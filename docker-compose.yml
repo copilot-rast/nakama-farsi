@@ -43,7 +43,12 @@ services:
 
 
   nakama:
-    image: registry.heroiclabs.com/heroiclabs/nakama:3.41.0
+    # Built from this repository so the Persian (fa-IR) console is included;
+    # the official heroiclabs/nakama image ships the upstream English console.
+    build:
+      context: .
+      dockerfile: build/Dockerfile.local
+    image: nakama-farsi:local
 
     entrypoint:
       - "/bin/sh"
