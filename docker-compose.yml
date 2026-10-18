@@ -2,11 +2,25 @@ services:
 
   cockroachdb:
     image: cockroachdb/cockroach:latest-v24.1
+
     command:
       - start-single-node
       - --insecure
       - --store=attrs=ssd,path=/var/lib/cockroach/
+
     restart: unless-stopped
+
+    # Resource limits
+    mem_limit: 2g
+    memswap_limit: 2g
+    cpus: "1"
+
+    # Prevent unbounded Docker logs
+    logging:
+      driver: json-file
+      options:
+        max-size: "150m"
+        max-file: "3"
 
     volumes:
       - data:/var/lib/cockroach
@@ -16,7 +30,13 @@ services:
       - "26257"
 
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health?ready=1"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8080/health?ready=1"
+        ]
       interval: 3s
       timeout: 3s
       retries: 5
@@ -46,6 +66,18 @@ services:
 
     restart: unless-stopped
 
+    # Resource limits
+    mem_limit: 3g
+    memswap_limit: 3g
+    cpus: "2"
+
+    # Prevent unbounded Docker logs
+    logging:
+      driver: json-file
+      options:
+        max-size: "150m"
+        max-file: "3"
+
     environment:
       NAKAMA_SERVER_KEY: ${NAKAMA_SERVER_KEY}
       NAKAMA_SESSION_ENCRYPTION_KEY: ${NAKAMA_SESSION_ENCRYPTION_KEY}
@@ -58,6 +90,10 @@ services:
       cockroachdb:
         condition: service_healthy
 
+    # Internal Docker ports only.
+    # Dokploy/Traefik routes:
+    #   nakama.dastar.dev         -> 7350
+    #   nakama-console.dastar.dev -> 7351
     expose:
       - "7349"
       - "7350"
@@ -65,7 +101,12 @@ services:
       - "9100"
 
     healthcheck:
-      test: ["CMD", "/nakama/nakama", "healthcheck"]
+      test:
+        [
+          "CMD",
+          "/nakama/nakama",
+          "healthcheck"
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -86,6 +127,7 @@ services:
         evaluation_interval: 15s
 
       scrape_configs:
+
         - job_name: prometheus
           static_configs:
             - targets: ["localhost:9090"]
@@ -99,6 +141,8 @@ services:
       prometheus --config.file=./prometheus.yml
       EOF'
 
+    # Prometheus is internal only.
+    # Do NOT expose 9090 publicly.
     expose:
       - "9090"
 
