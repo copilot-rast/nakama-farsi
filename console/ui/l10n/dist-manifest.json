@@ -1,0 +1,16 @@
+{
+  "note": "Files generated in console/ui/dist by scripts/build.mjs.",
+  "files": [
+    "static/index-Bdh9Sy6s.logical-72a711ac43.css",
+    "static/index-Bdh9Sy6s.logical-72a711ac43.css.gz",
+    "static/l10n-33462581a7.js",
+    "static/l10n-33462581a7.js.gz",
+    "static/l10n-f31db77df6.css",
+    "static/l10n-f31db77df6.css.gz",
+    "static/vazirmatn-OFL.txt",
+    "static/vazirmatn-fd-nl-bold-9a360988b2.woff2",
+    "static/vazirmatn-fd-nl-medium-1d4b124523.woff2",
+    "static/vazirmatn-fd-nl-regular-24cfa06801.woff2",
+    "static/vazirmatn-nl-wght-cdef5578ea.woff2"
+  ]
+}

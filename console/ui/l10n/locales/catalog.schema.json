@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Nakama Console localization catalog",
+  "description": "Namespaced messages. en.json holds the English source text the console renders; other locales map the same keys to translations. See docs/persian-localization.md.",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string" },
+    "$meta": {
+      "type": "object",
+      "properties": {
+        "locale": { "type": "string" },
+        "name": { "type": "string" },
+        "dir": { "enum": ["ltr", "rtl"] }
+      },
+      "required": ["locale", "name", "dir"],
+      "additionalProperties": false
+    }
+  },
+  "patternProperties": {
+    "^[a-z][A-Za-z0-9]*$": {
+      "description": "A namespace (application area).",
+      "type": "object",
+      "patternProperties": {
+        "^[a-z][A-Za-z0-9]*$": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "description": "Message text. {name} is a placeholder; ' | ' separates plural forms (one | other)."
+            },
+            {
+              "type": "object",
+              "description": "Source message that only applies inside elements matching a CSS selector.",
+              "properties": {
+                "message": { "type": "string", "minLength": 1 },
+                "context": { "type": "string", "minLength": 1 }
+              },
+              "required": ["message", "context"],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["$meta"],
+  "additionalProperties": false
+}

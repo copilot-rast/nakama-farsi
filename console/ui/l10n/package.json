@@ -1,0 +1,18 @@
+{
+  "name": "nakama-console-l10n",
+  "private": true,
+  "description": "Persian (fa-IR) localization layer for the prebuilt Nakama Console UI.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check",
+    "audit": "node scripts/audit.mjs",
+    "test": "node --test \"test/*.test.mjs\""
+  },
+  "devDependencies": {
+    "acorn": "8.14.0",
+    "jsdom": "25.0.1",
+    "postcss": "8.4.49"
+  }
+}

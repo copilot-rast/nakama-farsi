@@ -1,0 +1,186 @@
+/* Nakama Console localization. Vazirmatn font: SIL Open Font License 1.1, see /static/vazirmatn-OFL.txt */
+/*
+ * Nakama Console localization styles: Persian typography and RTL refinements.
+ * Layout mirroring itself comes from the generated logical-property stylesheet;
+ * this file only handles what that conversion cannot express.
+ * Font URLs (__FONT_*__) are replaced with hashed file names by scripts/build.mjs.
+ */
+
+/* Vazirmatn (SIL OFL 1.1), Non-Latin cut: Persian/Arabic glyphs only, so Latin
+   text (identifiers, code, brand names) keeps the console's Inter font. */
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/static/vazirmatn-nl-wght-cdef5578ea.woff2') format('woff2-variations'), url('/static/vazirmatn-nl-wght-cdef5578ea.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F, U+2066-2069, U+066B-066C;
+}
+
+/* Farsi-Digits cut: renders ASCII digits with Persian glyphs. Used only where
+   the underlying text must stay Latin (number-flow parses its digits). */
+@font-face {
+  font-family: 'Vazirmatn FD';
+  src: url('/static/vazirmatn-fd-nl-regular-24cfa06801.woff2') format('woff2');
+  font-weight: 100 449;
+  font-display: swap;
+  unicode-range: U+0030-0039, U+066B-066C, U+0600-06FF;
+}
+@font-face {
+  font-family: 'Vazirmatn FD';
+  src: url('/static/vazirmatn-fd-nl-medium-1d4b124523.woff2') format('woff2');
+  font-weight: 450 549;
+  font-display: swap;
+  unicode-range: U+0030-0039, U+066B-066C, U+0600-06FF;
+}
+@font-face {
+  font-family: 'Vazirmatn FD';
+  src: url('/static/vazirmatn-fd-nl-bold-9a360988b2.woff2') format('woff2');
+  font-weight: 550 900;
+  font-display: swap;
+  unicode-range: U+0030-0039, U+066B-066C, U+0600-06FF;
+}
+
+html[lang='fa-IR'] {
+  --font-family-sans: 'Vazirmatn', 'Inter Variable', Tahoma, Arial, sans-serif !important;
+  --dp-font-family: var(--font-family-sans) !important;
+}
+
+html[lang='fa-IR'] body,
+html[lang='fa-IR'] button,
+html[lang='fa-IR'] input,
+html[lang='fa-IR'] select,
+html[lang='fa-IR'] textarea,
+html[lang='fa-IR'] ::placeholder {
+  font-family: var(--font-family-sans);
+}
+
+/* Persian is a connected script: tracking breaks letter joins and uppercase is meaningless. */
+html[lang='fa-IR'] :is(.tracking-tight, .tracking-wide, .tracking-wider, .tracking-widest, .uppercase) {
+  letter-spacing: normal;
+}
+
+/* Tiny sidebar section labels are unreadable in Persian at 10px. */
+html[lang='fa-IR'] .text-\[10px\] {
+  font-size: 11px;
+}
+
+/* Dashboard counters (number-flow) keep Latin digits in the DOM; show Persian glyphs. */
+html[lang='fa-IR'] number-flow-vue {
+  font-family: 'Vazirmatn FD', var(--font-family-sans);
+}
+
+/* ---------------------------------------------------------------------------
+ * Right-to-left refinements
+ * ------------------------------------------------------------------------- */
+
+/* Directional icons (arrows, chevrons, back, logout, send) point the other way. */
+html[dir='rtl'] svg[data-l10n-icon='mirror'] {
+  scale: -1 1;
+}
+
+/* Date picker (vue-datepicker): mirror month navigation arrows; times read hh:mm. */
+html[dir='rtl'] .dp--arrow-btn-nav svg {
+  scale: -1 1;
+}
+html[dir='rtl'] .dp__time_input {
+  direction: ltr;
+}
+
+/* Code, editors and machine-readable values are always left-to-right. */
+html[dir='rtl'] :is(pre, code, kbd, samp, .monaco-editor, .monaco-diff-editor, .cm-editor) {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+html[dir='rtl'] :is(pre, .monaco-editor, .monaco-diff-editor, .cm-editor) {
+  text-align: left;
+}
+
+/* Charts: time flows left to right regardless of UI direction. */
+html[dir='rtl'] [_echarts_instance_] {
+  direction: ltr;
+}
+
+/* The console's input components default to dir="ltr" on every field. In RTL,
+   fields take the layout direction (so icons and paddings stay mirrored) and
+   order their text by content: Persian reads right-to-left while emails, IDs,
+   URLs and tokens typed in Latin read left-to-right. */
+html[dir='rtl'] :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='color']), textarea):not(.monaco-editor *) {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+/* Identifiers in tables/labels are a single LTR run; isolate them from the
+   surrounding Persian so punctuation does not jump sides. */
+html[dir='rtl'] .font-mono {
+  unicode-bidi: isolate;
+}
+
+/* ---------------------------------------------------------------------------
+ * Language switcher
+ * ------------------------------------------------------------------------- */
+.l10n-switcher {
+  position: fixed;
+  inset-block-end: 12px;
+  inset-inline-end: 12px;
+  z-index: 60;
+  min-width: 2.25rem;
+  height: 2rem;
+  padding: 0 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(203 213 225);
+  background: rgb(255 255 255 / 0.92);
+  color: rgb(51 65 85);
+  font: 600 12px/1 var(--font-family-sans, 'Vazirmatn', 'Inter Variable', Tahoma, sans-serif);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+  backdrop-filter: blur(4px);
+}
+.l10n-switcher:hover {
+  border-color: rgb(107 89 238);
+  color: rgb(107 89 238);
+}
+.l10n-switcher:focus-visible {
+  outline: 2px solid rgb(107 89 238);
+  outline-offset: 2px;
+}
+.dark .l10n-switcher {
+  background: rgb(15 23 42 / 0.92);
+  border-color: rgb(51 65 85);
+  color: rgb(226 232 240);
+}
+.l10n-switcher.l10n-switcher--docked {
+  position: static;
+  height: 1.75rem;
+  box-shadow: none;
+  margin-inline: 0.25rem;
+}
+
+@media print {
+  .l10n-switcher {
+    display: none;
+  }
+}
+
+/* Untranslated English prose (external blog feed, server or user text). */
+html[dir='rtl'] [data-l10n-ltr] {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Monaco does not support RTL: its host must be LTR too or it scrolls/clips. */
+html[dir='rtl'] :has(> .monaco-editor, > .monaco-diff-editor) {
+  direction: ltr;
+}
+
+/* Emphasized runs are often technical keys ("console.username:"); keep their
+   punctuation with them. */
+html[dir='rtl'] :is(strong, b) {
+  unicode-bidi: isolate;
+}
+
+/* Code/value previews (syntax-highlighted <pre class="shiki">) are LTR widgets;
+   mirroring them would put their copy button over the start of the value. */
+html[dir='rtl'] :is(.group\/preview, :has(> pre.shiki)) {
+  direction: ltr;
+}

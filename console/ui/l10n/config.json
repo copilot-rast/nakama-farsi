@@ -1,0 +1,42 @@
+{
+  "defaultLocale": "fa-IR",
+  "sourceLocale": "en",
+  "locales": {
+    "fa-IR": {
+      "name": "فارسی",
+      "short": "فا",
+      "lang": "fa-IR",
+      "dir": "rtl",
+      "switchLabel": "تغییر زبان به فارسی"
+    },
+    "en": {
+      "name": "English",
+      "short": "EN",
+      "lang": "en",
+      "dir": "ltr",
+      "switchLabel": "Switch language to English"
+    }
+  },
+  "mirrorIcons": [
+    "first-page",
+    "chevron-left",
+    "chevron-right",
+    "arrow-left",
+    "arrow-right",
+    "arrow-long-right",
+    "back",
+    "logout",
+    "send",
+    "schedule-send",
+    "undo",
+    "keyboard-return",
+    "collapse-drawer"
+  ],
+  "fonts": {
+    "VAZIRMATN_NL": "fonts/Vazirmatn-NL-wght.woff2",
+    "VAZIRMATN_FD_400": "fonts/Vazirmatn-FD-NL-Regular.woff2",
+    "VAZIRMATN_FD_500": "fonts/Vazirmatn-FD-NL-Medium.woff2",
+    "VAZIRMATN_FD_700": "fonts/Vazirmatn-FD-NL-Bold.woff2"
+  },
+  "preloadFonts": ["VAZIRMATN_NL"]
+}

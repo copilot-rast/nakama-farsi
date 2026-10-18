@@ -1,0 +1,45 @@
+# Persian (fa-IR) console localization: catalog validation, runtime tests,
+# translation audit, and a check that console/ui/dist matches the sources.
+name: Console localization
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "console/ui/**"
+      - "console/ui_l10n_test.go"
+jobs:
+  l10n:
+    name: Test console localization
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: console/ui/l10n
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+  embed:
+    name: Test embedded console assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Test
+        run: go test -mod=vendor ./console/
