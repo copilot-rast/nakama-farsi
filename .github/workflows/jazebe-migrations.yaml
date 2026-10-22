@@ -1,0 +1,43 @@
+name: Jazebe migration and database checks
+on:
+  pull_request:
+    paths:
+      - 'integrations/jazebe/**'
+      - 'migrate/**'
+      - 'scripts/jazebe_route_audit/**'
+      - 'docs/integration/jazebe-http-routes.md'
+      - 'docs/integration/jazebe-route-parity.json'
+      - '.github/workflows/jazebe-migrations.yaml'
+  workflow_dispatch:
+
+jobs:
+  profile_postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16.8-alpine
+        env:
+          POSTGRES_DB: jazebe_test
+          POSTGRES_PASSWORD: localdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d jazebe_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: Validate source-linked route inventory
+        run: |
+          go test -mod=vendor ./scripts/jazebe_route_audit -count=1
+          go run -mod=vendor ./scripts/jazebe_route_audit -offline
+      - name: Build Nakama with Jazebe migrations
+        run: go build -mod=vendor -o "$RUNNER_TEMP/nakama" .
+      - name: Apply Nakama and Jazebe migrations to disposable PostgreSQL
+        run: "$RUNNER_TEMP/nakama" migrate up --database.address postgres:localdb@127.0.0.1:5432/jazebe_test
+      - name: Exercise profile, report and account-state database behavior
+        env:
+          JAZEBE_DISPOSABLE_TEST_DB_URL: postgresql://postgres:localdb@127.0.0.1:5432/jazebe_test?sslmode=disable
+        run: go test -mod=vendor ./integrations/jazebe/native -run 'Test(Profile(PostgresConstraints|ReportPostgresConstraints|ReportPostgresWorkflow)|Account(Transition|RevocationRetry|TransitionConcurrent)Postgres|OperatorConstellationPostgres)$' -count=1 -v

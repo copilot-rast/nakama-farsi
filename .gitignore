@@ -2,6 +2,11 @@ nakama
 .cookie
 local.yml
 
+# Local read-only snapshots used during Jazebe feature analysis. The original
+# source repositories remain in ../jazebe; only native Nakama code is shipped.
+/integrations/jazebe/nest-backend/
+/integrations/jazebe/nextjs/
+
 # Created by https://www.toptal.com/developers/gitignore/api/go,angular,node,intellij+all,visualstudiocode,visualstudio,sublimetext,windows,linux,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,angular,node,intellij+all,visualstudiocode,visualstudio,sublimetext,windows,linux,macos
 

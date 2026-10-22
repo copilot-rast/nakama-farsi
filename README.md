@@ -183,6 +183,10 @@ docker-compose -f ./docker-compose-tests.yml up --build --abort-on-container-exi
 This will create an isolated environment with Nakama and database instances, run
 all the tests, and drop the environment afterwards.
 
+### Jazebe integration work
+
+The native Jazebe Go runtime module, feature inventory, and MCP prototype are documented in [docs/integration/architecture-analysis.md](docs/integration/architecture-analysis.md). The [parity matrix](docs/integration/feature-parity-matrix.md) records the remaining source behaviors to port. The module is built into the local Docker image and registered through Nakama's existing runtime.
+
 ### License
 
 This project is licensed under the [Apache-2 License](https://github.com/heroiclabs/nakama/blob/master/LICENSE).

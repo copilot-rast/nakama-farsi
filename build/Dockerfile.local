@@ -28,6 +28,7 @@ WORKDIR /go/build/nakama
 COPY . .
 
 RUN go build -o /go/build-out/nakama -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "-s -w -X main.version=local"
+RUN go build -buildmode=plugin -o /go/build-out/jazebe.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" ./integrations/jazebe/native
 
 FROM debian:bookworm-slim
 
@@ -48,6 +49,7 @@ RUN mkdir -p /nakama/data/modules && \
 
 WORKDIR /nakama/
 COPY --from=builder "/go/build-out/nakama" /nakama/
+COPY --from=builder "/go/build-out/jazebe.so" /nakama/data/modules/
 EXPOSE 7349 7350 7351
 
 ENTRYPOINT ["tini", "--", "/nakama/nakama"]
