@@ -814,13 +814,14 @@
     ],
     "destinationEntry": "jazebe_operator_user_suspend",
     "destinationFile": "integrations/jazebe/native/profile_account_state.go",
-    "implementationStatus": "PARTIAL",
-    "behavioralDifferences": "PARTIAL: native RPC exists; business behaviour not yet exercised against PostgreSQL by a workflow test.",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/profile_account_purge_postgres_test.go",
       "integrations/jazebe/native/profile_account_state_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "Gate-level only: TestJazebeRPCSweepPostgres (auth, malformed input, no leaks); no workflow test",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: profile_account_purge_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -991,17 +992,20 @@
     "methodPath": ":userId/purge",
     "method": "POST",
     "path": "admin/jazebeh/users/:userId/purge",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_operator_user_purge: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/profile_account_purge.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Platform operator (source PlatformAdminGuard/OperatorLevelGuard); native: JAZEBE_*_OPERATOR_USER_IDS allowlists checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: operator purge (irreversible personal-data erasure) requires a reviewed data-retention policy.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_operator_user_purge",
+    "destinationFile": "integrations/jazebe/native/profile_account_purge.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: source purge semantics (super operator, non-active account): KYC, Jazebe notices, preferences, devices and identity erased; Nakama user anonymized and banned; ledgers, memberships and audits retained. Nakama client account deletion of users with Jazebe data is refused (BeforeDeleteAccount, code 9); console/runtime deletion paths still fail on Jazebe foreign keys.",
+    "testReferences": [
+      "integrations/jazebe/native/profile_account_purge_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: profile_account_purge_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -1118,9 +1122,10 @@
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
       "integrations/jazebe/native/operator_workflow_postgres_test.go",
+      "integrations/jazebe/native/profile_account_purge_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: operator_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: operator_workflow_postgres_test.go, profile_account_purge_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -1139,12 +1144,13 @@
     "persistence": [],
     "destinationEntry": "jazebe_profile_overview",
     "destinationFile": "integrations/jazebe/native/profile_read.go",
-    "implementationStatus": "PARTIAL",
-    "behavioralDifferences": "PARTIAL: native RPC exists; business behaviour not yet exercised against PostgreSQL by a workflow test.",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/profile_account_purge_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "Gate-level only: TestJazebeRPCSweepPostgres (auth, malformed input, no leaks); no workflow test",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: profile_account_purge_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -1450,17 +1456,20 @@
     "methodPath": "me",
     "method": "GET",
     "path": "brand/me",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_brand_me: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_admin.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Brand administrator (source BrandAdminGuard + role); native: active jazebe_brand_admin row with the required role, checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: brand/me (current brand-admin context).",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_brand_me",
+    "destinationFile": "integrations/jazebe/native/brand_admin.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -1479,12 +1488,13 @@
     "persistence": [],
     "destinationEntry": "jazebe_brand_team_list",
     "destinationFile": "integrations/jazebe/native/brand_team.go",
-    "implementationStatus": "PARTIAL",
-    "behavioralDifferences": "PARTIAL: native RPC exists; business behaviour not yet exercised against PostgreSQL by a workflow test.",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "Gate-level only: TestJazebeRPCSweepPostgres (auth, malformed input, no leaks); no workflow test",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -1496,17 +1506,20 @@
     "methodPath": "lookup",
     "method": "GET",
     "path": "brand/team/lookup",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_brand_team_lookup: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_team_manage.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Brand administrator (source BrandAdminGuard + role); native: active jazebe_brand_admin row with the required role, checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: brand team lookup/invite/role change/deactivate/reactivate.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_brand_team_lookup",
+    "destinationFile": "integrations/jazebe/native/brand_team_manage.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED (adapted): exact Nakama user ID or username instead of a registered phone number, which Nakama-Farsi has no trusted identity for.",
+    "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -1518,17 +1531,20 @@
     "methodPath": "",
     "method": "POST",
     "path": "brand/team",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_brand_team_invite: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_team_manage.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Brand administrator (source BrandAdminGuard + role); native: active jazebe_brand_admin row with the required role, checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: brand team lookup/invite/role change/deactivate/reactivate.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_brand_team_invite",
+    "destinationFile": "integrations/jazebe/native/brand_team_manage.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED (adapted): invitee named by exact Nakama user ID or username instead of phone.",
+    "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -1540,17 +1556,20 @@
     "methodPath": ":id/role",
     "method": "PATCH",
     "path": "brand/team/:id/role",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_brand_team_role: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_team_manage.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Brand administrator (source BrandAdminGuard + role); native: active jazebe_brand_admin row with the required role, checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: brand team lookup/invite/role change/deactivate/reactivate.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_brand_team_role",
+    "destinationFile": "integrations/jazebe/native/brand_team_manage.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -1562,17 +1581,20 @@
     "methodPath": ":id/deactivate",
     "method": "POST",
     "path": "brand/team/:id/deactivate",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_brand_team_deactivate: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_team_manage.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Brand administrator (source BrandAdminGuard + role); native: active jazebe_brand_admin row with the required role, checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: brand team lookup/invite/role change/deactivate/reactivate.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_brand_team_deactivate",
+    "destinationFile": "integrations/jazebe/native/brand_team_manage.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -1584,17 +1606,20 @@
     "methodPath": ":id/reactivate",
     "method": "POST",
     "path": "brand/team/:id/reactivate",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_brand_team_reactivate: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_team_manage.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Brand administrator (source BrandAdminGuard + role); native: active jazebe_brand_admin row with the required role, checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: brand team lookup/invite/role change/deactivate/reactivate.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_brand_team_reactivate",
+    "destinationFile": "integrations/jazebe/native/brand_team_manage.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -2165,10 +2190,11 @@
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
       "integrations/jazebe/native/operator_workflow_postgres_test.go",
+      "integrations/jazebe/native/profile_account_purge_postgres_test.go",
       "integrations/jazebe/native/module_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: operator_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: operator_workflow_postgres_test.go, profile_account_purge_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -3180,10 +3206,11 @@
       "integrations/jazebe/native/migration_replay_postgres_test.go",
       "integrations/jazebe/native/mission_workflow_postgres_test.go",
       "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/profile_account_purge_postgres_test.go",
       "integrations/jazebe/native/group_base_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: game_workflow_postgres_test.go, group_read_postgres_test.go, group_workflow_postgres_test.go, lottery_workflow_postgres_test.go, migration_replay_postgres_test.go, mission_workflow_postgres_test.go, planet_home_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: game_workflow_postgres_test.go, group_read_postgres_test.go, group_workflow_postgres_test.go, lottery_workflow_postgres_test.go, migration_replay_postgres_test.go, mission_workflow_postgres_test.go, planet_home_postgres_test.go, profile_account_purge_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -4968,6 +4995,7 @@
     "implementationStatus": "IMPLEMENTED",
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
       "integrations/jazebe/native/game_workflow_postgres_test.go",
       "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/lottery_workflow_postgres_test.go",
@@ -4975,7 +5003,7 @@
       "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: game_workflow_postgres_test.go, group_read_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go, planet_home_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go, game_workflow_postgres_test.go, group_read_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go, planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6387,9 +6415,10 @@
     "behavioralDifferences": "IMPLEMENTED: preferences also gate delivery in persistJazebeNotification (critical always delivered).",
     "testReferences": [
       "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/profile_account_purge_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go, profile_account_purge_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6906,10 +6935,11 @@
     "implementationStatus": "IMPLEMENTED",
     "behavioralDifferences": "IMPLEMENTED: planet home; brand-domain auto-membership (route 292) is not ported.",
     "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
       "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go, planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -7073,17 +7103,20 @@
     "methodPath": "brands",
     "method": "GET",
     "path": "admin/jazebeh/brands",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_operator_brand_list: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_admin.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Platform operator (source PlatformAdminGuard/OperatorLevelGuard); native: JAZEBE_*_OPERATOR_USER_IDS allowlists checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: operator brand list.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_operator_brand_list",
+    "destinationFile": "integrations/jazebe/native/brand_admin.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -7103,12 +7136,13 @@
     "destinationEntry": "jazebe_brand_create",
     "destinationFile": "integrations/jazebe/native/module.go",
     "implementationStatus": "IMPLEMENTED",
-    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "behavioralDifferences": "IMPLEMENTED: requires the managerial operator level as in the source; commercial fields are set with jazebe_operator_brand_update.",
     "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
       "integrations/jazebe/native/fixture_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: fixture_postgres_test.go; live HTTP on native Nakama 2026-10-23 (JZ-LIVE-01)",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go, fixture_postgres_test.go; live HTTP on native Nakama 2026-10-23 (JZ-LIVE-01)",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -7120,17 +7154,19 @@
     "methodPath": "brands/:id",
     "method": "GET",
     "path": "admin/jazebeh/brands/:id",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_operator_brand_get: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_admin.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Platform operator (source PlatformAdminGuard/OperatorLevelGuard); native: JAZEBE_*_OPERATOR_USER_IDS allowlists checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: operator brand detail/update/contract and brand admin management.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_operator_brand_get",
+    "destinationFile": "integrations/jazebe/native/brand_admin.go",
+    "implementationStatus": "PARTIAL",
+    "behavioralDifferences": "PARTIAL: native RPC exists; business behaviour not yet exercised against PostgreSQL by a workflow test.",
+    "testReferences": [
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "Gate-level only: TestJazebeRPCSweepPostgres (auth, malformed input, no leaks); no workflow test",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -7142,17 +7178,20 @@
     "methodPath": "brands/:id",
     "method": "PATCH",
     "path": "admin/jazebeh/brands/:id",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_operator_brand_update: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_admin.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Platform operator (source PlatformAdminGuard/OperatorLevelGuard); native: JAZEBE_*_OPERATOR_USER_IDS allowlists checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: operator brand detail/update/contract and brand admin management.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_operator_brand_update",
+    "destinationFile": "integrations/jazebe/native/brand_admin.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -7164,17 +7203,20 @@
     "methodPath": "brands/:id/contract",
     "method": "POST",
     "path": "admin/jazebeh/brands/:id/contract",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_operator_brand_contract: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_admin.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Platform operator (source PlatformAdminGuard/OperatorLevelGuard); native: JAZEBE_*_OPERATOR_USER_IDS allowlists checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: operator brand detail/update/contract and brand admin management.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_operator_brand_contract",
+    "destinationFile": "integrations/jazebe/native/brand_admin.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: contract status drives jazebe_brand.is_active; brand-admin authorization reads jazebe_active_brand_admin, so a suspended or terminated brand holds no brand-panel authority.",
+    "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -7186,17 +7228,20 @@
     "methodPath": "brands/:id/admins",
     "method": "POST",
     "path": "admin/jazebeh/brands/:id/admins",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_operator_brand_admin_add: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_admin.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Platform operator (source PlatformAdminGuard/OperatorLevelGuard); native: JAZEBE_*_OPERATOR_USER_IDS allowlists checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: operator brand detail/update/contract and brand admin management.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_operator_brand_admin_add",
+    "destinationFile": "integrations/jazebe/native/brand_admin.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED (adapted): existing user by Nakama user ID; the phone variant (creating an account by mobile) needs a trusted phone identity.",
+    "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -7208,17 +7253,20 @@
     "methodPath": "brands/:id/admins/:adminId/role",
     "method": "PATCH",
     "path": "admin/jazebeh/brands/:id/admins/:adminId/role",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_operator_brand_admin_role: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_admin.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Platform operator (source PlatformAdminGuard/OperatorLevelGuard); native: JAZEBE_*_OPERATOR_USER_IDS allowlists checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: operator brand detail/update/contract and brand admin management.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_operator_brand_admin_role",
+    "destinationFile": "integrations/jazebe/native/brand_admin.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -7230,17 +7278,20 @@
     "methodPath": "brands/:id/admins/:adminId/deactivate",
     "method": "POST",
     "path": "admin/jazebeh/brands/:id/admins/:adminId/deactivate",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_operator_brand_admin_deactivate: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_admin.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Platform operator (source PlatformAdminGuard/OperatorLevelGuard); native: JAZEBE_*_OPERATOR_USER_IDS allowlists checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: operator brand detail/update/contract and brand admin management.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_operator_brand_admin_deactivate",
+    "destinationFile": "integrations/jazebe/native/brand_admin.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/brand_admin_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: brand_admin_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -7252,17 +7303,19 @@
     "methodPath": "brands/:id/admins/:adminId/reactivate",
     "method": "POST",
     "path": "admin/jazebeh/brands/:id/admins/:adminId/reactivate",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_operator_brand_admin_reactivate: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/brand_admin.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Platform operator (source PlatformAdminGuard/OperatorLevelGuard); native: JAZEBE_*_OPERATOR_USER_IDS allowlists checked server-side",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: operator brand detail/update/contract and brand admin management.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_operator_brand_admin_reactivate",
+    "destinationFile": "integrations/jazebe/native/brand_admin.go",
+    "implementationStatus": "PARTIAL",
+    "behavioralDifferences": "PARTIAL: native RPC exists; business behaviour not yet exercised against PostgreSQL by a workflow test.",
+    "testReferences": [
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "Gate-level only: TestJazebeRPCSweepPostgres (auth, malformed input, no leaks); no workflow test",
     "frontendCoverage": "UNAUDITED"
   },
   {
