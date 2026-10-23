@@ -17,12 +17,12 @@ jobs:
       postgres:
         image: postgres:16.8-alpine
         env:
-          POSTGRES_DB: jazebe_test
+          POSTGRES_DB: jazebe_test_disposable
           POSTGRES_PASSWORD: localdb
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres -d jazebe_test"
+          --health-cmd "pg_isready -U postgres -d jazebe_test_disposable"
           --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
       - uses: actions/checkout@v5
@@ -36,8 +36,8 @@ jobs:
       - name: Build Nakama with Jazebe migrations
         run: go build -mod=vendor -o "$RUNNER_TEMP/nakama" .
       - name: Apply Nakama and Jazebe migrations to disposable PostgreSQL
-        run: "$RUNNER_TEMP/nakama" migrate up --database.address postgres:localdb@127.0.0.1:5432/jazebe_test
+        run: "$RUNNER_TEMP/nakama" migrate up --database.address postgres:localdb@127.0.0.1:5432/jazebe_test_disposable
       - name: Exercise profile, report and account-state database behavior
         env:
-          JAZEBE_DISPOSABLE_TEST_DB_URL: postgresql://postgres:localdb@127.0.0.1:5432/jazebe_test?sslmode=disable
-        run: go test -mod=vendor ./integrations/jazebe/native -run 'Test(Profile(PostgresConstraints|ReportPostgresConstraints|ReportPostgresWorkflow)|Account(Transition|RevocationRetry|TransitionConcurrent)Postgres|OperatorConstellationPostgres)$' -count=1 -v
+          JAZEBE_DISPOSABLE_TEST_DB_URL: postgresql://postgres:localdb@127.0.0.1:5432/jazebe_test_disposable?sslmode=disable
+        run: go test -mod=vendor ./integrations/jazebe/native -run 'Test(Profile(PostgresConstraints|ReportPostgresConstraints|ReportPostgresWorkflow)|Account(Transition|RevocationRetry|TransitionConcurrent)Postgres|OperatorConstellationPostgres|JazebeSQLPreparesPostgres)$' -count=1 -v

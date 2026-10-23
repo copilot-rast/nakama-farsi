@@ -1,5 +1,21 @@
 # Jazebe feature parity matrix
 
+## Native PostgreSQL verification checkpoint (2026-10-23)
+
+PostgreSQL 18.6 now runs natively (Andronix); see [../ANDRONIX-POSTGRESQL.md](../ANDRONIX-POSTGRESQL.md). This checkpoint first ran the module's SQL against a real migrated schema.
+
+| ID | Behavior | Destination | Status and evidence |
+|---|---|---|---|
+| JZ-DB-MIGRATE-01 | 52 embedded migrations (20 upstream + 32 Jazebe) on a fresh DB, as a non-superuser owner | `migrate/sql` | TESTED: run 1 applied 52, run 2 applied 0, on both `nakama_dev` and the disposable DB. Down across Jazebe migrations is **unsafe**: 31/32 Down sections retain tables (`SELECT 1;`), so re-up fails (`jazebe_membership_join_path_check already exists`). Decision pending |
+| JZ-DB-SQLTYPES-01 | Every Jazebe SQL statement type-checks under pgx's default prepared mode, which Nakama uses (`server/db.go` `stdlib.OpenDB`) | 30 `native/*.go` files; `sql_prepare_postgres_test.go` | FIXED/TESTED: 43 statements passed bare `$N` to `jsonb_build_object` (VARIADIC "any"), which fails with 42P18. 2 more (`game_play.go` quota insert, `profile_core.go` avatar update) had conflicting varchar/text inference (42P08). All got explicit casts matching the Go type. Every affected audit, activity and update write, and its transaction, previously failed at runtime. 729/729 complete statements and 14/14 runtime-assembled variants now prepare |
+| JZ-DB-GUARD-01 | PostgreSQL fixtures must not reach non-disposable databases | `native/disposable_db_test.go` | TESTED: requires a `_disposable` database name and a loopback/socket host, then re-checks `current_database()`; 11-case unit test; refuses `nakama_dev` and remote hosts |
+| JZ-ACCOUNT-STATE-01, JZ-OPERATOR-CONSTELLATION-01, JZ-PROFILE-REPORT-01, JZ-OPERATOR-REPORT-01 | PostgreSQL workflow tests | `*_postgres_test.go` | PostgreSQL TESTED: all 7 previously NOT_RUN tests pass (4 failed before the cast fixes). Behavioral status stays PARTIAL for the reasons listed below |
+
+| JZ-RPC-ERRORS-01 | Clients receive the intended error class (source NestJS returns 400/403/404/409) | `native/account_rpc_guard.go` `nakamaRPCError`, applied once at registration in `module.go`; `TestNakamaRPCErrorMapsStatusCodes` | FIXED/TESTED LIVE: Nakama maps only `*runtime.Error` to a status (`server/runtime_go.go` RegisterRpc), but the module returned gRPC `status.Error` 1,584 times, so every Jazebe error reached clients as HTTP 500/code 13. Unstatused driver errors also leaked raw SQL text. Statuses are now translated, and unstatused errors are logged and returned as a generic `internal error`. Live: 403, 400 and 409 observed |
+| JZ-LIVE-01 | Nakama + `jazebe.so` start natively on PostgreSQL and serve database-backed RPCs | `nakama_dev`; [../ANDRONIX-POSTGRESQL.md](../ANDRONIX-POSTGRESQL.md) | TESTED LIVE (2026-10-23): the plugin loads with 196 RPCs. `jazebe_brand_create`: non-operator 403, empty name 400, operator 200, writing brand, member(owner), admin(main) and a `brand.create` audit with JSON params in one transaction. `jazebe_planet_create`: brand admin 200 (status `setup` + audit), duplicate name in brand 409 (matches source `uq_jz_planet_brand_name`), operator without a brand role 403. No server errors logged. Only these two RPCs are live-verified |
+
+Counts are unchanged: 196 native RPCs, 32 Jazebe migrations, 112 MCP tools, zero verified controller groups.
+
 ## Operator account restriction and support checkpoint (2026-10-23)
 
 | ID | Source behavior | Destination | Status and evidence |

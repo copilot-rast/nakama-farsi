@@ -1,5 +1,12 @@
 # Remaining Jazebe migration work
 
+## Native PostgreSQL follow-ups (2026-10-23)
+
+PostgreSQL integration is now runnable locally ([../ANDRONIX-POSTGRESQL.md](../ANDRONIX-POSTGRESQL.md)), and the 7 gated tests plus `TestJazebeSQLPreparesPostgres` pass. Next:
+1. DONE 2026-10-23: native Nakama + plugin run on `nakama_dev`; brand and planet create verified live; RPC error codes fixed. Next: live workflow tests for the other controller groups, starting with the 43 fixed audit/activity paths.
+2. Decide the Jazebe `migrate down` policy: make Up sections re-runnable, write real Downs, or document it as unsupported (current state).
+3. The prepare test proves type-correctness only. The 43 fixed audit/activity paths (groups, missions, lottery, wallet, planet, brand) still need behavioral PostgreSQL workflow tests.
+
 ## Current medal dependency gap (2026-10-22)
 
 Medal purchase, group join, approved solo mission, point/ticket acquisition and opt-in durable backfill now have native code paths, but the domain is still **partial**. Next: migrate actual game-session and qualified-referral histories and events, trace source special-event ingress, integrate the new medal wall into the complete account-profile contract with translations, complete source brand progression XP/levels operations, then run PostgreSQL duplicate-award/concurrency and live Nakama tests. Remote MCP OAuth, source frontend workflows, and the other incomplete controller groups remain. `JAZEBE_MEDAL_BACKFILL_ENABLED` defaults off; enable only after applying migration `20261023130000` and reviewing queued jobs. Earlier sections below record historical gaps.
