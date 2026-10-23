@@ -11,6 +11,12 @@ import (
 // prevents a retried reward or adjustment from creating duplicate notices.
 // Nakama's existing notification list reads this row without a parallel store.
 func persistJazebeNotification(ctx context.Context, tx *sql.Tx, userID, sourceKey, subject string, content map[string]any, at time.Time) error {
+	// A notice the recipient muted is not delivered in-app at all (source
+	// resolveChannels); critical notices ignore preferences.
+	delivered, err := notificationDelivered(ctx, tx, userID, content)
+	if err != nil || !delivered {
+		return err
+	}
 	encoded, err := json.Marshal(content)
 	if err != nil {
 		return err

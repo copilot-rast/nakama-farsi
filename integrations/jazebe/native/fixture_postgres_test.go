@@ -234,10 +234,27 @@ func (f *jazebeFixture) activity(groupID, key string) (actor string, payload map
 func expectJSON(t *testing.T, label string, got map[string]any, want map[string]any) {
 	t.Helper()
 	for k, v := range want {
+		if a, ok := jsonNumber(got[k]); ok {
+			if b, ok := jsonNumber(v); ok && a == b {
+				continue
+			}
+		}
 		if fmt.Sprint(got[k]) != fmt.Sprint(v) {
 			t.Errorf("%s: %s=%v (%T), want %v", label, k, got[k], got[k], v)
 		}
 	}
+}
+
+func jsonNumber(v any) (float64, bool) {
+	switch n := v.(type) {
+	case float64:
+		return n, true
+	case int:
+		return float64(n), true
+	case int64:
+		return float64(n), true
+	}
+	return 0, false
 }
 
 // cleanup deletes only rows tied to this fixture's users, brand and planet,

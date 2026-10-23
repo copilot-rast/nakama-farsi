@@ -370,6 +370,16 @@ column jazebe_mission_media_start.period_key character varying(32) not null
 column jazebe_mission_media_start.planet_id uuid not null
 column jazebe_mission_media_start.started_at timestamp with time zone not null
 column jazebe_mission_media_start.user_id uuid not null
+column jazebe_notification_preference.category_prefs jsonb not null default '{"news": true, "friends": true, "rewards": true, "missions": true, "marketing": false}'::jsonb
+column jazebe_notification_preference.channel_prefs jsonb not null default '{"group": {"sms": false, "in_app": true}, "system": {"sms": false, "in_app": true}, "mission_game": {"sms": false, "in_app": true}}'::jsonb
+column jazebe_notification_preference.created_at timestamp with time zone not null default now()
+column jazebe_notification_preference.updated_at timestamp with time zone not null default now()
+column jazebe_notification_preference.user_id uuid not null
+column jazebe_notification_state.deleted_at timestamp with time zone
+column jazebe_notification_state.notification_id uuid not null
+column jazebe_notification_state.read_at timestamp with time zone
+column jazebe_notification_state.updated_at timestamp with time zone not null default now()
+column jazebe_notification_state.user_id uuid not null
 column jazebe_order.delivery jsonb
 column jazebe_order.id uuid not null
 column jazebe_order.paid_points integer not null
@@ -855,6 +865,11 @@ constraint jazebe_mission_media_start jazebe_mission_media_start_mission_id_fkey
 constraint jazebe_mission_media_start jazebe_mission_media_start_pkey PRIMARY KEY (mission_id, user_id, period_key)
 constraint jazebe_mission_media_start jazebe_mission_media_start_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
 constraint jazebe_mission_media_start jazebe_mission_media_start_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_notification_preference jazebe_notification_preference_pkey PRIMARY KEY (user_id)
+constraint jazebe_notification_preference jazebe_notification_preference_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+constraint jazebe_notification_state jazebe_notification_state_notification_id_fkey FOREIGN KEY (notification_id) REFERENCES notification(id) ON DELETE CASCADE
+constraint jazebe_notification_state jazebe_notification_state_pkey PRIMARY KEY (notification_id)
+constraint jazebe_notification_state jazebe_notification_state_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 constraint jazebe_order jazebe_order_paid_points_check CHECK ((paid_points > 0))
 constraint jazebe_order jazebe_order_pkey PRIMARY KEY (id)
 constraint jazebe_order jazebe_order_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
@@ -1090,6 +1105,9 @@ index jazebe_mission_invite jazebe_mission_invite_token_key CREATE UNIQUE INDEX 
 index jazebe_mission_invite uq_jazebe_mission_invite_attribution CREATE UNIQUE INDEX uq_jazebe_mission_invite_attribution ON public.jazebe_mission_invite USING btree (inviter_user_id, invitee_user_id, COALESCE(mission_id, '00000000-0000-0000-0000-000000000000'::uuid)) WHERE (invitee_user_id IS NOT NULL)
 index jazebe_mission_invite uq_jazebe_mission_invite_unclaimed CREATE UNIQUE INDEX uq_jazebe_mission_invite_unclaimed ON public.jazebe_mission_invite USING btree (mission_id, inviter_user_id) WHERE ((invitee_user_id IS NULL) AND (mission_id IS NOT NULL))
 index jazebe_mission_media_start jazebe_mission_media_start_pkey CREATE UNIQUE INDEX jazebe_mission_media_start_pkey ON public.jazebe_mission_media_start USING btree (mission_id, user_id, period_key)
+index jazebe_notification_preference jazebe_notification_preference_pkey CREATE UNIQUE INDEX jazebe_notification_preference_pkey ON public.jazebe_notification_preference USING btree (user_id)
+index jazebe_notification_state idx_jazebe_notification_state_user CREATE INDEX idx_jazebe_notification_state_user ON public.jazebe_notification_state USING btree (user_id)
+index jazebe_notification_state jazebe_notification_state_pkey CREATE UNIQUE INDEX jazebe_notification_state_pkey ON public.jazebe_notification_state USING btree (notification_id)
 index jazebe_order idx_jazebe_order_product CREATE INDEX idx_jazebe_order_product ON public.jazebe_order USING btree (shop_product_id)
 index jazebe_order idx_jazebe_order_user_history CREATE INDEX idx_jazebe_order_user_history ON public.jazebe_order USING btree (planet_id, user_id, purchased_at DESC)
 index jazebe_order jazebe_order_pkey CREATE UNIQUE INDEX jazebe_order_pkey ON public.jazebe_order USING btree (id)
