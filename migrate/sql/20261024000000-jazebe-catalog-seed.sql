@@ -63,4 +63,9 @@ ON CONFLICT (key) DO NOTHING;
 
 -- +migrate Down
 -- Retain categories and medals: planets and medals reference them by ID.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261024000000-jazebe-catalog-seed'; END $$;
+-- +migrate StatementEnd

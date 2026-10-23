@@ -1,6 +1,6 @@
 -- Source-compatible shop and delivered-order ledgers; purchase support begins with tickets.
 -- +migrate Up
-CREATE TABLE jazebe_shop_product (
+CREATE TABLE IF NOT EXISTS jazebe_shop_product (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     name VARCHAR(128) NOT NULL,
@@ -20,8 +20,8 @@ CREATE TABLE jazebe_shop_product (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_jazebe_shop_product_planet_status ON jazebe_shop_product(planet_id,status);
-CREATE TABLE jazebe_order (
+CREATE INDEX IF NOT EXISTS idx_jazebe_shop_product_planet_status ON jazebe_shop_product(planet_id,status);
+CREATE TABLE IF NOT EXISTS jazebe_order (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     user_id UUID NOT NULL REFERENCES users(id),
@@ -34,9 +34,14 @@ CREATE TABLE jazebe_order (
     point_transaction_id UUID NOT NULL REFERENCES jazebe_point_transaction(id),
     purchased_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_jazebe_order_user_history ON jazebe_order(planet_id,user_id,purchased_at DESC);
-CREATE INDEX idx_jazebe_order_product ON jazebe_order(shop_product_id);
+CREATE INDEX IF NOT EXISTS idx_jazebe_order_user_history ON jazebe_order(planet_id,user_id,purchased_at DESC);
+CREATE INDEX IF NOT EXISTS idx_jazebe_order_product ON jazebe_order(shop_product_id);
 
 -- +migrate Down
 -- Orders and purchase ledgers represent earned value and require manual rollback.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261023050000-jazebe-shop-orders'; END $$;
+-- +migrate StatementEnd

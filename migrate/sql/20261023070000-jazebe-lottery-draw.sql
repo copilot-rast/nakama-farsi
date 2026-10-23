@@ -1,13 +1,13 @@
 -- Immutable winner and share snapshots. Verification is default-deny until
 -- the source KYC workflow marks a Nakama user verified.
 -- +migrate Up
-CREATE TABLE jazebe_user_verification (
+CREATE TABLE IF NOT EXISTS jazebe_user_verification (
     user_id UUID PRIMARY KEY REFERENCES users(id),
     status VARCHAR(16) NOT NULL DEFAULT 'none' CHECK (status IN ('none','review','verified','rejected')),
     verified_at TIMESTAMPTZ,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE TABLE jazebe_lottery_winner (
+CREATE TABLE IF NOT EXISTS jazebe_lottery_winner (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     lottery_id UUID NOT NULL REFERENCES jazebe_lottery(id),
@@ -19,9 +19,9 @@ CREATE TABLE jazebe_lottery_winner (
     recorded_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE(prize_id)
 );
-CREATE INDEX idx_jazebe_lottery_winner_lottery ON jazebe_lottery_winner(lottery_id);
-CREATE INDEX idx_jazebe_lottery_winner_group ON jazebe_lottery_winner(group_id);
-CREATE TABLE jazebe_lottery_winner_share (
+CREATE INDEX IF NOT EXISTS idx_jazebe_lottery_winner_lottery ON jazebe_lottery_winner(lottery_id);
+CREATE INDEX IF NOT EXISTS idx_jazebe_lottery_winner_group ON jazebe_lottery_winner(group_id);
+CREATE TABLE IF NOT EXISTS jazebe_lottery_winner_share (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     winner_id UUID NOT NULL REFERENCES jazebe_lottery_winner(id),
@@ -33,8 +33,13 @@ CREATE TABLE jazebe_lottery_winner_share (
     blocked_by_kyc BOOLEAN NOT NULL DEFAULT true,
     UNIQUE(winner_id,user_id)
 );
-CREATE INDEX idx_jazebe_lottery_share_user ON jazebe_lottery_winner_share(user_id,payout_status);
+CREATE INDEX IF NOT EXISTS idx_jazebe_lottery_share_user ON jazebe_lottery_winner_share(user_id,payout_status);
 
 -- +migrate Down
 -- Draw results, identity verification and payout evidence require manual review.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261023070000-jazebe-lottery-draw'; END $$;
+-- +migrate StatementEnd

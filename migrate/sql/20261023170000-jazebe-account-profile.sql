@@ -1,6 +1,6 @@
 -- Platform-wide Jazebe profile/state extension keyed by the existing Nakama user.
 -- +migrate Up
-CREATE TABLE jazebe_user_profile (
+CREATE TABLE IF NOT EXISTS jazebe_user_profile (
     user_id UUID PRIMARY KEY REFERENCES users(id),
     display_name VARCHAR(20) NOT NULL CHECK(char_length(display_name) BETWEEN 2 AND 20),
     display_name_changed_at TIMESTAMPTZ,
@@ -13,8 +13,8 @@ CREATE TABLE jazebe_user_profile (
     CHECK((avatar_kind='preset' AND avatar_preset_index IS NOT NULL AND avatar_media_id IS NULL)
        OR (avatar_kind='upload' AND avatar_preset_index IS NULL))
 );
-CREATE UNIQUE INDEX uq_jazebe_user_profile_name ON jazebe_user_profile(lower(display_name));
-CREATE TABLE jazebe_user_account (
+CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_user_profile_name ON jazebe_user_profile(lower(display_name));
+CREATE TABLE IF NOT EXISTS jazebe_user_account (
     user_id UUID PRIMARY KEY REFERENCES users(id),
     state VARCHAR(16) NOT NULL DEFAULT 'active' CHECK(state IN ('active','deactivated','suspended')),
     deactivated_at TIMESTAMPTZ,
@@ -29,8 +29,13 @@ CREATE TABLE jazebe_user_account (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_jazebe_user_account_state ON jazebe_user_account(state) WHERE state<>'active';
+CREATE INDEX IF NOT EXISTS idx_jazebe_user_account_state ON jazebe_user_account(state) WHERE state<>'active';
 
 -- +migrate Down
 -- Profile and account history are retained for explicit, reviewed rollback.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261023170000-jazebe-account-profile'; END $$;
+-- +migrate StatementEnd

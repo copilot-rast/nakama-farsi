@@ -1,7 +1,7 @@
 -- Mission actions and per-planet point economy. All payout rows share the
 -- completion transaction; Nakama's separate wallet transaction is not used.
 -- +migrate Up
-CREATE TABLE jazebe_mission_completion (
+CREATE TABLE IF NOT EXISTS jazebe_mission_completion (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet (id),
     mission_id UUID NOT NULL REFERENCES jazebe_mission (id),
@@ -19,13 +19,13 @@ CREATE TABLE jazebe_mission_completion (
     deleted_at TIMESTAMPTZ,
     CONSTRAINT jazebe_completion_reject_reason CHECK (status <> 'rejected' OR review_note IS NOT NULL)
 );
-CREATE UNIQUE INDEX uq_jazebe_completion_approved ON jazebe_mission_completion
+CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_completion_approved ON jazebe_mission_completion
     (mission_id,user_id,COALESCE(period_key,'')) WHERE status='approved' AND deleted_at IS NULL;
-CREATE UNIQUE INDEX uq_jazebe_completion_pending ON jazebe_mission_completion
+CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_completion_pending ON jazebe_mission_completion
     (mission_id,user_id) WHERE status='pending_review' AND deleted_at IS NULL;
-CREATE INDEX idx_jazebe_completion_user_history ON jazebe_mission_completion
+CREATE INDEX IF NOT EXISTS idx_jazebe_completion_user_history ON jazebe_mission_completion
     (planet_id,user_id,submitted_at DESC);
-CREATE TABLE jazebe_mission_media_start (
+CREATE TABLE IF NOT EXISTS jazebe_mission_media_start (
     mission_id UUID NOT NULL REFERENCES jazebe_mission (id),
     planet_id UUID NOT NULL REFERENCES jazebe_planet (id),
     user_id UUID NOT NULL REFERENCES users (id),
@@ -33,7 +33,7 @@ CREATE TABLE jazebe_mission_media_start (
     started_at TIMESTAMPTZ NOT NULL,
     PRIMARY KEY (mission_id,user_id,period_key)
 );
-CREATE TABLE jazebe_point_wallet (
+CREATE TABLE IF NOT EXISTS jazebe_point_wallet (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet (id),
     user_id UUID NOT NULL REFERENCES users (id),
@@ -41,7 +41,7 @@ CREATE TABLE jazebe_point_wallet (
     last_transaction_at TIMESTAMPTZ,
     UNIQUE (planet_id,user_id)
 );
-CREATE TABLE jazebe_point_transaction (
+CREATE TABLE IF NOT EXISTS jazebe_point_transaction (
     id UUID PRIMARY KEY,
     seq BIGSERIAL NOT NULL,
     wallet_id UUID NOT NULL REFERENCES jazebe_point_wallet (id),
@@ -57,10 +57,10 @@ CREATE TABLE jazebe_point_transaction (
     UNIQUE (wallet_id,source,source_id),
     UNIQUE (wallet_id,seq)
 );
-CREATE INDEX idx_jazebe_point_transaction_user_seq ON jazebe_point_transaction (planet_id,user_id,seq DESC);
-ALTER TABLE jazebe_mission_completion ADD CONSTRAINT jazebe_completion_point_transaction_fk
+CREATE INDEX IF NOT EXISTS idx_jazebe_point_transaction_user_seq ON jazebe_point_transaction (planet_id,user_id,seq DESC);
+ALTER TABLE jazebe_mission_completion DROP CONSTRAINT IF EXISTS jazebe_completion_point_transaction_fk, ADD CONSTRAINT jazebe_completion_point_transaction_fk
     FOREIGN KEY (point_transaction_id) REFERENCES jazebe_point_transaction (id);
-CREATE TABLE jazebe_xp_record (
+CREATE TABLE IF NOT EXISTS jazebe_xp_record (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet (id),
     user_id UUID NOT NULL REFERENCES users (id),
@@ -70,7 +70,7 @@ CREATE TABLE jazebe_xp_record (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (planet_id,user_id,source,source_id)
 );
-CREATE TABLE jazebe_user_planet_stats (
+CREATE TABLE IF NOT EXISTS jazebe_user_planet_stats (
     planet_id UUID NOT NULL REFERENCES jazebe_planet (id),
     user_id UUID NOT NULL REFERENCES users (id),
     total_xp BIGINT NOT NULL DEFAULT 0 CHECK (total_xp >= 0),
@@ -85,4 +85,9 @@ CREATE TABLE jazebe_user_planet_stats (
 );
 -- +migrate Down
 -- Preserve earned points and mission history for manual rollback review.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261022190000-jazebe-mission-rewards'; END $$;
+-- +migrate StatementEnd

@@ -1,7 +1,7 @@
 -- Chunked Jazebe media uploads fit Nakama's existing HTTP request limit.
 -- Upload bytes live in PostgreSQL so every Nakama instance sees the same asset.
 -- +migrate Up
-CREATE TABLE jazebe_media_upload (
+CREATE TABLE IF NOT EXISTS jazebe_media_upload (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet (id),
     owner_user_id UUID NOT NULL REFERENCES users (id),
@@ -20,9 +20,9 @@ CREATE TABLE jazebe_media_upload (
     deleted_at TIMESTAMPTZ,
     CONSTRAINT jazebe_media_received_bound CHECK (received_bytes <= expected_bytes)
 );
-CREATE INDEX idx_jazebe_media_owner ON jazebe_media_upload (planet_id,owner_user_id,purpose,status);
-CREATE INDEX idx_jazebe_media_expiry ON jazebe_media_upload (expires_at) WHERE status='open';
-CREATE TABLE jazebe_media_chunk (
+CREATE INDEX IF NOT EXISTS idx_jazebe_media_owner ON jazebe_media_upload (planet_id,owner_user_id,purpose,status);
+CREATE INDEX IF NOT EXISTS idx_jazebe_media_expiry ON jazebe_media_upload (expires_at) WHERE status='open';
+CREATE TABLE IF NOT EXISTS jazebe_media_chunk (
     upload_id UUID NOT NULL REFERENCES jazebe_media_upload (id) ON DELETE CASCADE,
     seq INTEGER NOT NULL CHECK (seq >= 0),
     data BYTEA NOT NULL,
@@ -33,4 +33,9 @@ CREATE TABLE jazebe_media_chunk (
 
 -- +migrate Down
 -- Preserve uploaded member media for manual rollback review.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261022210000-jazebe-media-upload'; END $$;
+-- +migrate StatementEnd

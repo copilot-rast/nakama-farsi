@@ -1,6 +1,6 @@
 -- Platform medal catalogue, planet selections and append-only acquisitions.
 -- +migrate Up
-CREATE TABLE jazebe_medal_library (
+CREATE TABLE IF NOT EXISTS jazebe_medal_library (
     id UUID PRIMARY KEY,
     key VARCHAR(64) NOT NULL UNIQUE,
     name VARCHAR(128) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE jazebe_medal_library (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE TABLE jazebe_planet_medal (
+CREATE TABLE IF NOT EXISTS jazebe_planet_medal (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     medal_library_id UUID NOT NULL REFERENCES jazebe_medal_library(id),
@@ -29,9 +29,9 @@ CREATE TABLE jazebe_planet_medal (
     UNIQUE (planet_id,medal_library_id),
     UNIQUE (id,planet_id)
 );
-CREATE INDEX idx_jazebe_planet_medal_active ON jazebe_planet_medal(planet_id) WHERE status='active';
-CREATE INDEX idx_jazebe_planet_medal_library ON jazebe_planet_medal(medal_library_id);
-CREATE TABLE jazebe_medal_acquisition (
+CREATE INDEX IF NOT EXISTS idx_jazebe_planet_medal_active ON jazebe_planet_medal(planet_id) WHERE status='active';
+CREATE INDEX IF NOT EXISTS idx_jazebe_planet_medal_library ON jazebe_planet_medal(medal_library_id);
+CREATE TABLE IF NOT EXISTS jazebe_medal_acquisition (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     planet_medal_id UUID NOT NULL,
@@ -42,8 +42,13 @@ CREATE TABLE jazebe_medal_acquisition (
     UNIQUE (planet_medal_id,user_id),
     FOREIGN KEY (planet_medal_id,planet_id) REFERENCES jazebe_planet_medal(id,planet_id)
 );
-CREATE INDEX idx_jazebe_medal_acquisition_user ON jazebe_medal_acquisition(planet_id,user_id,acquired_at DESC);
+CREATE INDEX IF NOT EXISTS idx_jazebe_medal_acquisition_user ON jazebe_medal_acquisition(planet_id,user_id,acquired_at DESC);
 
 -- +migrate Down
 -- Preserve earned medals and their rewards for manual rollback review.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261023110000-jazebe-medals'; END $$;
+-- +migrate StatementEnd

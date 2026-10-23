@@ -1,6 +1,6 @@
 -- A planet lottery and its append-only group-owned ticket pool.
 -- +migrate Up
-CREATE TABLE jazebe_lottery (
+CREATE TABLE IF NOT EXISTS jazebe_lottery (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     title VARCHAR(128) NOT NULL,
@@ -20,9 +20,9 @@ CREATE TABLE jazebe_lottery (
     CONSTRAINT jazebe_lottery_caps CHECK (per_user_ticket_cap IS NULL OR per_group_ticket_cap IS NULL OR per_user_ticket_cap <= per_group_ticket_cap),
     CONSTRAINT jazebe_lottery_planet_id_unique UNIQUE (planet_id,id)
 );
-CREATE INDEX idx_jazebe_lottery_planet_status ON jazebe_lottery(planet_id,status);
-CREATE INDEX idx_jazebe_lottery_draw ON jazebe_lottery(status,draw_at);
-CREATE TABLE jazebe_lottery_prize (
+CREATE INDEX IF NOT EXISTS idx_jazebe_lottery_planet_status ON jazebe_lottery(planet_id,status);
+CREATE INDEX IF NOT EXISTS idx_jazebe_lottery_draw ON jazebe_lottery(status,draw_at);
+CREATE TABLE IF NOT EXISTS jazebe_lottery_prize (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL,
     lottery_id UUID NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE jazebe_lottery_prize (
     CONSTRAINT jazebe_lottery_prize_lottery_fk FOREIGN KEY (planet_id,lottery_id) REFERENCES jazebe_lottery(planet_id,id),
     CONSTRAINT jazebe_lottery_prize_slot UNIQUE (lottery_id,priority)
 );
-CREATE TABLE jazebe_lottery_group_stat (
+CREATE TABLE IF NOT EXISTS jazebe_lottery_group_stat (
     lottery_id UUID NOT NULL REFERENCES jazebe_lottery(id),
     group_id UUID NOT NULL REFERENCES jazebe_group(id),
     ticket_count INTEGER NOT NULL DEFAULT 0 CHECK (ticket_count >= 0),
@@ -47,7 +47,7 @@ CREATE TABLE jazebe_lottery_group_stat (
     PRIMARY KEY (lottery_id,group_id),
     CONSTRAINT jazebe_lottery_group_stat_sum CHECK (ticket_count = individual_ticket_count + collective_ticket_count)
 );
-CREATE TABLE jazebe_lottery_ticket (
+CREATE TABLE IF NOT EXISTS jazebe_lottery_ticket (
     id UUID PRIMARY KEY,
     lottery_id UUID NOT NULL REFERENCES jazebe_lottery(id),
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
@@ -61,10 +61,15 @@ CREATE TABLE jazebe_lottery_ticket (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     CONSTRAINT jazebe_ticket_creator CHECK ((creator_type='member') = (creator_user_id IS NOT NULL))
 );
-CREATE INDEX idx_jazebe_ticket_lottery_group ON jazebe_lottery_ticket(lottery_id,group_id);
-CREATE INDEX idx_jazebe_ticket_lottery_creator ON jazebe_lottery_ticket(lottery_id,creator_user_id) WHERE status='active';
-CREATE INDEX idx_jazebe_ticket_source ON jazebe_lottery_ticket(source,source_id);
+CREATE INDEX IF NOT EXISTS idx_jazebe_ticket_lottery_group ON jazebe_lottery_ticket(lottery_id,group_id);
+CREATE INDEX IF NOT EXISTS idx_jazebe_ticket_lottery_creator ON jazebe_lottery_ticket(lottery_id,creator_user_id) WHERE status='active';
+CREATE INDEX IF NOT EXISTS idx_jazebe_ticket_source ON jazebe_lottery_ticket(source,source_id);
 
 -- +migrate Down
 -- Tickets represent earned value and must be retained for manual rollback review.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261023030000-jazebe-lottery'; END $$;
+-- +migrate StatementEnd

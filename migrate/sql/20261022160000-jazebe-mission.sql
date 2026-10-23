@@ -1,6 +1,6 @@
 -- Mission definitions are scoped to a Jazebe planet; completion and rewards follow separately.
 -- +migrate Up
-CREATE TABLE jazebe_mission (
+CREATE TABLE IF NOT EXISTS jazebe_mission (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet (id),
     title VARCHAR(128) NOT NULL,
@@ -30,9 +30,14 @@ CREATE TABLE jazebe_mission (
     CONSTRAINT jazebe_mission_periodic_period CHECK (repeat_pattern <> 'periodic' OR repeat_period IS NOT NULL),
     CONSTRAINT jazebe_mission_time CHECK (ends_at > starts_at)
 );
-CREATE INDEX idx_jazebe_mission_planet_status ON jazebe_mission (planet_id, status);
-CREATE INDEX idx_jazebe_mission_planet_sort ON jazebe_mission (planet_id, sort_order);
+CREATE INDEX IF NOT EXISTS idx_jazebe_mission_planet_status ON jazebe_mission (planet_id, status);
+CREATE INDEX IF NOT EXISTS idx_jazebe_mission_planet_sort ON jazebe_mission (planet_id, sort_order);
 
 -- +migrate Down
 -- Retain mission definitions and linked activity for manual rollback review.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261022160000-jazebe-mission'; END $$;
+-- +migrate StatementEnd

@@ -1,6 +1,6 @@
 -- Platform-wide bounds used by medal, mission, group and planet settings.
 -- +migrate Up
-CREATE TABLE jazebe_platform_policy (
+CREATE TABLE IF NOT EXISTS jazebe_platform_policy (
     id UUID PRIMARY KEY,
     key VARCHAR(16) NOT NULL UNIQUE CHECK (key='default'),
     mission_reward_point_min INTEGER NOT NULL DEFAULT 0 CHECK (mission_reward_point_min>=0),
@@ -35,4 +35,9 @@ INSERT INTO jazebe_platform_policy(id,key) VALUES('6a7a11eb-0000-4000-8000-00000
 
 -- +migrate Down
 -- Retain operator policy and audit history for manual rollback review.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261023120000-jazebe-platform-policy'; END $$;
+-- +migrate StatementEnd

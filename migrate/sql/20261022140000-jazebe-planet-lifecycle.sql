@@ -2,25 +2,25 @@
 -- +migrate Up
 ALTER TABLE jazebe_planet DROP CONSTRAINT IF EXISTS jazebe_planet_status_check;
 UPDATE jazebe_planet SET status = 'suspended' WHERE status = 'disabled';
-ALTER TABLE jazebe_planet ADD CONSTRAINT jazebe_planet_status_check CHECK (status IN ('setup', 'pending_review', 'active', 'suspended', 'archived'));
+ALTER TABLE jazebe_planet DROP CONSTRAINT IF EXISTS jazebe_planet_status_check, ADD CONSTRAINT jazebe_planet_status_check CHECK (status IN ('setup', 'pending_review', 'active', 'suspended', 'archived'));
 ALTER TABLE jazebe_planet ALTER COLUMN status SET DEFAULT 'setup';
 ALTER TABLE jazebe_planet ALTER COLUMN name TYPE VARCHAR(128);
-ALTER TABLE jazebe_planet ADD COLUMN slug VARCHAR(64);
-ALTER TABLE jazebe_planet ADD COLUMN latin_name VARCHAR(64);
-ALTER TABLE jazebe_planet ADD COLUMN short_description VARCHAR(512);
-ALTER TABLE jazebe_planet ADD COLUMN category_id UUID;
-ALTER TABLE jazebe_planet ADD COLUMN point_name VARCHAR(32) NOT NULL DEFAULT 'امتیاز';
-ALTER TABLE jazebe_planet ADD COLUMN brand_color VARCHAR(9);
-ALTER TABLE jazebe_planet ADD COLUMN icon_asset VARCHAR(512);
-ALTER TABLE jazebe_planet ADD COLUMN glyph VARCHAR(32);
-ALTER TABLE jazebe_planet ADD COLUMN activated_at TIMESTAMPTZ;
-ALTER TABLE jazebe_planet ADD COLUMN suspended_at TIMESTAMPTZ;
-ALTER TABLE jazebe_planet ADD COLUMN archived_at TIMESTAMPTZ;
-ALTER TABLE jazebe_planet ADD COLUMN created_by UUID REFERENCES users (id);
-CREATE UNIQUE INDEX uq_jazebe_planet_slug ON jazebe_planet (slug) WHERE slug IS NOT NULL;
-CREATE TABLE jazebe_planet_category (id UUID PRIMARY KEY, title_fa VARCHAR(128) NOT NULL, is_active BOOLEAN NOT NULL DEFAULT true);
-ALTER TABLE jazebe_planet ADD CONSTRAINT jazebe_planet_category_fk FOREIGN KEY (category_id) REFERENCES jazebe_planet_category (id);
-CREATE TABLE jazebe_planet_settings (
+ALTER TABLE jazebe_planet ADD COLUMN IF NOT EXISTS slug VARCHAR(64);
+ALTER TABLE jazebe_planet ADD COLUMN IF NOT EXISTS latin_name VARCHAR(64);
+ALTER TABLE jazebe_planet ADD COLUMN IF NOT EXISTS short_description VARCHAR(512);
+ALTER TABLE jazebe_planet ADD COLUMN IF NOT EXISTS category_id UUID;
+ALTER TABLE jazebe_planet ADD COLUMN IF NOT EXISTS point_name VARCHAR(32) NOT NULL DEFAULT 'امتیاز';
+ALTER TABLE jazebe_planet ADD COLUMN IF NOT EXISTS brand_color VARCHAR(9);
+ALTER TABLE jazebe_planet ADD COLUMN IF NOT EXISTS icon_asset VARCHAR(512);
+ALTER TABLE jazebe_planet ADD COLUMN IF NOT EXISTS glyph VARCHAR(32);
+ALTER TABLE jazebe_planet ADD COLUMN IF NOT EXISTS activated_at TIMESTAMPTZ;
+ALTER TABLE jazebe_planet ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMPTZ;
+ALTER TABLE jazebe_planet ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ;
+ALTER TABLE jazebe_planet ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users (id);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_planet_slug ON jazebe_planet (slug) WHERE slug IS NOT NULL;
+CREATE TABLE IF NOT EXISTS jazebe_planet_category (id UUID PRIMARY KEY, title_fa VARCHAR(128) NOT NULL, is_active BOOLEAN NOT NULL DEFAULT true);
+ALTER TABLE jazebe_planet DROP CONSTRAINT IF EXISTS jazebe_planet_category_fk, ADD CONSTRAINT jazebe_planet_category_fk FOREIGN KEY (category_id) REFERENCES jazebe_planet_category (id);
+CREATE TABLE IF NOT EXISTS jazebe_planet_settings (
     planet_id UUID PRIMARY KEY REFERENCES jazebe_planet (id),
     mission_reward_point_min INTEGER NOT NULL DEFAULT 0,
     mission_reward_point_max INTEGER NOT NULL DEFAULT 100,
@@ -45,4 +45,9 @@ INSERT INTO jazebe_planet_settings (planet_id) SELECT id FROM jazebe_planet ON C
 
 -- +migrate Down
 -- Retain draft and settings data for manual rollback review.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261022140000-jazebe-planet-lifecycle'; END $$;
+-- +migrate StatementEnd

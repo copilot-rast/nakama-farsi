@@ -1,6 +1,6 @@
 -- Planet-scoped Jazebe groups use Nakama user IDs. Names remain reserved after disbanding.
 -- +migrate Up
-CREATE TABLE jazebe_group (
+CREATE TABLE IF NOT EXISTS jazebe_group (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     name VARCHAR(64) NOT NULL,
@@ -18,9 +18,9 @@ CREATE TABLE jazebe_group (
     CONSTRAINT jazebe_group_color CHECK (color IS NULL OR color ~ '^#[0-9a-fA-F]{6}$'),
     CONSTRAINT jazebe_group_members_bound CHECK (member_count <= member_cap)
 );
-CREATE UNIQUE INDEX uq_jazebe_group_planet_name ON jazebe_group(planet_id,lower(name));
-CREATE INDEX idx_jazebe_group_planet_status_members ON jazebe_group(planet_id,status,member_count DESC);
-CREATE TABLE jazebe_group_membership (
+CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_group_planet_name ON jazebe_group(planet_id,lower(name));
+CREATE INDEX IF NOT EXISTS idx_jazebe_group_planet_status_members ON jazebe_group(planet_id,status,member_count DESC);
+CREATE TABLE IF NOT EXISTS jazebe_group_membership (
     id UUID PRIMARY KEY,
     group_id UUID NOT NULL REFERENCES jazebe_group(id),
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
@@ -31,11 +31,11 @@ CREATE TABLE jazebe_group_membership (
     joined_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     left_at TIMESTAMPTZ
 );
-CREATE UNIQUE INDEX uq_jazebe_group_active_user ON jazebe_group_membership(planet_id,user_id) WHERE status='active';
-CREATE UNIQUE INDEX uq_jazebe_group_creator ON jazebe_group_membership(group_id) WHERE role='creator' AND status='active';
-CREATE INDEX idx_jazebe_group_member_group ON jazebe_group_membership(group_id,status,role);
-CREATE INDEX idx_jazebe_group_member_user ON jazebe_group_membership(user_id,status);
-CREATE TABLE jazebe_group_activity (
+CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_group_active_user ON jazebe_group_membership(planet_id,user_id) WHERE status='active';
+CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_group_creator ON jazebe_group_membership(group_id) WHERE role='creator' AND status='active';
+CREATE INDEX IF NOT EXISTS idx_jazebe_group_member_group ON jazebe_group_membership(group_id,status,role);
+CREATE INDEX IF NOT EXISTS idx_jazebe_group_member_user ON jazebe_group_membership(user_id,status);
+CREATE TABLE IF NOT EXISTS jazebe_group_activity (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     group_id UUID NOT NULL REFERENCES jazebe_group(id),
@@ -45,8 +45,8 @@ CREATE TABLE jazebe_group_activity (
     payload JSONB,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_jazebe_group_activity_group_created ON jazebe_group_activity(group_id,created_at DESC);
-CREATE TABLE jazebe_group_join_request (
+CREATE INDEX IF NOT EXISTS idx_jazebe_group_activity_group_created ON jazebe_group_activity(group_id,created_at DESC);
+CREATE TABLE IF NOT EXISTS jazebe_group_join_request (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     group_id UUID NOT NULL REFERENCES jazebe_group(id),
@@ -56,9 +56,14 @@ CREATE TABLE jazebe_group_join_request (
     decided_by_user_id UUID REFERENCES users(id),
     decided_at TIMESTAMPTZ
 );
-CREATE UNIQUE INDEX uq_jazebe_group_request_pending ON jazebe_group_join_request(planet_id,user_id) WHERE status='pending';
-CREATE INDEX idx_jazebe_group_request_group ON jazebe_group_join_request(group_id,status);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_group_request_pending ON jazebe_group_join_request(planet_id,user_id) WHERE status='pending';
+CREATE INDEX IF NOT EXISTS idx_jazebe_group_request_group ON jazebe_group_join_request(group_id,status);
 
 -- +migrate Down
 -- Group membership and contribution history may represent monetary ownership.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261022220000-jazebe-groups'; END $$;
+-- +migrate StatementEnd

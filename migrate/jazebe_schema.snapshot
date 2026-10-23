@@ -1,0 +1,1144 @@
+# Jazebe schema after all migrations; regenerate with scripts/jazebe_schema_check -write from a fresh database.
+# postgres-major: 18
+column jazebe_audit_log.action character varying(64) not null
+column jazebe_audit_log.actor_id uuid
+column jazebe_audit_log.actor_type character varying(16) not null
+column jazebe_audit_log.brand_id uuid
+column jazebe_audit_log.created_at timestamp with time zone not null default now()
+column jazebe_audit_log.id bigint not null
+column jazebe_audit_log.params jsonb
+column jazebe_audit_log.planet_id uuid
+column jazebe_audit_log.result character varying(8) not null default 'success'::character varying
+column jazebe_audit_log.target_id uuid
+column jazebe_audit_log.target_type character varying(64) not null
+column jazebe_brand.created_at timestamp with time zone not null default now()
+column jazebe_brand.id uuid not null
+column jazebe_brand.is_active boolean not null default true
+column jazebe_brand.name character varying(120) not null
+column jazebe_brand.owner_id uuid not null
+column jazebe_brand_admin.brand_id uuid not null
+column jazebe_brand_admin.created_at timestamp with time zone not null default now()
+column jazebe_brand_admin.full_name character varying(128) not null
+column jazebe_brand_admin.is_active boolean not null default true
+column jazebe_brand_admin.role character varying(16) not null
+column jazebe_brand_admin.user_id uuid not null
+column jazebe_brand_member.brand_id uuid not null
+column jazebe_brand_member.created_at timestamp with time zone not null default now()
+column jazebe_brand_member.role character varying(16) not null
+column jazebe_brand_member.user_id uuid not null
+column jazebe_coupon_code.code character varying(64) not null
+column jazebe_coupon_code.created_at timestamp with time zone not null default now()
+column jazebe_coupon_code.deleted_at timestamp with time zone
+column jazebe_coupon_code.expires_at timestamp with time zone
+column jazebe_coupon_code.id uuid not null
+column jazebe_coupon_code.issued_at timestamp with time zone
+column jazebe_coupon_code.issued_to_user_id uuid
+column jazebe_coupon_code.planet_id uuid not null
+column jazebe_coupon_code.shop_product_id uuid not null
+column jazebe_coupon_code.status character varying(12) not null default 'available'::character varying
+column jazebe_coupon_code.updated_at timestamp with time zone not null default now()
+column jazebe_game.accent character varying(16) not null default 'brand'::character varying
+column jazebe_game.config jsonb not null default '{}'::jsonb
+column jazebe_game.created_at timestamp with time zone not null default now()
+column jazebe_game.description text
+column jazebe_game.entry_model character varying(8) not null default 'free'::character varying
+column jazebe_game.free_group_count integer
+column jazebe_game.free_group_period character varying(8)
+column jazebe_game.free_individual_count integer
+column jazebe_game.free_individual_period character varying(8)
+column jazebe_game.icon character varying(64)
+column jazebe_game.id uuid not null
+column jazebe_game.kind character varying(8) not null default 'catalog'::character varying
+column jazebe_game.name character varying(128) not null
+column jazebe_game.planet_id uuid not null
+column jazebe_game.point_cost integer not null default 0
+column jazebe_game.prize_ticket_max integer not null default 0
+column jazebe_game.prize_ticket_min integer not null default 0
+column jazebe_game.reward_xp integer not null default 0
+column jazebe_game.status character varying(12) not null default 'paused'::character varying
+column jazebe_game.target_lottery_id uuid
+column jazebe_game.template_id uuid
+column jazebe_game.updated_at timestamp with time zone not null default now()
+column jazebe_game_quota.game_id uuid not null
+column jazebe_game_quota.group_id uuid
+column jazebe_game_quota.id uuid not null
+column jazebe_game_quota.period_key character varying(24) not null
+column jazebe_game_quota.planet_id uuid not null
+column jazebe_game_quota.scope character varying(8) not null
+column jazebe_game_quota.used integer not null default 0
+column jazebe_game_quota.user_id uuid
+column jazebe_game_session.awarded_tickets integer not null default 0
+column jazebe_game_session.awarded_xp integer not null default 0
+column jazebe_game_session.entry_type character varying(16) not null
+column jazebe_game_session.finished_at timestamp with time zone
+column jazebe_game_session.game_id uuid not null
+column jazebe_game_session.group_id uuid
+column jazebe_game_session.id uuid not null
+column jazebe_game_session.planet_id uuid not null
+column jazebe_game_session.point_cost integer not null default 0
+column jazebe_game_session.point_transaction_id uuid
+column jazebe_game_session.result jsonb
+column jazebe_game_session.score numeric(5,4)
+column jazebe_game_session.started_at timestamp with time zone not null default now()
+column jazebe_game_session.status character varying(12) not null default 'open'::character varying
+column jazebe_game_session.user_id uuid not null
+column jazebe_game_template.created_at timestamp with time zone not null default now()
+column jazebe_game_template.default_config jsonb not null default '{}'::jsonb
+column jazebe_game_template.description text
+column jazebe_game_template.engine character varying(32) not null
+column jazebe_game_template.icon character varying(64)
+column jazebe_game_template.id uuid not null
+column jazebe_game_template.is_active boolean not null default true
+column jazebe_game_template.key character varying(64) not null
+column jazebe_game_template.name character varying(128) not null
+column jazebe_game_template.suspend_reason character varying(512)
+column jazebe_game_template.suspended_at timestamp with time zone
+column jazebe_game_template.updated_at timestamp with time zone not null default now()
+column jazebe_group.color character varying(9)
+column jazebe_group.created_at timestamp with time zone not null default now()
+column jazebe_group.creator_transferred_at timestamp with time zone
+column jazebe_group.creator_user_id uuid not null
+column jazebe_group.description character varying(280)
+column jazebe_group.disbanded_at timestamp with time zone
+column jazebe_group.disbanded_by_user_id uuid
+column jazebe_group.icon character varying(32)
+column jazebe_group.id uuid not null
+column jazebe_group.member_cap integer not null
+column jazebe_group.member_count integer not null default 1
+column jazebe_group.mode character varying(8) not null
+column jazebe_group.name character varying(64) not null
+column jazebe_group.planet_id uuid not null
+column jazebe_group.status character varying(12) not null default 'active'::character varying
+column jazebe_group.updated_at timestamp with time zone not null default now()
+column jazebe_group_activity.actor_user_id uuid
+column jazebe_group_activity.created_at timestamp with time zone not null default now()
+column jazebe_group_activity.group_id uuid not null
+column jazebe_group_activity.id uuid not null
+column jazebe_group_activity.kind character varying(12) not null
+column jazebe_group_activity.message_key character varying(64) not null
+column jazebe_group_activity.payload jsonb
+column jazebe_group_activity.planet_id uuid not null
+column jazebe_group_invite.created_at timestamp with time zone not null default now()
+column jazebe_group_invite.created_by_user_id uuid not null
+column jazebe_group_invite.expires_at timestamp with time zone not null
+column jazebe_group_invite.group_id uuid not null
+column jazebe_group_invite.id uuid not null
+column jazebe_group_invite.max_uses integer
+column jazebe_group_invite.planet_id uuid not null
+column jazebe_group_invite.revoked_at timestamp with time zone
+column jazebe_group_invite.token_hash bytea not null
+column jazebe_group_invite.use_count integer not null default 0
+column jazebe_group_join_request.decided_at timestamp with time zone
+column jazebe_group_join_request.decided_by_user_id uuid
+column jazebe_group_join_request.group_id uuid not null
+column jazebe_group_join_request.id uuid not null
+column jazebe_group_join_request.planet_id uuid not null
+column jazebe_group_join_request.requested_at timestamp with time zone not null default now()
+column jazebe_group_join_request.status character varying(16) not null default 'pending'::character varying
+column jazebe_group_join_request.user_id uuid not null
+column jazebe_group_leadership_offer.created_at timestamp with time zone not null default now()
+column jazebe_group_leadership_offer.decided_at timestamp with time zone
+column jazebe_group_leadership_offer.expires_at timestamp with time zone not null
+column jazebe_group_leadership_offer.from_user_id uuid not null
+column jazebe_group_leadership_offer.group_id uuid not null
+column jazebe_group_leadership_offer.id uuid not null
+column jazebe_group_leadership_offer.planet_id uuid not null
+column jazebe_group_leadership_offer.status character varying(12) not null default 'pending'::character varying
+column jazebe_group_leadership_offer.to_user_id uuid not null
+column jazebe_group_membership.group_id uuid not null
+column jazebe_group_membership.id uuid not null
+column jazebe_group_membership.joined_at timestamp with time zone not null default now()
+column jazebe_group_membership.left_at timestamp with time zone
+column jazebe_group_membership.planet_id uuid not null
+column jazebe_group_membership.role character varying(8) not null
+column jazebe_group_membership.source character varying(20) not null
+column jazebe_group_membership.status character varying(8) not null default 'active'::character varying
+column jazebe_group_membership.user_id uuid not null
+column jazebe_group_message.body text
+column jazebe_group_message.created_at timestamp with time zone not null default now()
+column jazebe_group_message.deleted_as_admin boolean not null default false
+column jazebe_group_message.deleted_at timestamp with time zone
+column jazebe_group_message.deleted_by uuid
+column jazebe_group_message.group_id uuid not null
+column jazebe_group_message.id uuid not null
+column jazebe_group_message.kind character varying(8) not null default 'text'::character varying
+column jazebe_group_message.planet_id uuid not null
+column jazebe_group_message.reply_to_message_id uuid
+column jazebe_group_message.sender_user_id uuid
+column jazebe_group_message.seq bigint not null default nextval('jazebe_group_message_seq_seq'::regclass)
+column jazebe_group_message_read.group_id uuid not null
+column jazebe_group_message_read.last_read_seq bigint not null default 0
+column jazebe_group_message_read.planet_id uuid not null
+column jazebe_group_message_read.user_id uuid not null
+column jazebe_group_mission_contribution.planet_id uuid not null
+column jazebe_group_mission_contribution.progress_id uuid not null
+column jazebe_group_mission_contribution.updated_at timestamp with time zone not null default now()
+column jazebe_group_mission_contribution.user_id uuid not null
+column jazebe_group_mission_contribution.value integer not null default 0
+column jazebe_group_mission_progress.completed_at timestamp with time zone
+column jazebe_group_mission_progress.current_value integer not null default 0
+column jazebe_group_mission_progress.group_id uuid not null
+column jazebe_group_mission_progress.id uuid not null
+column jazebe_group_mission_progress.mission_id uuid not null
+column jazebe_group_mission_progress.planet_id uuid not null
+column jazebe_group_mission_progress.status character varying(12) not null default 'in_progress'::character varying
+column jazebe_group_mission_progress.target_value integer not null
+column jazebe_lottery.banner_asset character varying(512)
+column jazebe_lottery.cancel_reason character varying(512)
+column jazebe_lottery.cancelled_at timestamp with time zone
+column jazebe_lottery.created_at timestamp with time zone not null default now()
+column jazebe_lottery.draw_at timestamp with time zone not null
+column jazebe_lottery.draw_meta jsonb
+column jazebe_lottery.draw_seed character varying(128)
+column jazebe_lottery.drawn_at timestamp with time zone
+column jazebe_lottery.id uuid not null
+column jazebe_lottery.long_description text
+column jazebe_lottery.per_group_ticket_cap integer
+column jazebe_lottery.per_user_ticket_cap integer
+column jazebe_lottery.planet_id uuid not null
+column jazebe_lottery.short_description character varying(512)
+column jazebe_lottery.starts_at timestamp with time zone not null
+column jazebe_lottery.status character varying(12) not null default 'draft'::character varying
+column jazebe_lottery.ticket_price_points integer not null
+column jazebe_lottery.title character varying(128) not null
+column jazebe_lottery.total_ticket_count integer not null default 0
+column jazebe_lottery.updated_at timestamp with time zone not null default now()
+column jazebe_lottery_group_stat.collective_ticket_count integer not null default 0
+column jazebe_lottery_group_stat.group_id uuid not null
+column jazebe_lottery_group_stat.individual_ticket_count integer not null default 0
+column jazebe_lottery_group_stat.lottery_id uuid not null
+column jazebe_lottery_group_stat.rank integer
+column jazebe_lottery_group_stat.ticket_count integer not null default 0
+column jazebe_lottery_group_stat.updated_at timestamp with time zone not null default now()
+column jazebe_lottery_prize.deleted_at timestamp with time zone
+column jazebe_lottery_prize.description text
+column jazebe_lottery_prize.id uuid not null
+column jazebe_lottery_prize.image_asset character varying(512)
+column jazebe_lottery_prize.lottery_id uuid not null
+column jazebe_lottery_prize.planet_id uuid not null
+column jazebe_lottery_prize.priority smallint not null
+column jazebe_lottery_prize.title character varying(128) not null
+column jazebe_lottery_prize.type character varying(16) not null
+column jazebe_lottery_prize.value_rial bigint not null
+column jazebe_lottery_ticket.created_at timestamp with time zone not null default now()
+column jazebe_lottery_ticket.creator_type character varying(8) not null
+column jazebe_lottery_ticket.creator_user_id uuid
+column jazebe_lottery_ticket.group_id uuid not null
+column jazebe_lottery_ticket.id uuid not null
+column jazebe_lottery_ticket.lottery_id uuid not null
+column jazebe_lottery_ticket.planet_id uuid not null
+column jazebe_lottery_ticket.serial character varying(24) not null
+column jazebe_lottery_ticket.source character varying(24) not null
+column jazebe_lottery_ticket.source_id uuid
+column jazebe_lottery_ticket.status character varying(8) not null default 'active'::character varying
+column jazebe_lottery_winner.delivery_note character varying(512)
+column jazebe_lottery_winner.delivery_status character varying(12) not null default 'pending'::character varying
+column jazebe_lottery_winner.group_id uuid not null
+column jazebe_lottery_winner.id uuid not null
+column jazebe_lottery_winner.lottery_id uuid not null
+column jazebe_lottery_winner.planet_id uuid not null
+column jazebe_lottery_winner.prize_id uuid not null
+column jazebe_lottery_winner.recorded_at timestamp with time zone not null default now()
+column jazebe_lottery_winner.ticket_id uuid not null
+column jazebe_lottery_winner_share.blocked_by_kyc boolean not null default true
+column jazebe_lottery_winner_share.id uuid not null
+column jazebe_lottery_winner_share.individual_ticket_count integer not null default 0
+column jazebe_lottery_winner_share.payout_status character varying(24) not null
+column jazebe_lottery_winner_share.planet_id uuid not null
+column jazebe_lottery_winner_share.share_percent numeric(7,4) not null
+column jazebe_lottery_winner_share.share_value_rial bigint not null
+column jazebe_lottery_winner_share.user_id uuid not null
+column jazebe_lottery_winner_share.winner_id uuid not null
+column jazebe_medal_acquisition.acquired_at timestamp with time zone not null default now()
+column jazebe_medal_acquisition.id uuid not null
+column jazebe_medal_acquisition.planet_id uuid not null
+column jazebe_medal_acquisition.planet_medal_id uuid not null
+column jazebe_medal_acquisition.reward_point_transaction_id uuid
+column jazebe_medal_acquisition.reward_ticket_ids uuid[]
+column jazebe_medal_acquisition.user_id uuid not null
+column jazebe_medal_backfill.attempts integer not null default 0
+column jazebe_medal_backfill.awarded bigint not null default 0
+column jazebe_medal_backfill.completed_at timestamp with time zone
+column jazebe_medal_backfill.evaluated bigint not null default 0
+column jazebe_medal_backfill.last_error text
+column jazebe_medal_backfill.last_user_id uuid not null default '00000000-0000-0000-0000-000000000000'::uuid
+column jazebe_medal_backfill.next_attempt_at timestamp with time zone not null default now()
+column jazebe_medal_backfill.planet_id uuid not null
+column jazebe_medal_backfill.planet_medal_id uuid not null
+column jazebe_medal_backfill.updated_at timestamp with time zone not null default now()
+column jazebe_medal_library.condition_param_schema jsonb not null
+column jazebe_medal_library.condition_type character varying(16) not null
+column jazebe_medal_library.created_at timestamp with time zone not null default now()
+column jazebe_medal_library.created_by uuid not null
+column jazebe_medal_library.description text
+column jazebe_medal_library.icon character varying(64)
+column jazebe_medal_library.id uuid not null
+column jazebe_medal_library.is_active boolean not null default true
+column jazebe_medal_library.key character varying(64) not null
+column jazebe_medal_library.name character varying(128) not null
+column jazebe_medal_library.theme_category character varying(16) not null
+column jazebe_medal_library.updated_at timestamp with time zone not null default now()
+column jazebe_medal_library.updated_by uuid
+column jazebe_medal_library.version integer not null default 1
+column jazebe_media_chunk.data bytea not null
+column jazebe_media_chunk.seq integer not null
+column jazebe_media_chunk.size_bytes integer not null
+column jazebe_media_chunk.upload_id uuid not null
+column jazebe_media_upload.completed_at timestamp with time zone
+column jazebe_media_upload.created_at timestamp with time zone not null default now()
+column jazebe_media_upload.deleted_at timestamp with time zone
+column jazebe_media_upload.expected_bytes integer not null
+column jazebe_media_upload.expires_at timestamp with time zone not null
+column jazebe_media_upload.file_name character varying(200) not null
+column jazebe_media_upload.id uuid not null
+column jazebe_media_upload.mime_type character varying(32)
+column jazebe_media_upload.owner_user_id uuid not null
+column jazebe_media_upload.planet_id uuid not null
+column jazebe_media_upload.purpose character varying(16) not null
+column jazebe_media_upload.received_bytes integer not null default 0
+column jazebe_media_upload.received_chunks integer not null default 0
+column jazebe_media_upload.sha256 character(64)
+column jazebe_media_upload.status character varying(12) not null default 'open'::character varying
+column jazebe_media_upload.token_hash bytea not null
+column jazebe_mission.created_at timestamp with time zone not null default now()
+column jazebe_mission.created_by uuid
+column jazebe_mission.detection_method character varying(16) not null
+column jazebe_mission.display_conditions jsonb
+column jazebe_mission.ends_at timestamp with time zone not null
+column jazebe_mission.functional_type character varying(24) not null
+column jazebe_mission.group_target_value integer
+column jazebe_mission.icon character varying(64)
+column jazebe_mission.id uuid not null
+column jazebe_mission.long_description text
+column jazebe_mission.planet_id uuid not null
+column jazebe_mission.repeat_pattern character varying(12) not null default 'once'::character varying
+column jazebe_mission.repeat_period character varying(8)
+column jazebe_mission.reward_points integer not null default 0
+column jazebe_mission.reward_tickets integer not null default 0
+column jazebe_mission.reward_xp integer not null default 0
+column jazebe_mission.short_description character varying(512)
+column jazebe_mission.sort_order integer not null default 0
+column jazebe_mission.starts_at timestamp with time zone not null
+column jazebe_mission.status character varying(12) not null default 'draft'::character varying
+column jazebe_mission.target_lottery_id uuid
+column jazebe_mission.target_type character varying(8) not null default 'solo'::character varying
+column jazebe_mission.title character varying(128) not null
+column jazebe_mission.type_config jsonb not null default '{}'::jsonb
+column jazebe_mission_code.assigned_user_id uuid
+column jazebe_mission_code.code character varying(64) not null
+column jazebe_mission_code.created_at timestamp with time zone not null default now()
+column jazebe_mission_code.expires_at timestamp with time zone
+column jazebe_mission_code.id uuid not null
+column jazebe_mission_code.is_active boolean not null default true
+column jazebe_mission_code.max_uses integer not null
+column jazebe_mission_code.mission_id uuid not null
+column jazebe_mission_code.mode character varying(8) not null
+column jazebe_mission_code.planet_id uuid not null
+column jazebe_mission_code.used_count integer not null default 0
+column jazebe_mission_completion.awarded_points integer not null default 0
+column jazebe_mission_completion.awarded_tickets integer not null default 0
+column jazebe_mission_completion.awarded_xp integer not null default 0
+column jazebe_mission_completion.deleted_at timestamp with time zone
+column jazebe_mission_completion.evidence jsonb
+column jazebe_mission_completion.group_id uuid
+column jazebe_mission_completion.id uuid not null
+column jazebe_mission_completion.mission_id uuid not null
+column jazebe_mission_completion.period_key character varying(24)
+column jazebe_mission_completion.planet_id uuid not null
+column jazebe_mission_completion.point_transaction_id uuid
+column jazebe_mission_completion.review_note character varying(512)
+column jazebe_mission_completion.reviewed_at timestamp with time zone
+column jazebe_mission_completion.reviewer_admin_id uuid
+column jazebe_mission_completion.status character varying(16) not null
+column jazebe_mission_completion.submitted_at timestamp with time zone not null default now()
+column jazebe_mission_completion.user_id uuid
+column jazebe_mission_invite.completion_id uuid
+column jazebe_mission_invite.created_at timestamp with time zone not null default now()
+column jazebe_mission_invite.group_id uuid
+column jazebe_mission_invite.id uuid not null
+column jazebe_mission_invite.invitee_user_id uuid
+column jazebe_mission_invite.inviter_user_id uuid not null
+column jazebe_mission_invite.mission_id uuid
+column jazebe_mission_invite.planet_id uuid not null
+column jazebe_mission_invite.qualified_at timestamp with time zone
+column jazebe_mission_invite.registered_at timestamp with time zone
+column jazebe_mission_invite.status character varying(12) not null default 'pending'::character varying
+column jazebe_mission_invite.token character varying(64) not null
+column jazebe_mission_invite.updated_at timestamp with time zone not null default now()
+column jazebe_mission_media_start.mission_id uuid not null
+column jazebe_mission_media_start.period_key character varying(32) not null
+column jazebe_mission_media_start.planet_id uuid not null
+column jazebe_mission_media_start.started_at timestamp with time zone not null
+column jazebe_mission_media_start.user_id uuid not null
+column jazebe_order.delivery jsonb
+column jazebe_order.id uuid not null
+column jazebe_order.paid_points integer not null
+column jazebe_order.planet_id uuid not null
+column jazebe_order.point_transaction_id uuid not null
+column jazebe_order.product_name_snapshot character varying(128) not null
+column jazebe_order.product_type_snapshot character varying(8) not null
+column jazebe_order.purchased_at timestamp with time zone not null default now()
+column jazebe_order.shop_product_id uuid not null
+column jazebe_order.status character varying(12) not null
+column jazebe_order.user_id uuid not null
+column jazebe_planet.activated_at timestamp with time zone
+column jazebe_planet.archived_at timestamp with time zone
+column jazebe_planet.brand_color character varying(9)
+column jazebe_planet.brand_id uuid not null
+column jazebe_planet.category_id uuid
+column jazebe_planet.cover_asset character varying(512)
+column jazebe_planet.created_at timestamp with time zone not null default now()
+column jazebe_planet.created_by uuid
+column jazebe_planet.deployment_mode character varying(16) not null default 'cloud'::character varying
+column jazebe_planet.fans_count integer not null default 0
+column jazebe_planet.glyph character varying(32)
+column jazebe_planet.icon_asset character varying(512)
+column jazebe_planet.id uuid not null
+column jazebe_planet.latin_name character varying(64)
+column jazebe_planet.logo_asset character varying(512)
+column jazebe_planet.long_description text
+column jazebe_planet.name character varying(128) not null
+column jazebe_planet.point_name character varying(32) not null default 'امتیاز'::character varying
+column jazebe_planet.short_description character varying(512)
+column jazebe_planet.slug character varying(64)
+column jazebe_planet.status character varying(16) not null default 'setup'::character varying
+column jazebe_planet.suspended_at timestamp with time zone
+column jazebe_planet_category.created_at timestamp with time zone not null default now()
+column jazebe_planet_category.created_by uuid
+column jazebe_planet_category.deleted_at timestamp with time zone
+column jazebe_planet_category.deleted_by uuid
+column jazebe_planet_category.id uuid not null
+column jazebe_planet_category.is_active boolean not null default true
+column jazebe_planet_category.key character varying(64) not null
+column jazebe_planet_category.sort_order integer not null default 0
+column jazebe_planet_category.title_en character varying(128)
+column jazebe_planet_category.title_fa character varying(128) not null
+column jazebe_planet_category.updated_at timestamp with time zone not null default now()
+column jazebe_planet_category.updated_by uuid
+column jazebe_planet_medal.condition_params jsonb not null default '{}'::jsonb
+column jazebe_planet_medal.created_at timestamp with time zone not null default now()
+column jazebe_planet_medal.id uuid not null
+column jazebe_planet_medal.medal_library_id uuid not null
+column jazebe_planet_medal.planet_id uuid not null
+column jazebe_planet_medal.reward_points integer not null default 0
+column jazebe_planet_medal.reward_tickets integer not null default 0
+column jazebe_planet_medal.status character varying(8) not null default 'active'::character varying
+column jazebe_planet_medal.updated_at timestamp with time zone not null default now()
+column jazebe_planet_membership.is_active boolean not null default true
+column jazebe_planet_membership.join_path character varying(24) not null default 'join_button'::character varying
+column jazebe_planet_membership.joined_at timestamp with time zone not null default now()
+column jazebe_planet_membership.last_activity_at timestamp with time zone
+column jazebe_planet_membership.planet_id uuid not null
+column jazebe_planet_membership.sort_order integer
+column jazebe_planet_membership.user_id uuid not null
+column jazebe_planet_settings.allowed_group_modes jsonb not null default '["open", "approval"]'::jsonb
+column jazebe_planet_settings.display_name_change_limit_per_month integer not null default 3
+column jazebe_planet_settings.free_game_daily_cap integer
+column jazebe_planet_settings.group_admin_cap integer not null default 2
+column jazebe_planet_settings.group_creation_enabled boolean not null default true
+column jazebe_planet_settings.group_max_count integer
+column jazebe_planet_settings.group_member_cap_max integer not null default 20
+column jazebe_planet_settings.group_member_cap_min integer not null default 2
+column jazebe_planet_settings.lottery_fee_percent numeric(5,2) not null default 0
+column jazebe_planet_settings.mission_reward_point_max integer not null default 100
+column jazebe_planet_settings.mission_reward_point_min integer not null default 0
+column jazebe_planet_settings.mission_reward_ticket_max integer not null default 5
+column jazebe_planet_settings.planet_id uuid not null
+column jazebe_planet_settings.point_to_toman_rate integer not null default 0
+column jazebe_planet_settings.ticket_price_max integer not null default 1000
+column jazebe_planet_settings.ticket_price_min integer not null default 1
+column jazebe_planet_settings.xp_level_thresholds jsonb not null default '[]'::jsonb
+column jazebe_planet_settings.xp_per_group_join integer not null default 0
+column jazebe_planet_settings.xp_per_purchase integer not null default 0
+column jazebe_platform_policy.created_at timestamp with time zone not null default now()
+column jazebe_platform_policy.display_name_change_limit_per_month integer not null default 3
+column jazebe_platform_policy.extra jsonb
+column jazebe_platform_policy.group_admin_cap_max integer not null default 5
+column jazebe_platform_policy.group_max_count_max integer
+column jazebe_platform_policy.group_member_cap_max integer not null default 100
+column jazebe_platform_policy.group_member_cap_min integer not null default 2
+column jazebe_platform_policy.id uuid not null
+column jazebe_platform_policy.key character varying(16) not null
+column jazebe_platform_policy.lottery_fee_percent_max numeric(5,2) not null default 100
+column jazebe_platform_policy.lottery_fee_percent_min numeric(5,2) not null default 0
+column jazebe_platform_policy.mission_reward_point_max integer not null default 1000
+column jazebe_platform_policy.mission_reward_point_min integer not null default 0
+column jazebe_platform_policy.mission_reward_ticket_max integer not null default 10
+column jazebe_platform_policy.mission_reward_xp_max integer not null default 1000
+column jazebe_platform_policy.otp_length smallint not null default 6
+column jazebe_platform_policy.otp_max_attempts smallint not null default 5
+column jazebe_platform_policy.otp_resend_cooldown_seconds integer not null default 60
+column jazebe_platform_policy.otp_ttl_seconds integer not null default 120
+column jazebe_platform_policy.rate_limit_per_minute integer not null default 120
+column jazebe_platform_policy.terms_version character varying(32) not null default '1'::character varying
+column jazebe_platform_policy.ticket_price_max integer not null default 100000
+column jazebe_platform_policy.ticket_price_min integer not null default 1
+column jazebe_platform_policy.updated_at timestamp with time zone not null default now()
+column jazebe_platform_policy.updated_by uuid
+column jazebe_point_transaction.amount bigint not null
+column jazebe_point_transaction.balance_after bigint not null
+column jazebe_point_transaction.created_at timestamp with time zone not null default now()
+column jazebe_point_transaction.description character varying(512)
+column jazebe_point_transaction.direction character varying(8) not null
+column jazebe_point_transaction.id uuid not null
+column jazebe_point_transaction.planet_id uuid not null
+column jazebe_point_transaction.seq bigint not null default nextval('jazebe_point_transaction_seq_seq'::regclass)
+column jazebe_point_transaction.source character varying(32) not null
+column jazebe_point_transaction.source_id uuid not null
+column jazebe_point_transaction.user_id uuid not null
+column jazebe_point_transaction.wallet_id uuid not null
+column jazebe_point_wallet.balance bigint not null default 0
+column jazebe_point_wallet.id uuid not null
+column jazebe_point_wallet.last_transaction_at timestamp with time zone
+column jazebe_point_wallet.planet_id uuid not null
+column jazebe_point_wallet.user_id uuid not null
+column jazebe_progression_event.attempts integer not null default 0
+column jazebe_progression_event.created_at timestamp with time zone not null default now()
+column jazebe_progression_event.id uuid not null
+column jazebe_progression_event.kind character varying(20) not null
+column jazebe_progression_event.planet_id uuid not null
+column jazebe_progression_event.processed_at timestamp with time zone
+column jazebe_progression_event.source_id uuid not null
+column jazebe_progression_event.user_id uuid not null
+column jazebe_referral_completion_job.attempts integer not null default 0
+column jazebe_referral_completion_job.inviter_user_id uuid not null
+column jazebe_referral_completion_job.last_error text
+column jazebe_referral_completion_job.mission_id uuid not null
+column jazebe_referral_completion_job.next_attempt_at timestamp with time zone not null default now()
+column jazebe_referral_completion_job.pending boolean not null default true
+column jazebe_referral_completion_job.planet_id uuid not null
+column jazebe_referral_completion_job.updated_at timestamp with time zone not null default now()
+column jazebe_referral_identity.created_at timestamp with time zone not null default now()
+column jazebe_referral_identity.invite_code character varying(16) not null
+column jazebe_referral_identity.referred_by_user_id uuid
+column jazebe_referral_identity.updated_at timestamp with time zone not null default now()
+column jazebe_referral_identity.user_id uuid not null
+column jazebe_shop_product.created_at timestamp with time zone not null default now()
+column jazebe_shop_product.delivery_note character varying(512)
+column jazebe_shop_product.freshness_rank integer not null default 0
+column jazebe_shop_product.id uuid not null
+column jazebe_shop_product.image_asset character varying(512)
+column jazebe_shop_product.long_description text
+column jazebe_shop_product.name character varying(128) not null
+column jazebe_shop_product.planet_id uuid not null
+column jazebe_shop_product.price_points integer not null
+column jazebe_shop_product.price_updated_at timestamp with time zone
+column jazebe_shop_product.short_description character varying(512)
+column jazebe_shop_product.sold_count integer not null default 0
+column jazebe_shop_product.status character varying(12) not null default 'active'::character varying
+column jazebe_shop_product.stock integer
+column jazebe_shop_product.terms text
+column jazebe_shop_product.type character varying(8) not null
+column jazebe_shop_product.type_config jsonb
+column jazebe_shop_product.updated_at timestamp with time zone not null default now()
+column jazebe_shop_purchase_rate.count integer not null
+column jazebe_shop_purchase_rate.user_id uuid not null
+column jazebe_shop_purchase_rate.window_started_at timestamp with time zone not null
+column jazebe_user_account.core_disable_time timestamp with time zone
+column jazebe_user_account.created_at timestamp with time zone not null default now()
+column jazebe_user_account.deactivated_at timestamp with time zone
+column jazebe_user_account.last_login_at timestamp with time zone
+column jazebe_user_account.reactivated_at timestamp with time zone
+column jazebe_user_account.session_revocation_pending boolean not null default false
+column jazebe_user_account.signup_source_planet_id uuid
+column jazebe_user_account.state character varying(16) not null default 'active'::character varying
+column jazebe_user_account.suspended_at timestamp with time zone
+column jazebe_user_account.suspended_by_operator_id uuid
+column jazebe_user_account.suspended_reason character varying(512)
+column jazebe_user_account.terms_accepted_at timestamp with time zone
+column jazebe_user_account.terms_version character varying(32)
+column jazebe_user_account.updated_at timestamp with time zone not null default now()
+column jazebe_user_account.user_id uuid not null
+column jazebe_user_planet_stats.games_played integer not null default 0
+column jazebe_user_planet_stats.last_activity_at timestamp with time zone
+column jazebe_user_planet_stats.level smallint not null default 1
+column jazebe_user_planet_stats.level_key character varying(32) not null default 'newcomer'::character varying
+column jazebe_user_planet_stats.medals_count integer not null default 0
+column jazebe_user_planet_stats.missions_completed integer not null default 0
+column jazebe_user_planet_stats.planet_id uuid not null
+column jazebe_user_planet_stats.tickets_created integer not null default 0
+column jazebe_user_planet_stats.total_xp bigint not null default 0
+column jazebe_user_planet_stats.user_id uuid not null
+column jazebe_user_profile.avatar_kind character varying(8) not null default 'preset'::character varying
+column jazebe_user_profile.avatar_media_id uuid
+column jazebe_user_profile.avatar_preset_index smallint
+column jazebe_user_profile.created_at timestamp with time zone not null default now()
+column jazebe_user_profile.display_name character varying(20) not null
+column jazebe_user_profile.display_name_change_count_month smallint not null default 0
+column jazebe_user_profile.display_name_changed_at timestamp with time zone
+column jazebe_user_profile.updated_at timestamp with time zone not null default now()
+column jazebe_user_profile.user_id uuid not null
+column jazebe_user_report.created_at timestamp with time zone not null default now()
+column jazebe_user_report.handled_at timestamp with time zone
+column jazebe_user_report.handled_by_admin_id uuid
+column jazebe_user_report.id uuid not null
+column jazebe_user_report.note character varying(512)
+column jazebe_user_report.planet_id uuid not null
+column jazebe_user_report.reason character varying(64) not null
+column jazebe_user_report.reporter_user_id uuid not null
+column jazebe_user_report.status character varying(12) not null default 'open'::character varying
+column jazebe_user_report.subject_id uuid not null
+column jazebe_user_report.subject_type character varying(16) not null
+column jazebe_user_verification.status character varying(16) not null default 'none'::character varying
+column jazebe_user_verification.updated_at timestamp with time zone not null default now()
+column jazebe_user_verification.user_id uuid not null
+column jazebe_user_verification.verified_at timestamp with time zone
+column jazebe_xp_record.amount integer not null
+column jazebe_xp_record.created_at timestamp with time zone not null default now()
+column jazebe_xp_record.id uuid not null
+column jazebe_xp_record.planet_id uuid not null
+column jazebe_xp_record.source character varying(32) not null
+column jazebe_xp_record.source_id uuid not null
+column jazebe_xp_record.user_id uuid not null
+constraint jazebe_audit_log jazebe_audit_log_actor_type_check CHECK (((actor_type)::text = ANY ((ARRAY['user'::character varying, 'brand_admin'::character varying, 'operator'::character varying, 'system'::character varying])::text[])))
+constraint jazebe_audit_log jazebe_audit_log_pkey PRIMARY KEY (id)
+constraint jazebe_brand jazebe_brand_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
+constraint jazebe_brand jazebe_brand_pkey PRIMARY KEY (id)
+constraint jazebe_brand_admin jazebe_brand_admin_brand_id_fkey FOREIGN KEY (brand_id) REFERENCES jazebe_brand(id)
+constraint jazebe_brand_admin jazebe_brand_admin_brand_id_user_id_fkey FOREIGN KEY (brand_id, user_id) REFERENCES jazebe_brand_member(brand_id, user_id)
+constraint jazebe_brand_admin jazebe_brand_admin_pkey PRIMARY KEY (brand_id, user_id)
+constraint jazebe_brand_admin jazebe_brand_admin_role_check CHECK (((role)::text = ANY ((ARRAY['main'::character varying, 'technical'::character varying, 'marketing'::character varying])::text[])))
+constraint jazebe_brand_admin jazebe_brand_admin_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+constraint jazebe_brand_member jazebe_brand_member_brand_id_fkey FOREIGN KEY (brand_id) REFERENCES jazebe_brand(id)
+constraint jazebe_brand_member jazebe_brand_member_pkey PRIMARY KEY (brand_id, user_id)
+constraint jazebe_brand_member jazebe_brand_member_role_check CHECK (((role)::text = ANY ((ARRAY['owner'::character varying, 'admin'::character varying, 'member'::character varying])::text[])))
+constraint jazebe_brand_member jazebe_brand_member_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+constraint jazebe_coupon_code ck_jazebe_coupon_issued CHECK ((((status)::text <> 'issued'::text) OR ((issued_to_user_id IS NOT NULL) AND (issued_at IS NOT NULL))))
+constraint jazebe_coupon_code jazebe_coupon_code_issued_to_user_id_fkey FOREIGN KEY (issued_to_user_id) REFERENCES users(id)
+constraint jazebe_coupon_code jazebe_coupon_code_pkey PRIMARY KEY (id)
+constraint jazebe_coupon_code jazebe_coupon_code_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_coupon_code jazebe_coupon_code_shop_product_id_fkey FOREIGN KEY (shop_product_id) REFERENCES jazebe_shop_product(id)
+constraint jazebe_coupon_code jazebe_coupon_code_status_check CHECK (((status)::text = ANY ((ARRAY['available'::character varying, 'issued'::character varying, 'expired'::character varying])::text[])))
+constraint jazebe_coupon_code uq_jazebe_coupon_code UNIQUE (shop_product_id, code)
+constraint jazebe_game jazebe_game_accent_check CHECK (((accent)::text = ANY ((ARRAY['gold'::character varying, 'brand'::character varying, 'success'::character varying])::text[])))
+constraint jazebe_game jazebe_game_check CHECK (((prize_ticket_max >= prize_ticket_min) AND (prize_ticket_max <= 10000)))
+constraint jazebe_game jazebe_game_entry_model_check CHECK (((entry_model)::text = ANY ((ARRAY['free'::character varying, 'cost'::character varying, 'hybrid'::character varying])::text[])))
+constraint jazebe_game jazebe_game_free_group_count_check CHECK (((free_group_count >= 1) AND (free_group_count <= 10000)))
+constraint jazebe_game jazebe_game_free_group_period_check CHECK (((free_group_period)::text = ANY ((ARRAY['daily'::character varying, 'weekly'::character varying, 'monthly'::character varying])::text[])))
+constraint jazebe_game jazebe_game_free_individual_count_check CHECK (((free_individual_count >= 1) AND (free_individual_count <= 1000)))
+constraint jazebe_game jazebe_game_free_individual_period_check CHECK (((free_individual_period)::text = ANY ((ARRAY['daily'::character varying, 'weekly'::character varying, 'monthly'::character varying])::text[])))
+constraint jazebe_game jazebe_game_kind_check CHECK (((kind)::text = ANY ((ARRAY['catalog'::character varying, 'custom'::character varying])::text[])))
+constraint jazebe_game jazebe_game_pkey PRIMARY KEY (id)
+constraint jazebe_game jazebe_game_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_game jazebe_game_planet_id_template_id_key UNIQUE (planet_id, template_id)
+constraint jazebe_game jazebe_game_point_cost_check CHECK (((point_cost >= 0) AND (point_cost <= 1000000)))
+constraint jazebe_game jazebe_game_prize_ticket_min_check CHECK (((prize_ticket_min >= 0) AND (prize_ticket_min <= 10000)))
+constraint jazebe_game jazebe_game_reward_xp_check CHECK (((reward_xp >= 0) AND (reward_xp <= 1000000)))
+constraint jazebe_game jazebe_game_status_check CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'paused'::character varying, 'suspended'::character varying])::text[])))
+constraint jazebe_game jazebe_game_target_lottery_id_fkey FOREIGN KEY (target_lottery_id) REFERENCES jazebe_lottery(id)
+constraint jazebe_game jazebe_game_template_id_fkey FOREIGN KEY (template_id) REFERENCES jazebe_game_template(id)
+constraint jazebe_game_quota jazebe_game_quota_check CHECK (((((scope)::text = 'user'::text) AND (user_id IS NOT NULL) AND (group_id IS NULL)) OR (((scope)::text = 'group'::text) AND (group_id IS NOT NULL) AND (user_id IS NULL))))
+constraint jazebe_game_quota jazebe_game_quota_game_id_fkey FOREIGN KEY (game_id) REFERENCES jazebe_game(id)
+constraint jazebe_game_quota jazebe_game_quota_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_game_quota jazebe_game_quota_pkey PRIMARY KEY (id)
+constraint jazebe_game_quota jazebe_game_quota_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_game_quota jazebe_game_quota_scope_check CHECK (((scope)::text = ANY ((ARRAY['user'::character varying, 'group'::character varying])::text[])))
+constraint jazebe_game_quota jazebe_game_quota_used_check CHECK ((used >= 0))
+constraint jazebe_game_quota jazebe_game_quota_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_game_session jazebe_game_session_awarded_tickets_check CHECK ((awarded_tickets >= 0))
+constraint jazebe_game_session jazebe_game_session_awarded_xp_check CHECK ((awarded_xp >= 0))
+constraint jazebe_game_session jazebe_game_session_check CHECK (((((status)::text = 'open'::text) AND (finished_at IS NULL)) OR (((status)::text <> 'open'::text) AND (finished_at IS NOT NULL))))
+constraint jazebe_game_session jazebe_game_session_entry_type_check CHECK (((entry_type)::text = ANY ((ARRAY['free_individual'::character varying, 'free_group'::character varying, 'paid'::character varying])::text[])))
+constraint jazebe_game_session jazebe_game_session_game_id_fkey FOREIGN KEY (game_id) REFERENCES jazebe_game(id)
+constraint jazebe_game_session jazebe_game_session_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_game_session jazebe_game_session_pkey PRIMARY KEY (id)
+constraint jazebe_game_session jazebe_game_session_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_game_session jazebe_game_session_point_cost_check CHECK ((point_cost >= 0))
+constraint jazebe_game_session jazebe_game_session_point_transaction_id_fkey FOREIGN KEY (point_transaction_id) REFERENCES jazebe_point_transaction(id)
+constraint jazebe_game_session jazebe_game_session_score_check CHECK (((score >= (0)::numeric) AND (score <= (1)::numeric)))
+constraint jazebe_game_session jazebe_game_session_status_check CHECK (((status)::text = ANY ((ARRAY['open'::character varying, 'finished'::character varying, 'abandoned'::character varying])::text[])))
+constraint jazebe_game_session jazebe_game_session_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_game_template jazebe_game_template_key_key UNIQUE (key)
+constraint jazebe_game_template jazebe_game_template_pkey PRIMARY KEY (id)
+constraint jazebe_group jazebe_group_color CHECK (((color IS NULL) OR ((color)::text ~ '^#[0-9a-fA-F]{6}$'::text)))
+constraint jazebe_group jazebe_group_creator_user_id_fkey FOREIGN KEY (creator_user_id) REFERENCES users(id)
+constraint jazebe_group jazebe_group_disbanded_by_user_id_fkey FOREIGN KEY (disbanded_by_user_id) REFERENCES users(id)
+constraint jazebe_group jazebe_group_member_cap_check CHECK ((member_cap >= 1))
+constraint jazebe_group jazebe_group_member_count_check CHECK ((member_count >= 0))
+constraint jazebe_group jazebe_group_members_bound CHECK ((member_count <= member_cap))
+constraint jazebe_group jazebe_group_mode_check CHECK (((mode)::text = ANY ((ARRAY['open'::character varying, 'approval'::character varying])::text[])))
+constraint jazebe_group jazebe_group_pkey PRIMARY KEY (id)
+constraint jazebe_group jazebe_group_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_group jazebe_group_status_check CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'suspended'::character varying, 'disbanded'::character varying])::text[])))
+constraint jazebe_group_activity jazebe_group_activity_actor_user_id_fkey FOREIGN KEY (actor_user_id) REFERENCES users(id)
+constraint jazebe_group_activity jazebe_group_activity_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_group_activity jazebe_group_activity_kind_check CHECK (((kind)::text = ANY ((ARRAY['join'::character varying, 'leave'::character varying, 'ticket'::character varying, 'game'::character varying, 'prize'::character varying, 'mission'::character varying, 'role'::character varying])::text[])))
+constraint jazebe_group_activity jazebe_group_activity_pkey PRIMARY KEY (id)
+constraint jazebe_group_activity jazebe_group_activity_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_group_invite jazebe_group_invite_created_by_user_id_fkey FOREIGN KEY (created_by_user_id) REFERENCES users(id)
+constraint jazebe_group_invite jazebe_group_invite_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_group_invite jazebe_group_invite_max_uses_check CHECK (((max_uses IS NULL) OR (max_uses > 0)))
+constraint jazebe_group_invite jazebe_group_invite_pkey PRIMARY KEY (id)
+constraint jazebe_group_invite jazebe_group_invite_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_group_invite jazebe_group_invite_token_hash_key UNIQUE (token_hash)
+constraint jazebe_group_invite jazebe_group_invite_use_count_check CHECK ((use_count >= 0))
+constraint jazebe_group_join_request jazebe_group_join_request_decided_by_user_id_fkey FOREIGN KEY (decided_by_user_id) REFERENCES users(id)
+constraint jazebe_group_join_request jazebe_group_join_request_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_group_join_request jazebe_group_join_request_pkey PRIMARY KEY (id)
+constraint jazebe_group_join_request jazebe_group_join_request_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_group_join_request jazebe_group_join_request_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'approved'::character varying, 'rejected'::character varying, 'cancelled'::character varying, 'auto_cancelled'::character varying])::text[])))
+constraint jazebe_group_join_request jazebe_group_join_request_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_group_leadership_offer jazebe_group_leadership_offer_from_user_id_fkey FOREIGN KEY (from_user_id) REFERENCES users(id)
+constraint jazebe_group_leadership_offer jazebe_group_leadership_offer_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_group_leadership_offer jazebe_group_leadership_offer_pkey PRIMARY KEY (id)
+constraint jazebe_group_leadership_offer jazebe_group_leadership_offer_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_group_leadership_offer jazebe_group_leadership_offer_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'accepted'::character varying, 'declined'::character varying, 'cancelled'::character varying, 'expired'::character varying])::text[])))
+constraint jazebe_group_leadership_offer jazebe_group_leadership_offer_to_user_id_fkey FOREIGN KEY (to_user_id) REFERENCES users(id)
+constraint jazebe_group_membership jazebe_group_membership_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_group_membership jazebe_group_membership_pkey PRIMARY KEY (id)
+constraint jazebe_group_membership jazebe_group_membership_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_group_membership jazebe_group_membership_role_check CHECK (((role)::text = ANY ((ARRAY['creator'::character varying, 'admin'::character varying, 'member'::character varying])::text[])))
+constraint jazebe_group_membership jazebe_group_membership_source_check CHECK (((source)::text = ANY ((ARRAY['creation'::character varying, 'list_join'::character varying, 'invite_link'::character varying, 'approved_request'::character varying])::text[])))
+constraint jazebe_group_membership jazebe_group_membership_status_check CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'left'::character varying, 'removed'::character varying])::text[])))
+constraint jazebe_group_membership jazebe_group_membership_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_group_message jazebe_group_message_body CHECK ((((kind)::text <> 'text'::text) OR ((body IS NOT NULL) AND ((char_length(body) >= 1) AND (char_length(body) <= 2000)))))
+constraint jazebe_group_message jazebe_group_message_deleted_by_fkey FOREIGN KEY (deleted_by) REFERENCES users(id)
+constraint jazebe_group_message jazebe_group_message_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_group_message jazebe_group_message_kind_check CHECK (((kind)::text = ANY ((ARRAY['text'::character varying, 'event'::character varying, 'system'::character varying])::text[])))
+constraint jazebe_group_message jazebe_group_message_pkey PRIMARY KEY (id)
+constraint jazebe_group_message jazebe_group_message_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_group_message jazebe_group_message_reply_to_message_id_fkey FOREIGN KEY (reply_to_message_id) REFERENCES jazebe_group_message(id)
+constraint jazebe_group_message jazebe_group_message_sender_user_id_fkey FOREIGN KEY (sender_user_id) REFERENCES users(id)
+constraint jazebe_group_message jazebe_group_message_seq_key UNIQUE (seq)
+constraint jazebe_group_message_read jazebe_group_message_read_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_group_message_read jazebe_group_message_read_last_read_seq_check CHECK ((last_read_seq >= 0))
+constraint jazebe_group_message_read jazebe_group_message_read_pkey PRIMARY KEY (group_id, user_id)
+constraint jazebe_group_message_read jazebe_group_message_read_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_group_message_read jazebe_group_message_read_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_group_mission_contribution jazebe_group_mission_contribution_pkey PRIMARY KEY (progress_id, user_id)
+constraint jazebe_group_mission_contribution jazebe_group_mission_contribution_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_group_mission_contribution jazebe_group_mission_contribution_progress_id_fkey FOREIGN KEY (progress_id) REFERENCES jazebe_group_mission_progress(id)
+constraint jazebe_group_mission_contribution jazebe_group_mission_contribution_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_group_mission_contribution jazebe_group_mission_contribution_value_check CHECK ((value >= 0))
+constraint jazebe_group_mission_progress jazebe_group_mission_progress_current_value_check CHECK ((current_value >= 0))
+constraint jazebe_group_mission_progress jazebe_group_mission_progress_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_group_mission_progress jazebe_group_mission_progress_mission_id_fkey FOREIGN KEY (mission_id) REFERENCES jazebe_mission(id)
+constraint jazebe_group_mission_progress jazebe_group_mission_progress_mission_id_group_id_key UNIQUE (mission_id, group_id)
+constraint jazebe_group_mission_progress jazebe_group_mission_progress_pkey PRIMARY KEY (id)
+constraint jazebe_group_mission_progress jazebe_group_mission_progress_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_group_mission_progress jazebe_group_mission_progress_status_check CHECK (((status)::text = ANY ((ARRAY['in_progress'::character varying, 'completed'::character varying, 'failed'::character varying])::text[])))
+constraint jazebe_group_mission_progress jazebe_group_mission_progress_target_value_check CHECK ((target_value > 0))
+constraint jazebe_lottery jazebe_lottery_caps CHECK (((per_user_ticket_cap IS NULL) OR (per_group_ticket_cap IS NULL) OR (per_user_ticket_cap <= per_group_ticket_cap)))
+constraint jazebe_lottery jazebe_lottery_per_group_ticket_cap_check CHECK ((per_group_ticket_cap > 0))
+constraint jazebe_lottery jazebe_lottery_per_user_ticket_cap_check CHECK ((per_user_ticket_cap > 0))
+constraint jazebe_lottery jazebe_lottery_pkey PRIMARY KEY (id)
+constraint jazebe_lottery jazebe_lottery_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_lottery jazebe_lottery_planet_id_unique UNIQUE (planet_id, id)
+constraint jazebe_lottery jazebe_lottery_status_check CHECK (((status)::text = ANY ((ARRAY['draft'::character varying, 'active'::character varying, 'drawing'::character varying, 'finished'::character varying, 'cancelled'::character varying])::text[])))
+constraint jazebe_lottery jazebe_lottery_ticket_price_points_check CHECK ((ticket_price_points > 0))
+constraint jazebe_lottery jazebe_lottery_time CHECK ((draw_at > starts_at))
+constraint jazebe_lottery jazebe_lottery_total_ticket_count_check CHECK ((total_ticket_count >= 0))
+constraint jazebe_lottery_group_stat jazebe_lottery_group_stat_collective_ticket_count_check CHECK ((collective_ticket_count >= 0))
+constraint jazebe_lottery_group_stat jazebe_lottery_group_stat_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_lottery_group_stat jazebe_lottery_group_stat_individual_ticket_count_check CHECK ((individual_ticket_count >= 0))
+constraint jazebe_lottery_group_stat jazebe_lottery_group_stat_lottery_id_fkey FOREIGN KEY (lottery_id) REFERENCES jazebe_lottery(id)
+constraint jazebe_lottery_group_stat jazebe_lottery_group_stat_pkey PRIMARY KEY (lottery_id, group_id)
+constraint jazebe_lottery_group_stat jazebe_lottery_group_stat_sum CHECK ((ticket_count = (individual_ticket_count + collective_ticket_count)))
+constraint jazebe_lottery_group_stat jazebe_lottery_group_stat_ticket_count_check CHECK ((ticket_count >= 0))
+constraint jazebe_lottery_prize jazebe_lottery_prize_lottery_fk FOREIGN KEY (planet_id, lottery_id) REFERENCES jazebe_lottery(planet_id, id)
+constraint jazebe_lottery_prize jazebe_lottery_prize_pkey PRIMARY KEY (id)
+constraint jazebe_lottery_prize jazebe_lottery_prize_priority_check CHECK (((priority >= 1) AND (priority <= 50)))
+constraint jazebe_lottery_prize jazebe_lottery_prize_slot UNIQUE (lottery_id, priority)
+constraint jazebe_lottery_prize jazebe_lottery_prize_type_check CHECK (((type)::text = ANY ((ARRAY['cash'::character varying, 'brand_credit'::character varying, 'planet_points'::character varying, 'discount_coupon'::character varying])::text[])))
+constraint jazebe_lottery_prize jazebe_lottery_prize_value_rial_check CHECK ((value_rial >= 0))
+constraint jazebe_lottery_ticket jazebe_lottery_ticket_creator_type_check CHECK (((creator_type)::text = ANY ((ARRAY['member'::character varying, 'group'::character varying])::text[])))
+constraint jazebe_lottery_ticket jazebe_lottery_ticket_creator_user_id_fkey FOREIGN KEY (creator_user_id) REFERENCES users(id)
+constraint jazebe_lottery_ticket jazebe_lottery_ticket_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_lottery_ticket jazebe_lottery_ticket_lottery_id_fkey FOREIGN KEY (lottery_id) REFERENCES jazebe_lottery(id)
+constraint jazebe_lottery_ticket jazebe_lottery_ticket_pkey PRIMARY KEY (id)
+constraint jazebe_lottery_ticket jazebe_lottery_ticket_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_lottery_ticket jazebe_lottery_ticket_serial_key UNIQUE (serial)
+constraint jazebe_lottery_ticket jazebe_lottery_ticket_source_check CHECK (((source)::text = ANY ((ARRAY['purchase'::character varying, 'solo_mission'::character varying, 'group_mission'::character varying, 'game'::character varying, 'previous_lottery_prize'::character varying, 'medal'::character varying])::text[])))
+constraint jazebe_lottery_ticket jazebe_lottery_ticket_status_check CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'void'::character varying])::text[])))
+constraint jazebe_lottery_ticket jazebe_ticket_creator CHECK ((((creator_type)::text = 'member'::text) = (creator_user_id IS NOT NULL)))
+constraint jazebe_lottery_winner jazebe_lottery_winner_delivery_status_check CHECK (((delivery_status)::text = ANY ((ARRAY['pending'::character varying, 'contacted'::character varying, 'delivered'::character varying, 'rejected'::character varying])::text[])))
+constraint jazebe_lottery_winner jazebe_lottery_winner_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_lottery_winner jazebe_lottery_winner_lottery_id_fkey FOREIGN KEY (lottery_id) REFERENCES jazebe_lottery(id)
+constraint jazebe_lottery_winner jazebe_lottery_winner_pkey PRIMARY KEY (id)
+constraint jazebe_lottery_winner jazebe_lottery_winner_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_lottery_winner jazebe_lottery_winner_prize_id_fkey FOREIGN KEY (prize_id) REFERENCES jazebe_lottery_prize(id)
+constraint jazebe_lottery_winner jazebe_lottery_winner_prize_id_key UNIQUE (prize_id)
+constraint jazebe_lottery_winner jazebe_lottery_winner_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES jazebe_lottery_ticket(id)
+constraint jazebe_lottery_winner_share jazebe_lottery_winner_share_individual_ticket_count_check CHECK ((individual_ticket_count >= 0))
+constraint jazebe_lottery_winner_share jazebe_lottery_winner_share_payout_status_check CHECK (((payout_status)::text = ANY ((ARRAY['pending_verification'::character varying, 'payable'::character varying, 'paid'::character varying, 'rejected'::character varying])::text[])))
+constraint jazebe_lottery_winner_share jazebe_lottery_winner_share_pkey PRIMARY KEY (id)
+constraint jazebe_lottery_winner_share jazebe_lottery_winner_share_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_lottery_winner_share jazebe_lottery_winner_share_share_percent_check CHECK (((share_percent >= (0)::numeric) AND (share_percent <= (100)::numeric)))
+constraint jazebe_lottery_winner_share jazebe_lottery_winner_share_share_value_rial_check CHECK ((share_value_rial >= 0))
+constraint jazebe_lottery_winner_share jazebe_lottery_winner_share_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_lottery_winner_share jazebe_lottery_winner_share_winner_id_fkey FOREIGN KEY (winner_id) REFERENCES jazebe_lottery_winner(id)
+constraint jazebe_lottery_winner_share jazebe_lottery_winner_share_winner_id_user_id_key UNIQUE (winner_id, user_id)
+constraint jazebe_medal_acquisition jazebe_medal_acquisition_pkey PRIMARY KEY (id)
+constraint jazebe_medal_acquisition jazebe_medal_acquisition_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_medal_acquisition jazebe_medal_acquisition_planet_medal_id_planet_id_fkey FOREIGN KEY (planet_medal_id, planet_id) REFERENCES jazebe_planet_medal(id, planet_id)
+constraint jazebe_medal_acquisition jazebe_medal_acquisition_planet_medal_id_user_id_key UNIQUE (planet_medal_id, user_id)
+constraint jazebe_medal_acquisition jazebe_medal_acquisition_reward_point_transaction_id_fkey FOREIGN KEY (reward_point_transaction_id) REFERENCES jazebe_point_transaction(id)
+constraint jazebe_medal_acquisition jazebe_medal_acquisition_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_medal_backfill jazebe_medal_backfill_attempts_check CHECK ((attempts >= 0))
+constraint jazebe_medal_backfill jazebe_medal_backfill_awarded_check CHECK ((awarded >= 0))
+constraint jazebe_medal_backfill jazebe_medal_backfill_evaluated_check CHECK ((evaluated >= 0))
+constraint jazebe_medal_backfill jazebe_medal_backfill_pkey PRIMARY KEY (planet_medal_id)
+constraint jazebe_medal_backfill jazebe_medal_backfill_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_medal_backfill jazebe_medal_backfill_planet_medal_id_fkey FOREIGN KEY (planet_medal_id) REFERENCES jazebe_planet_medal(id)
+constraint jazebe_medal_library jazebe_medal_library_condition_type_check CHECK (((condition_type)::text = ANY ((ARRAY['activity_count'::character varying, 'duration'::character varying, 'special_event'::character varying])::text[])))
+constraint jazebe_medal_library jazebe_medal_library_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id)
+constraint jazebe_medal_library jazebe_medal_library_key_key UNIQUE (key)
+constraint jazebe_medal_library jazebe_medal_library_pkey PRIMARY KEY (id)
+constraint jazebe_medal_library jazebe_medal_library_theme_category_check CHECK (((theme_category)::text = ANY ((ARRAY['participation'::character varying, 'purchase'::character varying, 'social'::character varying, 'progression'::character varying])::text[])))
+constraint jazebe_medal_library jazebe_medal_library_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES users(id)
+constraint jazebe_medal_library jazebe_medal_library_version_check CHECK ((version > 0))
+constraint jazebe_media_chunk jazebe_media_chunk_pkey PRIMARY KEY (upload_id, seq)
+constraint jazebe_media_chunk jazebe_media_chunk_seq_check CHECK ((seq >= 0))
+constraint jazebe_media_chunk jazebe_media_chunk_size CHECK ((octet_length(data) = size_bytes))
+constraint jazebe_media_chunk jazebe_media_chunk_size_bytes_check CHECK (((size_bytes >= 1) AND (size_bytes <= 131072)))
+constraint jazebe_media_chunk jazebe_media_chunk_upload_id_fkey FOREIGN KEY (upload_id) REFERENCES jazebe_media_upload(id) ON DELETE CASCADE
+constraint jazebe_media_upload jazebe_media_received_bound CHECK ((received_bytes <= expected_bytes))
+constraint jazebe_media_upload jazebe_media_upload_expected_bytes_check CHECK (((expected_bytes >= 1) AND (expected_bytes <= 52428800)))
+constraint jazebe_media_upload jazebe_media_upload_owner_user_id_fkey FOREIGN KEY (owner_user_id) REFERENCES users(id)
+constraint jazebe_media_upload jazebe_media_upload_pkey PRIMARY KEY (id)
+constraint jazebe_media_upload jazebe_media_upload_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_media_upload jazebe_media_upload_purpose_check CHECK (((purpose)::text = ANY ((ARRAY['evidence'::character varying, 'avatar'::character varying, 'mission_media'::character varying])::text[])))
+constraint jazebe_media_upload jazebe_media_upload_received_bytes_check CHECK ((received_bytes >= 0))
+constraint jazebe_media_upload jazebe_media_upload_received_chunks_check CHECK ((received_chunks >= 0))
+constraint jazebe_media_upload jazebe_media_upload_status_check CHECK (((status)::text = ANY ((ARRAY['open'::character varying, 'complete'::character varying, 'deleted'::character varying])::text[])))
+constraint jazebe_mission jazebe_mission_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id)
+constraint jazebe_mission jazebe_mission_detection_method_check CHECK (((detection_method)::text = ANY ((ARRAY['platform_auto'::character varying, 'brand_api'::character varying, 'manual_review'::character varying])::text[])))
+constraint jazebe_mission jazebe_mission_functional_type_check CHECK (((functional_type)::text = ANY ((ARRAY['media_view'::character varying, 'code_entry'::character varying, 'content_creation'::character varying, 'invite'::character varying, 'external_verification'::character varying, 'social_action'::character varying])::text[])))
+constraint jazebe_mission jazebe_mission_group_no_points CHECK ((((target_type)::text <> 'group'::text) OR (reward_points = 0)))
+constraint jazebe_mission jazebe_mission_group_target CHECK ((((target_type)::text <> 'group'::text) OR (group_target_value IS NOT NULL)))
+constraint jazebe_mission jazebe_mission_periodic_period CHECK ((((repeat_pattern)::text <> 'periodic'::text) OR (repeat_period IS NOT NULL)))
+constraint jazebe_mission jazebe_mission_pkey PRIMARY KEY (id)
+constraint jazebe_mission jazebe_mission_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_mission jazebe_mission_repeat_pattern_check CHECK (((repeat_pattern)::text = ANY ((ARRAY['once'::character varying, 'periodic'::character varying, 'unlimited'::character varying])::text[])))
+constraint jazebe_mission jazebe_mission_repeat_period_check CHECK (((repeat_period)::text = ANY ((ARRAY['daily'::character varying, 'weekly'::character varying, 'monthly'::character varying])::text[])))
+constraint jazebe_mission jazebe_mission_reward_points_check CHECK ((reward_points >= 0))
+constraint jazebe_mission jazebe_mission_reward_tickets_check CHECK ((reward_tickets >= 0))
+constraint jazebe_mission jazebe_mission_reward_xp_check CHECK ((reward_xp >= 0))
+constraint jazebe_mission jazebe_mission_status_check CHECK (((status)::text = ANY ((ARRAY['draft'::character varying, 'active'::character varying, 'paused'::character varying, 'expired'::character varying, 'suspended'::character varying])::text[])))
+constraint jazebe_mission jazebe_mission_target_type_check CHECK (((target_type)::text = ANY ((ARRAY['solo'::character varying, 'group'::character varying])::text[])))
+constraint jazebe_mission jazebe_mission_time CHECK ((ends_at > starts_at))
+constraint jazebe_mission_code jazebe_code_unique_uses CHECK ((((mode)::text <> 'unique'::text) OR (max_uses = 1)))
+constraint jazebe_mission_code jazebe_mission_code_assigned_user_id_fkey FOREIGN KEY (assigned_user_id) REFERENCES users(id)
+constraint jazebe_mission_code jazebe_mission_code_check CHECK (((used_count >= 0) AND (used_count <= max_uses)))
+constraint jazebe_mission_code jazebe_mission_code_max_uses_check CHECK ((max_uses > 0))
+constraint jazebe_mission_code jazebe_mission_code_mission_id_code_key UNIQUE (mission_id, code)
+constraint jazebe_mission_code jazebe_mission_code_mission_id_fkey FOREIGN KEY (mission_id) REFERENCES jazebe_mission(id)
+constraint jazebe_mission_code jazebe_mission_code_mode_check CHECK (((mode)::text = ANY ((ARRAY['unique'::character varying, 'shared'::character varying])::text[])))
+constraint jazebe_mission_code jazebe_mission_code_pkey PRIMARY KEY (id)
+constraint jazebe_mission_code jazebe_mission_code_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_mission_completion jazebe_completion_has_owner CHECK (((user_id IS NOT NULL) OR (group_id IS NOT NULL)))
+constraint jazebe_mission_completion jazebe_completion_point_transaction_fk FOREIGN KEY (point_transaction_id) REFERENCES jazebe_point_transaction(id)
+constraint jazebe_mission_completion jazebe_completion_reject_reason CHECK ((((status)::text <> 'rejected'::text) OR (review_note IS NOT NULL)))
+constraint jazebe_mission_completion jazebe_mission_completion_awarded_points_check CHECK ((awarded_points >= 0))
+constraint jazebe_mission_completion jazebe_mission_completion_awarded_tickets_check CHECK ((awarded_tickets >= 0))
+constraint jazebe_mission_completion jazebe_mission_completion_awarded_xp_check CHECK ((awarded_xp >= 0))
+constraint jazebe_mission_completion jazebe_mission_completion_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_mission_completion jazebe_mission_completion_mission_id_fkey FOREIGN KEY (mission_id) REFERENCES jazebe_mission(id)
+constraint jazebe_mission_completion jazebe_mission_completion_pkey PRIMARY KEY (id)
+constraint jazebe_mission_completion jazebe_mission_completion_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_mission_completion jazebe_mission_completion_reviewer_admin_id_fkey FOREIGN KEY (reviewer_admin_id) REFERENCES users(id)
+constraint jazebe_mission_completion jazebe_mission_completion_status_check CHECK (((status)::text = ANY ((ARRAY['recorded'::character varying, 'pending_review'::character varying, 'approved'::character varying, 'rejected'::character varying])::text[])))
+constraint jazebe_mission_completion jazebe_mission_completion_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_mission_invite jazebe_mission_invite_check CHECK (((invitee_user_id IS NULL) OR (invitee_user_id <> inviter_user_id)))
+constraint jazebe_mission_invite jazebe_mission_invite_check1 CHECK ((((status)::text = 'pending'::text) OR (invitee_user_id IS NOT NULL)))
+constraint jazebe_mission_invite jazebe_mission_invite_check2 CHECK ((((status)::text <> 'qualified'::text) OR (qualified_at IS NOT NULL)))
+constraint jazebe_mission_invite jazebe_mission_invite_completion_id_fkey FOREIGN KEY (completion_id) REFERENCES jazebe_mission_completion(id)
+constraint jazebe_mission_invite jazebe_mission_invite_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
+constraint jazebe_mission_invite jazebe_mission_invite_invitee_user_id_fkey FOREIGN KEY (invitee_user_id) REFERENCES users(id)
+constraint jazebe_mission_invite jazebe_mission_invite_inviter_user_id_fkey FOREIGN KEY (inviter_user_id) REFERENCES users(id)
+constraint jazebe_mission_invite jazebe_mission_invite_mission_id_fkey FOREIGN KEY (mission_id) REFERENCES jazebe_mission(id)
+constraint jazebe_mission_invite jazebe_mission_invite_pkey PRIMARY KEY (id)
+constraint jazebe_mission_invite jazebe_mission_invite_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_mission_invite jazebe_mission_invite_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'registered'::character varying, 'qualified'::character varying])::text[])))
+constraint jazebe_mission_invite jazebe_mission_invite_token_key UNIQUE (token)
+constraint jazebe_mission_media_start jazebe_mission_media_start_mission_id_fkey FOREIGN KEY (mission_id) REFERENCES jazebe_mission(id)
+constraint jazebe_mission_media_start jazebe_mission_media_start_pkey PRIMARY KEY (mission_id, user_id, period_key)
+constraint jazebe_mission_media_start jazebe_mission_media_start_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_mission_media_start jazebe_mission_media_start_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_order jazebe_order_paid_points_check CHECK ((paid_points > 0))
+constraint jazebe_order jazebe_order_pkey PRIMARY KEY (id)
+constraint jazebe_order jazebe_order_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_order jazebe_order_point_transaction_id_fkey FOREIGN KEY (point_transaction_id) REFERENCES jazebe_point_transaction(id)
+constraint jazebe_order jazebe_order_shop_product_id_fkey FOREIGN KEY (shop_product_id) REFERENCES jazebe_shop_product(id)
+constraint jazebe_order jazebe_order_status_check CHECK (((status)::text = ANY ((ARRAY['delivered'::character varying, 'failed'::character varying])::text[])))
+constraint jazebe_order jazebe_order_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_planet jazebe_planet_brand_id_fkey FOREIGN KEY (brand_id) REFERENCES jazebe_brand(id)
+constraint jazebe_planet jazebe_planet_brand_name UNIQUE (brand_id, name)
+constraint jazebe_planet jazebe_planet_category_fk FOREIGN KEY (category_id) REFERENCES jazebe_planet_category(id)
+constraint jazebe_planet jazebe_planet_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id)
+constraint jazebe_planet jazebe_planet_deployment_mode_check CHECK (((deployment_mode)::text = ANY ((ARRAY['cloud'::character varying, 'on_premise'::character varying])::text[])))
+constraint jazebe_planet jazebe_planet_pkey PRIMARY KEY (id)
+constraint jazebe_planet jazebe_planet_status_check CHECK (((status)::text = ANY ((ARRAY['setup'::character varying, 'pending_review'::character varying, 'active'::character varying, 'suspended'::character varying, 'archived'::character varying])::text[])))
+constraint jazebe_planet_category jazebe_planet_category_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id)
+constraint jazebe_planet_category jazebe_planet_category_deleted_by_fkey FOREIGN KEY (deleted_by) REFERENCES users(id)
+constraint jazebe_planet_category jazebe_planet_category_key_format CHECK (((key)::text ~ '^[a-z0-9_]{2,64}$'::text))
+constraint jazebe_planet_category jazebe_planet_category_pkey PRIMARY KEY (id)
+constraint jazebe_planet_category jazebe_planet_category_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES users(id)
+constraint jazebe_planet_medal jazebe_planet_medal_id_planet_id_key UNIQUE (id, planet_id)
+constraint jazebe_planet_medal jazebe_planet_medal_medal_library_id_fkey FOREIGN KEY (medal_library_id) REFERENCES jazebe_medal_library(id)
+constraint jazebe_planet_medal jazebe_planet_medal_pkey PRIMARY KEY (id)
+constraint jazebe_planet_medal jazebe_planet_medal_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_planet_medal jazebe_planet_medal_planet_id_medal_library_id_key UNIQUE (planet_id, medal_library_id)
+constraint jazebe_planet_medal jazebe_planet_medal_reward_points_check CHECK ((reward_points >= 0))
+constraint jazebe_planet_medal jazebe_planet_medal_reward_tickets_check CHECK ((reward_tickets >= 0))
+constraint jazebe_planet_medal jazebe_planet_medal_status_check CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'paused'::character varying])::text[])))
+constraint jazebe_planet_membership jazebe_membership_join_path_check CHECK (((join_path)::text = ANY ((ARRAY['brand_domain_signup'::character varying, 'join_button'::character varying, 'first_activity'::character varying, 'group_invite_link'::character varying])::text[])))
+constraint jazebe_planet_membership jazebe_planet_membership_pkey PRIMARY KEY (planet_id, user_id)
+constraint jazebe_planet_membership jazebe_planet_membership_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_planet_membership jazebe_planet_membership_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+constraint jazebe_planet_settings jazebe_planet_settings_pkey PRIMARY KEY (planet_id)
+constraint jazebe_planet_settings jazebe_planet_settings_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_platform_policy jazebe_platform_policy_check CHECK ((mission_reward_point_min <= mission_reward_point_max))
+constraint jazebe_platform_policy jazebe_platform_policy_check1 CHECK ((ticket_price_min <= ticket_price_max))
+constraint jazebe_platform_policy jazebe_platform_policy_check2 CHECK ((lottery_fee_percent_min <= lottery_fee_percent_max))
+constraint jazebe_platform_policy jazebe_platform_policy_check3 CHECK ((group_member_cap_min <= group_member_cap_max))
+constraint jazebe_platform_policy jazebe_platform_policy_display_name_change_limit_per_mont_check CHECK ((display_name_change_limit_per_month >= 0))
+constraint jazebe_platform_policy jazebe_platform_policy_group_admin_cap_max_check CHECK ((group_admin_cap_max >= 1))
+constraint jazebe_platform_policy jazebe_platform_policy_group_max_count_max_check CHECK ((group_max_count_max >= 1))
+constraint jazebe_platform_policy jazebe_platform_policy_group_member_cap_max_check CHECK ((group_member_cap_max >= 1))
+constraint jazebe_platform_policy jazebe_platform_policy_group_member_cap_min_check CHECK ((group_member_cap_min >= 1))
+constraint jazebe_platform_policy jazebe_platform_policy_key_check CHECK (((key)::text = 'default'::text))
+constraint jazebe_platform_policy jazebe_platform_policy_key_key UNIQUE (key)
+constraint jazebe_platform_policy jazebe_platform_policy_lottery_fee_percent_max_check CHECK (((lottery_fee_percent_max >= (0)::numeric) AND (lottery_fee_percent_max <= (100)::numeric)))
+constraint jazebe_platform_policy jazebe_platform_policy_lottery_fee_percent_min_check CHECK (((lottery_fee_percent_min >= (0)::numeric) AND (lottery_fee_percent_min <= (100)::numeric)))
+constraint jazebe_platform_policy jazebe_platform_policy_mission_reward_point_max_check CHECK ((mission_reward_point_max >= 0))
+constraint jazebe_platform_policy jazebe_platform_policy_mission_reward_point_min_check CHECK ((mission_reward_point_min >= 0))
+constraint jazebe_platform_policy jazebe_platform_policy_mission_reward_ticket_max_check CHECK ((mission_reward_ticket_max >= 0))
+constraint jazebe_platform_policy jazebe_platform_policy_mission_reward_xp_max_check CHECK ((mission_reward_xp_max >= 0))
+constraint jazebe_platform_policy jazebe_platform_policy_otp_length_check CHECK (((otp_length >= 4) AND (otp_length <= 8)))
+constraint jazebe_platform_policy jazebe_platform_policy_otp_max_attempts_check CHECK ((otp_max_attempts >= 1))
+constraint jazebe_platform_policy jazebe_platform_policy_otp_resend_cooldown_seconds_check CHECK ((otp_resend_cooldown_seconds >= 0))
+constraint jazebe_platform_policy jazebe_platform_policy_otp_ttl_seconds_check CHECK ((otp_ttl_seconds >= 30))
+constraint jazebe_platform_policy jazebe_platform_policy_pkey PRIMARY KEY (id)
+constraint jazebe_platform_policy jazebe_platform_policy_rate_limit_per_minute_check CHECK ((rate_limit_per_minute >= 1))
+constraint jazebe_platform_policy jazebe_platform_policy_ticket_price_max_check CHECK ((ticket_price_max >= 0))
+constraint jazebe_platform_policy jazebe_platform_policy_ticket_price_min_check CHECK ((ticket_price_min >= 0))
+constraint jazebe_platform_policy jazebe_platform_policy_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES users(id)
+constraint jazebe_point_transaction jazebe_point_transaction_amount_check CHECK ((amount > 0))
+constraint jazebe_point_transaction jazebe_point_transaction_balance_after_check CHECK ((balance_after >= 0))
+constraint jazebe_point_transaction jazebe_point_transaction_direction_check CHECK (((direction)::text = ANY ((ARRAY['credit'::character varying, 'debit'::character varying])::text[])))
+constraint jazebe_point_transaction jazebe_point_transaction_pkey PRIMARY KEY (id)
+constraint jazebe_point_transaction jazebe_point_transaction_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_point_transaction jazebe_point_transaction_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_point_transaction jazebe_point_transaction_wallet_id_fkey FOREIGN KEY (wallet_id) REFERENCES jazebe_point_wallet(id)
+constraint jazebe_point_transaction jazebe_point_transaction_wallet_id_seq_key UNIQUE (wallet_id, seq)
+constraint jazebe_point_transaction jazebe_point_transaction_wallet_id_source_source_id_key UNIQUE (wallet_id, source, source_id)
+constraint jazebe_point_wallet jazebe_point_wallet_balance_check CHECK ((balance >= 0))
+constraint jazebe_point_wallet jazebe_point_wallet_pkey PRIMARY KEY (id)
+constraint jazebe_point_wallet jazebe_point_wallet_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_point_wallet jazebe_point_wallet_planet_id_user_id_key UNIQUE (planet_id, user_id)
+constraint jazebe_point_wallet jazebe_point_wallet_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_progression_event jazebe_progression_event_attempts_check CHECK ((attempts >= 0))
+constraint jazebe_progression_event jazebe_progression_event_kind_check CHECK (((kind)::text = ANY ((ARRAY['purchase'::character varying, 'group_join'::character varying, 'mission'::character varying, 'game'::character varying])::text[])))
+constraint jazebe_progression_event jazebe_progression_event_kind_source_id_user_id_key UNIQUE (kind, source_id, user_id)
+constraint jazebe_progression_event jazebe_progression_event_pkey PRIMARY KEY (id)
+constraint jazebe_progression_event jazebe_progression_event_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_progression_event jazebe_progression_event_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_referral_completion_job jazebe_referral_completion_job_attempts_check CHECK ((attempts >= 0))
+constraint jazebe_referral_completion_job jazebe_referral_completion_job_inviter_user_id_fkey FOREIGN KEY (inviter_user_id) REFERENCES users(id)
+constraint jazebe_referral_completion_job jazebe_referral_completion_job_mission_id_fkey FOREIGN KEY (mission_id) REFERENCES jazebe_mission(id)
+constraint jazebe_referral_completion_job jazebe_referral_completion_job_pkey PRIMARY KEY (mission_id, inviter_user_id)
+constraint jazebe_referral_completion_job jazebe_referral_completion_job_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_referral_identity jazebe_referral_identity_check CHECK (((referred_by_user_id IS NULL) OR (referred_by_user_id <> user_id)))
+constraint jazebe_referral_identity jazebe_referral_identity_invite_code_key UNIQUE (invite_code)
+constraint jazebe_referral_identity jazebe_referral_identity_pkey PRIMARY KEY (user_id)
+constraint jazebe_referral_identity jazebe_referral_identity_referred_by_user_id_fkey FOREIGN KEY (referred_by_user_id) REFERENCES users(id)
+constraint jazebe_referral_identity jazebe_referral_identity_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_shop_product jazebe_shop_product_pkey PRIMARY KEY (id)
+constraint jazebe_shop_product jazebe_shop_product_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_shop_product jazebe_shop_product_price_points_check CHECK ((price_points > 0))
+constraint jazebe_shop_product jazebe_shop_product_sold_count_check CHECK ((sold_count >= 0))
+constraint jazebe_shop_product jazebe_shop_product_status_check CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'paused'::character varying, 'archived'::character varying, 'suspended'::character varying])::text[])))
+constraint jazebe_shop_product jazebe_shop_product_stock_check CHECK ((stock >= 0))
+constraint jazebe_shop_product jazebe_shop_product_type_check CHECK (((type)::text = ANY ((ARRAY['ticket'::character varying, 'coupon'::character varying, 'digital'::character varying, 'physical'::character varying])::text[])))
+constraint jazebe_shop_purchase_rate jazebe_shop_purchase_rate_count_check CHECK ((count >= 1))
+constraint jazebe_shop_purchase_rate jazebe_shop_purchase_rate_pkey PRIMARY KEY (user_id)
+constraint jazebe_shop_purchase_rate jazebe_shop_purchase_rate_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+constraint jazebe_user_account jazebe_user_account_pkey PRIMARY KEY (user_id)
+constraint jazebe_user_account jazebe_user_account_signup_source_planet_id_fkey FOREIGN KEY (signup_source_planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_user_account jazebe_user_account_state_check CHECK (((state)::text = ANY ((ARRAY['active'::character varying, 'deactivated'::character varying, 'suspended'::character varying])::text[])))
+constraint jazebe_user_account jazebe_user_account_suspended_by_operator_id_fkey FOREIGN KEY (suspended_by_operator_id) REFERENCES users(id)
+constraint jazebe_user_account jazebe_user_account_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_user_planet_stats jazebe_user_planet_stats_level_check CHECK (((level >= 1) AND (level <= 3)))
+constraint jazebe_user_planet_stats jazebe_user_planet_stats_pkey PRIMARY KEY (planet_id, user_id)
+constraint jazebe_user_planet_stats jazebe_user_planet_stats_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_user_planet_stats jazebe_user_planet_stats_total_xp_check CHECK ((total_xp >= 0))
+constraint jazebe_user_planet_stats jazebe_user_planet_stats_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_user_profile jazebe_user_profile_avatar_kind_check CHECK (((avatar_kind)::text = ANY ((ARRAY['preset'::character varying, 'upload'::character varying])::text[])))
+constraint jazebe_user_profile jazebe_user_profile_avatar_media_id_fkey FOREIGN KEY (avatar_media_id) REFERENCES jazebe_media_upload(id)
+constraint jazebe_user_profile jazebe_user_profile_avatar_preset_index_check CHECK (((avatar_preset_index >= 0) AND (avatar_preset_index <= 5)))
+constraint jazebe_user_profile jazebe_user_profile_check CHECK (((((avatar_kind)::text = 'preset'::text) AND (avatar_preset_index IS NOT NULL) AND (avatar_media_id IS NULL)) OR (((avatar_kind)::text = 'upload'::text) AND (avatar_preset_index IS NULL))))
+constraint jazebe_user_profile jazebe_user_profile_display_name_change_count_month_check CHECK ((display_name_change_count_month >= 0))
+constraint jazebe_user_profile jazebe_user_profile_display_name_check CHECK (((char_length((display_name)::text) >= 2) AND (char_length((display_name)::text) <= 20)))
+constraint jazebe_user_profile jazebe_user_profile_pkey PRIMARY KEY (user_id)
+constraint jazebe_user_profile jazebe_user_profile_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_user_report jazebe_user_report_handled_by_admin_id_fkey FOREIGN KEY (handled_by_admin_id) REFERENCES users(id)
+constraint jazebe_user_report jazebe_user_report_pkey PRIMARY KEY (id)
+constraint jazebe_user_report jazebe_user_report_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_user_report jazebe_user_report_reporter_user_id_fkey FOREIGN KEY (reporter_user_id) REFERENCES users(id)
+constraint jazebe_user_report jazebe_user_report_status_check CHECK (((status)::text = ANY ((ARRAY['open'::character varying, 'reviewing'::character varying, 'actioned'::character varying, 'dismissed'::character varying])::text[])))
+constraint jazebe_user_report jazebe_user_report_subject_type_check CHECK (((subject_type)::text = ANY ((ARRAY['message'::character varying, 'group'::character varying, 'profile'::character varying])::text[])))
+constraint jazebe_user_verification jazebe_user_verification_pkey PRIMARY KEY (user_id)
+constraint jazebe_user_verification jazebe_user_verification_status_check CHECK (((status)::text = ANY ((ARRAY['none'::character varying, 'review'::character varying, 'verified'::character varying, 'rejected'::character varying])::text[])))
+constraint jazebe_user_verification jazebe_user_verification_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_xp_record jazebe_xp_record_amount_check CHECK ((amount > 0))
+constraint jazebe_xp_record jazebe_xp_record_pkey PRIMARY KEY (id)
+constraint jazebe_xp_record jazebe_xp_record_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_xp_record jazebe_xp_record_planet_id_user_id_source_source_id_key UNIQUE (planet_id, user_id, source, source_id)
+constraint jazebe_xp_record jazebe_xp_record_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+index jazebe_audit_log idx_jazebe_audit_actor CREATE INDEX idx_jazebe_audit_actor ON public.jazebe_audit_log USING btree (actor_type, actor_id)
+index jazebe_audit_log idx_jazebe_audit_created CREATE INDEX idx_jazebe_audit_created ON public.jazebe_audit_log USING btree (created_at DESC)
+index jazebe_audit_log idx_jazebe_audit_target CREATE INDEX idx_jazebe_audit_target ON public.jazebe_audit_log USING btree (target_type, target_id)
+index jazebe_audit_log jazebe_audit_log_pkey CREATE UNIQUE INDEX jazebe_audit_log_pkey ON public.jazebe_audit_log USING btree (id)
+index jazebe_brand idx_jazebe_brand_owner CREATE INDEX idx_jazebe_brand_owner ON public.jazebe_brand USING btree (owner_id, created_at DESC)
+index jazebe_brand jazebe_brand_pkey CREATE UNIQUE INDEX jazebe_brand_pkey ON public.jazebe_brand USING btree (id)
+index jazebe_brand_admin jazebe_brand_admin_pkey CREATE UNIQUE INDEX jazebe_brand_admin_pkey ON public.jazebe_brand_admin USING btree (brand_id, user_id)
+index jazebe_brand_member idx_jazebe_brand_member_user CREATE INDEX idx_jazebe_brand_member_user ON public.jazebe_brand_member USING btree (user_id, brand_id)
+index jazebe_brand_member jazebe_brand_member_pkey CREATE UNIQUE INDEX jazebe_brand_member_pkey ON public.jazebe_brand_member USING btree (brand_id, user_id)
+index jazebe_coupon_code idx_jazebe_coupon_product_status CREATE INDEX idx_jazebe_coupon_product_status ON public.jazebe_coupon_code USING btree (shop_product_id, status, created_at) WHERE (deleted_at IS NULL)
+index jazebe_coupon_code idx_jazebe_coupon_user CREATE INDEX idx_jazebe_coupon_user ON public.jazebe_coupon_code USING btree (issued_to_user_id, issued_at DESC) WHERE (issued_to_user_id IS NOT NULL)
+index jazebe_coupon_code jazebe_coupon_code_pkey CREATE UNIQUE INDEX jazebe_coupon_code_pkey ON public.jazebe_coupon_code USING btree (id)
+index jazebe_coupon_code uq_jazebe_coupon_code CREATE UNIQUE INDEX uq_jazebe_coupon_code ON public.jazebe_coupon_code USING btree (shop_product_id, code)
+index jazebe_game idx_jazebe_game_planet_status CREATE INDEX idx_jazebe_game_planet_status ON public.jazebe_game USING btree (planet_id, status)
+index jazebe_game jazebe_game_pkey CREATE UNIQUE INDEX jazebe_game_pkey ON public.jazebe_game USING btree (id)
+index jazebe_game jazebe_game_planet_id_template_id_key CREATE UNIQUE INDEX jazebe_game_planet_id_template_id_key ON public.jazebe_game USING btree (planet_id, template_id)
+index jazebe_game_quota jazebe_game_quota_pkey CREATE UNIQUE INDEX jazebe_game_quota_pkey ON public.jazebe_game_quota USING btree (id)
+index jazebe_game_quota uq_jazebe_game_quota_group CREATE UNIQUE INDEX uq_jazebe_game_quota_group ON public.jazebe_game_quota USING btree (game_id, group_id, period_key) WHERE ((scope)::text = 'group'::text)
+index jazebe_game_quota uq_jazebe_game_quota_user CREATE UNIQUE INDEX uq_jazebe_game_quota_user ON public.jazebe_game_quota USING btree (game_id, user_id, period_key) WHERE ((scope)::text = 'user'::text)
+index jazebe_game_session idx_jazebe_game_session_game_user CREATE INDEX idx_jazebe_game_session_game_user ON public.jazebe_game_session USING btree (game_id, user_id, started_at DESC)
+index jazebe_game_session idx_jazebe_game_session_planet_user CREATE INDEX idx_jazebe_game_session_planet_user ON public.jazebe_game_session USING btree (planet_id, user_id, status)
+index jazebe_game_session jazebe_game_session_pkey CREATE UNIQUE INDEX jazebe_game_session_pkey ON public.jazebe_game_session USING btree (id)
+index jazebe_game_session uq_jazebe_game_session_open CREATE UNIQUE INDEX uq_jazebe_game_session_open ON public.jazebe_game_session USING btree (game_id, user_id) WHERE ((status)::text = 'open'::text)
+index jazebe_game_template jazebe_game_template_key_key CREATE UNIQUE INDEX jazebe_game_template_key_key ON public.jazebe_game_template USING btree (key)
+index jazebe_game_template jazebe_game_template_pkey CREATE UNIQUE INDEX jazebe_game_template_pkey ON public.jazebe_game_template USING btree (id)
+index jazebe_group idx_jazebe_group_planet_status_members CREATE INDEX idx_jazebe_group_planet_status_members ON public.jazebe_group USING btree (planet_id, status, member_count DESC)
+index jazebe_group jazebe_group_pkey CREATE UNIQUE INDEX jazebe_group_pkey ON public.jazebe_group USING btree (id)
+index jazebe_group uq_jazebe_group_planet_name CREATE UNIQUE INDEX uq_jazebe_group_planet_name ON public.jazebe_group USING btree (planet_id, lower((name)::text))
+index jazebe_group_activity idx_jazebe_group_activity_group_created CREATE INDEX idx_jazebe_group_activity_group_created ON public.jazebe_group_activity USING btree (group_id, created_at DESC)
+index jazebe_group_activity jazebe_group_activity_pkey CREATE UNIQUE INDEX jazebe_group_activity_pkey ON public.jazebe_group_activity USING btree (id)
+index jazebe_group_invite idx_jazebe_group_invite_group CREATE INDEX idx_jazebe_group_invite_group ON public.jazebe_group_invite USING btree (group_id)
+index jazebe_group_invite jazebe_group_invite_pkey CREATE UNIQUE INDEX jazebe_group_invite_pkey ON public.jazebe_group_invite USING btree (id)
+index jazebe_group_invite jazebe_group_invite_token_hash_key CREATE UNIQUE INDEX jazebe_group_invite_token_hash_key ON public.jazebe_group_invite USING btree (token_hash)
+index jazebe_group_join_request idx_jazebe_group_request_group CREATE INDEX idx_jazebe_group_request_group ON public.jazebe_group_join_request USING btree (group_id, status)
+index jazebe_group_join_request jazebe_group_join_request_pkey CREATE UNIQUE INDEX jazebe_group_join_request_pkey ON public.jazebe_group_join_request USING btree (id)
+index jazebe_group_join_request uq_jazebe_group_request_pending CREATE UNIQUE INDEX uq_jazebe_group_request_pending ON public.jazebe_group_join_request USING btree (planet_id, user_id) WHERE ((status)::text = 'pending'::text)
+index jazebe_group_leadership_offer idx_jazebe_group_leadership_recipient CREATE INDEX idx_jazebe_group_leadership_recipient ON public.jazebe_group_leadership_offer USING btree (to_user_id, status)
+index jazebe_group_leadership_offer jazebe_group_leadership_offer_pkey CREATE UNIQUE INDEX jazebe_group_leadership_offer_pkey ON public.jazebe_group_leadership_offer USING btree (id)
+index jazebe_group_leadership_offer uq_jazebe_group_leadership_pending CREATE UNIQUE INDEX uq_jazebe_group_leadership_pending ON public.jazebe_group_leadership_offer USING btree (group_id) WHERE ((status)::text = 'pending'::text)
+index jazebe_group_membership idx_jazebe_group_member_group CREATE INDEX idx_jazebe_group_member_group ON public.jazebe_group_membership USING btree (group_id, status, role)
+index jazebe_group_membership idx_jazebe_group_member_user CREATE INDEX idx_jazebe_group_member_user ON public.jazebe_group_membership USING btree (user_id, status)
+index jazebe_group_membership jazebe_group_membership_pkey CREATE UNIQUE INDEX jazebe_group_membership_pkey ON public.jazebe_group_membership USING btree (id)
+index jazebe_group_membership uq_jazebe_group_active_user CREATE UNIQUE INDEX uq_jazebe_group_active_user ON public.jazebe_group_membership USING btree (planet_id, user_id) WHERE ((status)::text = 'active'::text)
+index jazebe_group_membership uq_jazebe_group_creator CREATE UNIQUE INDEX uq_jazebe_group_creator ON public.jazebe_group_membership USING btree (group_id) WHERE (((role)::text = 'creator'::text) AND ((status)::text = 'active'::text))
+index jazebe_group_message idx_jazebe_group_message_page CREATE INDEX idx_jazebe_group_message_page ON public.jazebe_group_message USING btree (group_id, seq DESC)
+index jazebe_group_message idx_jazebe_group_message_rate CREATE INDEX idx_jazebe_group_message_rate ON public.jazebe_group_message USING btree (group_id, sender_user_id, created_at DESC) WHERE ((kind)::text = 'text'::text)
+index jazebe_group_message jazebe_group_message_pkey CREATE UNIQUE INDEX jazebe_group_message_pkey ON public.jazebe_group_message USING btree (id)
+index jazebe_group_message jazebe_group_message_seq_key CREATE UNIQUE INDEX jazebe_group_message_seq_key ON public.jazebe_group_message USING btree (seq)
+index jazebe_group_message_read jazebe_group_message_read_pkey CREATE UNIQUE INDEX jazebe_group_message_read_pkey ON public.jazebe_group_message_read USING btree (group_id, user_id)
+index jazebe_group_mission_contribution idx_jazebe_group_mission_contribution_user CREATE INDEX idx_jazebe_group_mission_contribution_user ON public.jazebe_group_mission_contribution USING btree (user_id, progress_id)
+index jazebe_group_mission_contribution jazebe_group_mission_contribution_pkey CREATE UNIQUE INDEX jazebe_group_mission_contribution_pkey ON public.jazebe_group_mission_contribution USING btree (progress_id, user_id)
+index jazebe_group_mission_progress idx_jazebe_group_mission_progress_group CREATE INDEX idx_jazebe_group_mission_progress_group ON public.jazebe_group_mission_progress USING btree (group_id, status)
+index jazebe_group_mission_progress jazebe_group_mission_progress_mission_id_group_id_key CREATE UNIQUE INDEX jazebe_group_mission_progress_mission_id_group_id_key ON public.jazebe_group_mission_progress USING btree (mission_id, group_id)
+index jazebe_group_mission_progress jazebe_group_mission_progress_pkey CREATE UNIQUE INDEX jazebe_group_mission_progress_pkey ON public.jazebe_group_mission_progress USING btree (id)
+index jazebe_lottery idx_jazebe_lottery_cancelled_stranded CREATE INDEX idx_jazebe_lottery_cancelled_stranded ON public.jazebe_lottery USING btree (planet_id, status, cancelled_at) WHERE ((status)::text = 'cancelled'::text)
+index jazebe_lottery idx_jazebe_lottery_draw CREATE INDEX idx_jazebe_lottery_draw ON public.jazebe_lottery USING btree (status, draw_at)
+index jazebe_lottery idx_jazebe_lottery_planet_status CREATE INDEX idx_jazebe_lottery_planet_status ON public.jazebe_lottery USING btree (planet_id, status)
+index jazebe_lottery jazebe_lottery_pkey CREATE UNIQUE INDEX jazebe_lottery_pkey ON public.jazebe_lottery USING btree (id)
+index jazebe_lottery jazebe_lottery_planet_id_unique CREATE UNIQUE INDEX jazebe_lottery_planet_id_unique ON public.jazebe_lottery USING btree (planet_id, id)
+index jazebe_lottery_group_stat jazebe_lottery_group_stat_pkey CREATE UNIQUE INDEX jazebe_lottery_group_stat_pkey ON public.jazebe_lottery_group_stat USING btree (lottery_id, group_id)
+index jazebe_lottery_prize jazebe_lottery_prize_pkey CREATE UNIQUE INDEX jazebe_lottery_prize_pkey ON public.jazebe_lottery_prize USING btree (id)
+index jazebe_lottery_prize jazebe_lottery_prize_slot CREATE UNIQUE INDEX jazebe_lottery_prize_slot ON public.jazebe_lottery_prize USING btree (lottery_id, priority)
+index jazebe_lottery_ticket idx_jazebe_ticket_lottery_creator CREATE INDEX idx_jazebe_ticket_lottery_creator ON public.jazebe_lottery_ticket USING btree (lottery_id, creator_user_id) WHERE ((status)::text = 'active'::text)
+index jazebe_lottery_ticket idx_jazebe_ticket_lottery_group CREATE INDEX idx_jazebe_ticket_lottery_group ON public.jazebe_lottery_ticket USING btree (lottery_id, group_id)
+index jazebe_lottery_ticket idx_jazebe_ticket_source CREATE INDEX idx_jazebe_ticket_source ON public.jazebe_lottery_ticket USING btree (source, source_id)
+index jazebe_lottery_ticket jazebe_lottery_ticket_pkey CREATE UNIQUE INDEX jazebe_lottery_ticket_pkey ON public.jazebe_lottery_ticket USING btree (id)
+index jazebe_lottery_ticket jazebe_lottery_ticket_serial_key CREATE UNIQUE INDEX jazebe_lottery_ticket_serial_key ON public.jazebe_lottery_ticket USING btree (serial)
+index jazebe_lottery_winner idx_jazebe_lottery_winner_group CREATE INDEX idx_jazebe_lottery_winner_group ON public.jazebe_lottery_winner USING btree (group_id)
+index jazebe_lottery_winner idx_jazebe_lottery_winner_lottery CREATE INDEX idx_jazebe_lottery_winner_lottery ON public.jazebe_lottery_winner USING btree (lottery_id)
+index jazebe_lottery_winner jazebe_lottery_winner_pkey CREATE UNIQUE INDEX jazebe_lottery_winner_pkey ON public.jazebe_lottery_winner USING btree (id)
+index jazebe_lottery_winner jazebe_lottery_winner_prize_id_key CREATE UNIQUE INDEX jazebe_lottery_winner_prize_id_key ON public.jazebe_lottery_winner USING btree (prize_id)
+index jazebe_lottery_winner_share idx_jazebe_lottery_share_user CREATE INDEX idx_jazebe_lottery_share_user ON public.jazebe_lottery_winner_share USING btree (user_id, payout_status)
+index jazebe_lottery_winner_share jazebe_lottery_winner_share_pkey CREATE UNIQUE INDEX jazebe_lottery_winner_share_pkey ON public.jazebe_lottery_winner_share USING btree (id)
+index jazebe_lottery_winner_share jazebe_lottery_winner_share_winner_id_user_id_key CREATE UNIQUE INDEX jazebe_lottery_winner_share_winner_id_user_id_key ON public.jazebe_lottery_winner_share USING btree (winner_id, user_id)
+index jazebe_medal_acquisition idx_jazebe_medal_acquisition_user CREATE INDEX idx_jazebe_medal_acquisition_user ON public.jazebe_medal_acquisition USING btree (planet_id, user_id, acquired_at DESC)
+index jazebe_medal_acquisition jazebe_medal_acquisition_pkey CREATE UNIQUE INDEX jazebe_medal_acquisition_pkey ON public.jazebe_medal_acquisition USING btree (id)
+index jazebe_medal_acquisition jazebe_medal_acquisition_planet_medal_id_user_id_key CREATE UNIQUE INDEX jazebe_medal_acquisition_planet_medal_id_user_id_key ON public.jazebe_medal_acquisition USING btree (planet_medal_id, user_id)
+index jazebe_medal_backfill idx_jazebe_medal_backfill_pending CREATE INDEX idx_jazebe_medal_backfill_pending ON public.jazebe_medal_backfill USING btree (next_attempt_at, planet_medal_id) WHERE (completed_at IS NULL)
+index jazebe_medal_backfill jazebe_medal_backfill_pkey CREATE UNIQUE INDEX jazebe_medal_backfill_pkey ON public.jazebe_medal_backfill USING btree (planet_medal_id)
+index jazebe_medal_library jazebe_medal_library_key_key CREATE UNIQUE INDEX jazebe_medal_library_key_key ON public.jazebe_medal_library USING btree (key)
+index jazebe_medal_library jazebe_medal_library_pkey CREATE UNIQUE INDEX jazebe_medal_library_pkey ON public.jazebe_medal_library USING btree (id)
+index jazebe_media_chunk jazebe_media_chunk_pkey CREATE UNIQUE INDEX jazebe_media_chunk_pkey ON public.jazebe_media_chunk USING btree (upload_id, seq)
+index jazebe_media_upload idx_jazebe_media_expiry CREATE INDEX idx_jazebe_media_expiry ON public.jazebe_media_upload USING btree (expires_at) WHERE ((status)::text = 'open'::text)
+index jazebe_media_upload idx_jazebe_media_owner CREATE INDEX idx_jazebe_media_owner ON public.jazebe_media_upload USING btree (planet_id, owner_user_id, purpose, status)
+index jazebe_media_upload jazebe_media_upload_pkey CREATE UNIQUE INDEX jazebe_media_upload_pkey ON public.jazebe_media_upload USING btree (id)
+index jazebe_mission idx_jazebe_mission_planet_sort CREATE INDEX idx_jazebe_mission_planet_sort ON public.jazebe_mission USING btree (planet_id, sort_order)
+index jazebe_mission idx_jazebe_mission_planet_status CREATE INDEX idx_jazebe_mission_planet_status ON public.jazebe_mission USING btree (planet_id, status)
+index jazebe_mission jazebe_mission_pkey CREATE UNIQUE INDEX jazebe_mission_pkey ON public.jazebe_mission USING btree (id)
+index jazebe_mission_code idx_jazebe_code_planet_code CREATE INDEX idx_jazebe_code_planet_code ON public.jazebe_mission_code USING btree (planet_id, code)
+index jazebe_mission_code jazebe_mission_code_mission_id_code_key CREATE UNIQUE INDEX jazebe_mission_code_mission_id_code_key ON public.jazebe_mission_code USING btree (mission_id, code)
+index jazebe_mission_code jazebe_mission_code_pkey CREATE UNIQUE INDEX jazebe_mission_code_pkey ON public.jazebe_mission_code USING btree (id)
+index jazebe_mission_completion idx_jazebe_completion_user_history CREATE INDEX idx_jazebe_completion_user_history ON public.jazebe_mission_completion USING btree (planet_id, user_id, submitted_at DESC)
+index jazebe_mission_completion idx_jazebe_mission_completion_group CREATE INDEX idx_jazebe_mission_completion_group ON public.jazebe_mission_completion USING btree (group_id, mission_id, status) WHERE (group_id IS NOT NULL)
+index jazebe_mission_completion jazebe_mission_completion_pkey CREATE UNIQUE INDEX jazebe_mission_completion_pkey ON public.jazebe_mission_completion USING btree (id)
+index jazebe_mission_completion uq_jazebe_completion_approved CREATE UNIQUE INDEX uq_jazebe_completion_approved ON public.jazebe_mission_completion USING btree (mission_id, user_id, COALESCE(period_key, ''::character varying)) WHERE (((status)::text = 'approved'::text) AND (deleted_at IS NULL))
+index jazebe_mission_completion uq_jazebe_completion_pending CREATE UNIQUE INDEX uq_jazebe_completion_pending ON public.jazebe_mission_completion USING btree (mission_id, user_id) WHERE (((status)::text = 'pending_review'::text) AND (deleted_at IS NULL))
+index jazebe_mission_completion uq_jazebe_group_mission_completion CREATE UNIQUE INDEX uq_jazebe_group_mission_completion ON public.jazebe_mission_completion USING btree (mission_id, group_id) WHERE ((user_id IS NULL) AND (group_id IS NOT NULL) AND ((status)::text = 'approved'::text) AND (deleted_at IS NULL))
+index jazebe_mission_invite idx_jazebe_mission_invite_history CREATE INDEX idx_jazebe_mission_invite_history ON public.jazebe_mission_invite USING btree (planet_id, inviter_user_id, status, qualified_at)
+index jazebe_mission_invite idx_jazebe_mission_invite_qualification CREATE INDEX idx_jazebe_mission_invite_qualification ON public.jazebe_mission_invite USING btree (planet_id, invitee_user_id, status) WHERE ((status)::text = 'registered'::text)
+index jazebe_mission_invite jazebe_mission_invite_pkey CREATE UNIQUE INDEX jazebe_mission_invite_pkey ON public.jazebe_mission_invite USING btree (id)
+index jazebe_mission_invite jazebe_mission_invite_token_key CREATE UNIQUE INDEX jazebe_mission_invite_token_key ON public.jazebe_mission_invite USING btree (token)
+index jazebe_mission_invite uq_jazebe_mission_invite_attribution CREATE UNIQUE INDEX uq_jazebe_mission_invite_attribution ON public.jazebe_mission_invite USING btree (inviter_user_id, invitee_user_id, COALESCE(mission_id, '00000000-0000-0000-0000-000000000000'::uuid)) WHERE (invitee_user_id IS NOT NULL)
+index jazebe_mission_invite uq_jazebe_mission_invite_unclaimed CREATE UNIQUE INDEX uq_jazebe_mission_invite_unclaimed ON public.jazebe_mission_invite USING btree (mission_id, inviter_user_id) WHERE ((invitee_user_id IS NULL) AND (mission_id IS NOT NULL))
+index jazebe_mission_media_start jazebe_mission_media_start_pkey CREATE UNIQUE INDEX jazebe_mission_media_start_pkey ON public.jazebe_mission_media_start USING btree (mission_id, user_id, period_key)
+index jazebe_order idx_jazebe_order_product CREATE INDEX idx_jazebe_order_product ON public.jazebe_order USING btree (shop_product_id)
+index jazebe_order idx_jazebe_order_user_history CREATE INDEX idx_jazebe_order_user_history ON public.jazebe_order USING btree (planet_id, user_id, purchased_at DESC)
+index jazebe_order jazebe_order_pkey CREATE UNIQUE INDEX jazebe_order_pkey ON public.jazebe_order USING btree (id)
+index jazebe_planet idx_jazebe_planet_status_created CREATE INDEX idx_jazebe_planet_status_created ON public.jazebe_planet USING btree (status, created_at DESC)
+index jazebe_planet jazebe_planet_brand_name CREATE UNIQUE INDEX jazebe_planet_brand_name ON public.jazebe_planet USING btree (brand_id, name)
+index jazebe_planet jazebe_planet_pkey CREATE UNIQUE INDEX jazebe_planet_pkey ON public.jazebe_planet USING btree (id)
+index jazebe_planet uq_jazebe_planet_slug CREATE UNIQUE INDEX uq_jazebe_planet_slug ON public.jazebe_planet USING btree (slug) WHERE (slug IS NOT NULL)
+index jazebe_planet_category jazebe_planet_category_pkey CREATE UNIQUE INDEX jazebe_planet_category_pkey ON public.jazebe_planet_category USING btree (id)
+index jazebe_planet_category uq_jazebe_planet_category_key CREATE UNIQUE INDEX uq_jazebe_planet_category_key ON public.jazebe_planet_category USING btree (key)
+index jazebe_planet_medal idx_jazebe_planet_medal_active CREATE INDEX idx_jazebe_planet_medal_active ON public.jazebe_planet_medal USING btree (planet_id) WHERE ((status)::text = 'active'::text)
+index jazebe_planet_medal idx_jazebe_planet_medal_library CREATE INDEX idx_jazebe_planet_medal_library ON public.jazebe_planet_medal USING btree (medal_library_id)
+index jazebe_planet_medal jazebe_planet_medal_id_planet_id_key CREATE UNIQUE INDEX jazebe_planet_medal_id_planet_id_key ON public.jazebe_planet_medal USING btree (id, planet_id)
+index jazebe_planet_medal jazebe_planet_medal_pkey CREATE UNIQUE INDEX jazebe_planet_medal_pkey ON public.jazebe_planet_medal USING btree (id)
+index jazebe_planet_medal jazebe_planet_medal_planet_id_medal_library_id_key CREATE UNIQUE INDEX jazebe_planet_medal_planet_id_medal_library_id_key ON public.jazebe_planet_medal USING btree (planet_id, medal_library_id)
+index jazebe_planet_membership idx_jazebe_membership_user_activity CREATE INDEX idx_jazebe_membership_user_activity ON public.jazebe_planet_membership USING btree (user_id, last_activity_at DESC NULLS LAST)
+index jazebe_planet_membership idx_jazebe_planet_membership_user CREATE INDEX idx_jazebe_planet_membership_user ON public.jazebe_planet_membership USING btree (user_id, joined_at DESC)
+index jazebe_planet_membership jazebe_planet_membership_pkey CREATE UNIQUE INDEX jazebe_planet_membership_pkey ON public.jazebe_planet_membership USING btree (planet_id, user_id)
+index jazebe_planet_settings jazebe_planet_settings_pkey CREATE UNIQUE INDEX jazebe_planet_settings_pkey ON public.jazebe_planet_settings USING btree (planet_id)
+index jazebe_platform_policy jazebe_platform_policy_key_key CREATE UNIQUE INDEX jazebe_platform_policy_key_key ON public.jazebe_platform_policy USING btree (key)
+index jazebe_platform_policy jazebe_platform_policy_pkey CREATE UNIQUE INDEX jazebe_platform_policy_pkey ON public.jazebe_platform_policy USING btree (id)
+index jazebe_point_transaction idx_jazebe_point_transaction_user_seq CREATE INDEX idx_jazebe_point_transaction_user_seq ON public.jazebe_point_transaction USING btree (planet_id, user_id, seq DESC)
+index jazebe_point_transaction jazebe_point_transaction_pkey CREATE UNIQUE INDEX jazebe_point_transaction_pkey ON public.jazebe_point_transaction USING btree (id)
+index jazebe_point_transaction jazebe_point_transaction_wallet_id_seq_key CREATE UNIQUE INDEX jazebe_point_transaction_wallet_id_seq_key ON public.jazebe_point_transaction USING btree (wallet_id, seq)
+index jazebe_point_transaction jazebe_point_transaction_wallet_id_source_source_id_key CREATE UNIQUE INDEX jazebe_point_transaction_wallet_id_source_source_id_key ON public.jazebe_point_transaction USING btree (wallet_id, source, source_id)
+index jazebe_point_wallet jazebe_point_wallet_pkey CREATE UNIQUE INDEX jazebe_point_wallet_pkey ON public.jazebe_point_wallet USING btree (id)
+index jazebe_point_wallet jazebe_point_wallet_planet_id_user_id_key CREATE UNIQUE INDEX jazebe_point_wallet_planet_id_user_id_key ON public.jazebe_point_wallet USING btree (planet_id, user_id)
+index jazebe_progression_event idx_jazebe_progression_pending CREATE INDEX idx_jazebe_progression_pending ON public.jazebe_progression_event USING btree (created_at, id) WHERE (processed_at IS NULL)
+index jazebe_progression_event jazebe_progression_event_kind_source_id_user_id_key CREATE UNIQUE INDEX jazebe_progression_event_kind_source_id_user_id_key ON public.jazebe_progression_event USING btree (kind, source_id, user_id)
+index jazebe_progression_event jazebe_progression_event_pkey CREATE UNIQUE INDEX jazebe_progression_event_pkey ON public.jazebe_progression_event USING btree (id)
+index jazebe_referral_completion_job idx_jazebe_referral_completion_pending CREATE INDEX idx_jazebe_referral_completion_pending ON public.jazebe_referral_completion_job USING btree (next_attempt_at) WHERE pending
+index jazebe_referral_completion_job jazebe_referral_completion_job_pkey CREATE UNIQUE INDEX jazebe_referral_completion_job_pkey ON public.jazebe_referral_completion_job USING btree (mission_id, inviter_user_id)
+index jazebe_referral_identity idx_jazebe_referral_identity_inviter CREATE INDEX idx_jazebe_referral_identity_inviter ON public.jazebe_referral_identity USING btree (referred_by_user_id) WHERE (referred_by_user_id IS NOT NULL)
+index jazebe_referral_identity jazebe_referral_identity_invite_code_key CREATE UNIQUE INDEX jazebe_referral_identity_invite_code_key ON public.jazebe_referral_identity USING btree (invite_code)
+index jazebe_referral_identity jazebe_referral_identity_pkey CREATE UNIQUE INDEX jazebe_referral_identity_pkey ON public.jazebe_referral_identity USING btree (user_id)
+index jazebe_shop_product idx_jazebe_shop_product_planet_status CREATE INDEX idx_jazebe_shop_product_planet_status ON public.jazebe_shop_product USING btree (planet_id, status)
+index jazebe_shop_product jazebe_shop_product_pkey CREATE UNIQUE INDEX jazebe_shop_product_pkey ON public.jazebe_shop_product USING btree (id)
+index jazebe_shop_purchase_rate jazebe_shop_purchase_rate_pkey CREATE UNIQUE INDEX jazebe_shop_purchase_rate_pkey ON public.jazebe_shop_purchase_rate USING btree (user_id)
+index jazebe_user_account idx_jazebe_account_revocation_pending CREATE INDEX idx_jazebe_account_revocation_pending ON public.jazebe_user_account USING btree (user_id) WHERE session_revocation_pending
+index jazebe_user_account idx_jazebe_user_account_state CREATE INDEX idx_jazebe_user_account_state ON public.jazebe_user_account USING btree (state) WHERE ((state)::text <> 'active'::text)
+index jazebe_user_account jazebe_user_account_pkey CREATE UNIQUE INDEX jazebe_user_account_pkey ON public.jazebe_user_account USING btree (user_id)
+index jazebe_user_planet_stats jazebe_user_planet_stats_pkey CREATE UNIQUE INDEX jazebe_user_planet_stats_pkey ON public.jazebe_user_planet_stats USING btree (planet_id, user_id)
+index jazebe_user_profile jazebe_user_profile_pkey CREATE UNIQUE INDEX jazebe_user_profile_pkey ON public.jazebe_user_profile USING btree (user_id)
+index jazebe_user_profile uq_jazebe_user_profile_name CREATE UNIQUE INDEX uq_jazebe_user_profile_name ON public.jazebe_user_profile USING btree (lower((display_name)::text))
+index jazebe_user_report idx_jazebe_user_report_planet_queue CREATE INDEX idx_jazebe_user_report_planet_queue ON public.jazebe_user_report USING btree (planet_id, status, created_at DESC, id DESC)
+index jazebe_user_report idx_jazebe_user_report_queue CREATE INDEX idx_jazebe_user_report_queue ON public.jazebe_user_report USING btree (status, created_at DESC, id DESC)
+index jazebe_user_report idx_jazebe_user_report_subject CREATE INDEX idx_jazebe_user_report_subject ON public.jazebe_user_report USING btree (subject_type, subject_id, status)
+index jazebe_user_report jazebe_user_report_pkey CREATE UNIQUE INDEX jazebe_user_report_pkey ON public.jazebe_user_report USING btree (id)
+index jazebe_user_report uq_jazebe_profile_report_open CREATE UNIQUE INDEX uq_jazebe_profile_report_open ON public.jazebe_user_report USING btree (planet_id, reporter_user_id, subject_type, subject_id) WHERE (((status)::text = 'open'::text) AND ((subject_type)::text = 'profile'::text))
+index jazebe_user_report uq_jazebe_user_report_open CREATE UNIQUE INDEX uq_jazebe_user_report_open ON public.jazebe_user_report USING btree (planet_id, reporter_user_id, subject_type, subject_id) WHERE (((status)::text = ANY ((ARRAY['open'::character varying, 'reviewing'::character varying])::text[])) AND ((subject_type)::text = ANY ((ARRAY['message'::character varying, 'group'::character varying])::text[])))
+index jazebe_user_verification jazebe_user_verification_pkey CREATE UNIQUE INDEX jazebe_user_verification_pkey ON public.jazebe_user_verification USING btree (user_id)
+index jazebe_xp_record jazebe_xp_record_pkey CREATE UNIQUE INDEX jazebe_xp_record_pkey ON public.jazebe_xp_record USING btree (id)
+index jazebe_xp_record jazebe_xp_record_planet_id_user_id_source_source_id_key CREATE UNIQUE INDEX jazebe_xp_record_planet_id_user_id_source_source_id_key ON public.jazebe_xp_record USING btree (planet_id, user_id, source, source_id)

@@ -1,6 +1,6 @@
 -- Server-authoritative game rounds, distinct from Nakama login sessions.
 -- +migrate Up
-CREATE TABLE jazebe_game_template (
+CREATE TABLE IF NOT EXISTS jazebe_game_template (
     id UUID PRIMARY KEY,
     key VARCHAR(64) NOT NULL UNIQUE,
     name VARCHAR(128) NOT NULL,
@@ -18,7 +18,7 @@ INSERT INTO jazebe_game_template(id,key,name,engine,icon,default_config)
 VALUES ('aa63ef7d-07af-5200-81b6-d0c34a9760c1','tap','بازی ضربه','tap','gmico-bolt','{"durationSec":10}'),
        ('0b00b262-320a-5ca2-8315-238273f59c4e','box','جعبه شانس','box','gmico-box','{"boxes":3}')
 ON CONFLICT(key) DO NOTHING;
-CREATE TABLE jazebe_game (
+CREATE TABLE IF NOT EXISTS jazebe_game (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     template_id UUID REFERENCES jazebe_game_template(id),
@@ -43,8 +43,8 @@ CREATE TABLE jazebe_game (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE(planet_id,template_id)
 );
-CREATE INDEX idx_jazebe_game_planet_status ON jazebe_game(planet_id,status);
-CREATE TABLE jazebe_game_quota (
+CREATE INDEX IF NOT EXISTS idx_jazebe_game_planet_status ON jazebe_game(planet_id,status);
+CREATE TABLE IF NOT EXISTS jazebe_game_quota (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     game_id UUID NOT NULL REFERENCES jazebe_game(id),
@@ -55,9 +55,9 @@ CREATE TABLE jazebe_game_quota (
     used INTEGER NOT NULL DEFAULT 0 CHECK(used>=0),
     CHECK((scope='user' AND user_id IS NOT NULL AND group_id IS NULL) OR (scope='group' AND group_id IS NOT NULL AND user_id IS NULL))
 );
-CREATE UNIQUE INDEX uq_jazebe_game_quota_user ON jazebe_game_quota(game_id,user_id,period_key) WHERE scope='user';
-CREATE UNIQUE INDEX uq_jazebe_game_quota_group ON jazebe_game_quota(game_id,group_id,period_key) WHERE scope='group';
-CREATE TABLE jazebe_game_session (
+CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_game_quota_user ON jazebe_game_quota(game_id,user_id,period_key) WHERE scope='user';
+CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_game_quota_group ON jazebe_game_quota(game_id,group_id,period_key) WHERE scope='group';
+CREATE TABLE IF NOT EXISTS jazebe_game_session (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     game_id UUID NOT NULL REFERENCES jazebe_game(id),
@@ -75,12 +75,17 @@ CREATE TABLE jazebe_game_session (
     finished_at TIMESTAMPTZ,
     CHECK((status='open' AND finished_at IS NULL) OR (status<>'open' AND finished_at IS NOT NULL))
 );
-CREATE UNIQUE INDEX uq_jazebe_game_session_open ON jazebe_game_session(game_id,user_id) WHERE status='open';
-CREATE INDEX idx_jazebe_game_session_game_user ON jazebe_game_session(game_id,user_id,started_at DESC);
-CREATE INDEX idx_jazebe_game_session_planet_user ON jazebe_game_session(planet_id,user_id,status);
-ALTER TABLE jazebe_progression_event DROP CONSTRAINT jazebe_progression_event_kind_check;
-ALTER TABLE jazebe_progression_event ADD CONSTRAINT jazebe_progression_event_kind_check
+CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_game_session_open ON jazebe_game_session(game_id,user_id) WHERE status='open';
+CREATE INDEX IF NOT EXISTS idx_jazebe_game_session_game_user ON jazebe_game_session(game_id,user_id,started_at DESC);
+CREATE INDEX IF NOT EXISTS idx_jazebe_game_session_planet_user ON jazebe_game_session(planet_id,user_id,status);
+ALTER TABLE jazebe_progression_event DROP CONSTRAINT IF EXISTS jazebe_progression_event_kind_check;
+ALTER TABLE jazebe_progression_event DROP CONSTRAINT IF EXISTS jazebe_progression_event_kind_check, ADD CONSTRAINT jazebe_progression_event_kind_check
     CHECK(kind IN ('purchase','group_join','mission','game'));
 -- +migrate Down
 -- Preserve paid rounds, rewards, and qualification history for manual rollback.
-SELECT 1;
+-- Refused rather than a no-op, which would drop this migration from
+-- migration_info while its schema stays. See docs/ANDRONIX-POSTGRESQL.md
+-- "Rolling back Jazebe migrations" for the backed-up manual procedure.
+-- +migrate StatementBegin
+DO $$ BEGIN RAISE EXCEPTION 'Jazebe migration % retains data and cannot be reverted automatically; restore from backup or use the documented rollback procedure', '20261023150000-jazebe-games'; END $$;
+-- +migrate StatementEnd

@@ -1,6 +1,7 @@
 package migrate
 
 import (
+	"regexp"
 	"strings"
 	"testing"
 
@@ -41,5 +42,58 @@ func TestJazebeMigrationIsEmbedded(t *testing.T) {
 	}
 	if !found["20261024000000-jazebe-catalog-seed.sql"] {
 		t.Fatal("Jazebe planet category and medal library seed migration is missing")
+	}
+}
+
+// Jazebe migrations must survive replay over an existing schema, and their
+// Down sections must refuse instead of silently forgetting a migration whose
+// tables remain (see docs/ANDRONIX-POSTGRESQL.md, "Rolling back Jazebe
+// migrations"). The PostgreSQL replay test proves this against real data.
+var jazebeReversibleDown = map[string]bool{
+	// Drops only a rate-limit counter table that holds no user data.
+	"20261023090000-jazebe-shop-rate.sql": true,
+}
+
+var nonRerunnable = []*regexp.Regexp{
+	regexp.MustCompile(`(?i)\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?`),
+	regexp.MustCompile(`(?i)\bCREATE\s+(?:UNIQUE\s+)?INDEX\s+(?:IF\s+NOT\s+EXISTS\s+)?`),
+	regexp.MustCompile(`(?i)\bADD\s+COLUMN\s+(?:IF\s+NOT\s+EXISTS\s+)?`),
+	regexp.MustCompile(`(?i)\bDROP\s+CONSTRAINT\s+(?:IF\s+EXISTS\s+)?`),
+}
+
+func TestJazebeMigrationsAreRerunnableAndRefuseDown(t *testing.T) {
+	source := &sqlmigrate.EmbedFileSystemMigrationSource{FileSystem: sqlMigrateFS, Root: "sql"}
+	migrations, err := source.FindMigrations()
+	if err != nil {
+		t.Fatal(err)
+	}
+	addConstraint := regexp.MustCompile(`(?i)ALTER\s+TABLE\s+(\w+)\s+((?:DROP\s+CONSTRAINT\s+IF\s+EXISTS\s+(\w+)\s*,\s*)?)ADD\s+CONSTRAINT\s+(\w+)`)
+	checked := 0
+	for _, m := range migrations {
+		if !strings.Contains(m.Id, "jazebe-") {
+			continue
+		}
+		checked++
+		for _, stmt := range m.Up {
+			for _, re := range nonRerunnable {
+				for _, match := range re.FindAllString(stmt, -1) {
+					if !strings.Contains(strings.ToUpper(match), "IF") {
+						t.Errorf("%s: %q is not re-runnable", m.Id, strings.TrimSpace(match))
+					}
+				}
+			}
+			for _, match := range addConstraint.FindAllStringSubmatch(stmt, -1) {
+				if match[3] == "" || match[3] != match[4] {
+					t.Errorf("%s: ADD CONSTRAINT %s must be preceded by DROP CONSTRAINT IF EXISTS of the same name", m.Id, match[4])
+				}
+			}
+		}
+		down := strings.Join(m.Down, "\n")
+		if !jazebeReversibleDown[m.Id] && !strings.Contains(down, "RAISE EXCEPTION") {
+			t.Errorf("%s: Down must refuse (RAISE EXCEPTION) or be listed as reversible", m.Id)
+		}
+	}
+	if checked < 33 {
+		t.Fatalf("checked %d Jazebe migrations, want at least 33", checked)
 	}
 }
