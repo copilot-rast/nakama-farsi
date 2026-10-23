@@ -411,6 +411,10 @@ func groupHistory(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runtime.N
 	if err := requireActiveGroupViewer(ctx, db, ref, user, true); err != nil {
 		return "", err
 	}
+	return groupHistoryRows(ctx, db, ref)
+}
+
+func groupHistoryRows(ctx context.Context, db *sql.DB, ref groupRef) (string, error) {
 	rows, err := db.QueryContext(ctx, `SELECT a.id,a.action,a.actor_type,a.actor_id,a.params,a.created_at,
 		CASE WHEN a.action='group.request.decision' THEN r.user_id::text END
 		FROM jazebe_audit_log a LEFT JOIN jazebe_group_join_request r ON a.action='group.request.decision' AND r.id=a.target_id

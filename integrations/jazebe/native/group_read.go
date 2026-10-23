@@ -44,6 +44,10 @@ func groupMembers(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runtime.N
 	if err := requireActiveGroupViewer(ctx, db, ref, actor, false); err != nil {
 		return "", err
 	}
+	return groupMemberRows(ctx, db, ref)
+}
+
+func groupMemberRows(ctx context.Context, db *sql.DB, ref groupRef) (string, error) {
 	rows, err := db.QueryContext(ctx, `SELECT m.user_id,m.role,m.joined_at,COALESCE(NULLIF(trim(u.display_name),''),'کاربر ناشناس')
 		FROM jazebe_group_membership m JOIN users u ON u.id=m.user_id
 		WHERE m.group_id=$1 AND m.planet_id=$2 AND m.status='active'
@@ -105,6 +109,10 @@ func groupActivity(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runtime.
 	if err := requireActiveGroupViewer(ctx, db, ref, actor, false); err != nil {
 		return "", err
 	}
+	return groupActivityRows(ctx, db, ref)
+}
+
+func groupActivityRows(ctx context.Context, db *sql.DB, ref groupRef) (string, error) {
 	rows, err := db.QueryContext(ctx, `SELECT id,kind,message_key,payload,created_at FROM jazebe_group_activity
 		WHERE group_id=$1 AND planet_id=$2 ORDER BY created_at DESC,id DESC LIMIT 50`, ref.GroupID, ref.PlanetID)
 	if err != nil {

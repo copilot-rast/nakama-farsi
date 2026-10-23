@@ -113,6 +113,7 @@ column jazebe_group.created_at timestamp with time zone not null default now()
 column jazebe_group.creator_transferred_at timestamp with time zone
 column jazebe_group.creator_user_id uuid not null
 column jazebe_group.description character varying(280)
+column jazebe_group.disband_reason character varying(512)
 column jazebe_group.disbanded_at timestamp with time zone
 column jazebe_group.disbanded_by_user_id uuid
 column jazebe_group.icon character varying(32)
@@ -123,6 +124,9 @@ column jazebe_group.mode character varying(8) not null
 column jazebe_group.name character varying(64) not null
 column jazebe_group.planet_id uuid not null
 column jazebe_group.status character varying(12) not null default 'active'::character varying
+column jazebe_group.suspended_at timestamp with time zone
+column jazebe_group.suspended_by_user_id uuid
+column jazebe_group.suspended_reason character varying(512)
 column jazebe_group.updated_at timestamp with time zone not null default now()
 column jazebe_group_activity.actor_user_id uuid
 column jazebe_group_activity.created_at timestamp with time zone not null default now()
@@ -454,6 +458,9 @@ column jazebe_planet_membership.joined_at timestamp with time zone not null defa
 column jazebe_planet_membership.last_activity_at timestamp with time zone
 column jazebe_planet_membership.planet_id uuid not null
 column jazebe_planet_membership.sort_order integer
+column jazebe_planet_membership.suspended_at timestamp with time zone
+column jazebe_planet_membership.suspended_by_user_id uuid
+column jazebe_planet_membership.suspended_reason character varying(512)
 column jazebe_planet_membership.user_id uuid not null
 column jazebe_planet_settings.allowed_group_modes jsonb not null default '["open", "approval"]'::jsonb
 column jazebe_planet_settings.display_name_change_limit_per_month integer not null default 3
@@ -687,6 +694,7 @@ constraint jazebe_group jazebe_group_mode_check CHECK (((mode)::text = ANY ((ARR
 constraint jazebe_group jazebe_group_pkey PRIMARY KEY (id)
 constraint jazebe_group jazebe_group_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
 constraint jazebe_group jazebe_group_status_check CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'suspended'::character varying, 'disbanded'::character varying])::text[])))
+constraint jazebe_group jazebe_group_suspended_by_user_id_fkey FOREIGN KEY (suspended_by_user_id) REFERENCES users(id)
 constraint jazebe_group_activity jazebe_group_activity_actor_user_id_fkey FOREIGN KEY (actor_user_id) REFERENCES users(id)
 constraint jazebe_group_activity jazebe_group_activity_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id)
 constraint jazebe_group_activity jazebe_group_activity_kind_check CHECK (((kind)::text = ANY ((ARRAY['join'::character varying, 'leave'::character varying, 'ticket'::character varying, 'game'::character varying, 'prize'::character varying, 'mission'::character varying, 'role'::character varying])::text[])))
@@ -917,6 +925,7 @@ constraint jazebe_planet_medal jazebe_planet_medal_status_check CHECK (((status)
 constraint jazebe_planet_membership jazebe_membership_join_path_check CHECK (((join_path)::text = ANY ((ARRAY['brand_domain_signup'::character varying, 'join_button'::character varying, 'first_activity'::character varying, 'group_invite_link'::character varying])::text[])))
 constraint jazebe_planet_membership jazebe_planet_membership_pkey PRIMARY KEY (planet_id, user_id)
 constraint jazebe_planet_membership jazebe_planet_membership_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
+constraint jazebe_planet_membership jazebe_planet_membership_suspended_by_user_id_fkey FOREIGN KEY (suspended_by_user_id) REFERENCES users(id)
 constraint jazebe_planet_membership jazebe_planet_membership_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 constraint jazebe_planet_settings jazebe_planet_settings_pkey PRIMARY KEY (planet_id)
 constraint jazebe_planet_settings jazebe_planet_settings_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
@@ -1142,6 +1151,7 @@ index jazebe_planet_medal jazebe_planet_medal_id_planet_id_key CREATE UNIQUE IND
 index jazebe_planet_medal jazebe_planet_medal_pkey CREATE UNIQUE INDEX jazebe_planet_medal_pkey ON public.jazebe_planet_medal USING btree (id)
 index jazebe_planet_medal jazebe_planet_medal_planet_id_medal_library_id_key CREATE UNIQUE INDEX jazebe_planet_medal_planet_id_medal_library_id_key ON public.jazebe_planet_medal USING btree (planet_id, medal_library_id)
 index jazebe_planet_membership idx_jazebe_membership_user_activity CREATE INDEX idx_jazebe_membership_user_activity ON public.jazebe_planet_membership USING btree (user_id, last_activity_at DESC NULLS LAST)
+index jazebe_planet_membership idx_jazebe_planet_membership_suspended CREATE INDEX idx_jazebe_planet_membership_suspended ON public.jazebe_planet_membership USING btree (planet_id, suspended_at DESC) WHERE (NOT is_active)
 index jazebe_planet_membership idx_jazebe_planet_membership_user CREATE INDEX idx_jazebe_planet_membership_user ON public.jazebe_planet_membership USING btree (user_id, joined_at DESC)
 index jazebe_planet_membership jazebe_planet_membership_pkey CREATE UNIQUE INDEX jazebe_planet_membership_pkey ON public.jazebe_planet_membership USING btree (planet_id, user_id)
 index jazebe_planet_settings jazebe_planet_settings_pkey CREATE UNIQUE INDEX jazebe_planet_settings_pkey ON public.jazebe_planet_settings USING btree (planet_id)

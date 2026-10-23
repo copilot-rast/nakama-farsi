@@ -33,6 +33,10 @@ func groupRequestQueue(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runt
 	if role != "creator" && role != "admin" {
 		return "", status.Error(codes.PermissionDenied, "group manager required")
 	}
+	return groupRequestRows(ctx, db, ref)
+}
+
+func groupRequestRows(ctx context.Context, db *sql.DB, ref groupRef) (string, error) {
 	rows, err := db.QueryContext(ctx, `SELECT r.id,r.user_id,coalesce(nullif(trim(u.display_name),''),'کاربر'),r.requested_at
 		FROM jazebe_group_join_request r JOIN users u ON u.id=r.user_id
 		WHERE r.group_id=$1 AND r.planet_id=$2 AND r.status='pending'

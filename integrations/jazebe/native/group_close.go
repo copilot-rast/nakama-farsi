@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -85,31 +86,8 @@ func groupRemoveMember(ctx context.Context, logger runtime.Logger, db *sql.DB, n
 	if err := groupCanRemove(actorRole, targetRole, actor == input.MemberID); err != nil {
 		return "", err
 	}
-	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group_membership SET status='removed',left_at=now()
-		WHERE group_id=$1 AND user_id=$2 AND status='active'`, input.GroupID, input.MemberID); err != nil {
-		return "", status.Error(codes.Internal, "member removal failed")
-	}
-	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group SET member_count=member_count-1,updated_at=now() WHERE id=$1`, input.GroupID); err != nil {
-		return "", status.Error(codes.Internal, "group count failed")
-	}
-	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group_leadership_offer SET status='cancelled',decided_at=now()
-		WHERE group_id=$1 AND status='pending' AND (from_user_id=$2 OR to_user_id=$2)`, input.GroupID, input.MemberID); err != nil {
-		return "", status.Error(codes.Internal, "offer cleanup failed")
-	}
-	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group_invite SET revoked_at=now() WHERE group_id=$1 AND created_by_user_id=$2 AND revoked_at IS NULL`, input.GroupID, input.MemberID); err != nil {
-		return "", status.Error(codes.Internal, "invite cleanup failed")
-	}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload)
-		VALUES($1,$2,$3,'leave',$4,'member.removed',jsonb_build_object('userId',$5::text))`, uuid.Must(uuid.NewV4()).String(), input.PlanetID, input.GroupID, actor, input.MemberID); err != nil {
-		return "", status.Error(codes.Internal, "group activity failed")
-	}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES('group.member.remove','user',$1,'group',$2,$3,jsonb_build_object('userId',$4::text))`, actor, input.GroupID, input.PlanetID, input.MemberID); err != nil {
-		return "", status.Error(codes.Internal, "removal audit failed")
-	}
-	if err = persistJazebeNotification(ctx, tx, input.MemberID, "group-remove:"+uuid.Must(uuid.NewV4()).String(), "از گروه حذف شدی",
-		map[string]any{"category": "group", "actionLink": "/groups", "groupId": input.GroupID, "groupName": name}, time.Now().UTC()); err != nil {
-		return "", status.Error(codes.Internal, "removal notice failed")
+	if err := removeGroupMemberTx(ctx, tx, groupRef{PlanetID: input.PlanetID, GroupID: input.GroupID}, name, actor, "user", input.MemberID, ""); err != nil {
+		return "", err
 	}
 	if err = tx.Commit(); err != nil {
 		return "", status.Error(codes.Internal, "member removal failed")
@@ -153,51 +131,8 @@ func groupDisband(ctx context.Context, logger runtime.Logger, db *sql.DB, nk run
 	if groupStatus == "disbanded" {
 		return "", status.Error(codes.FailedPrecondition, "group already disbanded")
 	}
-	rows, err := tx.QueryContext(ctx, `SELECT user_id FROM jazebe_group_membership WHERE group_id=$1 AND status='active'`, ref.GroupID)
-	if err != nil {
-		return "", status.Error(codes.Internal, "group members unavailable")
-	}
-	members := make([]string, 0)
-	for rows.Next() {
-		var user string
-		if rows.Scan(&user) != nil {
-			rows.Close()
-			return "", status.Error(codes.Internal, "group members unavailable")
-		}
-		members = append(members, user)
-	}
-	if err = rows.Err(); err != nil {
-		rows.Close()
-		return "", status.Error(codes.Internal, "group members unavailable")
-	}
-	rows.Close()
-	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group_membership SET status='left',left_at=now() WHERE group_id=$1 AND status='active'`, ref.GroupID); err != nil {
-		return "", status.Error(codes.Internal, "group disband failed")
-	}
-	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group_join_request SET status='auto_cancelled',decided_at=now() WHERE group_id=$1 AND status='pending'`, ref.GroupID); err != nil {
-		return "", status.Error(codes.Internal, "group request cleanup failed")
-	}
-	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group_leadership_offer SET status='cancelled',decided_at=now() WHERE group_id=$1 AND status='pending'`, ref.GroupID); err != nil {
-		return "", status.Error(codes.Internal, "offer cleanup failed")
-	}
-	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group_invite SET revoked_at=now() WHERE group_id=$1 AND revoked_at IS NULL`, ref.GroupID); err != nil {
-		return "", status.Error(codes.Internal, "invite cleanup failed")
-	}
-	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group SET status='disbanded',member_count=0,disbanded_at=now(),disbanded_by_user_id=$2,updated_at=now() WHERE id=$1`, ref.GroupID, actor); err != nil {
-		return "", status.Error(codes.Internal, "group disband failed")
-	}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES('group.disband','user',$1,'group',$2,$3,jsonb_build_object('members',$4::bigint))`, actor, ref.GroupID, ref.PlanetID, len(members)); err != nil {
-		return "", status.Error(codes.Internal, "disband audit failed")
-	}
-	eventID := uuid.Must(uuid.NewV4()).String()
-	for _, user := range members {
-		if user != actor {
-			if err = persistJazebeNotification(ctx, tx, user, "group-disband:"+eventID+":"+user, "گروه منحل شد",
-				map[string]any{"category": "group", "actionLink": "/groups", "groupId": ref.GroupID, "groupName": name}, time.Now().UTC()); err != nil {
-				return "", status.Error(codes.Internal, "disband notice failed")
-			}
-		}
+	if _, err := disbandGroupTx(ctx, tx, ref, name, actor, "user", ""); err != nil {
+		return "", err
 	}
 	if err = tx.Commit(); err != nil {
 		return "", status.Error(codes.Internal, "group disband failed")
@@ -206,4 +141,101 @@ func groupDisband(ctx context.Context, logger runtime.Logger, db *sql.DB, nk run
 		logger.Warn("Jazebe group stream closure failed: %v", err)
 	}
 	return encode(map[string]any{"id": ref.GroupID, "status": "disbanded", "members": 0})
+}
+
+// disbandGroupTx closes every seat, request, offer and invite of a locked
+// group, marks it disbanded, audits it and tells the members other than the
+// actor. The caller authorizes and commits.
+func disbandGroupTx(ctx context.Context, tx *sql.Tx, ref groupRef, name, actor, actorType, reason string) (int, error) {
+	rows, err := tx.QueryContext(ctx, `SELECT user_id FROM jazebe_group_membership WHERE group_id=$1 AND status='active'`, ref.GroupID)
+	if err != nil {
+		return 0, status.Error(codes.Internal, "group members unavailable")
+	}
+	members := make([]string, 0)
+	for rows.Next() {
+		var user string
+		if rows.Scan(&user) != nil {
+			rows.Close()
+			return 0, status.Error(codes.Internal, "group members unavailable")
+		}
+		members = append(members, user)
+	}
+	if err = rows.Err(); err != nil {
+		rows.Close()
+		return 0, status.Error(codes.Internal, "group members unavailable")
+	}
+	rows.Close()
+	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group_membership SET status='left',left_at=now() WHERE group_id=$1 AND status='active'`, ref.GroupID); err != nil {
+		return 0, status.Error(codes.Internal, "group disband failed")
+	}
+	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group_join_request SET status='auto_cancelled',decided_at=now() WHERE group_id=$1 AND status='pending'`, ref.GroupID); err != nil {
+		return 0, status.Error(codes.Internal, "group request cleanup failed")
+	}
+	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group_leadership_offer SET status='cancelled',decided_at=now() WHERE group_id=$1 AND status='pending'`, ref.GroupID); err != nil {
+		return 0, status.Error(codes.Internal, "offer cleanup failed")
+	}
+	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group_invite SET revoked_at=now() WHERE group_id=$1 AND revoked_at IS NULL`, ref.GroupID); err != nil {
+		return 0, status.Error(codes.Internal, "invite cleanup failed")
+	}
+	if _, err = tx.ExecContext(ctx, `UPDATE jazebe_group SET status='disbanded',member_count=0,disbanded_at=now(),disbanded_by_user_id=$2,
+		disband_reason=NULLIF($3,''),updated_at=now() WHERE id=$1`, ref.GroupID, actor, reason); err != nil {
+		return 0, status.Error(codes.Internal, "group disband failed")
+	}
+	auditParams := map[string]any{"members": len(members)}
+	if reason != "" {
+		auditParams["reason"] = reason
+	}
+	params, _ := json.Marshal(auditParams)
+	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
+		VALUES('group.disband',$4,$1,'group',$2,$3,$5::jsonb)`, actor, ref.GroupID, ref.PlanetID, actorType, string(params)); err != nil {
+		return 0, status.Error(codes.Internal, "disband audit failed")
+	}
+	eventID := uuid.Must(uuid.NewV4()).String()
+	for _, user := range members {
+		if user != actor {
+			if err = persistJazebeNotification(ctx, tx, user, "group-disband:"+eventID+":"+user, "گروه منحل شد",
+				map[string]any{"category": "group", "actionLink": "/groups", "groupId": ref.GroupID, "groupName": name}, time.Now().UTC()); err != nil {
+				return 0, status.Error(codes.Internal, "disband notice failed")
+			}
+		}
+	}
+	return len(members), nil
+}
+
+// removeGroupMemberTx ends a member's seat in a locked group, cancels their
+// leadership offers and invites, and records the removal. The caller checks
+// who may remove whom and commits.
+func removeGroupMemberTx(ctx context.Context, tx *sql.Tx, ref groupRef, name, actor, actorType, member, reason string) error {
+	if _, err := tx.ExecContext(ctx, `UPDATE jazebe_group_membership SET status='removed',left_at=now()
+		WHERE group_id=$1 AND user_id=$2 AND status='active'`, ref.GroupID, member); err != nil {
+		return status.Error(codes.Internal, "member removal failed")
+	}
+	if _, err := tx.ExecContext(ctx, `UPDATE jazebe_group SET member_count=member_count-1,updated_at=now() WHERE id=$1`, ref.GroupID); err != nil {
+		return status.Error(codes.Internal, "group count failed")
+	}
+	if _, err := tx.ExecContext(ctx, `UPDATE jazebe_group_leadership_offer SET status='cancelled',decided_at=now()
+		WHERE group_id=$1 AND status='pending' AND (from_user_id=$2 OR to_user_id=$2)`, ref.GroupID, member); err != nil {
+		return status.Error(codes.Internal, "offer cleanup failed")
+	}
+	if _, err := tx.ExecContext(ctx, `UPDATE jazebe_group_invite SET revoked_at=now() WHERE group_id=$1 AND created_by_user_id=$2 AND revoked_at IS NULL`, ref.GroupID, member); err != nil {
+		return status.Error(codes.Internal, "invite cleanup failed")
+	}
+	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload)
+		VALUES($1,$2,$3,'leave',$4,'member.removed',jsonb_build_object('userId',$5::text))`, uuid.Must(uuid.NewV4()).String(), ref.PlanetID, ref.GroupID, actor, member); err != nil {
+		return status.Error(codes.Internal, "group activity failed")
+	}
+	auditParams := map[string]any{"userId": member}
+	if reason != "" {
+		auditParams["reason"] = reason
+	}
+	params, _ := json.Marshal(auditParams)
+	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
+		VALUES('group.member.remove',$4,$1,'group',$2,$3,$5::jsonb)`, actor, ref.GroupID, ref.PlanetID, actorType, string(params)); err != nil {
+		return status.Error(codes.Internal, "removal audit failed")
+	}
+	if err := persistJazebeNotification(ctx, tx, member, "group-remove:"+uuid.Must(uuid.NewV4()).String(), "از گروه حذف شدی",
+		map[string]any{"category": "group", "actionLink": "/groups", "groupId": ref.GroupID, "groupName": name}, time.Now().UTC()); err != nil {
+		return status.Error(codes.Internal, "removal notice failed")
+	}
+	return nil
 }

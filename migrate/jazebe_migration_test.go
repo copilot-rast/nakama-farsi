@@ -40,6 +40,12 @@ func TestJazebeMigrationIsEmbedded(t *testing.T) {
 	if !found["20261023190000-jazebe-account-restriction.sql"] {
 		t.Fatal("Jazebe account restriction migration is missing")
 	}
+	if !found["20261024060000-jazebe-planet-member-suspension.sql"] {
+		t.Fatal("Jazebe planet member suspension migration is missing")
+	}
+	if !found["20261024050000-jazebe-group-suspension.sql"] {
+		t.Fatal("Jazebe group suspension migration is missing")
+	}
 	if !found["20261024040000-jazebe-active-brand-admin.sql"] {
 		t.Fatal("Jazebe active brand administrator view migration is missing")
 	}
