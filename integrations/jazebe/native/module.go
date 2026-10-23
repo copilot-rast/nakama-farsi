@@ -29,10 +29,44 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if _, _, err := shopRateConfig(); err != nil {
 		return err
 	}
-	for _, entry := range []struct {
-		name string
-		fn   func(context.Context, runtime.Logger, *sql.DB, runtime.NakamaModule, string) (string, error)
-	}{
+	for _, entry := range jazebeRPCEntries() {
+		if err := initializer.RegisterRpc(entry.name, nakamaRPCError(guardJazebeRPC(entry.fn))); err != nil {
+			return err
+		}
+	}
+	if err := registerMediaHTTP(initializer, db); err != nil {
+		return err
+	}
+	if err := registerReferralHTTP(initializer, db); err != nil {
+		return err
+	}
+	if err := startLotteryDrawWorker(ctx, logger, db); err != nil {
+		return err
+	}
+	if err := startProgressionWorker(ctx, logger, db); err != nil {
+		return err
+	}
+	if err := startMedalBackfillWorker(ctx, logger, db); err != nil {
+		return err
+	}
+	if err := startReferralCompletionWorker(ctx, logger, db); err != nil {
+		return err
+	}
+	if err := startAccountRevocationWorker(ctx, logger, db, nk); err != nil {
+		return err
+	}
+	logger.Info("Jazebe native integration RPCs registered")
+	return nil
+}
+
+type jazebeRPCEntry struct {
+	name string
+	fn   jazebeRPC
+}
+
+// jazebeRPCEntries lists every RPC InitModule registers, in registration order.
+func jazebeRPCEntries() []jazebeRPCEntry {
+	return []jazebeRPCEntry{
 		{"jazebe_brand_create", brandCreate},
 		{"jazebe_brand_list", brandList},
 		{"jazebe_profile_bootstrap", profileBootstrap},
@@ -229,34 +263,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		{"jazebe_brand_platform_policy_get", brandPlatformPolicyGet},
 		{"jazebe_planet_join", planetJoin},
 		{"jazebe_planet_memberships", planetMemberships},
-	} {
-		if err := initializer.RegisterRpc(entry.name, nakamaRPCError(guardJazebeRPC(entry.fn))); err != nil {
-			return err
-		}
 	}
-	if err := registerMediaHTTP(initializer, db); err != nil {
-		return err
-	}
-	if err := registerReferralHTTP(initializer, db); err != nil {
-		return err
-	}
-	if err := startLotteryDrawWorker(ctx, logger, db); err != nil {
-		return err
-	}
-	if err := startProgressionWorker(ctx, logger, db); err != nil {
-		return err
-	}
-	if err := startMedalBackfillWorker(ctx, logger, db); err != nil {
-		return err
-	}
-	if err := startReferralCompletionWorker(ctx, logger, db); err != nil {
-		return err
-	}
-	if err := startAccountRevocationWorker(ctx, logger, db, nk); err != nil {
-		return err
-	}
-	logger.Info("Jazebe native integration RPCs registered")
-	return nil
 }
 
 type brand struct {
