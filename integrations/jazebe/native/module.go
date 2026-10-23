@@ -34,6 +34,9 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 			return err
 		}
 	}
+	if err := initializer.RegisterBeforeDeleteAccount(refuseJazebeAccountDeletion); err != nil {
+		return err
+	}
 	if err := registerMediaHTTP(initializer, db); err != nil {
 		return err
 	}
@@ -89,6 +92,7 @@ func jazebeRPCEntries() []jazebeRPCEntry {
 		{"jazebe_operator_user_reactivate", operatorAccountReactivate},
 		{"jazebe_operator_user_revocation_retry", operatorAccountRevocationRetry},
 		{"jazebe_operator_user_constellation", operatorUserConstellation},
+		{"jazebe_operator_user_purge", operatorAccountPurge},
 		{"jazebe_planet_create", planetCreate},
 		{"jazebe_planet_list", planetList},
 		{"jazebe_brand_planets", brandPlanets},

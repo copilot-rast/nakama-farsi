@@ -40,6 +40,9 @@ func TestJazebeMigrationIsEmbedded(t *testing.T) {
 	if !found["20261023190000-jazebe-account-restriction.sql"] {
 		t.Fatal("Jazebe account restriction migration is missing")
 	}
+	if !found["20261024020000-jazebe-account-purge.sql"] {
+		t.Fatal("Jazebe account purge migration is missing")
+	}
 	if !found["20261024010000-jazebe-notification-centre.sql"] {
 		t.Fatal("Jazebe notification centre migration is missing")
 	}

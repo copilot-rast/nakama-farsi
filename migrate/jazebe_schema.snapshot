@@ -548,6 +548,8 @@ column jazebe_user_account.core_disable_time timestamp with time zone
 column jazebe_user_account.created_at timestamp with time zone not null default now()
 column jazebe_user_account.deactivated_at timestamp with time zone
 column jazebe_user_account.last_login_at timestamp with time zone
+column jazebe_user_account.purged_at timestamp with time zone
+column jazebe_user_account.purged_by_operator_id uuid
 column jazebe_user_account.reactivated_at timestamp with time zone
 column jazebe_user_account.session_revocation_pending boolean not null default false
 column jazebe_user_account.signup_source_planet_id uuid
@@ -970,6 +972,7 @@ constraint jazebe_shop_purchase_rate jazebe_shop_purchase_rate_count_check CHECK
 constraint jazebe_shop_purchase_rate jazebe_shop_purchase_rate_pkey PRIMARY KEY (user_id)
 constraint jazebe_shop_purchase_rate jazebe_shop_purchase_rate_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 constraint jazebe_user_account jazebe_user_account_pkey PRIMARY KEY (user_id)
+constraint jazebe_user_account jazebe_user_account_purged_by_operator_id_fkey FOREIGN KEY (purged_by_operator_id) REFERENCES users(id)
 constraint jazebe_user_account jazebe_user_account_signup_source_planet_id_fkey FOREIGN KEY (signup_source_planet_id) REFERENCES jazebe_planet(id)
 constraint jazebe_user_account jazebe_user_account_state_check CHECK (((state)::text = ANY ((ARRAY['active'::character varying, 'deactivated'::character varying, 'suspended'::character varying])::text[])))
 constraint jazebe_user_account jazebe_user_account_suspended_by_operator_id_fkey FOREIGN KEY (suspended_by_operator_id) REFERENCES users(id)
