@@ -326,7 +326,7 @@ func groupSetRole(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runtime.N
 			return "", status.Error(codes.Internal, "leadership offer failed")
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-			VALUES('group.transfer.offer','user',$1,'group',$2,$3,jsonb_build_object('to',$4,'offerId',$5))`, actor, input.GroupID, input.PlanetID, input.MemberID, offerID); err != nil {
+			VALUES('group.transfer.offer','user',$1,'group',$2,$3,jsonb_build_object('to',$4::text,'offerId',$5::text))`, actor, input.GroupID, input.PlanetID, input.MemberID, offerID); err != nil {
 			return "", status.Error(codes.Internal, "offer audit failed")
 		}
 		if err := persistJazebeNotification(ctx, tx, input.MemberID, "group-offer:"+offerID,
@@ -369,11 +369,11 @@ func groupSetRole(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runtime.N
 		notice = "نقش تو در گروه به عضو عادی تغییر کرد"
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES($1,'user',$2,'group',$3,$4,jsonb_build_object('userId',$5))`, action, actor, input.GroupID, input.PlanetID, input.MemberID); err != nil {
+		VALUES($1,'user',$2,'group',$3,$4,jsonb_build_object('userId',$5::text))`, action, actor, input.GroupID, input.PlanetID, input.MemberID); err != nil {
 		return "", status.Error(codes.Internal, "group audit failed")
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload)
-		VALUES($1,$2,$3,'role',$4,$5,jsonb_build_object('userId',$6,'role',$7))`, uuid.Must(uuid.NewV4()).String(), input.PlanetID, input.GroupID, actor, messageKey, input.MemberID, input.Role); err != nil {
+		VALUES($1,$2,$3,'role',$4,$5,jsonb_build_object('userId',$6::text,'role',$7::text))`, uuid.Must(uuid.NewV4()).String(), input.PlanetID, input.GroupID, actor, messageKey, input.MemberID, input.Role); err != nil {
 		return "", status.Error(codes.Internal, "group activity failed")
 	}
 	if err := persistJazebeNotification(ctx, tx, input.MemberID, "group-role:"+uuid.Must(uuid.NewV4()).String(),

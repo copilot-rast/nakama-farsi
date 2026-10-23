@@ -131,7 +131,7 @@ func mediaMissionReview(ctx context.Context, logger runtime.Logger, db *sql.DB, 
 		}
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log (action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES ('mission.review','brand_admin',$1,'mission_completion',$2,$3,jsonb_build_object('decision',$4))`, actor, input.CompletionID, input.PlanetID, input.Decision); err != nil {
+		VALUES ('mission.review','brand_admin',$1,'mission_completion',$2,$3,jsonb_build_object('decision',$4::text))`, actor, input.CompletionID, input.PlanetID, input.Decision); err != nil {
 		return "", status.Error(codes.Internal, "review audit failed")
 	}
 	if err := tx.Commit(); err != nil {

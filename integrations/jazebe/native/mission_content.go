@@ -241,7 +241,7 @@ func contentMissionActivate(ctx context.Context, logger runtime.Logger, db *sql.
 		return "", status.Error(codes.Internal, "content activation failed")
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log (action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES ('mission.status','brand_admin',$1,'mission',$2,$3,jsonb_build_object('from',$4,'to','active'))`, actor, ref.MissionID, ref.PlanetID, m.Status); err != nil {
+		VALUES ('mission.status','brand_admin',$1,'mission',$2,$3,jsonb_build_object('from',$4::text,'to','active'))`, actor, ref.MissionID, ref.PlanetID, m.Status); err != nil {
 		return "", status.Error(codes.Internal, "content activation audit failed")
 	}
 	if err := tx.Commit(); err != nil {

@@ -169,7 +169,7 @@ func lotteryAdminReplay(ctx context.Context, _ runtime.Logger, db *sql.DB, _ run
 	if verdict == "mismatch" {
 		result = "failure"
 	}
-	_, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params,result) VALUES('lottery.replay','operator',$1,'lottery',$2,$3,jsonb_build_object('verdict',$4::text,'ticketDigest',$5::text,'shareMismatches',$6),$7)`, actor, in.LotteryID, planetID, verdict, out.TicketDigest, shareMismatches, result)
+	_, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params,result) VALUES('lottery.replay','operator',$1,'lottery',$2,$3,jsonb_build_object('verdict',$4::text,'ticketDigest',$5::text,'shareMismatches',$6::bigint),$7)`, actor, in.LotteryID, planetID, verdict, out.TicketDigest, shareMismatches, result)
 	if err != nil {
 		return "", status.Error(codes.Internal, "replay audit failed")
 	}

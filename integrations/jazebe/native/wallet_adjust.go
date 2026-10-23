@@ -124,8 +124,8 @@ func walletAdjust(ctx context.Context, logger runtime.Logger, db *sql.DB, _ runt
 	}
 	if movement.Applied {
 		_, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log (action,actor_type,actor_id,target_type,target_id,planet_id,params)
-			VALUES ('wallet.adjust','operator',$1,'wallet',$2,$3,jsonb_build_object('adjustmentId',$4,'transactionId',$5,
-			'userId',$6,'direction',$7,'amount',$8,'balanceAfter',$9,'reason',$10,'reference',$11,'large',$12))`, actor, movement.WalletID, input.PlanetID,
+			VALUES ('wallet.adjust','operator',$1,'wallet',$2,$3,jsonb_build_object('adjustmentId',$4::text,'transactionId',$5::text,
+			'userId',$6::text,'direction',$7::text,'amount',$8::bigint,'balanceAfter',$9::bigint,'reason',$10::text,'reference',$11::text,'large',$12::boolean))`, actor, movement.WalletID, input.PlanetID,
 			sourceID, movement.TransactionID, input.UserID, input.Direction, input.Amount, movement.Balance, input.Reason, input.Reference, large)
 		if err != nil {
 			return "", status.Error(codes.Internal, "wallet adjustment audit failed")

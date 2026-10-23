@@ -210,7 +210,7 @@ func lotteryBrandUpdate(ctx context.Context, logger runtime.Logger, db *sql.DB, 
 			return "", status.Error(codes.Internal, "lottery prize update failed")
 		}
 	}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params) VALUES('lottery.update','brand_admin',$1,'lottery',$2,$3,jsonb_build_object('structural',$4))`, actor, req.LotteryID, req.PlanetID, structural); err != nil {
+	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params) VALUES('lottery.update','brand_admin',$1,'lottery',$2,$3,jsonb_build_object('structural',$4::boolean))`, actor, req.LotteryID, req.PlanetID, structural); err != nil {
 		return "", status.Error(codes.Internal, "lottery audit failed")
 	}
 	if err = tx.Commit(); err != nil {

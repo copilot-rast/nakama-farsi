@@ -101,7 +101,7 @@ func missionSetStatus(ctx context.Context, logger runtime.Logger, db *sql.DB, nk
 		return "", status.Error(codes.Internal, "mission transition failed")
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log (action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES ('mission.status','brand_admin',$1,'mission',$2,$3,jsonb_build_object('from',$4,'to',$5))`, actor, ref.MissionID, ref.PlanetID, current, input.Status); err != nil {
+		VALUES ('mission.status','brand_admin',$1,'mission',$2,$3,jsonb_build_object('from',$4::text,'to',$5::text))`, actor, ref.MissionID, ref.PlanetID, current, input.Status); err != nil {
 		return "", status.Error(codes.Internal, "mission transition audit failed")
 	}
 	if err := tx.Commit(); err != nil {

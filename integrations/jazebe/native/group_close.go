@@ -100,11 +100,11 @@ func groupRemoveMember(ctx context.Context, logger runtime.Logger, db *sql.DB, n
 		return "", status.Error(codes.Internal, "invite cleanup failed")
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload)
-		VALUES($1,$2,$3,'leave',$4,'member.removed',jsonb_build_object('userId',$5))`, uuid.Must(uuid.NewV4()).String(), input.PlanetID, input.GroupID, actor, input.MemberID); err != nil {
+		VALUES($1,$2,$3,'leave',$4,'member.removed',jsonb_build_object('userId',$5::text))`, uuid.Must(uuid.NewV4()).String(), input.PlanetID, input.GroupID, actor, input.MemberID); err != nil {
 		return "", status.Error(codes.Internal, "group activity failed")
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES('group.member.remove','user',$1,'group',$2,$3,jsonb_build_object('userId',$4))`, actor, input.GroupID, input.PlanetID, input.MemberID); err != nil {
+		VALUES('group.member.remove','user',$1,'group',$2,$3,jsonb_build_object('userId',$4::text))`, actor, input.GroupID, input.PlanetID, input.MemberID); err != nil {
 		return "", status.Error(codes.Internal, "removal audit failed")
 	}
 	if err = persistJazebeNotification(ctx, tx, input.MemberID, "group-remove:"+uuid.Must(uuid.NewV4()).String(), "از گروه حذف شدی",
@@ -187,7 +187,7 @@ func groupDisband(ctx context.Context, logger runtime.Logger, db *sql.DB, nk run
 		return "", status.Error(codes.Internal, "group disband failed")
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES('group.disband','user',$1,'group',$2,$3,jsonb_build_object('members',$4))`, actor, ref.GroupID, ref.PlanetID, len(members)); err != nil {
+		VALUES('group.disband','user',$1,'group',$2,$3,jsonb_build_object('members',$4::bigint))`, actor, ref.GroupID, ref.PlanetID, len(members)); err != nil {
 		return "", status.Error(codes.Internal, "disband audit failed")
 	}
 	eventID := uuid.Must(uuid.NewV4()).String()

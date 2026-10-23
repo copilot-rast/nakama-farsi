@@ -87,7 +87,7 @@ func missionAdminTransition(ctx context.Context, logger runtime.Logger, db *sql.
 		return "", status.Error(codes.Internal, "mission moderation failed")
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log (action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES ($1,'operator',$2,'mission',$3,$4,jsonb_build_object('reason',$5,'previousStatus',$6,'title',$7))`,
+		VALUES ($1,'operator',$2,'mission',$3,$4,jsonb_build_object('reason',$5::text,'previousStatus',$6::text,'title',$7::text))`,
 		action, actor, input.MissionID, planetID, input.Reason, current, title); err != nil {
 		return "", status.Error(codes.Internal, "mission moderation audit failed")
 	}

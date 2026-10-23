@@ -215,7 +215,7 @@ func groupChatDismissReport(ctx context.Context, _ runtime.Logger, db *sql.DB, _
 		return "", status.Error(codes.Internal, "report dismissal failed")
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES('user_report.dismiss',$1,$2,'user_report',$3,$4,jsonb_build_object('reason',$5))`, actorType, actor, input.ReportID, planetID, input.Reason); err != nil {
+		VALUES('user_report.dismiss',$1,$2,'user_report',$3,$4,jsonb_build_object('reason',$5::text))`, actorType, actor, input.ReportID, planetID, input.Reason); err != nil {
 		return "", status.Error(codes.Internal, "report audit failed")
 	}
 	if err = tx.Commit(); err != nil {

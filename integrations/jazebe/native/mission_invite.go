@@ -199,7 +199,7 @@ func inviteMissionActivate(ctx context.Context, _ runtime.Logger, db *sql.DB, _ 
 		return "", err
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES('mission.status','brand_admin',$1,'mission',$2,$3,jsonb_build_object('from',$4,'to','active'))`, actor, ref.MissionID, ref.PlanetID, m.Status); err != nil {
+		VALUES('mission.status','brand_admin',$1,'mission',$2,$3,jsonb_build_object('from',$4::text,'to','active'))`, actor, ref.MissionID, ref.PlanetID, m.Status); err != nil {
 		return "", err
 	}
 	if err = tx.Commit(); err != nil {

@@ -155,7 +155,7 @@ func mediaMissionActivate(ctx context.Context, logger runtime.Logger, db *sql.DB
 		return "", status.Error(codes.Internal, "mission activation failed")
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log (action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES ('mission.status','brand_admin',$1,'mission',$2,$3,jsonb_build_object('from',$4,'to','active'))`, actor, ref.MissionID, ref.PlanetID, m.Status); err != nil {
+		VALUES ('mission.status','brand_admin',$1,'mission',$2,$3,jsonb_build_object('from',$4::text,'to','active'))`, actor, ref.MissionID, ref.PlanetID, m.Status); err != nil {
 		return "", status.Error(codes.Internal, "mission activation audit failed")
 	}
 	if err := tx.Commit(); err != nil {
@@ -363,7 +363,7 @@ func paySoloMission(ctx context.Context, tx *sql.Tx, ref missionRef, user, compl
 		if _, err = issueLotteryTickets(ctx, tx, ticketIssue{LotteryID: m.TargetLotteryID.String, PlanetID: ref.PlanetID, GroupID: groupID.String, UserID: user, CreatorType: "member", Source: "solo_mission", SourceID: completionID, Count: m.RewardTickets}, now); err != nil {
 			return err
 		}
-		if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload) VALUES($1,$2,$3,'mission',$4,'mission.completed',jsonb_build_object('missionId',$5::uuid,'tickets',$6))`, uuid.Must(uuid.NewV4()).String(), ref.PlanetID, groupID.String, user, ref.MissionID, m.RewardTickets); err != nil {
+		if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload) VALUES($1,$2,$3,'mission',$4,'mission.completed',jsonb_build_object('missionId',$5::uuid,'tickets',$6::bigint))`, uuid.Must(uuid.NewV4()).String(), ref.PlanetID, groupID.String, user, ref.MissionID, m.RewardTickets); err != nil {
 			return status.Error(codes.Internal, "mission group activity failed")
 		}
 	}

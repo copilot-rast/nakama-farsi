@@ -211,7 +211,7 @@ func runLotteryDraw(ctx context.Context, db *sql.DB, lotteryID, actor, actorType
 				if _, err = tx.ExecContext(ctx, `UPDATE jazebe_lottery_winner_share SET payout_status='paid' WHERE id=$1`, shareID); err != nil {
 					return "", status.Error(codes.Internal, "prize payout status failed")
 				}
-				if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,target_type,target_id,planet_id,params) VALUES('lottery.payout','system','lottery',$1,$2,jsonb_build_object('winnerId',$3::uuid,'shareId',$4::uuid,'userId',$5::uuid,'valueRial',$6::text,'points',$7::text,'rialPerPoint',$8))`, lotteryID, planetID, winnerID, shareID, s.UserID, s.ShareValueRial, points.String(), rate); err != nil {
+				if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,target_type,target_id,planet_id,params) VALUES('lottery.payout','system','lottery',$1,$2,jsonb_build_object('winnerId',$3::uuid,'shareId',$4::uuid,'userId',$5::uuid,'valueRial',$6::text,'points',$7::text,'rialPerPoint',$8::bigint))`, lotteryID, planetID, winnerID, shareID, s.UserID, s.ShareValueRial, points.String(), rate); err != nil {
 					return "", status.Error(codes.Internal, "prize payout audit failed")
 				}
 			}

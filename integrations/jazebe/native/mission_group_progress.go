@@ -107,7 +107,7 @@ func advanceGroupMission(ctx context.Context, tx *sql.Tx, ref missionRef, user, 
 			return err
 		}
 	}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload) VALUES($1,$2,$3,'mission',NULL,'mission.completed',jsonb_build_object('missionId',$4::uuid,'tickets',$5))`, uuid.Must(uuid.NewV4()).String(), ref.PlanetID, groupID, ref.MissionID, tickets); err != nil {
+	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload) VALUES($1,$2,$3,'mission',NULL,'mission.completed',jsonb_build_object('missionId',$4::uuid,'tickets',$5::bigint))`, uuid.Must(uuid.NewV4()).String(), ref.PlanetID, groupID, ref.MissionID, tickets); err != nil {
 		return status.Error(codes.Internal, "group activity failed")
 	}
 	rows, err := tx.QueryContext(ctx, `SELECT user_id FROM jazebe_group_mission_contribution WHERE progress_id=$1 AND value>0`, progressID)

@@ -230,7 +230,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		{"jazebe_planet_join", planetJoin},
 		{"jazebe_planet_memberships", planetMemberships},
 	} {
-		if err := initializer.RegisterRpc(entry.name, guardJazebeRPC(entry.fn)); err != nil {
+		if err := initializer.RegisterRpc(entry.name, nakamaRPCError(guardJazebeRPC(entry.fn))); err != nil {
 			return err
 		}
 	}
@@ -397,7 +397,7 @@ func brandCreate(ctx context.Context, logger runtime.Logger, db *sql.DB, _ runti
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log
 		(action,actor_type,actor_id,target_type,target_id,brand_id,params)
-		VALUES ('brand.create','operator',$1,'brand',$2,$2,jsonb_build_object('ownerUserId',$3,'name',$4))`,
+		VALUES ('brand.create','operator',$1,'brand',$2,$2,jsonb_build_object('ownerUserId',$3::text,'name',$4::text))`,
 		operatorID, result.ID, ownerID, name); err != nil {
 		logger.Error("Jazebe brand audit creation failed: %v", err)
 		return "", status.Error(codes.Internal, "brand creation failed")
@@ -553,7 +553,7 @@ func planetCreate(ctx context.Context, logger runtime.Logger, db *sql.DB, _ runt
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log
 		(action,actor_type,actor_id,target_type,target_id,brand_id,planet_id,params)
-		VALUES ('planet.create','brand_admin',$1,'planet',$2,$3,$2,jsonb_build_object('name',$4,'slug',$5))`,
+		VALUES ('planet.create','brand_admin',$1,'planet',$2,$3,$2,jsonb_build_object('name',$4::text,'slug',$5::text))`,
 		ownerID, result.ID, brandID, name, slug); err != nil {
 		logger.Error("Jazebe planet creation audit failed: %v", err)
 		return "", status.Error(codes.Internal, "planet creation failed")

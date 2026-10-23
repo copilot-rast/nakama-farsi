@@ -197,7 +197,7 @@ func missionInviteJoin(ctx context.Context, logger runtime.Logger, db *sql.DB, u
 			return "", err
 		}
 		if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload)
-			VALUES($1,$2,$3,'join',$4,'member.joined',jsonb_build_object('userId',$4,'name',$5,'source','invite_link','text',$6))`,
+			VALUES($1,$2,$3,'join',$4,'member.joined',jsonb_build_object('userId',$4::uuid,'name',$5::text,'source','invite_link','text',$6::text))`,
 			uuid.Must(uuid.NewV4()).String(), invite.PlanetID, groupID, user, display.String, display.String+" به گروه پیوست"); err != nil {
 			return "", err
 		}

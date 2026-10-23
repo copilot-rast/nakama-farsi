@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"os"
 	"sync"
 	"testing"
 	"time"
@@ -19,15 +18,9 @@ import (
 // Requires a database explicitly designated disposable with all Nakama and
 // Jazebe migrations applied. No existing user is modified by this fixture.
 func TestAccountTransitionPostgres(t *testing.T) {
-	dsn := os.Getenv("JAZEBE_DISPOSABLE_TEST_DB_URL")
-	if dsn == "" {
-		t.Skip("JAZEBE_DISPOSABLE_TEST_DB_URL not set; PostgreSQL NOT_RUN")
-	}
-	db, err := sql.Open("pgx", dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
+	db := openDisposableTestDB(t)
 	defer db.Close()
+	var err error
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	if err = db.PingContext(ctx); err != nil {
@@ -114,15 +107,9 @@ func TestAccountTransitionPostgres(t *testing.T) {
 }
 
 func TestAccountRevocationRetryPostgres(t *testing.T) {
-	dsn := os.Getenv("JAZEBE_DISPOSABLE_TEST_DB_URL")
-	if dsn == "" {
-		t.Skip("JAZEBE_DISPOSABLE_TEST_DB_URL not set; PostgreSQL NOT_RUN")
-	}
-	db, err := sql.Open("pgx", dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
+	db := openDisposableTestDB(t)
 	defer db.Close()
+	var err error
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	actor, target := uuid.Must(uuid.NewV4()).String(), uuid.Must(uuid.NewV4()).String()
@@ -172,15 +159,9 @@ func TestAccountRevocationRetryPostgres(t *testing.T) {
 }
 
 func TestAccountTransitionConcurrentPostgres(t *testing.T) {
-	dsn := os.Getenv("JAZEBE_DISPOSABLE_TEST_DB_URL")
-	if dsn == "" {
-		t.Skip("JAZEBE_DISPOSABLE_TEST_DB_URL not set; PostgreSQL NOT_RUN")
-	}
-	db, err := sql.Open("pgx", dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
+	db := openDisposableTestDB(t)
 	defer db.Close()
+	var err error
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	actor, target := uuid.Must(uuid.NewV4()).String(), uuid.Must(uuid.NewV4()).String()

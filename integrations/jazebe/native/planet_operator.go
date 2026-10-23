@@ -91,7 +91,7 @@ func planetOperatorAction(ctx context.Context, logger runtime.Logger, db *sql.DB
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log
 		(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES ($1,'operator',$2,'planet',$3,$3,jsonb_build_object('from',$4,'to',$5,'reason',$6))`,
+		VALUES ($1,'operator',$2,'planet',$3,$3,jsonb_build_object('from',$4::text,'to',$5::text,'reason',$6::text))`,
 		"planet."+action, operatorID, id, from, to, reason); err != nil {
 		logger.Error("Jazebe planet audit write failed: %v", err)
 		return "", status.Error(codes.Internal, "planet transition failed")

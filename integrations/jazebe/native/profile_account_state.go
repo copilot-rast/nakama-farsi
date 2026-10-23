@@ -135,7 +135,7 @@ func operatorAccountTransition(ctx context.Context, logger runtime.Logger, db *s
 	}
 	var auditID int64
 	if err = tx.QueryRowContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,params)
-		VALUES($1,'operator',$2,'user',$3,jsonb_build_object('reason',$4,'previousState',$5,'newState',$6)) RETURNING id`,
+		VALUES($1,'operator',$2,'user',$3,jsonb_build_object('reason',$4::text,'previousState',$5::text,'newState',$6::text)) RETURNING id`,
 		"account."+action, actor, in.UserID, in.Reason, previous, map[string]string{"suspend": "suspended", "unsuspend": "active", "reactivate": "active"}[action]).Scan(&auditID); err != nil {
 		return "", err
 	}

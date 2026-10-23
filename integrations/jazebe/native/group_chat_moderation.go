@@ -83,7 +83,7 @@ func groupChatDelete(ctx context.Context, logger runtime.Logger, db *sql.DB, nk 
 	}
 	if moderation {
 		if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-			VALUES('group.message.delete','user',$1,'group_message',$2,$3,jsonb_build_object('groupId',$4,'seq',$5,'senderUserId',$6))`, actor, id, ref.PlanetID, ref.GroupID, input.Seq, sender); err != nil {
+			VALUES('group.message.delete','user',$1,'group_message',$2,$3,jsonb_build_object('groupId',$4::text,'seq',$5::bigint,'senderUserId',$6::text))`, actor, id, ref.PlanetID, ref.GroupID, input.Seq, sender); err != nil {
 			return "", status.Error(codes.Internal, "message moderation audit failed")
 		}
 	}
@@ -243,7 +243,7 @@ func groupChatModerate(ctx context.Context, logger runtime.Logger, db *sql.DB, n
 		return "", status.Error(codes.Internal, "report moderation failed")
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES('group.message.delete',$1,$2,'group_message',$3,$4,jsonb_build_object('groupId',$5,'seq',$6,'reason',$7,'senderUserId',$8))`, actorType, actor, id, ref.PlanetID, ref.GroupID, input.Seq, input.Reason, sender); err != nil {
+		VALUES('group.message.delete',$1,$2,'group_message',$3,$4,jsonb_build_object('groupId',$5::text,'seq',$6::bigint,'reason',$7::text,'senderUserId',$8::text))`, actorType, actor, id, ref.PlanetID, ref.GroupID, input.Seq, input.Reason, sender); err != nil {
 		return "", status.Error(codes.Internal, "moderation audit failed")
 	}
 	if err = tx.Commit(); err != nil {

@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
-	"os"
 	"testing"
 	"time"
 
@@ -16,15 +14,9 @@ import (
 )
 
 func TestOperatorConstellationPostgres(t *testing.T) {
-	dsn := os.Getenv("JAZEBE_DISPOSABLE_TEST_DB_URL")
-	if dsn == "" {
-		t.Skip("JAZEBE_DISPOSABLE_TEST_DB_URL not set; PostgreSQL NOT_RUN")
-	}
-	db, err := sql.Open("pgx", dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
+	db := openDisposableTestDB(t)
 	defer db.Close()
+	var err error
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	operator, user, brand, planet, wallet := uuid.Must(uuid.NewV4()).String(), uuid.Must(uuid.NewV4()).String(),

@@ -224,7 +224,7 @@ func operatorReportTransition(ctx context.Context, db *sql.DB, payload string, r
 		return "", err
 	}
 	_, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,brand_id,planet_id,params)
-		VALUES($1,'operator',$2,'user_report',$3,$4,$5,jsonb_build_object('reason',$6,'subjectType',$7,'subjectId',$8))`,
+		VALUES($1,'operator',$2,'user_report',$3,$4,$5,jsonb_build_object('reason',$6::text,'subjectType',$7::text,'subjectId',$8::text))`,
 		action, actor, in.ReportID, brandID, planetID, in.Reason, subjectType, subjectID)
 	if err != nil {
 		return "", err

@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"os"
 	"testing"
 	"time"
 
@@ -21,15 +20,9 @@ import (
 // with the Nakama and Jazebe migrations already applied. All fixture writes
 // stay inside a transaction which rolls back, including failed assertions.
 func TestProfilePostgresConstraints(t *testing.T) {
-	dsn := os.Getenv("JAZEBE_DISPOSABLE_TEST_DB_URL")
-	if dsn == "" {
-		t.Skip("JAZEBE_DISPOSABLE_TEST_DB_URL not set; PostgreSQL NOT_RUN")
-	}
-	db, err := sql.Open("pgx", dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
+	db := openDisposableTestDB(t)
 	defer db.Close()
+	var err error
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	if err = db.PingContext(ctx); err != nil {
@@ -84,15 +77,9 @@ func TestProfilePostgresConstraints(t *testing.T) {
 // Unlike constraint tests, this exercises the registered RPC handlers against
 // committed rows, including the operator's review and audited resolution.
 func TestProfileReportPostgresWorkflow(t *testing.T) {
-	dsn := os.Getenv("JAZEBE_DISPOSABLE_TEST_DB_URL")
-	if dsn == "" {
-		t.Skip("JAZEBE_DISPOSABLE_TEST_DB_URL not set; PostgreSQL NOT_RUN")
-	}
-	db, err := sql.Open("pgx", dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
+	db := openDisposableTestDB(t)
 	defer db.Close()
+	var err error
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	if err = db.PingContext(ctx); err != nil {
@@ -174,15 +161,9 @@ func TestProfileReportPostgresWorkflow(t *testing.T) {
 // The profile report key is scoped to a planet and only to the open state.
 // A report under review may coexist with a new open report, as in Jazebe.
 func TestProfileReportPostgresConstraints(t *testing.T) {
-	dsn := os.Getenv("JAZEBE_DISPOSABLE_TEST_DB_URL")
-	if dsn == "" {
-		t.Skip("JAZEBE_DISPOSABLE_TEST_DB_URL not set; PostgreSQL NOT_RUN")
-	}
-	db, err := sql.Open("pgx", dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
+	db := openDisposableTestDB(t)
 	defer db.Close()
+	var err error
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	if err = db.PingContext(ctx); err != nil {

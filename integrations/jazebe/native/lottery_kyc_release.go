@@ -64,7 +64,7 @@ func releaseVerifiedLotteryShares(ctx context.Context, tx *sql.Tx, userID string
 				}
 			}
 			payout = "paid"
-			if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,target_type,target_id,planet_id,params) VALUES('lottery.payout','system','lottery',$1,$2,jsonb_build_object('winnerId',$3::uuid,'shareId',$4::uuid,'userId',$5::uuid,'valueRial',$6::text,'points',$7::text,'rialPerPoint',$8))`, s.LotteryID, s.PlanetID, s.WinnerID, s.ID, userID, s.Value, points.String(), rate); err != nil {
+			if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,target_type,target_id,planet_id,params) VALUES('lottery.payout','system','lottery',$1,$2,jsonb_build_object('winnerId',$3::uuid,'shareId',$4::uuid,'userId',$5::uuid,'valueRial',$6::text,'points',$7::text,'rialPerPoint',$8::bigint))`, s.LotteryID, s.PlanetID, s.WinnerID, s.ID, userID, s.Value, points.String(), rate); err != nil {
 				return 0, status.Error(codes.Internal, "KYC payout audit failed")
 			}
 		}

@@ -144,7 +144,7 @@ func groupJoin(ctx context.Context, logger runtime.Logger, db *sql.DB, _ runtime
 		return "", status.Error(codes.Internal, "planet activity update failed")
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload)
-		VALUES($1,$2,$3,'join',$4,'member.joined',jsonb_build_object('userId',$4,'name',$5,'source','list_join','text',$6))`,
+		VALUES($1,$2,$3,'join',$4,'member.joined',jsonb_build_object('userId',$4::uuid,'name',$5::text,'source','list_join','text',$6::text))`,
 		uuid.Must(uuid.NewV4()).String(), ref.PlanetID, ref.GroupID, user, displayName.String, displayName.String+" به گروه پیوست"); err != nil {
 		return "", status.Error(codes.Internal, "group activity failed")
 	}
@@ -275,7 +275,7 @@ func groupLeave(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		name = "کاربر ناشناس"
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload)
-		VALUES($1,$2,$3,'leave',$4,'member.left',jsonb_build_object('userId',$4,'name',$5,'text',$6))`,
+		VALUES($1,$2,$3,'leave',$4,'member.left',jsonb_build_object('userId',$4::uuid,'name',$5::text,'text',$6::text))`,
 		uuid.Must(uuid.NewV4()).String(), ref.PlanetID, ref.GroupID, user, name, name+" از گروه خارج شد"); err != nil {
 		return "", status.Error(codes.Internal, "group activity failed")
 	}

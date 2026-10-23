@@ -246,7 +246,7 @@ func gameStart(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runtime.Naka
 			target = groupID
 		}
 		_, err = tx.ExecContext(ctx, `INSERT INTO jazebe_game_quota(id,planet_id,game_id,scope,user_id,group_id,period_key,used)
-			VALUES($1,$2,$3,$4,CASE WHEN $4='user' THEN $5::uuid ELSE NULL END,CASE WHEN $4='group' THEN $5::uuid ELSE NULL END,$6,0)
+			VALUES($1,$2,$3,$4::text,CASE WHEN $4::text='user' THEN $5::uuid ELSE NULL END,CASE WHEN $4::text='group' THEN $5::uuid ELSE NULL END,$6,0)
 			ON CONFLICT DO NOTHING`, uuid.Must(uuid.NewV4()).String(), planetID, gameID, scope, target, period)
 		if err != nil {
 			return "", err
@@ -457,7 +457,7 @@ func gameClaim(ctx context.Context, logger runtime.Logger, db *sql.DB, _ runtime
 			return encode(map[string]any{"tickets": 0, "balance": balance, "refunded": true, "boxes": secret.Boxes})
 		}
 		if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload)
-			VALUES($1,$2,$3,'game',$4,'game.played',jsonb_build_object('gameId',$5::uuid,'sessionId',$6::uuid,'tickets',$7))`,
+			VALUES($1,$2,$3,'game',$4,'game.played',jsonb_build_object('gameId',$5::uuid,'sessionId',$6::uuid,'tickets',$7::bigint))`,
 			uuid.Must(uuid.NewV4()).String(), planetID, r.GroupID, user, gameID, r.ID, tickets); err != nil {
 			return "", err
 		}

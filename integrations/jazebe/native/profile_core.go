@@ -335,8 +335,8 @@ func profileSetName(ctx context.Context, logger runtime.Logger, db *sql.DB, payl
 			kind = "upload"
 			preset = nil
 		}
-		_, err = tx.ExecContext(ctx, `UPDATE jazebe_user_profile SET avatar_kind=$2,avatar_preset_index=$3,
-			avatar_media_id=CASE WHEN $2='preset' THEN NULL ELSE avatar_media_id END,updated_at=now() WHERE user_id=$1`, user, kind, preset)
+		_, err = tx.ExecContext(ctx, `UPDATE jazebe_user_profile SET avatar_kind=$2::text,avatar_preset_index=$3,
+			avatar_media_id=CASE WHEN $2::text='preset' THEN NULL ELSE avatar_media_id END,updated_at=now() WHERE user_id=$1`, user, kind, preset)
 		if err != nil {
 			return "", err
 		}

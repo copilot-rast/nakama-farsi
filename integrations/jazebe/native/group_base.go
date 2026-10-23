@@ -177,11 +177,11 @@ func groupCreate(ctx context.Context, logger runtime.Logger, db *sql.DB, _ runti
 		return "", status.Error(codes.Internal, "planet activity update failed")
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES('group.create','user',$1,'group',$2,$3,jsonb_build_object('name',$4))`, user, id, input.PlanetID, input.Name); err != nil {
+		VALUES('group.create','user',$1,'group',$2,$3,jsonb_build_object('name',$4::text))`, user, id, input.PlanetID, input.Name); err != nil {
 		return "", status.Error(codes.Internal, "group audit failed")
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload)
-		VALUES($1,$2,$3,'join',$4,'group.created',jsonb_build_object('name',$5,'text',$6))`,
+		VALUES($1,$2,$3,'join',$4,'group.created',jsonb_build_object('name',$5::text,'text',$6::text))`,
 		uuid.Must(uuid.NewV4()).String(), input.PlanetID, id, user, input.Name, displayName.String+" گروه را ساخت"); err != nil {
 		return "", status.Error(codes.Internal, "group activity failed")
 	}

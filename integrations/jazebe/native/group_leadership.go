@@ -105,7 +105,7 @@ func groupRespondLeadership(ctx context.Context, _ runtime.Logger, db *sql.DB, _
 			return "", status.Error(codes.Internal, "offer decline failed")
 		}
 		if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-			VALUES('group.transfer.decline','user',$1,'group',$2,$3,jsonb_build_object('offerId',$4))`, actor, input.GroupID, input.PlanetID, offerID); err != nil {
+			VALUES('group.transfer.decline','user',$1,'group',$2,$3,jsonb_build_object('offerId',$4::text))`, actor, input.GroupID, input.PlanetID, offerID); err != nil {
 			return "", status.Error(codes.Internal, "offer audit failed")
 		}
 		if err = persistJazebeNotification(ctx, tx, from, "group-offer-declined:"+offerID, "پیشنهاد رهبری پذیرفته نشد",
@@ -151,11 +151,11 @@ func groupRespondLeadership(ctx context.Context, _ runtime.Logger, db *sql.DB, _
 		return "", status.Error(codes.Internal, "offer acceptance failed")
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES('group.transfer','user',$1,'group',$2,$3,jsonb_build_object('from',$4,'to',$1,'offerId',$5))`, actor, input.GroupID, input.PlanetID, from, offerID); err != nil {
+		VALUES('group.transfer','user',$1,'group',$2,$3,jsonb_build_object('from',$4::text,'to',$1::uuid,'offerId',$5::text))`, actor, input.GroupID, input.PlanetID, from, offerID); err != nil {
 		return "", status.Error(codes.Internal, "transfer audit failed")
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload)
-		VALUES($1,$2,$3,'role',$4,'member.transfer',jsonb_build_object('userId',$4,'fromUserId',$5,'groupName',$6))`, uuid.Must(uuid.NewV4()).String(), input.PlanetID, input.GroupID, actor, from, name); err != nil {
+		VALUES($1,$2,$3,'role',$4,'member.transfer',jsonb_build_object('userId',$4::uuid,'fromUserId',$5::text,'groupName',$6::text))`, uuid.Must(uuid.NewV4()).String(), input.PlanetID, input.GroupID, actor, from, name); err != nil {
 		return "", status.Error(codes.Internal, "transfer activity failed")
 	}
 	if err = persistJazebeNotification(ctx, tx, from, "group-offer-accepted:"+offerID, "رهبری گروه منتقل شد",

@@ -227,7 +227,7 @@ func codeMissionActivate(ctx context.Context, logger runtime.Logger, db *sql.DB,
 		return "", status.Error(codes.Internal, "code activation failed")
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log (action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES ('mission.status','brand_admin',$1,'mission',$2,$3,jsonb_build_object('from',$4,'to','active'))`, actor, ref.MissionID, ref.PlanetID, m.Status); err != nil {
+		VALUES ('mission.status','brand_admin',$1,'mission',$2,$3,jsonb_build_object('from',$4::text,'to','active'))`, actor, ref.MissionID, ref.PlanetID, m.Status); err != nil {
 		return "", status.Error(codes.Internal, "code activation audit failed")
 	}
 	if err := tx.Commit(); err != nil {
@@ -370,7 +370,7 @@ func codeMissionGenerate(ctx context.Context, logger runtime.Logger, db *sql.DB,
 		}
 	}
 	if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log (action,actor_type,actor_id,target_type,target_id,planet_id,params)
-		VALUES ('mission.codes.generate','brand_admin',$1,'mission',$2,$3,jsonb_build_object('created',$4))`, actor, ref.MissionID, ref.PlanetID, len(codesOut)); err != nil {
+		VALUES ('mission.codes.generate','brand_admin',$1,'mission',$2,$3,jsonb_build_object('created',$4::bigint))`, actor, ref.MissionID, ref.PlanetID, len(codesOut)); err != nil {
 		return "", status.Error(codes.Internal, "code generation audit failed")
 	}
 	if err := tx.Commit(); err != nil {

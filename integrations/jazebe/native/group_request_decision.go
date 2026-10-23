@@ -165,7 +165,7 @@ func groupDecideRequest(ctx context.Context, logger runtime.Logger, db *sql.DB, 
 			return "", status.Error(codes.Internal, "planet activity update failed")
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_group_activity(id,planet_id,group_id,kind,actor_user_id,message_key,payload)
-			VALUES($1,$2,$3,'join',$4,'member.joined',jsonb_build_object('userId',$4,'name',$5,'source','approved_request','text',$6))`,
+			VALUES($1,$2,$3,'join',$4,'member.joined',jsonb_build_object('userId',$4::uuid,'name',$5::text,'source','approved_request','text',$6::text))`,
 			uuid.Must(uuid.NewV4()).String(), input.PlanetID, input.GroupID, requester, nameForFeed, nameForFeed+" به گروه پیوست"); err != nil {
 			return "", status.Error(codes.Internal, "group activity failed")
 		}
@@ -176,7 +176,7 @@ func groupDecideRequest(ctx context.Context, logger runtime.Logger, db *sql.DB, 
 	}
 	if decision != "auto_cancelled" {
 		if _, err := tx.ExecContext(ctx, `INSERT INTO jazebe_audit_log(action,actor_type,actor_id,target_type,target_id,planet_id,params)
-			VALUES('group.request.decision','user',$1,'group_request',$2,$3,jsonb_build_object('decision',$4,'groupId',$5))`,
+			VALUES('group.request.decision','user',$1,'group_request',$2,$3,jsonb_build_object('decision',$4::text,'groupId',$5::text))`,
 			actor, input.RequestID, input.PlanetID, decision, input.GroupID); err != nil {
 			return "", status.Error(codes.Internal, "group decision audit failed")
 		}
