@@ -1760,7 +1760,7 @@
     "destinationEntry": "jazebe_shop_ticket_create, jazebe_shop_coupon_create, jazebe_shop_digital_create",
     "destinationFile": "integrations/jazebe/native/shop_ticket.go",
     "implementationStatus": "PARTIAL",
-    "behavioralDifferences": "PARTIAL: one source create endpoint split by product type into three RPCs.",
+    "behavioralDifferences": "Adapted: one source create endpoint is split by product type into three RPCs.",
     "testReferences": [
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
@@ -4054,13 +4054,13 @@
     "persistence": [],
     "destinationEntry": "jazebe_group_chat_moderate",
     "destinationFile": "integrations/jazebe/native/group_chat_moderation.go",
-    "implementationStatus": "PARTIAL",
-    "behavioralDifferences": "PARTIAL: operator message deletion is served by jazebe_group_chat_moderate (operator actor type).",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "Adapted: operator message deletion is served by jazebe_group_chat_moderate with the operator actor type.",
     "testReferences": [
       "integrations/jazebe/native/group_workflow_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-24 for the ported subset: group_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_workflow_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -5591,8 +5591,8 @@
     "persistence": [],
     "destinationEntry": "jazebe_media_mission_draft_create, jazebe_code_mission_draft_create, jazebe_content_mission_draft_create, jazebe_invite_mission_draft_create",
     "destinationFile": "integrations/jazebe/native/mission_media.go",
-    "implementationStatus": "PARTIAL",
-    "behavioralDifferences": "PARTIAL: one source create endpoint split by mission type.",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "Adapted: one source create endpoint is split by mission type into four RPCs.",
     "testReferences": [
       "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/lottery_workflow_postgres_test.go",
@@ -5602,7 +5602,7 @@
       "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-24 for the ported subset: group_read_postgres_test.go, lottery_workflow_postgres_test.go, mission_brand_postgres_test.go, mission_workflow_postgres_test.go, operator_workflow_postgres_test.go, planet_home_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go, lottery_workflow_postgres_test.go, mission_brand_postgres_test.go, mission_workflow_postgres_test.go, operator_workflow_postgres_test.go, planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
