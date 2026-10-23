@@ -33,11 +33,30 @@ jobs:
         run: |
           go test -mod=vendor ./scripts/jazebe_route_audit -count=1
           go run -mod=vendor ./scripts/jazebe_route_audit -offline
-      - name: Build Nakama with Jazebe migrations
-        run: go build -mod=vendor -o "$RUNNER_TEMP/nakama" .
+      - name: Unit and migration policy tests
+        run: go test -mod=vendor ./integrations/jazebe/... ./migrate ./scripts/jazebe_route_audit -count=1
+      - name: Build Nakama and the Jazebe plugin with matching flags
+        run: |
+          go build -mod=vendor -trimpath -o "$RUNNER_TEMP/nakama" .
+          go build -mod=vendor -trimpath -buildmode=plugin -o "$RUNNER_TEMP/jazebe.so" ./integrations/jazebe/native
       - name: Apply Nakama and Jazebe migrations to disposable PostgreSQL
-        run: "$RUNNER_TEMP/nakama" migrate up --database.address postgres:localdb@127.0.0.1:5432/jazebe_test_disposable
-      - name: Exercise profile, report and account-state database behavior
+        run: |
+          "$RUNNER_TEMP/nakama" migrate up --database.address postgres:localdb@127.0.0.1:5432/jazebe_test_disposable
+          "$RUNNER_TEMP/nakama" migrate up --database.address postgres:localdb@127.0.0.1:5432/jazebe_test_disposable | tee "$RUNNER_TEMP/rerun.log"
+          grep -q '"count":0' "$RUNNER_TEMP/rerun.log"
+      - name: Report Jazebe schema drift against the committed snapshot
+        # The snapshot records the PostgreSQL major it was taken on; this job
+        # reports differences for review without failing on catalog text from
+        # another major.
+        continue-on-error: true
+        run: go run -mod=vendor ./scripts/jazebe_schema_check -db postgresql://postgres:localdb@127.0.0.1:5432/jazebe_test_disposable?sslmode=disable
+      - name: Exercise every PostgreSQL workflow, sweep, replay and SQL prepare test
         env:
           JAZEBE_DISPOSABLE_TEST_DB_URL: postgresql://postgres:localdb@127.0.0.1:5432/jazebe_test_disposable?sslmode=disable
-        run: go test -mod=vendor ./integrations/jazebe/native -run 'Test(Profile(PostgresConstraints|ReportPostgresConstraints|ReportPostgresWorkflow)|Account(Transition|RevocationRetry|TransitionConcurrent)Postgres|OperatorConstellationPostgres|JazebeSQLPreparesPostgres)$' -count=1 -v
+        run: go test -mod=vendor ./integrations/jazebe/... -run 'Postgres$' -count=1 -v
+      - name: Refused migrate down keeps the tracker consistent
+        run: |
+          if "$RUNNER_TEMP/nakama" migrate down --limit 1 --database.address postgres:localdb@127.0.0.1:5432/jazebe_test_disposable; then
+            echo "Jazebe migrate down unexpectedly succeeded"; exit 1
+          fi
+          test "$(PGPASSWORD=localdb psql -h 127.0.0.1 -U postgres -d jazebe_test_disposable -tAc 'select count(*) from migration_info')" = 53

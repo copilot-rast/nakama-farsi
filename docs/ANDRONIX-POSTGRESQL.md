@@ -60,7 +60,7 @@ sudo andronix-postgres stop
 
 ## Migrations
 
-Nakama embeds all 52 migrations: 20 upstream, then 32 Jazebe (`20261022120000` and later). They are applied in timestamp order and recorded in `migration_info`.
+Nakama embeds all 53 migrations: 20 upstream, then 33 Jazebe (`20261022120000` and later). They are applied in timestamp order, each in its own transaction, and recorded in `migration_info`. `20261024000000-jazebe-catalog-seed` adds the source's planet categories (12) and library medals (9).
 
 ```sh
 export PATH=$HOME/.local/go/bin:$PATH
@@ -68,21 +68,57 @@ go build -mod=vendor -o ~/.local/share/nakama-farsi/nakama .
 (set -a; . ~/.config/nakama-farsi/dev.env; ~/.local/share/nakama-farsi/nakama migrate up --database.address "$NAKAMA_DATABASE_ADDRESS")
 ```
 
-- On an empty database, a first run applies 52 migrations and a second run applies 0.
+- On an empty database, a first run applies 53 migrations and a second run applies 0.
 - The Jazebe migrations only add `jazebe_*` objects. Their only link to Nakama core tables is foreign keys to `users`.
-- **Do not run `migrate down` across Jazebe migrations.** 31 of their 32 Down sections intentionally keep user data (`SELECT 1;`), so a down run removes the `migration_info` rows but leaves the tables. The next `migrate up` then fails with errors such as `constraint ... already exists`. This was reproduced on the disposable database. Roll back from a backup (`pg_dump`) instead.
+- **Re-runnable:** every Jazebe Up section uses `IF NOT EXISTS` for tables, indexes and columns, and drops a named constraint before re-adding it. Seeds use `ON CONFLICT DO NOTHING`, so operator edits are never overwritten. `TestJazebeMigrationReplayPostgres` replays all 33 Up sections over a database that already holds data and checks the schema and data are unchanged. `TestJazebeMigrationsAreRerunnableAndRefuseDown` enforces this for future migrations.
+- **No automatic rollback:** a Jazebe Down section raises an error instead of running. `nakama migrate down` therefore stops at the newest Jazebe migration, its transaction rolls back and `migration_info` stays consistent. Previously, data-retaining Downs were `SELECT 1;`: they removed the tracking row but left the tables, so the next `migrate up` failed. The one exception, `20261023090000-jazebe-shop-rate`, drops only a rate-limit counter table, and is only reachable after the newer Jazebe migrations.
+
+### Detecting schema drift
+
+`IF NOT EXISTS` would also accept an object that already existed with a different definition. `migrate/jazebe_schema.snapshot` holds the schema a fresh migration produces (1,573 facts: columns, constraints, indexes). The checker only reads system catalogs, so it is safe against any database:
+
+```sh
+go run -mod=vendor ./scripts/jazebe_schema_check -db "postgres://<user>:<password>@127.0.0.1:5432/<db>?sslmode=disable"
+# MISSING / UNEXPECTED lines and exit code 1 on drift
+```
+
+After changing a migration, apply it to a fresh disposable database and regenerate the snapshot with `-write`. Databases migrated with the earlier, non-re-runnable versions of these files have the identical schema; this was verified on both local databases.
+
+### Rolling back Jazebe migrations
+
+Reverting means deleting Jazebe user data, so it is a deliberate, manual step:
+
+1. Stop Nakama.
+2. Take and verify a backup: `pg_dump -Fc -d <db> -f nakama-before-jazebe-rollback.dump`, then `pg_restore -l nakama-before-jazebe-rollback.dump | head`.
+3. Run `psql -d <db> -v ON_ERROR_STOP=1 -v jazebe_confirm=DROP_JAZEBE_DATA -f scripts/jazebe-rollback.sql`. In one transaction this drops every `jazebe_*` table and removes the Jazebe `migration_info` rows. Nakama core tables and users are not touched. Without the exact confirmation value, the script refuses.
+4. To restore the data instead, use `pg_restore` into a new database from the backup. To start fresh, run `nakama migrate up`, which re-applies the 33 Jazebe migrations.
+
+Distinguish the four cases:
+- **Transaction rollback:** automatic. A failed RPC or migration leaves nothing behind.
+- **Recovery after a failed migration:** fix the cause and run `migrate up` again. The failed migration's transaction left no trace, and Up sections are re-runnable.
+- **Schema downgrade:** the rollback script above.
+- **Data restoration:** `pg_restore` from the backup.
+
+Verified on the disposable database:
+- `migrate down` was refused and `migration_info` stayed at 53;
+- the rollback script without confirmation, or with a wrong value, refused;
+- the confirmed run left 0 Jazebe tables, 20 core tables and 20 tracking rows;
+- `migrate up` then re-applied 33 migrations, and the schema check matched.
 
 ## Tests
 
 ```sh
 cd nakama-farsi
 export PATH=$HOME/.local/go/bin:$PATH GOFLAGS=-mod=vendor
-go test ./integrations/jazebe/native ./migrate ./scripts/jazebe_route_audit -count=1
-(set -a; . ~/.config/nakama-farsi/test.env; go test ./integrations/jazebe/native -run Postgres -count=1 -v)
+go test ./integrations/jazebe/... ./migrate ./scripts/jazebe_route_audit -count=1
+(set -a; . ~/.config/nakama-farsi/test.env; go test ./integrations/jazebe/... -run 'Postgres$' -count=1 -v)
 ```
 
 - The PostgreSQL tests use `openDisposableTestDB` (`integrations/jazebe/native/disposable_db_test.go`). It refuses any target whose database name does not end in `_disposable` or whose host is not loopback or a local socket. After connecting, it also checks `current_database()`.
 - `TestJazebeSQLPreparesPostgres` prepares every complete SQL statement in the module against the migrated schema, without executing any of them.
+- `TestJazebeRPCSweepPostgres` calls every registered RPC as an anonymous caller and as an ordinary user with empty, malformed and nonexistent-ID input. It checks status codes, panics and leaks, and writes a per-RPC report when `JAZEBE_RPC_SWEEP_REPORT` names a file.
+- The workflow tests (`*_workflow_postgres_test.go`) use `newJazebeFixture`, which creates an isolated brand, planet and users through the real RPCs. Its cleanup deletes only rows tied to that fixture and then verifies that none remain.
+- Not available on this device: `go test -race`. ThreadSanitizer needs a 48-bit address space and this Android kernel provides 39 bits (`FATAL: ThreadSanitizer: unsupported VMA range`). The concurrency tests check their invariants directly instead.
 
 To reset the disposable database, as its owner only:
 
@@ -119,7 +155,7 @@ database: {address: ["nakama_dev:<password>@127.0.0.1:5432/nakama_dev"]}
 
 The ports are 7350 (API), 7351 (console) and 7349 (gRPC). The worker flags (`JAZEBE_*_WORKER_ENABLED`, `JAZEBE_MEDAL_BACKFILL_ENABLED`) default to off. Operators are configured with `JAZEBE_OPERATOR_USER_IDS=<nakama user id>`.
 
-Smoke test (verified 2026-10-23). Startup logs `Found runtime modules ... jazebe.so` and `Jazebe native integration RPCs registered`, with 196 RPCs:
+Smoke test (verified 2026-10-23). Startup logs `Found runtime modules ... jazebe.so` and `Jazebe native integration RPCs registered`, with 201 RPCs:
 
 ```sh
 curl -s http://127.0.0.1:7350/healthcheck                                   # 200
