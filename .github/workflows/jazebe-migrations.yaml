@@ -53,7 +53,7 @@ jobs:
       - name: Exercise every PostgreSQL workflow, sweep, replay and SQL prepare test
         env:
           JAZEBE_DISPOSABLE_TEST_DB_URL: postgresql://postgres:localdb@127.0.0.1:5432/jazebe_test_disposable?sslmode=disable
-        run: go test -mod=vendor ./integrations/jazebe/... -run 'Postgres$' -count=1 -v
+        run: go test -mod=vendor ./integrations/jazebe/... -run 'Postgres' -count=1 -v
       - name: Refused migrate down keeps the tracker consistent
         run: |
           if "$RUNNER_TEMP/nakama" migrate down --limit 1 --database.address postgres:localdb@127.0.0.1:5432/jazebe_test_disposable; then

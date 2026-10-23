@@ -111,7 +111,7 @@ Verified on the disposable database:
 cd nakama-farsi
 export PATH=$HOME/.local/go/bin:$PATH GOFLAGS=-mod=vendor
 go test ./integrations/jazebe/... ./migrate ./scripts/jazebe_route_audit -count=1
-(set -a; . ~/.config/nakama-farsi/test.env; go test ./integrations/jazebe/... -run 'Postgres$' -count=1 -v)
+(set -a; . ~/.config/nakama-farsi/test.env; go test ./integrations/jazebe/... -run 'Postgres' -count=1 -v)
 ```
 
 - The PostgreSQL tests use `openDisposableTestDB` (`integrations/jazebe/native/disposable_db_test.go`). It refuses any target whose database name does not end in `_disposable` or whose host is not loopback or a local socket. After connecting, it also checks `current_database()`.

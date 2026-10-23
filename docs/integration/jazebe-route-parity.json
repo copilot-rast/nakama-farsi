@@ -2951,10 +2951,11 @@
     "implementationStatus": "IMPLEMENTED",
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/group_workflow_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go, group_workflow_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -3040,17 +3041,20 @@
     "methodPath": "",
     "method": "GET",
     "path": "client/groups",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_group_list: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/group_client_read.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: planet group list (called by the main app).",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_group_list",
+    "destinationFile": "integrations/jazebe/native/group_client_read.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -3086,17 +3090,20 @@
     "methodPath": "mine",
     "method": "GET",
     "path": "client/groups/mine",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_group_mine: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/group_client_read.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: my group (called by the main app).",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_group_mine",
+    "destinationFile": "integrations/jazebe/native/group_client_read.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -3167,14 +3174,16 @@
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
       "integrations/jazebe/native/game_workflow_postgres_test.go",
+      "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/group_workflow_postgres_test.go",
       "integrations/jazebe/native/lottery_workflow_postgres_test.go",
       "integrations/jazebe/native/migration_replay_postgres_test.go",
       "integrations/jazebe/native/mission_workflow_postgres_test.go",
+      "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/group_base_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: game_workflow_postgres_test.go, group_workflow_postgres_test.go, lottery_workflow_postgres_test.go, migration_replay_postgres_test.go, mission_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: game_workflow_postgres_test.go, group_read_postgres_test.go, group_workflow_postgres_test.go, lottery_workflow_postgres_test.go, migration_replay_postgres_test.go, mission_workflow_postgres_test.go, planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -3237,17 +3246,20 @@
     "methodPath": ":id",
     "method": "GET",
     "path": "client/groups/:id",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_group_detail: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/group_client_read.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: group detail (called by the main app).",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_group_detail",
+    "destinationFile": "integrations/jazebe/native/group_client_read.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -3266,12 +3278,13 @@
     "persistence": [],
     "destinationEntry": "jazebe_group_update",
     "destinationFile": "integrations/jazebe/native/group_manage.go",
-    "implementationStatus": "PARTIAL",
-    "behavioralDifferences": "PARTIAL: native RPC exists; business behaviour not yet exercised against PostgreSQL by a workflow test.",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "Gate-level only: TestJazebeRPCSweepPostgres (auth, malformed input, no leaks); no workflow test",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -3342,10 +3355,11 @@
     "implementationStatus": "IMPLEMENTED",
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/group_workflow_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go, group_workflow_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -3504,17 +3518,20 @@
     "methodPath": ":id/history",
     "method": "GET",
     "path": "client/groups/:id/history",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_group_history: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/group_client_read.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: group history.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_group_history",
+    "destinationFile": "integrations/jazebe/native/group_client_read.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -3560,13 +3577,14 @@
     "implementationStatus": "IMPLEMENTED",
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/group_workflow_postgres_test.go",
       "integrations/jazebe/native/lottery_workflow_postgres_test.go",
       "integrations/jazebe/native/mission_workflow_postgres_test.go",
       "integrations/jazebe/native/group_base_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_workflow_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go, group_workflow_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -3662,13 +3680,14 @@
     "implementationStatus": "IMPLEMENTED",
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/group_workflow_postgres_test.go",
       "integrations/jazebe/native/lottery_workflow_postgres_test.go",
       "integrations/jazebe/native/mission_workflow_postgres_test.go",
       "integrations/jazebe/native/group_base_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_workflow_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go, group_workflow_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -4950,11 +4969,13 @@
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
       "integrations/jazebe/native/game_workflow_postgres_test.go",
+      "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/lottery_workflow_postgres_test.go",
       "integrations/jazebe/native/mission_workflow_postgres_test.go",
+      "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: game_workflow_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: game_workflow_postgres_test.go, group_read_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go, planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -5026,11 +5047,13 @@
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
       "integrations/jazebe/native/game_workflow_postgres_test.go",
+      "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/lottery_workflow_postgres_test.go",
       "integrations/jazebe/native/mission_workflow_postgres_test.go",
+      "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: game_workflow_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: game_workflow_postgres_test.go, group_read_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go, planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -5342,11 +5365,12 @@
     "implementationStatus": "IMPLEMENTED",
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/lottery_workflow_postgres_test.go",
       "integrations/jazebe/native/mission_workflow_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -5539,12 +5563,14 @@
     "implementationStatus": "IMPLEMENTED",
     "behavioralDifferences": "PARTIAL: one source create endpoint split by mission type.",
     "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/lottery_workflow_postgres_test.go",
       "integrations/jazebe/native/mission_workflow_postgres_test.go",
       "integrations/jazebe/native/operator_workflow_postgres_test.go",
+      "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go, operator_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go, operator_workflow_postgres_test.go, planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -5703,12 +5729,14 @@
     "implementationStatus": "IMPLEMENTED",
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/lottery_workflow_postgres_test.go",
       "integrations/jazebe/native/mission_workflow_postgres_test.go",
       "integrations/jazebe/native/operator_workflow_postgres_test.go",
+      "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go, operator_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go, operator_workflow_postgres_test.go, planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -5754,11 +5782,12 @@
     "implementationStatus": "IMPLEMENTED",
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/group_read_postgres_test.go",
       "integrations/jazebe/native/lottery_workflow_postgres_test.go",
       "integrations/jazebe/native/mission_workflow_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: group_read_postgres_test.go, lottery_workflow_postgres_test.go, mission_workflow_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6172,19 +6201,20 @@
     "methodPath": "",
     "method": "GET",
     "path": "notifications",
-    "requestContract": "Nakama core API (Nakama /v2/notification (list))",
-    "responseContract": "Nakama core response",
+    "requestContract": "Nakama RPC jazebe_notification_list: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/notification_centre.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "Nakama /v2/notification (list)",
-    "destinationFile": "server/api_notification.go",
-    "implementationStatus": "EQUIVALENT_NATIVE",
-    "behavioralDifferences": "EQUIVALENT_NATIVE: Jazebe notices are persisted as Nakama notifications (persistJazebeNotification).",
+    "destinationEntry": "jazebe_notification_list",
+    "destinationFile": "integrations/jazebe/native/notification_centre.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: Jazebe notification centre over Nakama notification rows (code 1001) with read/soft-delete state; replaces the bare Nakama core list for the main app.",
     "testReferences": [
-      "server/api_test.go (NOT_RUN)"
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "Upstream Nakama behaviour",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6196,17 +6226,20 @@
     "methodPath": "unread-count",
     "method": "GET",
     "path": "notifications/unread-count",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_notification_unread_count: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/notification_centre.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: notification read state; Nakama core notifications have no read flag.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_notification_unread_count",
+    "destinationFile": "integrations/jazebe/native/notification_centre.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6218,17 +6251,20 @@
     "methodPath": "read-all",
     "method": "POST",
     "path": "notifications/read-all",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_notification_read_all: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/notification_centre.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: notification read state; Nakama core notifications have no read flag.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_notification_read_all",
+    "destinationFile": "integrations/jazebe/native/notification_centre.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6240,17 +6276,20 @@
     "methodPath": ":id",
     "method": "PATCH",
     "path": "notifications/:id",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_notification_mark_read: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/notification_centre.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: notification read state; Nakama core notifications have no read flag.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_notification_mark_read",
+    "destinationFile": "integrations/jazebe/native/notification_centre.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6262,19 +6301,20 @@
     "methodPath": ":id",
     "method": "DELETE",
     "path": "notifications/:id",
-    "requestContract": "Nakama core API (Nakama DELETE /v2/notification)",
-    "responseContract": "Nakama core response",
+    "requestContract": "Nakama RPC jazebe_notification_remove: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/notification_centre.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "Nakama DELETE /v2/notification",
-    "destinationFile": "server/api_notification.go",
-    "implementationStatus": "EQUIVALENT_NATIVE",
-    "behavioralDifferences": "EQUIVALENT_NATIVE: Nakama notification deletion.",
+    "destinationEntry": "jazebe_notification_remove",
+    "destinationFile": "integrations/jazebe/native/notification_centre.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: soft delete as in the source; the Nakama notification row is kept.",
     "testReferences": [
-      "server/api_test.go (NOT_RUN)"
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "Upstream Nakama behaviour",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6286,19 +6326,20 @@
     "methodPath": "",
     "method": "DELETE",
     "path": "notifications",
-    "requestContract": "Nakama core API (Nakama DELETE /v2/notification)",
-    "responseContract": "Nakama core response",
+    "requestContract": "Nakama RPC jazebe_notification_clear: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/notification_centre.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "Nakama DELETE /v2/notification",
-    "destinationFile": "server/api_notification.go",
-    "implementationStatus": "EQUIVALENT_NATIVE",
-    "behavioralDifferences": "EQUIVALENT_NATIVE: Nakama notification deletion.",
+    "destinationEntry": "jazebe_notification_clear",
+    "destinationFile": "integrations/jazebe/native/notification_centre.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: soft delete as in the source.",
     "testReferences": [
-      "server/api_test.go (NOT_RUN)"
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "Upstream Nakama behaviour",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6310,17 +6351,20 @@
     "methodPath": "preferences",
     "method": "GET",
     "path": "settings/preferences",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_settings_preferences_get: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/notification_centre.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: notification preferences.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_settings_preferences_get",
+    "destinationFile": "integrations/jazebe/native/notification_centre.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6332,17 +6376,20 @@
     "methodPath": "preferences",
     "method": "PATCH",
     "path": "settings/preferences",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_settings_preferences_update: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/notification_centre.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: notification preferences.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_settings_preferences_update",
+    "destinationFile": "integrations/jazebe/native/notification_centre.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: preferences also gate delivery in persistJazebeNotification (critical always delivered).",
+    "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6354,19 +6401,20 @@
     "methodPath": "planet-order",
     "method": "GET",
     "path": "settings/planet-order",
-    "requestContract": "Nakama RPC jazebe_planet_memberships: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/module.go)",
+    "requestContract": "Nakama RPC jazebe_settings_planet_order_get: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/notification_centre.go)",
     "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "jazebe_planet_memberships",
-    "destinationFile": "integrations/jazebe/native/module.go",
-    "implementationStatus": "PARTIAL",
-    "behavioralDifferences": "PARTIAL: planet order read via jazebe_planet_memberships (sort_order).",
+    "destinationEntry": "jazebe_settings_planet_order_get",
+    "destinationFile": "integrations/jazebe/native/notification_centre.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "Gate-level only: TestJazebeRPCSweepPostgres (auth, malformed input, no leaks); no workflow test",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6378,17 +6426,20 @@
     "methodPath": "planet-order",
     "method": "PATCH",
     "path": "settings/planet-order",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_settings_planet_order_update: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/notification_centre.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: planet order update.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_settings_planet_order_update",
+    "destinationFile": "integrations/jazebe/native/notification_centre.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6400,17 +6451,20 @@
     "methodPath": "planet-order",
     "method": "PUT",
     "path": "settings/planet-order",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_settings_planet_order_update: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/notification_centre.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: planet order update.",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_settings_planet_order_update",
+    "destinationFile": "integrations/jazebe/native/notification_centre.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6842,17 +6896,20 @@
     "methodPath": "planet",
     "method": "GET",
     "path": "client/planet",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_planet_overview: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/planet_client_read.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: planet overview (called by the main app).",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_planet_overview",
+    "destinationFile": "integrations/jazebe/native/planet_client_read.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: planet home; brand-domain auto-membership (route 292) is not ported.",
+    "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6864,19 +6921,20 @@
     "methodPath": "brands",
     "method": "GET",
     "path": "client/brands",
-    "requestContract": "Nakama RPC jazebe_brand_list: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/module.go)",
+    "requestContract": "Nakama RPC jazebe_planet_constellation: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/planet_client_read.go)",
     "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "jazebe_brand_list",
-    "destinationFile": "integrations/jazebe/native/module.go",
-    "implementationStatus": "PARTIAL",
-    "behavioralDifferences": "PARTIAL: brand listing.",
+    "destinationEntry": "jazebe_planet_constellation",
+    "destinationFile": "integrations/jazebe/native/planet_client_read.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: the caller's constellation (jazebe_brand_list returns brands the caller administers and is kept for compatibility).",
     "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "Gate-level only: TestJazebeRPCSweepPostgres (auth, malformed input, no leaks); no workflow test",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6888,17 +6946,20 @@
     "methodPath": "brands/:planet/missions/preview",
     "method": "GET",
     "path": "client/brands/:planet/missions/preview",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_planet_missions_preview: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/planet_client_read.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: brand previews (missions/groups/raffle).",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_planet_missions_preview",
+    "destinationFile": "integrations/jazebe/native/planet_client_read.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6910,17 +6971,20 @@
     "methodPath": "brands/:planet/groups/preview",
     "method": "GET",
     "path": "client/brands/:planet/groups/preview",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_planet_groups_preview: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/planet_client_read.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: brand previews (missions/groups/raffle).",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_planet_groups_preview",
+    "destinationFile": "integrations/jazebe/native/planet_client_read.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6932,17 +6996,20 @@
     "methodPath": "brands/:planet/raffle/preview",
     "method": "GET",
     "path": "client/brands/:planet/raffle/preview",
-    "requestContract": "",
-    "responseContract": "",
+    "requestContract": "Nakama RPC jazebe_planet_raffle_preview: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/planet_client_read.go)",
+    "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "",
-    "destinationFile": "",
-    "implementationStatus": "NOT_STARTED",
-    "behavioralDifferences": "NOT_STARTED: brand previews (missions/groups/raffle).",
-    "testReferences": [],
-    "runtimeEvidence": "",
+    "destinationEntry": "jazebe_planet_raffle_preview",
+    "destinationFile": "integrations/jazebe/native/planet_client_read.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
+    "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
+      "integrations/jazebe/native/rpc_sweep_postgres_test.go"
+    ],
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6954,19 +7021,20 @@
     "methodPath": "planets/discover",
     "method": "GET",
     "path": "client/planets/discover",
-    "requestContract": "Nakama RPC jazebe_planet_list: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/module.go)",
+    "requestContract": "Nakama RPC jazebe_planet_discover: JSON payload carrying the source path/query/body parameters (see integrations/jazebe/native/planet_client_read.go)",
     "responseContract": "JSON object from the native RPC; field-level parity with the source DTO is not asserted unless a workflow test checks it",
     "serviceDependencies": [],
     "authorization": "Authenticated member (source JWT guard); native: Nakama session user ID plus guardJazebeRPC account-state check",
     "persistence": [],
-    "destinationEntry": "jazebe_planet_list",
-    "destinationFile": "integrations/jazebe/native/module.go",
-    "implementationStatus": "PARTIAL",
-    "behavioralDifferences": "PARTIAL: discovery list.",
+    "destinationEntry": "jazebe_planet_discover",
+    "destinationFile": "integrations/jazebe/native/planet_client_read.go",
+    "implementationStatus": "IMPLEMENTED",
+    "behavioralDifferences": "IMPLEMENTED: the Sky (jazebe_planet_list is a bare active-planet list kept for compatibility).",
     "testReferences": [
+      "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "Gate-level only: TestJazebeRPCSweepPostgres (auth, malformed input, no leaks); no workflow test",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -6990,9 +7058,10 @@
     "testReferences": [
       "integrations/jazebe/native/fixture_postgres_test.go",
       "integrations/jazebe/native/group_workflow_postgres_test.go",
+      "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: fixture_postgres_test.go, group_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: fixture_postgres_test.go, group_workflow_postgres_test.go, planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -7312,9 +7381,10 @@
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
       "integrations/jazebe/native/operator_workflow_postgres_test.go",
+      "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: operator_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: operator_workflow_postgres_test.go, planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -7648,9 +7718,10 @@
     "testReferences": [
       "integrations/jazebe/native/fixture_postgres_test.go",
       "integrations/jazebe/native/operator_workflow_postgres_test.go",
+      "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: fixture_postgres_test.go, operator_workflow_postgres_test.go; live HTTP on native Nakama 2026-10-23 (JZ-LIVE-01)",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: fixture_postgres_test.go, operator_workflow_postgres_test.go, planet_home_postgres_test.go; live HTTP on native Nakama 2026-10-23 (JZ-LIVE-01)",
     "frontendCoverage": "UNAUDITED"
   },
   {
@@ -7697,9 +7768,10 @@
     "behavioralDifferences": "IMPLEMENTED: business rules, authorization and persisted side effects exercised by the workflow test(s); HTTP envelope differs (Nakama RPC).",
     "testReferences": [
       "integrations/jazebe/native/operator_workflow_postgres_test.go",
+      "integrations/jazebe/native/planet_home_postgres_test.go",
       "integrations/jazebe/native/rpc_sweep_postgres_test.go"
     ],
-    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: operator_workflow_postgres_test.go",
+    "runtimeEvidence": "PostgreSQL 18.6 workflow PASS 2026-10-23: operator_workflow_postgres_test.go, planet_home_postgres_test.go",
     "frontendCoverage": "UNAUDITED"
   },
   {
