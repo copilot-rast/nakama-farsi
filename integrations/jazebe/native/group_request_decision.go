@@ -129,8 +129,10 @@ func groupDecideRequest(ctx context.Context, logger runtime.Logger, db *sql.DB, 
 			refusal = "already in group"
 		}
 	}
+	// The stored status is the source GroupJoinRequestStatus, not the decision verb.
+	decidedStatus := map[string]string{"approve": "approved", "reject": "rejected", "auto_cancelled": "auto_cancelled"}[decision]
 	if _, err := tx.ExecContext(ctx, `UPDATE jazebe_group_join_request
-		SET status=$2,decided_at=now(),decided_by_user_id=$3 WHERE id=$1`, input.RequestID, decision, actor); err != nil {
+		SET status=$2,decided_at=now(),decided_by_user_id=$3 WHERE id=$1`, input.RequestID, decidedStatus, actor); err != nil {
 		return "", status.Error(codes.Internal, "group decision failed")
 	}
 	if decision == "approve" {
