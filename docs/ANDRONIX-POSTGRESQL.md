@@ -91,7 +91,7 @@ Reverting means deleting Jazebe user data, so it is a deliberate, manual step:
 1. Stop Nakama.
 2. Take and verify a backup: `pg_dump -Fc -d <db> -f nakama-before-jazebe-rollback.dump`, then `pg_restore -l nakama-before-jazebe-rollback.dump | head`.
 3. Run `psql -d <db> -v ON_ERROR_STOP=1 -v jazebe_confirm=DROP_JAZEBE_DATA -f scripts/jazebe-rollback.sql`. In one transaction this drops every `jazebe_*` table and removes the Jazebe `migration_info` rows. Nakama core tables and users are not touched. Without the exact confirmation value, the script refuses.
-4. To restore the data instead, use `pg_restore` into a new database from the backup. To start fresh, run `nakama migrate up`, which re-applies the 33 Jazebe migrations.
+4. To restore the data instead, use `pg_restore` into a new database from the backup. To start fresh, run `nakama migrate up`, which re-applies every Jazebe migration (39 as of 2026-10-24).
 
 Distinguish the four cases:
 - **Transaction rollback:** automatic. A failed RPC or migration leaves nothing behind.

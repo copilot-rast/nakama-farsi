@@ -1,5 +1,18 @@
 # Remaining Jazebe migration work
 
+## Route parity progress (2026-10-24)
+
+`docs/integration/jazebe-route-parity.json` (validated by `go run ./scripts/jazebe_route_audit`): 131 IMPLEMENTED, 123 PARTIAL, 83 NOT_STARTED, 10 BLOCKED, 8 EQUIVALENT_NATIVE, 34 SOURCE_ONLY_NOT_APPLICABLE of 389 routes. IMPLEMENTED means a PostgreSQL workflow test exercises the RPC.
+
+Added in this batch: brand progression XP panel and level ladder; operator/me, operator directory and audit-log explorer; operator and brand-panel group views; group suspend/unsuspend/disband; staff member removal; planet member suspension. Migrations `20261024050000-jazebe-group-suspension` and `20261024060000-jazebe-planet-member-suspension` add nullable columns only.
+
+Deliberate adaptations:
+- Operator levels come from the `JAZEBE_*_OPERATOR_USER_IDS` deployment allowlists. `operators/:id/level` (route 286) is NOT_STARTED by design, because a database-backed registry would replace every operator check and needs an explicit decision.
+- Brand-panel staff RPCs take `planetId` (or `brandId` for lists) in place of the source `X-Product-ID` header. A group outside the addressed planet reads as not found.
+- Staff group and member audit rows carry `planet_id`. Like the existing group audit rows, they do not set `brand_id`.
+
+Next: wallet admin (91, 92), analytics (56–62), broadcasts (248–262), integrations/webhooks/public API (183–200), operations (275–283), audit exports (288–291), operator planet list/get (309, 310), planet domains (292, 316–319) and localization (1–20). After that, workflow tests for the PARTIAL routes.
+
 ## Native PostgreSQL follow-ups (2026-10-23)
 
 PostgreSQL integration is now runnable locally ([../ANDRONIX-POSTGRESQL.md](../ANDRONIX-POSTGRESQL.md)), and the 7 gated tests plus `TestJazebeSQLPreparesPostgres` pass. Next:
