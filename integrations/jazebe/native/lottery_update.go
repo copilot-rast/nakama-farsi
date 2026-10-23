@@ -104,7 +104,7 @@ func lotteryBrandUpdate(ctx context.Context, logger runtime.Logger, db *sql.DB, 
 	var userCap, groupCap sql.NullInt64
 	var minPrice, maxPrice int
 	var allowed bool
-	err = tx.QueryRowContext(ctx, `SELECT l.title,l.short_description,l.long_description,l.banner_asset,l.starts_at,l.draw_at,l.ticket_price_points,l.per_user_ticket_cap,l.per_group_ticket_cap,l.status,s.ticket_price_min,s.ticket_price_max,EXISTS(SELECT 1 FROM jazebe_brand_admin a WHERE a.brand_id=p.brand_id AND a.user_id=$3 AND a.is_active AND a.role IN ('main','marketing')) FROM jazebe_lottery l JOIN jazebe_planet p ON p.id=l.planet_id JOIN jazebe_planet_settings s ON s.planet_id=p.id WHERE l.id=$1 AND l.planet_id=$2 FOR UPDATE OF l`, req.LotteryID, req.PlanetID, actor).Scan(&draft.Title, &short, &long, &banner, &start, &draw, &draft.TicketPricePoints, &userCap, &groupCap, &state, &minPrice, &maxPrice, &allowed)
+	err = tx.QueryRowContext(ctx, `SELECT l.title,l.short_description,l.long_description,l.banner_asset,l.starts_at,l.draw_at,l.ticket_price_points,l.per_user_ticket_cap,l.per_group_ticket_cap,l.status,s.ticket_price_min,s.ticket_price_max,EXISTS(SELECT 1 FROM jazebe_active_brand_admin a WHERE a.brand_id=p.brand_id AND a.user_id=$3 AND a.is_active AND a.role IN ('main','marketing')) FROM jazebe_lottery l JOIN jazebe_planet p ON p.id=l.planet_id JOIN jazebe_planet_settings s ON s.planet_id=p.id WHERE l.id=$1 AND l.planet_id=$2 FOR UPDATE OF l`, req.LotteryID, req.PlanetID, actor).Scan(&draft.Title, &short, &long, &banner, &start, &draw, &draft.TicketPricePoints, &userCap, &groupCap, &state, &minPrice, &maxPrice, &allowed)
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", status.Error(codes.NotFound, "lottery not found")
 	}

@@ -187,7 +187,7 @@ func brandPlatformPolicyGet(ctx context.Context, _ runtime.Logger, db *sql.DB, _
 		return "", err
 	}
 	var allowed bool
-	if err = db.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM jazebe_brand_admin WHERE brand_id=$1 AND user_id=$2 AND is_active)`, in.BrandID, actor).Scan(&allowed); err != nil {
+	if err = db.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM jazebe_active_brand_admin WHERE brand_id=$1 AND user_id=$2 AND is_active)`, in.BrandID, actor).Scan(&allowed); err != nil {
 		return "", status.Error(codes.Internal, "brand authorization unavailable")
 	}
 	if !allowed {

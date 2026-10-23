@@ -77,7 +77,7 @@ func missionSetStatus(ctx context.Context, logger runtime.Logger, db *sql.DB, nk
 		return "", status.Error(codes.Internal, "mission transition failed")
 	}
 	var allowed bool
-	if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id
+	if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id
 		WHERE p.id=$1 AND a.user_id=$2 AND a.is_active)`, ref.PlanetID, actor).Scan(&allowed); err != nil {
 		return "", status.Error(codes.Internal, "mission authorization failed")
 	}

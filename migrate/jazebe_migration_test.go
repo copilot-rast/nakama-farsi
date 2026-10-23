@@ -40,6 +40,12 @@ func TestJazebeMigrationIsEmbedded(t *testing.T) {
 	if !found["20261023190000-jazebe-account-restriction.sql"] {
 		t.Fatal("Jazebe account restriction migration is missing")
 	}
+	if !found["20261024040000-jazebe-active-brand-admin.sql"] {
+		t.Fatal("Jazebe active brand administrator view migration is missing")
+	}
+	if !found["20261024030000-jazebe-brand-commercial.sql"] {
+		t.Fatal("Jazebe brand commercial record migration is missing")
+	}
 	if !found["20261024020000-jazebe-account-purge.sql"] {
 		t.Fatal("Jazebe account purge migration is missing")
 	}
@@ -58,6 +64,8 @@ func TestJazebeMigrationIsEmbedded(t *testing.T) {
 var jazebeReversibleDown = map[string]bool{
 	// Drops only a rate-limit counter table that holds no user data.
 	"20261023090000-jazebe-shop-rate.sql": true,
+	// Drops only a view.
+	"20261024040000-jazebe-active-brand-admin.sql": true,
 }
 
 var nonRerunnable = []*regexp.Regexp{

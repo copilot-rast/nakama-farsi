@@ -95,7 +95,7 @@ func mediaUploadBegin(ctx context.Context, logger runtime.Logger, db *sql.DB, _ 
 	}
 	var allowed bool
 	if input.Purpose == "mission_media" {
-		err = db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_brand_admin a
+		err = db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_active_brand_admin a
 			ON a.brand_id=p.brand_id WHERE p.id=$1 AND a.user_id=$2 AND a.is_active)`, input.PlanetID, user).Scan(&allowed)
 	} else {
 		err = db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_planet_membership m

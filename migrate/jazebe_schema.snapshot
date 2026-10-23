@@ -1,5 +1,11 @@
 # Jazebe schema after all migrations; regenerate with scripts/jazebe_schema_check -write from a fresh database.
 # postgres-major: 18
+column jazebe_active_brand_admin.brand_id uuid
+column jazebe_active_brand_admin.created_at timestamp with time zone
+column jazebe_active_brand_admin.full_name character varying(128)
+column jazebe_active_brand_admin.is_active boolean
+column jazebe_active_brand_admin.role character varying(16)
+column jazebe_active_brand_admin.user_id uuid
 column jazebe_audit_log.action character varying(64) not null
 column jazebe_audit_log.actor_id uuid
 column jazebe_audit_log.actor_type character varying(16) not null
@@ -11,11 +17,19 @@ column jazebe_audit_log.planet_id uuid
 column jazebe_audit_log.result character varying(8) not null default 'success'::character varying
 column jazebe_audit_log.target_id uuid
 column jazebe_audit_log.target_type character varying(64) not null
+column jazebe_brand.contact_address text
+column jazebe_brand.contact_email character varying(320)
+column jazebe_brand.contact_phone character varying(32)
+column jazebe_brand.contract_signed_at timestamp with time zone
+column jazebe_brand.contract_status character varying(16) not null default 'active'::character varying
 column jazebe_brand.created_at timestamp with time zone not null default now()
 column jazebe_brand.id uuid not null
 column jazebe_brand.is_active boolean not null default true
+column jazebe_brand.legal_name character varying(256)
 column jazebe_brand.name character varying(120) not null
+column jazebe_brand.national_company_id character varying(32)
 column jazebe_brand.owner_id uuid not null
+column jazebe_brand.updated_at timestamp with time zone not null default now()
 column jazebe_brand_admin.brand_id uuid not null
 column jazebe_brand_admin.created_at timestamp with time zone not null default now()
 column jazebe_brand_admin.full_name character varying(128) not null
@@ -604,6 +618,7 @@ column jazebe_xp_record.source_id uuid not null
 column jazebe_xp_record.user_id uuid not null
 constraint jazebe_audit_log jazebe_audit_log_actor_type_check CHECK (((actor_type)::text = ANY ((ARRAY['user'::character varying, 'brand_admin'::character varying, 'operator'::character varying, 'system'::character varying])::text[])))
 constraint jazebe_audit_log jazebe_audit_log_pkey PRIMARY KEY (id)
+constraint jazebe_brand jazebe_brand_contract_status_check CHECK (((contract_status)::text = ANY ((ARRAY['active'::character varying, 'suspended'::character varying, 'terminated'::character varying])::text[])))
 constraint jazebe_brand jazebe_brand_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
 constraint jazebe_brand jazebe_brand_pkey PRIMARY KEY (id)
 constraint jazebe_brand_admin jazebe_brand_admin_brand_id_fkey FOREIGN KEY (brand_id) REFERENCES jazebe_brand(id)
@@ -1010,6 +1025,7 @@ index jazebe_audit_log idx_jazebe_audit_target CREATE INDEX idx_jazebe_audit_tar
 index jazebe_audit_log jazebe_audit_log_pkey CREATE UNIQUE INDEX jazebe_audit_log_pkey ON public.jazebe_audit_log USING btree (id)
 index jazebe_brand idx_jazebe_brand_owner CREATE INDEX idx_jazebe_brand_owner ON public.jazebe_brand USING btree (owner_id, created_at DESC)
 index jazebe_brand jazebe_brand_pkey CREATE UNIQUE INDEX jazebe_brand_pkey ON public.jazebe_brand USING btree (id)
+index jazebe_brand uq_jazebe_brand_national_company_id CREATE UNIQUE INDEX uq_jazebe_brand_national_company_id ON public.jazebe_brand USING btree (national_company_id) WHERE (national_company_id IS NOT NULL)
 index jazebe_brand_admin jazebe_brand_admin_pkey CREATE UNIQUE INDEX jazebe_brand_admin_pkey ON public.jazebe_brand_admin USING btree (brand_id, user_id)
 index jazebe_brand_member idx_jazebe_brand_member_user CREATE INDEX idx_jazebe_brand_member_user ON public.jazebe_brand_member USING btree (user_id, brand_id)
 index jazebe_brand_member jazebe_brand_member_pkey CREATE UNIQUE INDEX jazebe_brand_member_pkey ON public.jazebe_brand_member USING btree (brand_id, user_id)

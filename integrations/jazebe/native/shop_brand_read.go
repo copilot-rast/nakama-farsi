@@ -52,7 +52,7 @@ func validateShopBrandList(in *shopBrandInput) error {
 func shopBrandAccess(ctx context.Context, db *sql.DB, planetID, actor string, write bool) (string, error) {
 	var brandID string
 	var role sql.NullString
-	err := db.QueryRowContext(ctx, `SELECT p.brand_id::text,(SELECT a.role FROM jazebe_brand_admin a WHERE a.brand_id=p.brand_id AND a.user_id=$2 AND a.is_active LIMIT 1) FROM jazebe_planet p WHERE p.id=$1`, planetID, actor).Scan(&brandID, &role)
+	err := db.QueryRowContext(ctx, `SELECT p.brand_id::text,(SELECT a.role FROM jazebe_active_brand_admin a WHERE a.brand_id=p.brand_id AND a.user_id=$2 AND a.is_active LIMIT 1) FROM jazebe_planet p WHERE p.id=$1`, planetID, actor).Scan(&brandID, &role)
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", status.Error(codes.NotFound, "planet not found")
 	}

@@ -173,7 +173,7 @@ func gameBrandList(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runtime.
 // manage them; an unrelated planet's administrator never can.
 func gameBrandAccess(ctx context.Context, db *sql.DB, planetID, user string) error {
 	var role sql.NullString
-	err := db.QueryRowContext(ctx, `SELECT a.role FROM jazebe_planet p JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id
+	err := db.QueryRowContext(ctx, `SELECT a.role FROM jazebe_planet p JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id
 		AND a.user_id=$2 AND a.is_active WHERE p.id=$1`, planetID, user).Scan(&role)
 	if errors.Is(err, sql.ErrNoRows) {
 		return status.Error(codes.PermissionDenied, "brand content role required")

@@ -47,7 +47,7 @@ func readPublishState(ctx context.Context, tx *sql.Tx, ownerID, planetID string)
 	var state string
 	err := tx.QueryRowContext(ctx, `SELECT p.status,p.name,COALESCE(p.short_description,''),p.category_id,
 		p.point_name,p.brand_color,p.icon_asset,p.glyph FROM jazebe_planet p
-		JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id AND a.user_id=$2
+		JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id AND a.user_id=$2
 			AND a.is_active AND a.role IN ('main','technical')
 		WHERE p.id=$1 FOR UPDATE OF p`,
 		planetID, ownerID).Scan(&state, &fields.name, &fields.shortDescription, &fields.categoryID,
@@ -159,7 +159,7 @@ func planetWithdrawPublish(ctx context.Context, logger runtime.Logger, db *sql.D
 	if err != nil {
 		return "", err
 	}
-	result, err := db.ExecContext(ctx, `UPDATE jazebe_planet p SET status='setup' FROM jazebe_brand_admin a
+	result, err := db.ExecContext(ctx, `UPDATE jazebe_planet p SET status='setup' FROM jazebe_active_brand_admin a
 		WHERE p.id=$1 AND p.brand_id=a.brand_id AND a.user_id=$2 AND a.is_active
 		AND a.role IN ('main','technical') AND p.status='pending_review'`, id, ownerID)
 	if err != nil {

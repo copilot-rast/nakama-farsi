@@ -36,7 +36,7 @@ func lotteryBrandMeta(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runti
 	var name string
 	var min, max int
 	var allowed bool
-	err = db.QueryRowContext(ctx, `SELECT p.point_name,s.ticket_price_min,s.ticket_price_max,EXISTS(SELECT 1 FROM jazebe_brand_admin a WHERE a.brand_id=p.brand_id AND a.user_id=$2 AND a.is_active) FROM jazebe_planet p JOIN jazebe_planet_settings s ON s.planet_id=p.id WHERE p.id=$1`, in.PlanetID, actor).Scan(&name, &min, &max, &allowed)
+	err = db.QueryRowContext(ctx, `SELECT p.point_name,s.ticket_price_min,s.ticket_price_max,EXISTS(SELECT 1 FROM jazebe_active_brand_admin a WHERE a.brand_id=p.brand_id AND a.user_id=$2 AND a.is_active) FROM jazebe_planet p JOIN jazebe_planet_settings s ON s.planet_id=p.id WHERE p.id=$1`, in.PlanetID, actor).Scan(&name, &min, &max, &allowed)
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", status.Error(codes.NotFound, "planet not found")
 	}
@@ -51,7 +51,7 @@ func lotteryBrandMeta(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runti
 
 func lotteryBrandAccess(ctx context.Context, db *sql.DB, planetID, actor string) error {
 	var allowed bool
-	err := db.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM jazebe_planet p JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id WHERE p.id=$1 AND a.user_id=$2 AND a.is_active)`, planetID, actor).Scan(&allowed)
+	err := db.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM jazebe_planet p JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id WHERE p.id=$1 AND a.user_id=$2 AND a.is_active)`, planetID, actor).Scan(&allowed)
 	if err != nil {
 		return status.Error(codes.Internal, "lottery authorization failed")
 	}

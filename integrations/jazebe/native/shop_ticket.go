@@ -70,7 +70,7 @@ func shopTicketCreate(ctx context.Context, logger runtime.Logger, db *sql.DB, _ 
 	defer tx.Rollback()
 	var min, max int
 	var allowed bool
-	err = tx.QueryRowContext(ctx, `SELECT s.ticket_price_min,s.ticket_price_max,EXISTS(SELECT 1 FROM jazebe_brand_admin a WHERE a.brand_id=p.brand_id AND a.user_id=$2 AND a.is_active AND a.role IN ('main','marketing')) FROM jazebe_planet p JOIN jazebe_planet_settings s ON s.planet_id=p.id WHERE p.id=$1`, in.PlanetID, actor).Scan(&min, &max, &allowed)
+	err = tx.QueryRowContext(ctx, `SELECT s.ticket_price_min,s.ticket_price_max,EXISTS(SELECT 1 FROM jazebe_active_brand_admin a WHERE a.brand_id=p.brand_id AND a.user_id=$2 AND a.is_active AND a.role IN ('main','marketing')) FROM jazebe_planet p JOIN jazebe_planet_settings s ON s.planet_id=p.id WHERE p.id=$1`, in.PlanetID, actor).Scan(&min, &max, &allowed)
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", status.Error(codes.NotFound, "planet not found")
 	}

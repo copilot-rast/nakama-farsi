@@ -121,7 +121,7 @@ func mediaMissionDraftCreate(ctx context.Context, logger runtime.Logger, db *sql
 	var pointMin, pointMax, ticketMax int
 	err = tx.QueryRowContext(ctx, `SELECT s.mission_reward_point_min,s.mission_reward_point_max,s.mission_reward_ticket_max
 		FROM jazebe_planet_settings s JOIN jazebe_planet p ON p.id=s.planet_id
-		JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id AND a.user_id=$2 AND a.is_active
+		JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id AND a.user_id=$2 AND a.is_active
 		WHERE p.id=$1`,
 		planetID, ownerID).Scan(&pointMin, &pointMax, &ticketMax)
 	if errors.Is(err, sql.ErrNoRows) {

@@ -78,7 +78,7 @@ func lotteryCancel(ctx context.Context, logger runtime.Logger, db *sql.DB, _ run
 	var state, title string
 	var price int
 	var allowed bool
-	err = tx.QueryRowContext(ctx, `SELECT l.status,l.title,l.ticket_price_points,EXISTS(SELECT 1 FROM jazebe_planet p JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id WHERE p.id=l.planet_id AND a.user_id=$3 AND a.is_active AND a.role IN ('main','marketing')) FROM jazebe_lottery l WHERE l.id=$1 AND l.planet_id=$2 FOR UPDATE OF l`, in.LotteryID, in.PlanetID, actor).Scan(&state, &title, &price, &allowed)
+	err = tx.QueryRowContext(ctx, `SELECT l.status,l.title,l.ticket_price_points,EXISTS(SELECT 1 FROM jazebe_planet p JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id WHERE p.id=l.planet_id AND a.user_id=$3 AND a.is_active AND a.role IN ('main','marketing')) FROM jazebe_lottery l WHERE l.id=$1 AND l.planet_id=$2 FOR UPDATE OF l`, in.LotteryID, in.PlanetID, actor).Scan(&state, &title, &price, &allowed)
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", status.Error(codes.NotFound, "lottery not found")
 	}

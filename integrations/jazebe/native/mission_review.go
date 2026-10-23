@@ -64,7 +64,7 @@ func mediaMissionReview(ctx context.Context, logger runtime.Logger, db *sql.DB, 
 	}
 	defer tx.Rollback()
 	var allowed bool
-	if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id
+	if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id
 		WHERE p.id=$1 AND a.user_id=$2 AND a.is_active)`, input.PlanetID, actor).Scan(&allowed); err != nil {
 		return "", status.Error(codes.Internal, "review authorization failed")
 	}
@@ -185,7 +185,7 @@ func missionReviewQueue(ctx context.Context, logger runtime.Logger, db *sql.DB, 
 		return "", status.Error(codes.InvalidArgument, "invalid pagination")
 	}
 	var allowed bool
-	if err := db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id
+	if err := db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id
 		WHERE p.id=$1 AND a.user_id=$2 AND a.is_active)`, planetID, actor).Scan(&allowed); err != nil {
 		return "", status.Error(codes.Internal, "review queue unavailable")
 	}

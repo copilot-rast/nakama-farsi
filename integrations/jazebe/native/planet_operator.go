@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"os"
 	"strings"
 
 	"github.com/heroiclabs/nakama-common/runtime"
@@ -25,12 +24,10 @@ var planetOperatorTransitions = map[string]operatorTransition{
 }
 
 func planetOperatorAction(ctx context.Context, logger runtime.Logger, db *sql.DB, payload, action string) (string, error) {
-	operatorID, err := userID(ctx)
+	// Source planet-admin.controller.ts: @RequireOperatorLevel(MANAGERIAL).
+	operatorID, err := managerialOperator(ctx)
 	if err != nil {
 		return "", err
-	}
-	if !isOperator(operatorID, os.Getenv("JAZEBE_OPERATOR_USER_IDS")) {
-		return "", status.Error(codes.PermissionDenied, "Jazebe operator role required")
 	}
 	var input struct {
 		PlanetID string `json:"planetId"`

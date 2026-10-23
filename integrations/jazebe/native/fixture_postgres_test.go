@@ -107,7 +107,8 @@ func newJazebeFixture(t *testing.T, members ...string) *jazebeFixture {
 	f.owner = f.user("owner")
 	t.Setenv("JAZEBE_OPERATOR_USER_IDS", f.operator)
 	t.Setenv("JAZEBE_SUPER_OPERATOR_USER_IDS", "")
-	t.Setenv("JAZEBE_MANAGERIAL_OPERATOR_USER_IDS", "")
+	// Brand creation and planet transitions are managerial (source RequireOperatorLevel).
+	t.Setenv("JAZEBE_MANAGERIAL_OPERATOR_USER_IDS", f.operator)
 	brand := f.ok(f.operator, "jazebe_brand_create", map[string]any{"name": "برند " + f.owner[:8], "ownerUserId": f.owner})
 	f.brandID = brand["id"].(string)
 	planet := f.ok(f.owner, "jazebe_planet_create", map[string]any{"brandId": f.brandID, "name": "سیاره " + f.owner[:8],

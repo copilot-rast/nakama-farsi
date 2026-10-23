@@ -40,7 +40,7 @@ func brandTeamList(ctx context.Context, logger runtime.Logger, db *sql.DB, _ run
 		return "", err
 	}
 	var allowed bool
-	if err := db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_brand_admin
+	if err := db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_active_brand_admin
 		WHERE brand_id=$1 AND user_id=$2 AND role='main' AND is_active)`, brandID, callerID).Scan(&allowed); err != nil {
 		logger.Error("Jazebe brand team access check failed: %v", err)
 		return "", status.Error(codes.Internal, "brand team unavailable")

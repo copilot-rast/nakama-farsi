@@ -71,7 +71,7 @@ func TestPlanetCategoryAndLifecyclePostgres(t *testing.T) {
 
 	transition := func(action string, payload map[string]any, from, to string) {
 		t.Helper()
-		f.ok(f.operator, "jazebe_planet_"+action, payload)
+		f.ok(manager, "jazebe_planet_"+action, payload)
 		var n int
 		n = f.count(`SELECT count(*) FROM jazebe_audit_log WHERE action=$1 AND target_id=$2 AND params->>'from'=$3 AND params->>'to'=$4`,
 			"planet."+action, planet, from, to)
@@ -84,19 +84,20 @@ func TestPlanetCategoryAndLifecyclePostgres(t *testing.T) {
 	}
 	f.ok(f.owner, "jazebe_planet_publish_request", pref)
 	f.fails(f.owner, "jazebe_planet_approve", pref, 7)
-	f.fails(f.operator, "jazebe_planet_reject", pref, 3)
+	f.fails(f.operator, "jazebe_planet_reject", map[string]any{"planetId": planet, "reason": "غیرمجاز"}, 7) // base operator
+	f.fails(manager, "jazebe_planet_reject", pref, 3)
 	transition("reject", map[string]any{"planetId": planet, "reason": "توضیحات ناقص است"}, "pending_review", "setup")
 	if n := f.count(`SELECT count(*) FROM jazebe_audit_log WHERE action='planet.reject' AND target_id=$1 AND params->>'reason'='توضیحات ناقص است'`, planet); n != 1 {
 		t.Error("rejection reason not audited")
 	}
 	f.ok(f.owner, "jazebe_planet_publish_request", pref)
 	transition("approve", pref, "pending_review", "active")
-	f.fails(f.operator, "jazebe_planet_approve", pref, 9)
-	f.fails(f.operator, "jazebe_planet_suspend", pref, 3)
+	f.fails(manager, "jazebe_planet_approve", pref, 9)
+	f.fails(manager, "jazebe_planet_suspend", pref, 3)
 	transition("suspend", map[string]any{"planetId": planet, "reason": "تخلف"}, "active", "suspended")
 	transition("unsuspend", pref, "suspended", "active")
 	transition("archive", map[string]any{"planetId": planet, "reason": "پایان همکاری"}, "active", "archived")
-	f.fails(f.operator, "jazebe_planet_archive", map[string]any{"planetId": planet, "reason": "دوباره"}, 9)
+	f.fails(manager, "jazebe_planet_archive", map[string]any{"planetId": planet, "reason": "دوباره"}, 9)
 
 	deleted := f.ok(manager, "jazebe_operator_planet_category_delete", map[string]any{"id": categoryID, "reason": "دسته تکراری"})
 	expectJSON(t, "deleted", deleted, map[string]any{"isActive": false})

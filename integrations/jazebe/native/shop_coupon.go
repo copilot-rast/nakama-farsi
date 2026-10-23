@@ -103,7 +103,7 @@ func couponProductCreate(ctx context.Context, logger runtime.Logger, db *sql.DB,
 	}
 	defer tx.Rollback()
 	var allowed bool
-	err = tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM jazebe_planet p JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id WHERE p.id=$1 AND a.user_id=$2 AND a.is_active AND a.role IN ('main','marketing'))`, in.PlanetID, actor).Scan(&allowed)
+	err = tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM jazebe_planet p JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id WHERE p.id=$1 AND a.user_id=$2 AND a.is_active AND a.role IN ('main','marketing'))`, in.PlanetID, actor).Scan(&allowed)
 	if err != nil {
 		return "", status.Error(codes.Internal, "product authorization unavailable")
 	}
@@ -167,7 +167,7 @@ func couponGenerate(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runtime
 	var kind, state string
 	var config []byte
 	var allowed bool
-	err = db.QueryRowContext(ctx, `SELECT p.type,p.status,p.type_config,EXISTS(SELECT 1 FROM jazebe_planet q JOIN jazebe_brand_admin a ON a.brand_id=q.brand_id WHERE q.id=p.planet_id AND a.user_id=$3 AND a.is_active AND a.role IN ('main','marketing')) FROM jazebe_shop_product p WHERE p.id=$1 AND p.planet_id=$2`, in.ProductID, in.PlanetID, actor).Scan(&kind, &state, &config, &allowed)
+	err = db.QueryRowContext(ctx, `SELECT p.type,p.status,p.type_config,EXISTS(SELECT 1 FROM jazebe_planet q JOIN jazebe_active_brand_admin a ON a.brand_id=q.brand_id WHERE q.id=p.planet_id AND a.user_id=$3 AND a.is_active AND a.role IN ('main','marketing')) FROM jazebe_shop_product p WHERE p.id=$1 AND p.planet_id=$2`, in.ProductID, in.PlanetID, actor).Scan(&kind, &state, &config, &allowed)
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", status.Error(codes.NotFound, "product not found")
 	}

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -72,6 +71,15 @@ func jazebeRPCEntries() []jazebeRPCEntry {
 	return []jazebeRPCEntry{
 		{"jazebe_brand_create", brandCreate},
 		{"jazebe_brand_list", brandList},
+		{"jazebe_brand_me", brandMe},
+		{"jazebe_operator_brand_list", operatorBrandList},
+		{"jazebe_operator_brand_get", operatorBrandGet},
+		{"jazebe_operator_brand_update", operatorBrandUpdate},
+		{"jazebe_operator_brand_contract", operatorBrandContract},
+		{"jazebe_operator_brand_admin_add", operatorBrandAdminAdd},
+		{"jazebe_operator_brand_admin_role", operatorBrandAdminRole},
+		{"jazebe_operator_brand_admin_deactivate", operatorBrandAdminDeactivate},
+		{"jazebe_operator_brand_admin_reactivate", operatorBrandAdminReactivate},
 		{"jazebe_profile_bootstrap", profileBootstrap},
 		{"jazebe_profile_terms_accept", profileTermsAccept},
 		{"jazebe_profile_name_available", profileNameAvailable},
@@ -146,6 +154,11 @@ func jazebeRPCEntries() []jazebeRPCEntry {
 		{"jazebe_wallet_transactions", walletTransactions},
 		{"jazebe_wallet_adjust", walletAdjust},
 		{"jazebe_brand_team_list", brandTeamList},
+		{"jazebe_brand_team_lookup", brandTeamLookup},
+		{"jazebe_brand_team_invite", brandTeamInvite},
+		{"jazebe_brand_team_role", brandTeamRole},
+		{"jazebe_brand_team_deactivate", brandTeamDeactivate},
+		{"jazebe_brand_team_reactivate", brandTeamReactivate},
 		{"jazebe_group_create", groupCreate},
 		{"jazebe_group_meta", groupMeta},
 		{"jazebe_group_name_availability", groupNameAvailability},
@@ -384,12 +397,10 @@ func encode(value any) (string, error) {
 }
 
 func brandCreate(ctx context.Context, logger runtime.Logger, db *sql.DB, _ runtime.NakamaModule, payload string) (string, error) {
-	operatorID, err := userID(ctx)
+	// Source planet-admin.controller.ts: @RequireOperatorLevel(MANAGERIAL).
+	operatorID, err := managerialOperator(ctx)
 	if err != nil {
 		return "", err
-	}
-	if !isOperator(operatorID, os.Getenv("JAZEBE_OPERATOR_USER_IDS")) {
-		return "", status.Error(codes.PermissionDenied, "Jazebe operator role required")
 	}
 	var input struct {
 		Name        string `json:"name"`
@@ -543,7 +554,7 @@ func planetCreate(ctx context.Context, logger runtime.Logger, db *sql.DB, _ runt
 	}
 	defer tx.Rollback()
 	var owned bool
-	if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_brand_admin
+	if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_active_brand_admin
 		WHERE brand_id = $1 AND user_id = $2 AND is_active AND role IN ('main','technical'))`, brandID, ownerID).Scan(&owned); err != nil {
 		logger.Error("Jazebe brand ownership lookup failed: %v", err)
 		return "", status.Error(codes.Internal, "planet creation failed")

@@ -165,7 +165,7 @@ func lotteryBrandDelivery(ctx context.Context, _ runtime.Logger, db *sql.DB, _ r
 	defer tx.Rollback()
 	var from, prizeTitle, lotteryTitle string
 	var allowed bool
-	err = tx.QueryRowContext(ctx, `SELECT w.delivery_status,p.title,l.title,EXISTS(SELECT 1 FROM jazebe_planet pl JOIN jazebe_brand_admin a ON a.brand_id=pl.brand_id WHERE pl.id=l.planet_id AND a.user_id=$4 AND a.is_active AND a.role IN ('main','marketing')) FROM jazebe_lottery_winner w JOIN jazebe_lottery l ON l.id=w.lottery_id JOIN jazebe_lottery_prize p ON p.id=w.prize_id WHERE w.id=$1 AND w.lottery_id=$2 AND w.planet_id=$3 FOR UPDATE OF w`, in.WinnerID, in.LotteryID, in.PlanetID, actor).Scan(&from, &prizeTitle, &lotteryTitle, &allowed)
+	err = tx.QueryRowContext(ctx, `SELECT w.delivery_status,p.title,l.title,EXISTS(SELECT 1 FROM jazebe_planet pl JOIN jazebe_active_brand_admin a ON a.brand_id=pl.brand_id WHERE pl.id=l.planet_id AND a.user_id=$4 AND a.is_active AND a.role IN ('main','marketing')) FROM jazebe_lottery_winner w JOIN jazebe_lottery l ON l.id=w.lottery_id JOIN jazebe_lottery_prize p ON p.id=w.prize_id WHERE w.id=$1 AND w.lottery_id=$2 AND w.planet_id=$3 FOR UPDATE OF w`, in.WinnerID, in.LotteryID, in.PlanetID, actor).Scan(&from, &prizeTitle, &lotteryTitle, &allowed)
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", status.Error(codes.NotFound, "winner not found")
 	}

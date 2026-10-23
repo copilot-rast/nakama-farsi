@@ -126,7 +126,7 @@ func codeMissionDraftCreate(ctx context.Context, logger runtime.Logger, db *sql.
 	defer tx.Rollback()
 	var min, max, ticketMax int
 	err = tx.QueryRowContext(ctx, `SELECT s.mission_reward_point_min,s.mission_reward_point_max,s.mission_reward_ticket_max FROM jazebe_planet_settings s
-		JOIN jazebe_planet p ON p.id=s.planet_id JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id
+		JOIN jazebe_planet p ON p.id=s.planet_id JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id
 		WHERE p.id=$1 AND a.user_id=$2 AND a.is_active`, planetID, actor).Scan(&min, &max, &ticketMax)
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", status.Error(codes.PermissionDenied, "active brand administrator required")
@@ -200,7 +200,7 @@ func codeMissionActivate(ctx context.Context, logger runtime.Logger, db *sql.DB,
 		return "", status.Error(codes.Internal, "code activation failed")
 	}
 	var allowed bool
-	if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id
+	if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id
 		WHERE p.id=$1 AND a.user_id=$2 AND a.is_active)`, ref.PlanetID, actor).Scan(&allowed); err != nil {
 		return "", status.Error(codes.Internal, "code authorization failed")
 	}
@@ -311,7 +311,7 @@ func codeMissionGenerate(ctx context.Context, logger runtime.Logger, db *sql.DB,
 		return "", status.Error(codes.Internal, "code generation failed")
 	}
 	var allowed bool
-	if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id
+	if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_planet p JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id
 		WHERE p.id=$1 AND a.user_id=$2 AND a.is_active)`, ref.PlanetID, actor).Scan(&allowed); err != nil {
 		return "", status.Error(codes.Internal, "code authorization failed")
 	}
@@ -542,7 +542,7 @@ func codeMissionCodes(ctx context.Context, logger runtime.Logger, db *sql.DB, _ 
 	}
 	var allowed bool
 	err = db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM jazebe_mission m JOIN jazebe_planet p ON p.id=m.planet_id
-		JOIN jazebe_brand_admin a ON a.brand_id=p.brand_id WHERE m.id=$1 AND m.planet_id=$2
+		JOIN jazebe_active_brand_admin a ON a.brand_id=p.brand_id WHERE m.id=$1 AND m.planet_id=$2
 		AND m.functional_type='code_entry' AND a.user_id=$3 AND a.is_active)`, ref.MissionID, ref.PlanetID, actor).Scan(&allowed)
 	if err != nil {
 		return "", status.Error(codes.Internal, "code stock unavailable")

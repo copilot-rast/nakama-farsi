@@ -142,7 +142,7 @@ func brandPlanetUpdate(ctx context.Context, logger runtime.Logger, db *sql.DB, n
 	defer tx.Rollback()
 	var brandID, planetStatus string
 	err = tx.QueryRowContext(ctx, `SELECT p.brand_id, p.status FROM jazebe_planet p
-		JOIN jazebe_brand_admin a ON a.brand_id = p.brand_id AND a.user_id=$2
+		JOIN jazebe_active_brand_admin a ON a.brand_id = p.brand_id AND a.user_id=$2
 			AND a.is_active AND a.role IN ('main','technical')
 		WHERE p.id = $1 FOR UPDATE OF p`, planetID, ownerID).Scan(&brandID, &planetStatus)
 	if errors.Is(err, sql.ErrNoRows) {
