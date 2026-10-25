@@ -129,12 +129,23 @@ func TestStaffMemberModerationPostgres(t *testing.T) {
 		t.Errorf("member count %d", n)
 	}
 
-	// Planet member suspension.
+	// Planet member suspension. The stored fan counter must track active memberships.
+	fansMatch := func(when string) int {
+		stored := f.count(`SELECT fans_count FROM jazebe_planet WHERE id=$1`, f.planetID)
+		if active := f.count(`SELECT count(*) FROM jazebe_planet_membership WHERE planet_id=$1 AND is_active`, f.planetID); stored != active {
+			t.Errorf("%s: fans_count %d, active memberships %d", when, stored, active)
+		}
+		return stored
+	}
+	fansBefore := fansMatch("before suspension")
 	suspend := map[string]any{"planetId": f.planetID, "userId": u["lead"], "reason": "تخلف در سیاره"}
 	f.fails(tech, "jazebe_brand_member_suspend", suspend, 7)
 	f.fails(f.owner, "jazebe_brand_member_suspend", map[string]any{"planetId": f.planetID, "userId": u["lead"], "reason": "x"}, 3)
 	f.ok(f.owner, "jazebe_brand_member_suspend", suspend)
 	f.fails(f.owner, "jazebe_brand_member_suspend", suspend, 9)
+	if n := fansMatch("after suspension"); n != fansBefore-1 {
+		t.Errorf("suspension changed fans_count %d -> %d", fansBefore, n)
+	}
 	f.fails(u["lead"], "jazebe_group_chat_send", map[string]any{"planetId": f.planetID, "groupId": group, "text": "سلام"}, 7)
 	if n := f.count(`SELECT count(*) FROM notification WHERE code=1001 AND user_id=$1 AND subject='دسترسی تو به سیاره محدود شد'`, u["lead"]); n != 1 {
 		t.Errorf("suspension notice %d", n)
@@ -154,6 +165,9 @@ func TestStaffMemberModerationPostgres(t *testing.T) {
 	f.fails(tech, "jazebe_brand_suspended_members", map[string]any{"brandId": f.brandID}, 7)
 	f.fails(f.owner, "jazebe_brand_member_unsuspend", map[string]any{"planetId": f.planetID, "userId": u["other"], "reason": "رفع تعلیق"}, 9)
 	f.ok(f.owner, "jazebe_brand_member_unsuspend", map[string]any{"planetId": f.planetID, "userId": u["lead"], "reason": "رفع تعلیق"})
+	if n := fansMatch("after unsuspension"); n != fansBefore {
+		t.Errorf("unsuspension left fans_count %d, want %d", n, fansBefore)
+	}
 	f.ok(u["lead"], "jazebe_group_chat_send", map[string]any{"planetId": f.planetID, "groupId": group, "text": "برگشتم"})
 	if n := len(f.ok(f.owner, "jazebe_brand_suspended_members", map[string]any{"brandId": f.brandID})["items"].([]any)); n != 0 {
 		t.Errorf("lifted suspension still listed: %d", n)

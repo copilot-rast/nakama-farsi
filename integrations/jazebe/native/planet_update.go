@@ -165,7 +165,7 @@ func brandPlanetUpdate(ctx context.Context, logger runtime.Logger, db *sql.DB, n
 		}
 	}
 	if newName != nil {
-		if _, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(774102, hashtext($1))`, brandID); err != nil {
+		if err := lockXact(ctx, tx, "774102:"+brandID); err != nil {
 			return "", status.Error(codes.Internal, "planet update failed")
 		}
 		var duplicate bool

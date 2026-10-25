@@ -202,7 +202,7 @@ func referralMissionLink(ctx context.Context, _ runtime.Logger, db *sql.DB, _ ru
 			return "", err
 		}
 	}
-	if _, err = tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "jazebe_referral_link:"+ref.MissionID+":"+user); err != nil {
+	if err = lockXact(ctx, tx, "jazebe_referral_link:"+ref.MissionID+":"+user); err != nil {
 		return "", err
 	}
 	var token string
@@ -288,7 +288,7 @@ func referralAccept(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runtime
 		return "", err
 	}
 	defer tx.Rollback()
-	if _, err = tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "jazebe_referral_user:"+user); err != nil {
+	if err = lockXact(ctx, tx, "jazebe_referral_user:"+user); err != nil {
 		return "", err
 	}
 	invite, err := referralLookup(ctx, tx, token)
@@ -325,7 +325,7 @@ func referralAccept(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runtime
 	if invite.MissionID.Valid && !referralMissionAcceptAllowed(ctx) {
 		return "", status.Error(codes.FailedPrecondition, "accept mission invitation through group join-by-invite")
 	}
-	if _, err = tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "jazebe_referral_attr:"+invite.Inviter+":"+user+":"+invite.MissionID.String); err != nil {
+	if err = lockXact(ctx, tx, "jazebe_referral_attr:"+invite.Inviter+":"+user+":"+invite.MissionID.String); err != nil {
 		return "", err
 	}
 	var already string

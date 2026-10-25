@@ -48,7 +48,7 @@ func groupJoin(ctx context.Context, logger runtime.Logger, db *sql.DB, _ runtime
 		return "", status.Error(codes.Internal, "group join unavailable")
 	}
 	defer tx.Rollback()
-	if _, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(774103,hashtext($1))`, ref.PlanetID+user); err != nil {
+	if err := lockXact(ctx, tx, "774103:"+ref.PlanetID+user); err != nil {
 		return "", status.Error(codes.Internal, "group join unavailable")
 	}
 	var mode, groupStatus, planetStatus, name string

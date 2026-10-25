@@ -616,6 +616,8 @@ column jazebe_user_verification.status character varying(16) not null default 'n
 column jazebe_user_verification.updated_at timestamp with time zone not null default now()
 column jazebe_user_verification.user_id uuid not null
 column jazebe_user_verification.verified_at timestamp with time zone
+column jazebe_xact_lock.lock_key bigint not null
+column jazebe_xact_lock.locked_at timestamp with time zone not null default now()
 column jazebe_xp_record.amount integer not null
 column jazebe_xp_record.created_at timestamp with time zone not null default now()
 column jazebe_xp_record.id uuid not null
@@ -1023,6 +1025,7 @@ constraint jazebe_user_report jazebe_user_report_subject_type_check CHECK (((sub
 constraint jazebe_user_verification jazebe_user_verification_pkey PRIMARY KEY (user_id)
 constraint jazebe_user_verification jazebe_user_verification_status_check CHECK (((status)::text = ANY ((ARRAY['none'::character varying, 'review'::character varying, 'verified'::character varying, 'rejected'::character varying])::text[])))
 constraint jazebe_user_verification jazebe_user_verification_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+constraint jazebe_xact_lock jazebe_xact_lock_pkey PRIMARY KEY (lock_key)
 constraint jazebe_xp_record jazebe_xp_record_amount_check CHECK ((amount > 0))
 constraint jazebe_xp_record jazebe_xp_record_pkey PRIMARY KEY (id)
 constraint jazebe_xp_record jazebe_xp_record_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES jazebe_planet(id)
@@ -1187,5 +1190,6 @@ index jazebe_user_report jazebe_user_report_pkey CREATE UNIQUE INDEX jazebe_user
 index jazebe_user_report uq_jazebe_profile_report_open CREATE UNIQUE INDEX uq_jazebe_profile_report_open ON public.jazebe_user_report USING btree (planet_id, reporter_user_id, subject_type, subject_id) WHERE (((status)::text = 'open'::text) AND ((subject_type)::text = 'profile'::text))
 index jazebe_user_report uq_jazebe_user_report_open CREATE UNIQUE INDEX uq_jazebe_user_report_open ON public.jazebe_user_report USING btree (planet_id, reporter_user_id, subject_type, subject_id) WHERE (((status)::text = ANY ((ARRAY['open'::character varying, 'reviewing'::character varying])::text[])) AND ((subject_type)::text = ANY ((ARRAY['message'::character varying, 'group'::character varying])::text[])))
 index jazebe_user_verification jazebe_user_verification_pkey CREATE UNIQUE INDEX jazebe_user_verification_pkey ON public.jazebe_user_verification USING btree (user_id)
+index jazebe_xact_lock jazebe_xact_lock_pkey CREATE UNIQUE INDEX jazebe_xact_lock_pkey ON public.jazebe_xact_lock USING btree (lock_key)
 index jazebe_xp_record jazebe_xp_record_pkey CREATE UNIQUE INDEX jazebe_xp_record_pkey ON public.jazebe_xp_record USING btree (id)
 index jazebe_xp_record jazebe_xp_record_planet_id_user_id_source_source_id_key CREATE UNIQUE INDEX jazebe_xp_record_planet_id_user_id_source_source_id_key ON public.jazebe_xp_record USING btree (planet_id, user_id, source, source_id)

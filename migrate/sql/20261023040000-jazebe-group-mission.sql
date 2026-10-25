@@ -1,9 +1,14 @@
 -- Group mission completions are distinct from each contributor's completion.
--- +migrate Up
+-- +migrate Up notransaction
 ALTER TABLE jazebe_mission_completion ALTER COLUMN user_id DROP NOT NULL;
-ALTER TABLE jazebe_mission_completion ADD COLUMN IF NOT EXISTS group_id UUID REFERENCES jazebe_group(id);
-ALTER TABLE jazebe_mission_completion ADD COLUMN IF NOT EXISTS awarded_tickets INTEGER NOT NULL DEFAULT 0 CHECK (awarded_tickets >= 0);
-ALTER TABLE jazebe_mission_completion DROP CONSTRAINT IF EXISTS jazebe_completion_has_owner, ADD CONSTRAINT jazebe_completion_has_owner CHECK (user_id IS NOT NULL OR group_id IS NOT NULL);
+ALTER TABLE jazebe_mission_completion ADD COLUMN IF NOT EXISTS group_id UUID;
+ALTER TABLE jazebe_mission_completion DROP CONSTRAINT IF EXISTS jazebe_mission_completion_group_id_fkey;
+ALTER TABLE jazebe_mission_completion ADD CONSTRAINT jazebe_mission_completion_group_id_fkey FOREIGN KEY (group_id) REFERENCES jazebe_group(id);
+ALTER TABLE jazebe_mission_completion ADD COLUMN IF NOT EXISTS awarded_tickets INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE jazebe_mission_completion DROP CONSTRAINT IF EXISTS jazebe_mission_completion_awarded_tickets_check;
+ALTER TABLE jazebe_mission_completion ADD CONSTRAINT jazebe_mission_completion_awarded_tickets_check CHECK (awarded_tickets >= 0);
+ALTER TABLE jazebe_mission_completion DROP CONSTRAINT IF EXISTS jazebe_completion_has_owner;
+ALTER TABLE jazebe_mission_completion ADD CONSTRAINT jazebe_completion_has_owner CHECK (user_id IS NOT NULL OR group_id IS NOT NULL);
 CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_group_mission_completion ON jazebe_mission_completion(mission_id,group_id) WHERE user_id IS NULL AND group_id IS NOT NULL AND status='approved' AND deleted_at IS NULL;
 CREATE INDEX IF NOT EXISTS idx_jazebe_mission_completion_group ON jazebe_mission_completion(group_id,mission_id,status) WHERE group_id IS NOT NULL;
 CREATE TABLE IF NOT EXISTS jazebe_group_mission_progress (

@@ -17,7 +17,7 @@ type referralJob struct{ mission, inviter, planet string }
 
 func inviteCompleteIfReachedTx(ctx context.Context, tx *sql.Tx, job referralJob, now time.Time) (string, error) {
 	ref := missionRef{MissionID: job.mission, PlanetID: job.planet}
-	if _, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "jazebe_referral_completion:"+job.mission+":"+job.inviter); err != nil {
+	if err := lockXact(ctx, tx, "jazebe_referral_completion:"+job.mission+":"+job.inviter); err != nil {
 		return "", err
 	}
 	m, err := loadInviteMission(ctx, tx, ref)

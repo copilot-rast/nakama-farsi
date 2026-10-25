@@ -82,6 +82,14 @@ func TestSnapshotDetectsDriftPostgres(t *testing.T) {
 	if err := conn.QueryRow(ctx, `SELECT current_database()`).Scan(&name); err != nil || !strings.HasSuffix(name, "_disposable") {
 		t.Fatalf("refusing non-disposable database %q (%v)", name, err)
 	}
+	var version string
+	if err := conn.QueryRow(ctx, `SELECT version()`).Scan(&version); err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(version, "CockroachDB") {
+		// The probe relies on PostgreSQL's transactional DDL rollback and catalog text.
+		t.Skip("schema drift snapshot is PostgreSQL-only; CockroachDB NOT_RUN")
+	}
 	before, err := Snapshot(ctx, conn)
 	if err != nil {
 		t.Fatal(err)

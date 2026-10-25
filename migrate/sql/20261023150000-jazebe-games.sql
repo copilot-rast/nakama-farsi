@@ -1,5 +1,5 @@
 -- Server-authoritative game rounds, distinct from Nakama login sessions.
--- +migrate Up
+-- +migrate Up notransaction
 CREATE TABLE IF NOT EXISTS jazebe_game_template (
     id UUID PRIMARY KEY,
     key VARCHAR(64) NOT NULL UNIQUE,
@@ -79,7 +79,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_game_session_open ON jazebe_game_ses
 CREATE INDEX IF NOT EXISTS idx_jazebe_game_session_game_user ON jazebe_game_session(game_id,user_id,started_at DESC);
 CREATE INDEX IF NOT EXISTS idx_jazebe_game_session_planet_user ON jazebe_game_session(planet_id,user_id,status);
 ALTER TABLE jazebe_progression_event DROP CONSTRAINT IF EXISTS jazebe_progression_event_kind_check;
-ALTER TABLE jazebe_progression_event DROP CONSTRAINT IF EXISTS jazebe_progression_event_kind_check, ADD CONSTRAINT jazebe_progression_event_kind_check
+ALTER TABLE jazebe_progression_event ADD CONSTRAINT jazebe_progression_event_kind_check
     CHECK(kind IN ('purchase','group_join','mission','game'));
 -- +migrate Down
 -- Preserve paid rounds, rewards, and qualification history for manual rollback.

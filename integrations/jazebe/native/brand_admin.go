@@ -363,7 +363,7 @@ func operatorBrandAdminAdd(ctx context.Context, logger runtime.Logger, db *sql.D
 	if contract == "terminated" {
 		return "", status.Error(codes.FailedPrecondition, "brand contract terminated")
 	}
-	if _, err = tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "jz-brand-team:"+in.BrandID); err != nil {
+	if err = lockXact(ctx, tx, "jz-brand-team:"+in.BrandID); err != nil {
 		return "", status.Error(codes.Internal, "brand team unavailable")
 	}
 	target, _, err := brandTeamUser(ctx, tx, in)

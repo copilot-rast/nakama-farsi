@@ -78,6 +78,14 @@ func brandMemberSetSuspended(suspend bool) func(context.Context, runtime.Logger,
 			}
 			return "", status.Error(codes.FailedPrecondition, "PLANET_MEMBER_NOT_SUSPENDED: member is not suspended")
 		}
+		// fans_count counts active memberships, as the migration backfill and reconcile do.
+		delta := 1
+		if suspend {
+			delta = -1
+		}
+		if _, err := tx.ExecContext(ctx, `UPDATE jazebe_planet SET fans_count=GREATEST(fans_count+$2,0) WHERE id=$1`, in.PlanetID, delta); err != nil {
+			return "", status.Error(codes.Internal, "member moderation failed")
+		}
 		title, body, action := "دسترسی تو به سیاره محدود شد", "مدیریت سیاره «"+planetName+"» حضور تو را معلق کرد. دلیل: "+in.Reason, "planet.member.suspend"
 		if !suspend {
 			title, body, action = "دسترسی تو به سیاره برگشت", "دسترسی تو به سیاره «"+planetName+"» دوباره برقرار شد.", "planet.member.unsuspend"

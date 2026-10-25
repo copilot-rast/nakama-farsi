@@ -1,7 +1,9 @@
 -- Mission medals are processed after the approved completion commits.
--- +migrate Up
+-- +migrate Up notransaction
+-- An inline CHECK is named jazebe_progression_event_kind_check by PostgreSQL and check_kind by CockroachDB.
+ALTER TABLE jazebe_progression_event DROP CONSTRAINT IF EXISTS check_kind;
 ALTER TABLE jazebe_progression_event DROP CONSTRAINT IF EXISTS jazebe_progression_event_kind_check;
-ALTER TABLE jazebe_progression_event DROP CONSTRAINT IF EXISTS jazebe_progression_event_kind_check, ADD CONSTRAINT jazebe_progression_event_kind_check
+ALTER TABLE jazebe_progression_event ADD CONSTRAINT jazebe_progression_event_kind_check
     CHECK (kind IN ('purchase','group_join','mission')) NOT VALID;
 -- +migrate Down
 -- Retain pending mission events; restoring the narrower check would discard work.

@@ -60,6 +60,16 @@ func TestJazebeMigrationReplayPostgres(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%s: %v", file, err)
 		}
+		// Replay the way sql-migrate applies it: notransaction sections run
+		// statement by statement, as CockroachDB requires for them.
+		if m.DisableTransactionUp {
+			for _, stmt := range m.Up {
+				if _, err := conn.Exec(f.ctx, stmt); err != nil {
+					t.Fatalf("replaying %s failed: %v\n%s", filepath.Base(file), err, strings.TrimSpace(stmt))
+				}
+			}
+			continue
+		}
 		tx, err := conn.Begin(f.ctx)
 		if err != nil {
 			t.Fatal(err)

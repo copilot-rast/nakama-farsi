@@ -48,7 +48,7 @@ func shopPurchaseRate(ctx context.Context, db *sql.DB, user string) error {
 	now := time.Now().UTC()
 	var count int
 	var started time.Time
-	err = db.QueryRowContext(ctx, `INSERT INTO jazebe_shop_purchase_rate(user_id,window_started_at,count) VALUES($1,$2,1) ON CONFLICT(user_id) DO UPDATE SET window_started_at=CASE WHEN jazebe_shop_purchase_rate.window_started_at<=$2::timestamptz-make_interval(secs=>$3) THEN $2 ELSE jazebe_shop_purchase_rate.window_started_at END,count=CASE WHEN jazebe_shop_purchase_rate.window_started_at<=$2::timestamptz-make_interval(secs=>$3) THEN 1 ELSE jazebe_shop_purchase_rate.count+1 END RETURNING count,window_started_at`, user, now, window).Scan(&count, &started)
+	err = db.QueryRowContext(ctx, `INSERT INTO jazebe_shop_purchase_rate(user_id,window_started_at,count) VALUES($1,$2,1) ON CONFLICT(user_id) DO UPDATE SET window_started_at=CASE WHEN jazebe_shop_purchase_rate.window_started_at<=$2::timestamptz-$3::INT8*INTERVAL '1 second' THEN $2 ELSE jazebe_shop_purchase_rate.window_started_at END,count=CASE WHEN jazebe_shop_purchase_rate.window_started_at<=$2::timestamptz-$3::INT8*INTERVAL '1 second' THEN 1 ELSE jazebe_shop_purchase_rate.count+1 END RETURNING count,window_started_at`, user, now, window).Scan(&count, &started)
 	if err != nil {
 		return status.Error(codes.Internal, "purchase rate limit unavailable")
 	}

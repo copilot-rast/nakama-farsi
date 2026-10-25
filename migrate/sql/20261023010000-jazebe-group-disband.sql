@@ -1,6 +1,8 @@
 -- Preserve the actor of a disband operation for audit and source response parity.
--- +migrate Up
-ALTER TABLE jazebe_group ADD COLUMN IF NOT EXISTS disbanded_by_user_id UUID REFERENCES users(id);
+-- +migrate Up notransaction
+ALTER TABLE jazebe_group ADD COLUMN IF NOT EXISTS disbanded_by_user_id UUID;
+ALTER TABLE jazebe_group DROP CONSTRAINT IF EXISTS jazebe_group_disbanded_by_user_id_fkey;
+ALTER TABLE jazebe_group ADD CONSTRAINT jazebe_group_disbanded_by_user_id_fkey FOREIGN KEY (disbanded_by_user_id) REFERENCES users(id);
 
 -- +migrate Down
 -- Disband history is intentionally retained.

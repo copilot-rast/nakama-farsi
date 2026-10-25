@@ -12,6 +12,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -23,6 +25,9 @@ const reconcileSQL = `WITH counts AS (
 )
 UPDATE jazebe_planet p SET fans_count = counts.fans
   FROM counts WHERE p.id = counts.id AND p.fans_count <> counts.fans`
+
+// reconcileLockKey is the fan reconciliation's row in jazebe_xact_lock.
+const reconcileLockKey int64 = 774101
 
 // Wallet balances are caches of the append-only ledger. Report drift for
 // operator investigation; never silently change money in reconciliation.
@@ -116,13 +121,22 @@ func reconcile(ctx context.Context, db *sql.DB) (int64, error) {
 		return 0, err
 	}
 	defer tx.Rollback()
-	var acquired bool
-	// Transaction-scoped lock prevents duplicate runs across Nakama deployments.
-	if err := tx.QueryRowContext(ctx, `SELECT pg_try_advisory_xact_lock(774101, 1)`).Scan(&acquired); err != nil {
-		return 0, err
-	}
-	if !acquired {
+	// A locked jazebe_xact_lock row prevents duplicate runs across Nakama
+	// deployments; CockroachDB has no advisory locks. NOWAIT reports a running
+	// reconciliation instead of queueing behind it.
+	var key int64
+	err = tx.QueryRowContext(ctx, `SELECT lock_key FROM jazebe_xact_lock WHERE lock_key = $1 FOR UPDATE NOWAIT`, reconcileLockKey).Scan(&key)
+	var pgErr *pgconn.PgError
+	switch {
+	case errors.As(err, &pgErr) && pgErr.Code == pgerrcode.LockNotAvailable:
 		return 0, errors.New("planet fan reconciliation is already running")
+	case errors.Is(err, sql.ErrNoRows):
+		// First run: the inserted row stays locked until this transaction ends.
+		if _, err = tx.ExecContext(ctx, `INSERT INTO jazebe_xact_lock (lock_key) VALUES ($1)`, reconcileLockKey); err != nil {
+			return 0, err
+		}
+	case err != nil:
+		return 0, err
 	}
 	result, err := tx.ExecContext(ctx, reconcileSQL)
 	if err != nil {

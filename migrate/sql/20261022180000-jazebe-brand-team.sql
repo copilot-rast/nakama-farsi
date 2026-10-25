@@ -1,5 +1,5 @@
 -- Brand tenant roles map directly to Nakama user UUIDs.
--- +migrate Up
+-- +migrate Up notransaction
 CREATE TABLE IF NOT EXISTS jazebe_brand_member (
     brand_id UUID NOT NULL REFERENCES jazebe_brand (id),
     user_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,

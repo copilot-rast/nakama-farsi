@@ -1,11 +1,13 @@
 -- Who suspended a member from a planet, when and why (source
 -- BrandModerationService.setMemberSuspended, phase 14). is_active stays the
 -- switch every planet guard reads.
--- +migrate Up
+-- +migrate Up notransaction
 ALTER TABLE jazebe_planet_membership
     ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMPTZ,
-    ADD COLUMN IF NOT EXISTS suspended_by_user_id UUID REFERENCES users(id),
+    ADD COLUMN IF NOT EXISTS suspended_by_user_id UUID,
     ADD COLUMN IF NOT EXISTS suspended_reason VARCHAR(512);
+ALTER TABLE jazebe_planet_membership DROP CONSTRAINT IF EXISTS jazebe_planet_membership_suspended_by_user_id_fkey;
+ALTER TABLE jazebe_planet_membership ADD CONSTRAINT jazebe_planet_membership_suspended_by_user_id_fkey FOREIGN KEY (suspended_by_user_id) REFERENCES users(id);
 CREATE INDEX IF NOT EXISTS idx_jazebe_planet_membership_suspended ON jazebe_planet_membership (planet_id, suspended_at DESC) WHERE NOT is_active;
 
 -- +migrate Down

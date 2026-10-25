@@ -1,9 +1,11 @@
 -- Operator purge (source admin-support.service.ts purge, PRD 12.2): personal
 -- data is erased and the identity anonymized while business records stay.
--- +migrate Up
+-- +migrate Up notransaction
 ALTER TABLE jazebe_user_account
     ADD COLUMN IF NOT EXISTS purged_at TIMESTAMPTZ,
-    ADD COLUMN IF NOT EXISTS purged_by_operator_id UUID REFERENCES users (id);
+    ADD COLUMN IF NOT EXISTS purged_by_operator_id UUID;
+ALTER TABLE jazebe_user_account DROP CONSTRAINT IF EXISTS jazebe_user_account_purged_by_operator_id_fkey;
+ALTER TABLE jazebe_user_account ADD CONSTRAINT jazebe_user_account_purged_by_operator_id_fkey FOREIGN KEY (purged_by_operator_id) REFERENCES users (id);
 
 -- +migrate Down
 -- The purge marker records an irreversible erasure.

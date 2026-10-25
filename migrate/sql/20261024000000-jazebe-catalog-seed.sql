@@ -4,24 +4,31 @@
 -- Without categories no planet can pass the publish check. Safe to re-run;
 -- existing rows and operator edits are never overwritten.
 
--- +migrate Up
+-- +migrate Up notransaction
 ALTER TABLE jazebe_planet_category
     ADD COLUMN IF NOT EXISTS key VARCHAR(64),
     ADD COLUMN IF NOT EXISTS title_en VARCHAR(128),
     ADD COLUMN IF NOT EXISTS sort_order INTEGER NOT NULL DEFAULT 0,
-    ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users (id),
-    ADD COLUMN IF NOT EXISTS updated_by UUID REFERENCES users (id),
-    ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES users (id),
+    ADD COLUMN IF NOT EXISTS created_by UUID,
+    ADD COLUMN IF NOT EXISTS updated_by UUID,
+    ADD COLUMN IF NOT EXISTS deleted_by UUID,
     ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
+ALTER TABLE jazebe_planet_category DROP CONSTRAINT IF EXISTS jazebe_planet_category_created_by_fkey;
+ALTER TABLE jazebe_planet_category ADD CONSTRAINT jazebe_planet_category_created_by_fkey FOREIGN KEY (created_by) REFERENCES users (id);
+ALTER TABLE jazebe_planet_category DROP CONSTRAINT IF EXISTS jazebe_planet_category_updated_by_fkey;
+ALTER TABLE jazebe_planet_category ADD CONSTRAINT jazebe_planet_category_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES users (id);
+ALTER TABLE jazebe_planet_category DROP CONSTRAINT IF EXISTS jazebe_planet_category_deleted_by_fkey;
+ALTER TABLE jazebe_planet_category ADD CONSTRAINT jazebe_planet_category_deleted_by_fkey FOREIGN KEY (deleted_by) REFERENCES users (id);
 
 -- Categories created before keys existed keep a stable, unique derived key.
 UPDATE jazebe_planet_category SET key = 'legacy_' || replace(id::text, '-', '') WHERE key IS NULL;
 ALTER TABLE jazebe_planet_category ALTER COLUMN key SET NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_planet_category_key ON jazebe_planet_category (key);
 ALTER TABLE jazebe_planet_category
-    DROP CONSTRAINT IF EXISTS jazebe_planet_category_key_format,
+    DROP CONSTRAINT IF EXISTS jazebe_planet_category_key_format;
+ALTER TABLE jazebe_planet_category
     ADD CONSTRAINT jazebe_planet_category_key_format CHECK (key ~ '^[a-z0-9_]{2,64}$');
 
 INSERT INTO jazebe_planet_category (id, key, title_fa, title_en, sort_order) VALUES

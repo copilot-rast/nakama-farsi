@@ -1,8 +1,11 @@
 -- Group chat is planet scoped. Global sequence supports descending cursor pages.
 -- +migrate Up
+-- BIGSERIAL spelled out: CockroachDB would otherwise fill seq from
+-- unique_rowid(), whose values exceed the 2^53 a JSON client reads exactly.
+CREATE SEQUENCE IF NOT EXISTS jazebe_group_message_seq_seq;
 CREATE TABLE IF NOT EXISTS jazebe_group_message (
     id UUID PRIMARY KEY,
-    seq BIGSERIAL NOT NULL UNIQUE,
+    seq BIGINT NOT NULL DEFAULT nextval('jazebe_group_message_seq_seq') UNIQUE,
     planet_id UUID NOT NULL REFERENCES jazebe_planet(id),
     group_id UUID NOT NULL REFERENCES jazebe_group(id),
     sender_user_id UUID REFERENCES users(id),
@@ -15,6 +18,7 @@ CREATE TABLE IF NOT EXISTS jazebe_group_message (
     deleted_as_admin BOOLEAN NOT NULL DEFAULT false,
     CONSTRAINT jazebe_group_message_body CHECK (kind <> 'text' OR (body IS NOT NULL AND char_length(body) BETWEEN 1 AND 2000))
 );
+ALTER SEQUENCE jazebe_group_message_seq_seq OWNED BY jazebe_group_message.seq;
 CREATE INDEX IF NOT EXISTS idx_jazebe_group_message_page ON jazebe_group_message(group_id,seq DESC);
 CREATE INDEX IF NOT EXISTS idx_jazebe_group_message_rate ON jazebe_group_message(group_id,sender_user_id,created_at DESC) WHERE kind='text';
 CREATE TABLE IF NOT EXISTS jazebe_group_message_read (

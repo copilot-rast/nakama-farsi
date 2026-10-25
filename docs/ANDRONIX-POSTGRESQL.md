@@ -60,7 +60,7 @@ sudo andronix-postgres stop
 
 ## Migrations
 
-Nakama embeds all 53 migrations: 20 upstream, then 33 Jazebe (`20261022120000` and later). They are applied in timestamp order, each in its own transaction, and recorded in `migration_info`. `20261024000000-jazebe-catalog-seed` adds the source's planet categories (12) and library medals (9).
+Nakama embeds all 53 migrations: 20 upstream, then 33 Jazebe (`20261022120000` and later). They are applied in timestamp order and recorded in `migration_info`. Each runs in its own transaction, except the Jazebe migrations marked `notransaction` for CockroachDB, which run statement by statement (see `docs/integration/cockroachdb-migrations.md`). `20261024000000-jazebe-catalog-seed` adds the source's planet categories (12) and library medals (9).
 
 ```sh
 export PATH=$HOME/.local/go/bin:$PATH
@@ -70,7 +70,7 @@ go build -mod=vendor -o ~/.local/share/nakama-farsi/nakama .
 
 - On an empty database, a first run applies 53 migrations and a second run applies 0.
 - The Jazebe migrations only add `jazebe_*` objects. Their only link to Nakama core tables is foreign keys to `users`.
-- **Re-runnable:** every Jazebe Up section uses `IF NOT EXISTS` for tables, indexes and columns, and drops a named constraint before re-adding it. Seeds use `ON CONFLICT DO NOTHING`, so operator edits are never overwritten. `TestJazebeMigrationReplayPostgres` replays all 33 Up sections over a database that already holds data and checks the schema and data are unchanged. `TestJazebeMigrationsAreRerunnableAndRefuseDown` enforces this for future migrations.
+- **Re-runnable:** every Jazebe Up section uses `IF NOT EXISTS` for tables, indexes and columns, and drops a named constraint in its own statement before re-adding it. Seeds use `ON CONFLICT DO NOTHING`, so operator edits are never overwritten. `TestJazebeMigrationReplayPostgres` replays all 33 Up sections over a database that already holds data and checks the schema and data are unchanged. `TestJazebeMigrationsAreRerunnableAndRefuseDown` enforces this for future migrations.
 - **No automatic rollback:** a Jazebe Down section raises an error instead of running. `nakama migrate down` therefore stops at the newest Jazebe migration, its transaction rolls back and `migration_info` stays consistent. Previously, data-retaining Downs were `SELECT 1;`: they removed the tracking row but left the tables, so the next `migrate up` failed. The one exception, `20261023090000-jazebe-shop-rate`, drops only a rate-limit counter table, and is only reachable after the newer Jazebe migrations.
 
 ### Detecting schema drift

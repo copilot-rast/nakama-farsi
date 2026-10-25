@@ -129,7 +129,7 @@ func gameStart(ctx context.Context, _ runtime.Logger, db *sql.DB, _ runtime.Naka
 	}
 	defer tx.Rollback()
 	// Serialize starts per game/player across all Nakama nodes.
-	if _, err = tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "jazebe_game:"+gameID+":"+user); err != nil {
+	if err = lockXact(ctx, tx, "jazebe_game:"+gameID+":"+user); err != nil {
 		return "", err
 	}
 	g, err := loadPlayableGame(ctx, tx, planetID, gameID)

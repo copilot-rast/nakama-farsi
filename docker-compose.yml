@@ -40,6 +40,37 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
+      # A slow first start or recovery is not reported unhealthy.
+      start_period: 120s
+
+
+  # One-shot schema migration. It runs once per deployment, after
+  # CockroachDB reports ready, and the server starts only if it exits 0. A
+  # failure stops the deployment instead of restarting in a loop.
+  nakama-migrate:
+    build:
+      context: .
+      dockerfile: build/Dockerfile.local
+    image: nakama-farsi:local
+
+    entrypoint:
+      - "/bin/sh"
+      - "-ec"
+      - >
+        /nakama/nakama migrate up
+        --database.address root@cockroachdb:26257
+
+    restart: "no"
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "150m"
+        max-file: "3"
+
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
 
 
   nakama:
@@ -50,12 +81,13 @@ services:
       dockerfile: build/Dockerfile.local
     image: nakama-farsi:local
 
+    # Migrations run in nakama-migrate. The server itself refuses to start
+    # while migrations are pending ("DB schema outdated").
+    # -e without -x: tracing would print the secret flags below.
     entrypoint:
       - "/bin/sh"
-      - "-ecx"
+      - "-ec"
       - >
-        /nakama/nakama migrate up
-        --database.address root@cockroachdb:26257 &&
         exec /nakama/nakama
         --name nakama1
         --database.address root@cockroachdb:26257
@@ -94,6 +126,8 @@ services:
     depends_on:
       cockroachdb:
         condition: service_healthy
+      nakama-migrate:
+        condition: service_completed_successfully
 
     # Internal Docker ports only.
     # Dokploy/Traefik routes:

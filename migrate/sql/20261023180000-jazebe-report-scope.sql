@@ -1,9 +1,11 @@
 -- Scope open reports to the planet. The older uniqueness key prevented the
 -- same reporter from reporting one person in a different planet.
--- +migrate Up
+-- +migrate Up notransaction
+-- An inline CHECK is named jazebe_user_report_subject_type_check by PostgreSQL and check_subject_type by CockroachDB.
+ALTER TABLE jazebe_user_report DROP CONSTRAINT IF EXISTS check_subject_type;
 ALTER TABLE jazebe_user_report DROP CONSTRAINT IF EXISTS jazebe_user_report_subject_type_check;
 UPDATE jazebe_user_report SET subject_type='profile' WHERE subject_type='user';
-ALTER TABLE jazebe_user_report DROP CONSTRAINT IF EXISTS jazebe_user_report_subject_type_check, ADD CONSTRAINT jazebe_user_report_subject_type_check
+ALTER TABLE jazebe_user_report ADD CONSTRAINT jazebe_user_report_subject_type_check
     CHECK (subject_type IN ('message','group','profile'));
 DROP INDEX IF EXISTS uq_jazebe_user_report_open;
 CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_user_report_open ON jazebe_user_report

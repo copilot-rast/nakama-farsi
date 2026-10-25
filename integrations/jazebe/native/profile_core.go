@@ -267,10 +267,10 @@ func profileSetName(ctx context.Context, logger runtime.Logger, db *sql.DB, payl
 	if !active {
 		return "", status.Error(codes.PermissionDenied, "account unavailable")
 	}
-	if _, err = tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "jazebe_profile_user:"+user); err != nil {
+	if err = lockXact(ctx, tx, "jazebe_profile_user:"+user); err != nil {
 		return "", err
 	}
-	if _, err = tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "jazebe_profile_name:"+strings.ToLower(name)); err != nil {
+	if err = lockXact(ctx, tx, "jazebe_profile_name:"+strings.ToLower(name)); err != nil {
 		return "", err
 	}
 	var old string

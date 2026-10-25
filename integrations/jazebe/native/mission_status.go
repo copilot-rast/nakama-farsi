@@ -63,7 +63,7 @@ func missionSetStatus(ctx context.Context, logger runtime.Logger, db *sql.DB, nk
 	}
 	defer tx.Rollback()
 	// Two administrators must not both pause the last two simple missions.
-	if _, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(774103,hashtext($1))`, ref.PlanetID); err != nil {
+	if err := lockXact(ctx, tx, "774103:"+ref.PlanetID); err != nil {
 		return "", status.Error(codes.Internal, "mission transition failed")
 	}
 	var current, target string

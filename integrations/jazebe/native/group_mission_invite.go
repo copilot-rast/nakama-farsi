@@ -125,7 +125,7 @@ func missionInviteJoin(ctx context.Context, logger runtime.Logger, db *sql.DB, u
 	if err != nil {
 		return "", err
 	}
-	if _, err = tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(774103,hashtext($1))`, invite.PlanetID+user); err != nil {
+	if err = lockXact(ctx, tx, "774103:"+invite.PlanetID+user); err != nil {
 		return "", err
 	}
 	if err = requireUsablePlanetMembership(ctx, tx, invite.PlanetID, user); err != nil {

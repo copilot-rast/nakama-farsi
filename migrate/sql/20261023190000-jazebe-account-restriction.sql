@@ -1,6 +1,6 @@
 -- Track the core ban owned by Jazebe so a later native Nakama ban is never
 -- cleared by an operator's Jazebe unsuspend action.
--- +migrate Up
+-- +migrate Up notransaction
 ALTER TABLE jazebe_user_account
     ADD COLUMN IF NOT EXISTS core_disable_time TIMESTAMPTZ,
     ADD COLUMN IF NOT EXISTS session_revocation_pending BOOLEAN NOT NULL DEFAULT false;

@@ -1,5 +1,5 @@
 -- Platform-wide bounds used by medal, mission, group and planet settings.
--- +migrate Up
+-- +migrate Up notransaction
 CREATE TABLE IF NOT EXISTS jazebe_platform_policy (
     id UUID PRIMARY KEY,
     key VARCHAR(16) NOT NULL UNIQUE CHECK (key='default'),

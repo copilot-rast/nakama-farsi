@@ -228,7 +228,7 @@ func groupInviteJoin(ctx context.Context, logger runtime.Logger, db *sql.DB, _ r
 		return "", status.Error(codes.Internal, "group invite join unavailable")
 	}
 	defer tx.Rollback()
-	if _, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(774103,hashtext($1))`, planetID+user); err != nil {
+	if err := lockXact(ctx, tx, "774103:"+planetID+user); err != nil {
 		return "", status.Error(codes.Internal, "group invite join unavailable")
 	}
 	var groupStatus, planetStatus string

@@ -40,6 +40,9 @@ func TestJazebeMigrationIsEmbedded(t *testing.T) {
 	if !found["20261023190000-jazebe-account-restriction.sql"] {
 		t.Fatal("Jazebe account restriction migration is missing")
 	}
+	if !found["20261025000000-jazebe-xact-lock.sql"] {
+		t.Fatal("Jazebe transaction lock migration is missing")
+	}
 	if !found["20261024060000-jazebe-planet-member-suspension.sql"] {
 		t.Fatal("Jazebe planet member suspension migration is missing")
 	}
@@ -76,6 +79,7 @@ var jazebeReversibleDown = map[string]bool{
 
 var nonRerunnable = []*regexp.Regexp{
 	regexp.MustCompile(`(?i)\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?`),
+	regexp.MustCompile(`(?i)\bCREATE\s+SEQUENCE\s+(?:IF\s+NOT\s+EXISTS\s+)?`),
 	regexp.MustCompile(`(?i)\bCREATE\s+(?:UNIQUE\s+)?INDEX\s+(?:IF\s+NOT\s+EXISTS\s+)?`),
 	regexp.MustCompile(`(?i)\bADD\s+COLUMN\s+(?:IF\s+NOT\s+EXISTS\s+)?`),
 	regexp.MustCompile(`(?i)\bDROP\s+CONSTRAINT\s+(?:IF\s+EXISTS\s+)?`),
@@ -87,13 +91,20 @@ func TestJazebeMigrationsAreRerunnableAndRefuseDown(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	addConstraint := regexp.MustCompile(`(?i)ALTER\s+TABLE\s+(\w+)\s+((?:DROP\s+CONSTRAINT\s+IF\s+EXISTS\s+(\w+)\s*,\s*)?)ADD\s+CONSTRAINT\s+(\w+)`)
+	// CockroachDB rejects re-adding a constraint name dropped in the same
+	// statement or transaction, so the drop is its own statement and the
+	// migration runs with notransaction.
+	combined := regexp.MustCompile(`(?i)DROP\s+CONSTRAINT\s+IF\s+EXISTS\s+\w+\s*,\s*ADD\s+CONSTRAINT`)
+	dropConstraint := regexp.MustCompile(`(?i)DROP\s+CONSTRAINT\s+IF\s+EXISTS\s+(\w+)`)
+	addConstraint := regexp.MustCompile(`(?i)ADD\s+CONSTRAINT\s+(\w+)`)
+	inlineColumnConstraint := regexp.MustCompile(`(?i)ADD\s+COLUMN\s+IF\s+NOT\s+EXISTS\s+\w+\s+[^,;]*\b(?:REFERENCES|CHECK)\b`)
 	checked := 0
 	for _, m := range migrations {
 		if !strings.Contains(m.Id, "jazebe-") {
 			continue
 		}
 		checked++
+		dropped := make(map[string]bool)
 		for _, stmt := range m.Up {
 			for _, re := range nonRerunnable {
 				for _, match := range re.FindAllString(stmt, -1) {
@@ -102,10 +113,21 @@ func TestJazebeMigrationsAreRerunnableAndRefuseDown(t *testing.T) {
 					}
 				}
 			}
+			if inlineColumnConstraint.MatchString(stmt) {
+				t.Errorf("%s: name ADD COLUMN constraints separately; CockroachDB adds an inline REFERENCES or CHECK again on every replay", m.Id)
+			}
+			if combined.MatchString(stmt) {
+				t.Errorf("%s: DROP CONSTRAINT and ADD CONSTRAINT must be separate statements for CockroachDB", m.Id)
+			}
 			for _, match := range addConstraint.FindAllStringSubmatch(stmt, -1) {
-				if match[3] == "" || match[3] != match[4] {
-					t.Errorf("%s: ADD CONSTRAINT %s must be preceded by DROP CONSTRAINT IF EXISTS of the same name", m.Id, match[4])
+				if !dropped[match[1]] {
+					t.Errorf("%s: ADD CONSTRAINT %s must be preceded by DROP CONSTRAINT IF EXISTS of the same name", m.Id, match[1])
+				} else if !m.DisableTransactionUp {
+					t.Errorf("%s: re-adds constraint %s, so its Up section must be notransaction for CockroachDB", m.Id, match[1])
 				}
+			}
+			for _, match := range dropConstraint.FindAllStringSubmatch(stmt, -1) {
+				dropped[match[1]] = true
 			}
 		}
 		down := strings.Join(m.Down, "\n")

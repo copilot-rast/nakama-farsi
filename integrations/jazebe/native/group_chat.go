@@ -217,7 +217,7 @@ func groupChatSend(ctx context.Context, logger runtime.Logger, db *sql.DB, nk ru
 	if _, err := chatMember(ctx, tx, ref, user, true); err != nil {
 		return "", err
 	}
-	if _, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(774104,hashtext($1))`, ref.GroupID+user); err != nil {
+	if err := lockXact(ctx, tx, "774104:"+ref.GroupID+user); err != nil {
 		return "", status.Error(codes.Internal, "chat rate check failed")
 	}
 	var recent int

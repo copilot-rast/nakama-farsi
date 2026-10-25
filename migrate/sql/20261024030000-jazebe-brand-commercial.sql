@@ -1,7 +1,7 @@
 -- The brand's commercial record (source jz_brand, PRD 12.3.4). The existing
 -- name column is the trade name and is_active stays the tenant switch every
 -- brand-scoped query already checks; contract_status drives it.
--- +migrate Up
+-- +migrate Up notransaction
 ALTER TABLE jazebe_brand
     ADD COLUMN IF NOT EXISTS legal_name VARCHAR(256),
     ADD COLUMN IF NOT EXISTS national_company_id VARCHAR(32),
@@ -14,7 +14,8 @@ ALTER TABLE jazebe_brand
 -- Brands deactivated before contracts existed read as suspended.
 UPDATE jazebe_brand SET contract_status='suspended' WHERE NOT is_active AND contract_status='active';
 ALTER TABLE jazebe_brand
-    DROP CONSTRAINT IF EXISTS jazebe_brand_contract_status_check,
+    DROP CONSTRAINT IF EXISTS jazebe_brand_contract_status_check;
+ALTER TABLE jazebe_brand
     ADD CONSTRAINT jazebe_brand_contract_status_check CHECK (contract_status IN ('active', 'suspended', 'terminated'));
 CREATE UNIQUE INDEX IF NOT EXISTS uq_jazebe_brand_national_company_id ON jazebe_brand (national_company_id) WHERE national_company_id IS NOT NULL;
 

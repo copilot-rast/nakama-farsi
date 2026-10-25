@@ -5,6 +5,8 @@ on:
       - 'integrations/jazebe/**'
       - 'migrate/**'
       - 'scripts/jazebe_route_audit/**'
+      - 'scripts/jazebe-cockroach-migration-check.sh'
+      - 'docker-compose.yml'
       - 'docs/integration/jazebe-http-routes.md'
       - 'docs/integration/jazebe-route-parity.json'
       - '.github/workflows/jazebe-migrations.yaml'
@@ -59,4 +61,27 @@ jobs:
           if "$RUNNER_TEMP/nakama" migrate down --limit 1 --database.address postgres:localdb@127.0.0.1:5432/jazebe_test_disposable; then
             echo "Jazebe migrate down unexpectedly succeeded"; exit 1
           fi
-          test "$(PGPASSWORD=localdb psql -h 127.0.0.1 -U postgres -d jazebe_test_disposable -tAc 'select count(*) from migration_info')" = 53
+          test "$(PGPASSWORD=localdb psql -h 127.0.0.1 -U postgres -d jazebe_test_disposable -tAc 'select count(*) from migration_info')" = 60
+
+  # Production runs CockroachDB, whose schema-change rules differ from
+  # PostgreSQL's (docs/integration/cockroachdb-migrations.md).
+  profile_cockroachdb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: Build Nakama
+        run: go build -mod=vendor -trimpath -o "$RUNNER_TEMP/nakama" .
+      - name: Fresh install and production-state upgrade on CockroachDB v24.1.33
+        run: scripts/jazebe-cockroach-migration-check.sh "$RUNNER_TEMP/nakama"
+      - name: Start a disposable CockroachDB for the workflow tests
+        run: |
+          docker run -d --name crdb -p 127.0.0.1:26257:26257 cockroachdb/cockroach:v24.1.33 start-single-node --insecure
+          for i in $(seq 1 60); do docker exec crdb cockroach sql --insecure -e 'CREATE DATABASE IF NOT EXISTS jazebe_test_disposable' && break; sleep 1; done
+          "$RUNNER_TEMP/nakama" migrate up --database.address root@127.0.0.1:26257/jazebe_test_disposable
+      - name: Exercise every workflow, sweep, replay and SQL prepare test on CockroachDB
+        env:
+          JAZEBE_DISPOSABLE_TEST_DB_URL: postgresql://root@127.0.0.1:26257/jazebe_test_disposable?sslmode=disable
+        run: go test -mod=vendor ./integrations/jazebe/... -run 'Postgres' -count=1 -v

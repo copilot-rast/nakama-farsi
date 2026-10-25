@@ -125,7 +125,7 @@ func mediaUploadBegin(ctx context.Context, logger runtime.Logger, db *sql.DB, _ 
 	}
 	defer tx.Rollback()
 	// Serialize ticket issuance per Nakama user across all Nakama nodes.
-	if _, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(774102, hashtext($1))`, user); err != nil {
+	if err := lockXact(ctx, tx, "774102:"+user); err != nil {
 		return "", status.Error(codes.Internal, "upload rate limit unavailable")
 	}
 	var recent int

@@ -129,7 +129,7 @@ func brandTeamAudit(ctx context.Context, tx *sql.Tx, actorType, action, actor, b
 
 // lockBrandTeam serializes team changes per brand and returns the target.
 func lockBrandTeam(ctx context.Context, tx *sql.Tx, brandID, memberID string) (role string, active bool, err error) {
-	if _, err = tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "jz-brand-team:"+brandID); err != nil {
+	if err = lockXact(ctx, tx, "jz-brand-team:"+brandID); err != nil {
 		return "", false, status.Error(codes.Internal, "brand team unavailable")
 	}
 	err = tx.QueryRowContext(ctx, `SELECT role,is_active FROM jazebe_brand_admin WHERE brand_id=$1 AND user_id=$2`, brandID, memberID).Scan(&role, &active)
@@ -177,7 +177,7 @@ func brandTeamInvite(ctx context.Context, logger runtime.Logger, db *sql.DB, nk 
 	if err := requireMainBrandAdmin(ctx, tx, in.BrandID, actor); err != nil {
 		return "", err
 	}
-	if _, err = tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtext($1))`, "jz-brand-team:"+in.BrandID); err != nil {
+	if err = lockXact(ctx, tx, "jz-brand-team:"+in.BrandID); err != nil {
 		return "", status.Error(codes.Internal, "brand team unavailable")
 	}
 	target, _, err := brandTeamUser(ctx, tx, in)

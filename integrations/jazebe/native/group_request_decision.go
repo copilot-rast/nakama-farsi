@@ -70,7 +70,7 @@ func groupDecideRequest(ctx context.Context, logger runtime.Logger, db *sql.DB, 
 	if err != nil {
 		return "", status.Error(codes.Internal, "group request unavailable")
 	}
-	if _, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(774103,hashtext($1))`, input.PlanetID+applicant); err != nil {
+	if err := lockXact(ctx, tx, "774103:"+input.PlanetID+applicant); err != nil {
 		return "", status.Error(codes.Internal, "group decision unavailable")
 	}
 	var groupStatus, name string

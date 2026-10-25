@@ -1,6 +1,6 @@
 -- Mission actions and per-planet point economy. All payout rows share the
 -- completion transaction; Nakama's separate wallet transaction is not used.
--- +migrate Up
+-- +migrate Up notransaction
 CREATE TABLE IF NOT EXISTS jazebe_mission_completion (
     id UUID PRIMARY KEY,
     planet_id UUID NOT NULL REFERENCES jazebe_planet (id),
@@ -58,7 +58,8 @@ CREATE TABLE IF NOT EXISTS jazebe_point_transaction (
     UNIQUE (wallet_id,seq)
 );
 CREATE INDEX IF NOT EXISTS idx_jazebe_point_transaction_user_seq ON jazebe_point_transaction (planet_id,user_id,seq DESC);
-ALTER TABLE jazebe_mission_completion DROP CONSTRAINT IF EXISTS jazebe_completion_point_transaction_fk, ADD CONSTRAINT jazebe_completion_point_transaction_fk
+ALTER TABLE jazebe_mission_completion DROP CONSTRAINT IF EXISTS jazebe_completion_point_transaction_fk;
+ALTER TABLE jazebe_mission_completion ADD CONSTRAINT jazebe_completion_point_transaction_fk
     FOREIGN KEY (point_transaction_id) REFERENCES jazebe_point_transaction (id);
 CREATE TABLE IF NOT EXISTS jazebe_xp_record (
     id UUID PRIMARY KEY,
