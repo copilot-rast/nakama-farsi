@@ -1,6 +1,69 @@
+# PostgreSQL connection for nakama-migrate and nakama, set in Dokploy's
+# Environment tab (or .env). The bundled postgres service is initialised with
+# the same DB_NAME, DB_USER and DB_PASSWORD. DB_URL, when set, replaces the
+# individual fields for the two Nakama services. build/nakama-db.sh turns
+# these into the Nakama database address; see
+# docs/integration/database-configuration.md and .env.example.
+x-database-env: &database-env
+  DB_HOST: ${DB_HOST:-postgres}
+  DB_PORT: ${DB_PORT:-5432}
+  DB_NAME: ${DB_NAME:-nakama}
+  DB_USER: ${DB_USER:-nakama}
+  DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in the Dokploy Environment tab}
+  DB_SSL_MODE: ${DB_SSL_MODE:-}
+  DB_SSL_ROOT_CERT: ${DB_SSL_ROOT_CERT:-}
+  DB_URL: ${DB_URL:-}
+  DB_WAIT_TIMEOUT_SECONDS: ${DB_WAIT_TIMEOUT_SECONDS:-120}
+
 services:
 
+  postgres:
+    image: postgres:16.8-alpine
+
+    restart: unless-stopped
+
+    # Resource limits
+    mem_limit: 2g
+    memswap_limit: 2g
+    cpus: "1"
+
+    # Prevent unbounded Docker logs
+    logging:
+      driver: json-file
+      options:
+        max-size: "150m"
+        max-file: "3"
+
+    # Read on the first start of an empty volume only. Changing them later
+    # does not change an existing role or password.
+    environment:
+      POSTGRES_DB: ${DB_NAME:-nakama}
+      POSTGRES_USER: ${DB_USER:-nakama}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in the Dokploy Environment tab}
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    expose:
+      - "5432"
+
+    # Over TCP, so the temporary socket-only server of the first
+    # initialisation is not reported ready.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -q -h 127.0.0.1 -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+      start_period: 120s
+
+
+  # Legacy CockroachDB, kept only as the source of the one-time import into
+  # PostgreSQL (DB_IMPORT_FROM_COCKROACH). Nothing else connects to it. Its
+  # profile keeps `up` from starting or removing it: an existing container
+  # stays as it is, with its data volume. After a verified import it can be
+  # removed; see docs/integration/database-configuration.md.
   cockroachdb:
+    profiles: ["cockroach-import"]
     image: cockroachdb/cockroach:latest-v24.1
 
     command:
@@ -44,21 +107,26 @@ services:
       start_period: 120s
 
 
-  # One-shot schema migration. It runs once per deployment, after
-  # CockroachDB reports ready, and the server starts only if it exits 0. A
-  # failure stops the deployment instead of restarting in a loop.
+  # One-shot schema migration. It runs once per deployment, waits up to
+  # DB_WAIT_TIMEOUT_SECONDS for PostgreSQL to resolve and accept connections,
+  # imports the legacy CockroachDB data once into an empty PostgreSQL, and the
+  # server starts only if it exits 0. A failure stops the deployment instead
+  # of restarting in a loop.
   nakama-migrate:
     build:
       context: .
       dockerfile: build/Dockerfile.local
     image: nakama-farsi:local
 
-    entrypoint:
-      - "/bin/sh"
-      - "-ec"
-      - >
-        /nakama/nakama migrate up
-        --database.address root@cockroachdb:26257
+    entrypoint: ["/nakama/nakama-db.sh", "migrate"]
+
+    environment:
+      <<: *database-env
+      DB_MIGRATIONS_ENABLED: ${DB_MIGRATIONS_ENABLED:-true}
+      # true: this deployment has legacy CockroachDB data. Set false for a new
+      # installation. Ignored once an import has completed.
+      DB_IMPORT_FROM_COCKROACH: ${DB_IMPORT_FROM_COCKROACH:-true}
+      COCKROACH_IMPORT_URL: ${COCKROACH_IMPORT_URL:-postgresql://root@cockroachdb:26257/nakama?sslmode=disable}
 
     restart: "no"
 
@@ -69,7 +137,7 @@ services:
         max-file: "3"
 
     depends_on:
-      cockroachdb:
+      postgres:
         condition: service_healthy
 
 
@@ -82,24 +150,26 @@ services:
     image: nakama-farsi:local
 
     # Migrations run in nakama-migrate. The server itself refuses to start
-    # while migrations are pending ("DB schema outdated").
-    # -e without -x: tracing would print the secret flags below.
+    # while migrations are pending ("DB schema outdated"). nakama-db.sh
+    # supplies the database address from the DB_* variables.
+    # -e without -x: tracing would print the secret flags below. $$ defers
+    # them to the container shell, so they are not written into the
+    # container's stored command.
     entrypoint:
       - "/bin/sh"
       - "-ec"
       - >
-        exec /nakama/nakama
+        exec /nakama/nakama-db.sh server
         --name nakama1
-        --database.address root@cockroachdb:26257
         --logger.level DEBUG
         --session.token_expiry_sec 7200
         --metrics.prometheus_port 9100
-        --socket.server_key "$NAKAMA_SERVER_KEY"
-        --session.encryption_key "$NAKAMA_SESSION_ENCRYPTION_KEY"
-        --runtime.http_key "$NAKAMA_RUNTIME_HTTP_KEY"
-        --console.username "$NAKAMA_CONSOLE_USERNAME"
-        --console.password "$NAKAMA_CONSOLE_PASSWORD"
-        --console.signing_key "$NAKAMA_CONSOLE_SIGNING_KEY"
+        --socket.server_key "$$NAKAMA_SERVER_KEY"
+        --session.encryption_key "$$NAKAMA_SESSION_ENCRYPTION_KEY"
+        --runtime.http_key "$$NAKAMA_RUNTIME_HTTP_KEY"
+        --console.username "$$NAKAMA_CONSOLE_USERNAME"
+        --console.password "$$NAKAMA_CONSOLE_PASSWORD"
+        --console.signing_key "$$NAKAMA_CONSOLE_SIGNING_KEY"
 
     restart: unless-stopped
 
@@ -116,6 +186,7 @@ services:
         max-file: "3"
 
     environment:
+      <<: *database-env
       NAKAMA_SERVER_KEY: ${NAKAMA_SERVER_KEY}
       NAKAMA_SESSION_ENCRYPTION_KEY: ${NAKAMA_SESSION_ENCRYPTION_KEY}
       NAKAMA_RUNTIME_HTTP_KEY: ${NAKAMA_RUNTIME_HTTP_KEY}
@@ -124,7 +195,7 @@ services:
       NAKAMA_CONSOLE_SIGNING_KEY: ${NAKAMA_CONSOLE_SIGNING_KEY}
 
     depends_on:
-      cockroachdb:
+      postgres:
         condition: service_healthy
       nakama-migrate:
         condition: service_completed_successfully
@@ -187,4 +258,7 @@ services:
 
 
 volumes:
+  postgres-data:
+  # Legacy CockroachDB store, read by the one-time import. Keep it until the
+  # PostgreSQL deployment is verified.
   data:

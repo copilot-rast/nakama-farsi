@@ -1,8 +1,15 @@
-# Jazebe migrations on CockroachDB
+# Jazebe migrations on CockroachDB (historical)
 
-Production runs CockroachDB (CCL v24.1.33). The Jazebe migrations and module were
+> **Superseded.** The deployment now runs on PostgreSQL. CockroachDB is kept only
+> as the source of a one-time data import. Configuration, deployment and the import
+> are described in [database-configuration.md](database-configuration.md). This page
+> remains as the record of the CockroachDB incident and of why the Jazebe
+> migrations contain `notransaction` and CockroachDB constraint names. Released
+> migrations stay as they are, and they run unchanged on PostgreSQL.
+
+Production ran CockroachDB (CCL v24.1.33) until the move to PostgreSQL. The Jazebe migrations and module were
 previously tested only on PostgreSQL. This page records the incident of 2026-10-25,
-the fix and how to operate migrations safely.
+and the fix.
 
 ## Incident
 
@@ -66,91 +73,9 @@ other migrations and in the module:
   suspension increments it, both in the moderation transaction. Rows removed by
   cascading user deletion are corrected by the daily reconcile worker.
 
-## Automatic migrations in Docker Compose (Dokploy)
+## Operations
 
-`docker-compose.yml` has a one-shot `nakama-migrate` service:
-
-1. `cockroachdb` must be healthy (`/health?ready=1`, with `start_period: 120s` for slow
-   starts).
-2. `nakama-migrate` runs `nakama migrate up --database.address root@cockroachdb:26257`
-   once, with `restart: "no"`.
-3. `nakama` starts only after `nakama-migrate` exits 0
-   (`service_completed_successfully`). The server also refuses to start while
-   migrations are pending ("DB schema outdated").
-4. A failed migration makes `docker compose up` exit non-zero with
-   `service "nakama-migrate" didn't complete successfully: exit 1`. The server is not
-   started or recreated, and nothing restarts in a loop.
-5. Restarting `nakama`, or a host reboot, does not re-run migrations. Every deployment
-   re-runs the job, which applies 0 when nothing is pending.
-6. One job per deployment means replicas never migrate concurrently. If two migrators
-   still race, the loser fails on `migration_info_pkey` and the winner completes. This
-   was verified twice on CockroachDB.
-
-The server entrypoint now uses `sh -ec` instead of `sh -ecx`. `-x` printed the
-expanded server key, console password and signing key into container logs.
-
-Migrations on CockroachDB are slow. Upgrading from the production state took about
-3 minutes with the Compose limit of 1 CPU and 2 GB.
-
-## Inspecting migration status (read-only)
-
-```sh
-docker compose logs nakama-migrate
-docker compose run --rm --no-deps --entrypoint /nakama/nakama nakama-migrate migrate status --database.address root@cockroachdb:26257
-docker compose exec cockroachdb cockroach sql --insecure -d nakama -e "SELECT count(*) FROM migration_info"
-```
-
-## Recovering from a failed deployment
-
-1. Read `docker compose logs nakama-migrate`. The last line names the migration and
-   SQL error.
-2. Do not drop, truncate or reset the database. Do not delete `migration_info` rows.
-3. Fix the migration in a new commit and deploy again. The job re-runs, and a
-   re-runnable migration completes whatever an earlier attempt left.
-4. Take a backup before any manual repair:
-   `cockroach sql --insecure -e "BACKUP DATABASE nakama INTO 'nodelocal://1/<name>'"`.
-   `scripts/jazebe-rollback.sql` is PostgreSQL-only (psql, `DO`).
-5. On CockroachDB 24.1 a refused Jazebe `migrate down` fails with a `DO` syntax error
-   instead of the explanatory message (no `DO` support). It is still refused and
-   `migration_info` is unchanged.
-
-## Reproducing the tests
-
-Build the binary (Go 1.27.1, or the `golang:1.27.1-bookworm` image):
-
-```sh
-go build -mod=vendor -trimpath -o /tmp/nakama .
-scripts/jazebe-cockroach-migration-check.sh /tmp/nakama
-```
-
-The script starts a throwaway `cockroachdb/cockroach:v24.1.33` container and checks two
-scenarios:
-- **Fresh install:** 60 migrations, then 0, and `fans_count` is `bigint NOT NULL DEFAULT 0`.
-- **Production state:** `migrate up --limit 21` plus planets with 0, 1 and 3 members,
-  then an upgrade (39 migrations, `fans_count` 0/1/3, rows intact), then a no-op rerun.
-
-The pre-fix binary fails this script at `20261022130000`.
-
-Run the module's database tests against a migrated CockroachDB database:
-
-```sh
-docker run -d --name crdb -p 127.0.0.1:26257:26257 cockroachdb/cockroach:v24.1.33 start-single-node --insecure
-docker exec crdb cockroach sql --insecure -e 'CREATE DATABASE jazebe_test_disposable'
-/tmp/nakama migrate up --database.address root@127.0.0.1:26257/jazebe_test_disposable
-JAZEBE_DISPOSABLE_TEST_DB_URL='postgresql://root@127.0.0.1:26257/jazebe_test_disposable?sslmode=disable' \
-  go test -mod=vendor ./integrations/jazebe/... -run Postgres -count=1
-```
-
-The `profile_cockroachdb` job in `.github/workflows/jazebe-migrations.yaml` runs both.
-The PostgreSQL schema-snapshot tests skip on CockroachDB because they read PostgreSQL
-catalog text.
-
-## Known limits
-
-- CockroachDB runs `SERIALIZABLE` and can return `40001` restart errors under
-  contention where PostgreSQL would wait. The module has no automatic transaction
-  retry, so a contended RPC may fail with `Internal`. The transaction rolls back
-  completely, and the client can retry. `TestAccountTransitionConcurrentPostgres`
-  showed this once in about 30 runs.
-- `jazebe_point_transaction.seq` still uses `unique_rowid()` on CockroachDB. It is
-  returned to clients as a string, so precision is preserved.
+Deployment, migration status, recovery and the tests are described in
+[database-configuration.md](database-configuration.md). The CockroachDB-only check
+script and CI job were removed with the move to PostgreSQL; they remain in the Git
+history at commit `d9b54e0c`.

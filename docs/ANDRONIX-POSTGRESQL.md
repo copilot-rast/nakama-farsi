@@ -60,7 +60,7 @@ sudo andronix-postgres stop
 
 ## Migrations
 
-Nakama embeds all 53 migrations: 20 upstream, then 33 Jazebe (`20261022120000` and later). They are applied in timestamp order and recorded in `migration_info`. Each runs in its own transaction, except the Jazebe migrations marked `notransaction` for CockroachDB, which run statement by statement (see `docs/integration/cockroachdb-migrations.md`). `20261024000000-jazebe-catalog-seed` adds the source's planet categories (12) and library medals (9).
+Nakama embeds all 53 migrations: 20 upstream, then 33 Jazebe (`20261022120000` and later). They are applied in timestamp order and recorded in `migration_info`. Each runs in its own transaction, except the Jazebe migrations marked `notransaction`, which run statement by statement. They were written for CockroachDB, which production used before PostgreSQL (see `docs/integration/cockroachdb-migrations.md` and `docs/integration/database-configuration.md`). `20261024000000-jazebe-catalog-seed` adds the source's planet categories (12) and library medals (9).
 
 ```sh
 export PATH=$HOME/.local/go/bin:$PATH

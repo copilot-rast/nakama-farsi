@@ -5,7 +5,10 @@ on:
       - 'integrations/jazebe/**'
       - 'migrate/**'
       - 'scripts/jazebe_route_audit/**'
-      - 'scripts/jazebe-cockroach-migration-check.sh'
+      - 'build/Dockerfile.local'
+      - 'build/nakama-db.sh'
+      - 'scripts/nakama-db-test.sh'
+      - 'scripts/cockroach-import-test.sh'
       - 'docker-compose.yml'
       - 'docs/integration/jazebe-http-routes.md'
       - 'docs/integration/jazebe-route-parity.json'
@@ -63,25 +66,16 @@ jobs:
           fi
           test "$(PGPASSWORD=localdb psql -h 127.0.0.1 -U postgres -d jazebe_test_disposable -tAc 'select count(*) from migration_info')" = 60
 
-  # Production runs CockroachDB, whose schema-change rules differ from
-  # PostgreSQL's (docs/integration/cockroachdb-migrations.md).
-  profile_cockroachdb:
+  # The deployment image: the DB_* launcher, the compose wiring, and the
+  # one-time import of the legacy CockroachDB data into PostgreSQL
+  # (docs/integration/database-configuration.md).
+  deployment_image:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v6
-        with:
-          go-version-file: go.mod
-      - name: Build Nakama
-        run: go build -mod=vendor -trimpath -o "$RUNNER_TEMP/nakama" .
-      - name: Fresh install and production-state upgrade on CockroachDB v24.1.33
-        run: scripts/jazebe-cockroach-migration-check.sh "$RUNNER_TEMP/nakama"
-      - name: Start a disposable CockroachDB for the workflow tests
-        run: |
-          docker run -d --name crdb -p 127.0.0.1:26257:26257 cockroachdb/cockroach:v24.1.33 start-single-node --insecure
-          for i in $(seq 1 60); do docker exec crdb cockroach sql --insecure -e 'CREATE DATABASE IF NOT EXISTS jazebe_test_disposable' && break; sleep 1; done
-          "$RUNNER_TEMP/nakama" migrate up --database.address root@127.0.0.1:26257/jazebe_test_disposable
-      - name: Exercise every workflow, sweep, replay and SQL prepare test on CockroachDB
-        env:
-          JAZEBE_DISPOSABLE_TEST_DB_URL: postgresql://root@127.0.0.1:26257/jazebe_test_disposable?sslmode=disable
-        run: go test -mod=vendor ./integrations/jazebe/... -run 'Postgres' -count=1 -v
+      - name: Launcher and docker-compose.yml checks
+        run: scripts/nakama-db-test.sh
+      - name: Build the deployment image
+        run: docker build -f build/Dockerfile.local -t nakama-farsi:local .
+      - name: CockroachDB v24.1.33 production state imported into PostgreSQL
+        run: scripts/cockroach-import-test.sh nakama-farsi:local
