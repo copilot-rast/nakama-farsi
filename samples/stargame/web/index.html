@@ -9,9 +9,9 @@
 </head>
 <body>
 <header class="topbar">
-  <button class="brand" type="button" data-go="home" aria-label="خانه">
+  <button class="brand" type="button" data-go="home" aria-label="خانه" data-i18n-aria="home">
     <span class="brand-star" aria-hidden="true">★</span>
-    <span>ستاره‌چین</span>
+    <span data-i18n="appName">ستاره‌چین</span>
   </button>
   <div class="topbar-end">
     <button class="bell" type="button" id="btn-inbox" aria-label="صندوق پیام">
@@ -21,7 +21,7 @@
     <div class="wallet" id="wallet" aria-live="polite">
       <span class="coin" aria-hidden="true"></span>
       <span id="balance">…</span>
-      <span class="wallet-unit">سکه</span>
+      <span class="wallet-unit" data-i18n="coinUnit">سکه</span>
     </div>
   </div>
 </header>
@@ -30,28 +30,32 @@
   <section class="screen" id="screen-loading">
     <div class="center-block">
       <div class="spinner" aria-hidden="true"></div>
-      <p id="loading-text">در حال ورود…</p>
+      <p id="loading-text" data-i18n="loggingIn">در حال ورود…</p>
     </div>
   </section>
 
   <section class="screen" id="screen-home" hidden>
+    <div class="lang-picker" id="lang-picker" role="group" aria-labelledby="lang-label" hidden>
+      <span class="lang-label" id="lang-label"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span data-i18n="language">زبان</span></span>
+      <div class="lang-options" id="lang-options"></div>
+    </div>
     <div class="hero">
-      <p class="hello">سلام <bdi id="username">…</bdi></p>
-      <h1>ستاره‌ها را بگیر، از بمب‌ها فرار کن</h1>
-      <p class="muted">هر دور ۳۰ ثانیه است. هر ستاره <b>۱ امتیاز</b> دارد و ستاره‌ی طلایی <b>۵ امتیاز</b>. هر بمب <b>۳ امتیاز</b> کم می‌کند. هر ۵ امتیاز یک سکه، تا سقف ۳۰ سکه در هر دور.</p>
-      <button class="btn btn-primary btn-big" type="button" id="btn-play">شروع بازی</button>
+      <p class="hello"><span data-i18n="hello">سلام</span> <bdi id="username">…</bdi></p>
+      <h1 data-i18n="heroTitle">ستاره‌ها را بگیر، از بمب‌ها فرار کن</h1>
+      <p class="muted" data-i18n-html="heroText">هر دور ۳۰ ثانیه است. هر ستاره <b>۱ امتیاز</b> دارد و ستاره‌ی طلایی <b>۵ امتیاز</b>. هر بمب <b>۳ امتیاز</b> کم می‌کند. هر ۵ امتیاز یک سکه، تا سقف ۳۰ سکه در هر دور.</p>
+      <button class="btn btn-primary btn-big" type="button" id="btn-play" data-i18n="startGame">شروع بازی</button>
     </div>
     <div class="menu-grid">
-      <button class="menu-card" type="button" data-go="shop"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 7H6"/></svg></span><span>فروشگاه</span></button>
-      <button class="menu-card" type="button" data-go="gift"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></span><span>کد هدیه</span></button>
-      <button class="menu-card" type="button" data-go="news" id="menu-news"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg></span><span>اخبار</span><span class="menu-dot" id="news-dot" hidden></span></button>
-      <button class="menu-card" type="button" data-go="faq"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg></span><span>سؤال‌های متداول</span></button>
-      <button class="menu-card" type="button" data-go="payments"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span><span>پرداخت‌های من</span></button>
+      <button class="menu-card" type="button" data-go="shop"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 7H6"/></svg></span><span data-i18n="shop">فروشگاه</span></button>
+      <button class="menu-card" type="button" data-go="gift"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></span><span data-i18n="gift">کد هدیه</span></button>
+      <button class="menu-card" type="button" data-go="news" id="menu-news"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg></span><span data-i18n="news">اخبار</span><span class="menu-dot" id="news-dot" hidden></span></button>
+      <button class="menu-card" type="button" data-go="faq"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg></span><span data-i18n="faq">سؤال‌های متداول</span></button>
+      <button class="menu-card" type="button" data-go="payments"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span><span data-i18n="payments">پرداخت‌های من</span></button>
     </div>
     <div class="panel">
       <div class="panel-head">
-        <h2>سبدهای من</h2>
-        <span class="muted small">سبدی را که می‌خواهی در بازی داشته باشی انتخاب کن</span>
+        <h2 data-i18n="mySkins">سبدهای من</h2>
+        <span class="muted small" data-i18n="mySkinsHint">سبدی را که می‌خواهی در بازی داشته باشی انتخاب کن</span>
       </div>
       <div class="skins" id="skins"></div>
     </div>
@@ -59,26 +63,26 @@
 
   <section class="screen" id="screen-play" hidden>
     <div class="hud">
-      <div class="hud-item"><span class="muted small">امتیاز</span><b id="hud-score">۰</b></div>
-      <div class="hud-item"><span class="muted small">زمان</span><b id="hud-time">۳۰</b></div>
-      <button class="btn btn-ghost" type="button" id="btn-quit">خروج</button>
+      <div class="hud-item"><span class="muted small" data-i18n="score">امتیاز</span><b id="hud-score">۰</b></div>
+      <div class="hud-item"><span class="muted small" data-i18n="time">زمان</span><b id="hud-time">۳۰</b></div>
+      <button class="btn btn-ghost" type="button" id="btn-quit" data-i18n="quit">خروج</button>
     </div>
     <div class="stage" id="stage">
-      <canvas id="canvas" aria-label="صفحه‌ی بازی"></canvas>
+      <canvas id="canvas" aria-label="صفحه‌ی بازی" data-i18n-aria="canvasLabel"></canvas>
       <div class="stage-overlay" id="stage-overlay" hidden></div>
     </div>
-    <p class="muted small center hint">با موس، لمس یا کلیدهای جهت‌نما سبد را حرکت بده.</p>
+    <p class="muted small center hint" data-i18n="playHint">با موس، لمس یا کلیدهای جهت‌نما سبد را حرکت بده.</p>
   </section>
 
   <section class="screen" id="screen-shop" hidden>
     <div class="screen-head">
-      <button class="btn btn-ghost" type="button" data-go="home">بازگشت</button>
-      <h1>فروشگاه</h1>
-      <button class="btn btn-ghost" type="button" id="btn-restore">بازیابی خرید</button>
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="shop">فروشگاه</h1>
+      <button class="btn btn-ghost" type="button" id="btn-restore" data-i18n="restore">بازیابی خرید</button>
     </div>
     <div class="tabs" id="shop-tabs" role="tablist"></div>
     <div class="discount" id="discount-row">
-      <label for="discount-code">کد تخفیف (اختیاری، فقط زرین‌پال و زیبال)</label>
+      <label for="discount-code" data-i18n="discountLabel">کد تخفیف (اختیاری، فقط زرین‌پال و زیبال)</label>
       <input id="discount-code" class="mono" type="text" autocomplete="off" spellcheck="false" dir="ltr" placeholder="HALF50">
     </div>
     <div class="products" id="products"></div>
@@ -86,66 +90,66 @@
 
   <section class="screen" id="screen-gift" hidden>
     <div class="screen-head">
-      <button class="btn btn-ghost" type="button" data-go="home">بازگشت</button>
-      <h1>کد هدیه</h1>
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="gift">کد هدیه</h1>
       <span></span>
     </div>
     <form class="panel form" id="gift-form">
-      <label for="gift-code">کد هدیه‌ات را وارد کن</label>
+      <label for="gift-code" data-i18n="giftPrompt">کد هدیه‌ات را وارد کن</label>
       <input id="gift-code" class="mono" type="text" autocomplete="off" spellcheck="false" dir="ltr" placeholder="STAR100" required>
-      <button class="btn btn-primary" type="submit">دریافت هدیه</button>
+      <button class="btn btn-primary" type="submit" data-i18n="giftSubmit">دریافت هدیه</button>
       <p class="form-msg" id="gift-msg" role="status"></p>
     </form>
   </section>
 
   <section class="screen" id="screen-payments" hidden>
     <div class="screen-head">
-      <button class="btn btn-ghost" type="button" data-go="home">بازگشت</button>
-      <h1>پرداخت‌های من</h1>
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="payments">پرداخت‌های من</h1>
       <span></span>
     </div>
     <div class="payments" id="payments"></div>
-    <button class="btn btn-ghost wide" type="button" id="btn-more" hidden>بیشتر</button>
+    <button class="btn btn-ghost wide" type="button" id="btn-more" hidden data-i18n="more">بیشتر</button>
   </section>
 
   <section class="screen" id="screen-news" hidden>
     <div class="screen-head">
-      <button class="btn btn-ghost" type="button" data-go="home">بازگشت</button>
-      <h1>اخبار</h1>
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="news">اخبار</h1>
       <span></span>
     </div>
     <div class="news-list" id="news-list"></div>
-    <button class="btn btn-ghost wide" type="button" id="btn-news-more" hidden>خبرهای قدیمی‌تر</button>
+    <button class="btn btn-ghost wide" type="button" id="btn-news-more" hidden data-i18n="olderNews">خبرهای قدیمی‌تر</button>
   </section>
 
   <section class="screen" id="screen-article" hidden>
     <div class="screen-head">
-      <button class="btn btn-ghost" type="button" data-go="news">همه‌ی خبرها</button>
+      <button class="btn btn-ghost" type="button" data-go="news" data-i18n="allNews">همه‌ی خبرها</button>
       <span></span>
       <span></span>
     </div>
     <article class="article" id="article"></article>
     <div class="panel comments" id="comments" hidden>
-      <div class="panel-head"><h2>نظرها</h2><span class="muted small" id="comments-count"></span></div>
+      <div class="panel-head"><h2 data-i18n="comments">نظرها</h2><span class="muted small" id="comments-count"></span></div>
       <form class="comment-form" id="comment-form">
-        <label class="sr-only" for="comment-text">نظرت را بنویس</label>
-        <textarea id="comment-text" rows="3" maxlength="1000" placeholder="نظرت را بنویس…" required></textarea>
-        <div class="comment-form-row"><span class="muted small" id="comment-hint"></span><button class="btn btn-primary" type="submit">ارسال نظر</button></div>
+        <label class="sr-only" for="comment-text" data-i18n="commentLabel">نظرت را بنویس</label>
+        <textarea id="comment-text" rows="3" maxlength="1000" placeholder="نظرت را بنویس…" data-i18n-ph="commentPlaceholder" required></textarea>
+        <div class="comment-form-row"><span class="muted small" id="comment-hint"></span><button class="btn btn-primary" type="submit" data-i18n="sendComment">ارسال نظر</button></div>
       </form>
       <div class="comment-list" id="comment-list"></div>
-      <button class="btn btn-ghost wide" type="button" id="btn-comments-more" hidden>نظرهای بیشتر</button>
+      <button class="btn btn-ghost wide" type="button" id="btn-comments-more" hidden data-i18n="moreComments">نظرهای بیشتر</button>
     </div>
   </section>
 
   <section class="screen" id="screen-faq" hidden>
     <div class="screen-head">
-      <button class="btn btn-ghost" type="button" data-go="home">بازگشت</button>
-      <h1>سؤال‌های متداول</h1>
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="faq">سؤال‌های متداول</h1>
       <span></span>
     </div>
     <div class="faq-search">
-      <label class="sr-only" for="faq-q">جستجو در سؤال‌ها</label>
-      <input id="faq-q" type="search" placeholder="جستجو در سؤال‌ها…" autocomplete="off">
+      <label class="sr-only" for="faq-q" data-i18n="faqSearch">جستجو در سؤال‌ها</label>
+      <input id="faq-q" type="search" placeholder="جستجو در سؤال‌ها…" data-i18n-ph="faqSearchPlaceholder" autocomplete="off">
     </div>
     <div class="tabs" id="faq-tabs" role="tablist"></div>
     <div class="faq-list" id="faq-list"></div>
@@ -153,12 +157,12 @@
 
   <section class="screen" id="screen-inbox" hidden>
     <div class="screen-head">
-      <button class="btn btn-ghost" type="button" data-go="home">بازگشت</button>
-      <h1>صندوق پیام</h1>
-      <button class="btn btn-ghost" type="button" id="btn-seen-all">همه را خواندم</button>
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="inbox">صندوق پیام</h1>
+      <button class="btn btn-ghost" type="button" id="btn-seen-all" data-i18n="seenAll">همه را خواندم</button>
     </div>
     <div class="inbox-list" id="inbox-list"></div>
-    <button class="btn btn-ghost wide" type="button" id="btn-inbox-more" hidden>پیام‌های قدیمی‌تر</button>
+    <button class="btn btn-ghost wide" type="button" id="btn-inbox-more" hidden data-i18n="olderMessages">پیام‌های قدیمی‌تر</button>
   </section>
 </main>
 

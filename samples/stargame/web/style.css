@@ -10,6 +10,20 @@
   font-weight: 700;
   font-display: swap;
 }
+@font-face {
+  font-family: "Vazirmatn Arabic";
+  src: url("fonts/Vazirmatn-FD-NL-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: "Vazirmatn Arabic";
+  src: url("fonts/Vazirmatn-FD-NL-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200F, U+FB50-FDFF, U+FE70-FEFF;
+}
 
 :root {
   --bg: #0b1026;
@@ -42,6 +56,9 @@ body {
   line-height: 1.7;
   -webkit-tap-highlight-color: transparent;
 }
+
+html.ui-fallback body :where(*) { unicode-bidi: plaintext; }
+html:not([lang="fa"]) body { font-family: "Vazirmatn Arabic", system-ui, -apple-system, "Segoe UI", Roboto, Tahoma, sans-serif; }
 
 button, input { font: inherit; color: inherit; }
 
@@ -157,6 +174,36 @@ h2 { font-size: 1.05rem; margin: 0; }
 .btn-ok { background: var(--ok); color: #05301e; border-color: var(--ok); }
 .btn-ok:hover { background: #63e7ae; }
 .wide { width: 100%; margin-top: 12px; }
+
+.lang-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.lang-label { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.9rem; }
+.lang-options { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.lang-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.lang-opt:hover { background: var(--card2); }
+.lang-opt[aria-pressed="true"] { background: var(--gold); color: var(--gold-ink); border-color: var(--gold); }
+.lang-opt:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.lang-check { font-size: 0.8rem; }
 
 .hero {
   text-align: center;
@@ -337,7 +384,7 @@ input[type="text"]:focus, select:focus { outline: 3px solid var(--accent); outli
 .pay .meta { color: var(--muted); font-size: 0.85rem; }
 .pay .amount { font-weight: 700; text-align: end; }
 
-.status { display: inline-block; padding: 0 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; justify-self: end; }
+.status { display: inline-block; padding: 0 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; justify-self: end; align-self: start; }
 .status-success { background: rgba(61, 220, 151, 0.15); color: var(--ok); }
 .status-pending { background: rgba(255, 201, 60, 0.15); color: var(--gold); }
 .status-failed, .status-expired { background: rgba(255, 107, 107, 0.15); color: var(--bad); }
