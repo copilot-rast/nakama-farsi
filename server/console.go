@@ -297,7 +297,11 @@ func StartConsoleServer(logger *zap.Logger, startupLogger *zap.Logger, db *sql.D
 
 			// If operation was successful, note it in the audit log.
 			if sw.statusCode >= 200 && sw.statusCode < 300 {
-				consoleHttpAuditLogInterceptor(r.Context(), logger, db, method, path, originalBody)
+				if strings.HasPrefix(path, "/v2/console/economy/") {
+					consoleEconomyAuditLog(r.Context(), logger, db, method, path, r.URL.Path, originalBody)
+				} else {
+					consoleHttpAuditLogInterceptor(r.Context(), logger, db, method, path, originalBody)
+				}
 			}
 		}
 	}
@@ -320,7 +324,7 @@ func StartConsoleServer(logger *zap.Logger, startupLogger *zap.Logger, db *sql.D
 			logger.Fatal("Failed to register custom console HTTP handler, path pattern must start with '/'", zap.String("path_pattern", handler.PathPattern))
 		}
 		handlerFunc := handler.Handler
-		if strings.HasPrefix(handler.PathPattern, "/v2/console/hiro/") {
+		if strings.HasPrefix(handler.PathPattern, "/v2/console/hiro/") || strings.HasPrefix(handler.PathPattern, "/v2/console/economy/") {
 			// Handlers in reverse order of priority.
 			handlerFunc = customHttpMuxParamsFunc(handlerFunc)
 			handlerFunc = customHttpAuditLogFunc(handler.PathPattern, handler.Methods, handlerFunc)

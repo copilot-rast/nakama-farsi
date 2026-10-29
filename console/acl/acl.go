@@ -174,6 +174,10 @@ func CheckACLHttp(method, path string, userPermissions Permission) bool {
 		requiredPermissions = NewPermission(console.AclResources_HIRO_STATS, PermissionWrite)
 	case method == http.MethodPost && path == "/v2/console/hiro/energy/{user_id}": // HiroEnergyGrant
 		requiredPermissions = NewPermission(console.AclResources_HIRO_ENERGY, PermissionWrite)
+	case method == http.MethodGet && strings.HasPrefix(path, "/v2/console/economy/"):
+		requiredPermissions = NewPermission(console.AclResources_HIRO_ECONOMY, PermissionRead)
+	case method != "" && strings.HasPrefix(path, "/v2/console/economy/"):
+		requiredPermissions = NewPermission(console.AclResources_HIRO_ECONOMY, PermissionWrite)
 	default:
 		requiredPermissions = Admin()
 	}

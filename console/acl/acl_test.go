@@ -12,6 +12,7 @@
 package acl
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/heroiclabs/nakama/v3/console"
@@ -42,4 +43,29 @@ func Test_Permission(t *testing.T) {
 	assert.False(t, acl[console.AclResources_ACCOUNT_EXPORT.String()].Read)
 	assert.False(t, acl[console.AclResources_ACCOUNT_EXPORT.String()].Write)
 	assert.True(t, acl[console.AclResources_ACCOUNT_EXPORT.String()].Delete)
+}
+
+func TestCheckACLHttpEconomy(t *testing.T) {
+	read := NewPermission(console.AclResources_HIRO_ECONOMY, PermissionRead)
+	write := NewPermission(console.AclResources_HIRO_ECONOMY, PermissionWrite)
+	if !CheckACLHttp(http.MethodGet, "/v2/console/economy/products", read) {
+		t.Fatal("read permission must list products")
+	}
+	if CheckACLHttp(http.MethodPost, "/v2/console/economy/products", read) {
+		t.Fatal("read permission must not create products")
+	}
+	for _, method := range []string{http.MethodPost, http.MethodPut, http.MethodDelete} {
+		if !CheckACLHttp(method, "/v2/console/economy/products/{id}", write) {
+			t.Fatalf("write permission must allow %s", method)
+		}
+	}
+	if CheckACLHttp(http.MethodGet, "/v2/console/economy/products", None()) {
+		t.Fatal("no permission must be refused")
+	}
+	if !CheckACLHttp(http.MethodDelete, "/v2/console/economy/gifts/{id}", Admin()) {
+		t.Fatal("admin must pass")
+	}
+	if CheckACLHttp("", "/v2/console/economy/gifts/{id}", write) {
+		t.Fatal("handlers without a single method need admin")
+	}
 }
