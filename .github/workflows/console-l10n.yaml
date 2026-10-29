@@ -29,6 +29,10 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Test economy pages
+        working-directory: console/ui/economy
+        run: npm test
+
   embed:
     name: Test embedded console assets
     runs-on: ubuntu-latest

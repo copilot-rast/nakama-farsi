@@ -369,7 +369,8 @@
         try { win.localStorage.setItem(STORAGE_KEY, next); } catch (e) { /* storage unavailable */ }
         var url = new URL(win.location.href);
         url.searchParams.delete('lang');
-        win.location.replace(url.toString());
+        if (url.toString() === win.location.href) win.location.reload();
+        else win.location.replace(url.toString());
       },
       translate: function (text) { return index ? translate(index, text) : text; },
       formatNumber: function (n, options) { return new win.Intl.NumberFormat(info.lang, options).format(n); },

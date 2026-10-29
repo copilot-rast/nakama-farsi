@@ -1,0 +1,12 @@
+{
+  "name": "nakama-console-economy",
+  "private": true,
+  "description": "Economy admin pages injected into the prebuilt Nakama Console UI.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check",
+    "test": "node --test \"test/*.test.mjs\""
+  }
+}
