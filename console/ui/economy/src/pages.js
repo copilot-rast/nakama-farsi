@@ -1,13 +1,16 @@
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments', 'payment-methods', 'categories', 'tags'],
-  publication: ['faqs', 'news', 'comments', 'notifications', 'providers']
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments', 'categories', 'tags'],
+  publication: ['faqs', 'news', 'comments', 'notifications']
 };
+var SETTINGS_TABS = ['payment-methods', 'sms', 'email'];
+var LEGACY_HASHES = { economy: { 'payment-methods': 'payment-methods' }, publication: { providers: 'sms' } };
 var SECTION_ORDER = ['economy', 'publication'];
 var PAGES = SECTIONS.economy.concat(SECTIONS.publication);
 var LIMIT = 20;
 var lastQuery = { comments: { status: 'pending' } };
 
 function sectionOf(page) {
+  if (SETTINGS_TABS.indexOf(page) !== -1) return 'settings';
   return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
 }
 
@@ -397,7 +400,7 @@ function paymentDetail(container, id) {
 }
 
 function paymentMethodsPage(container) {
-  var frame = pageFrame(t('nav.payment-methods'), t('desc.payment-methods'));
+  var frame = tabFrame(t('desc.payment-methods'));
   clear(container).appendChild(frame.el);
   var grid = h('div', { class: 'eco-card-grid' });
   frame.content.appendChild(grid);

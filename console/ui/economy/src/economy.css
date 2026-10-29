@@ -141,3 +141,6 @@ a[data-economy-page]{position:relative}
 .eco-pt-3{padding-top:.75rem}
 .eco-md-token{font-family:ui-monospace,Menlo,monospace;font-size:.6875rem;padding:0 .3rem;border-radius:.25rem;background-color:rgb(var(--secondary-color-100))}
 .dark .eco-md-token{background-color:rgb(var(--secondary-color-800))}
+a.eco-tab{position:relative}
+a.eco-tab-on::after{content:'';position:absolute;inset-inline:0;bottom:-1px;height:2px;background-color:var(--x-tab-group-text)}
+.dark a.eco-tab-on::after{background-color:var(--x-tab-group-dark-text)}

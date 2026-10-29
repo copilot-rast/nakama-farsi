@@ -453,7 +453,7 @@ function composePage(container, query) {
       }
       var list = providers.filter(function (p) { return p.channel === v.channel && p.isActive; });
       if (!list.length) {
-        providerBox.appendChild(notice('error', t('nt.noProvider'), h('a', { href: hashFor('providers'), class: 'eco-link text-sm font-medium', text: t('nav.providers') })));
+        providerBox.appendChild(notice('error', t('nt.noProvider'), h('a', { href: hashFor(v.channel), class: 'eco-link text-sm font-medium', text: t('nt.goSettings.' + v.channel) })));
         return;
       }
       var def = list.filter(function (p) { return p.isDefault; })[0] || list[0];
@@ -634,26 +634,24 @@ function providerField(f, cfg, onchange) {
   return field(label, ctl, hintKey ? t(hintKey) : null, { optional: !f.required });
 }
 
-function providersPage(container) {
-  var frame = pageFrame(t('nav.providers'), t('desc.providers'));
+function providersPage(container, channel) {
+  var frame = tabFrame(t('desc.' + channel));
   clear(container).appendChild(frame.el);
-  var body = h('div', { class: 'flex flex-col gap-8' });
+  var body = h('section', { 'data-channel': channel });
   frame.content.appendChild(body);
   var catalog = [];
 
   function skeleton() {
-    clear(body);
-    ['sms', 'email'].forEach(function (c, k) {
-      var grid = h('div', { class: 'eco-card-grid' });
-      for (var i = 0; i < (k ? 2 : 3); i++) {
-        grid.appendChild(card(h('div', { class: 'p-4' },
-          h('div', { class: 'flex items-center justify-between mb-4' }, bar('7rem', 'h-4'), bar('2rem', 'h-5 rounded-full')),
-          bar('100%', 'h-14 mb-4'),
-          skeletonField(), skeletonField(),
-          h('div', { class: 'flex justify-end' }, bar('5rem', 'h-8')))));
-      }
-      body.appendChild(h('div', {}, h('div', { class: 'flex items-center justify-between mb-3' }, bar('6rem', 'h-5'), bar('10rem', 'h-8')), grid));
-    });
+    clear(frame.actions).appendChild(bar('12rem', 'h-8'));
+    var grid = h('div', { class: 'eco-card-grid' });
+    for (var i = 0; i < (channel === 'sms' ? 3 : 2); i++) {
+      grid.appendChild(card(h('div', { class: 'p-4' },
+        h('div', { class: 'flex items-center justify-between mb-4' }, bar('7rem', 'h-4'), bar('2rem', 'h-5 rounded-full')),
+        bar('100%', 'h-14 mb-4'),
+        skeletonField(), skeletonField(),
+        h('div', { class: 'flex justify-end' }, bar('5rem', 'h-8')))));
+    }
+    clear(body).appendChild(grid);
   }
 
   function testBox(p) {
@@ -767,7 +765,7 @@ function providersPage(container) {
     return el;
   }
 
-  function addControl(channel, existing) {
+  function addControl(existing) {
     var free = catalog.filter(function (k) { return k.channel === channel && existing.indexOf(k.kind) === -1; });
     if (!free.length) return h('span', { class: 'text-xs text-secondary-500', text: t('pv.allAdded') });
     var kind = free[0].kind;
@@ -788,19 +786,13 @@ function providersPage(container) {
       if (!container.isConnected) return;
       var items = (res && res.items) || [];
       catalog = (res && res.catalog) || [];
-      clear(body);
-      ['sms', 'email'].forEach(function (channel) {
-        var list = items.filter(function (p) { return p.channel === channel; });
-        var grid = h('div', { class: 'eco-card-grid' });
-        if (!list.length) grid.appendChild(h('div', { class: 'eco-span-all' }, card(emptyBlock(t('pv.empty.' + channel), t('pv.empty.hint')))));
-        list.forEach(function (p) { grid.appendChild(providerCard(p)); });
-        body.appendChild(h('section', { 'data-channel': channel },
-          h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-3' },
-            h('h2', { class: 'text-lg font-medium', text: t('ch.' + channel) }),
-            addControl(channel, list.map(function (p) { return p.kind; }))),
-          grid));
-      });
-    }, function (err) { clear(body).appendChild(errorBlock(err, load)); });
+      var list = items.filter(function (p) { return p.channel === channel; });
+      var grid = h('div', { class: 'eco-card-grid' });
+      if (!list.length) grid.appendChild(h('div', { class: 'eco-span-all' }, card(emptyBlock(t('pv.empty.' + channel), t('pv.empty.hint')))));
+      list.forEach(function (p) { grid.appendChild(providerCard(p)); });
+      clear(frame.actions).appendChild(addControl(list.map(function (p) { return p.kind; })));
+      clear(body).appendChild(grid);
+    }, function (err) { clear(frame.actions); clear(body).appendChild(errorBlock(err, load)); });
   }
   load();
 }

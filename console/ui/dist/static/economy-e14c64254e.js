@@ -11,7 +11,10 @@ var MESSAGES = {
     'nav.products': 'فروشگاه',
     'nav.gifts': 'هدیه‌ها',
     'nav.payments': 'پرداخت‌ها',
-    'nav.payment-methods': 'روش‌های پرداخت',
+    'tab.payment-methods': 'درگاه‌های پرداخت',
+    'tab.sms': 'پیامک',
+    'tab.email': 'ایمیل',
+    'settings': 'تنظیمات',
     'nav.categories': 'دسته‌بندی‌ها',
     'nav.tags': 'تگ‌ها',
 
@@ -336,7 +339,7 @@ var MESSAGES = {
     'ov.revenue30': 'درآمد ۳۰ روز اخیر',
     'ov.paymentsToday': 'پرداخت‌های امروز',
     'ov.grantErrors': 'جایزه‌های داده‌نشده',
-    'ov.methods': 'روش‌های پرداخت',
+    'ov.methods': 'درگاه‌های پرداخت',
     'ov.sandbox': 'آزمایشی',
     'ov.payments': 'پرداخت‌ها',
     'ov.revenue': 'درآمد',
@@ -350,12 +353,12 @@ var MESSAGES = {
     'nav.news': 'اخبار',
     'nav.comments': 'کامنت‌ها',
     'nav.notifications': 'اعلان‌ها',
-    'nav.providers': 'سرویس‌های ارسال',
     'desc.faqs': 'پرسش و پاسخ‌هایی که بازیکن در بخش راهنما می‌بیند.',
     'desc.news': 'خبرها و اطلاعیه‌هایی که در بازی نمایش داده می‌شوند.',
     'desc.comments': 'کامنت‌های بازیکنان روی خبرها را بررسی و تأیید کنید.',
     'desc.notifications': 'اعلان درون بازی، پیامک و ایمیل به بازیکنان بفرستید.',
-    'desc.providers': 'سرویس‌های پیامک و ایمیل را تنظیم کنید. در حالت آزمایشی چیزی واقعاً فرستاده نمی‌شود.',
+    'desc.sms': 'سرویس‌های پیامک را تنظیم کنید. در حالت آزمایشی هیچ پیامکی واقعاً فرستاده نمی‌شود.',
+    'desc.email': 'سرویس‌های ایمیل را تنظیم کنید. در حالت آزمایشی هیچ ایمیلی واقعاً فرستاده نمی‌شود.',
     'new.faqs': 'سؤال جدید',
     'new.news': 'خبر جدید',
     'edit.faqs': 'ویرایش سؤال',
@@ -503,6 +506,8 @@ var MESSAGES = {
     'nt.action.hint': 'اختیاری. با زدن اعلان، پیوند باز می‌شود یا بازیکن به آن بخش بازی می‌رود.',
     'nt.inapp.hint': 'در صندوق پیام بازیکن ذخیره می‌شود و اگر بازی باز باشد، همان لحظه نشان داده می‌شود.',
     'nt.noProvider': 'سرویس فعالی برای این کانال نیست.',
+    'nt.goSettings.sms': 'تنظیمات پیامک',
+    'nt.goSettings.email': 'تنظیمات ایمیل',
     'nt.sandbox.note': 'این سرویس در حالت آزمایشی است؛ پیامی واقعاً فرستاده نمی‌شود.',
     'nt.live.note': 'این سرویس آزمایشی نیست؛ پیام واقعاً برای کاربران فرستاده می‌شود.',
     'nt.recipientsWord': 'گیرنده',
@@ -588,7 +593,7 @@ var MESSAGES = {
     'code.INVALID_TARGET': 'گیرندگان معتبر نیستند.',
     'code.INVALID_CHANNEL': 'کانال معتبر نیست.',
     'code.PROVIDER_NOT_FOUND': 'این سرویس پیدا نشد.',
-    'code.PROVIDER_NOT_CONFIGURED': 'سرویس فعال و کاملی برای این کانال نیست؛ فیلدهای لازم را پر کنید.',
+    'code.PROVIDER_NOT_CONFIGURED': 'سرویس فعال و کاملی برای این کانال نیست؛ در تنظیمات، فیلدهای لازم را پر کنید.',
     'code.PROVIDER_INACTIVE': 'این سرویس فعال نیست.',
     'code.PROVIDER_CHANNEL_MISMATCH': 'این سرویس برای این کانال نیست.',
     'code.PROVIDER_KIND_FIXED': 'نوع سرویس بعد از ساخت عوض نمی‌شود.',
@@ -616,7 +621,10 @@ var MESSAGES = {
     'nav.products': 'Shop',
     'nav.gifts': 'Gifts',
     'nav.payments': 'Payments',
-    'nav.payment-methods': 'Payment Methods',
+    'tab.payment-methods': 'Payment Gateways',
+    'tab.sms': 'SMS',
+    'tab.email': 'Email',
+    'settings': 'Settings',
     'nav.categories': 'Categories',
     'nav.tags': 'Tags',
 
@@ -941,7 +949,7 @@ var MESSAGES = {
     'ov.revenue30': 'Revenue, last 30 days',
     'ov.paymentsToday': 'Payments today',
     'ov.grantErrors': 'Rewards not granted',
-    'ov.methods': 'Payment methods',
+    'ov.methods': 'Payment gateways',
     'ov.sandbox': 'Sandbox',
     'ov.payments': 'Payments',
     'ov.revenue': 'Revenue',
@@ -955,12 +963,12 @@ var MESSAGES = {
     'nav.news': 'News',
     'nav.comments': 'Comments',
     'nav.notifications': 'Notifications',
-    'nav.providers': 'Delivery Services',
     'desc.faqs': 'Questions and answers players see in the help section.',
     'desc.news': 'News and announcements shown in the game.',
     'desc.comments': 'Review and approve player comments on news.',
     'desc.notifications': 'Send in-game notifications, SMS and email to players.',
-    'desc.providers': 'Set up SMS and email services. In sandbox mode nothing is actually sent.',
+    'desc.sms': 'Set up SMS services. In sandbox mode no SMS is actually sent.',
+    'desc.email': 'Set up email services. In sandbox mode no email is actually sent.',
     'new.faqs': 'New question',
     'new.news': 'New article',
     'edit.faqs': 'Edit question',
@@ -1108,6 +1116,8 @@ var MESSAGES = {
     'nt.action.hint': 'Optional. Tapping the notification opens the link or takes the player to that screen.',
     'nt.inapp.hint': 'Saved to the player\'s inbox and shown right away if the game is open.',
     'nt.noProvider': 'There is no active service for this channel.',
+    'nt.goSettings.sms': 'SMS settings',
+    'nt.goSettings.email': 'Email settings',
     'nt.sandbox.note': 'This service is in sandbox mode; nothing is actually sent.',
     'nt.live.note': 'This service is not in sandbox mode; messages really go to users.',
     'nt.recipientsWord': 'recipients',
@@ -1193,7 +1203,7 @@ var MESSAGES = {
     'code.INVALID_TARGET': 'The recipients are not valid.',
     'code.INVALID_CHANNEL': 'The channel is not valid.',
     'code.PROVIDER_NOT_FOUND': 'Service not found.',
-    'code.PROVIDER_NOT_CONFIGURED': 'No active, complete service for this channel; fill in the required fields.',
+    'code.PROVIDER_NOT_CONFIGURED': 'No active, complete service for this channel; fill in the required fields in Settings.',
     'code.PROVIDER_INACTIVE': 'This service is not active.',
     'code.PROVIDER_CHANNEL_MISMATCH': 'This service is for another channel.',
     'code.PROVIDER_KIND_FIXED': 'The service type cannot change after creation.',
@@ -1433,7 +1443,6 @@ var ICONS = {
   products: '<path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a3 3 0 0 0 6 0a3 3 0 0 0 6 0a3 3 0 0 0 6 0"/><path d="M5 12v8h14v-8M10 20v-5h4v5"/>',
   gifts: '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/><path d="M13 5v2M13 11v2M13 17v2"/>',
   payments: '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z"/><path d="M16 8H8M16 12H8M13 16H8"/>',
-  'payment-methods': '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>',
   categories: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/>',
   tags: '<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r="1"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
@@ -1454,7 +1463,6 @@ var ICONS = {
   news: '<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/>',
   comments: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
   notifications: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
-  providers: '<path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5M19.1 4.9C23 8.8 23 15.1 19.1 19"/><circle cx="12" cy="12" r="2"/>',
   send: '<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',
   eye: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
   reply: '<path d="M9 17l-5-5 5-5"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/>',
@@ -1662,6 +1670,17 @@ function pageFrame(title, desc, actions) {
                   h('div', { class: 'text-secondary-500 -mt-0.5 space-x-2' }, h('span', { text: desc }))) : null))),
           actionsBox)),
       content));
+  return { el: frame, content: content, actions: actionsBox };
+}
+
+function tabFrame(desc, actions) {
+  var content = h('div', { class: 'flex flex-col flex-1 min-w-0' });
+  var actionsBox = h('div', { class: 'flex flex-wrap items-center gap-2' }, actions || null);
+  var frame = h('div', { class: 'flex flex-col flex-1 min-w-0' },
+    h('div', { class: 'flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4' },
+      h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: desc }),
+      actionsBox),
+    content);
   return { el: frame, content: content, actions: actionsBox };
 }
 
@@ -2856,15 +2875,18 @@ var RESOURCES = {
 };
 
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments', 'payment-methods', 'categories', 'tags'],
-  publication: ['faqs', 'news', 'comments', 'notifications', 'providers']
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments', 'categories', 'tags'],
+  publication: ['faqs', 'news', 'comments', 'notifications']
 };
+var SETTINGS_TABS = ['payment-methods', 'sms', 'email'];
+var LEGACY_HASHES = { economy: { 'payment-methods': 'payment-methods' }, publication: { providers: 'sms' } };
 var SECTION_ORDER = ['economy', 'publication'];
 var PAGES = SECTIONS.economy.concat(SECTIONS.publication);
 var LIMIT = 20;
 var lastQuery = { comments: { status: 'pending' } };
 
 function sectionOf(page) {
+  if (SETTINGS_TABS.indexOf(page) !== -1) return 'settings';
   return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
 }
 
@@ -3254,7 +3276,7 @@ function paymentDetail(container, id) {
 }
 
 function paymentMethodsPage(container) {
-  var frame = pageFrame(t('nav.payment-methods'), t('desc.payment-methods'));
+  var frame = tabFrame(t('desc.payment-methods'));
   clear(container).appendChild(frame.el);
   var grid = h('div', { class: 'eco-card-grid' });
   frame.content.appendChild(grid);
@@ -3855,7 +3877,7 @@ function composePage(container, query) {
       }
       var list = providers.filter(function (p) { return p.channel === v.channel && p.isActive; });
       if (!list.length) {
-        providerBox.appendChild(notice('error', t('nt.noProvider'), h('a', { href: hashFor('providers'), class: 'eco-link text-sm font-medium', text: t('nav.providers') })));
+        providerBox.appendChild(notice('error', t('nt.noProvider'), h('a', { href: hashFor(v.channel), class: 'eco-link text-sm font-medium', text: t('nt.goSettings.' + v.channel) })));
         return;
       }
       var def = list.filter(function (p) { return p.isDefault; })[0] || list[0];
@@ -4036,26 +4058,24 @@ function providerField(f, cfg, onchange) {
   return field(label, ctl, hintKey ? t(hintKey) : null, { optional: !f.required });
 }
 
-function providersPage(container) {
-  var frame = pageFrame(t('nav.providers'), t('desc.providers'));
+function providersPage(container, channel) {
+  var frame = tabFrame(t('desc.' + channel));
   clear(container).appendChild(frame.el);
-  var body = h('div', { class: 'flex flex-col gap-8' });
+  var body = h('section', { 'data-channel': channel });
   frame.content.appendChild(body);
   var catalog = [];
 
   function skeleton() {
-    clear(body);
-    ['sms', 'email'].forEach(function (c, k) {
-      var grid = h('div', { class: 'eco-card-grid' });
-      for (var i = 0; i < (k ? 2 : 3); i++) {
-        grid.appendChild(card(h('div', { class: 'p-4' },
-          h('div', { class: 'flex items-center justify-between mb-4' }, bar('7rem', 'h-4'), bar('2rem', 'h-5 rounded-full')),
-          bar('100%', 'h-14 mb-4'),
-          skeletonField(), skeletonField(),
-          h('div', { class: 'flex justify-end' }, bar('5rem', 'h-8')))));
-      }
-      body.appendChild(h('div', {}, h('div', { class: 'flex items-center justify-between mb-3' }, bar('6rem', 'h-5'), bar('10rem', 'h-8')), grid));
-    });
+    clear(frame.actions).appendChild(bar('12rem', 'h-8'));
+    var grid = h('div', { class: 'eco-card-grid' });
+    for (var i = 0; i < (channel === 'sms' ? 3 : 2); i++) {
+      grid.appendChild(card(h('div', { class: 'p-4' },
+        h('div', { class: 'flex items-center justify-between mb-4' }, bar('7rem', 'h-4'), bar('2rem', 'h-5 rounded-full')),
+        bar('100%', 'h-14 mb-4'),
+        skeletonField(), skeletonField(),
+        h('div', { class: 'flex justify-end' }, bar('5rem', 'h-8')))));
+    }
+    clear(body).appendChild(grid);
   }
 
   function testBox(p) {
@@ -4169,7 +4189,7 @@ function providersPage(container) {
     return el;
   }
 
-  function addControl(channel, existing) {
+  function addControl(existing) {
     var free = catalog.filter(function (k) { return k.channel === channel && existing.indexOf(k.kind) === -1; });
     if (!free.length) return h('span', { class: 'text-xs text-secondary-500', text: t('pv.allAdded') });
     var kind = free[0].kind;
@@ -4190,19 +4210,13 @@ function providersPage(container) {
       if (!container.isConnected) return;
       var items = (res && res.items) || [];
       catalog = (res && res.catalog) || [];
-      clear(body);
-      ['sms', 'email'].forEach(function (channel) {
-        var list = items.filter(function (p) { return p.channel === channel; });
-        var grid = h('div', { class: 'eco-card-grid' });
-        if (!list.length) grid.appendChild(h('div', { class: 'eco-span-all' }, card(emptyBlock(t('pv.empty.' + channel), t('pv.empty.hint')))));
-        list.forEach(function (p) { grid.appendChild(providerCard(p)); });
-        body.appendChild(h('section', { 'data-channel': channel },
-          h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-3' },
-            h('h2', { class: 'text-lg font-medium', text: t('ch.' + channel) }),
-            addControl(channel, list.map(function (p) { return p.kind; }))),
-          grid));
-      });
-    }, function (err) { clear(body).appendChild(errorBlock(err, load)); });
+      var list = items.filter(function (p) { return p.channel === channel; });
+      var grid = h('div', { class: 'eco-card-grid' });
+      if (!list.length) grid.appendChild(h('div', { class: 'eco-span-all' }, card(emptyBlock(t('pv.empty.' + channel), t('pv.empty.hint')))));
+      list.forEach(function (p) { grid.appendChild(providerCard(p)); });
+      clear(frame.actions).appendChild(addControl(list.map(function (p) { return p.kind; })));
+      clear(body).appendChild(grid);
+    }, function (err) { clear(frame.actions); clear(body).appendChild(errorBlock(err, load)); });
   }
   load();
 }
@@ -4214,6 +4228,11 @@ var rendered = null;
 var router = null;
 var pendingHash = null;
 var EmptyPage = { name: 'EconomyPage', render: function () { return null; } };
+var TAB_ON = 'text-[color:var(--x-tab-group-text)] dark:text-[color:var(--x-tab-group-dark-text)]';
+var TAB_VARS = {
+  off: '--x-link-text: #475569; --x-link-text-hover: #334155; --x-link-shadow: #f1f5f9; --x-link-dark-text: #94a3b8; --x-link-dark-text-hover: #cbd5e1; --x-link-dark-shadow: #0f172a;',
+  on: '--x-link-text: rgb(102,84,226); --x-link-text-hover: rgb(93,77,206); --x-link-shadow: rgb(233,232,252); --x-link-dark-text: rgb(130,117,240); --x-link-dark-text-hover: rgb(181,175,245); --x-link-dark-shadow: rgb(59,49,130);'
+};
 
 function captureRouter(app) {
   if (router) return;
@@ -4226,6 +4245,17 @@ function captureRouter(app) {
       if (r.hasRoute(sec)) return;
       r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { title: sec === 'economy' ? 'Economy' : 'Publishing' } }] });
     });
+    if (r.hasRoute('settings')) {
+      SETTINGS_TABS.forEach(function (tab) {
+        if (!r.hasRoute('settings-' + tab)) r.addRoute('settings', { path: tab, name: 'settings-' + tab, component: EmptyPage, meta: tabMeta(tab) });
+      });
+      Object.keys(LEGACY_HASHES).forEach(function (sec) {
+        Object.keys(LEGACY_HASHES[sec]).forEach(function (page) {
+          var name = 'legacy-' + sec + '-' + page;
+          if (!r.hasRoute(name)) r.addRoute({ path: '/' + sec + '/' + page + '/:rest(.*)*', name: name, redirect: hashFor(LEGACY_HASHES[sec][page]).slice(1) });
+        });
+      });
+    }
     router = r;
   } catch (e) {
     router = null;
@@ -4236,6 +4266,16 @@ function captureRouter(app) {
     pendingHash = null;
     router.replace(target.slice(1));
   }
+}
+
+function tabMeta(tab) {
+  return { get title() { return t('settings') + ' - ' + t('tab.' + tab); } };
+}
+
+function legacyHash(hash) {
+  var m = /^#\/(economy|publication)\/([^/?]+)/.exec(hash);
+  var to = m && LEGACY_HASHES[m[1]][m[2]];
+  return to ? hashFor(to) : null;
 }
 
 function trapApp() {
@@ -4259,9 +4299,10 @@ function replaceHash(hash) {
 }
 
 function parseRoute(hash) {
-  var m = /^#\/(economy|publication)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(economy|publication|settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
+  if (section === 'settings') return SETTINGS_TABS.indexOf(m[2]) === -1 ? null : { section: section, page: m[2], id: null, query: {} };
   var page = m[2] || SECTIONS[section][0];
   if (SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   var query = {};
@@ -4351,16 +4392,75 @@ function syncSidebar(route) {
   document.documentElement.toggleAttribute('data-economy-active', !!active);
 }
 
-function unmount() {
-  var root = document.getElementById(ROOT_ID);
-  if (root) root.remove();
+function showMains() {
   var hidden = document.querySelectorAll('[data-economy-hidden]');
   for (var i = 0; i < hidden.length; i++) {
     hidden[i].style.display = '';
     hidden[i].removeAttribute('data-economy-hidden');
   }
+}
+
+function unmount() {
+  var root = document.getElementById(ROOT_ID);
+  if (root) root.remove();
+  showMains();
   closePanel();
   rendered = null;
+}
+
+function settingsTabRow() {
+  var native = document.querySelector('#main > main .x-tab-group a.x-tab[href^="#/settings/"]:not([data-settings-tab])');
+  return native ? native.parentElement : null;
+}
+
+function settingsTab(base, tab, on) {
+  var a = base.cloneNode(true);
+  a.removeAttribute('aria-current');
+  a.classList.remove('router-link-active', 'router-link-exact-active');
+  TAB_ON.split(' ').forEach(function (c) { a.classList.remove(c); });
+  if (on) TAB_ON.split(' ').forEach(function (c) { a.classList.add(c); });
+  a.classList.add('eco-tab');
+  a.classList.toggle('eco-tab-on', on);
+  a.setAttribute('href', hashFor(tab));
+  a.setAttribute('aria-selected', on ? 'true' : 'false');
+  if (on) a.setAttribute('aria-current', 'page');
+  a.setAttribute('data-value', location.origin + location.pathname + hashFor(tab));
+  a.setAttribute('data-settings-tab', tab);
+  a.setAttribute('data-l10n-skip', '');
+  a.setAttribute('style', on ? TAB_VARS.on : TAB_VARS.off);
+  var label = a.querySelector('.font-medium');
+  if (label) label.textContent = t('tab.' + tab);
+  else a.textContent = t('tab.' + tab);
+  return a;
+}
+
+function syncSettingsTabs(route) {
+  var row = settingsTabRow();
+  if (!row) return null;
+  var active = route && route.section === 'settings' ? route.page : null;
+  var key = lang() + '|' + active;
+  var ours = row.querySelectorAll('[data-settings-tab]');
+  var natives = row.querySelectorAll('a.x-tab:not([data-settings-tab])');
+  var last = natives[natives.length - 1];
+  var inOrder = ours.length === SETTINGS_TABS.length && last.nextElementSibling === ours[0];
+  if (inOrder && ours[0].getAttribute('data-key') === key) return row;
+  for (var i = 0; i < ours.length; i++) ours[i].remove();
+  var base = natives[0];
+  var anchor = last;
+  SETTINGS_TABS.forEach(function (tab) {
+    var a = settingsTab(base, tab, tab === active);
+    a.setAttribute('data-key', key);
+    anchor.after(a);
+    anchor = a;
+  });
+  return row;
+}
+
+function settingsSlot(row) {
+  var group = row && row.closest('.x-tab-group');
+  var box = group && group.parentElement && group.parentElement.parentElement;
+  var slot = box && box.nextElementSibling;
+  return slot && slot.tagName === 'DIV' ? slot : null;
 }
 
 function render(root, route) {
@@ -4377,7 +4477,7 @@ function render(root, route) {
     if (route.page === 'comments') refreshBadge(true);
     if (route.page === 'overview') overviewPage(root);
     else if (route.page === 'payment-methods') paymentMethodsPage(root);
-    else if (route.page === 'providers') providersPage(root);
+    else if (route.page === 'sms' || route.page === 'email') providersPage(root, route.page);
     else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
     else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
     else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
@@ -4391,9 +4491,41 @@ function render(root, route) {
 }
 
 function sync() {
-  var route = parseRoute();
-  syncSidebar(route);
+  var hash = location.hash;
+  var moved = legacyHash(hash);
+  if (moved) {
+    hash = moved;
+    if (router) router.replace(moved.slice(1));
+    else history.replaceState(history.state, '', location.pathname + location.search + moved);
+  }
+  var route = parseRoute(hash);
+  var settings = route && route.section === 'settings';
+  syncSidebar(settings ? null : route);
+  var row = syncSettingsTabs(route);
   if (!route) { if (rendered || document.getElementById(ROOT_ID)) unmount(); return; }
+  var root = document.getElementById(ROOT_ID);
+  if (settings) {
+    if (root && root.getAttribute('data-economy') !== 'settings') {
+      root.remove();
+      closePanel();
+      root = null;
+    }
+    showMains();
+    var slot = settingsSlot(row);
+    if (!slot) return;
+    if (!root) {
+      root = h('div', { id: ROOT_ID, class: 'flex flex-col flex-1 min-w-0', 'data-l10n-skip': '', 'data-economy': 'settings' });
+      rendered = null;
+    }
+    if (root.parentElement !== slot) slot.appendChild(root);
+    render(root, route);
+    return;
+  }
+  if (root && root.getAttribute('data-economy') !== 'root') {
+    root.remove();
+    root = null;
+    rendered = null;
+  }
   var main = document.querySelector('#main > main');
   if (!main) return;
   var mains = document.querySelectorAll('#main > main');
@@ -4403,7 +4535,6 @@ function sync() {
       mains[i].setAttribute('data-economy-hidden', '');
     }
   }
-  var root = document.getElementById(ROOT_ID);
   if (!root) {
     root = h('div', { id: ROOT_ID, class: 'flex flex-col flex-1 pt-4', 'data-l10n-skip': '', 'data-economy': 'root' });
     rendered = null;
@@ -4442,7 +4573,7 @@ function boot() {
   sync();
 }
 
-if (/^#\/(economy|publication)/.test(location.hash)) {
+if (/^#\/(economy|publication)/.test(location.hash) || parseRoute(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }

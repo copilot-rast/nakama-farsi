@@ -5,6 +5,11 @@ var rendered = null;
 var router = null;
 var pendingHash = null;
 var EmptyPage = { name: 'EconomyPage', render: function () { return null; } };
+var TAB_ON = 'text-[color:var(--x-tab-group-text)] dark:text-[color:var(--x-tab-group-dark-text)]';
+var TAB_VARS = {
+  off: '--x-link-text: #475569; --x-link-text-hover: #334155; --x-link-shadow: #f1f5f9; --x-link-dark-text: #94a3b8; --x-link-dark-text-hover: #cbd5e1; --x-link-dark-shadow: #0f172a;',
+  on: '--x-link-text: rgb(102,84,226); --x-link-text-hover: rgb(93,77,206); --x-link-shadow: rgb(233,232,252); --x-link-dark-text: rgb(130,117,240); --x-link-dark-text-hover: rgb(181,175,245); --x-link-dark-shadow: rgb(59,49,130);'
+};
 
 function captureRouter(app) {
   if (router) return;
@@ -17,6 +22,17 @@ function captureRouter(app) {
       if (r.hasRoute(sec)) return;
       r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { title: sec === 'economy' ? 'Economy' : 'Publishing' } }] });
     });
+    if (r.hasRoute('settings')) {
+      SETTINGS_TABS.forEach(function (tab) {
+        if (!r.hasRoute('settings-' + tab)) r.addRoute('settings', { path: tab, name: 'settings-' + tab, component: EmptyPage, meta: tabMeta(tab) });
+      });
+      Object.keys(LEGACY_HASHES).forEach(function (sec) {
+        Object.keys(LEGACY_HASHES[sec]).forEach(function (page) {
+          var name = 'legacy-' + sec + '-' + page;
+          if (!r.hasRoute(name)) r.addRoute({ path: '/' + sec + '/' + page + '/:rest(.*)*', name: name, redirect: hashFor(LEGACY_HASHES[sec][page]).slice(1) });
+        });
+      });
+    }
     router = r;
   } catch (e) {
     router = null;
@@ -27,6 +43,16 @@ function captureRouter(app) {
     pendingHash = null;
     router.replace(target.slice(1));
   }
+}
+
+function tabMeta(tab) {
+  return { get title() { return t('settings') + ' - ' + t('tab.' + tab); } };
+}
+
+function legacyHash(hash) {
+  var m = /^#\/(economy|publication)\/([^/?]+)/.exec(hash);
+  var to = m && LEGACY_HASHES[m[1]][m[2]];
+  return to ? hashFor(to) : null;
 }
 
 function trapApp() {
@@ -50,9 +76,10 @@ function replaceHash(hash) {
 }
 
 function parseRoute(hash) {
-  var m = /^#\/(economy|publication)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(economy|publication|settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
+  if (section === 'settings') return SETTINGS_TABS.indexOf(m[2]) === -1 ? null : { section: section, page: m[2], id: null, query: {} };
   var page = m[2] || SECTIONS[section][0];
   if (SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   var query = {};
@@ -142,16 +169,75 @@ function syncSidebar(route) {
   document.documentElement.toggleAttribute('data-economy-active', !!active);
 }
 
-function unmount() {
-  var root = document.getElementById(ROOT_ID);
-  if (root) root.remove();
+function showMains() {
   var hidden = document.querySelectorAll('[data-economy-hidden]');
   for (var i = 0; i < hidden.length; i++) {
     hidden[i].style.display = '';
     hidden[i].removeAttribute('data-economy-hidden');
   }
+}
+
+function unmount() {
+  var root = document.getElementById(ROOT_ID);
+  if (root) root.remove();
+  showMains();
   closePanel();
   rendered = null;
+}
+
+function settingsTabRow() {
+  var native = document.querySelector('#main > main .x-tab-group a.x-tab[href^="#/settings/"]:not([data-settings-tab])');
+  return native ? native.parentElement : null;
+}
+
+function settingsTab(base, tab, on) {
+  var a = base.cloneNode(true);
+  a.removeAttribute('aria-current');
+  a.classList.remove('router-link-active', 'router-link-exact-active');
+  TAB_ON.split(' ').forEach(function (c) { a.classList.remove(c); });
+  if (on) TAB_ON.split(' ').forEach(function (c) { a.classList.add(c); });
+  a.classList.add('eco-tab');
+  a.classList.toggle('eco-tab-on', on);
+  a.setAttribute('href', hashFor(tab));
+  a.setAttribute('aria-selected', on ? 'true' : 'false');
+  if (on) a.setAttribute('aria-current', 'page');
+  a.setAttribute('data-value', location.origin + location.pathname + hashFor(tab));
+  a.setAttribute('data-settings-tab', tab);
+  a.setAttribute('data-l10n-skip', '');
+  a.setAttribute('style', on ? TAB_VARS.on : TAB_VARS.off);
+  var label = a.querySelector('.font-medium');
+  if (label) label.textContent = t('tab.' + tab);
+  else a.textContent = t('tab.' + tab);
+  return a;
+}
+
+function syncSettingsTabs(route) {
+  var row = settingsTabRow();
+  if (!row) return null;
+  var active = route && route.section === 'settings' ? route.page : null;
+  var key = lang() + '|' + active;
+  var ours = row.querySelectorAll('[data-settings-tab]');
+  var natives = row.querySelectorAll('a.x-tab:not([data-settings-tab])');
+  var last = natives[natives.length - 1];
+  var inOrder = ours.length === SETTINGS_TABS.length && last.nextElementSibling === ours[0];
+  if (inOrder && ours[0].getAttribute('data-key') === key) return row;
+  for (var i = 0; i < ours.length; i++) ours[i].remove();
+  var base = natives[0];
+  var anchor = last;
+  SETTINGS_TABS.forEach(function (tab) {
+    var a = settingsTab(base, tab, tab === active);
+    a.setAttribute('data-key', key);
+    anchor.after(a);
+    anchor = a;
+  });
+  return row;
+}
+
+function settingsSlot(row) {
+  var group = row && row.closest('.x-tab-group');
+  var box = group && group.parentElement && group.parentElement.parentElement;
+  var slot = box && box.nextElementSibling;
+  return slot && slot.tagName === 'DIV' ? slot : null;
 }
 
 function render(root, route) {
@@ -168,7 +254,7 @@ function render(root, route) {
     if (route.page === 'comments') refreshBadge(true);
     if (route.page === 'overview') overviewPage(root);
     else if (route.page === 'payment-methods') paymentMethodsPage(root);
-    else if (route.page === 'providers') providersPage(root);
+    else if (route.page === 'sms' || route.page === 'email') providersPage(root, route.page);
     else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
     else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
     else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
@@ -182,9 +268,41 @@ function render(root, route) {
 }
 
 function sync() {
-  var route = parseRoute();
-  syncSidebar(route);
+  var hash = location.hash;
+  var moved = legacyHash(hash);
+  if (moved) {
+    hash = moved;
+    if (router) router.replace(moved.slice(1));
+    else history.replaceState(history.state, '', location.pathname + location.search + moved);
+  }
+  var route = parseRoute(hash);
+  var settings = route && route.section === 'settings';
+  syncSidebar(settings ? null : route);
+  var row = syncSettingsTabs(route);
   if (!route) { if (rendered || document.getElementById(ROOT_ID)) unmount(); return; }
+  var root = document.getElementById(ROOT_ID);
+  if (settings) {
+    if (root && root.getAttribute('data-economy') !== 'settings') {
+      root.remove();
+      closePanel();
+      root = null;
+    }
+    showMains();
+    var slot = settingsSlot(row);
+    if (!slot) return;
+    if (!root) {
+      root = h('div', { id: ROOT_ID, class: 'flex flex-col flex-1 min-w-0', 'data-l10n-skip': '', 'data-economy': 'settings' });
+      rendered = null;
+    }
+    if (root.parentElement !== slot) slot.appendChild(root);
+    render(root, route);
+    return;
+  }
+  if (root && root.getAttribute('data-economy') !== 'root') {
+    root.remove();
+    root = null;
+    rendered = null;
+  }
   var main = document.querySelector('#main > main');
   if (!main) return;
   var mains = document.querySelectorAll('#main > main');
@@ -194,7 +312,6 @@ function sync() {
       mains[i].setAttribute('data-economy-hidden', '');
     }
   }
-  var root = document.getElementById(ROOT_ID);
   if (!root) {
     root = h('div', { id: ROOT_ID, class: 'flex flex-col flex-1 pt-4', 'data-l10n-skip': '', 'data-economy': 'root' });
     rendered = null;
@@ -233,7 +350,7 @@ function boot() {
   sync();
 }
 
-if (/^#\/(economy|publication)/.test(location.hash)) {
+if (/^#\/(economy|publication)/.test(location.hash) || parseRoute(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }

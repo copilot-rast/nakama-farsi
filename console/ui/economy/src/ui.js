@@ -167,6 +167,17 @@ function pageFrame(title, desc, actions) {
   return { el: frame, content: content, actions: actionsBox };
 }
 
+function tabFrame(desc, actions) {
+  var content = h('div', { class: 'flex flex-col flex-1 min-w-0' });
+  var actionsBox = h('div', { class: 'flex flex-wrap items-center gap-2' }, actions || null);
+  var frame = h('div', { class: 'flex flex-col flex-1 min-w-0' },
+    h('div', { class: 'flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4' },
+      h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: desc }),
+      actionsBox),
+    content);
+  return { el: frame, content: content, actions: actionsBox };
+}
+
 function notice(kind, text, action) {
   var color = kind === 'error' ? 'error' : kind === 'success' ? 'success' : 'secondary';
   return h('div', { class: 'eco-notice eco-notice--' + color + ' flex items-center gap-2 rounded-md px-3 py-2 text-sm', role: kind === 'error' ? 'alert' : 'status' },

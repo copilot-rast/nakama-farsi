@@ -82,4 +82,4 @@ Errors: runtime errors with UPPER_SNAKE codes.
 
 ## Console pages
 
-New sidebar section «انتشار» / "Publishing" after «اقتصاد»: سؤال‌های متداول، اخبار، کامنت‌ها (with pending badge), اعلان‌ها (list + «ارسال اعلان» form with channel, target picker with live count from preview-target, markdown body with preview), سرویس‌های ارسال (provider cards like payment methods, with test send). Same look, fa/en, dark, mobile cards, server-side search/paging, layout-matching loading states.
+New sidebar section «انتشار» / "Publishing" after «اقتصاد»: سؤال‌های متداول، اخبار، کامنت‌ها (with pending badge), اعلان‌ها (list + «ارسال اعلان» form with channel, target picker with live count from preview-target, markdown body with preview). Delivery services (provider cards like payment methods, with test send) live in the console's Settings page as the «پیامک» (`#/settings/sms`) and «ایمیل» (`#/settings/email`) tabs; `#/publication/providers` redirects to the SMS tab. Same look, fa/en, dark, mobile cards, server-side search/paging, layout-matching loading states.
