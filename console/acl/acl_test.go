@@ -69,3 +69,31 @@ func TestCheckACLHttpEconomy(t *testing.T) {
 		t.Fatal("handlers without a single method need admin")
 	}
 }
+
+func TestCheckACLHttpPublication(t *testing.T) {
+	read := NewPermission(console.AclResources_NOTIFICATION, PermissionRead)
+	write := NewPermission(console.AclResources_NOTIFICATION, PermissionWrite)
+	if !CheckACLHttp(http.MethodGet, "/v2/console/publication/news", read) {
+		t.Fatal("read permission must list news")
+	}
+	if CheckACLHttp(http.MethodPost, "/v2/console/publication/notifications", read) {
+		t.Fatal("read permission must not send notifications")
+	}
+	for _, method := range []string{http.MethodPost, http.MethodPut, http.MethodDelete} {
+		if !CheckACLHttp(method, "/v2/console/publication/providers/{id}", write) {
+			t.Fatalf("write permission must allow %s", method)
+		}
+	}
+	if CheckACLHttp(http.MethodGet, "/v2/console/publication/faqs", NewPermission(console.AclResources_HIRO_ECONOMY, PermissionRead)) {
+		t.Fatal("economy permission must not read publication")
+	}
+	if CheckACLHttp(http.MethodGet, "/v2/console/publication/faqs", None()) {
+		t.Fatal("no permission must be refused")
+	}
+	if !CheckACLHttp(http.MethodPost, "/v2/console/publication/providers/{id}/test", Admin()) {
+		t.Fatal("admin must pass")
+	}
+	if CheckACLHttp("", "/v2/console/publication/faqs/{id}", write) {
+		t.Fatal("handlers without a single method need admin")
+	}
+}

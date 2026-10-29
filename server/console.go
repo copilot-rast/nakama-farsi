@@ -255,7 +255,13 @@ func StartConsoleServer(logger *zap.Logger, startupLogger *zap.Logger, db *sql.D
 			method = methods[0]
 		}
 		return func(w http.ResponseWriter, r *http.Request) {
+			r.Header.Del(consoleUsernameHeader)
 			r, success, code, message := checkAuthCustom(r, logger, config, r.Header.Get("Authorization"), method, path, sessionCache, loginAttemptCache)
+			if success {
+				if username, ok := r.Context().Value(ctxConsoleUsernameKey{}).(string); ok && username != "" {
+					r.Header.Set(consoleUsernameHeader, username)
+				}
+			}
 			if !success {
 				w.Header().Set("content-type", "application/json")
 				w.WriteHeader(code)
@@ -299,6 +305,8 @@ func StartConsoleServer(logger *zap.Logger, startupLogger *zap.Logger, db *sql.D
 			if sw.statusCode >= 200 && sw.statusCode < 300 {
 				if strings.HasPrefix(path, "/v2/console/economy/") {
 					consoleEconomyAuditLog(r.Context(), logger, db, method, path, r.URL.Path, originalBody)
+				} else if strings.HasPrefix(path, "/v2/console/publication/") {
+					consolePublicationAuditLog(r.Context(), logger, db, method, path, r.URL.Path, originalBody)
 				} else {
 					consoleHttpAuditLogInterceptor(r.Context(), logger, db, method, path, originalBody)
 				}
@@ -324,7 +332,7 @@ func StartConsoleServer(logger *zap.Logger, startupLogger *zap.Logger, db *sql.D
 			logger.Fatal("Failed to register custom console HTTP handler, path pattern must start with '/'", zap.String("path_pattern", handler.PathPattern))
 		}
 		handlerFunc := handler.Handler
-		if strings.HasPrefix(handler.PathPattern, "/v2/console/hiro/") || strings.HasPrefix(handler.PathPattern, "/v2/console/economy/") {
+		if strings.HasPrefix(handler.PathPattern, "/v2/console/hiro/") || strings.HasPrefix(handler.PathPattern, "/v2/console/economy/") || strings.HasPrefix(handler.PathPattern, "/v2/console/publication/") {
 			// Handlers in reverse order of priority.
 			handlerFunc = customHttpMuxParamsFunc(handlerFunc)
 			handlerFunc = customHttpAuditLogFunc(handler.PathPattern, handler.Methods, handlerFunc)
