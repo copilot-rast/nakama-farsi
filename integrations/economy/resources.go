@@ -31,7 +31,8 @@ func resources() []resource {
 			filters: map[string]string{"kind": "t.kind = ?"},
 			save:    saveCategory,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
-				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_product WHERE category_id=$1)`)
+				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_product WHERE category_id=$1)
+					OR EXISTS (SELECT 1 FROM publication_faq WHERE category_id=$1) OR EXISTS (SELECT 1 FROM publication_news WHERE category_id=$1)`)
 			},
 		},
 		{
@@ -398,9 +399,9 @@ func saveCategory(s *service, ctx context.Context, tx *sql.Tx, id string, create
 		return err
 	}
 	switch in.Kind {
-	case "product", "prize", "gift", "currency":
+	case "product", "prize", "gift", "currency", "faq", "news":
 	default:
-		return badRequest("INVALID_KIND", "kind", "kind must be product, prize, gift or currency")
+		return badRequest("INVALID_KIND", "kind", "kind must be product, prize, gift, currency, faq or news")
 	}
 	key, err := cleanKey("key", in.Key)
 	if err != nil {
@@ -414,7 +415,8 @@ func saveCategory(s *service, ctx context.Context, tx *sql.Tx, id string, create
 		var oldKind string
 		if err := tx.QueryRowContext(ctx, `SELECT kind FROM economy_category WHERE id=$1`, id).Scan(&oldKind); err == nil && oldKind != in.Kind {
 			var used bool
-			_ = tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_product WHERE category_id=$1)`, id).Scan(&used)
+			_ = tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_product WHERE category_id=$1)
+				OR EXISTS (SELECT 1 FROM publication_faq WHERE category_id=$1) OR EXISTS (SELECT 1 FROM publication_news WHERE category_id=$1)`, id).Scan(&used)
 			if used {
 				return badRequest("IN_USE", "kind", "a used category cannot change kind")
 			}
