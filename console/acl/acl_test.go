@@ -97,3 +97,52 @@ func TestCheckACLHttpPublication(t *testing.T) {
 		t.Fatal("handlers without a single method need admin")
 	}
 }
+
+func TestCheckACLHttpBase(t *testing.T) {
+	settingsRead := NewPermission(console.AclResources_SETTINGS, PermissionRead)
+	settingsWrite := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
+	economyRead := NewPermission(console.AclResources_HIRO_ECONOMY, PermissionRead)
+	economyWrite := NewPermission(console.AclResources_HIRO_ECONOMY, PermissionWrite)
+	for _, path := range []string{"/v2/console/base/languages", "/v2/console/base/languages/{id}", "/v2/console/base/languages/coverage"} {
+		if !CheckACLHttp(http.MethodGet, path, settingsRead) {
+			t.Fatalf("settings read must read %s", path)
+		}
+		if CheckACLHttp(http.MethodGet, path, economyRead) {
+			t.Fatalf("economy permission must not read %s", path)
+		}
+	}
+	for _, method := range []string{http.MethodPost, http.MethodPut, http.MethodDelete} {
+		if !CheckACLHttp(method, "/v2/console/base/languages/{id}", settingsWrite) {
+			t.Fatalf("settings write must allow %s on languages", method)
+		}
+		if CheckACLHttp(method, "/v2/console/base/languages/{id}", settingsRead) {
+			t.Fatalf("settings read must not allow %s on languages", method)
+		}
+		if CheckACLHttp(method, "/v2/console/base/languages/{id}", economyWrite) {
+			t.Fatalf("economy write must not allow %s on languages", method)
+		}
+	}
+	for _, path := range []string{"/v2/console/base/categories", "/v2/console/base/categories/{id}", "/v2/console/base/tags/key-types", "/v2/console/base/tags/{id}"} {
+		if !CheckACLHttp(http.MethodGet, path, economyRead) {
+			t.Fatalf("economy read must read %s", path)
+		}
+		if CheckACLHttp(http.MethodGet, path, settingsRead) {
+			t.Fatalf("settings permission must not read %s", path)
+		}
+		if CheckACLHttp(http.MethodPost, path, economyRead) {
+			t.Fatalf("economy read must not write %s", path)
+		}
+		if !CheckACLHttp(http.MethodPut, path, economyWrite) {
+			t.Fatalf("economy write must write %s", path)
+		}
+	}
+	if CheckACLHttp(http.MethodGet, "/v2/console/base/categories", None()) || CheckACLHttp(http.MethodGet, "/v2/console/base/other", economyRead) {
+		t.Fatal("unknown base paths and no permission must be refused")
+	}
+	if !CheckACLHttp(http.MethodDelete, "/v2/console/base/languages/{id}", Admin()) {
+		t.Fatal("admin must pass")
+	}
+	if CheckACLHttp("", "/v2/console/base/tags/{id}", economyWrite) {
+		t.Fatal("handlers without a single method need admin")
+	}
+}
