@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"net/mail"
 	"strconv"
 	"strings"
@@ -9,43 +10,26 @@ import (
 	"unicode/utf8"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
-type i18n map[string]string
+type i18n = localized.Text
 
-func cleanI18n(field string, in i18n, required bool, max int) (i18n, error) {
-	out := i18n{}
-	for k, v := range in {
-		if k != "fa" && k != "en" {
-			return nil, badRequest("INVALID_LANGUAGE", field, "only fa and en are allowed")
-		}
-		v = strings.TrimSpace(v)
-		if !utf8.ValidString(v) || utf8.RuneCountInString(v) > max {
-			return nil, badRequest("TEXT_TOO_LONG", field, "text is too long (max "+strconv.Itoa(max)+")")
-		}
-		if v != "" {
-			out[k] = v
-		}
-	}
-	if (required || len(out) > 0) && out["fa"] == "" {
-		return nil, badRequest("FA_REQUIRED", field, "a Persian (fa) value is required")
-	}
-	return out, nil
+func cleanI18n(langs *localized.Set, field string, in i18n, required bool, max int) (i18n, error) {
+	out, err := langs.Clean(field, in, required, max)
+	return out, textError(err)
 }
 
-func (t i18n) pick(lang string) string {
-	if v := t[lang]; v != "" {
-		return v
+func textError(err error) error {
+	var e *localized.Error
+	if errors.As(err, &e) {
+		return badRequest(e.Code, e.Field, e.Message)
 	}
-	return t["fa"]
+	return err
 }
 
-func cleanLang(lang string) string {
-	lang = strings.ToLower(strings.TrimSpace(lang))
-	if strings.HasPrefix(lang, "en") {
-		return "en"
-	}
-	return "fa"
+func translatedSearch(col string) string {
+	return "(SELECT string_agg(e.value, ' ') FROM jsonb_each_text(" + col + ") e)"
 }
 
 func cleanURL(field, value string) (string, error) {
@@ -119,7 +103,7 @@ type action struct {
 	Value string `json:"value"`
 }
 
-func cleanAction(field string, in action, withLabel bool) (action, error) {
+func cleanAction(langs *localized.Set, field string, in action, labelRequired bool) (action, error) {
 	in.Type = strings.TrimSpace(in.Type)
 	in.Value = strings.TrimSpace(in.Value)
 	switch in.Type {
@@ -134,15 +118,14 @@ func cleanAction(field string, in action, withLabel bool) (action, error) {
 	default:
 		return in, badRequest("INVALID_ACTION", field, "type must be url or goto")
 	}
-	if withLabel {
-		label, err := cleanI18n(field+".label", in.Label, true, 64)
-		if err != nil {
-			return in, err
-		}
-		in.Label = label
-	} else {
-		in.Label = nil
+	label, err := cleanI18n(langs, field+".label", in.Label, labelRequired, 64)
+	if err != nil {
+		return in, err
 	}
+	if len(label) == 0 {
+		label = nil
+	}
+	in.Label = label
 	return in, nil
 }
 
@@ -217,11 +200,7 @@ func itoa(n int) string {
 }
 
 func i18nJSON(t i18n) string {
-	if t == nil {
-		t = i18n{}
-	}
-	b, _ := json.Marshal(t)
-	return string(b)
+	return t.JSON()
 }
 
 func decodeInto(raw []byte, out any) error {

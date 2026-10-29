@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"testing"
+
+	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
 func TestNormalizePhone(t *testing.T) {
@@ -55,18 +57,28 @@ func TestNormalizeEmail(t *testing.T) {
 	}
 }
 
+func testLangs() *localized.Set {
+	return localized.NewSet([]localized.Language{{Code: "fa", Direction: "rtl", Active: true, Default: true}, {Code: "en", Active: true}, {Code: "ar", Direction: "rtl", Active: true}})
+}
+
 func TestCleanAction(t *testing.T) {
-	if _, err := cleanAction("a", action{Type: "url", Value: "javascript:alert(1)"}, false); err == nil {
+	if _, err := cleanAction(testLangs(), "a", action{Type: "url", Value: "javascript:alert(1)"}, false); err == nil {
 		t.Error("javascript url must be refused")
 	}
-	if _, err := cleanAction("a", action{Type: "url", Value: "https://e.com"}, true); err == nil {
+	if _, err := cleanAction(testLangs(), "a", action{Type: "url", Value: "https://e.com"}, true); err == nil {
 		t.Error("label is required for news actions")
 	}
-	if a, err := cleanAction("a", action{Type: "goto", Value: "shop", Label: i18n{"fa": "فروشگاه"}}, true); err != nil || a.Label["fa"] == "" {
+	if a, err := cleanAction(testLangs(), "a", action{Type: "goto", Value: "shop", Label: i18n{"fa": "فروشگاه", "ar": "متجر"}}, true); err != nil || a.Label["fa"] == "" {
 		t.Errorf("goto action refused: %v", err)
 	}
-	if _, err := cleanAction("a", action{Type: "open", Value: "x"}, false); err == nil {
+	if _, err := cleanAction(testLangs(), "a", action{Type: "open", Value: "x"}, false); err == nil {
 		t.Error("unknown type must be refused")
+	}
+	if a, err := cleanAction(testLangs(), "a", action{Type: "goto", Value: "shop"}, false); err != nil || a.Label != nil {
+		t.Errorf("optional label = %v %v", a, err)
+	}
+	if _, err := cleanAction(testLangs(), "a", action{Type: "goto", Value: "shop", Label: i18n{"de": "x"}}, false); err == nil {
+		t.Error("unknown label language must be refused")
 	}
 }
 
@@ -78,20 +90,21 @@ func TestCleanNotification(t *testing.T) {
 	}{
 		"bad channel":      {notificationInput{Channel: "push", Body: i18n{"fa": "x"}}, "INVALID_CHANNEL"},
 		"sms too long":     {notificationInput{Channel: "sms", Body: i18n{"fa": long}}, "TEXT_TOO_LONG"},
-		"email no title":   {notificationInput{Channel: "email", Body: i18n{"fa": "x"}}, "FA_REQUIRED"},
-		"in_app no title":  {notificationInput{Channel: "in_app", Body: i18n{"fa": "x"}}, "FA_REQUIRED"},
-		"no body":          {notificationInput{Channel: "sms"}, "FA_REQUIRED"},
+		"email no title":   {notificationInput{Channel: "email", Body: i18n{"fa": "x"}}, "DEFAULT_LANGUAGE_REQUIRED"},
+		"in_app no title":  {notificationInput{Channel: "in_app", Body: i18n{"fa": "x"}}, "DEFAULT_LANGUAGE_REQUIRED"},
+		"no body":          {notificationInput{Channel: "sms"}, "DEFAULT_LANGUAGE_REQUIRED"},
 		"provider on push": {notificationInput{Channel: "in_app", Title: i18n{"fa": "t"}, Body: i18n{"fa": "x"}, ProviderID: "x"}, "PROVIDER_NOT_ALLOWED"},
 		"bad action":       {notificationInput{Channel: "in_app", Title: i18n{"fa": "t"}, Body: i18n{"fa": "x"}, Action: &action{Type: "url", Value: "ftp://x"}}, "INVALID_ACTION"},
-		"en only":          {notificationInput{Channel: "in_app", Title: i18n{"en": "t"}, Body: i18n{"fa": "x"}}, "FA_REQUIRED"},
+		"en only":          {notificationInput{Channel: "in_app", Title: i18n{"en": "t"}, Body: i18n{"fa": "x"}}, "DEFAULT_LANGUAGE_REQUIRED"},
+		"unknown language": {notificationInput{Channel: "in_app", Title: i18n{"fa": "t", "de": "t"}, Body: i18n{"fa": "x"}}, "INVALID_LANGUAGE"},
 	} {
-		_, err := cleanNotification(tc.in)
+		_, err := cleanNotification(testLangs(), tc.in)
 		app, ok := asApp(err)
 		if !ok || app.Code != tc.code {
 			t.Errorf("%s: err=%v want %s", name, err, tc.code)
 		}
 	}
-	if _, err := cleanNotification(notificationInput{Channel: "sms", Body: i18n{"fa": string(bytes.Repeat([]byte("a"), 600))}}); err != nil {
+	if _, err := cleanNotification(testLangs(), notificationInput{Channel: "sms", Body: i18n{"fa": string(bytes.Repeat([]byte("a"), 600))}}); err != nil {
 		t.Errorf("600 char sms without title must pass: %v", err)
 	}
 }

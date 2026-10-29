@@ -235,7 +235,7 @@ func checkMessage(t *testing.T, sess smtpSession) {
 }
 
 func smtpMessage() outMessage {
-	return outMessage{To: "u@example.com", Subject: "سلام دنیا", Text: markdownText("متن **پررنگ**"), HTML: emailHTML("سلام دنیا", renderMarkdown("متن **پررنگ**"), "fa")}
+	return outMessage{To: "u@example.com", Subject: "سلام دنیا", Text: markdownText("متن **پررنگ**"), HTML: emailHTML("سلام دنیا", renderMarkdown("متن **پررنگ**"), "fa", "rtl")}
 }
 
 func TestSMTPStartTLS(t *testing.T) {

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
 const commentsPerMinute = 5
@@ -58,9 +59,11 @@ func nextCursor(offset, limit, got int) string {
 }
 
 func parseI18n(raw string) i18n {
-	out := i18n{}
-	_ = json.Unmarshal([]byte(raw), &out)
-	return out
+	return localized.Parse(raw)
+}
+
+func (s *service) clientLang(ctx context.Context, userID, requested string) (*localized.Set, string, error) {
+	return localized.ForUser(ctx, s.db, userID, requested)
 }
 
 func (s *service) rpcFaqList(ctx context.Context, userID, payload string) (any, error) {
@@ -72,9 +75,12 @@ func (s *service) rpcFaqList(ctx context.Context, userID, payload string) (any, 
 	if err := decodeStrict(payload, &in); err != nil {
 		return nil, err
 	}
-	lang := cleanLang(in.Lang)
+	langs, lang, err := s.clientLang(ctx, userID, in.Lang)
+	if err != nil {
+		return nil, err
+	}
 	categories := []map[string]any{}
-	rows, err := s.db.QueryContext(ctx, `SELECT c.key, c.name::text FROM economy_category c WHERE c.kind='faq'
+	rows, err := s.db.QueryContext(ctx, `SELECT c.key, c.name::text FROM base_category c WHERE c.key_type='faq'
 		AND EXISTS (SELECT 1 FROM publication_faq f WHERE f.category_id=c.id AND f.is_active) ORDER BY c.sort, c.key`)
 	if err != nil {
 		return nil, err
@@ -85,7 +91,7 @@ func (s *service) rpcFaqList(ctx context.Context, userID, payload string) (any, 
 			rows.Close()
 			return nil, err
 		}
-		categories = append(categories, map[string]any{"key": key, "name": parseI18n(name).pick(lang)})
+		categories = append(categories, map[string]any{"key": key, "name": langs.Resolve(parseI18n(name), lang)})
 	}
 	rows.Close()
 	where := &sqlWhere{}
@@ -99,9 +105,9 @@ func (s *service) rpcFaqList(ctx context.Context, userID, payload string) (any, 
 		}
 		n := where.next()
 		where.args = append(where.args, likePattern(q))
-		where.parts = append(where.parts, "(f.question->>'fa' ILIKE "+n+" OR COALESCE(f.question->>'en','') ILIKE "+n+" OR f.answer->>'fa' ILIKE "+n+" OR COALESCE(f.answer->>'en','') ILIKE "+n+")")
+		where.parts = append(where.parts, "(COALESCE("+translatedSearch("f.question")+",'') ILIKE "+n+" OR COALESCE("+translatedSearch("f.answer")+",'') ILIKE "+n+")")
 	}
-	rows, err = s.db.QueryContext(ctx, `SELECT f.id::text, f.question::text, f.answer::text, COALESCE(c.key,'') FROM publication_faq f LEFT JOIN economy_category c ON c.id=f.category_id`+
+	rows, err = s.db.QueryContext(ctx, `SELECT f.id::text, f.question::text, f.answer::text, COALESCE(c.key,'') FROM publication_faq f LEFT JOIN base_category c ON c.id=f.category_id`+
 		where.sql()+` ORDER BY f.sort, f.created_at DESC, f.id LIMIT 500`, where.args...)
 	if err != nil {
 		return nil, err
@@ -113,14 +119,14 @@ func (s *service) rpcFaqList(ctx context.Context, userID, payload string) (any, 
 		if err := rows.Scan(&id, &q, &a, &key); err != nil {
 			return nil, err
 		}
-		answer := parseI18n(a).pick(lang)
+		answer := langs.Resolve(parseI18n(a), lang)
 		var cat any
 		if key != "" {
 			cat = key
 		}
-		items = append(items, map[string]any{"id": id, "question": parseI18n(q).pick(lang), "answer": answer, "answerHtml": renderMarkdown(answer), "categoryKey": cat})
+		items = append(items, map[string]any{"id": id, "question": langs.Resolve(parseI18n(q), lang), "answer": answer, "answerHtml": renderMarkdown(answer), "categoryKey": cat})
 	}
-	return map[string]any{"categories": categories, "items": items}, rows.Err()
+	return map[string]any{"lang": lang, "categories": categories, "items": items}, rows.Err()
 }
 
 const newsVisible = `n.is_active AND n.published_at <= now()`
@@ -135,7 +141,10 @@ func (s *service) rpcNewsList(ctx context.Context, userID, payload string) (any,
 	if err := decodeStrict(payload, &in); err != nil {
 		return nil, err
 	}
-	lang := cleanLang(in.Lang)
+	langs, lang, err := s.clientLang(ctx, userID, in.Lang)
+	if err != nil {
+		return nil, err
+	}
 	limit := clampLimit(in.Limit, 20, 50)
 	offset, err := readCursor(in.Cursor)
 	if err != nil {
@@ -144,13 +153,13 @@ func (s *service) rpcNewsList(ctx context.Context, userID, payload string) (any,
 	where := &sqlWhere{args: []any{userID}}
 	where.add(newsVisible)
 	if k := strings.TrimSpace(in.CategoryKey); k != "" {
-		where.add("n.category_id IN (SELECT id FROM economy_category WHERE kind='news' AND key = ?)", k)
+		where.add("n.category_id IN (SELECT id FROM base_category WHERE key_type='news' AND key = ?)", k)
 	}
 	n := len(where.args)
 	rows, err := s.db.QueryContext(ctx, `SELECT n.id::text, n.title::text, n.summary::text, n.cover_url, n.published_at, n.is_pinned, COALESCE(c.key,''),
 		EXISTS (SELECT 1 FROM publication_news_seen ns WHERE ns.news_id=n.id AND ns.user_id=$1::uuid),
 		(SELECT count(*) FROM publication_news_comment nc WHERE nc.news_id=n.id AND nc.is_accepted)
-		FROM publication_news n LEFT JOIN economy_category c ON c.id=n.category_id`+where.sql()+`
+		FROM publication_news n LEFT JOIN base_category c ON c.id=n.category_id`+where.sql()+`
 		ORDER BY n.is_pinned DESC, n.published_at DESC, n.id DESC LIMIT $`+itoa(n+1)+` OFFSET $`+itoa(n+2), append(where.args, limit, offset)...)
 	if err != nil {
 		return nil, err
@@ -165,13 +174,13 @@ func (s *service) rpcNewsList(ctx context.Context, userID, payload string) (any,
 		if err := rows.Scan(&id, &title, &summary, &cover, &published, &pinned, &key, &seen, &comments); err != nil {
 			return nil, err
 		}
-		items = append(items, map[string]any{"id": id, "title": parseI18n(title).pick(lang), "summary": parseI18n(summary).pick(lang), "coverUrl": cover,
+		items = append(items, map[string]any{"id": id, "title": langs.Resolve(parseI18n(title), lang), "summary": langs.Resolve(parseI18n(summary), lang), "coverUrl": cover,
 			"publishedAt": published.UTC(), "isPinned": pinned, "categoryKey": nullable(key), "seen": seen, "commentCount": comments})
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	return map[string]any{"items": items, "cursor": nextCursor(offset, limit, len(items))}, nil
+	return map[string]any{"lang": lang, "items": items, "cursor": nextCursor(offset, limit, len(items))}, nil
 }
 
 func nullable(s string) any {
@@ -197,7 +206,7 @@ func (s *service) visibleNews(ctx context.Context, q queryer, userID, id string)
 		n.is_pinned, n.allow_comment, n.free_comment,
 		EXISTS (SELECT 1 FROM publication_news_seen ns WHERE ns.news_id=n.id AND ns.user_id=$2::uuid),
 		(SELECT count(*) FROM publication_news_comment nc WHERE nc.news_id=n.id AND nc.is_accepted)
-		FROM publication_news n LEFT JOIN economy_category c ON c.id=n.category_id WHERE n.id=$1 AND `+newsVisible, id, userID).
+		FROM publication_news n LEFT JOIN base_category c ON c.id=n.category_id WHERE n.id=$1 AND `+newsVisible, id, userID).
 		Scan(&row.ID, &row.Title, &row.Summary, &row.Body, &row.Cover, &row.CategoryKey, &row.Actions, &row.Published, &row.Pinned, &row.AllowComment, &row.FreeComment, &row.Seen, &row.Comments)
 	if errors.Is(err, sql.ErrNoRows) {
 		return row, notFound("NEWS_NOT_FOUND")
@@ -213,7 +222,10 @@ func (s *service) rpcNewsGet(ctx context.Context, userID, payload string) (any, 
 	if err := decodeStrict(payload, &in); err != nil {
 		return nil, err
 	}
-	lang := cleanLang(in.Lang)
+	langs, lang, err := s.clientLang(ctx, userID, in.Lang)
+	if err != nil {
+		return nil, err
+	}
 	row, err := s.visibleNews(ctx, s.db, userID, in.ID)
 	if err != nil {
 		return nil, err
@@ -222,10 +234,10 @@ func (s *service) rpcNewsGet(ctx context.Context, userID, payload string) (any, 
 	_ = json.Unmarshal([]byte(row.Actions), &actions)
 	outActions := []map[string]any{}
 	for _, a := range actions {
-		outActions = append(outActions, map[string]any{"type": a.Type, "label": a.Label.pick(lang), "value": a.Value})
+		outActions = append(outActions, map[string]any{"type": a.Type, "label": langs.Resolve(a.Label, lang), "value": a.Value})
 	}
-	body := parseI18n(row.Body).pick(lang)
-	return map[string]any{"id": row.ID, "title": parseI18n(row.Title).pick(lang), "summary": parseI18n(row.Summary).pick(lang), "body": body, "bodyHtml": renderMarkdown(body),
+	body := langs.Resolve(parseI18n(row.Body), lang)
+	return map[string]any{"lang": lang, "id": row.ID, "title": langs.Resolve(parseI18n(row.Title), lang), "summary": langs.Resolve(parseI18n(row.Summary), lang), "body": body, "bodyHtml": renderMarkdown(body),
 		"coverUrl": row.Cover, "categoryKey": nullable(row.CategoryKey), "publishedAt": row.Published.UTC(), "isPinned": row.Pinned, "allowComment": row.AllowComment,
 		"actions": outActions, "seen": row.Seen, "commentCount": row.Comments}, nil
 }
@@ -403,7 +415,10 @@ func (s *service) rpcInbox(ctx context.Context, userID, payload string) (any, er
 	if err := decodeStrict(payload, &in); err != nil {
 		return nil, err
 	}
-	lang := cleanLang(in.Lang)
+	langs, lang, err := s.clientLang(ctx, userID, in.Lang)
+	if err != nil {
+		return nil, err
+	}
 	limit := clampLimit(in.Limit, 20, 50)
 	offset, err := readCursor(in.Cursor)
 	if err != nil {
@@ -425,9 +440,11 @@ func (s *service) rpcInbox(ctx context.Context, userID, payload string) (any, er
 		if err := rows.Scan(&id, &title, &body, &act, &created, &seen); err != nil {
 			return nil, err
 		}
-		text := parseI18n(body).pick(lang)
-		items = append(items, map[string]any{"id": id, "title": parseI18n(title).pick(lang), "body": text, "bodyHtml": renderMarkdown(text),
-			"action": json.RawMessage(act), "createdAt": created.UTC(), "seen": seen})
+		text := langs.Resolve(parseI18n(body), lang)
+		var a *action
+		_ = json.Unmarshal([]byte(act), &a)
+		items = append(items, map[string]any{"id": id, "title": langs.Resolve(parseI18n(title), lang), "body": text, "bodyHtml": renderMarkdown(text),
+			"action": resolveAction(langs, a, lang), "createdAt": created.UTC(), "seen": seen})
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -436,7 +453,7 @@ func (s *service) rpcInbox(ctx context.Context, userID, payload string) (any, er
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"items": items, "unread": unread, "cursor": nextCursor(offset, limit, len(items))}, nil
+	return map[string]any{"lang": lang, "items": items, "unread": unread, "cursor": nextCursor(offset, limit, len(items))}, nil
 }
 
 func (s *service) rpcInboxSeen(ctx context.Context, userID, payload string) (any, error) {

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
 const secretMask = "********"
@@ -398,7 +399,12 @@ func (s *service) consoleProviderTest(w http.ResponseWriter, r *http.Request) {
 		s.writeError(w, badRequest("INVALID_MESSAGE", "message", "message is required (max 600 characters)"))
 		return
 	}
-	msg := outMessage{Text: in.Message, Lang: "fa"}
+	langs, err := localized.Load(r.Context(), s.db)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	msg := outMessage{Text: in.Message, Lang: langs.Default}
 	switch p.Channel {
 	case "sms":
 		addr, ok := normalizePhone(in.To)
@@ -418,7 +424,7 @@ func (s *service) consoleProviderTest(w http.ResponseWriter, r *http.Request) {
 		if msg.Subject == "" {
 			msg.Subject = "Test message"
 		}
-		msg.HTML = emailHTML(msg.Subject, renderMarkdown(in.Message), "fa")
+		msg.HTML = emailHTML(msg.Subject, renderMarkdown(in.Message), langs.Default, langs.Direction(langs.Default))
 		msg.Text = markdownText(in.Message)
 	}
 	if !providerConfigured(p) {

@@ -11,6 +11,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
 const systemUserID = "00000000-0000-0000-0000-000000000000"
@@ -175,7 +176,7 @@ type notificationInput struct {
 	ProviderID string  `json:"providerId"`
 }
 
-func cleanNotification(in notificationInput) (notificationInput, error) {
+func cleanNotification(langs *localized.Set, in notificationInput) (notificationInput, error) {
 	var err error
 	titleMax, bodyMax := 200, 2000
 	switch in.Channel {
@@ -187,14 +188,14 @@ func cleanNotification(in notificationInput) (notificationInput, error) {
 	default:
 		return in, badRequest("INVALID_CHANNEL", "channel", "channel must be in_app, sms or email")
 	}
-	if in.Title, err = cleanI18n("title", in.Title, in.Channel != "sms", titleMax); err != nil {
+	if in.Title, err = cleanI18n(langs, "title", in.Title, in.Channel != "sms", titleMax); err != nil {
 		return in, err
 	}
-	if in.Body, err = cleanI18n("body", in.Body, true, bodyMax); err != nil {
+	if in.Body, err = cleanI18n(langs, "body", in.Body, true, bodyMax); err != nil {
 		return in, err
 	}
 	if in.Action != nil && (in.Action.Type != "" || in.Action.Value != "") {
-		a, err := cleanAction("action", *in.Action, false)
+		a, err := cleanAction(langs, "action", *in.Action, false)
 		if err != nil {
 			return in, err
 		}
@@ -215,7 +216,11 @@ const notificationJSON = `jsonb_build_object('id',n.id,'channel',n.channel,'titl
 const notificationFrom = ` FROM publication_notification n LEFT JOIN publication_provider p ON p.id::text = n.provider`
 
 func (s *service) createNotification(ctx context.Context, in notificationInput, createdBy string) (string, error) {
-	in, err := cleanNotification(in)
+	langs, err := localized.Load(ctx, s.db)
+	if err != nil {
+		return "", err
+	}
+	in, err = cleanNotification(langs, in)
 	if err != nil {
 		return "", err
 	}
@@ -368,7 +373,7 @@ func (s *service) consoleNotificationsList(w http.ResponseWriter, r *http.Reques
 	if p.Q != "" {
 		n := where.next()
 		where.args = append(where.args, likePattern(p.Q))
-		where.parts = append(where.parts, "(COALESCE(n.title->>'fa','') ILIKE "+n+" OR COALESCE(n.title->>'en','') ILIKE "+n+" OR n.body->>'fa' ILIKE "+n+" OR n.id::text ILIKE "+n+")")
+		where.parts = append(where.parts, "(COALESCE("+translatedSearch("n.title")+",'') ILIKE "+n+" OR COALESCE("+translatedSearch("n.body")+",'') ILIKE "+n+" OR n.id::text ILIKE "+n+")")
 	}
 	var total int64
 	if err := s.db.QueryRowContext(r.Context(), `SELECT count(*)`+notificationFrom+where.sql(), where.args...).Scan(&total); err != nil {
@@ -417,7 +422,7 @@ func (s *service) consoleNotificationGet(w http.ResponseWriter, r *http.Request)
 	}
 	n := len(where.args)
 	rows, err := s.db.QueryContext(r.Context(), `SELECT jsonb_build_object('userId',r.user_id,'username',u.username,'displayName',u.display_name,'status',r.status,'address',r.address,
-		'error',r.error,'attempts',r.attempts,'nextAttemptAt',CASE WHEN r.status='pending' THEN r.next_attempt_at END,'seenAt',r.seen_at,'sentAt',r.sent_at)::text
+		'error',r.error,'lang',r.lang,'message',r.message,'attempts',r.attempts,'nextAttemptAt',CASE WHEN r.status='pending' THEN r.next_attempt_at END,'seenAt',r.seen_at,'sentAt',r.sent_at)::text
 		FROM publication_notification_recipient r LEFT JOIN users u ON u.id=r.user_id`+where.sql()+` ORDER BY u.username, r.user_id LIMIT $`+itoa(n+1)+` OFFSET $`+itoa(n+2),
 		append(append([]any{}, where.args...), limit, (page-1)*limit)...)
 	if err != nil {

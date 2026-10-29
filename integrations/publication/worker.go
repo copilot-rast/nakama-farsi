@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/heroiclabs/nakama-common/runtime"
+	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
 const inAppCode = 1001
@@ -144,7 +145,7 @@ func (s *service) loadNotification(ctx context.Context, id string) (notification
 	return n, nil
 }
 
-func (s *service) userLangs(ctx context.Context, ids []string) (map[string]string, error) {
+func (s *service) userLangs(ctx context.Context, langs *localized.Set, ids []string) (map[string]string, error) {
 	rows, err := s.db.QueryContext(ctx, `SELECT id::text, COALESCE(lang_tag,'') FROM users WHERE id = ANY($1::uuid[])`, uuidArray(ids))
 	if err != nil {
 		return nil, err
@@ -156,18 +157,22 @@ func (s *service) userLangs(ctx context.Context, ids []string) (map[string]strin
 		if err := rows.Scan(&id, &lang); err != nil {
 			return nil, err
 		}
-		out[id] = cleanLang(lang)
+		out[id] = langs.Choose(lang)
 	}
 	return out, rows.Err()
 }
 
-func (s *service) markSent(ctx context.Context, c claimed, note string) error {
-	var errText *string
+func (s *service) markSent(ctx context.Context, c claimed, note, lang, message string) error {
+	var errText, msgText *string
 	if note != "" {
 		errText = &note
 	}
-	_, err := s.db.ExecContext(ctx, `UPDATE publication_notification_recipient SET status='sent', sent_at=now(), error=$4
-		WHERE notification_id=$1 AND user_id=$2 AND status='pending' AND attempts=$3`, c.NotificationID, c.UserID, c.Attempts, errText)
+	if message != "" {
+		m := truncate(message, 1000)
+		msgText = &m
+	}
+	_, err := s.db.ExecContext(ctx, `UPDATE publication_notification_recipient SET status='sent', sent_at=now(), error=$4, lang=NULLIF($5,''), message=$6
+		WHERE notification_id=$1 AND user_id=$2 AND status='pending' AND attempts=$3`, c.NotificationID, c.UserID, c.Attempts, errText, lang, msgText)
 	return err
 }
 
@@ -196,12 +201,16 @@ func (s *service) processNotification(ctx context.Context, id string, batch []cl
 	for i, c := range batch {
 		ids[i] = c.UserID
 	}
-	langs, err := s.userLangs(ctx, ids)
+	set, err := localized.Load(ctx, s.db)
+	if err != nil {
+		return err
+	}
+	langs, err := s.userLangs(ctx, set, ids)
 	if err != nil {
 		return err
 	}
 	if n.Channel == "in_app" {
-		return s.sendInApp(ctx, n, batch, langs)
+		return s.sendInApp(ctx, n, batch, set, langs)
 	}
 	p, perr := s.loadProvider(ctx, s.db, n.Provider, false)
 	if perr == nil && !p.Active {
@@ -220,20 +229,22 @@ func (s *service) processNotification(ctx context.Context, id string, batch []cl
 		}
 		lang := langs[c.UserID]
 		if lang == "" {
-			lang = "fa"
+			lang = set.Default
 		}
 		msg := outMessage{To: c.Address, Lang: lang, IdempotencyKey: n.ID + "/" + c.UserID}
-		body := n.Body.pick(lang)
+		body := set.Resolve(n.Body, lang)
+		preview := body
 		if n.Channel == "email" {
-			msg.Subject = n.Title.pick(lang)
-			msg.HTML = emailHTML(msg.Subject, renderMarkdown(body), lang)
+			msg.Subject = set.Resolve(n.Title, lang)
+			msg.HTML = emailHTML(msg.Subject, renderMarkdown(body), lang, set.Direction(lang))
 			msg.Text = markdownText(body)
+			preview = msg.Subject + "\n" + msg.Text
 		} else {
 			msg.Text = body
 		}
 		if p.Sandbox {
-			s.logger.Info("Publication sandbox %s via %s to %s (notification %s): %s", n.Channel, p.Kind, maskAddress(c.Address), n.ID, truncate(msg.Text, 200))
-			if err := s.markSent(ctx, c, "sandbox"); err != nil {
+			s.logger.Info("Publication sandbox %s via %s to %s in %s (notification %s): %s", n.Channel, p.Kind, maskAddress(c.Address), lang, n.ID, truncate(msg.Text, 200))
+			if err := s.markSent(ctx, c, "sandbox", lang, preview); err != nil {
 				return err
 			}
 			continue
@@ -249,25 +260,25 @@ func (s *service) processNotification(ctx context.Context, id string, batch []cl
 			continue
 		}
 		s.logger.Debug("Publication %s via %s to %s: %s", n.Channel, p.Kind, maskAddress(c.Address), reply)
-		if err := s.markSent(ctx, c, ""); err != nil {
+		if err := s.markSent(ctx, c, "", lang, ""); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (s *service) sendInApp(ctx context.Context, n notificationRow, batch []claimed, langs map[string]string) error {
-	var action any
-	_ = json.Unmarshal(n.Action, &action)
+func (s *service) sendInApp(ctx context.Context, n notificationRow, batch []claimed, set *localized.Set, langs map[string]string) error {
+	var act *action
+	_ = json.Unmarshal(n.Action, &act)
 	sends := make([]*runtime.NotificationSend, 0, len(batch))
 	for _, c := range batch {
 		lang := langs[c.UserID]
 		if lang == "" {
-			lang = "fa"
+			lang = set.Default
 		}
-		title, body := n.Title.pick(lang), n.Body.pick(lang)
+		title, body := set.Resolve(n.Title, lang), set.Resolve(n.Body, lang)
 		sends = append(sends, &runtime.NotificationSend{UserID: c.UserID, Subject: title, Code: inAppCode, Persistent: true,
-			Content: map[string]any{"notificationId": n.ID, "title": title, "body": body, "action": action}})
+			Content: map[string]any{"notificationId": n.ID, "title": title, "body": body, "action": resolveAction(set, act, lang), "lang": lang}})
 	}
 	if err := s.nk.NotificationsSend(ctx, sends); err != nil {
 		cause := transientErr("in-app send failed: %v", err)
@@ -282,9 +293,20 @@ func (s *service) sendInApp(ctx context.Context, n notificationRow, batch []clai
 		return nil
 	}
 	for _, c := range batch {
-		if err := s.markSent(ctx, c, ""); err != nil {
+		if err := s.markSent(ctx, c, "", langs[c.UserID], ""); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func resolveAction(set *localized.Set, a *action, lang string) any {
+	if a == nil || a.Type == "" {
+		return nil
+	}
+	out := map[string]any{"type": a.Type, "value": a.Value}
+	if label := set.Resolve(a.Label, lang); label != "" {
+		out["label"] = label
+	}
+	return out
 }

@@ -82,7 +82,7 @@ func (s *service) consoleCommentsList(w http.ResponseWriter, r *http.Request) {
 	if p.Q != "" {
 		n := where.next()
 		where.args = append(where.args, likePattern(p.Q))
-		where.parts = append(where.parts, "(m.message ILIKE "+n+" OR COALESCE(u.username,'') ILIKE "+n+" OR COALESCE(n.title->>'fa','') ILIKE "+n+")")
+		where.parts = append(where.parts, "(m.message ILIKE "+n+" OR COALESCE(u.username,'') ILIKE "+n+" OR COALESCE("+translatedSearch("n.title")+",'') ILIKE "+n+")")
 	}
 	var total int64
 	if err := s.db.QueryRowContext(r.Context(), `SELECT count(*)`+commentAdminFrom+where.sql(), where.args...).Scan(&total); err != nil {

@@ -76,8 +76,17 @@ func newHarness(t *testing.T) *harness {
 	t.Cleanup(func() { db.Close() })
 	ctx := context.Background()
 	if _, err := db.ExecContext(ctx, `TRUNCATE publication_notification_recipient, publication_notification, publication_provider, publication_news_comment, publication_news_seen,
-		publication_news, publication_faq, economy_category CASCADE`); err != nil {
+		publication_news, publication_faq, base_category CASCADE`); err != nil {
 		t.Fatal(err)
+	}
+	for _, q := range []string{
+		`DELETE FROM base_language WHERE code NOT IN ('fa','en')`,
+		`UPDATE base_language SET is_default = false WHERE code = 'en'`,
+		`UPDATE base_language SET is_default = (code = 'fa'), is_active = true`,
+	} {
+		if _, err := db.ExecContext(ctx, q); err != nil {
+			t.Fatal(err)
+		}
 	}
 	if _, err := db.ExecContext(ctx, `DELETE FROM group_edge; DELETE FROM groups; DELETE FROM users WHERE id <> '00000000-0000-0000-0000-000000000000'`); err != nil {
 		t.Fatal(err)
@@ -201,7 +210,7 @@ func (h *harness) rpcCode(user, name string, payload any) string {
 func (h *harness) category(kind, key string) string {
 	h.t.Helper()
 	id := uuid.Must(uuid.NewV4()).String()
-	if _, err := h.s.db.ExecContext(h.ctx, `INSERT INTO economy_category (id, kind, key, name) VALUES ($1,$2,$3,'{"fa":"دسته","en":"Cat"}')`, id, kind, key); err != nil {
+	if _, err := h.s.db.ExecContext(h.ctx, `INSERT INTO base_category (id, key_type, key, name) VALUES ($1,$2,$3,'{"fa":"دسته","en":"Cat"}')`, id, kind, key); err != nil {
 		h.t.Fatal(err)
 	}
 	return id
@@ -324,7 +333,7 @@ func TestCommentsModerationAndReplies(t *testing.T) {
 	if code := h.rpcCode(b, "publication_news_comment", map[string]any{"newsId": closed, "message": "hi"}); code != "COMMENT_NOT_ALLOWED" {
 		t.Fatalf("closed = %s", code)
 	}
-	if _, err := h.s.db.Exec(`DELETE FROM economy_category WHERE id=$1`, cat); err == nil {
+	if _, err := h.s.db.Exec(`DELETE FROM base_category WHERE id=$1`, cat); err == nil {
 		t.Fatal("a used news category must not be deletable")
 	}
 }
@@ -390,7 +399,7 @@ func TestNewsListSeenAndFaq(t *testing.T) {
 	h.mustAPI(http.StatusCreated, http.MethodPost, "/faqs", map[string]any{"question": map[string]string{"fa": "رمز؟", "en": "Password?"}, "answer": map[string]string{"fa": "[اینجا](https://e.com)"}, "categoryId": faqCat, "sort": 2})
 	h.mustAPI(http.StatusCreated, http.MethodPost, "/faqs", map[string]any{"question": map[string]string{"fa": "خرید؟"}, "answer": map[string]string{"fa": "ب"}, "sort": 1})
 	h.mustAPI(http.StatusCreated, http.MethodPost, "/faqs", map[string]any{"question": map[string]string{"fa": "پنهان"}, "answer": map[string]string{"fa": "x"}, "isActive": false})
-	if code, out := h.api(http.MethodPost, "/faqs", map[string]any{"question": map[string]string{"en": "x"}, "answer": map[string]string{"fa": "x"}}); code != http.StatusBadRequest || out["error"] != "FA_REQUIRED" {
+	if code, out := h.api(http.MethodPost, "/faqs", map[string]any{"question": map[string]string{"en": "x"}, "answer": map[string]string{"fa": "x"}}); code != http.StatusBadRequest || out["error"] != "DEFAULT_LANGUAGE_REQUIRED" {
 		t.Fatalf("fa required = %d %v", code, out)
 	}
 	faq := h.mustRPC(u, "publication_faq_list", map[string]any{"lang": "en"})
@@ -719,4 +728,116 @@ func TestProvidersConsole(t *testing.T) {
 	}
 	h.mustAPI(http.StatusOK, http.MethodDelete, "/providers/"+smtp["id"].(string), nil)
 	h.mustAPI(http.StatusNotFound, http.MethodDelete, "/providers/"+smtp["id"].(string), nil)
+}
+
+func TestMultilingualDeliveryAndContent(t *testing.T) {
+	h := newHarness(t)
+	if _, err := h.s.db.Exec(`INSERT INTO base_language (code, name, native_name, direction, sort) VALUES ('ar','{"fa":"عربی"}','العربية','rtl',3)`); err != nil {
+		t.Fatal(err)
+	}
+	fa := h.user(map[string]any{"phone": "09121111111"}, "fa@example.com", "fa")
+	en := h.user(map[string]any{"phone": "09122222222"}, "en@example.com", "en")
+	ar := h.user(map[string]any{"phone": "09123333333"}, "ar@example.com", "ar")
+	odd := h.user(map[string]any{"phone": "09124444444"}, "zz@example.com", "zz")
+	expect := map[string]string{fa: "fa", en: "en", ar: "ar", odd: "fa"}
+
+	title := map[string]string{"fa": "سلام", "en": "Hello", "ar": "مرحبا"}
+	body := map[string]string{"fa": "متن", "en": "Text", "ar": "نص"}
+	n := h.mustAPI(http.StatusCreated, http.MethodPost, "/notifications", map[string]any{"channel": "in_app", "title": title, "body": body,
+		"action": map[string]any{"type": "goto", "value": "shop", "label": map[string]string{"fa": "فروشگاه", "ar": "متجر"}}, "target": map[string]any{"mode": "all"}})
+	if n["title"].(map[string]any)["ar"] != "مرحبا" || n["action"].(map[string]any)["label"].(map[string]any)["ar"] != "متجر" {
+		t.Fatalf("console keeps full maps: %v", n)
+	}
+	if code, out := h.api(http.MethodPost, "/notifications", map[string]any{"channel": "in_app", "title": map[string]string{"fa": "x", "tr": "y"}, "body": body, "target": map[string]any{"mode": "all"}}); code != http.StatusBadRequest || out["error"] != "INVALID_LANGUAGE" {
+		t.Fatalf("unknown language = %d %v", code, out)
+	}
+	h.drain()
+	sent := map[string]map[string]any{}
+	for _, s := range h.nk.sent {
+		sent[s.UserID] = s.Content
+		if s.Subject != title[expect[s.UserID]] {
+			t.Errorf("subject for %s = %q", expect[s.UserID], s.Subject)
+		}
+	}
+	for user, lang := range expect {
+		c := sent[user]
+		if c["lang"] != lang || c["title"] != title[lang] || c["body"] != body[lang] {
+			t.Errorf("in_app content for %s = %v", lang, c)
+		}
+		inbox := items(h.mustRPC(user, "publication_inbox", map[string]any{}))
+		if len(inbox) != 1 || inbox[0].(map[string]any)["title"] != title[lang] {
+			t.Errorf("inbox for %s = %v", lang, inbox)
+		}
+	}
+	if label := sent[ar]["action"].(map[string]any)["label"]; label != "متجر" {
+		t.Errorf("ar action label = %v", label)
+	}
+	if label := sent[en]["action"].(map[string]any)["label"]; label != "فروشگاه" {
+		t.Errorf("en action label falls back to default = %v", label)
+	}
+	if inbox := items(h.mustRPC(fa, "publication_inbox", map[string]any{"lang": "ar"})); inbox[0].(map[string]any)["title"] != "مرحبا" || inbox[0].(map[string]any)["action"].(map[string]any)["label"] != "متجر" {
+		t.Errorf("requested lang wins = %v", inbox)
+	}
+	var langs map[string]string = map[string]string{}
+	rows, _ := h.s.db.Query(`SELECT user_id::text, COALESCE(lang,'') FROM publication_notification_recipient WHERE notification_id=$1`, n["id"])
+	for rows.Next() {
+		var id, l string
+		_ = rows.Scan(&id, &l)
+		langs[id] = l
+	}
+	rows.Close()
+	for user, lang := range expect {
+		if langs[user] != lang {
+			t.Errorf("recipient lang for %s = %q", lang, langs[user])
+		}
+	}
+
+	h.mustAPI(http.StatusCreated, http.MethodPost, "/providers", map[string]any{"channel": "sms", "kind": "smsir", "isActive": true, "isDefault": true, "config": map[string]any{"apiKey": "k", "lineNumber": "3000"}})
+	h.mustAPI(http.StatusCreated, http.MethodPost, "/providers", map[string]any{"channel": "email", "kind": "smtp", "isActive": true, "isDefault": true, "config": map[string]any{"host": "smtp.example.com", "from": "a@example.com"}})
+	sms := h.mustAPI(http.StatusCreated, http.MethodPost, "/notifications", map[string]any{"channel": "sms", "body": map[string]string{"fa": "کد", "en": "Code", "ar": "رمز"}, "target": map[string]any{"mode": "all"}})
+	email := h.mustAPI(http.StatusCreated, http.MethodPost, "/notifications", map[string]any{"channel": "email", "title": title, "body": map[string]string{"fa": "**متن**", "ar": "**نص**"}, "target": map[string]any{"mode": "all"}})
+	h.drain()
+	smsText := map[string]string{"fa": "کد", "en": "Code", "ar": "رمز"}
+	for _, it := range h.mustAPI(http.StatusOK, http.MethodGet, "/notifications/"+sms["id"].(string), nil)["recipients"].(map[string]any)["items"].([]any) {
+		r := it.(map[string]any)
+		lang := expect[r["userId"].(string)]
+		if r["status"] != "sent" || r["error"] != "sandbox" || r["lang"] != lang || r["message"] != smsText[lang] {
+			t.Errorf("sms recipient = %v", r)
+		}
+	}
+	emailText := map[string]string{"fa": "سلام\nمتن", "en": "Hello\nمتن", "ar": "مرحبا\nنص"}
+	for _, it := range h.mustAPI(http.StatusOK, http.MethodGet, "/notifications/"+email["id"].(string), nil)["recipients"].(map[string]any)["items"].([]any) {
+		r := it.(map[string]any)
+		lang := expect[r["userId"].(string)]
+		if r["lang"] != lang || r["message"] != emailText[lang] {
+			t.Errorf("email recipient = %v", r)
+		}
+	}
+
+	cat := h.category("faq", "account")
+	if _, err := h.s.db.Exec(`UPDATE base_category SET name='{"fa":"حساب","ar":"الحساب"}' WHERE id=$1`, cat); err != nil {
+		t.Fatal(err)
+	}
+	h.mustAPI(http.StatusCreated, http.MethodPost, "/faqs", map[string]any{"question": map[string]string{"fa": "رمز؟", "ar": "كلمة المرور؟"}, "answer": map[string]string{"fa": "پاسخ", "ar": "**جواب**"}, "categoryId": cat})
+	faq := h.mustRPC(fa, "publication_faq_list", map[string]any{"lang": "ar"})
+	item := items(faq)[0].(map[string]any)
+	if faq["lang"] != "ar" || item["question"] != "كلمة المرور؟" || item["answer"] != "**جواب**" || !strings.Contains(item["answerHtml"].(string), "<strong>جواب</strong>") || faq["categories"].([]any)[0].(map[string]any)["name"] != "الحساب" {
+		t.Fatalf("faq ar = %v", faq)
+	}
+	if found := items(h.mustRPC(fa, "publication_faq_list", map[string]any{"q": "المرور"})); len(found) != 1 {
+		t.Fatalf("faq search in ar = %v", found)
+	}
+	newsID := h.news(map[string]any{"title": map[string]string{"fa": "خبر", "ar": "أخبار"}, "summary": map[string]string{"fa": "خلاصه"}, "body": map[string]string{"fa": "متن", "ar": "نص الخبر"},
+		"actions": []map[string]any{{"type": "url", "label": map[string]string{"fa": "باز کن", "ar": "افتح"}, "value": "https://example.com"}}})
+	list := h.mustRPC(ar, "publication_news_list", map[string]any{})
+	if list["lang"] != "ar" || items(list)[0].(map[string]any)["title"] != "أخبار" || items(list)[0].(map[string]any)["summary"] != "خلاصه" {
+		t.Fatalf("news list ar = %v", list)
+	}
+	got := h.mustRPC(en, "publication_news_get", map[string]any{"id": newsID, "lang": "ar"})
+	if got["body"] != "نص الخبر" || got["actions"].([]any)[0].(map[string]any)["label"] != "افتح" {
+		t.Fatalf("news get ar = %v", got)
+	}
+	if got := h.mustRPC(en, "publication_news_get", map[string]any{"id": newsID}); got["lang"] != "en" || got["title"] != "خبر" {
+		t.Fatalf("news en falls back to default = %v", got)
+	}
 }

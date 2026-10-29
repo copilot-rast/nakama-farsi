@@ -215,9 +215,8 @@ func inlineText(s string) string {
 	return b.String()
 }
 
-func emailHTML(subject, bodyHTML, lang string) string {
-	dir := "rtl"
-	if lang == "en" {
+func emailHTML(subject, bodyHTML, lang, dir string) string {
+	if dir != "rtl" {
 		dir = "ltr"
 	}
 	return `<!DOCTYPE html><html lang="` + lang + `" dir="` + dir + `"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>` +

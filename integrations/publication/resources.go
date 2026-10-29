@@ -11,6 +11,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
 type resource struct {
@@ -39,8 +40,8 @@ func resources() []resource {
 			name:    "faqs",
 			table:   "publication_faq",
 			json:    faqJSON,
-			from:    ` FROM publication_faq t LEFT JOIN economy_category c ON c.id=t.category_id`,
-			search:  []string{"t.question->>'fa'", "t.question->>'en'", "t.answer->>'fa'", "t.answer->>'en'"},
+			from:    ` FROM publication_faq t LEFT JOIN base_category c ON c.id=t.category_id`,
+			search:  []string{translatedSearch("t.question"), translatedSearch("t.answer")},
 			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "categoryId": "t.category_id = ?::uuid"},
 			order:   "t.sort, t.created_at DESC, t.id",
 			save:    saveFaq,
@@ -49,8 +50,8 @@ func resources() []resource {
 			name:    "news",
 			table:   "publication_news",
 			json:    newsJSON,
-			from:    ` FROM publication_news t LEFT JOIN economy_category c ON c.id=t.category_id`,
-			search:  []string{"t.title->>'fa'", "t.title->>'en'", "t.summary->>'fa'", "t.summary->>'en'"},
+			from:    ` FROM publication_news t LEFT JOIN base_category c ON c.id=t.category_id`,
+			search:  []string{translatedSearch("t.title"), translatedSearch("t.summary")},
 			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "categoryId": "t.category_id = ?::uuid", "isPinned": "t.is_pinned = ?::boolean"},
 			order:   "t.is_pinned DESC, t.published_at DESC, t.id DESC",
 			save:    saveNews,
@@ -248,7 +249,7 @@ func checkCategory(ctx context.Context, tx *sql.Tx, id *string, kind string) err
 		return nil
 	}
 	var k string
-	err := tx.QueryRowContext(ctx, `SELECT kind FROM economy_category WHERE id=$1`, *id).Scan(&k)
+	err := tx.QueryRowContext(ctx, `SELECT key_type FROM base_category WHERE id=$1`, *id).Scan(&k)
 	if errors.Is(err, sql.ErrNoRows) {
 		return badRequest("CATEGORY_NOT_FOUND", "categoryId", "category does not exist")
 	}
@@ -256,7 +257,7 @@ func checkCategory(ctx context.Context, tx *sql.Tx, id *string, kind string) err
 		return err
 	}
 	if k != kind {
-		return badRequest("CATEGORY_KIND_MISMATCH", "categoryId", "category kind must be "+kind)
+		return badRequest("CATEGORY_KIND_MISMATCH", "categoryId", "category key type must be "+kind)
 	}
 	return nil
 }
@@ -279,6 +280,10 @@ func saveFaq(s *service, ctx context.Context, tx *sql.Tx, id string, create bool
 	if err := decodeInto(raw, &in); err != nil {
 		return err
 	}
+	langs, err := localized.Load(ctx, tx)
+	if err != nil {
+		return err
+	}
 	cat, err := cleanUUID("categoryId", in.CategoryID, false)
 	if err != nil {
 		return err
@@ -286,11 +291,11 @@ func saveFaq(s *service, ctx context.Context, tx *sql.Tx, id string, create bool
 	if err := checkCategory(ctx, tx, cat, "faq"); err != nil {
 		return err
 	}
-	question, err := cleanI18n("question", in.Question, true, 500)
+	question, err := cleanI18n(langs, "question", in.Question, true, 500)
 	if err != nil {
 		return err
 	}
-	answer, err := cleanI18n("answer", in.Answer, true, 10000)
+	answer, err := cleanI18n(langs, "answer", in.Answer, true, 10000)
 	if err != nil {
 		return err
 	}
@@ -316,15 +321,19 @@ func saveNews(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	if err := decodeInto(raw, &in); err != nil {
 		return err
 	}
-	title, err := cleanI18n("title", in.Title, true, 200)
+	langs, err := localized.Load(ctx, tx)
 	if err != nil {
 		return err
 	}
-	summary, err := cleanI18n("summary", in.Summary, false, 1000)
+	title, err := cleanI18n(langs, "title", in.Title, true, 200)
 	if err != nil {
 		return err
 	}
-	body, err := cleanI18n("body", in.Body, true, 50000)
+	summary, err := cleanI18n(langs, "summary", in.Summary, false, 1000)
+	if err != nil {
+		return err
+	}
+	body, err := cleanI18n(langs, "body", in.Body, true, 50000)
 	if err != nil {
 		return err
 	}
@@ -358,7 +367,7 @@ func saveNews(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	}
 	actions := make([]action, 0, len(in.Actions))
 	for _, a := range in.Actions {
-		clean, err := cleanAction("actions", a, true)
+		clean, err := cleanAction(langs, "actions", a, true)
 		if err != nil {
 			return err
 		}
