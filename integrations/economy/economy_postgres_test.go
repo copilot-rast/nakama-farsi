@@ -132,8 +132,17 @@ func newHarness(t *testing.T) *harness {
 	t.Cleanup(func() { db.Close() })
 	ctx := context.Background()
 	if _, err := db.ExecContext(ctx, `TRUNCATE economy_payment_log, economy_payment, economy_gift_use, economy_gift, economy_product, economy_user_prize, economy_prize,
-		economy_user_meta, economy_meta, economy_user_currency_init, economy_currency, economy_tag, economy_category CASCADE`); err != nil {
+		economy_user_meta, economy_meta, economy_user_currency_init, economy_currency, base_tag, base_category CASCADE`); err != nil {
 		t.Fatal(err)
+	}
+	for _, q := range []string{
+		`DELETE FROM base_language WHERE code NOT IN ('fa','en')`,
+		`UPDATE base_language SET is_default = false WHERE code = 'en'`,
+		`UPDATE base_language SET is_default = (code = 'fa'), is_active = true`,
+	} {
+		if _, err := db.ExecContext(ctx, q); err != nil {
+			t.Fatal(err)
+		}
 	}
 	if _, err := db.ExecContext(ctx, `UPDATE economy_payment_method SET is_active=false, config=''`); err != nil {
 		t.Fatal(err)
@@ -158,6 +167,23 @@ func (h *harness) user() string {
 		h.t.Fatal(err)
 	}
 	return id
+}
+
+func (h *harness) taxonomy(table, keyType, key string, name map[string]string) map[string]any {
+	h.t.Helper()
+	id := uuid.Must(uuid.NewV4()).String()
+	raw, _ := json.Marshal(name)
+	if _, err := h.s.db.ExecContext(h.ctx, `INSERT INTO `+table+` (id, key_type, key, name) VALUES ($1,$2,$3,$4)`, id, keyType, key, string(raw)); err != nil {
+		h.t.Fatal(err)
+	}
+	return map[string]any{"id": id}
+}
+
+func (h *harness) language(code, direction string) {
+	h.t.Helper()
+	if _, err := h.s.db.ExecContext(h.ctx, `INSERT INTO base_language (code, name, native_name, direction, sort) VALUES ($1,'{"fa":"زبان"}',$1,$2,9) ON CONFLICT DO NOTHING`, code, direction); err != nil {
+		h.t.Fatal(err)
+	}
 }
 
 func (h *harness) api(method, path string, body any) (int, map[string]any) {
@@ -250,8 +276,11 @@ func TestEconomyPostgresFlows(t *testing.T) {
 		t.Fatalf("bad key accepted: %d", code)
 	}
 	code, out := h.api(http.MethodPost, "/currencies", map[string]any{"key": "coin", "name": map[string]string{"en": "Coin"}, "type": "soft"})
-	if code != 400 || out["error"] != "FA_REQUIRED" || out["field"] != "name" {
-		t.Fatalf("fa validation = %d %v", code, out)
+	if code != 400 || out["error"] != "DEFAULT_LANGUAGE_REQUIRED" || out["field"] != "name" {
+		t.Fatalf("default language validation = %d %v", code, out)
+	}
+	if code, out := h.api(http.MethodPost, "/currencies", map[string]any{"key": "coin", "name": map[string]string{"fa": "سکه", "ar": "عملة"}, "type": "soft", "defaultValue": 10}); code != 400 || out["error"] != "INVALID_LANGUAGE" {
+		t.Fatalf("unknown language = %d %v", code, out)
 	}
 	coin := h.mustAPI(201, http.MethodPost, "/currencies", map[string]any{"key": "coin", "name": map[string]string{"fa": "سکه", "en": "Coin"}, "type": "soft", "defaultValue": 50})
 	gem := h.mustAPI(201, http.MethodPost, "/currencies", map[string]any{"key": "gem", "name": map[string]string{"fa": "الماس"}, "type": "hard"})
@@ -267,9 +296,18 @@ func TestEconomyPostgresFlows(t *testing.T) {
 	}
 	h.mustAPI(201, http.MethodPost, "/metas", map[string]any{"key": "xp", "name": map[string]string{"fa": "تجربه"}, "defaultValue": 10})
 	h.mustAPI(201, http.MethodPost, "/metas", map[string]any{"key": "secret_score", "name": map[string]string{"fa": "امتیاز"}, "serverOnly": true})
-	cat := h.mustAPI(201, http.MethodPost, "/categories", map[string]any{"kind": "product", "key": "packs", "name": map[string]string{"fa": "بسته"}})
-	prizeCat := h.mustAPI(201, http.MethodPost, "/categories", map[string]any{"kind": "prize", "key": "rewards", "name": map[string]string{"fa": "جایزه"}})
-	tag := h.mustAPI(201, http.MethodPost, "/tags", map[string]any{"key": "hot", "name": map[string]string{"fa": "داغ"}})
+	cat := h.taxonomy("base_category", "product", "packs", map[string]string{"fa": "بسته", "en": "Packs"})
+	prizeCat := h.taxonomy("base_category", "prize", "rewards", map[string]string{"fa": "جایزه"})
+	tag := h.taxonomy("base_tag", "general", "hot", map[string]string{"fa": "داغ"})
+	newsTag := h.taxonomy("base_tag", "news", "breaking", map[string]string{"fa": "فوری"})
+	for _, path := range []string{"/categories", "/tags"} {
+		if code, _ := h.api(http.MethodGet, path, nil); code != http.StatusNotFound {
+			t.Fatalf("removed endpoint %s = %d", path, code)
+		}
+	}
+	if code, out := h.api(http.MethodPost, "/prizes", map[string]any{"key": "bad3", "tagIds": []string{newsTag["id"].(string)}, "name": map[string]string{"fa": "x"}, "items": []map[string]any{{"type": "currency", "key": "coin", "action": "add", "value": 1}}}); code != 400 || out["error"] != "TAG_KIND_MISMATCH" {
+		t.Fatalf("tag key type = %d %v", code, out)
+	}
 
 	if code, out := h.api(http.MethodPost, "/prizes", map[string]any{"key": "bad", "name": map[string]string{"fa": "x"}, "items": []map[string]any{{"type": "currency", "key": "nope", "action": "add", "value": 1}}}); code != 400 || out["error"] != "CURRENCY_NOT_FOUND" {
 		t.Fatalf("unknown currency in prize = %d %v", code, out)
@@ -310,12 +348,8 @@ func TestEconomyPostgresFlows(t *testing.T) {
 	if code, _ := h.api(http.MethodDelete, "/currencies/"+coin["id"].(string), nil); code != 409 {
 		t.Fatal("used currency deleted")
 	}
-	if code, _ := h.api(http.MethodDelete, "/categories/"+cat["id"].(string), nil); code != 409 {
-		t.Fatal("used category deleted")
-	}
-	h.mustAPI(200, http.MethodDelete, "/tags/"+tag["id"].(string), nil)
-	if p := h.mustAPI(200, http.MethodGet, "/products/"+inApp["id"].(string), nil); len(p["tagIds"].([]any)) != 0 {
-		t.Fatalf("tag not stripped: %v", p["tagIds"])
+	if p := h.mustAPI(200, http.MethodGet, "/products/"+inApp["id"].(string), nil); len(p["tagIds"].([]any)) != 1 || p["tagIds"].([]any)[0] != tag["id"] {
+		t.Fatalf("product tags = %v", p["tagIds"])
 	}
 	h.mustAPI(404, http.MethodGet, "/products/"+uuid.Must(uuid.NewV4()).String(), nil)
 
@@ -354,7 +388,7 @@ func TestEconomyPostgresFlows(t *testing.T) {
 			t.Fatalf("gateway product = %v", p)
 		}
 	}
-	if c := h.mustRPC(alice, "economy_catalog", map[string]any{"categoryKey": "packs"}); len(c["products"].([]any)) != 1 {
+	if c := h.mustRPC(alice, "economy_catalog", map[string]any{"categoryKey": "packs"}); len(c["products"].([]any)) != 1 || c["products"].([]any)[0].(map[string]any)["tags"].([]any)[0] != "hot" {
 		t.Fatalf("category filter = %v", c)
 	}
 	if w := h.wallet(alice); w["coin"] != 50 {
@@ -398,8 +432,8 @@ func TestEconomyPostgresFlows(t *testing.T) {
 		t.Fatalf("in_app payment = %+v", inAppPay)
 	}
 
-	h.mustAPI(201, http.MethodPost, "/gifts", map[string]any{"name": "welcome", "type": "reward", "code": "welcome-1", "prizeId": prize["id"], "perUserLimit": 1, "maxTotalUses": 1})
-	if code, out := h.api(http.MethodPost, "/gifts", map[string]any{"name": "dup", "type": "reward", "code": "WELCOME-1", "prizeId": prize["id"]}); code != 409 || out["field"] != "code" {
+	h.mustAPI(201, http.MethodPost, "/gifts", map[string]any{"name": map[string]string{"fa": "خوش‌آمد", "en": "welcome"}, "type": "reward", "code": "welcome-1", "prizeId": prize["id"], "perUserLimit": 1, "maxTotalUses": 1})
+	if code, out := h.api(http.MethodPost, "/gifts", map[string]any{"name": map[string]string{"fa": "dup"}, "type": "reward", "code": "WELCOME-1", "prizeId": prize["id"]}); code != 409 || out["field"] != "code" {
 		t.Fatalf("duplicate code = %d %v", code, out)
 	}
 	red := h.mustRPC(alice, "economy_gift_redeem", map[string]any{"code": "welcome-1"})
@@ -415,7 +449,7 @@ func TestEconomyPostgresFlows(t *testing.T) {
 	if c := h.rpcCode(bob, "economy_gift_redeem", map[string]any{"code": "NOPE-1"}); c != "GIFT_NOT_FOUND" {
 		t.Fatalf("unknown code = %s", c)
 	}
-	h.mustAPI(201, http.MethodPost, "/gifts", map[string]any{"name": "half", "type": "discount", "code": "HALF", "discountPercent": 50, "perUserLimit": 1})
+	h.mustAPI(201, http.MethodPost, "/gifts", map[string]any{"name": map[string]string{"fa": "half"}, "type": "discount", "code": "HALF", "discountPercent": 50, "perUserLimit": 1})
 	if c := h.rpcCode(bob, "economy_gift_redeem", map[string]any{"code": "HALF"}); c != "GIFT_NOT_REDEEMABLE" {
 		t.Fatalf("discount redeem = %s", c)
 	}
@@ -522,7 +556,7 @@ func TestEconomyPostgresFlows(t *testing.T) {
 		t.Fatalf("reconciled = %+v", p)
 	}
 
-	h.mustAPI(201, http.MethodPost, "/gifts", map[string]any{"name": "half2", "type": "discount", "code": "HALF2", "discountPercent": 50, "perUserLimit": 1, "maxTotalUses": 1})
+	h.mustAPI(201, http.MethodPost, "/gifts", map[string]any{"name": map[string]string{"fa": "half2"}, "type": "discount", "code": "HALF2", "discountPercent": 50, "perUserLimit": 1, "maxTotalUses": 1})
 	start = h.mustRPC(bob, "economy_purchase_start", map[string]any{"productId": gateway["id"], "method": "zibal", "giftCode": "HALF2"})
 	if c := h.rpcCode(alice, "economy_purchase_start", map[string]any{"productId": gateway["id"], "method": "zibal", "giftCode": "HALF2"}); c != "GIFT_EXHAUSTED" {
 		t.Fatalf("reserved total = %s", c)
@@ -614,7 +648,7 @@ func TestEconomyPostgresFlows(t *testing.T) {
 		t.Fatalf("paged %d of %d", seen, bobCount)
 	}
 
-	free := h.mustAPI(201, http.MethodPost, "/gifts", map[string]any{"name": "full", "type": "discount", "code": "FREE100", "discountPercent": 100})
+	free := h.mustAPI(201, http.MethodPost, "/gifts", map[string]any{"name": map[string]string{"fa": "full"}, "type": "discount", "code": "FREE100", "discountPercent": 100})
 	_ = free
 	fr := h.mustRPC(alice, "economy_purchase_start", map[string]any{"productId": gateway["id"], "method": "zarinpal", "giftCode": "FREE100"})
 	if fr["status"] != "success" || h.payment(fr["paymentId"].(string)).FinalToman != 0 {
@@ -731,5 +765,65 @@ func TestEconomyPostgresConcurrentGrant(t *testing.T) {
 	}
 	if w := h.wallet(user); w["coin"] != 14 {
 		t.Fatalf("retry after crash applied the wallet twice: %d", w["coin"])
+	}
+}
+
+func TestEconomyCatalogLanguages(t *testing.T) {
+	h := newHarness(t)
+	h.language("ar", "rtl")
+	h.mustAPI(201, http.MethodPost, "/currencies", map[string]any{"key": "coin", "name": map[string]string{"fa": "سکه", "en": "Coin", "ar": "عملة"}, "type": "soft", "defaultValue": 10})
+	cat := h.taxonomy("base_category", "product", "packs", map[string]string{"fa": "بسته‌ها", "en": "Packs", "ar": "حزم"})
+	prize := h.mustAPI(201, http.MethodPost, "/prizes", map[string]any{"key": "p", "name": map[string]string{"fa": "جایزه", "ar": "جائزة"}, "items": []map[string]any{{"type": "currency", "key": "coin", "action": "add", "value": 5}}})
+	product := h.mustAPI(201, http.MethodPost, "/products", map[string]any{"key": "trio", "isActive": true, "categoryId": cat["id"], "prizeId": prize["id"],
+		"name": map[string]string{"fa": "سه‌زبانه", "en": "Trilingual", "ar": "ثلاثي"}, "description": map[string]string{"fa": "توضیح", "en": "About"},
+		"paymentMethods": []string{"in_app"}, "coinPrice": map[string]any{"currencyKey": "coin", "amount": 1}})
+	if n := product["name"].(map[string]any); n["ar"] != "ثلاثي" || n["en"] != "Trilingual" {
+		t.Fatalf("console keeps full maps: %v", product)
+	}
+	h.mustAPI(200, http.MethodPut, "/payment-methods/in_app", map[string]any{"isActive": true})
+	enUser := h.user()
+	faUser := h.user()
+	if _, err := h.s.db.Exec(`UPDATE users SET lang_tag='fa' WHERE id=$1`, faUser); err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range []struct {
+		user, lang, wantLang, name, desc, category, currency string
+	}{
+		{faUser, "ar", "ar", "ثلاثي", "توضیح", "حزم", "عملة"},
+		{faUser, "en", "en", "Trilingual", "About", "Packs", "Coin"},
+		{enUser, "fa", "fa", "سه‌زبانه", "توضیح", "بسته‌ها", "سکه"},
+		{faUser, "unknown", "fa", "سه‌زبانه", "توضیح", "بسته‌ها", "سکه"},
+		{enUser, "unknown", "en", "Trilingual", "About", "Packs", "Coin"},
+		{enUser, "", "en", "Trilingual", "About", "Packs", "Coin"},
+	} {
+		out := h.mustRPC(c.user, "economy_catalog", map[string]any{"lang": c.lang})
+		p := out["products"].([]any)[0].(map[string]any)
+		cat := out["categories"].([]any)[0].(map[string]any)
+		cur := out["currencies"].([]any)[0].(map[string]any)
+		if out["lang"] != c.wantLang || p["name"] != c.name || p["description"] != c.desc || cat["name"] != c.category || cur["name"] != c.currency {
+			t.Errorf("lang %q for %s: %v", c.lang, c.user, out)
+		}
+	}
+	res := h.mustRPC(enUser, "economy_purchase_start", map[string]any{"productId": product["id"], "method": "in_app"})
+	if res["status"] != "success" {
+		t.Fatalf("purchase = %v", res)
+	}
+	mine := h.mustRPC(enUser, "economy_payments_mine", map[string]any{"lang": "ar"})
+	if mine["lang"] != "ar" || mine["items"].([]any)[0].(map[string]any)["productName"] != "ثلاثي" {
+		t.Fatalf("mine = %v", mine)
+	}
+
+	gift := h.mustAPI(201, http.MethodPost, "/gifts", map[string]any{"name": map[string]string{"fa": "هدیه", "ar": "هدية"}, "type": "reward", "code": "ARGIFT", "prizeId": prize["id"]})
+	if gift["name"].(map[string]any)["ar"] != "هدية" {
+		t.Fatalf("gift name = %v", gift)
+	}
+	if code, out := h.api(http.MethodPost, "/gifts", map[string]any{"name": "plain", "type": "reward", "code": "PLAIN", "prizeId": prize["id"]}); code != 400 || out["error"] != "INVALID_JSON" {
+		t.Fatalf("plain gift name = %d %v", code, out)
+	}
+	if l := h.mustAPI(200, http.MethodGet, "/gifts?q="+url.QueryEscape("هدية"), nil); l["total"].(float64) != 1 {
+		t.Fatalf("translated gift search = %v", l)
+	}
+	if l := h.mustAPI(200, http.MethodGet, "/products?q=Trilingual", nil); l["total"].(float64) != 1 {
+		t.Fatalf("translated product search = %v", l)
 	}
 }

@@ -2,13 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"math/big"
 	"regexp"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
 var (
@@ -34,33 +35,23 @@ func validMethod(method string) bool {
 	return false
 }
 
-type i18n map[string]string
+type i18n = localized.Text
 
-func cleanI18n(field string, in i18n, required bool, max int) (i18n, error) {
-	out := i18n{}
-	for k, v := range in {
-		if k != "fa" && k != "en" {
-			return nil, badRequest("INVALID_LANGUAGE", field, "only fa and en are allowed")
-		}
-		v = strings.TrimSpace(v)
-		if !utf8.ValidString(v) || utf8.RuneCountInString(v) > max {
-			return nil, badRequest("TEXT_TOO_LONG", field, "text is too long")
-		}
-		if v != "" {
-			out[k] = v
-		}
-	}
-	if (required || len(out) > 0) && out["fa"] == "" {
-		return nil, badRequest("FA_REQUIRED", field, "a Persian (fa) value is required")
-	}
-	return out, nil
+func cleanI18n(langs *localized.Set, field string, in i18n, required bool, max int) (i18n, error) {
+	out, err := langs.Clean(field, in, required, max)
+	return out, textError(err)
 }
 
-func (t i18n) pick(lang string) string {
-	if v := t[lang]; v != "" {
-		return v
+func textError(err error) error {
+	var e *localized.Error
+	if errors.As(err, &e) {
+		return badRequest(e.Code, e.Field, e.Message)
 	}
-	return t["fa"]
+	return err
+}
+
+func translatedSearch(col string) string {
+	return "(SELECT string_agg(e.value, ' ') FROM jsonb_each_text(" + col + ") e)"
 }
 
 func cleanKey(field, key string) (string, error) {

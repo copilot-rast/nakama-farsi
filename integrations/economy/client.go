@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
 func (s *service) clientRPCs() map[string]clientRPC {
@@ -27,16 +28,6 @@ func (s *service) clientRPCs() map[string]clientRPC {
 	}
 }
 
-func localized(t i18n, lang string) any {
-	if lang == "" {
-		if t == nil {
-			return i18n{}
-		}
-		return t
-	}
-	return t.pick(lang)
-}
-
 func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, error) {
 	var in struct {
 		CategoryKey string `json:"categoryKey"`
@@ -45,8 +36,9 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 	if err := decodeStrict(payload, &in); err != nil {
 		return nil, err
 	}
-	if in.Lang != "" && in.Lang != "fa" && in.Lang != "en" {
-		return nil, badRequest("INVALID_LANGUAGE", "lang", "lang must be fa or en")
+	langs, lang, err := localized.ForUser(ctx, s.db, userID, in.Lang)
+	if err != nil {
+		return nil, err
 	}
 	if err := s.ensureDefaults(ctx, userID); err != nil {
 		return nil, err
@@ -66,34 +58,30 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 			rows.Close()
 			return nil, err
 		}
-		var n i18n
-		_ = json.Unmarshal([]byte(name), &n)
-		currencies = append(currencies, map[string]any{"key": key, "name": localized(n, in.Lang), "type": typ, "iconUrl": icon})
+		currencies = append(currencies, map[string]any{"key": key, "name": langs.Resolve(localized.Parse(name), lang), "type": typ, "iconUrl": icon})
 	}
 	rows.Close()
 
 	categories := []map[string]any{}
 	categoryKeys := map[string]string{}
-	rows, err = s.db.QueryContext(ctx, `SELECT id::text, key, name::text, sort FROM economy_category WHERE kind='product' ORDER BY sort, key`)
+	rows, err = s.db.QueryContext(ctx, `SELECT id::text, key, name::text, description::text, icon_url, sort FROM base_category WHERE key_type='product' ORDER BY sort, key`)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		var id, key, name string
+		var id, key, name, desc, icon string
 		var sort int
-		if err := rows.Scan(&id, &key, &name, &sort); err != nil {
+		if err := rows.Scan(&id, &key, &name, &desc, &icon, &sort); err != nil {
 			rows.Close()
 			return nil, err
 		}
-		var n i18n
-		_ = json.Unmarshal([]byte(name), &n)
 		categoryKeys[id] = key
-		categories = append(categories, map[string]any{"key": key, "name": localized(n, in.Lang), "sort": sort})
+		categories = append(categories, map[string]any{"key": key, "name": langs.Resolve(localized.Parse(name), lang), "description": langs.Resolve(localized.Parse(desc), lang), "iconUrl": icon, "sort": sort})
 	}
 	rows.Close()
 
 	tagKeys := map[string]string{}
-	rows, err = s.db.QueryContext(ctx, `SELECT id::text, key FROM economy_tag`)
+	rows, err = s.db.QueryContext(ctx, `SELECT id::text, key FROM base_tag WHERE key_type IN ('product','general')`)
 	if err != nil {
 		return nil, err
 	}
@@ -153,13 +141,13 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 			final = discounted(*p.PriceToman, p.DiscountPercent)
 		}
 		products = append(products, map[string]any{
-			"id": p.ID, "key": p.Key, "name": localized(p.Name, in.Lang), "description": localized(p.Description, in.Lang),
+			"id": p.ID, "key": p.Key, "name": langs.Resolve(p.Name, lang), "description": langs.Resolve(p.Description, lang),
 			"iconUrl": p.IconURL, "coverUrl": p.CoverURL, "priceToman": p.PriceToman, "finalToman": final, "coinPrice": p.CoinPrice,
 			"discountPercent": p.DiscountPercent, "paymentMethods": available, "sku": sku, "isSubscription": p.IsSubscription,
 			"categoryKey": categoryKey, "tags": tags, "minLevel": p.MinLevel,
 		})
 	}
-	return map[string]any{"currencies": currencies, "categories": categories, "products": products}, rows.Err()
+	return map[string]any{"lang": lang, "currencies": currencies, "categories": categories, "products": products}, rows.Err()
 }
 
 func (s *service) userWallet(ctx context.Context, userID string) (map[string]int64, error) {
@@ -528,7 +516,7 @@ func (s *service) startGateway(ctx context.Context, userID string, product produ
 		}
 		return map[string]any{"paymentId": id, "status": "success", "rewards": rewards}, nil
 	}
-	description := "خرید " + product.Name.pick("fa")
+	description := s.purchaseDescription(ctx, product.Name)
 	var start gatewayStart
 	if pm.Method == "zarinpal" {
 		start = s.zarinpalRequest(ctx, pm.Config, final*10, s.callbackURL(id), description)
@@ -828,12 +816,25 @@ func (s *service) rpcStoreConfig(ctx context.Context, userID, payload string) (a
 	return map[string]any{"method": in.Method, "sandbox": pm.Config.flag("sandbox"), "rsaPublicKey": pm.Config.str("rsaPublicKey"), "packageName": pm.Config.str("packageName")}, nil
 }
 
+func (s *service) purchaseDescription(ctx context.Context, name i18n) string {
+	langs, err := localized.Load(ctx, s.db)
+	if err != nil {
+		return "خرید " + name["fa"]
+	}
+	return "خرید " + langs.Resolve(name, "fa")
+}
+
 func (s *service) rpcPaymentsMine(ctx context.Context, userID, payload string) (any, error) {
 	var in struct {
 		Limit  int    `json:"limit"`
 		Cursor string `json:"cursor"`
+		Lang   string `json:"lang"`
 	}
 	if err := decodeStrict(payload, &in); err != nil {
+		return nil, err
+	}
+	langs, lang, err := localized.ForUser(ctx, s.db, userID, in.Lang)
+	if err != nil {
 		return nil, err
 	}
 	if in.Limit <= 0 {
@@ -864,7 +865,7 @@ func (s *service) rpcPaymentsMine(ctx context.Context, userID, payload string) (
 		return nil, err
 	}
 	defer rows.Close()
-	items := []json.RawMessage{}
+	items := []map[string]any{}
 	var lastAt time.Time
 	var lastID string
 	next := ""
@@ -878,8 +879,21 @@ func (s *service) rpcPaymentsMine(ctx context.Context, userID, payload string) (
 			next = base64.RawURLEncoding.EncodeToString([]byte(lastAt.UTC().Format(time.RFC3339Nano) + "|" + lastID))
 			break
 		}
-		items = append(items, json.RawMessage(raw))
+		item := map[string]any{}
+		if err := json.Unmarshal([]byte(raw), &item); err != nil {
+			return nil, err
+		}
+		names := i18n{}
+		if m, ok := item["productName"].(map[string]any); ok {
+			for k, v := range m {
+				if str, ok := v.(string); ok {
+					names[k] = str
+				}
+			}
+		}
+		item["productName"] = langs.Resolve(names, lang)
+		items = append(items, item)
 		lastAt, lastID = at, id
 	}
-	return map[string]any{"items": items, "cursor": next}, rows.Err()
+	return map[string]any{"lang": lang, "items": items, "cursor": next}, rows.Err()
 }

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
 type resource struct {
@@ -24,37 +25,10 @@ type resource struct {
 func resources() []resource {
 	return []resource{
 		{
-			name:    "categories",
-			table:   "economy_category",
-			json:    `jsonb_build_object('id',t.id,'kind',t.kind,'key',t.key,'name',t.name,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`,
-			search:  []string{"t.key", "t.name->>'fa'", "t.name->>'en'"},
-			filters: map[string]string{"kind": "t.kind = ?"},
-			save:    saveCategory,
-			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
-				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_product WHERE category_id=$1)
-					OR EXISTS (SELECT 1 FROM publication_faq WHERE category_id=$1) OR EXISTS (SELECT 1 FROM publication_news WHERE category_id=$1)`)
-			},
-		},
-		{
-			name:    "tags",
-			table:   "economy_tag",
-			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'createdAt',t.created_at,'updatedAt',t.updated_at)`,
-			search:  []string{"t.key", "t.name->>'fa'", "t.name->>'en'"},
-			filters: map[string]string{},
-			save:    saveTag,
-			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
-				if _, err := tx.ExecContext(ctx, `UPDATE economy_prize SET tag_ids = array_remove(tag_ids, $1::text), updated_at=now() WHERE $1::text = ANY(tag_ids)`, id); err != nil {
-					return err
-				}
-				_, err := tx.ExecContext(ctx, `UPDATE economy_product SET tag_ids = array_remove(tag_ids, $1::text), updated_at=now() WHERE $1::text = ANY(tag_ids)`, id)
-				return err
-			},
-		},
-		{
 			name:    "currencies",
 			table:   "economy_currency",
 			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'type',t.type,'defaultValue',t.default_value,'iconUrl',t.icon_url,'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`,
-			search:  []string{"t.key", "t.name->>'fa'", "t.name->>'en'"},
+			search:  []string{"t.key", translatedSearch("t.name")},
 			filters: map[string]string{"type": "t.type = ?"},
 			save:    saveCurrency,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
@@ -66,7 +40,7 @@ func resources() []resource {
 			name:    "metas",
 			table:   "economy_meta",
 			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'defaultValue',t.default_value,'serverOnly',t.server_only,'settings',t.settings,'createdAt',t.created_at,'updatedAt',t.updated_at)`,
-			search:  []string{"t.key", "t.name->>'fa'", "t.name->>'en'"},
+			search:  []string{"t.key", translatedSearch("t.name")},
 			filters: map[string]string{},
 			save:    saveMeta,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
@@ -77,7 +51,7 @@ func resources() []resource {
 			name:    "prizes",
 			table:   "economy_prize",
 			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'message',t.message,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'isRepeatable',t.is_repeatable,'items',t.items,'metadata',t.metadata,'createdAt',t.created_at,'updatedAt',t.updated_at)`,
-			search:  []string{"t.key", "t.name->>'fa'", "t.name->>'en'"},
+			search:  []string{"t.key", translatedSearch("t.name")},
 			filters: map[string]string{"categoryId": "t.category_id::text = ?"},
 			save:    savePrize,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
@@ -88,7 +62,7 @@ func resources() []resource {
 			name:    "products",
 			table:   "economy_product",
 			json:    productJSON,
-			search:  []string{"t.key", "t.name->>'fa'", "t.name->>'en'"},
+			search:  []string{"t.key", translatedSearch("t.name")},
 			filters: map[string]string{"categoryId": "t.category_id::text = ?", "isActive": "t.is_active = ?::boolean", "method": "? = ANY(t.payment_methods)"},
 			save:    saveProduct,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
@@ -99,7 +73,7 @@ func resources() []resource {
 			name:    "gifts",
 			table:   "economy_gift",
 			json:    `jsonb_build_object('id',t.id,'name',t.name,'type',t.type,'code',t.code,'prizeId',t.prize_id,'discountPercent',t.discount_percent,'isPromo',t.is_promo,'perUserLimit',t.per_user_limit,'maxTotalUses',t.max_total_uses,'totalUsed',t.total_used,'validFrom',t.valid_from,'expireAt',t.expire_at,'isActive',t.is_active,'createdAt',t.created_at,'updatedAt',t.updated_at)`,
-			search:  []string{"t.name", "t.code"},
+			search:  []string{translatedSearch("t.name"), "t.code"},
 			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "type": "t.type = ?"},
 			save:    saveGift,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
@@ -323,8 +297,11 @@ func execSave(ctx context.Context, tx *sql.Tx, table, id string, create bool, co
 }
 
 func i18nJSON(t i18n) string {
-	b, _ := json.Marshal(t)
-	return string(b)
+	return t.JSON()
+}
+
+func loadLangs(ctx context.Context, tx *sql.Tx) (*localized.Set, error) {
+	return localized.Load(ctx, tx)
 }
 
 func stringsJSON(v []string) string {
@@ -351,7 +328,7 @@ func checkCategory(ctx context.Context, tx *sql.Tx, id *string, kind string) err
 		return nil
 	}
 	var k string
-	err := tx.QueryRowContext(ctx, `SELECT kind FROM economy_category WHERE id=$1`, *id).Scan(&k)
+	err := tx.QueryRowContext(ctx, `SELECT key_type FROM base_category WHERE id=$1`, *id).Scan(&k)
 	if errors.Is(err, sql.ErrNoRows) {
 		return badRequest("CATEGORY_NOT_FOUND", "categoryId", "category does not exist")
 	}
@@ -359,12 +336,12 @@ func checkCategory(ctx context.Context, tx *sql.Tx, id *string, kind string) err
 		return err
 	}
 	if k != kind {
-		return badRequest("CATEGORY_KIND_MISMATCH", "categoryId", "category kind must be "+kind)
+		return badRequest("CATEGORY_KIND_MISMATCH", "categoryId", "category key type must be "+kind)
 	}
 	return nil
 }
 
-func checkTags(ctx context.Context, tx *sql.Tx, ids []string) ([]string, error) {
+func checkTags(ctx context.Context, tx *sql.Tx, ids []string, kind string) ([]string, error) {
 	out := []string{}
 	seen := map[string]bool{}
 	for _, raw := range ids {
@@ -376,72 +353,20 @@ func checkTags(ctx context.Context, tx *sql.Tx, ids []string) ([]string, error) 
 			continue
 		}
 		seen[*id] = true
-		var exists bool
-		if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_tag WHERE id=$1)`, *id).Scan(&exists); err != nil {
+		var kt string
+		err = tx.QueryRowContext(ctx, `SELECT key_type FROM base_tag WHERE id=$1`, *id).Scan(&kt)
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, badRequest("TAG_NOT_FOUND", "tagIds", "tag does not exist")
+		}
+		if err != nil {
 			return nil, err
 		}
-		if !exists {
-			return nil, badRequest("TAG_NOT_FOUND", "tagIds", "tag does not exist")
+		if kt != kind && kt != "general" {
+			return nil, badRequest("TAG_KIND_MISMATCH", "tagIds", "tag key type must be "+kind+" or general")
 		}
 		out = append(out, *id)
 	}
 	return out, nil
-}
-
-func saveCategory(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
-	var in struct {
-		Kind string `json:"kind"`
-		Key  string `json:"key"`
-		Name i18n   `json:"name"`
-		Sort int    `json:"sort"`
-	}
-	if err := decodeInto(raw, &in); err != nil {
-		return err
-	}
-	switch in.Kind {
-	case "product", "prize", "gift", "currency", "faq", "news":
-	default:
-		return badRequest("INVALID_KIND", "kind", "kind must be product, prize, gift, currency, faq or news")
-	}
-	key, err := cleanKey("key", in.Key)
-	if err != nil {
-		return err
-	}
-	name, err := cleanI18n("name", in.Name, true, 128)
-	if err != nil {
-		return err
-	}
-	if !create {
-		var oldKind string
-		if err := tx.QueryRowContext(ctx, `SELECT kind FROM economy_category WHERE id=$1`, id).Scan(&oldKind); err == nil && oldKind != in.Kind {
-			var used bool
-			_ = tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_product WHERE category_id=$1)
-				OR EXISTS (SELECT 1 FROM publication_faq WHERE category_id=$1) OR EXISTS (SELECT 1 FROM publication_news WHERE category_id=$1)`, id).Scan(&used)
-			if used {
-				return badRequest("IN_USE", "kind", "a used category cannot change kind")
-			}
-		}
-	}
-	return execSave(ctx, tx, "economy_category", id, create, []string{"kind", "key", "name", "sort"}, []any{in.Kind, key, i18nJSON(name), in.Sort})
-}
-
-func saveTag(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
-	var in struct {
-		Key  string `json:"key"`
-		Name i18n   `json:"name"`
-	}
-	if err := decodeInto(raw, &in); err != nil {
-		return err
-	}
-	key, err := cleanKey("key", in.Key)
-	if err != nil {
-		return err
-	}
-	name, err := cleanI18n("name", in.Name, true, 128)
-	if err != nil {
-		return err
-	}
-	return execSave(ctx, tx, "economy_tag", id, create, []string{"key", "name"}, []any{key, i18nJSON(name)})
 }
 
 func saveCurrency(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
@@ -457,6 +382,10 @@ func saveCurrency(s *service, ctx context.Context, tx *sql.Tx, id string, create
 	if err := decodeInto(raw, &in); err != nil {
 		return err
 	}
+	langs, err := loadLangs(ctx, tx)
+	if err != nil {
+		return err
+	}
 	key := strings.TrimSpace(in.Key)
 	if !currencyPattern.MatchString(key) {
 		return badRequest("INVALID_KEY", "key", "use 2 to 32 lower-case letters, digits or _")
@@ -467,7 +396,7 @@ func saveCurrency(s *service, ctx context.Context, tx *sql.Tx, id string, create
 			return badRequest("KEY_IMMUTABLE", "key", "a currency key is the wallet entry name and cannot change")
 		}
 	}
-	name, err := cleanI18n("name", in.Name, true, 128)
+	name, err := cleanI18n(langs, "name", in.Name, true, 128)
 	if err != nil {
 		return err
 	}
@@ -500,6 +429,10 @@ func saveMeta(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	if err := decodeInto(raw, &in); err != nil {
 		return err
 	}
+	langs, err := loadLangs(ctx, tx)
+	if err != nil {
+		return err
+	}
 	key, err := cleanKey("key", in.Key)
 	if err != nil {
 		return err
@@ -510,7 +443,7 @@ func saveMeta(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 			return badRequest("KEY_IMMUTABLE", "key", "a meta key is used by prize items and cannot change")
 		}
 	}
-	name, err := cleanI18n("name", in.Name, true, 128)
+	name, err := cleanI18n(langs, "name", in.Name, true, 128)
 	if err != nil {
 		return err
 	}
@@ -567,15 +500,19 @@ func savePrize(s *service, ctx context.Context, tx *sql.Tx, id string, create bo
 	if err := decodeInto(raw, &in); err != nil {
 		return err
 	}
+	langs, err := loadLangs(ctx, tx)
+	if err != nil {
+		return err
+	}
 	key, err := cleanKey("key", in.Key)
 	if err != nil {
 		return err
 	}
-	name, err := cleanI18n("name", in.Name, true, 128)
+	name, err := cleanI18n(langs, "name", in.Name, true, 128)
 	if err != nil {
 		return err
 	}
-	message, err := cleanI18n("message", in.Message, false, 1000)
+	message, err := cleanI18n(langs, "message", in.Message, false, 1000)
 	if err != nil {
 		return err
 	}
@@ -586,7 +523,7 @@ func savePrize(s *service, ctx context.Context, tx *sql.Tx, id string, create bo
 	if err := checkCategory(ctx, tx, category, "prize"); err != nil {
 		return err
 	}
-	tags, err := checkTags(ctx, tx, in.TagIDs)
+	tags, err := checkTags(ctx, tx, in.TagIDs, "prize")
 	if err != nil {
 		return err
 	}
@@ -713,15 +650,19 @@ func saveProduct(s *service, ctx context.Context, tx *sql.Tx, id string, create 
 	if err := decodeInto(raw, &in); err != nil {
 		return err
 	}
+	langs, err := loadLangs(ctx, tx)
+	if err != nil {
+		return err
+	}
 	key, err := cleanKey("key", in.Key)
 	if err != nil {
 		return err
 	}
-	name, err := cleanI18n("name", in.Name, true, 128)
+	name, err := cleanI18n(langs, "name", in.Name, true, 128)
 	if err != nil {
 		return err
 	}
-	desc, err := cleanI18n("description", in.Description, false, 4000)
+	desc, err := cleanI18n(langs, "description", in.Description, false, 4000)
 	if err != nil {
 		return err
 	}
@@ -735,7 +676,7 @@ func saveProduct(s *service, ctx context.Context, tx *sql.Tx, id string, create 
 	if err := checkCategory(ctx, tx, category, "product"); err != nil {
 		return err
 	}
-	tags, err := checkTags(ctx, tx, in.TagIDs)
+	tags, err := checkTags(ctx, tx, in.TagIDs, "product")
 	if err != nil {
 		return err
 	}
@@ -781,7 +722,7 @@ func saveProduct(s *service, ctx context.Context, tx *sql.Tx, id string, create 
 
 func saveGift(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
 	var in struct {
-		Name            string  `json:"name"`
+		Name            i18n    `json:"name"`
 		Type            string  `json:"type"`
 		Code            *string `json:"code"`
 		PrizeID         string  `json:"prizeId"`
@@ -796,9 +737,13 @@ func saveGift(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	if err := decodeInto(raw, &in); err != nil {
 		return err
 	}
-	name := strings.TrimSpace(in.Name)
-	if name == "" || len([]rune(name)) > 128 {
-		return badRequest("INVALID_NAME", "name", "name is required (max 128)")
+	langs, err := loadLangs(ctx, tx)
+	if err != nil {
+		return err
+	}
+	name, err := cleanI18n(langs, "name", in.Name, true, 128)
+	if err != nil {
+		return err
 	}
 	var code *string
 	if in.Code != nil && strings.TrimSpace(*in.Code) != "" {
@@ -810,7 +755,6 @@ func saveGift(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	}
 	var prize *string
 	var percent *int
-	var err error
 	switch in.Type {
 	case "reward":
 		if prize, err = cleanUUID("prizeId", in.PrizeID, true); err != nil {
@@ -861,5 +805,5 @@ func saveGift(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	}
 	return execSave(ctx, tx, "economy_gift", id, create,
 		[]string{"name", "type", "code", "prize_id", "discount_percent", "is_promo", "per_user_limit", "max_total_uses", "valid_from", "expire_at", "is_active"},
-		[]any{name, in.Type, code, prize, percent, in.IsPromo, perUser, in.MaxTotalUses, from, expire, active})
+		[]any{i18nJSON(name), in.Type, code, prize, percent, in.IsPromo, perUser, in.MaxTotalUses, from, expire, active})
 }

@@ -1,6 +1,6 @@
 # Economy module (phase 1)
 
-Port of the asp `Modules/Economy` (Currency, Meta, Prize, Shop, Payment, Gift) plus the Base pieces they need (Category, Tag, uploads), as a Go runtime plugin with admin pages inside the existing Nakama console. Gamification is out of scope. Events, EventPrizeRelation, MetaRelation, Streak and Achievement are phase 2.
+Port of the asp `Modules/Economy` (Currency, Meta, Prize, Shop, Payment, Gift) plus uploads, as a Go runtime plugin with admin pages inside the existing Nakama console. Gamification is out of scope. Events, EventPrizeRelation, MetaRelation, Streak and Achievement are phase 2.
 
 References:
 - asp: `/Users/mazyar/Projects/asp/backend/src/PolicePatrol.Api/Modules/Economy` (ZarinPal, Bazaar, Myket, shop, prize, gift, admin UI in `/Users/mazyar/Projects/asp/frontend/src/features/{currencies,metas,prizes,shops,gifts,paymentMethods,payments,categories,tags}`)
@@ -11,7 +11,9 @@ References:
 | Part | Path |
 |---|---|
 | Go plugin (package main, `InitModule`) | `integrations/economy/` → `economy.so` |
-| Migrations (embedded in Nakama's migrator) | `migrate/sql/2026103000xxxx-economy-*.sql` |
+| Migrations (embedded in Nakama's migrator) | `migrate/sql/2026103000xxxx-economy-*.sql`, `20261101000002-economy-gift-name-localized.sql` |
+| Languages, categories, tags | Base module (`docs/base/spec.md`, `integrations/base`); economy reads `base_language`, `base_category`, `base_tag` |
+| Translated text helper | `internal/localized` (shared with publication and base) |
 | Console auth for `/v2/console/economy/` | `server/console.go`, `console/acl/acl.go` |
 | Console pages (overlay, like the l10n layer) | `console/ui/economy/` → injected into `console/ui/dist/index.html` |
 
@@ -30,10 +32,9 @@ Rules: SQL must run on PostgreSQL 16 (CockroachDB is legacy, but avoid Postgres-
 
 ## Data model (tables prefixed `economy_`)
 
-Names and descriptions are `jsonb` `{"fa": "...", "en": "..."}`; `fa` required.
+Names, descriptions and messages are `jsonb` maps keyed by language code (`{"fa": "...", "en": "...", "ar": "..."}`), validated by `internal/localized` against `base_language`: keys must be existing language codes (active or inactive), values are trimmed and empty values dropped, the default language value is required for required fields and whenever any value is given, max length per language. Errors: 400 `INVALID_LANGUAGE`, `DEFAULT_LANGUAGE_REQUIRED`, `TEXT_TOO_LONG` with `field`.
 
-- `category(id uuid, kind text check in ('product','prize','gift','currency'), key text, name jsonb, sort int, created_at, updated_at)`, unique `(kind,key)`.
-- `tag(id, key unique, name jsonb, created_at, updated_at)`.
+- Categories and tags live in the Base module: `base_category` (`key_type` = `product` | `prize` | `gift` | `currency`) and `base_tag` (`key_type` = `product` | `prize` | `general`). `category_id` must point at a category whose `key_type` equals the entity (`CATEGORY_KIND_MISMATCH`); `tag_ids` must be tags whose `key_type` is the entity or `general` (`TAG_NOT_FOUND`, `TAG_KIND_MISMATCH`). The old `economy_category` / `economy_tag` tables were copied (ids kept) and dropped by `20261101000001-base-move-categories.sql`.
 - `currency(id, key unique [a-z0-9_]{2,32}, name jsonb, type text check in ('soft','hard'), default_value bigint >=0, icon_url, metadata jsonb, sort, created_at, updated_at)`. A user's balance is the Nakama wallet entry named by `key`. Default values are granted once per user per currency (`user_currency_init(user_id, currency_id, primary key both)`), lazily on the first client economy RPC.
 - `meta(id, key unique, name jsonb, default_value numeric(20,4), server_only bool, settings jsonb, created_at, updated_at)`; `user_meta(user_id, meta_id, value numeric(20,4), updated_at, primary key(user_id, meta_id))`. Missing row means `default_value`. `server_only` metas are hidden from clients.
 - `prize(id, key unique, name jsonb, message jsonb, category_id null, tag_ids text[], is_repeatable bool, items jsonb, metadata jsonb, created_at, updated_at)`. `items` is an array of `{type: 'currency'|'meta'|'storage', key, action: 'add'|'set'|'give', value}`:
@@ -42,7 +43,7 @@ Names and descriptions are `jsonb` `{"fa": "...", "en": "..."}`; `fa` required.
   - `storage` + `give`: writes `value` (object) to collection `economy_items`, key = item key, merging is not done (overwrite).
 - `user_prize(id, user_id, prize_id, source_type text check in ('payment','gift','admin'), source_id text, claimed bool, error text, created_at)`, unique `(source_type, source_id, prize_id)`. Granting is all-or-nothing in one transaction (wallet update through `nk.WalletUpdate` happens after the DB part commits only if you cannot do both atomically; prefer `nk.MultiUpdate` for wallet + storage, then mark claimed; on failure record `error` so admin can retry). A non-repeatable prize is granted at most once per user.
 - `product(id, key unique, name jsonb, description jsonb, is_active bool, category_id null, tag_ids text[], price_toman bigint null, coin_price jsonb null {currency_key, amount}, discount_percent int 0..100, payment_methods text[] subset of ('zarinpal','zibal','bazaar','myket','in_app'), sku jsonb {bazaar?, myket?}, is_subscription bool, prize_id not null, icon_url, cover_url, min_level int 0, metadata jsonb, sort int, created_at, updated_at)`. Validation: gateway methods need `price_toman >= 100`; `in_app` needs `coin_price`; store methods need the matching `sku`.
-- `gift(id, name text, type text check in ('reward','discount'), code text unique null (stored upper-case), prize_id null, discount_percent null 1..100, is_promo bool, per_user_limit int default 1, max_total_uses int null, total_used int, valid_from, expire_at, is_active, created_at, updated_at)`. `reward`: redeem grants `prize_id`. `discount`: usable as `gift_code` on a gateway purchase only.
+- `gift(id, name jsonb (translated; existing text names were migrated to `{default: text}`), type text check in ('reward','discount'), code text unique null (stored upper-case), prize_id null, discount_percent null 1..100, is_promo bool, per_user_limit int default 1, max_total_uses int null, total_used int, valid_from, expire_at, is_active, created_at, updated_at)`. `reward`: redeem grants `prize_id`. `discount`: usable as `gift_code` on a gateway purchase only.
 - `gift_use(id, gift_id, user_id, payment_id null, status text check in ('reserved','used','released'), created_at, updated_at)`. A discount is reserved when a payment starts and becomes `used` on success or `released` on fail/expiry; limits count reserved + used.
 - `payment_method(method pk, is_active bool, config text /* AES-GCM ciphertext of a JSON object */, updated_at)`.
 - `payment(id uuid, user_id, product_id, method, sandbox bool, status text check in ('pending','success','failed','expired'), original_toman bigint, final_toman bigint, amount_rial bigint, coin_currency text null, coin_amount bigint null, gift_id null, discount_percent int, authority text null, track_id text null, ref_id text null, store_token text null, card_mask text null, outcome text null, error text null, reward_granted bool, reward_error text null, inquiry_count int, inquired_at, verified_at, created_at, updated_at)`. Unique `(method, authority)`, `(method, track_id)`, `(method, store_token)` where not null. Indexes `(status, created_at)`, `(user_id, created_at)`.
@@ -82,9 +83,11 @@ Flow and safety (union of asp + afz):
 
 All take/return JSON. Errors use Nakama runtime errors with a stable `message` code (UPPER_SNAKE).
 
+Language: every RPC that returns text accepts `lang` and returns resolved strings plus `lang` (the language used). Resolution: requested `lang` if it is an active language (`en-US` matches `en`) → the account `lang_tag` if active → default language; per field, a missing value falls back to the default language, then the first non-empty value. An unknown `lang` is not an error.
+
 | RPC | Input | Output |
 |---|---|---|
-| `economy_catalog` | `{categoryKey?, lang?}` | `{currencies:[{key,name,type,iconUrl}], categories:[…], products:[{id,key,name,description,iconUrl,coverUrl,priceToman,finalToman,coinPrice,discountPercent,paymentMethods,sku,isSubscription,categoryKey,tags}]}` (active only, methods filtered to active methods) |
+| `economy_catalog` | `{categoryKey?, lang?}` | `{lang, currencies:[{key,name,type,iconUrl}], categories:[{key,name,description,iconUrl,sort}], products:[{id,key,name,description,iconUrl,coverUrl,priceToman,finalToman,coinPrice,discountPercent,paymentMethods,sku,isSubscription,categoryKey,tags}]}` (active only, methods filtered to active methods) |
 | `economy_balances` | `{}` | `{wallet:{key:amount}, metas:{key:value} (non server_only), items:[…storage economy_items]}` |
 | `economy_purchase_start` | `{productId, method, giftCode?}` | gateway: `{paymentId, status:"redirect", redirectUrl}`; store: `{paymentId, status:"store", sku, developerPayload}`; in_app or free: `{paymentId, status:"success", rewards}` |
 | `economy_purchase_submit` | `{paymentId, token}` | `{paymentId, status, rewards?}` |
@@ -92,7 +95,7 @@ All take/return JSON. Errors use Nakama runtime errors with a stable `message` c
 | `economy_purchase_status` | `{paymentId}` | `{paymentId, status, rewardGranted, error?}` (own payments only) |
 | `economy_store_config` | `{method}` | `{method, sandbox, rsaPublicKey, packageName}` |
 | `economy_gift_redeem` | `{code}` | `{rewards}` |
-| `economy_payments_mine` | `{limit?, cursor?}` | `{items, cursor}` |
+| `economy_payments_mine` | `{limit?, cursor?, lang?}` | `{lang, items:[{…, productName (resolved string)}], cursor}` |
 
 `rewards` = the prize items actually applied.
 
@@ -100,14 +103,14 @@ All take/return JSON. Errors use Nakama runtime errors with a stable `message` c
 
 Wired through `customHttpAuthFunc` + audit log + mux params (extend the `/v2/console/hiro/` branch in `server/console.go` to also cover `/v2/console/economy/`). ACL in `console/acl/acl.go`: GET needs `HIRO_ECONOMY` read, other methods need `HIRO_ECONOMY` write (admins pass). Each handler registered with exactly one method so the ACL/audit gets it.
 
-Generic CRUD for `categories, tags, currencies, metas, prizes, products, gifts`:
-- `GET /v2/console/economy/{resource}?q=&page=1&limit=20[&kind=][&categoryId=][&isActive=]` → `{items, total, page, limit}` (server-side search on key/name, newest first)
+Generic CRUD for `currencies, metas, prizes, products, gifts` (categories and tags moved to `/v2/console/base/{categories,tags}`; the old economy endpoints are removed):
+- `GET /v2/console/economy/{resource}?q=&page=1&limit=20[&type=][&categoryId=][&isActive=]` → `{items, total, page, limit}` (server-side search on key and every translation of the name, newest first)
 - `GET /v2/console/economy/{resource}/{id}` → item
 - `POST /v2/console/economy/{resource}` → created item
 - `PUT /v2/console/economy/{resource}/{id}` → updated item (full replace of editable fields)
-- `DELETE /v2/console/economy/{resource}/{id}` → `{}`; refuse with 409 `IN_USE` when referenced (prize used by product/gift, category used, currency used in coin_price or prize items).
+- `DELETE /v2/console/economy/{resource}/{id}` → `{}`; refuse with 409 `IN_USE` when referenced (prize used by product/gift, currency used in coin_price or prize items).
 
-JSON fields are camelCase mirrors of the columns (`name:{fa,en}`, `tagIds`, `priceToman`, `coinPrice:{currencyKey,amount}`, `paymentMethods`, `sku:{bazaar,myket}`, `prizeId`, `items:[…]`, …). Validation errors: 400 `{"error": CODE, "message": text, "field": name}`.
+JSON fields are camelCase mirrors of the columns (`name:{<lang>: text}` full maps, also for gifts, `tagIds`, `priceToman`, `coinPrice:{currencyKey,amount}`, `paymentMethods`, `sku:{bazaar,myket}`, `prizeId`, `items:[…]`, …). Validation errors: 400 `{"error": CODE, "message": text, "field": name}`.
 
 Other:
 - `GET /v2/console/economy/payment-methods` → `[{method, isActive, configured, fields:[{name, type:'text'|'secret'|'bool'|'textarea', required}], config:{…masked}}]`
@@ -119,8 +122,8 @@ Other:
 - `GET /v2/console/economy/users/{userId}` → `{wallet, metas, prizes (latest 50)}`.
 - `POST /v2/console/economy/users/{userId}/grant` `{prizeId}` → `{rewards}` (`source_type=admin`, source id = new uuid).
 - `POST /v2/console/economy/uploads` multipart `file` (png/jpg/webp/svg, ≤ 2 MB, sniffed) → `{url}` served publicly at `GET /v2/economy/files/{name}` on the API port.
-- `GET /v2/console/economy/summary` → counts for the overview page.
+- `GET /v2/console/economy/summary` → counts for the overview page (`categories`/`tags` count the economy key types in `base_category`/`base_tag`).
 
 ## Console pages
 
-Sidebar section «اقتصاد» / "Economy" after «منوی اصلی»: نمای کلی، ارزها، متاها، جایزه‌ها، فروشگاه، هدیه‌ها، پرداخت‌ها، دسته‌بندی‌ها، تگ‌ها. Routes `#/economy/<page>[/<id>]`. Payment methods live in the console's Settings page as the «درگاه‌های پرداخت» tab (`#/settings/payment-methods`); `#/economy/payment-methods` redirects there. Pages look like the console's own pages (same Tailwind classes, light/dark, fa/en, Persian digits in fa). Lists: server-side search + paging; on mobile tables become stacked cards. Forms in a side drawer or a detail page; prize item editor is a repeatable row editor; product form shows only the fields relevant to the chosen payment methods.
+Sidebar section «اقتصاد» / "Economy" after «منوی اصلی»: نمای کلی، ارزها، متاها، جایزه‌ها، فروشگاه، هدیه‌ها، پرداخت‌ها. دسته‌بندی‌ها و تگ‌ها move to the «عمومی» / "General" section (Base module). Routes `#/economy/<page>[/<id>]`. Payment methods live in the console's Settings page as the «درگاه‌های پرداخت» tab (`#/settings/payment-methods`); `#/economy/payment-methods` redirects there. Pages look like the console's own pages (same Tailwind classes, light/dark, fa/en, Persian digits in fa). Lists: server-side search + paging; on mobile tables become stacked cards. Forms in a side drawer or a detail page; prize item editor is a repeatable row editor; product form shows only the fields relevant to the chosen payment methods.

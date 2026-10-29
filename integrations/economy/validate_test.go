@@ -3,7 +3,13 @@ package main
 import (
 	"encoding/json"
 	"testing"
+
+	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
+
+func testLangs() *localized.Set {
+	return localized.NewSet([]localized.Language{{Code: "fa", Direction: "rtl", Active: true, Default: true}, {Code: "en", Active: true}, {Code: "ar", Direction: "rtl", Active: true}})
+}
 
 func TestPrizeItems(t *testing.T) {
 	good := []prizeItem{
@@ -73,13 +79,21 @@ func TestProductShape(t *testing.T) {
 }
 
 func TestI18nAndMisc(t *testing.T) {
-	if _, err := cleanI18n("name", i18n{"en": "x"}, true, 10); err == nil {
-		t.Fatal("fa is required")
+	langs := testLangs()
+	if _, err := cleanI18n(langs, "name", i18n{"en": "x"}, true, 10); err == nil {
+		t.Fatal("default language is required")
+	} else if app, ok := asApp(err); !ok || app.Code != "DEFAULT_LANGUAGE_REQUIRED" || app.Field != "name" {
+		t.Fatalf("default error = %v", err)
 	}
-	if _, err := cleanI18n("name", i18n{"fa": "x", "de": "y"}, true, 10); err == nil {
+	if _, err := cleanI18n(langs, "name", i18n{"fa": "x", "de": "y"}, true, 10); err == nil {
 		t.Fatal("unknown language accepted")
+	} else if app, ok := asApp(err); !ok || app.Code != "INVALID_LANGUAGE" {
+		t.Fatalf("language error = %v", err)
 	}
-	if out, err := cleanI18n("message", i18n{}, false, 10); err != nil || len(out) != 0 {
+	if out, err := cleanI18n(langs, "name", i18n{"fa": "x", "ar": "س"}, true, 10); err != nil || out["ar"] != "س" {
+		t.Fatalf("any active language accepted: %v %v", out, err)
+	}
+	if out, err := cleanI18n(langs, "message", i18n{}, false, 10); err != nil || len(out) != 0 {
 		t.Fatal("optional empty must pass")
 	}
 	if discounted(1000, 25) != 750 || discounted(1000, 100) != 0 || discounted(999, 0) != 999 {
