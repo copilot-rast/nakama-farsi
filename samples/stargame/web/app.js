@@ -70,7 +70,17 @@ const ERRORS = {
   ROUND_EXPIRED: "این دور خیلی قدیمی شده و ثبت نشد.",
   SCORE_TOO_HIGH: "امتیاز باورکردنی نیست و ثبت نشد.",
   NETWORK: "به سرور وصل نشدیم. اینترنت یا آدرس را بررسی کن.",
+  NEWS_NOT_FOUND: "این خبر پیدا نشد یا دیگر منتشر نمی‌شود.",
+  COMMENT_NOT_ALLOWED: "نظر دادن برای این خبر بسته است.",
+  COMMENT_RATE_LIMITED: "کمی صبر کن؛ در هر دقیقه فقط ۵ نظر می‌شود فرستاد.",
+  COMMENT_MESSAGE_REQUIRED: "اول نظرت را بنویس.",
+  COMMENT_TOO_LONG: "نظر حداکثر ۱۰۰۰ نویسه است.",
+  PARENT_COMMENT_NOT_FOUND: "نظری که به آن جواب می‌دهی دیگر نیست.",
+  QUERY_TOO_LONG: "متن جستجو خیلی بلند است.",
 };
+
+const SCREENS = ["home", "play", "shop", "gift", "payments", "news", "faq", "inbox"];
+const SCREEN_LABEL = { home: "خانه", play: "بازی", shop: "فروشگاه", gift: "کد هدیه", payments: "پرداخت‌های من", news: "اخبار", faq: "سؤال‌های متداول", inbox: "صندوق پیام" };
 
 const METHOD_LABEL = {
   zarinpal: "زرین‌پال",
@@ -107,6 +117,16 @@ const state = {
   catalog: null,
   shopTab: null,
   paymentsCursor: "",
+  newsCursor: "",
+  newsLoading: false,
+  article: null,
+  commentsCursor: "",
+  replyTo: null,
+  faqCategory: "",
+  inboxCursor: "",
+  unread: 0,
+  socket: null,
+  socketRetry: 0,
 };
 
 class ApiError extends Error {
@@ -172,6 +192,7 @@ async function login() {
   });
   state.token = body.token;
   state.username = decodeJwt(body.token).usn || "";
+  connectSocket();
 }
 
 async function rpc(id, payload, retry = true) {
@@ -220,9 +241,18 @@ function show(name) {
   if (name !== "play") stopGame();
   for (const s of document.querySelectorAll(".screen")) s.hidden = s.id !== "screen-" + name;
   window.scrollTo(0, 0);
-  if (name === "home") renderHome();
+  if (name === "home") {
+    renderHome();
+    if (state.token) refreshNewsDot();
+  }
   if (name === "shop") loadShop();
   if (name === "payments") loadPayments(true);
+  if (name === "news") loadNews(true);
+  if (name === "faq") loadFaq();
+  if (name === "inbox") {
+    $("#note-toast").hidden = true;
+    loadInbox(true);
+  }
   if (name === "gift") {
     $("#gift-msg").textContent = "";
     $("#gift-code").focus();
@@ -990,6 +1020,425 @@ async function handleReturn() {
   return true;
 }
 
+function navigate(target) {
+  const name = String(target || "").trim();
+  if (name === "play") return startGame();
+  if (SCREENS.includes(name)) return show(name);
+  toast("این بخش در بازی پیدا نشد.", "bad");
+}
+
+function runAction(action) {
+  if (!action || !action.value) return;
+  if (action.type === "url") {
+    window.open(action.value, "_blank", "noopener,noreferrer");
+    return;
+  }
+  navigate(action.value);
+}
+
+function richText(html) {
+  const box = el("div", { class: "rich" });
+  box.innerHTML = html || "";
+  for (const a of box.querySelectorAll("a")) {
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+  }
+  return box;
+}
+
+function skeletonList(n, cls) {
+  return Array.from({ length: n }, () => el("div", { class: "skel " + cls, "aria-hidden": "true" }, [el("span", { class: "skel-block" }), el("span", { class: "skel-line" }), el("span", { class: "skel-line short" })]));
+}
+
+function setNewsDot(n) {
+  const dot = $("#news-dot");
+  dot.hidden = !n;
+  dot.textContent = n ? fa(n) : "";
+  $("#menu-news").setAttribute("aria-label", n ? `اخبار، ${fa(n)} خبر تازه` : "اخبار");
+}
+
+async function refreshNewsDot() {
+  try {
+    const r = await rpc("publication_news_list", { lang: "fa", limit: 50 });
+    setNewsDot(r.items.filter((n) => !n.seen).length);
+  } catch (e) {
+    setNewsDot(0);
+  }
+}
+
+async function loadNews(reset) {
+  if (state.newsLoading) return;
+  state.newsLoading = true;
+  const box = $("#news-list");
+  const more = $("#btn-news-more");
+  if (reset) {
+    state.newsCursor = "";
+    box.textContent = "";
+    box.append(...skeletonList(3, "skel-news"));
+  }
+  try {
+    const r = await rpc("publication_news_list", { lang: "fa", limit: 10, cursor: state.newsCursor || undefined });
+    if (reset) box.textContent = "";
+    if (reset && !r.items.length) box.append(el("div", { class: "empty", text: "هنوز خبری منتشر نشده." }));
+    for (const n of r.items) box.append(newsCard(n));
+    state.newsCursor = r.cursor || "";
+    more.hidden = !r.cursor;
+    if (reset) setNewsDot(r.items.filter((n) => !n.seen).length);
+  } catch (err) {
+    if (reset) box.textContent = "";
+    box.append(el("div", { class: "empty", text: errorText(err) }));
+  } finally {
+    state.newsLoading = false;
+  }
+}
+
+function newsCard(n) {
+  const cover = n.coverUrl ? el("img", { class: "news-cover", src: n.coverUrl, alt: "", loading: "lazy" }) : el("div", { class: "news-cover news-cover-empty", "aria-hidden": "true" }, "★");
+  return el("button", { class: "news-card" + (n.seen ? "" : " unread") + (n.isPinned ? " pinned" : ""), type: "button", "data-news": n.id, onclick: () => openArticle(n.id) }, [
+    cover,
+    el("div", { class: "news-body" }, [
+      el("div", { class: "news-tags" }, [
+        n.isPinned ? el("span", { class: "chip chip-gold", text: "سنجاق‌شده" }) : null,
+        n.seen ? null : el("span", { class: "chip chip-new" }, [el("span", { class: "dot", "aria-hidden": "true" }), "تازه"]),
+      ]),
+      el("h3", { text: n.title }),
+      n.summary ? el("p", { class: "muted small", text: n.summary }) : null,
+      el("div", { class: "news-meta muted small" }, [el("span", { text: formatDate(n.publishedAt) }), el("span", { text: `${fa(n.commentCount)} نظر` })]),
+    ]),
+  ]);
+}
+
+async function openArticle(id) {
+  for (const s of document.querySelectorAll(".screen")) s.hidden = s.id !== "screen-article";
+  stopGame();
+  window.scrollTo(0, 0);
+  const box = $("#article");
+  box.textContent = "";
+  box.append(el("div", { class: "skel skel-article", "aria-hidden": "true" }, [el("span", { class: "skel-block" }), el("span", { class: "skel-line" }), el("span", { class: "skel-line" }), el("span", { class: "skel-line short" })]));
+  $("#comments").hidden = true;
+  state.replyTo = null;
+  try {
+    const a = await rpc("publication_news_get", { id, lang: "fa" });
+    state.article = a;
+    box.textContent = "";
+    if (a.coverUrl) box.append(el("img", { class: "article-cover", src: a.coverUrl, alt: "" }));
+    box.append(
+      el("div", { class: "news-tags" }, [a.isPinned ? el("span", { class: "chip chip-gold", text: "سنجاق‌شده" }) : null]),
+      el("h1", { text: a.title }),
+      el("p", { class: "muted small", text: formatDate(a.publishedAt) }),
+      a.summary ? el("p", { class: "article-summary", text: a.summary }) : null,
+      richText(a.bodyHtml)
+    );
+    if (a.actions && a.actions.length) {
+      box.append(el("div", { class: "article-actions" }, a.actions.map((act, i) => el("button", {
+        class: i === 0 ? "btn btn-primary" : "btn",
+        type: "button",
+        "data-action": act.type,
+        onclick: () => runAction(act),
+      }, [act.label || act.value, act.type === "url" ? el("span", { class: "ext", "aria-hidden": "true", text: "↗" }) : null]))));
+    }
+    if (!a.seen) rpc("publication_news_seen", { id: a.id }).then(() => refreshNewsDot()).catch(() => {});
+    const c = $("#comments");
+    c.hidden = false;
+    $("#comment-form").hidden = !a.allowComment;
+    $("#comment-hint").textContent = "";
+    $("#comments-count").textContent = a.allowComment ? "" : "نظر دادن برای این خبر بسته است";
+    loadComments(true);
+  } catch (err) {
+    box.textContent = "";
+    box.append(el("div", { class: "empty", text: errorText(err) }));
+  }
+}
+
+function commentView(c, root) {
+  const node = el("div", { class: "comment" + (c.isAccepted ? "" : " pending") + (c.mine ? " mine" : ""), "data-comment": c.id }, [
+    el("div", { class: "comment-head" }, [
+      el("bdi", { class: "comment-user", text: c.displayName || c.username || "بازیکن" }),
+      c.mine ? el("span", { class: "chip", text: "تو" }) : null,
+      el("span", { class: "muted small", text: formatDate(c.createdAt) }),
+      c.isAccepted ? null : el("span", { class: "chip chip-wait", text: "در انتظار تأیید" }),
+    ]),
+    el("p", { class: "comment-text", dir: "auto", text: c.message }),
+  ]);
+  if (root && c.isAccepted && state.article && state.article.allowComment) {
+    node.append(el("button", { class: "link-btn", type: "button", text: "پاسخ", onclick: () => startReply(c) }));
+  }
+  if (root && c.replies && c.replies.length) {
+    node.append(el("div", { class: "replies" }, c.replies.map((r) => commentView(r, false))));
+  }
+  return node;
+}
+
+function startReply(c) {
+  state.replyTo = c;
+  $("#comment-hint").textContent = "";
+  $("#comment-hint").append(`در پاسخ به ${c.displayName || c.username || "بازیکن"} `, el("button", { class: "link-btn", type: "button", text: "لغو", onclick: () => { state.replyTo = null; $("#comment-hint").textContent = ""; } }));
+  $("#comment-text").focus();
+}
+
+async function loadComments(reset) {
+  const list = $("#comment-list");
+  const more = $("#btn-comments-more");
+  if (!state.article) return;
+  if (reset) {
+    state.commentsCursor = "";
+    list.textContent = "";
+    list.append(...skeletonList(2, "skel-comment"));
+  }
+  try {
+    const r = await rpc("publication_news_comments", { newsId: state.article.id, limit: 20, cursor: state.commentsCursor || undefined });
+    if (reset) list.textContent = "";
+    if (reset && !r.items.length) list.append(el("p", { class: "muted small center", id: "no-comments", text: state.article.allowComment ? "هنوز نظری نیست. اولین نفر باش!" : "نظری نیست." }));
+    for (const c of r.items) list.append(commentView(c, true));
+    state.commentsCursor = r.cursor || "";
+    more.hidden = !r.cursor;
+    if (state.article.allowComment) $("#comments-count").textContent = `${fa(state.article.commentCount)} نظر`;
+  } catch (err) {
+    if (reset) list.textContent = "";
+    list.append(el("p", { class: "form-msg bad", text: errorText(err) }));
+  }
+}
+
+async function postComment(e) {
+  e.preventDefault();
+  const input = $("#comment-text");
+  const btn = $("#comment-form button[type=submit]");
+  const message = input.value.trim();
+  if (!message || !state.article) return;
+  btn.disabled = true;
+  try {
+    const payload = { newsId: state.article.id, message };
+    if (state.replyTo) payload.parentId = state.replyTo.id;
+    const c = await rpc("publication_news_comment", payload);
+    input.value = "";
+    const parent = state.replyTo;
+    state.replyTo = null;
+    $("#comment-hint").textContent = "";
+    const empty = $("#no-comments");
+    if (empty) empty.remove();
+    const view = commentView(c, !c.parentId);
+    if (c.parentId) {
+      const host = document.querySelector(`[data-comment="${c.parentId}"]`) || (parent && document.querySelector(`[data-comment="${parent.id}"]`));
+      let replies = host && host.querySelector(".replies");
+      if (host && !replies) {
+        replies = el("div", { class: "replies" });
+        host.append(replies);
+      }
+      if (replies) replies.append(view);
+      else $("#comment-list").prepend(view);
+    } else {
+      $("#comment-list").prepend(view);
+    }
+    toast(c.isAccepted ? "نظرت منتشر شد." : "نظرت ثبت شد و بعد از تأیید برای بقیه نمایش داده می‌شود.", "ok");
+  } catch (err) {
+    toast(errorText(err), "bad");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+let faqTimer = null;
+let faqSeq = 0;
+async function loadFaq() {
+  const my = ++faqSeq;
+  const box = $("#faq-list");
+  box.textContent = "";
+  box.append(...skeletonList(4, "skel-faq"));
+  try {
+    const q = $("#faq-q").value.trim();
+    const r = await rpc("publication_faq_list", { lang: "fa", q: q || undefined, categoryKey: state.faqCategory || undefined });
+    if (my !== faqSeq) return;
+    const tabs = $("#faq-tabs");
+    tabs.textContent = "";
+    if (r.categories.length) {
+      const all = [{ key: "", name: "همه" }].concat(r.categories);
+      for (const c of all) {
+        tabs.append(el("button", { class: "tab", type: "button", role: "tab", "aria-selected": c.key === state.faqCategory ? "true" : "false", "data-cat": c.key, onclick: () => { state.faqCategory = c.key; loadFaq(); } }, c.name));
+      }
+    }
+    box.textContent = "";
+    if (!r.items.length) {
+      box.append(el("div", { class: "empty", text: q ? "با این جستجو سؤالی پیدا نشد." : "هنوز سؤالی اضافه نشده." }));
+      return;
+    }
+    for (const f of r.items) {
+      box.append(el("details", { class: "faq", "data-faq": f.id }, [
+        el("summary", {}, [el("span", { text: f.question }), el("span", { class: "chev", "aria-hidden": "true", text: "⌄" })]),
+        richText(f.answerHtml),
+      ]));
+    }
+  } catch (err) {
+    if (my !== faqSeq) return;
+    box.textContent = "";
+    box.append(el("div", { class: "empty", text: errorText(err) }));
+  }
+}
+
+function setUnread(n) {
+  state.unread = Math.max(0, Number(n) || 0);
+  const b = $("#inbox-badge");
+  b.hidden = !state.unread;
+  b.textContent = state.unread > 99 ? "+۹۹" : fa(state.unread);
+  $("#btn-inbox").setAttribute("aria-label", state.unread ? `صندوق پیام، ${fa(state.unread)} پیام نخوانده` : "صندوق پیام");
+}
+
+async function refreshUnread() {
+  try {
+    const r = await rpc("publication_inbox", { lang: "fa", limit: 1 });
+    setUnread(r.unread);
+  } catch (e) {
+    return;
+  }
+}
+
+function inboxItem(m) {
+  const node = el("div", { class: "inbox-item" + (m.seen ? "" : " unread"), "data-inbox": m.id }, [
+    el("div", { class: "inbox-head" }, [
+      m.seen ? null : el("span", { class: "dot", "aria-label": "نخوانده" }),
+      el("h3", { text: m.title || "پیام" }),
+      el("span", { class: "muted small", text: formatDate(m.createdAt) }),
+    ]),
+    richText(m.bodyHtml),
+  ]);
+  if (m.action && m.action.value) {
+    node.append(el("button", { class: "btn", type: "button", "data-action": m.action.type, text: m.action.type === "url" ? "باز کردن پیوند ↗" : `رفتن به ${SCREEN_LABEL[m.action.value] || m.action.value}`, onclick: () => {
+      if (!m.seen) rpc("publication_inbox_seen", { ids: [m.id] }).then((r) => setUnread(r.unread)).catch(() => {});
+      runAction(m.action);
+    } }));
+  }
+  return node;
+}
+
+async function loadInbox(reset) {
+  const box = $("#inbox-list");
+  const more = $("#btn-inbox-more");
+  if (reset) {
+    state.inboxCursor = "";
+    box.textContent = "";
+    box.append(...skeletonList(3, "skel-inbox"));
+  }
+  try {
+    const r = await rpc("publication_inbox", { lang: "fa", limit: 20, cursor: state.inboxCursor || undefined });
+    if (reset) box.textContent = "";
+    if (reset && !r.items.length) box.append(el("div", { class: "empty", text: "صندوقت خالی است." }));
+    for (const m of r.items) box.append(inboxItem(m));
+    state.inboxCursor = r.cursor || "";
+    more.hidden = !r.cursor;
+    setUnread(r.unread);
+    $("#btn-seen-all").disabled = !r.unread;
+  } catch (err) {
+    if (reset) box.textContent = "";
+    box.append(el("div", { class: "empty", text: errorText(err) }));
+  }
+}
+
+async function seenAll() {
+  const btn = $("#btn-seen-all");
+  btn.disabled = true;
+  try {
+    const r = await rpc("publication_inbox_seen", { all: true });
+    setUnread(r.unread);
+    for (const n of document.querySelectorAll(".inbox-item.unread")) {
+      n.classList.remove("unread");
+      const d = n.querySelector(".dot");
+      if (d) d.remove();
+    }
+    toast("همه‌ی پیام‌ها خوانده شد.", "ok");
+  } catch (err) {
+    btn.disabled = false;
+    toast(errorText(err), "bad");
+  }
+}
+
+let noteTimer = null;
+function showNote(n) {
+  const t = $("#note-toast");
+  t.textContent = "";
+  t.append(
+    el("span", { class: "note-icon", "aria-hidden": "true" }, "★"),
+    el("span", { class: "note-text" }, [el("b", { text: n.title || "پیام تازه" }), n.body ? el("span", { class: "muted small", text: plainText(n.body) }) : null])
+  );
+  t.hidden = false;
+  t.classList.remove("in");
+  void t.offsetWidth;
+  t.classList.add("in");
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => (t.hidden = true), 6000);
+}
+
+function plainText(md) {
+  return String(md || "").replace(/!\[[^\]]*\]\([^)]*\)/g, "").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*#]/g, "").replace(/\s+/g, " ").trim().slice(0, 140);
+}
+
+async function liveNotification(id, fallback) {
+  let note = fallback;
+  let unread = state.unread + 1;
+  for (let i = 0; i < 4; i++) {
+    try {
+      const r = await rpc("publication_inbox", { lang: "fa", limit: 10 });
+      const found = r.items.find((m) => m.id === id);
+      unread = Math.max(r.unread, found ? 0 : state.unread + 1);
+      if (found) {
+        note = { title: found.title, body: found.body };
+        break;
+      }
+    } catch (e) {
+      break;
+    }
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  showNote(note);
+  setUnread(unread);
+  const bell = $("#btn-inbox");
+  bell.classList.remove("ring");
+  void bell.offsetWidth;
+  bell.classList.add("ring");
+  if (!$("#screen-inbox").hidden) loadInbox(true);
+}
+
+function connectSocket() {
+  if (state.socket) {
+    state.socket.onclose = null;
+    state.socket.close();
+    state.socket = null;
+  }
+  if (!state.token) return;
+  const proto = location.protocol === "https:" ? "wss:" : "ws:";
+  const ws = new WebSocket(`${proto}//${location.hostname}:7450/ws?token=${encodeURIComponent(state.token)}&format=json`);
+  state.socket = ws;
+  ws.onopen = () => {
+    state.socketRetry = 0;
+    document.body.dataset.socket = "open";
+  };
+  ws.onmessage = (ev) => {
+    let msg;
+    try {
+      msg = JSON.parse(ev.data);
+    } catch (e) {
+      return;
+    }
+    const list = msg && msg.notifications && msg.notifications.notifications;
+    if (!list) return;
+    for (const n of list) {
+      if (n.code !== 1001) continue;
+      let content = {};
+      try {
+        content = typeof n.content === "string" ? JSON.parse(n.content) : n.content || {};
+      } catch (e) {
+        content = {};
+      }
+      liveNotification(content.notificationId, { title: n.subject, body: "" });
+    }
+  };
+  ws.onclose = () => {
+    document.body.dataset.socket = "closed";
+    if (state.socket !== ws) return;
+    state.socket = null;
+    const wait = Math.min(30000, 1000 * 2 ** state.socketRetry++);
+    setTimeout(() => { if (!state.socket) connectSocket(); }, wait);
+  };
+}
+
 async function boot() {
   setupInput();
   for (const b of document.querySelectorAll("[data-go]")) b.addEventListener("click", () => show(b.dataset.go));
@@ -998,6 +1447,14 @@ async function boot() {
   $("#btn-restore").addEventListener("click", restoreDialog);
   $("#btn-more").addEventListener("click", () => loadPayments(false));
   $("#gift-form").addEventListener("submit", redeemGift);
+  $("#btn-inbox").addEventListener("click", () => show("inbox"));
+  $("#btn-seen-all").addEventListener("click", seenAll);
+  $("#btn-inbox-more").addEventListener("click", () => loadInbox(false));
+  $("#btn-news-more").addEventListener("click", () => loadNews(false));
+  $("#btn-comments-more").addEventListener("click", () => loadComments(false));
+  $("#comment-form").addEventListener("submit", postComment);
+  $("#note-toast").addEventListener("click", () => { $("#note-toast").hidden = true; show("inbox"); });
+  $("#faq-q").addEventListener("input", () => { clearTimeout(faqTimer); faqTimer = setTimeout(loadFaq, 300); });
   try {
     await login();
     await refreshBalances();
@@ -1006,6 +1463,8 @@ async function boot() {
     document.querySelector("#screen-loading .spinner").hidden = true;
     return;
   }
+  refreshUnread();
+  refreshNewsDot();
   if (!(await handleReturn())) show("home");
 }
 
