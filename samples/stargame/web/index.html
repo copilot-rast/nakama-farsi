@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1026">
+<title>ستاره‌چین</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <button class="brand" type="button" data-go="home" aria-label="خانه">
+    <span class="brand-star" aria-hidden="true">★</span>
+    <span>ستاره‌چین</span>
+  </button>
+  <div class="wallet" id="wallet" aria-live="polite">
+    <span class="coin" aria-hidden="true"></span>
+    <span id="balance">…</span>
+    <span class="wallet-unit">سکه</span>
+  </div>
+</header>
+
+<main>
+  <section class="screen" id="screen-loading">
+    <div class="center-block">
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="loading-text">در حال ورود…</p>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-home" hidden>
+    <div class="hero">
+      <p class="hello">سلام <bdi id="username">…</bdi></p>
+      <h1>ستاره‌ها را بگیر، از بمب‌ها فرار کن</h1>
+      <p class="muted">هر دور ۳۰ ثانیه است. هر ستاره <b>۱ امتیاز</b> دارد و ستاره‌ی طلایی <b>۵ امتیاز</b>. هر بمب <b>۳ امتیاز</b> کم می‌کند. هر ۵ امتیاز یک سکه، تا سقف ۳۰ سکه در هر دور.</p>
+      <button class="btn btn-primary btn-big" type="button" id="btn-play">شروع بازی</button>
+    </div>
+    <div class="menu-grid">
+      <button class="menu-card" type="button" data-go="shop"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 7H6"/></svg></span><span>فروشگاه</span></button>
+      <button class="menu-card" type="button" data-go="gift"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></span><span>کد هدیه</span></button>
+      <button class="menu-card" type="button" data-go="payments"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span><span>پرداخت‌های من</span></button>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>سبدهای من</h2>
+        <span class="muted small">سبدی را که می‌خواهی در بازی داشته باشی انتخاب کن</span>
+      </div>
+      <div class="skins" id="skins"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-play" hidden>
+    <div class="hud">
+      <div class="hud-item"><span class="muted small">امتیاز</span><b id="hud-score">۰</b></div>
+      <div class="hud-item"><span class="muted small">زمان</span><b id="hud-time">۳۰</b></div>
+      <button class="btn btn-ghost" type="button" id="btn-quit">خروج</button>
+    </div>
+    <div class="stage" id="stage">
+      <canvas id="canvas" aria-label="صفحه‌ی بازی"></canvas>
+      <div class="stage-overlay" id="stage-overlay" hidden></div>
+    </div>
+    <p class="muted small center hint">با موس، لمس یا کلیدهای جهت‌نما سبد را حرکت بده.</p>
+  </section>
+
+  <section class="screen" id="screen-shop" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="home">بازگشت</button>
+      <h1>فروشگاه</h1>
+      <button class="btn btn-ghost" type="button" id="btn-restore">بازیابی خرید</button>
+    </div>
+    <div class="tabs" id="shop-tabs" role="tablist"></div>
+    <div class="discount" id="discount-row">
+      <label for="discount-code">کد تخفیف (اختیاری، فقط زرین‌پال و زیبال)</label>
+      <input id="discount-code" class="mono" type="text" autocomplete="off" spellcheck="false" dir="ltr" placeholder="HALF50">
+    </div>
+    <div class="products" id="products"></div>
+  </section>
+
+  <section class="screen" id="screen-gift" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="home">بازگشت</button>
+      <h1>کد هدیه</h1>
+      <span></span>
+    </div>
+    <form class="panel form" id="gift-form">
+      <label for="gift-code">کد هدیه‌ات را وارد کن</label>
+      <input id="gift-code" class="mono" type="text" autocomplete="off" spellcheck="false" dir="ltr" placeholder="STAR100" required>
+      <button class="btn btn-primary" type="submit">دریافت هدیه</button>
+      <p class="form-msg" id="gift-msg" role="status"></p>
+    </form>
+  </section>
+
+  <section class="screen" id="screen-payments" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="home">بازگشت</button>
+      <h1>پرداخت‌های من</h1>
+      <span></span>
+    </div>
+    <div class="payments" id="payments"></div>
+    <button class="btn btn-ghost wide" type="button" id="btn-more" hidden>بیشتر</button>
+  </section>
+</main>
+
+<dialog id="dialog">
+  <form method="dialog" class="dialog-body" id="dialog-body"></form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>
