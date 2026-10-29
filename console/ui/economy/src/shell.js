@@ -20,11 +20,16 @@ function captureRouter(app) {
     if (!layout || !layout.components) return;
     SECTION_ORDER.forEach(function (sec) {
       if (r.hasRoute(sec)) return;
-      r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { title: sec === 'economy' ? 'Economy' : 'Publishing' } }] });
+      r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { title: SECTION_TITLE[sec] } }] });
+    });
+    Object.keys(MOVED_PAGES).forEach(function (from) {
+      var name = 'moved-' + from.replace('/', '-');
+      if (!r.hasRoute(name)) r.addRoute({ path: '/' + from + '/:rest(.*)*', name: name, redirect: function (to) { return to.fullPath.replace('/' + from, '/' + MOVED_PAGES[from]); } });
     });
     if (r.hasRoute('settings')) {
       SETTINGS_TABS.forEach(function (tab) {
         if (!r.hasRoute('settings-' + tab)) r.addRoute('settings', { path: tab, name: 'settings-' + tab, component: EmptyPage, meta: tabMeta(tab) });
+        if (RESOURCES[tab] && !r.hasRoute('settings-' + tab + '-item')) r.addRoute('settings', { path: tab + '/:id(.*)', name: 'settings-' + tab + '-item', component: EmptyPage, meta: tabMeta(tab) });
       });
       Object.keys(LEGACY_HASHES).forEach(function (sec) {
         Object.keys(LEGACY_HASHES[sec]).forEach(function (page) {
@@ -45,11 +50,20 @@ function captureRouter(app) {
   }
 }
 
+var SECTION_TITLE = { base: 'General', economy: 'Economy', publication: 'Publishing' };
+
+function movedHash(hash) {
+  var m = /^#\/([^/?]+\/[^/?]+)(.*)$/.exec(hash || '');
+  return m && MOVED_PAGES[m[1]] ? '#/' + MOVED_PAGES[m[1]] + m[2] : null;
+}
+
 function tabMeta(tab) {
   return { get title() { return t('settings') + ' - ' + t('tab.' + tab); } };
 }
 
 function legacyHash(hash) {
+  var moved = movedHash(hash);
+  if (moved) return moved;
   var m = /^#\/(economy|publication)\/([^/?]+)/.exec(hash);
   var to = m && LEGACY_HASHES[m[1]][m[2]];
   return to ? hashFor(to) : null;
@@ -76,12 +90,15 @@ function replaceHash(hash) {
 }
 
 function parseRoute(hash) {
-  var m = /^#\/(economy|publication|settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(base|economy|publication|settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
-  if (section === 'settings') return SETTINGS_TABS.indexOf(m[2]) === -1 ? null : { section: section, page: m[2], id: null, query: {} };
-  var page = m[2] || SECTIONS[section][0];
-  if (SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
+  if (section === 'settings') {
+    if (SETTINGS_TABS.indexOf(m[2]) === -1) return null;
+    if (!RESOURCES[m[2]]) return { section: section, page: m[2], id: null, query: {} };
+  }
+  var page = section === 'settings' ? m[2] : m[2] || SECTIONS[section][0];
+  if (section !== 'settings' && SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   var query = {};
   (m[4] || '').split('&').forEach(function (pair) {
     if (!pair) return;
@@ -115,8 +132,8 @@ function buildNav(section, collapsed, active) {
     if (badge) a.appendChild(badge);
     ul.appendChild(h('li', {}, a));
   });
-  var title = section === 'economy' ? 'section' : 'section.pub';
-  return h('div', { 'data-economy-nav': section, 'data-l10n-skip': '', class: section === 'economy' ? null : 'eco-nav-next' },
+  var title = section === 'economy' ? 'section' : section === 'base' ? 'section.base' : 'section.pub';
+  return h('div', { 'data-economy-nav': section, 'data-l10n-skip': '', class: section === SECTION_ORDER[0] ? null : 'eco-nav-next' },
     h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 ' + (collapsed ? 'text-[8px] text-center' : 'px-3 text-[10px]'), text: collapsed ? t(title + '.short') : t(title) }),
     h('nav', { 'aria-label': t(title) }, ul));
 }
@@ -255,6 +272,7 @@ function render(root, route) {
     if (route.page === 'overview') overviewPage(root);
     else if (route.page === 'payment-methods') paymentMethodsPage(root);
     else if (route.page === 'sms' || route.page === 'email') providersPage(root, route.page);
+    else if (route.page === 'languages') ctl.list = languagesPage(root, route.query, ctx);
     else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
     else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
     else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
@@ -276,6 +294,11 @@ function sync() {
     else history.replaceState(history.state, '', location.pathname + location.search + moved);
   }
   var route = parseRoute(hash);
+  if (route && !LANGS.tried && token()) {
+    LANGS.tried = true;
+    loadLanguages().then(function () { if (LANGS.loaded && LANGS.def !== 'fa' && rendered) { rendered.key = ''; schedule(); } });
+    loadKeyTypes();
+  }
   var settings = route && route.section === 'settings';
   syncSidebar(settings ? null : route);
   var row = syncSettingsTabs(route);
@@ -350,7 +373,7 @@ function boot() {
   sync();
 }
 
-if (/^#\/(economy|publication)/.test(location.hash) || parseRoute(location.hash)) {
+if (/^#\/(base|economy|publication)/.test(location.hash) || parseRoute(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }

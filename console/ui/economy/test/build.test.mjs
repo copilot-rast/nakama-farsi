@@ -69,3 +69,14 @@ test('Persian copy uses ZWNJ, Persian punctuation and no em dashes', () => {
 test('committed dist output matches the sources', () => {
   execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build.mjs'), '--check'], { stdio: 'pipe' });
 });
+
+test('every literal message key exists and the removed economy taxonomy endpoints are gone', () => {
+  const m = messages();
+  const { js } = bundle();
+  const keys = new Set([...js.matchAll(/\bt\('([a-zA-Z0-9_.-]*[a-zA-Z0-9_-])'\s*[,)]/g)].map((x) => x[1]));
+  const missing = [...keys].filter((k) => m.en[k] === undefined);
+  assert.deepEqual(missing, []);
+  assert.ok(!/['"]\/categories['"]\s*\)|kind: '(product|prize|faq|news)'/.test(js));
+  for (const code of ['DEFAULT_LANGUAGE_REQUIRED', 'INVALID_LANGUAGE', 'TEXT_TOO_LONG', 'TAG_KIND_MISMATCH', 'CATEGORY_KIND_MISMATCH']) assert.ok(m.fa['code.' + code] && m.en['code.' + code], code);
+  assert.equal(m.fa['code.FA_REQUIRED'], undefined);
+});

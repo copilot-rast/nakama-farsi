@@ -23,8 +23,16 @@ function textInput(value, opts) {
     'aria-label': opts.label
   });
   el.value = value == null ? '' : value;
+  if (opts.ltr) el.addEventListener('input', function () { latinize(el); });
   if (opts.oninput) el.addEventListener('input', function () { opts.oninput(el.value); });
   return el;
+}
+
+function latinize(el) {
+  if (!/[۰-۹٠-٩]/.test(el.value)) return;
+  var pos = el.selectionStart;
+  el.value = el.value.replace(/[۰-۹]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); }).replace(/[٠-٩]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); });
+  try { el.setSelectionRange(pos, pos); } catch (e) { return; }
 }
 
 function numberInput(value, opts) {
@@ -101,11 +109,13 @@ function refPicker(opts) {
     var my = ++seq;
     clear(list);
     for (var i = 0; i < 3; i++) list.appendChild(h('div', { class: 'px-2 py-2' }, bar(['60%', '40%', '50%'][i])));
-    var params = Object.assign({ q: q, page: 1, limit: 20 }, opts.filter || {});
-    call('GET', '/' + opts.resource + qs(params)).then(function (res) {
+    var filters = Array.isArray(opts.filter) ? opts.filter : [opts.filter || {}];
+    Promise.all(filters.map(function (f) { return call('GET', '/' + opts.resource + qs(Object.assign({ q: q, page: 1, limit: 20 }, f))); })).then(function (all) {
       if (my !== seq) return;
       clear(list);
-      var items = (res && res.items) || [];
+      var seen = {};
+      var items = [];
+      all.forEach(function (res) { ((res && res.items) || []).forEach(function (it) { var k = it[opts.valueKey || 'id']; if (!seen[k]) { seen[k] = 1; items.push(it); } }); });
       if (!items.length) list.appendChild(h('div', { class: 'px-2 py-2 text-sm text-secondary-500', text: !q && opts.emptyText ? opts.emptyText : t('no.results') }));
       items.forEach(function (it) {
         var v = it[opts.valueKey || 'id'];
@@ -144,7 +154,7 @@ function refPicker(opts) {
   if (value && !refCache[cacheKey(value)]) {
     var req = (opts.valueKey || 'id') === 'id'
       ? call('GET', '/' + opts.resource + '/' + encodeURIComponent(value))
-      : call('GET', '/' + opts.resource + qs(Object.assign({ q: value, limit: 20 }, opts.filter || {}))).then(function (res) {
+      : call('GET', '/' + opts.resource + qs(Object.assign({ q: value, limit: 20 }, Array.isArray(opts.filter) ? {} : opts.filter || {}))).then(function (res) {
         return ((res && res.items) || []).filter(function (it) { return it[opts.valueKey] === value; })[0] || null;
       });
     req.then(function (item) { if (item) { refCache[cacheKey(value)] = item; paint(item); } }, function () { return null; });
@@ -243,6 +253,133 @@ function dateInput(value, onchange) {
   });
   paint();
   return h('div', {}, el, shown);
+}
+
+function trValue(v) {
+  var out = {};
+  if (v && typeof v === 'object') Object.keys(v).forEach(function (k) { if (typeof v[k] === 'string') out[k] = v[k]; });
+  else if (typeof v === 'string' && v) out[LANGS.def] = v;
+  return out;
+}
+
+function trClean(v) {
+  var out = {};
+  Object.keys(v || {}).forEach(function (k) {
+    if (LANGS.codes.indexOf(k) === -1) return;
+    var s = String(v[k] == null ? '' : v[k]).trim();
+    if (s) out[k] = s;
+  });
+  return out;
+}
+
+function trCheck(v, opts) {
+  var c = trClean(v);
+  var any = Object.keys(c).length > 0;
+  if ((opts.required || any) && !c[LANGS.def]) return { code: 'DEFAULT_LANGUAGE_REQUIRED', lang: LANGS.def };
+  if (opts.max) {
+    for (var i = 0; i < LANGS.items.length; i++) {
+      var code = LANGS.items[i].code;
+      if (c[code] && Array.from(c[code]).length > opts.max) return { code: 'TEXT_TOO_LONG', lang: code };
+    }
+  }
+  return null;
+}
+
+function trServerLang(err, v, opts) {
+  if (!err) return LANGS.def;
+  if (err.code === 'INVALID_LANGUAGE') {
+    var m = /language\s+(\S+)/.exec(err.message || '');
+    return m && LANGS.active.some(function (l) { return l.code === m[1]; }) ? m[1] : LANGS.def;
+  }
+  if (err.code === 'TEXT_TOO_LONG') {
+    var hit = trCheck(v, { max: opts.max });
+    if (hit && hit.code === 'TEXT_TOO_LONG') return hit.lang;
+    var best = LANGS.def;
+    var len = -1;
+    Object.keys(v || {}).forEach(function (k) { var n = Array.from(String(v[k] || '')).length; if (n > len && LANGS.active.some(function (l) { return l.code === k; })) { len = n; best = k; } });
+    return best;
+  }
+  return LANGS.def;
+}
+
+function translatedInput(value, opts) {
+  opts = opts || {};
+  var values = trValue(value);
+  var langs = LANGS.active.slice();
+  var current = langs.length ? langs[0].code : LANGS.def;
+  var tabs = h('div', { class: 'eco-tr-tabs', role: 'tablist', 'aria-label': opts.label || null });
+  var panels = h('div', { class: 'eco-tr-panels' });
+  var parts = {};
+  langs.forEach(function (l) {
+    var code = l.code;
+    var dir = langDir(code);
+    var dot = h('span', { class: 'eco-tr-dot', 'aria-hidden': 'true' });
+    var tab = h('button', { type: 'button', role: 'tab', class: 'eco-tr-tab', 'data-lang': code, 'aria-selected': 'false', title: langName(code),
+      onclick: function () { select(code); } },
+      h('span', { dir: dir, text: l.nativeName || code }),
+      code === LANGS.def ? h('span', { class: 'eco-tr-def', text: t('tr.default') }) : null,
+      dot);
+    var label = (opts.label ? opts.label + ' - ' : '') + langName(code);
+    var ctl;
+    var onin = function (v) {
+      values[code] = v;
+      paintTab(code);
+      tab.classList.remove('eco-tr-bad');
+      if (opts.oninput) opts.oninput(Object.assign({}, values));
+    };
+    if (opts.markdown) {
+      ctl = markdownInput(values[code] || '', { ltr: dir === 'ltr', rows: opts.rows, max: opts.max, label: label, oninput: onin });
+      var ta = ctl.querySelector('textarea');
+      if (ta) ta.setAttribute('dir', dir);
+    } else {
+      var input = textInput(values[code] || '', { multiline: !!opts.multiline, rows: opts.rows || 3, label: label, oninput: function (v) { onin(v); if (count) paintCount(); } });
+      input.setAttribute('dir', dir);
+      var count = opts.counter && opts.max ? h('span', { class: 'text-xs tabular-nums text-secondary-500' }) : null;
+      var paintCount = function () {
+        var n = Array.from(input.value).length;
+        count.textContent = t('chars', { n: n, max: opts.max });
+        count.classList.toggle('text-error-600', n > opts.max);
+      };
+      if (count) paintCount();
+      ctl = count ? h('div', {}, input, h('div', { class: 'flex justify-end mt-1' }, count)) : input;
+    }
+    var panel = h('div', { role: 'tabpanel', 'data-lang': code, hidden: true }, ctl);
+    parts[code] = { tab: tab, dot: dot, panel: panel, ctl: ctl };
+    tabs.appendChild(tab);
+    panels.appendChild(panel);
+  });
+  function paintTab(code) {
+    var p = parts[code];
+    if (!p) return;
+    var empty = !String(values[code] || '').trim();
+    p.dot.hidden = !empty;
+    p.tab.classList.toggle('eco-tr-empty', empty);
+    p.tab.setAttribute('aria-label', langName(code) + (code === LANGS.def ? ' (' + t('tr.default') + ')' : '') + (empty ? ' (' + t('tr.empty') + ')' : ''));
+  }
+  function select(code) {
+    if (!parts[code]) return;
+    current = code;
+    Object.keys(parts).forEach(function (k) {
+      parts[k].panel.hidden = k !== code;
+      parts[k].tab.setAttribute('aria-selected', k === code ? 'true' : 'false');
+      parts[k].tab.classList.toggle('eco-tr-on', k === code);
+    });
+  }
+  Object.keys(parts).forEach(paintTab);
+  select(current);
+  var el = h('div', { class: 'eco-tr', 'data-translated': opts.name || '' }, tabs, panels);
+  el.select = select;
+  el.markLang = function (code) {
+    Object.keys(parts).forEach(function (k) { parts[k].tab.classList.toggle('eco-tr-bad', k === code); });
+    if (code && parts[code]) {
+      select(code);
+      var input = parts[code].panel.querySelector('input,textarea');
+      if (input) setTimeout(function () { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } }, 0);
+    }
+  };
+  el.value = function () { return Object.assign({}, values); };
+  el.current = function () { return current; };
+  return el;
 }
 
 function mdEscape(s) {
@@ -359,14 +496,14 @@ function markdownInput(value, opts) {
 var GOTO_SCREENS = ['home', 'play', 'shop', 'gift', 'payments', 'news', 'faq', 'inbox'];
 
 function actionsEditor(value, onchange) {
-  var rows = (value || []).map(function (r) { return { type: r.type || 'url', value: r.value || '', label: { fa: (r.label && r.label.fa) || '', en: (r.label && r.label.en) || '' } }; });
+  var rows = (value || []).map(function (r) { return { type: r.type || 'url', value: r.value || '', label: trValue(r.label) }; });
   var listEl = h('div', { class: 'flex flex-col gap-2' });
   var errors = [];
   var listId = 'eco-goto-' + Math.random().toString(36).slice(2, 8);
   var datalist = h('datalist', { id: listId }, GOTO_SCREENS.map(function (s) { return h('option', { value: s }); }));
-  function emit() { onchange(rows.map(function (r) { return { type: r.type, value: r.value, label: { fa: r.label.fa, en: r.label.en } }; })); }
+  function emit() { onchange(rows.map(function (r) { return { type: r.type, value: r.value, label: Object.assign({}, r.label) }; })); }
   var add = button({ variant: 'link', size: 'sm', icon: 'plus', label: t('act.add'), onclick: function () {
-    rows.push({ type: 'url', value: '', label: { fa: '', en: '' } });
+    rows.push({ type: 'url', value: '', label: {} });
     render();
     emit();
   } });
@@ -382,16 +519,14 @@ function actionsEditor(value, onchange) {
       var typeSel = selectInput(row.type, [{ value: 'url', label: t('act.url') }, { value: 'goto', label: t('act.goto') }], function (v) { row.type = v; render(); emit(); }, { placeholder: false, label: t('act.type') });
       var val = textInput(row.value, { ltr: true, mono: true, label: t('act.value'), placeholder: row.type === 'url' ? 'https://' : 'shop', oninput: function (v) { row.value = v.trim(); emit(); } });
       if (row.type === 'goto') val.setAttribute('list', listId);
-      var fa = textInput(row.label.fa, { label: t('act.label.fa'), oninput: function (v) { row.label.fa = v; emit(); } });
-      var en = textInput(row.label.en, { ltr: true, label: t('act.label.en'), oninput: function (v) { row.label.en = v; emit(); } });
+      var label = translatedInput(row.label, { label: t('act.label'), oninput: function (v) { row.label = v; emit(); } });
       var err = h('p', { class: 'text-xs text-error-600 dark:text-error-400 eco-items-err', hidden: true });
-      errors.push({ row: row, el: err });
+      errors.push({ row: row, el: err, label: label });
       listEl.appendChild(h('div', { class: 'border border-secondary-200 dark:border-secondary-700 rounded-md p-3', 'data-action-row': '' },
         h('div', { class: 'eco-actions-row' },
           cell('act.type', typeSel),
           cell('act.value', val),
-          cell('act.label.fa', fa),
-          cell('act.label.en', en),
+          h('div', { class: 'min-w-0 eco-actions-label' }, h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('act.label') }), label),
           h('div', { class: 'eco-items-remove' }, button({ variant: 'danger', size: 'iconLg', icon: 'trash', title: t('remove'), onclick: function () { rows.splice(idx, 1); render(); emit(); } }))),
         h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1.5', text: t(row.type === 'url' ? 'act.url.hint' : 'act.goto.hint') }),
         err));
@@ -399,20 +534,34 @@ function actionsEditor(value, onchange) {
   }
   render();
   var el = h('div', {}, listEl, datalist, h('div', { class: 'mt-2' }, add));
+  function show(e, msg, code) {
+    e.el.textContent = msg;
+    e.el.hidden = !msg;
+    e.el.parentElement.classList.toggle('eco-row-invalid', !!msg);
+    e.label.markLang(code || null);
+  }
   el.validate = function () {
     var bad = false;
     errors.forEach(function (e) {
       var r = e.row;
       var msg = '';
-      if (!r.label.fa.trim()) msg = t('act.label.fa') + ': ' + t('err.required');
+      var hit = trCheck(r.label, { required: true, max: 64 });
+      if (hit) msg = t('act.label') + ': ' + t('code.' + hit.code, { lang: langName(hit.lang) });
       else if (!r.value) msg = t('act.value') + ': ' + t('err.required');
       else if (r.type === 'url' && !/^https?:\/\/\S+$/i.test(r.value)) msg = t('code.INVALID_ACTION');
-      e.el.textContent = msg;
-      e.el.hidden = !msg;
-      e.el.parentElement.classList.toggle('eco-row-invalid', !!msg);
+      show(e, msg, hit ? hit.lang : null);
       if (msg) bad = true;
     });
     return bad ? t('err.form') : null;
+  };
+  el.showServerError = function (err) {
+    if (!err || !/label$/.test(String(err.field || ''))) return false;
+    var target = errors.filter(function (e) { return trCheck(e.row.label, { required: true, max: 64 }); })[0] || errors[0];
+    if (!target) return false;
+    var code = trServerLang(err, target.row.label, { max: 64 });
+    show(target, t('act.label') + ': ' + errorText(err, code), code);
+    target.el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    return true;
   };
   return el;
 }
@@ -558,10 +707,17 @@ function buildForm(fields, values, ctx) {
           change(set.slice());
         }));
       });
+    } else if (t2 === 'i18n') {
+      control = translatedInput(cur, { name: f.name, label: label, multiline: f.multiline, markdown: f.markdown, rows: f.rows, max: f.max, oninput: function (v) {
+        setPath(values, f.name, v);
+        if (entry.wrap.setError) entry.wrap.setError('');
+        control.markLang(null);
+        if (ctx && ctx.onchange) ctx.onchange(values);
+      } });
     } else if (t2 === 'ref') {
-      control = refPicker({ resource: f.resource, valueKey: f.valueKey, filter: f.filter, value: cur, required: f.required, label: label, onchange: function (v) { change(v); } });
+      control = refPicker({ resource: f.resource, api: f.api, valueKey: f.valueKey, filter: f.filter, value: cur, required: f.required, label: label, onchange: function (v) { change(v); } });
     } else if (t2 === 'refMulti') {
-      control = refMulti({ resource: f.resource, filter: f.filter, value: cur, label: label, onchange: function (v) { change(v); } });
+      control = refMulti({ resource: f.resource, api: f.api, filter: f.filter, value: cur, label: label, onchange: function (v) { change(v); } });
     } else if (t2 === 'image') {
       control = imageInput(cur, function (v) { change(v); });
     } else if (t2 === 'datetime') {
@@ -620,10 +776,14 @@ function buildForm(fields, values, ctx) {
         else setPath(values, f.name, n);
       } else if (t2 === 'items' || t2 === 'actions') {
         msg = e.control.validate();
+      } else if (t2 === 'i18n') {
+        var hit = trCheck(v, f);
+        e.control.markLang(hit ? hit.lang : null);
+        if (hit) msg = t('code.' + hit.code, { lang: langName(hit.lang) });
       } else if (f.required && (v === null || v === undefined || v === '' || (Array.isArray(v) && !v.length))) {
         msg = t('err.required');
       } else if (t2 === 'key' && v && !(f.keyRe || KEY_RE).test(v)) {
-        msg = t(f.keyRe ? 'err.key' : 'err.key.general');
+        msg = t(f.keyErr || (f.keyRe ? 'err.key' : 'err.key.general'));
       } else if (t2 === 'code' && v && !CODE_RE.test(v)) {
         msg = t('err.code');
       }
@@ -644,6 +804,14 @@ function buildForm(fields, values, ctx) {
       if (name === e.def.name || name.indexOf(e.def.name + '.') === 0 || e.def.name.indexOf(name + '.') === 0) { if (!best) best = e; }
     });
     if (!best) return false;
+    if (best.def.type === 'actions' && best.control.showServerError) return best.control.showServerError(err);
+    if (best.def.type === 'i18n') {
+      var code = trServerLang(err, getPath(values, best.def.name), best.def);
+      best.control.markLang(code);
+      best.wrap.setError(errorText(err, code));
+      best.wrap.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      return true;
+    }
     best.wrap.setError(errorText(err));
     best.wrap.scrollIntoView({ block: 'center', behavior: 'smooth' });
     return true;
@@ -657,14 +825,9 @@ function buildForm(fields, values, ctx) {
       var visible = !f.when || f.when(values);
       var v = getPath(values, f.name);
       if (!visible) v = f.empty !== undefined ? f.empty : null;
-      if (f.type === 'actions' && Array.isArray(v)) v = v.map(function (r) { var label = { fa: r.label.fa.trim() }; if (r.label.en.trim()) label.en = r.label.en.trim(); return { type: r.type, value: r.value, label: label }; });
+      if (f.type === 'actions' && Array.isArray(v)) v = v.map(function (r) { return { type: r.type, value: r.value, label: trClean(r.label) }; });
+      if (f.type === 'i18n') v = trClean(v);
       if (f.type === 'items' && Array.isArray(v)) v = v.map(function (r) { return { type: r.type, key: r.key, action: r.action, value: r.value }; });
-      if (/\.(fa|en)$/.test(f.name)) {
-        var parentPath = f.name.slice(0, -3);
-        if (typeof getPath(out, parentPath) !== 'object' || getPath(out, parentPath) === null) setPath(out, parentPath, {});
-        if (v === null || v === undefined || String(v).trim() === '') return;
-        v = String(v).trim();
-      }
       setPath(out, f.name, v === undefined ? null : v);
     });
     return out;

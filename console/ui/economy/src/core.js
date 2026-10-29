@@ -1,5 +1,6 @@
 var API_BASE = '/v2/console/economy';
 var PUB_BASE = '/v2/console/publication';
+var BASE_BASE = '/v2/console/base';
 var CONSOLE_BASE = '/v2/console';
 var PERSIAN = '۰۱۲۳۴۵۶۷۸۹';
 var SVG_NS = 'http://www.w3.org/2000/svg';
@@ -60,11 +61,71 @@ function has(key) {
   return MESSAGES.en[key] !== undefined;
 }
 
+var LANGS = { items: [], active: [], codes: [], def: 'fa', loaded: false, promise: null, seq: 0, at: 0 };
+var FALLBACK_LANGS = [
+  { code: 'fa', nativeName: 'فارسی', name: { fa: 'فارسی', en: 'Persian' }, direction: 'rtl', isActive: true, isDefault: true, sort: 0 },
+  { code: 'en', nativeName: 'English', name: { fa: 'انگلیسی', en: 'English' }, direction: 'ltr', isActive: true, isDefault: false, sort: 1 }
+];
+
+function setLanguages(items) {
+  LANGS.items = items;
+  LANGS.active = items.filter(function (l) { return l.isActive; });
+  LANGS.codes = items.map(function (l) { return l.code; });
+  var d = items.filter(function (l) { return l.isDefault; })[0] || LANGS.active[0] || items[0];
+  LANGS.def = d ? d.code : 'fa';
+  if (d) LANGS.active.sort(function (a, b) { return (b.code === d.code) - (a.code === d.code); });
+}
+setLanguages(FALLBACK_LANGS);
+
+function loadLanguages(force) {
+  if (LANGS.promise && !force) return LANGS.promise;
+  var my = ++LANGS.seq;
+  LANGS.promise = baseApi('GET', '/languages?limit=100').then(function (res) {
+    if (my !== LANGS.seq) return LANGS;
+    var items = (res && res.items) || [];
+    if (items.length) setLanguages(items);
+    LANGS.loaded = true;
+    LANGS.at = Date.now();
+    return LANGS;
+  }, function () {
+    if (my === LANGS.seq) LANGS.promise = null;
+    return LANGS;
+  });
+  return LANGS.promise;
+}
+
+function freshLanguages() {
+  return loadLanguages(!LANGS.loaded || Date.now() - LANGS.at > 30000);
+}
+
+function langInfo(code) {
+  return LANGS.items.filter(function (l) { return l.code === code; })[0] || null;
+}
+
+function langDir(code) {
+  var l = langInfo(code);
+  if (l) return l.direction === 'rtl' ? 'rtl' : 'ltr';
+  return /^(fa|ar|he|ur|ps|ckb|ku|sd|dv|yi)(-|$)/.test(code || '') ? 'rtl' : 'ltr';
+}
+
+function langName(code) {
+  var l = langInfo(code);
+  if (!l) return code;
+  var n = l.name || {};
+  return n[lang()] || l.nativeName || n[LANGS.def] || code;
+}
+
 function i18nText(v) {
   if (v == null) return '';
   if (typeof v === 'string') return v;
+  if (typeof v !== 'object') return String(v);
   var l = lang();
-  return v[l] || v.fa || v.en || '';
+  if (v[l]) return v[l];
+  if (v[LANGS.def]) return v[LANGS.def];
+  for (var i = 0; i < LANGS.active.length; i++) if (v[LANGS.active[i].code]) return v[LANGS.active[i].code];
+  var keys = Object.keys(v).sort();
+  for (var j = 0; j < keys.length; j++) if (typeof v[keys[j]] === 'string' && v[keys[j]]) return v[keys[j]];
+  return '';
 }
 
 function getPath(obj, path) {
@@ -177,6 +238,7 @@ function request(base, method, path, body, isForm) {
         var code = data && (typeof data.error === 'string' ? data.error : (data.code && typeof data.code === 'string' ? data.code : null));
         var msg = data && (data.message || (data.error && data.error.message)) || '';
         if (!code && /^[A-Z][A-Z0-9_]+$/.test(msg)) code = msg;
+        if (code === 'INVALID_LANGUAGE') loadLanguages(true);
         throw new ApiError(res.status, code, msg, data && data.field);
       }
       return data;
@@ -194,13 +256,17 @@ function pubApi(method, path, body, isForm) {
   return request(PUB_BASE, method, path, body, isForm);
 }
 
+function baseApi(method, path, body, isForm) {
+  return request(BASE_BASE, method, path, body, isForm);
+}
+
 function consoleApi(method, path) {
   return request(CONSOLE_BASE, method, path);
 }
 
-function errorText(err) {
+function errorText(err, langCode) {
   if (!err) return t('err.generic');
-  if (err.code && has('code.' + err.code)) return t('code.' + err.code);
+  if (err.code && has('code.' + err.code)) return t('code.' + err.code, { lang: langName(langCode || LANGS.def) });
   if (err.status === 0) return t('err.network');
   if (err.status === 403) return t('err.forbidden');
   if (err.status === 404 && !err.code) return t('err.notfound');
@@ -219,6 +285,7 @@ var ICONS = {
   gifts: '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/><path d="M13 5v2M13 11v2M13 17v2"/>',
   payments: '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z"/><path d="M16 8H8M16 12H8M13 16H8"/>',
   categories: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/>',
+  languages: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   tags: '<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r="1"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',

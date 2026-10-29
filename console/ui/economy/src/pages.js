@@ -1,21 +1,27 @@
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments', 'categories', 'tags'],
+  base: ['categories', 'tags'],
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments'],
   publication: ['faqs', 'news', 'comments', 'notifications']
 };
-var SETTINGS_TABS = ['payment-methods', 'sms', 'email'];
+var SETTINGS_TABS = ['payment-methods', 'sms', 'email', 'languages'];
 var LEGACY_HASHES = { economy: { 'payment-methods': 'payment-methods' }, publication: { providers: 'sms' } };
-var SECTION_ORDER = ['economy', 'publication'];
-var PAGES = SECTIONS.economy.concat(SECTIONS.publication);
+var SECTION_ORDER = ['base', 'economy', 'publication'];
+var MOVED_PAGES = { 'economy/categories': 'base/categories', 'economy/tags': 'base/tags' };
+var PAGES = SECTIONS.base.concat(SECTIONS.economy, SECTIONS.publication);
 var LIMIT = 20;
 var lastQuery = { comments: { status: 'pending' } };
 
 function sectionOf(page) {
   if (SETTINGS_TABS.indexOf(page) !== -1) return 'settings';
+  if (SECTIONS.base.indexOf(page) !== -1) return 'base';
   return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
 }
 
 function apiFor(page) {
-  return sectionOf(page) === 'publication' ? pubApi : api;
+  var def = RESOURCES[page];
+  if (def && def.api === 'base') return baseApi;
+  var sec = sectionOf(page);
+  return sec === 'publication' ? pubApi : sec === 'base' ? baseApi : api;
 }
 
 function hashFor(page, id, query) {
@@ -39,7 +45,7 @@ function listPage(container, name, query, ctx) {
   lastQuery[name] = currentQuery();
 
   var create = def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new', currentQuery()); } }) : def.create ? def.create() : null;
-  var frame = pageFrame(t('nav.' + name), t('desc.' + name), create);
+  var frame = def.settings ? tabFrame(t('desc.' + name), create) : pageFrame(t('nav.' + name), t('desc.' + name), create);
   var pagerTop = h('div', { class: 'relative flex items-center justify-end' });
   var pagerBottom = h('div', { class: 'flex gap-2 py-4 items-center justify-end' });
   var tableBox = h('div', {});
@@ -52,7 +58,7 @@ function listPage(container, name, query, ctx) {
   var filters = (def.filters || []).map(function (f) {
     var opts2 = typeof f.options === 'function' ? f.options() : f.options;
     if (f.type === 'ref') {
-      var picker = refPicker({ resource: f.resource, api: f.api === 'publication' ? pubApi : api, filter: f.filter, value: state.filters[f.name] || '', label: t(f.label), placeholder: t(f.label) + ': ' + t('all'), onchange: function (v) {
+      var picker = refPicker({ resource: f.resource, api: typeof f.api === 'function' ? f.api : f.api === 'publication' ? pubApi : api, filter: f.filter, value: state.filters[f.name] || '', label: t(f.label), placeholder: t(f.label) + ': ' + t('all'), onchange: function (v) {
         state.filters[f.name] = v || '';
         state.page = 1;
         sync();
@@ -186,7 +192,7 @@ function openEditor(name, id, query, onSaved) {
 
   var call = apiFor(name);
   var item = isNew ? Promise.resolve(def.defaults(query)) : call('GET', '/' + name + '/' + encodeURIComponent(id));
-  item.then(function (data) {
+  Promise.all([item, freshLanguages(), loadKeyTypes()]).then(function (all) { return all[0]; }).then(function (data) {
     if (!panelState || panelState.el !== el) return;
     var values = clone(data) || {};
     var form = buildForm(def.fields, values);
@@ -206,6 +212,7 @@ function openEditor(name, id, query, onSaved) {
       var doDelete = function () {
         call('DELETE', '/' + name + '/' + encodeURIComponent(id)).then(function () {
           toast('success', t('deleted'));
+          if (def.afterSave) def.afterSave();
           back();
           if (onSaved) onSaved();
         }, function (err) {
@@ -228,6 +235,7 @@ function openEditor(name, id, query, onSaved) {
       setBusy(saveBtn, true, t('saving'));
       call(isNew ? 'POST' : 'PUT', '/' + name + (isNew ? '' : '/' + encodeURIComponent(id)), payload).then(function () {
         toast('success', t('saved'));
+        if (def.afterSave) def.afterSave();
         back();
         if (onSaved) onSaved();
       }, function (err) {
@@ -478,6 +486,76 @@ function paymentMethodsPage(container) {
 }
 
 var OVERVIEW_CATALOG = ['currencies', 'metas', 'prizes', 'products', 'gifts', 'categories', 'tags'];
+
+var COVERAGE_PAGES = { languages: 'languages', categories: 'categories', tags: 'tags', currencies: 'currencies', metas: 'metas', prizes: 'prizes', products: 'products', gifts: 'gifts', faqs: 'faqs', news: 'news' };
+
+function coverageLabel(resource) {
+  return resource === 'languages' ? t('tab.languages') : has('nav.' + resource) ? t('nav.' + resource) : resource;
+}
+
+function coveragePanel() {
+  var body = h('div', {});
+  var box = section('cov.title', h('div', {}, h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 mb-4', text: t('cov.desc') }), body),
+    button({ variant: 'muted', size: 'icon', icon: 'refresh', iconClass: 'h-3 w-3', title: t('refresh'), onclick: function () { load(); } }));
+  box.classList.add('mt-6');
+  box.setAttribute('data-coverage', '');
+  var seq = 0;
+  function cols(langs) {
+    return [{ label: t('cov.resource'), skeleton: '55%' }, { label: t('cov.total'), width: 90 }].concat(langs.map(function (code) { return { label: langName(code), width: 120 }; }));
+  }
+  function skeleton() {
+    var langs = LANGS.active.map(function (l) { return l.code; });
+    var chips = h('div', { class: 'flex flex-wrap gap-2 mb-4' }, langs.map(function () { return bar('8rem', 'h-6'); }));
+    clear(body).appendChild(h('div', {}, chips, table(cols(langs), skeletonRows(cols(langs), 6))));
+  }
+  function render(c) {
+    var langs = (c && c.languages) || [];
+    var missing = (c && c.missing) || {};
+    var chips = h('div', { class: 'flex flex-wrap gap-2 mb-4' }, langs.map(function (code) {
+      var n = missing[code] || 0;
+      return h('span', { class: 'eco-tag eco-tag--' + (n ? 'warning' : 'success') + ' inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded-md', 'data-cov-lang': code, 'data-cov-missing': String(n) },
+        h('span', { class: 'font-medium', text: langName(code) + (code === c.default ? ' (' + t('tr.default') + ')' : '') }),
+        h('span', { class: 'tabular-nums', text: n ? t('cov.missingN', { n: n }) : t('cov.complete') }));
+    }));
+    var rows = ((c && c.items) || []).map(function (it) {
+      var page = COVERAGE_PAGES[it.resource];
+      var href = page ? hashFor(page) : null;
+      var name = h('div', { class: 'min-w-0' },
+        href ? h('a', { href: href, class: 'eco-link font-medium', text: coverageLabel(it.resource) }) : h('span', { class: 'font-medium', text: coverageLabel(it.resource) }),
+        h('div', { class: 'text-xs text-secondary-500', text: t('cov.module.' + it.module) }));
+      var cells = [name, h('span', { class: 'tabular-nums', text: fmtNum(it.total || 0) })];
+      langs.forEach(function (code) {
+        var n = (it.missing || {})[code] || 0;
+        cells.push(n
+          ? h('a', { href: href || '#', class: 'eco-tag eco-tag--warning inline-flex leading-tight px-2 py-0.5 text-xs rounded-md whitespace-nowrap tabular-nums', 'data-cov': it.resource + ':' + code, text: t('cov.missingN', { n: n }), title: t('cov.open') })
+          : h('span', { class: 'eco-text-success inline-flex items-center gap-1 text-xs', 'data-cov': it.resource + ':' + code }, icon('check', 'h-3.5 w-3.5'), h('span', { text: t('cov.complete') })));
+      });
+      return { item: it, cells: cells };
+    });
+    clear(body).appendChild(h('div', {}, chips, table(cols(langs), rows)));
+  }
+  function load() {
+    var my = ++seq;
+    skeleton();
+    baseApi('GET', '/languages/coverage').then(function (c) { if (my === seq) render(c); }, function (err) { if (my === seq) clear(body).appendChild(errorBlock(err, load)); });
+  }
+  load();
+  box.reload = load;
+  return box;
+}
+
+function languagesPage(container, query, ctx) {
+  var list = listPage(container, 'languages', query, ctx);
+  var cov = coveragePanel();
+  container.appendChild(cov);
+  var hook = function () {
+    if (!cov.isConnected) { languageHooks.splice(languageHooks.indexOf(hook), 1); return; }
+    cov.reload();
+    list.reload();
+  };
+  languageHooks.push(hook);
+  return list;
+}
 
 function statCard(label, value, sub, href, opts) {
   opts = opts || {};

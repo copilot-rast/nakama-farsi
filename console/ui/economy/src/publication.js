@@ -155,11 +155,14 @@ function statTile(label, value, color) {
 function i18nBlock(v, markdown) {
   v = v || {};
   var out = h('div', { class: 'flex flex-col gap-3' });
-  ['fa', 'en'].forEach(function (l) {
+  var order = LANGS.items.map(function (l) { return l.code; });
+  Object.keys(v).sort().forEach(function (k) { if (order.indexOf(k) === -1) order.push(k); });
+  order.forEach(function (l) {
     if (!v[l]) return;
-    out.appendChild(h('div', {},
-      h('div', { class: 'text-xs text-secondary-500 mb-1', text: t('lang.' + l) }),
-      markdown ? mdPreview(v[l], l === 'en') : h('div', { class: 'text-sm eco-pre-line break-words', dir: l === 'en' ? 'ltr' : 'rtl', text: v[l] })));
+    var ltr = langDir(l) === 'ltr';
+    out.appendChild(h('div', { 'data-lang': l },
+      h('div', { class: 'text-xs text-secondary-500 mb-1', text: langName(l) + (l === LANGS.def ? ' (' + t('tr.default') + ')' : '') }),
+      markdown ? mdPreview(v[l], ltr) : h('div', { class: 'text-sm eco-pre-line break-words', dir: ltr ? 'ltr' : 'rtl', text: v[l] })));
   });
   return out;
 }
@@ -224,7 +227,7 @@ function notificationDetail(container, id) {
     clear(grid);
     clear(titleBox).appendChild(h('span', { text: t('nt.title') + ' ' }));
     titleBox.appendChild(h('span', { class: 'font-mono text-base text-secondary-500', dir: 'ltr', text: String(n.id).slice(0, 8) }));
-    var action = n.action && n.action.type ? h('div', { class: 'flex items-center gap-1.5' }, tag(t('act.' + n.action.type), 'secondary'), mono(n.action.value)) : null;
+    var action = n.action && n.action.type ? h('div', { class: 'flex flex-wrap items-center gap-1.5' }, tag(t('act.' + n.action.type), 'secondary'), mono(n.action.value), n.action.label && i18nText(n.action.label) ? h('span', { class: 'text-sm', text: i18nText(n.action.label) }) : null) : null;
     grid.appendChild(section('nt.info', dl([
       ['col.status', statusBox],
       ['col.channel', h('div', { class: 'flex flex-wrap items-center gap-1.5' }, tag(t('ch.' + n.channel), n.channel === 'in_app' ? 'primary' : 'secondary'), n.providerKind ? h('span', { class: 'text-sm', text: kindLabel(n.providerKind) }) : null)],
@@ -268,7 +271,7 @@ function notificationDetail(container, id) {
         var sandbox = it.error === 'sandbox';
         return { item: it, cells: [
           userCell(it.userId, it.username, it.displayName),
-          h('div', { class: 'flex flex-wrap gap-1' }, tag(t('rst.' + it.status), RECIPIENT_COLOR[it.status]), sandbox ? tag(t('pv.sandbox.short'), 'warning') : null),
+          h('div', { class: 'flex flex-wrap gap-1' }, tag(t('rst.' + it.status), RECIPIENT_COLOR[it.status]), sandbox ? tag(t('pv.sandbox.short'), 'warning') : null, it.lang ? h('span', { 'data-recipient-lang': it.lang }, tag(langName(it.lang), 'secondary')) : null),
           it.address ? mono(it.address) : h('span', {}),
           it.error && !sandbox && it.error !== 'no address' ? h('span', { class: 'text-xs text-error-600 dark:text-error-400 break-words', dir: 'auto', text: it.error }) : h('span', {}),
           h('span', { class: 'tabular-nums', text: fmtNum(it.attempts || 0) }),
@@ -350,9 +353,9 @@ function composePage(container, query) {
   var v = {
     channel: CHANNELS.indexOf(query.channel) !== -1 ? query.channel : 'in_app',
     providerId: '',
-    title: { fa: '', en: '' },
-    body: { fa: '', en: '' },
-    action: { type: '', value: '' },
+    title: {},
+    body: {},
+    action: { type: '', value: '', label: {} },
     target: { mode: 'users', userIds: query.userId ? [query.userId] : [], groupId: '' }
   };
   var providers = [];
@@ -389,11 +392,11 @@ function composePage(container, query) {
     }, t('col.channel'), 'md');
     main.appendChild(section('nt.s.channel', h('div', {}, h('div', { class: 'mb-4' }, channelSeg), providerBox)));
 
-    var titleRow = h('div', { class: 'eco-form-row' });
-    fields.titleFa = field(t('nt.f.title.fa'), textInput('', { label: t('nt.f.title.fa'), oninput: function (x) { v.title.fa = x; fields.titleFa.setError(''); } }));
-    fields.titleEn = field(t('nt.f.title.en'), textInput('', { ltr: true, label: t('nt.f.title.en'), oninput: function (x) { v.title.en = x; } }), null, { optional: true });
-    titleRow.appendChild(fields.titleFa);
-    titleRow.appendChild(fields.titleEn);
+    var titleRow = h('div', {});
+    var titleCtl = translatedInput(v.title, { label: t('nt.f.title'), oninput: function (x) { v.title = x; fields.title.setError(''); titleCtl.markLang(null); } });
+    fields.title = field(t('nt.f.title'), titleCtl);
+    fields.title.ctl = titleCtl;
+    titleRow.appendChild(fields.title);
     var bodyBox = h('div', {});
     main.appendChild(section('nt.s.content', h('div', {}, titleRow, bodyBox)));
 
@@ -407,7 +410,13 @@ function composePage(container, query) {
     var actValue = textInput('', { ltr: true, mono: true, label: t('act.value'), oninput: function (x) { v.action.value = x.trim(); fields.action.setError(''); } });
     actValue.hidden = true;
     fields.action = field(null, h('div', { class: 'eco-form-row' }, actType, actValue, h('datalist', { id: 'eco-nt-goto' }, GOTO_SCREENS.map(function (s) { return h('option', { value: s }); }))), t('nt.action.hint'));
-    var actionSection = section('nt.s.action', fields.action);
+    var actLabelCtl = translatedInput(v.action.label, { label: t('act.label'), oninput: function (x) { v.action.label = x; fields.actionLabel.setError(''); actLabelCtl.markLang(null); } });
+    fields.actionLabel = field(t('act.label'), actLabelCtl, t('nt.action.label.hint'), { optional: true });
+    fields.actionLabel.ctl = actLabelCtl;
+    fields.actionLabel.hidden = true;
+    var actType0 = actType;
+    actType0.addEventListener('change', function () { fields.actionLabel.hidden = !actType0.value; });
+    var actionSection = section('nt.s.action', h('div', {}, fields.action, fields.actionLabel));
     main.appendChild(actionSection);
 
     var targetBox = h('div', {});
@@ -430,23 +439,10 @@ function composePage(container, query) {
       actionSection.hidden = v.channel === 'sms';
       clear(bodyBox);
       var max = v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : 2000;
-      if (v.channel === 'sms') {
-        var counter = function (lang) {
-          var c = h('span', { class: 'text-xs tabular-nums text-secondary-500' });
-          c.paint = function () { var n = Array.from(v.body[lang]).length; c.textContent = t('chars', { n: n, max: SMS_MAX }); c.classList.toggle('text-error-600', n > SMS_MAX); };
-          c.paint();
-          return c;
-        };
-        var cFa = counter('fa');
-        var cEn = counter('en');
-        fields.bodyFa = field(t('nt.f.sms.fa'), h('div', {}, textInput(v.body.fa, { multiline: true, rows: 4, label: t('nt.f.sms.fa'), oninput: function (x) { v.body.fa = x; cFa.paint(); fields.bodyFa.setError(''); } }), h('div', { class: 'flex justify-end mt-1' }, cFa)), t('nt.sms.hint'));
-        fields.bodyEn = field(t('nt.f.sms.en'), h('div', {}, textInput(v.body.en, { multiline: true, rows: 4, ltr: true, label: t('nt.f.sms.en'), oninput: function (x) { v.body.en = x; cEn.paint(); } }), h('div', { class: 'flex justify-end mt-1' }, cEn)), null, { optional: true });
-      } else {
-        fields.bodyFa = field(t('nt.f.body.fa'), markdownInput(v.body.fa, { max: max, label: t('nt.f.body.fa'), oninput: function (x) { v.body.fa = x; fields.bodyFa.setError(''); } }));
-        fields.bodyEn = field(t('nt.f.body.en'), markdownInput(v.body.en, { max: max, ltr: true, label: t('nt.f.body.en'), oninput: function (x) { v.body.en = x; } }), null, { optional: true });
-      }
-      bodyBox.appendChild(fields.bodyFa);
-      bodyBox.appendChild(fields.bodyEn);
+      var bodyCtl = translatedInput(v.body, { label: t(v.channel === 'sms' ? 'nt.f.sms' : 'nt.f.body'), markdown: v.channel !== 'sms', multiline: true, rows: 4, max: max, counter: v.channel === 'sms', oninput: function (x) { v.body = x; fields.body.setError(''); bodyCtl.markLang(null); } });
+      fields.body = field(t(v.channel === 'sms' ? 'nt.f.sms' : 'nt.f.body'), bodyCtl, v.channel === 'sms' ? t('nt.sms.hint') : null);
+      fields.body.ctl = bodyCtl;
+      bodyBox.appendChild(fields.body);
       if (v.channel === 'in_app') {
         providerBox.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('nt.inapp.hint') }));
         return;
@@ -539,10 +535,16 @@ function composePage(container, query) {
     function validate() {
       var ok = true;
       var setErr = function (f, msg) { if (f) f.setError(msg); if (msg) ok = false; };
-      [fields.titleFa, fields.bodyFa, fields.action, fields.target].forEach(function (f) { if (f) f.setError(''); });
-      if (v.channel !== 'sms' && !v.title.fa.trim()) setErr(fields.titleFa, t('err.required'));
-      if (!v.body.fa.trim()) setErr(fields.bodyFa, t('err.required'));
-      else if (v.channel === 'sms' && (Array.from(v.body.fa).length > SMS_MAX || Array.from(v.body.en).length > SMS_MAX)) setErr(fields.bodyFa, t('nt.sms.tooLong'));
+      [fields.title, fields.body, fields.action, fields.actionLabel, fields.target].forEach(function (f) { if (f) f.setError(''); });
+      var max = v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : 2000;
+      var trErr = function (f, val, o) {
+        var hit = trCheck(val, o);
+        f.ctl.markLang(hit ? hit.lang : null);
+        if (hit) setErr(f, hit.code === 'TEXT_TOO_LONG' && v.channel === 'sms' ? t('nt.sms.tooLong') : t('code.' + hit.code, { lang: langName(hit.lang) }));
+      };
+      if (v.channel !== 'sms') trErr(fields.title, v.title, { required: true, max: 200 });
+      trErr(fields.body, v.body, { required: true, max: max });
+      if (v.channel !== 'sms' && v.action.type) trErr(fields.actionLabel, v.action.label, { max: 64 });
       if (v.channel !== 'sms' && v.action.type) {
         if (!v.action.value) setErr(fields.action, t('act.value') + ': ' + t('err.required'));
         else if (v.action.type === 'url' && !/^https?:\/\/\S+$/i.test(v.action.value)) setErr(fields.action, t('code.INVALID_ACTION'));
@@ -554,12 +556,14 @@ function composePage(container, query) {
     }
 
     function payload() {
-      var p = { channel: v.channel, body: { fa: v.body.fa.trim() }, target: { mode: v.target.mode } };
-      if (v.body.en.trim()) p.body.en = v.body.en.trim();
+      var p = { channel: v.channel, body: trClean(v.body), target: { mode: v.target.mode } };
       if (v.channel !== 'sms') {
-        p.title = { fa: v.title.fa.trim() };
-        if (v.title.en.trim()) p.title.en = v.title.en.trim();
-        if (v.action.type) p.action = { type: v.action.type, value: v.action.value };
+        p.title = trClean(v.title);
+        if (v.action.type) {
+          p.action = { type: v.action.type, value: v.action.value };
+          var lbl = trClean(v.action.label);
+          if (Object.keys(lbl).length) p.action.label = lbl;
+        }
       }
       if (v.target.mode === 'users') p.target.userIds = v.target.userIds.slice();
       if (v.target.mode === 'group') p.target.groupId = v.target.groupId;
@@ -595,9 +599,12 @@ function composePage(container, query) {
           go('notifications', res.id);
         }, function (err) {
           setBusy(sendBtn, false);
-          var map = { title: fields.titleFa, body: fields.bodyFa, action: fields.action, 'target.userIds': fields.target, 'target.groupId': fields.target, providerId: fields.provider };
+          var map = { title: fields.title, body: fields.body, action: fields.action, 'action.label': fields.actionLabel, 'target.userIds': fields.target, 'target.groupId': fields.target, providerId: fields.provider };
           var f = err && err.field && map[err.field];
-          if (f) { f.setError(errorText(err)); f.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+          var vals = { title: v.title, body: v.body, 'action.label': v.action.label };
+          var code = f && f.ctl ? trServerLang(err, vals[err.field], { max: err.field === 'title' ? 200 : err.field === 'action.label' ? 64 : v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : 2000 }) : null;
+          if (f && f.ctl) f.ctl.markLang(code);
+          if (f) { f.hidden = false; f.setError(errorText(err, code)); f.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
           else errTop.appendChild(notice('error', errorText(err)));
         });
       });
@@ -611,7 +618,8 @@ function composePage(container, query) {
 
   function load() {
     skeleton();
-    pubApi('GET', '/providers').then(function (res) {
+    Promise.all([pubApi('GET', '/providers'), freshLanguages()]).then(function (all) {
+      var res = all[0];
       if (!container.isConnected) return;
       providers = (res && res.items) || [];
       build();
@@ -626,7 +634,7 @@ function providerField(f, cfg, onchange) {
   if (f.type === 'select') {
     ctl = selectInput(cfg[f.name] || f.default || '', (f.options || []).map(function (o) { return { value: o, label: has('pv.opt.' + o) ? t('pv.opt.' + o) : o }; }), function (x) { cfg[f.name] = x; onchange(); }, { placeholder: false, label: label });
   } else {
-    ctl = textInput(cfg[f.name] == null ? '' : (f.type === 'number' ? localDigits(String(cfg[f.name])) : cfg[f.name]), { ltr: true, mono: true, label: label, inputmode: f.type === 'number' ? 'numeric' : f.type === 'email' ? 'email' : null, placeholder: f.default ? localDigits(f.default) : null, oninput: function (x) { cfg[f.name] = f.type === 'number' ? toLatinDigits(x).trim() : x; onchange(); } });
+    ctl = textInput(cfg[f.name] == null ? '' : toLatinDigits(String(cfg[f.name])), { ltr: true, mono: true, label: label, inputmode: f.type === 'number' ? 'numeric' : f.type === 'email' ? 'email' : null, placeholder: f.default ? toLatinDigits(f.default) : null, oninput: function (x) { cfg[f.name] = f.type === 'number' ? toLatinDigits(x).trim() : x; onchange(); } });
     ctl.classList.add('text-sm');
     if (f.type === 'secret') ctl.classList.add('eco-secret');
   }

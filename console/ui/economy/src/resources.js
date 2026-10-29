@@ -1,7 +1,43 @@
 var METHODS = ['zarinpal', 'zibal', 'bazaar', 'myket', 'in_app'];
 var GATEWAYS = ['zarinpal', 'zibal'];
 var STORES = ['bazaar', 'myket'];
-var CATEGORY_KINDS = ['product', 'prize', 'gift', 'currency', 'faq', 'news'];
+var CATEGORY_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news'];
+var TAG_KEY_TYPES = ['product', 'prize', 'news', 'faq', 'general'];
+var LANG_CODE_RE = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/;
+var keyTypeCache = {};
+var keyTypePromise = null;
+
+function loadKeyTypes() {
+  if (keyTypePromise) return keyTypePromise;
+  keyTypePromise = Promise.all(['categories', 'tags'].map(function (r) {
+    return baseApi('GET', '/' + r + '/key-types').then(function (res) { if (res && res.items && res.items.length) keyTypeCache[r] = res.items; }, function () { return null; });
+  })).then(function () { return keyTypeCache; }, function () { keyTypePromise = null; return keyTypeCache; });
+  return keyTypePromise;
+}
+
+function keyTypeLabel(resource, key) {
+  var hit = (keyTypeCache[resource] || []).filter(function (k) { return k.key === key; })[0];
+  return hit && hit.name && i18nText(hit.name) ? i18nText(hit.name) : has('kind.' + key) ? t('kind.' + key) : key;
+}
+
+function keyTypeOptions(resource) {
+  return function () {
+    var list = keyTypeCache[resource] ? keyTypeCache[resource].map(function (k) { return k.key; }) : resource === 'tags' ? TAG_KEY_TYPES : CATEGORY_KEY_TYPES;
+    return list.map(function (k) { return { value: k, label: keyTypeLabel(resource, k) }; });
+  };
+}
+
+function categoryField(keyType) {
+  return { name: 'categoryId', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: keyType }, label: 'f.category', optional: true };
+}
+
+function tagsField(keyType) {
+  return { name: 'tagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: [{ keyType: keyType }, { keyType: 'general' }], label: 'f.tags', optional: true, empty: [] };
+}
+
+function tr(name, opts) {
+  return Object.assign({ name: name, type: 'i18n', label: 'f.' + name }, opts || {});
+}
 var STATUS_COLOR = { pending: 'warning', success: 'success', failed: 'error', expired: 'secondary' };
 
 function opts(prefix, keys) {
@@ -51,18 +87,45 @@ function itemSummary(items) {
   });
 }
 
-var nameRow = function (base, required) {
-  return { type: 'row', fields: [
-    { name: base + '.fa', label: 'f.' + base + '.fa', required: required !== false },
-    { name: base + '.en', label: 'f.' + base + '.en', ltr: true, optional: true }
-  ] };
-};
-var nameTextareas = function (base) {
-  return { type: 'row', fields: [
-    { name: base + '.fa', type: 'textarea', label: 'f.' + base + '.fa', optional: true },
-    { name: base + '.en', type: 'textarea', label: 'f.' + base + '.en', ltr: true, optional: true }
-  ] };
-};
+function languageCell(it) {
+  var pic = h('div', { class: 'h-8 w-8 shrink-0 rounded-md bg-secondary-100 dark:bg-secondary-700 overflow-hidden flex items-center justify-center text-secondary-400' });
+  pic.appendChild(it.iconUrl ? img(it.iconUrl, 'languages') : icon('languages', 'h-4 w-4'));
+  var trName = i18nText(it.name);
+  return h('div', { class: 'flex items-center gap-3 min-w-0' }, pic,
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'font-medium truncate flex items-center gap-2' }, h('span', { dir: it.direction === 'rtl' ? 'rtl' : 'ltr', text: it.nativeName || it.code }), it.isDefault ? tag(t('lang.default'), 'primary') : null),
+      h('div', { class: 'text-secondary-500 flex items-center gap-2' }, mono(it.code), trName && trName !== it.nativeName ? h('span', { class: 'text-xs truncate', text: trName }) : null)));
+}
+
+function languageBody(it, patch) {
+  return Object.assign({ name: it.name || {}, nativeName: it.nativeName, direction: it.direction, iconUrl: it.iconUrl || '', isActive: !!it.isActive, isDefault: !!it.isDefault, sort: it.sort || 0 }, patch || {});
+}
+
+function languageActive(it) {
+  var box = h('div', { class: 'flex items-center gap-2' });
+  var sw = toggle(it.isActive, null, function (on) {
+    baseApi('PUT', '/languages/' + encodeURIComponent(it.code), languageBody(it, { isActive: on })).then(function () {
+      it.isActive = on;
+      label.textContent = on ? t('active') : t('inactive');
+      toast('success', t(on ? 'lang.activated' : 'lang.deactivated', { name: it.nativeName || it.code }));
+      languagesChanged();
+    }, function (err) {
+      sw.set(!on);
+      toast('error', errorText(err));
+    });
+  }, 'sm');
+  sw.setAttribute('aria-label', t('f.isActive'));
+  sw.setAttribute('title', t('f.isActive'));
+  var label = h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: it.isActive ? t('active') : t('inactive') });
+  box.appendChild(sw);
+  box.appendChild(label);
+  return box;
+}
+
+var languageHooks = [];
+function languagesChanged() {
+  loadLanguages(true).then(function () { languageHooks.forEach(function (fn) { fn(); }); });
+}
 
 var RESOURCES = {
   currencies: {
@@ -78,7 +141,7 @@ var RESOURCES = {
         { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, keyRe: CURRENCY_KEY_RE, lockOnEdit: true },
         { name: 'type', type: 'select', label: 'f.type', required: true, options: opts('type.', ['soft', 'hard']) }
       ] },
-      nameRow('name'),
+      tr('name', { required: true, max: 128 }),
       { type: 'row', fields: [
         { name: 'defaultValue', type: 'number', label: 'f.defaultValue', hint: 'f.defaultValue.currency.hint', min: 0 },
         { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
@@ -86,7 +149,7 @@ var RESOURCES = {
       { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function () { return { type: 'soft', name: { fa: '', en: '' }, defaultValue: 0, sort: 0, metadata: {} }; }
+    defaults: function () { return { type: 'soft', name: {}, defaultValue: 0, sort: 0, metadata: {} }; }
   },
   metas: {
     columns: [
@@ -97,12 +160,12 @@ var RESOURCES = {
     ],
     fields: [
       { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, lockOnEdit: true },
-      nameRow('name'),
+      tr('name', { required: true, max: 128 }),
       { name: 'defaultValue', type: 'number', int: false, label: 'f.defaultValue', hint: 'f.defaultValue.meta.hint' },
       { name: 'serverOnly', type: 'bool', inline: true, label: 'f.serverOnly', hint: 'f.serverOnly.hint' },
       { name: 'settings', type: 'json', label: 'f.settings', optional: true, empty: {} }
     ],
-    defaults: function () { return { name: { fa: '', en: '' }, defaultValue: 0, serverOnly: false, settings: {} }; }
+    defaults: function () { return { name: {}, defaultValue: 0, serverOnly: false, settings: {} }; }
   },
   prizes: {
     columns: [
@@ -116,17 +179,14 @@ var RESOURCES = {
     ],
     fields: [
       { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
-      nameRow('name'),
-      nameTextareas('message'),
-      { type: 'row', fields: [
-        { name: 'categoryId', type: 'ref', resource: 'categories', filter: { kind: 'prize' }, label: 'f.category', optional: true },
-        { name: 'tagIds', type: 'refMulti', resource: 'tags', label: 'f.tags', optional: true, empty: [] }
-      ] },
+      tr('name', { required: true, max: 128 }),
+      tr('message', { multiline: true, max: 1000, optional: true }),
+      { type: 'row', fields: [categoryField('prize'), tagsField('prize')] },
       { name: 'isRepeatable', type: 'bool', inline: true, label: 'f.isRepeatable', hint: 'f.isRepeatable.hint' },
       { name: 'items', type: 'items', label: 'f.items' },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function () { return { name: { fa: '', en: '' }, message: { fa: '', en: '' }, tagIds: [], isRepeatable: false, items: [{ type: 'currency', key: '', action: 'add', value: 0 }], metadata: {} }; }
+    defaults: function () { return { name: {}, message: {}, tagIds: [], isRepeatable: false, items: [{ type: 'currency', key: '', action: 'add', value: 0 }], metadata: {} }; }
   },
   products: {
     filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
@@ -142,12 +202,9 @@ var RESOURCES = {
         { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
         { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
       ] },
-      nameRow('name'),
-      nameTextareas('description'),
-      { type: 'row', fields: [
-        { name: 'categoryId', type: 'ref', resource: 'categories', filter: { kind: 'product' }, label: 'f.category', optional: true },
-        { name: 'tagIds', type: 'refMulti', resource: 'tags', label: 'f.tags', optional: true, empty: [] }
-      ] },
+      tr('name', { required: true, max: 128 }),
+      tr('description', { multiline: true, max: 4000, optional: true }),
+      { type: 'row', fields: [categoryField('product'), tagsField('product')] },
       { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', hint: 'f.prize.product.hint', required: true },
       { type: 'heading', label: 'f.paymentMethods' },
       { name: 'paymentMethods', type: 'multi', required: true, options: opts('method.', METHODS) },
@@ -178,7 +235,7 @@ var RESOURCES = {
       ] },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function () { return { isActive: true, name: { fa: '', en: '' }, description: { fa: '', en: '' }, tagIds: [], paymentMethods: ['zarinpal'], discountPercent: 0, sku: {}, coinPrice: null, isSubscription: false, minLevel: 0, sort: 0, metadata: {} }; },
+    defaults: function () { return { isActive: true, name: {}, description: {}, tagIds: [], paymentMethods: ['zarinpal'], discountPercent: 0, sku: {}, coinPrice: null, isSubscription: false, minLevel: 0, sort: 0, metadata: {} }; },
     fixPayload: function (p) {
       if (p.coinPrice && p.coinPrice.currencyKey == null && p.coinPrice.amount == null) p.coinPrice = null;
       var sku = {};
@@ -191,17 +248,15 @@ var RESOURCES = {
   gifts: {
     filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
     columns: [
-      { label: 'col.name', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: it.name || '' }), it.code ? h('div', { class: 'text-secondary-500' }, mono(it.code)) : null); }, skeleton: '50%' },
+      { label: 'col.name', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.name) }), it.code ? h('div', { class: 'text-secondary-500' }, mono(it.code)) : null); }, skeleton: '50%' },
       { label: 'col.type', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, tag(t('gift.' + it.type), it.type === 'discount' ? 'warning' : 'primary'), it.type === 'discount' && it.discountPercent ? tag(t('percent', { n: it.discountPercent }), 'secondary') : null); }, width: 150 },
       { label: 'col.usage', render: function (it) { return h('span', { class: 'tabular-nums whitespace-nowrap', text: fmtNum(it.totalUsed || 0) + ' / ' + (it.maxTotalUses ? fmtNum(it.maxTotalUses) : t('unlimited')) }); }, width: 130 },
       { label: 'col.expire', render: function (it) { return dateCell(it.expireAt); }, width: 190 },
       { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 }
     ],
     fields: [
-      { type: 'row', fields: [
-        { name: 'name', label: 'f.gift.name', required: true },
-        { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
-      ] },
+      tr('name', { label: 'f.gift.name', required: true, max: 128 }),
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' },
       { type: 'row', fields: [
         { name: 'type', type: 'select', label: 'f.type', required: true, options: opts('gift.', ['reward', 'discount']) },
         { name: 'code', type: 'code', label: 'f.code', hint: 'f.code.hint', optional: true, check: function (c, v) { return v.type === 'discount' && !c ? t('code.CODE_REQUIRED') : null; } }
@@ -219,42 +274,93 @@ var RESOURCES = {
       { name: 'isPromo', type: 'bool', inline: true, label: 'f.isPromo' },
       { name: 'totalUsed', type: 'static', label: 'f.totalUsed', readonly: true, when: function (v) { return !!v.id; }, render: function (v) { return numCell(v.totalUsed || 0); } }
     ],
-    defaults: function () { return { type: 'reward', isActive: true, isPromo: false, perUserLimit: 1, maxTotalUses: null, code: '' }; },
+    defaults: function () { return { name: {}, type: 'reward', isActive: true, isPromo: false, perUserLimit: 1, maxTotalUses: null, code: '' }; },
     fixPayload: function (p) { if (p.code === '') p.code = null; return p; }
   },
   categories: {
-    filters: [{ name: 'kind', label: 'filter.kind', options: opts('kind.', CATEGORY_KINDS) }],
+    api: 'base',
+    filters: [{ name: 'keyType', label: 'filter.keyType', options: keyTypeOptions('categories') }],
     columns: [
-      { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '55%' },
-      { label: 'col.kind', render: function (it) { return tag(t('kind.' + it.kind), 'secondary'); }, width: 130 },
+      { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '55%' },
+      { label: 'col.keyType', render: function (it) { return tag(keyTypeLabel('categories', it.keyType), 'secondary'); }, width: 140 },
       { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 90 },
       { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
     ],
     fields: [
       { type: 'row', fields: [
         { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
-        { name: 'kind', type: 'select', label: 'f.kind', required: true, options: opts('kind.', CATEGORY_KINDS) }
+        { name: 'keyType', type: 'select', label: 'f.keyType', hint: 'f.keyType.category.hint', required: true, options: keyTypeOptions('categories') }
       ] },
-      nameRow('name'),
-      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+      tr('name', { required: true, max: 128 }),
+      tr('description', { multiline: true, max: 1000, optional: true }),
+      { type: 'row', fields: [
+        { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
+        { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+      ] },
+      { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function (query) { return { kind: (query && query.kind) || 'product', name: { fa: '', en: '' }, sort: 0 }; }
+    defaults: function (query) { return { keyType: (query && query.keyType) || 'product', name: {}, description: {}, iconUrl: '', metadata: {}, sort: 0 }; },
+    fixPayload: function (p) { if (!p.iconUrl) p.iconUrl = ''; if (p.sort == null) p.sort = 0; return p; }
   },
   tags: {
+    api: 'base',
+    filters: [{ name: 'keyType', label: 'filter.keyType', options: keyTypeOptions('tags') }],
     columns: [
-      { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '55%' },
+      { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '55%' },
+      { label: 'col.keyType', render: function (it) { return tag(keyTypeLabel('tags', it.keyType), it.keyType === 'general' ? 'primary' : 'secondary'); }, width: 140 },
+      { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 90 },
       { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
     ],
     fields: [
-      { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
-      nameRow('name')
+      { type: 'row', fields: [
+        { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
+        { name: 'keyType', type: 'select', label: 'f.keyType', hint: 'f.keyType.tag.hint', required: true, options: keyTypeOptions('tags') }
+      ] },
+      tr('name', { required: true, max: 128 }),
+      tr('description', { multiline: true, max: 1000, optional: true }),
+      { type: 'row', fields: [
+        { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
+        { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+      ] },
+      { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function () { return { name: { fa: '', en: '' } }; }
+    defaults: function (query) { return { keyType: (query && query.keyType) || 'general', name: {}, description: {}, iconUrl: '', metadata: {}, sort: 0 }; },
+    fixPayload: function (p) { if (!p.iconUrl) p.iconUrl = ''; if (p.sort == null) p.sort = 0; return p; }
+  },
+  languages: {
+    api: 'base',
+    settings: true,
+    filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
+    columns: [
+      { label: 'col.language', render: languageCell, skeleton: '60%' },
+      { label: 'col.status', render: languageActive, width: 150 },
+      { label: 'col.direction', render: function (it) { return tag(t('dir.' + it.direction), 'secondary'); }, width: 150 },
+      { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 90 }
+    ],
+    fields: [
+      { type: 'row', fields: [
+        { name: 'code', type: 'key', label: 'f.lang.code', hint: 'f.lang.code.hint', required: true, keyRe: LANG_CODE_RE, keyErr: 'code.INVALID_LANGUAGE_CODE', lockOnEdit: true },
+        { name: 'nativeName', label: 'f.lang.nativeName', hint: 'f.lang.nativeName.hint', required: true, check: function (v) { return v && Array.from(v.trim()).length > 64 ? t('code.INVALID_NATIVE_NAME') : null; } }
+      ] },
+      tr('name', { label: 'f.lang.name', hint: 'f.lang.name.hint', required: true, max: 64 }),
+      { type: 'row', fields: [
+        { name: 'direction', type: 'select', label: 'f.lang.direction', required: true, options: opts('dir.', ['rtl', 'ltr']) },
+        { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+      ] },
+      { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
+      { type: 'row', fields: [
+        { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.lang.active.hint' },
+        { name: 'isDefault', type: 'bool', inline: true, label: 'f.lang.default', hint: 'f.lang.default.hint' }
+      ] }
+    ],
+    defaults: function () { return { code: '', name: {}, nativeName: '', direction: 'ltr', iconUrl: '', isActive: true, isDefault: false, sort: 0 }; },
+    fixPayload: function (p) { p.code = String(p.code || '').trim().toLowerCase().replace(/_/g, '-'); if (!p.iconUrl) p.iconUrl = ''; if (p.sort == null) p.sort = 0; return p; },
+    afterSave: function () { languagesChanged(); }
   },
   faqs: {
     api: 'publication',
     filters: [
-      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', filter: { kind: 'faq' } },
+      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'faq' } },
       { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }
     ],
     columns: [
@@ -269,21 +375,20 @@ var RESOURCES = {
       { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
     ],
     fields: [
-      nameRow('question'),
-      { name: 'answer.fa', type: 'markdown', label: 'f.answer.fa', required: true },
-      { name: 'answer.en', type: 'markdown', label: 'f.answer.en', ltr: true, optional: true },
+      tr('question', { required: true, max: 500 }),
+      tr('answer', { markdown: true, required: true, max: 10000 }),
       { type: 'row', fields: [
-        { name: 'categoryId', type: 'ref', resource: 'categories', filter: { kind: 'faq' }, label: 'f.category', optional: true },
+        categoryField('faq'),
         { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
       ] },
       { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.faq.active.hint' }
     ],
-    defaults: function (query) { return { question: { fa: '', en: '' }, answer: { fa: '', en: '' }, categoryId: (query && query.categoryId) || null, isActive: true, sort: 0 }; }
+    defaults: function (query) { return { question: {}, answer: {}, categoryId: (query && query.categoryId) || null, isActive: true, sort: 0 }; }
   },
   news: {
     api: 'publication',
     filters: [
-      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', filter: { kind: 'news' } },
+      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'news' } },
       { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } },
       { name: 'isPinned', label: 'filter.pinned', options: function () { return [{ value: 'true', label: t('news.pinned') }, { value: 'false', label: t('news.notPinned') }]; } }
     ],
@@ -310,13 +415,12 @@ var RESOURCES = {
       { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
     ],
     fields: [
-      nameRow('title'),
-      nameTextareas('summary'),
-      { name: 'body.fa', type: 'markdown', label: 'f.body.fa', required: true, rows: 8 },
-      { name: 'body.en', type: 'markdown', label: 'f.body.en', ltr: true, optional: true, rows: 8 },
+      tr('title', { required: true, max: 200 }),
+      tr('summary', { multiline: true, max: 1000, optional: true }),
+      tr('body', { markdown: true, required: true, max: 50000, rows: 8 }),
       { name: 'coverUrl', type: 'image', label: 'f.cover', optional: true },
       { type: 'row', fields: [
-        { name: 'categoryId', type: 'ref', resource: 'categories', filter: { kind: 'news' }, label: 'f.category', optional: true },
+        categoryField('news'),
         { name: 'publishedAt', type: 'datetime', label: 'f.publishedAt', hint: 'f.publishedAt.hint', optional: true }
       ] },
       { type: 'row', fields: [
@@ -332,7 +436,7 @@ var RESOURCES = {
       { name: 'actions', type: 'actions', empty: [] },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function (query) { return { title: { fa: '', en: '' }, summary: { fa: '', en: '' }, body: { fa: '', en: '' }, coverUrl: '', categoryId: (query && query.categoryId) || null, publishedAt: null, isActive: true, isPinned: false, allowComment: true, freeComment: false, actions: [], metadata: {} }; },
+    defaults: function (query) { return { title: {}, summary: {}, body: {}, coverUrl: '', categoryId: (query && query.categoryId) || null, publishedAt: null, isActive: true, isPinned: false, allowComment: true, freeComment: false, actions: [], metadata: {} }; },
     fixPayload: function (p) { if (!p.coverUrl) p.coverUrl = ''; if (!p.publishedAt) delete p.publishedAt; return p; }
   }
 };

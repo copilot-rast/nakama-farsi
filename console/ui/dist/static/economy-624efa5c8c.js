@@ -26,8 +26,6 @@ var MESSAGES = {
     'desc.gifts': 'کدهای هدیه و تخفیف.',
     'desc.payments': 'همهٔ خریدها و وضعیت هرکدام.',
     'desc.payment-methods': 'درگاه‌ها و فروشگاه‌ها را تنظیم و فعال کنید.',
-    'desc.categories': 'دسته‌بندی محصولات، جایزه‌ها، هدیه‌ها، ارزها، سؤال‌ها و خبرها.',
-    'desc.tags': 'برچسب‌هایی برای گروه‌بندی محصولات و جایزه‌ها.',
 
     'new.currencies': 'ارز جدید',
     'new.metas': 'متای جدید',
@@ -111,7 +109,6 @@ var MESSAGES = {
     'code.NOT_FOUND': 'پیدا نشد.',
     'code.INVALID_STATE': 'در این وضعیت این کار ممکن نیست.',
     'code.KEY_IMMUTABLE': 'کلید بعد از ساخت عوض نمی‌شود.',
-    'code.FA_REQUIRED': 'نام فارسی لازم است.',
     'code.REQUIRED': 'این فیلد لازم است.',
     'code.INVALID_KEY': 'این کلید معتبر نیست.',
     'code.INVALID_CODE': 'کد باید ۳ تا ۳۲ کاراکتر از A تا Z، عدد، _ یا - باشد.',
@@ -125,7 +122,6 @@ var MESSAGES = {
     'code.META_NOT_FOUND': 'این متا وجود ندارد.',
     'code.PRIZE_NOT_FOUND': 'این جایزه وجود ندارد.',
     'code.CATEGORY_NOT_FOUND': 'این دسته‌بندی وجود ندارد.',
-    'code.CATEGORY_KIND_MISMATCH': 'این دسته‌بندی برای این بخش نیست.',
     'code.TAG_NOT_FOUND': 'یکی از تگ‌ها دیگر وجود ندارد.',
     'code.REFERENCE_NOT_FOUND': 'یکی از موارد انتخاب‌شده دیگر وجود ندارد.',
     'code.PRICE_REQUIRED': 'درگاه‌ها قیمت دست‌کم ۱۰۰ تومان لازم دارند.',
@@ -142,7 +138,6 @@ var MESSAGES = {
     'code.INVALID_URL': 'نشانی باید با http یا https یا / شروع شود.',
     'code.INVALID_OBJECT': 'باید یک شیء JSON باشد.',
     'code.OBJECT_TOO_LARGE': 'این JSON بیش از حد بزرگ است.',
-    'code.TEXT_TOO_LONG': 'متن بیش از حد بلند است.',
     'code.INVALID_NAME': 'نام لازم است (تا ۱۲۸ کاراکتر).',
     'code.INVALID_KIND': 'کاربرد معتبر نیست.',
     'code.INVALID_TYPE': 'نوع معتبر نیست.',
@@ -161,15 +156,7 @@ var MESSAGES = {
     'f.key': 'کلید',
     'f.key.hint': 'شناسهٔ ثابت در کد بازی؛ بعداً عوضش نکنید.',
     'f.key.locked': 'کلید بعد از ساخت عوض نمی‌شود.',
-    'f.name': 'نام',
-    'f.name.fa': 'نام فارسی',
-    'f.name.en': 'نام انگلیسی',
-    'f.message.fa': 'پیام فارسی',
-    'f.message.en': 'پیام انگلیسی',
-    'f.description.fa': 'توضیح فارسی',
-    'f.description.en': 'توضیح انگلیسی',
     'f.type': 'نوع',
-    'f.kind': 'کاربرد',
     'f.sort': 'ترتیب',
     'f.sort.hint': 'عدد کمتر، بالاتر نمایش داده می‌شود.',
     'f.icon': 'آیکون',
@@ -221,7 +208,6 @@ var MESSAGES = {
     'col.key': 'کلید',
     'col.name': 'نام',
     'col.type': 'نوع',
-    'col.kind': 'کاربرد',
     'col.default': 'مقدار اولیه',
     'col.sort': 'ترتیب',
     'col.items': 'آیتم‌ها',
@@ -275,7 +261,6 @@ var MESSAGES = {
     'filter.status': 'وضعیت',
     'filter.method': 'روش',
     'filter.user': 'شناسهٔ کاربر',
-    'filter.kind': 'کاربرد',
     'filter.active': 'وضعیت',
 
     'pay.title': 'پرداخت',
@@ -396,17 +381,7 @@ var MESSAGES = {
     'col.attempts': 'تلاش',
     'col.time': 'زمان',
 
-    'f.question.fa': 'سؤال فارسی',
-    'f.question.en': 'سؤال انگلیسی',
-    'f.answer.fa': 'پاسخ فارسی',
-    'f.answer.en': 'پاسخ انگلیسی',
     'f.faq.active.hint': 'سؤال غیرفعال در بازی دیده نمی‌شود.',
-    'f.title.fa': 'عنوان فارسی',
-    'f.title.en': 'عنوان انگلیسی',
-    'f.summary.fa': 'خلاصهٔ فارسی',
-    'f.summary.en': 'خلاصهٔ انگلیسی',
-    'f.body.fa': 'متن فارسی',
-    'f.body.en': 'متن انگلیسی',
     'f.publishedAt': 'زمان انتشار',
     'f.publishedAt.hint': 'خالی یعنی همین حالا. اگر زمانی در آینده بدهید، خبر از همان موقع دیده می‌شود.',
     'f.news.active.hint': 'خبر غیرفعال در بازی دیده نمی‌شود.',
@@ -433,8 +408,6 @@ var MESSAGES = {
     'act.goto': 'رفتن به بخشی از بازی',
     'act.none': 'بدون دکمه',
     'act.value': 'مقصد',
-    'act.label.fa': 'متن دکمه (فارسی)',
-    'act.label.en': 'متن دکمه (انگلیسی)',
     'act.url.hint': 'پیوند در زبانهٔ تازه باز می‌شود.',
     'act.goto.hint': 'نام بخش بازی، مثل shop یا play.',
 
@@ -465,8 +438,6 @@ var MESSAGES = {
     'rst.sent': 'ارسال‌شده',
     'rst.skipped': 'بدون نشانی',
     'rst.failed': 'ناموفق',
-    'lang.fa': 'فارسی',
-    'lang.en': 'انگلیسی',
 
     'tg.all': 'همهٔ کاربران',
     'tg.users': 'کاربران مشخص',
@@ -494,12 +465,6 @@ var MESSAGES = {
     'nt.summary': 'خلاصه',
     'nt.f.title': 'عنوان',
     'nt.f.body': 'متن',
-    'nt.f.title.fa': 'عنوان فارسی',
-    'nt.f.title.en': 'عنوان انگلیسی',
-    'nt.f.body.fa': 'متن فارسی',
-    'nt.f.body.en': 'متن انگلیسی',
-    'nt.f.sms.fa': 'متن پیامک فارسی',
-    'nt.f.sms.en': 'متن پیامک انگلیسی',
     'nt.f.provider': 'سرویس ارسال',
     'nt.sms.hint': 'پیامک عنوان ندارد. متن ساده بنویسید.',
     'nt.sms.tooLong': 'متن پیامک حداکثر ۶۰۰ نویسه است.',
@@ -585,7 +550,6 @@ var MESSAGES = {
     'pv.test.ok': 'ارسال شد.',
     'pv.test.failed': 'ارسال نشد:',
 
-    'code.FA_REQUIRED_TEXT': 'متن فارسی لازم است.',
     'code.TARGET_USERS_REQUIRED': 'دست‌کم یک کاربر انتخاب کنید.',
     'code.USERS_NOT_FOUND': 'بعضی از کاربران انتخاب‌شده وجود ندارند.',
     'code.TOO_MANY_USERS': 'حداکثر ۱۰۰۰ کاربر.',
@@ -598,7 +562,6 @@ var MESSAGES = {
     'code.PROVIDER_CHANNEL_MISMATCH': 'این سرویس برای این کانال نیست.',
     'code.PROVIDER_KIND_FIXED': 'نوع سرویس بعد از ساخت عوض نمی‌شود.',
     'code.INVALID_PROVIDER_KIND': 'این نوع سرویس شناخته‌شده نیست.',
-    'code.DEFAULT_MUST_BE_ACTIVE': 'فقط سرویس فعال می‌تواند پیش‌فرض باشد.',
     'code.INVALID_PHONE': 'شماره را به شکل ۰۹۱۲۳۴۵۶۷۸۹ یا با کد کشور بنویسید.',
     'code.INVALID_EMAIL': 'نشانی ایمیل معتبر نیست.',
     'code.INVALID_MESSAGE': 'متن لازم است (حداکثر ۶۰۰ نویسه).',
@@ -608,8 +571,77 @@ var MESSAGES = {
     'code.INVALID_FILTER': 'فیلتر معتبر نیست.',
     'code.QUERY_TOO_LONG': 'متن جستجو بیش از حد بلند است.',
     'code.URL_TOO_LONG': 'نشانی بیش از حد بلند است.',
-    'code.INVALID_LANGUAGE': 'فقط فارسی و انگلیسی پذیرفته می‌شود.',
-    'code.PROVIDER_NOT_ALLOWED': 'اعلان درون بازی سرویس ارسال ندارد.'
+    'code.PROVIDER_NOT_ALLOWED': 'اعلان درون بازی سرویس ارسال ندارد.',
+    'section.base': 'عمومی',
+    'section.base.short': 'عمومی',
+    'desc.categories': 'دسته‌بندی‌های همهٔ بخش‌ها؛ هر دسته‌بندی برای یک نوع کلید است، مثل محصول یا خبر.',
+    'desc.tags': 'برچسب‌هایی برای گروه‌بندی؛ تگ «عمومی» همه‌جا قابل استفاده است.',
+    'tab.languages': 'زبان‌ها',
+    'desc.languages': 'زبان‌هایی که محتوای بازی به آن‌ها ترجمه می‌شود. زبان پیش‌فرض همیشه فعال است.',
+    'new.languages': 'زبان جدید',
+    'edit.languages': 'ویرایش زبان',
+    'search.languages': 'جستجو در کد یا نام زبان…',
+    'empty.hint.languages': 'اولین زبان را اضافه کنید.',
+    'filter.keyType': 'نوع کلید',
+    'col.keyType': 'نوع کلید',
+    'f.keyType': 'نوع کلید',
+    'f.keyType.category.hint': 'مشخص می‌کند این دسته‌بندی در کدام بخش دیده شود.',
+    'f.keyType.tag.hint': 'تگ «عمومی» برای همهٔ بخش‌ها قابل انتخاب است.',
+    'kind.general': 'عمومی',
+    'f.name': 'نام',
+    'f.message': 'پیام',
+    'f.description': 'توضیح',
+    'f.question': 'سؤال',
+    'f.answer': 'پاسخ',
+    'f.title': 'عنوان',
+    'f.summary': 'خلاصه',
+    'f.body': 'متن',
+    'act.label': 'متن دکمه',
+    'nt.f.sms': 'متن پیامک',
+    'nt.action.label.hint': 'اگر خالی بماند، بازی متن خودش را نشان می‌دهد.',
+    'tr.default': 'پیش‌فرض',
+    'tr.empty': 'خالی',
+    'lang.default': 'پیش‌فرض',
+    'lang.activated': '{name} فعال شد.',
+    'lang.deactivated': '{name} غیرفعال شد.',
+    'col.language': 'زبان',
+    'col.direction': 'جهت نوشتن',
+    'dir.rtl': 'راست به چپ',
+    'dir.ltr': 'چپ به راست',
+    'f.lang.code': 'کد زبان',
+    'f.lang.code.hint': 'کد کوتاه با حروف کوچک، مثل fa، en، ar یا pt-br. بعد از ساخت عوض نمی‌شود.',
+    'f.lang.nativeName': 'نام بومی',
+    'f.lang.nativeName.hint': 'نام زبان به خط خودش، مثل العربية.',
+    'f.lang.name': 'نام ترجمه‌شده',
+    'f.lang.name.hint': 'نام زبان در هر زبان دیگر؛ مقدار زبان پیش‌فرض لازم است.',
+    'f.lang.direction': 'جهت نوشتن',
+    'f.lang.active.hint': 'فقط زبان‌های فعال در فرم‌ها و بازی دیده می‌شوند.',
+    'f.lang.default': 'زبان پیش‌فرض',
+    'f.lang.default.hint': 'متن پیش‌فرض همه‌جا لازم است و وقتی ترجمه نباشد نشان داده می‌شود.',
+    'cov.title': 'پوشش ترجمه',
+    'cov.desc': 'تعداد مواردی که متنی دارند ولی در هر زبان ترجمه نشده‌اند. روی هر عدد بزنید تا به همان صفحه بروید.',
+    'cov.resource': 'بخش',
+    'cov.total': 'کل',
+    'cov.missingN': '{n} ناقص',
+    'cov.complete': 'کامل',
+    'cov.open': 'باز کردن صفحه',
+    'cov.module.base': 'عمومی',
+    'cov.module.economy': 'اقتصاد',
+    'cov.module.publication': 'انتشار',
+    'code.DEFAULT_LANGUAGE_REQUIRED': 'متن به زبان پیش‌فرض ({lang}) لازم است.',
+    'code.INVALID_LANGUAGE': 'یکی از زبان‌ها دیگر وجود ندارد؛ فرم را ببندید و دوباره باز کنید.',
+    'code.TEXT_TOO_LONG': 'متن {lang} بیش از حد بلند است.',
+    'code.CATEGORY_KIND_MISMATCH': 'نوع کلید این دسته‌بندی با این بخش جور نیست.',
+    'code.TAG_KIND_MISMATCH': 'یکی از تگ‌ها برای این بخش نیست؛ فقط تگ همین بخش یا عمومی را انتخاب کنید.',
+    'code.INVALID_KEY_TYPE': 'نوع کلید معتبر نیست.',
+    'code.INVALID_LANGUAGE_CODE': 'کد زبان را با حروف کوچک بنویسید، مثل fa، en یا pt-br.',
+    'code.LANGUAGE_NOT_FOUND': 'این زبان پیدا نشد.',
+    'code.DEFAULT_LANGUAGE_LOCKED': 'زبان پیش‌فرض حذف یا غیرفعال نمی‌شود؛ اول زبان دیگری را پیش‌فرض کنید.',
+    'code.LANGUAGE_ACTIVE': 'زبان فعال حذف نمی‌شود؛ اول آن را غیرفعال کنید.',
+    'code.INVALID_DIRECTION': 'جهت نوشتن باید راست به چپ یا چپ به راست باشد.',
+    'code.INVALID_NATIVE_NAME': 'نام بومی لازم است (تا ۶۴ نویسه).',
+    'code.DEFAULT_MUST_BE_ACTIVE': 'فقط مورد فعال می‌تواند پیش‌فرض باشد.',
+    'code.LANGUAGE_NOT_AVAILABLE': 'این زبان در دسترس نیست.'
   },
   en: {
     'section': 'Economy',
@@ -636,8 +668,6 @@ var MESSAGES = {
     'desc.gifts': 'Gift and discount codes.',
     'desc.payments': 'Every purchase and its status.',
     'desc.payment-methods': 'Configure and enable gateways and stores.',
-    'desc.categories': 'Categories for products, prizes, gifts, currencies, FAQ and news.',
-    'desc.tags': 'Labels to group products and prizes.',
 
     'new.currencies': 'New Currency',
     'new.metas': 'New Meta',
@@ -721,7 +751,6 @@ var MESSAGES = {
     'code.NOT_FOUND': 'Not found.',
     'code.INVALID_STATE': 'Not possible in the current state.',
     'code.KEY_IMMUTABLE': 'The key cannot change after creation.',
-    'code.FA_REQUIRED': 'A Persian name is required.',
     'code.REQUIRED': 'This field is required.',
     'code.INVALID_KEY': 'This key is not valid.',
     'code.INVALID_CODE': 'Use 3 to 32 characters: A-Z, digits, _ or -.',
@@ -735,7 +764,6 @@ var MESSAGES = {
     'code.META_NOT_FOUND': 'This meta does not exist.',
     'code.PRIZE_NOT_FOUND': 'This prize does not exist.',
     'code.CATEGORY_NOT_FOUND': 'This category does not exist.',
-    'code.CATEGORY_KIND_MISMATCH': 'This category is for another section.',
     'code.TAG_NOT_FOUND': 'One of the tags no longer exists.',
     'code.REFERENCE_NOT_FOUND': 'A selected item no longer exists.',
     'code.PRICE_REQUIRED': 'Gateways need a price of at least 100 Toman.',
@@ -752,7 +780,6 @@ var MESSAGES = {
     'code.INVALID_URL': 'The URL must start with http, https or /.',
     'code.INVALID_OBJECT': 'This must be a JSON object.',
     'code.OBJECT_TOO_LARGE': 'This JSON is too large.',
-    'code.TEXT_TOO_LONG': 'This text is too long.',
     'code.INVALID_NAME': 'A name is required (up to 128 characters).',
     'code.INVALID_KIND': 'Unknown kind.',
     'code.INVALID_TYPE': 'Unknown type.',
@@ -771,15 +798,7 @@ var MESSAGES = {
     'f.key': 'Key',
     'f.key.hint': 'Stable ID used by the game code; do not change it later.',
     'f.key.locked': 'The key cannot change after creation.',
-    'f.name': 'Name',
-    'f.name.fa': 'Persian name',
-    'f.name.en': 'English name',
-    'f.message.fa': 'Persian message',
-    'f.message.en': 'English message',
-    'f.description.fa': 'Persian description',
-    'f.description.en': 'English description',
     'f.type': 'Type',
-    'f.kind': 'Used for',
     'f.sort': 'Sort order',
     'f.sort.hint': 'Lower numbers show first.',
     'f.icon': 'Icon',
@@ -831,7 +850,6 @@ var MESSAGES = {
     'col.key': 'Key',
     'col.name': 'Name',
     'col.type': 'Type',
-    'col.kind': 'Used for',
     'col.default': 'Default',
     'col.sort': 'Sort',
     'col.items': 'Items',
@@ -885,7 +903,6 @@ var MESSAGES = {
     'filter.status': 'Status',
     'filter.method': 'Method',
     'filter.user': 'User ID',
-    'filter.kind': 'Used for',
     'filter.active': 'Status',
 
     'pay.title': 'Payment',
@@ -1006,17 +1023,7 @@ var MESSAGES = {
     'col.attempts': 'Attempts',
     'col.time': 'Time',
 
-    'f.question.fa': 'Question (Persian)',
-    'f.question.en': 'Question (English)',
-    'f.answer.fa': 'Answer (Persian)',
-    'f.answer.en': 'Answer (English)',
     'f.faq.active.hint': 'Inactive questions are hidden in the game.',
-    'f.title.fa': 'Title (Persian)',
-    'f.title.en': 'Title (English)',
-    'f.summary.fa': 'Summary (Persian)',
-    'f.summary.en': 'Summary (English)',
-    'f.body.fa': 'Body (Persian)',
-    'f.body.en': 'Body (English)',
     'f.publishedAt': 'Publish time',
     'f.publishedAt.hint': 'Empty means now. A future time keeps the article hidden until then.',
     'f.news.active.hint': 'Inactive articles are hidden in the game.',
@@ -1043,8 +1050,6 @@ var MESSAGES = {
     'act.goto': 'Go to a game screen',
     'act.none': 'No button',
     'act.value': 'Target',
-    'act.label.fa': 'Button text (Persian)',
-    'act.label.en': 'Button text (English)',
     'act.url.hint': 'The link opens in a new tab.',
     'act.goto.hint': 'A game screen name, like shop or play.',
 
@@ -1075,8 +1080,6 @@ var MESSAGES = {
     'rst.sent': 'Sent',
     'rst.skipped': 'No address',
     'rst.failed': 'Failed',
-    'lang.fa': 'Persian',
-    'lang.en': 'English',
 
     'tg.all': 'All users',
     'tg.users': 'Chosen users',
@@ -1104,12 +1107,6 @@ var MESSAGES = {
     'nt.summary': 'Summary',
     'nt.f.title': 'Title',
     'nt.f.body': 'Body',
-    'nt.f.title.fa': 'Title (Persian)',
-    'nt.f.title.en': 'Title (English)',
-    'nt.f.body.fa': 'Body (Persian)',
-    'nt.f.body.en': 'Body (English)',
-    'nt.f.sms.fa': 'SMS text (Persian)',
-    'nt.f.sms.en': 'SMS text (English)',
     'nt.f.provider': 'Delivery service',
     'nt.sms.hint': 'SMS has no title. Write plain text.',
     'nt.sms.tooLong': 'SMS text can be at most 600 characters.',
@@ -1195,7 +1192,6 @@ var MESSAGES = {
     'pv.test.ok': 'Sent.',
     'pv.test.failed': 'Not sent:',
 
-    'code.FA_REQUIRED_TEXT': 'Persian text is required.',
     'code.TARGET_USERS_REQUIRED': 'Pick at least one user.',
     'code.USERS_NOT_FOUND': 'Some chosen users do not exist.',
     'code.TOO_MANY_USERS': 'At most 1,000 users.',
@@ -1208,7 +1204,6 @@ var MESSAGES = {
     'code.PROVIDER_CHANNEL_MISMATCH': 'This service is for another channel.',
     'code.PROVIDER_KIND_FIXED': 'The service type cannot change after creation.',
     'code.INVALID_PROVIDER_KIND': 'Unknown service type.',
-    'code.DEFAULT_MUST_BE_ACTIVE': 'Only an active service can be the default.',
     'code.INVALID_PHONE': 'Write the number like 09123456789 or with a country code.',
     'code.INVALID_EMAIL': 'The email address is not valid.',
     'code.INVALID_MESSAGE': 'Text is required (at most 600 characters).',
@@ -1218,13 +1213,83 @@ var MESSAGES = {
     'code.INVALID_FILTER': 'The filter is not valid.',
     'code.QUERY_TOO_LONG': 'The search text is too long.',
     'code.URL_TOO_LONG': 'The URL is too long.',
-    'code.INVALID_LANGUAGE': 'Only Persian and English are accepted.',
-    'code.PROVIDER_NOT_ALLOWED': 'In-game notifications do not use a delivery service.'
+    'code.PROVIDER_NOT_ALLOWED': 'In-game notifications do not use a delivery service.',
+    'section.base': 'General',
+    'section.base.short': 'General',
+    'desc.categories': 'Categories for every section; each one belongs to a key type, such as product or news.',
+    'desc.tags': 'Labels for grouping; a General tag can be used everywhere.',
+    'tab.languages': 'Languages',
+    'desc.languages': 'Languages the game content is translated into. The default language is always active.',
+    'new.languages': 'New language',
+    'edit.languages': 'Edit language',
+    'search.languages': 'Search code or name…',
+    'empty.hint.languages': 'Add your first language.',
+    'filter.keyType': 'Key type',
+    'col.keyType': 'Key type',
+    'f.keyType': 'Key type',
+    'f.keyType.category.hint': 'Where this category can be used.',
+    'f.keyType.tag.hint': 'A General tag can be picked in every section.',
+    'kind.general': 'General',
+    'f.name': 'Name',
+    'f.message': 'Message',
+    'f.description': 'Description',
+    'f.question': 'Question',
+    'f.answer': 'Answer',
+    'f.title': 'Title',
+    'f.summary': 'Summary',
+    'f.body': 'Body',
+    'act.label': 'Button text',
+    'nt.f.sms': 'SMS text',
+    'nt.action.label.hint': 'Leave it empty and the game shows its own text.',
+    'tr.default': 'Default',
+    'tr.empty': 'empty',
+    'lang.default': 'Default',
+    'lang.activated': '{name} is active.',
+    'lang.deactivated': '{name} is inactive.',
+    'col.language': 'Language',
+    'col.direction': 'Direction',
+    'dir.rtl': 'Right to left',
+    'dir.ltr': 'Left to right',
+    'f.lang.code': 'Language code',
+    'f.lang.code.hint': 'A short lower-case code, like fa, en, ar or pt-br. It cannot change later.',
+    'f.lang.nativeName': 'Native name',
+    'f.lang.nativeName.hint': 'The name in its own script, like العربية.',
+    'f.lang.name': 'Translated name',
+    'f.lang.name.hint': 'The language name in other languages; the default language value is required.',
+    'f.lang.direction': 'Direction',
+    'f.lang.active.hint': 'Only active languages show in forms and in the game.',
+    'f.lang.default': 'Default language',
+    'f.lang.default.hint': 'Default text is required everywhere and shows when a translation is missing.',
+    'cov.title': 'Translation coverage',
+    'cov.desc': 'How many items have text but no translation in each language. Click a number to open that page.',
+    'cov.resource': 'Section',
+    'cov.total': 'Total',
+    'cov.missingN': '{n} missing',
+    'cov.complete': 'Complete',
+    'cov.open': 'Open page',
+    'cov.module.base': 'General',
+    'cov.module.economy': 'Economy',
+    'cov.module.publication': 'Publishing',
+    'code.DEFAULT_LANGUAGE_REQUIRED': 'Text in the default language ({lang}) is required.',
+    'code.INVALID_LANGUAGE': 'One of the languages no longer exists; close the form and open it again.',
+    'code.TEXT_TOO_LONG': 'The {lang} text is too long.',
+    'code.CATEGORY_KIND_MISMATCH': 'This category has a different key type.',
+    'code.TAG_KIND_MISMATCH': 'A tag does not belong to this section; pick tags of this section or General.',
+    'code.INVALID_KEY_TYPE': 'Unknown key type.',
+    'code.INVALID_LANGUAGE_CODE': 'Use a lower-case language code, like fa, en or pt-br.',
+    'code.LANGUAGE_NOT_FOUND': 'This language was not found.',
+    'code.DEFAULT_LANGUAGE_LOCKED': 'The default language cannot be deleted or deactivated; make another language the default first.',
+    'code.LANGUAGE_ACTIVE': 'An active language cannot be deleted; deactivate it first.',
+    'code.INVALID_DIRECTION': 'Direction must be right to left or left to right.',
+    'code.INVALID_NATIVE_NAME': 'A native name is required (up to 64 characters).',
+    'code.DEFAULT_MUST_BE_ACTIVE': 'Only an active item can be the default.',
+    'code.LANGUAGE_NOT_AVAILABLE': 'This language is not available.'
   }
 };
 
 var API_BASE = '/v2/console/economy';
 var PUB_BASE = '/v2/console/publication';
+var BASE_BASE = '/v2/console/base';
 var CONSOLE_BASE = '/v2/console';
 var PERSIAN = '۰۱۲۳۴۵۶۷۸۹';
 var SVG_NS = 'http://www.w3.org/2000/svg';
@@ -1285,11 +1350,71 @@ function has(key) {
   return MESSAGES.en[key] !== undefined;
 }
 
+var LANGS = { items: [], active: [], codes: [], def: 'fa', loaded: false, promise: null, seq: 0, at: 0 };
+var FALLBACK_LANGS = [
+  { code: 'fa', nativeName: 'فارسی', name: { fa: 'فارسی', en: 'Persian' }, direction: 'rtl', isActive: true, isDefault: true, sort: 0 },
+  { code: 'en', nativeName: 'English', name: { fa: 'انگلیسی', en: 'English' }, direction: 'ltr', isActive: true, isDefault: false, sort: 1 }
+];
+
+function setLanguages(items) {
+  LANGS.items = items;
+  LANGS.active = items.filter(function (l) { return l.isActive; });
+  LANGS.codes = items.map(function (l) { return l.code; });
+  var d = items.filter(function (l) { return l.isDefault; })[0] || LANGS.active[0] || items[0];
+  LANGS.def = d ? d.code : 'fa';
+  if (d) LANGS.active.sort(function (a, b) { return (b.code === d.code) - (a.code === d.code); });
+}
+setLanguages(FALLBACK_LANGS);
+
+function loadLanguages(force) {
+  if (LANGS.promise && !force) return LANGS.promise;
+  var my = ++LANGS.seq;
+  LANGS.promise = baseApi('GET', '/languages?limit=100').then(function (res) {
+    if (my !== LANGS.seq) return LANGS;
+    var items = (res && res.items) || [];
+    if (items.length) setLanguages(items);
+    LANGS.loaded = true;
+    LANGS.at = Date.now();
+    return LANGS;
+  }, function () {
+    if (my === LANGS.seq) LANGS.promise = null;
+    return LANGS;
+  });
+  return LANGS.promise;
+}
+
+function freshLanguages() {
+  return loadLanguages(!LANGS.loaded || Date.now() - LANGS.at > 30000);
+}
+
+function langInfo(code) {
+  return LANGS.items.filter(function (l) { return l.code === code; })[0] || null;
+}
+
+function langDir(code) {
+  var l = langInfo(code);
+  if (l) return l.direction === 'rtl' ? 'rtl' : 'ltr';
+  return /^(fa|ar|he|ur|ps|ckb|ku|sd|dv|yi)(-|$)/.test(code || '') ? 'rtl' : 'ltr';
+}
+
+function langName(code) {
+  var l = langInfo(code);
+  if (!l) return code;
+  var n = l.name || {};
+  return n[lang()] || l.nativeName || n[LANGS.def] || code;
+}
+
 function i18nText(v) {
   if (v == null) return '';
   if (typeof v === 'string') return v;
+  if (typeof v !== 'object') return String(v);
   var l = lang();
-  return v[l] || v.fa || v.en || '';
+  if (v[l]) return v[l];
+  if (v[LANGS.def]) return v[LANGS.def];
+  for (var i = 0; i < LANGS.active.length; i++) if (v[LANGS.active[i].code]) return v[LANGS.active[i].code];
+  var keys = Object.keys(v).sort();
+  for (var j = 0; j < keys.length; j++) if (typeof v[keys[j]] === 'string' && v[keys[j]]) return v[keys[j]];
+  return '';
 }
 
 function getPath(obj, path) {
@@ -1402,6 +1527,7 @@ function request(base, method, path, body, isForm) {
         var code = data && (typeof data.error === 'string' ? data.error : (data.code && typeof data.code === 'string' ? data.code : null));
         var msg = data && (data.message || (data.error && data.error.message)) || '';
         if (!code && /^[A-Z][A-Z0-9_]+$/.test(msg)) code = msg;
+        if (code === 'INVALID_LANGUAGE') loadLanguages(true);
         throw new ApiError(res.status, code, msg, data && data.field);
       }
       return data;
@@ -1419,13 +1545,17 @@ function pubApi(method, path, body, isForm) {
   return request(PUB_BASE, method, path, body, isForm);
 }
 
+function baseApi(method, path, body, isForm) {
+  return request(BASE_BASE, method, path, body, isForm);
+}
+
 function consoleApi(method, path) {
   return request(CONSOLE_BASE, method, path);
 }
 
-function errorText(err) {
+function errorText(err, langCode) {
   if (!err) return t('err.generic');
-  if (err.code && has('code.' + err.code)) return t('code.' + err.code);
+  if (err.code && has('code.' + err.code)) return t('code.' + err.code, { lang: langName(langCode || LANGS.def) });
   if (err.status === 0) return t('err.network');
   if (err.status === 403) return t('err.forbidden');
   if (err.status === 404 && !err.code) return t('err.notfound');
@@ -1444,6 +1574,7 @@ var ICONS = {
   gifts: '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/><path d="M13 5v2M13 11v2M13 17v2"/>',
   payments: '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z"/><path d="M16 8H8M16 12H8M13 16H8"/>',
   categories: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/>',
+  languages: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   tags: '<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r="1"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
@@ -1883,8 +2014,16 @@ function textInput(value, opts) {
     'aria-label': opts.label
   });
   el.value = value == null ? '' : value;
+  if (opts.ltr) el.addEventListener('input', function () { latinize(el); });
   if (opts.oninput) el.addEventListener('input', function () { opts.oninput(el.value); });
   return el;
+}
+
+function latinize(el) {
+  if (!/[۰-۹٠-٩]/.test(el.value)) return;
+  var pos = el.selectionStart;
+  el.value = el.value.replace(/[۰-۹]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); }).replace(/[٠-٩]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); });
+  try { el.setSelectionRange(pos, pos); } catch (e) { return; }
 }
 
 function numberInput(value, opts) {
@@ -1961,11 +2100,13 @@ function refPicker(opts) {
     var my = ++seq;
     clear(list);
     for (var i = 0; i < 3; i++) list.appendChild(h('div', { class: 'px-2 py-2' }, bar(['60%', '40%', '50%'][i])));
-    var params = Object.assign({ q: q, page: 1, limit: 20 }, opts.filter || {});
-    call('GET', '/' + opts.resource + qs(params)).then(function (res) {
+    var filters = Array.isArray(opts.filter) ? opts.filter : [opts.filter || {}];
+    Promise.all(filters.map(function (f) { return call('GET', '/' + opts.resource + qs(Object.assign({ q: q, page: 1, limit: 20 }, f))); })).then(function (all) {
       if (my !== seq) return;
       clear(list);
-      var items = (res && res.items) || [];
+      var seen = {};
+      var items = [];
+      all.forEach(function (res) { ((res && res.items) || []).forEach(function (it) { var k = it[opts.valueKey || 'id']; if (!seen[k]) { seen[k] = 1; items.push(it); } }); });
       if (!items.length) list.appendChild(h('div', { class: 'px-2 py-2 text-sm text-secondary-500', text: !q && opts.emptyText ? opts.emptyText : t('no.results') }));
       items.forEach(function (it) {
         var v = it[opts.valueKey || 'id'];
@@ -2004,7 +2145,7 @@ function refPicker(opts) {
   if (value && !refCache[cacheKey(value)]) {
     var req = (opts.valueKey || 'id') === 'id'
       ? call('GET', '/' + opts.resource + '/' + encodeURIComponent(value))
-      : call('GET', '/' + opts.resource + qs(Object.assign({ q: value, limit: 20 }, opts.filter || {}))).then(function (res) {
+      : call('GET', '/' + opts.resource + qs(Object.assign({ q: value, limit: 20 }, Array.isArray(opts.filter) ? {} : opts.filter || {}))).then(function (res) {
         return ((res && res.items) || []).filter(function (it) { return it[opts.valueKey] === value; })[0] || null;
       });
     req.then(function (item) { if (item) { refCache[cacheKey(value)] = item; paint(item); } }, function () { return null; });
@@ -2103,6 +2244,133 @@ function dateInput(value, onchange) {
   });
   paint();
   return h('div', {}, el, shown);
+}
+
+function trValue(v) {
+  var out = {};
+  if (v && typeof v === 'object') Object.keys(v).forEach(function (k) { if (typeof v[k] === 'string') out[k] = v[k]; });
+  else if (typeof v === 'string' && v) out[LANGS.def] = v;
+  return out;
+}
+
+function trClean(v) {
+  var out = {};
+  Object.keys(v || {}).forEach(function (k) {
+    if (LANGS.codes.indexOf(k) === -1) return;
+    var s = String(v[k] == null ? '' : v[k]).trim();
+    if (s) out[k] = s;
+  });
+  return out;
+}
+
+function trCheck(v, opts) {
+  var c = trClean(v);
+  var any = Object.keys(c).length > 0;
+  if ((opts.required || any) && !c[LANGS.def]) return { code: 'DEFAULT_LANGUAGE_REQUIRED', lang: LANGS.def };
+  if (opts.max) {
+    for (var i = 0; i < LANGS.items.length; i++) {
+      var code = LANGS.items[i].code;
+      if (c[code] && Array.from(c[code]).length > opts.max) return { code: 'TEXT_TOO_LONG', lang: code };
+    }
+  }
+  return null;
+}
+
+function trServerLang(err, v, opts) {
+  if (!err) return LANGS.def;
+  if (err.code === 'INVALID_LANGUAGE') {
+    var m = /language\s+(\S+)/.exec(err.message || '');
+    return m && LANGS.active.some(function (l) { return l.code === m[1]; }) ? m[1] : LANGS.def;
+  }
+  if (err.code === 'TEXT_TOO_LONG') {
+    var hit = trCheck(v, { max: opts.max });
+    if (hit && hit.code === 'TEXT_TOO_LONG') return hit.lang;
+    var best = LANGS.def;
+    var len = -1;
+    Object.keys(v || {}).forEach(function (k) { var n = Array.from(String(v[k] || '')).length; if (n > len && LANGS.active.some(function (l) { return l.code === k; })) { len = n; best = k; } });
+    return best;
+  }
+  return LANGS.def;
+}
+
+function translatedInput(value, opts) {
+  opts = opts || {};
+  var values = trValue(value);
+  var langs = LANGS.active.slice();
+  var current = langs.length ? langs[0].code : LANGS.def;
+  var tabs = h('div', { class: 'eco-tr-tabs', role: 'tablist', 'aria-label': opts.label || null });
+  var panels = h('div', { class: 'eco-tr-panels' });
+  var parts = {};
+  langs.forEach(function (l) {
+    var code = l.code;
+    var dir = langDir(code);
+    var dot = h('span', { class: 'eco-tr-dot', 'aria-hidden': 'true' });
+    var tab = h('button', { type: 'button', role: 'tab', class: 'eco-tr-tab', 'data-lang': code, 'aria-selected': 'false', title: langName(code),
+      onclick: function () { select(code); } },
+      h('span', { dir: dir, text: l.nativeName || code }),
+      code === LANGS.def ? h('span', { class: 'eco-tr-def', text: t('tr.default') }) : null,
+      dot);
+    var label = (opts.label ? opts.label + ' - ' : '') + langName(code);
+    var ctl;
+    var onin = function (v) {
+      values[code] = v;
+      paintTab(code);
+      tab.classList.remove('eco-tr-bad');
+      if (opts.oninput) opts.oninput(Object.assign({}, values));
+    };
+    if (opts.markdown) {
+      ctl = markdownInput(values[code] || '', { ltr: dir === 'ltr', rows: opts.rows, max: opts.max, label: label, oninput: onin });
+      var ta = ctl.querySelector('textarea');
+      if (ta) ta.setAttribute('dir', dir);
+    } else {
+      var input = textInput(values[code] || '', { multiline: !!opts.multiline, rows: opts.rows || 3, label: label, oninput: function (v) { onin(v); if (count) paintCount(); } });
+      input.setAttribute('dir', dir);
+      var count = opts.counter && opts.max ? h('span', { class: 'text-xs tabular-nums text-secondary-500' }) : null;
+      var paintCount = function () {
+        var n = Array.from(input.value).length;
+        count.textContent = t('chars', { n: n, max: opts.max });
+        count.classList.toggle('text-error-600', n > opts.max);
+      };
+      if (count) paintCount();
+      ctl = count ? h('div', {}, input, h('div', { class: 'flex justify-end mt-1' }, count)) : input;
+    }
+    var panel = h('div', { role: 'tabpanel', 'data-lang': code, hidden: true }, ctl);
+    parts[code] = { tab: tab, dot: dot, panel: panel, ctl: ctl };
+    tabs.appendChild(tab);
+    panels.appendChild(panel);
+  });
+  function paintTab(code) {
+    var p = parts[code];
+    if (!p) return;
+    var empty = !String(values[code] || '').trim();
+    p.dot.hidden = !empty;
+    p.tab.classList.toggle('eco-tr-empty', empty);
+    p.tab.setAttribute('aria-label', langName(code) + (code === LANGS.def ? ' (' + t('tr.default') + ')' : '') + (empty ? ' (' + t('tr.empty') + ')' : ''));
+  }
+  function select(code) {
+    if (!parts[code]) return;
+    current = code;
+    Object.keys(parts).forEach(function (k) {
+      parts[k].panel.hidden = k !== code;
+      parts[k].tab.setAttribute('aria-selected', k === code ? 'true' : 'false');
+      parts[k].tab.classList.toggle('eco-tr-on', k === code);
+    });
+  }
+  Object.keys(parts).forEach(paintTab);
+  select(current);
+  var el = h('div', { class: 'eco-tr', 'data-translated': opts.name || '' }, tabs, panels);
+  el.select = select;
+  el.markLang = function (code) {
+    Object.keys(parts).forEach(function (k) { parts[k].tab.classList.toggle('eco-tr-bad', k === code); });
+    if (code && parts[code]) {
+      select(code);
+      var input = parts[code].panel.querySelector('input,textarea');
+      if (input) setTimeout(function () { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } }, 0);
+    }
+  };
+  el.value = function () { return Object.assign({}, values); };
+  el.current = function () { return current; };
+  return el;
 }
 
 function mdEscape(s) {
@@ -2219,14 +2487,14 @@ function markdownInput(value, opts) {
 var GOTO_SCREENS = ['home', 'play', 'shop', 'gift', 'payments', 'news', 'faq', 'inbox'];
 
 function actionsEditor(value, onchange) {
-  var rows = (value || []).map(function (r) { return { type: r.type || 'url', value: r.value || '', label: { fa: (r.label && r.label.fa) || '', en: (r.label && r.label.en) || '' } }; });
+  var rows = (value || []).map(function (r) { return { type: r.type || 'url', value: r.value || '', label: trValue(r.label) }; });
   var listEl = h('div', { class: 'flex flex-col gap-2' });
   var errors = [];
   var listId = 'eco-goto-' + Math.random().toString(36).slice(2, 8);
   var datalist = h('datalist', { id: listId }, GOTO_SCREENS.map(function (s) { return h('option', { value: s }); }));
-  function emit() { onchange(rows.map(function (r) { return { type: r.type, value: r.value, label: { fa: r.label.fa, en: r.label.en } }; })); }
+  function emit() { onchange(rows.map(function (r) { return { type: r.type, value: r.value, label: Object.assign({}, r.label) }; })); }
   var add = button({ variant: 'link', size: 'sm', icon: 'plus', label: t('act.add'), onclick: function () {
-    rows.push({ type: 'url', value: '', label: { fa: '', en: '' } });
+    rows.push({ type: 'url', value: '', label: {} });
     render();
     emit();
   } });
@@ -2242,16 +2510,14 @@ function actionsEditor(value, onchange) {
       var typeSel = selectInput(row.type, [{ value: 'url', label: t('act.url') }, { value: 'goto', label: t('act.goto') }], function (v) { row.type = v; render(); emit(); }, { placeholder: false, label: t('act.type') });
       var val = textInput(row.value, { ltr: true, mono: true, label: t('act.value'), placeholder: row.type === 'url' ? 'https://' : 'shop', oninput: function (v) { row.value = v.trim(); emit(); } });
       if (row.type === 'goto') val.setAttribute('list', listId);
-      var fa = textInput(row.label.fa, { label: t('act.label.fa'), oninput: function (v) { row.label.fa = v; emit(); } });
-      var en = textInput(row.label.en, { ltr: true, label: t('act.label.en'), oninput: function (v) { row.label.en = v; emit(); } });
+      var label = translatedInput(row.label, { label: t('act.label'), oninput: function (v) { row.label = v; emit(); } });
       var err = h('p', { class: 'text-xs text-error-600 dark:text-error-400 eco-items-err', hidden: true });
-      errors.push({ row: row, el: err });
+      errors.push({ row: row, el: err, label: label });
       listEl.appendChild(h('div', { class: 'border border-secondary-200 dark:border-secondary-700 rounded-md p-3', 'data-action-row': '' },
         h('div', { class: 'eco-actions-row' },
           cell('act.type', typeSel),
           cell('act.value', val),
-          cell('act.label.fa', fa),
-          cell('act.label.en', en),
+          h('div', { class: 'min-w-0 eco-actions-label' }, h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('act.label') }), label),
           h('div', { class: 'eco-items-remove' }, button({ variant: 'danger', size: 'iconLg', icon: 'trash', title: t('remove'), onclick: function () { rows.splice(idx, 1); render(); emit(); } }))),
         h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1.5', text: t(row.type === 'url' ? 'act.url.hint' : 'act.goto.hint') }),
         err));
@@ -2259,20 +2525,34 @@ function actionsEditor(value, onchange) {
   }
   render();
   var el = h('div', {}, listEl, datalist, h('div', { class: 'mt-2' }, add));
+  function show(e, msg, code) {
+    e.el.textContent = msg;
+    e.el.hidden = !msg;
+    e.el.parentElement.classList.toggle('eco-row-invalid', !!msg);
+    e.label.markLang(code || null);
+  }
   el.validate = function () {
     var bad = false;
     errors.forEach(function (e) {
       var r = e.row;
       var msg = '';
-      if (!r.label.fa.trim()) msg = t('act.label.fa') + ': ' + t('err.required');
+      var hit = trCheck(r.label, { required: true, max: 64 });
+      if (hit) msg = t('act.label') + ': ' + t('code.' + hit.code, { lang: langName(hit.lang) });
       else if (!r.value) msg = t('act.value') + ': ' + t('err.required');
       else if (r.type === 'url' && !/^https?:\/\/\S+$/i.test(r.value)) msg = t('code.INVALID_ACTION');
-      e.el.textContent = msg;
-      e.el.hidden = !msg;
-      e.el.parentElement.classList.toggle('eco-row-invalid', !!msg);
+      show(e, msg, hit ? hit.lang : null);
       if (msg) bad = true;
     });
     return bad ? t('err.form') : null;
+  };
+  el.showServerError = function (err) {
+    if (!err || !/label$/.test(String(err.field || ''))) return false;
+    var target = errors.filter(function (e) { return trCheck(e.row.label, { required: true, max: 64 }); })[0] || errors[0];
+    if (!target) return false;
+    var code = trServerLang(err, target.row.label, { max: 64 });
+    show(target, t('act.label') + ': ' + errorText(err, code), code);
+    target.el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    return true;
   };
   return el;
 }
@@ -2418,10 +2698,17 @@ function buildForm(fields, values, ctx) {
           change(set.slice());
         }));
       });
+    } else if (t2 === 'i18n') {
+      control = translatedInput(cur, { name: f.name, label: label, multiline: f.multiline, markdown: f.markdown, rows: f.rows, max: f.max, oninput: function (v) {
+        setPath(values, f.name, v);
+        if (entry.wrap.setError) entry.wrap.setError('');
+        control.markLang(null);
+        if (ctx && ctx.onchange) ctx.onchange(values);
+      } });
     } else if (t2 === 'ref') {
-      control = refPicker({ resource: f.resource, valueKey: f.valueKey, filter: f.filter, value: cur, required: f.required, label: label, onchange: function (v) { change(v); } });
+      control = refPicker({ resource: f.resource, api: f.api, valueKey: f.valueKey, filter: f.filter, value: cur, required: f.required, label: label, onchange: function (v) { change(v); } });
     } else if (t2 === 'refMulti') {
-      control = refMulti({ resource: f.resource, filter: f.filter, value: cur, label: label, onchange: function (v) { change(v); } });
+      control = refMulti({ resource: f.resource, api: f.api, filter: f.filter, value: cur, label: label, onchange: function (v) { change(v); } });
     } else if (t2 === 'image') {
       control = imageInput(cur, function (v) { change(v); });
     } else if (t2 === 'datetime') {
@@ -2480,10 +2767,14 @@ function buildForm(fields, values, ctx) {
         else setPath(values, f.name, n);
       } else if (t2 === 'items' || t2 === 'actions') {
         msg = e.control.validate();
+      } else if (t2 === 'i18n') {
+        var hit = trCheck(v, f);
+        e.control.markLang(hit ? hit.lang : null);
+        if (hit) msg = t('code.' + hit.code, { lang: langName(hit.lang) });
       } else if (f.required && (v === null || v === undefined || v === '' || (Array.isArray(v) && !v.length))) {
         msg = t('err.required');
       } else if (t2 === 'key' && v && !(f.keyRe || KEY_RE).test(v)) {
-        msg = t(f.keyRe ? 'err.key' : 'err.key.general');
+        msg = t(f.keyErr || (f.keyRe ? 'err.key' : 'err.key.general'));
       } else if (t2 === 'code' && v && !CODE_RE.test(v)) {
         msg = t('err.code');
       }
@@ -2504,6 +2795,14 @@ function buildForm(fields, values, ctx) {
       if (name === e.def.name || name.indexOf(e.def.name + '.') === 0 || e.def.name.indexOf(name + '.') === 0) { if (!best) best = e; }
     });
     if (!best) return false;
+    if (best.def.type === 'actions' && best.control.showServerError) return best.control.showServerError(err);
+    if (best.def.type === 'i18n') {
+      var code = trServerLang(err, getPath(values, best.def.name), best.def);
+      best.control.markLang(code);
+      best.wrap.setError(errorText(err, code));
+      best.wrap.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      return true;
+    }
     best.wrap.setError(errorText(err));
     best.wrap.scrollIntoView({ block: 'center', behavior: 'smooth' });
     return true;
@@ -2517,14 +2816,9 @@ function buildForm(fields, values, ctx) {
       var visible = !f.when || f.when(values);
       var v = getPath(values, f.name);
       if (!visible) v = f.empty !== undefined ? f.empty : null;
-      if (f.type === 'actions' && Array.isArray(v)) v = v.map(function (r) { var label = { fa: r.label.fa.trim() }; if (r.label.en.trim()) label.en = r.label.en.trim(); return { type: r.type, value: r.value, label: label }; });
+      if (f.type === 'actions' && Array.isArray(v)) v = v.map(function (r) { return { type: r.type, value: r.value, label: trClean(r.label) }; });
+      if (f.type === 'i18n') v = trClean(v);
       if (f.type === 'items' && Array.isArray(v)) v = v.map(function (r) { return { type: r.type, key: r.key, action: r.action, value: r.value }; });
-      if (/\.(fa|en)$/.test(f.name)) {
-        var parentPath = f.name.slice(0, -3);
-        if (typeof getPath(out, parentPath) !== 'object' || getPath(out, parentPath) === null) setPath(out, parentPath, {});
-        if (v === null || v === undefined || String(v).trim() === '') return;
-        v = String(v).trim();
-      }
       setPath(out, f.name, v === undefined ? null : v);
     });
     return out;
@@ -2538,7 +2832,43 @@ function buildForm(fields, values, ctx) {
 var METHODS = ['zarinpal', 'zibal', 'bazaar', 'myket', 'in_app'];
 var GATEWAYS = ['zarinpal', 'zibal'];
 var STORES = ['bazaar', 'myket'];
-var CATEGORY_KINDS = ['product', 'prize', 'gift', 'currency', 'faq', 'news'];
+var CATEGORY_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news'];
+var TAG_KEY_TYPES = ['product', 'prize', 'news', 'faq', 'general'];
+var LANG_CODE_RE = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/;
+var keyTypeCache = {};
+var keyTypePromise = null;
+
+function loadKeyTypes() {
+  if (keyTypePromise) return keyTypePromise;
+  keyTypePromise = Promise.all(['categories', 'tags'].map(function (r) {
+    return baseApi('GET', '/' + r + '/key-types').then(function (res) { if (res && res.items && res.items.length) keyTypeCache[r] = res.items; }, function () { return null; });
+  })).then(function () { return keyTypeCache; }, function () { keyTypePromise = null; return keyTypeCache; });
+  return keyTypePromise;
+}
+
+function keyTypeLabel(resource, key) {
+  var hit = (keyTypeCache[resource] || []).filter(function (k) { return k.key === key; })[0];
+  return hit && hit.name && i18nText(hit.name) ? i18nText(hit.name) : has('kind.' + key) ? t('kind.' + key) : key;
+}
+
+function keyTypeOptions(resource) {
+  return function () {
+    var list = keyTypeCache[resource] ? keyTypeCache[resource].map(function (k) { return k.key; }) : resource === 'tags' ? TAG_KEY_TYPES : CATEGORY_KEY_TYPES;
+    return list.map(function (k) { return { value: k, label: keyTypeLabel(resource, k) }; });
+  };
+}
+
+function categoryField(keyType) {
+  return { name: 'categoryId', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: keyType }, label: 'f.category', optional: true };
+}
+
+function tagsField(keyType) {
+  return { name: 'tagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: [{ keyType: keyType }, { keyType: 'general' }], label: 'f.tags', optional: true, empty: [] };
+}
+
+function tr(name, opts) {
+  return Object.assign({ name: name, type: 'i18n', label: 'f.' + name }, opts || {});
+}
 var STATUS_COLOR = { pending: 'warning', success: 'success', failed: 'error', expired: 'secondary' };
 
 function opts(prefix, keys) {
@@ -2588,18 +2918,45 @@ function itemSummary(items) {
   });
 }
 
-var nameRow = function (base, required) {
-  return { type: 'row', fields: [
-    { name: base + '.fa', label: 'f.' + base + '.fa', required: required !== false },
-    { name: base + '.en', label: 'f.' + base + '.en', ltr: true, optional: true }
-  ] };
-};
-var nameTextareas = function (base) {
-  return { type: 'row', fields: [
-    { name: base + '.fa', type: 'textarea', label: 'f.' + base + '.fa', optional: true },
-    { name: base + '.en', type: 'textarea', label: 'f.' + base + '.en', ltr: true, optional: true }
-  ] };
-};
+function languageCell(it) {
+  var pic = h('div', { class: 'h-8 w-8 shrink-0 rounded-md bg-secondary-100 dark:bg-secondary-700 overflow-hidden flex items-center justify-center text-secondary-400' });
+  pic.appendChild(it.iconUrl ? img(it.iconUrl, 'languages') : icon('languages', 'h-4 w-4'));
+  var trName = i18nText(it.name);
+  return h('div', { class: 'flex items-center gap-3 min-w-0' }, pic,
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'font-medium truncate flex items-center gap-2' }, h('span', { dir: it.direction === 'rtl' ? 'rtl' : 'ltr', text: it.nativeName || it.code }), it.isDefault ? tag(t('lang.default'), 'primary') : null),
+      h('div', { class: 'text-secondary-500 flex items-center gap-2' }, mono(it.code), trName && trName !== it.nativeName ? h('span', { class: 'text-xs truncate', text: trName }) : null)));
+}
+
+function languageBody(it, patch) {
+  return Object.assign({ name: it.name || {}, nativeName: it.nativeName, direction: it.direction, iconUrl: it.iconUrl || '', isActive: !!it.isActive, isDefault: !!it.isDefault, sort: it.sort || 0 }, patch || {});
+}
+
+function languageActive(it) {
+  var box = h('div', { class: 'flex items-center gap-2' });
+  var sw = toggle(it.isActive, null, function (on) {
+    baseApi('PUT', '/languages/' + encodeURIComponent(it.code), languageBody(it, { isActive: on })).then(function () {
+      it.isActive = on;
+      label.textContent = on ? t('active') : t('inactive');
+      toast('success', t(on ? 'lang.activated' : 'lang.deactivated', { name: it.nativeName || it.code }));
+      languagesChanged();
+    }, function (err) {
+      sw.set(!on);
+      toast('error', errorText(err));
+    });
+  }, 'sm');
+  sw.setAttribute('aria-label', t('f.isActive'));
+  sw.setAttribute('title', t('f.isActive'));
+  var label = h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: it.isActive ? t('active') : t('inactive') });
+  box.appendChild(sw);
+  box.appendChild(label);
+  return box;
+}
+
+var languageHooks = [];
+function languagesChanged() {
+  loadLanguages(true).then(function () { languageHooks.forEach(function (fn) { fn(); }); });
+}
 
 var RESOURCES = {
   currencies: {
@@ -2615,7 +2972,7 @@ var RESOURCES = {
         { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, keyRe: CURRENCY_KEY_RE, lockOnEdit: true },
         { name: 'type', type: 'select', label: 'f.type', required: true, options: opts('type.', ['soft', 'hard']) }
       ] },
-      nameRow('name'),
+      tr('name', { required: true, max: 128 }),
       { type: 'row', fields: [
         { name: 'defaultValue', type: 'number', label: 'f.defaultValue', hint: 'f.defaultValue.currency.hint', min: 0 },
         { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
@@ -2623,7 +2980,7 @@ var RESOURCES = {
       { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function () { return { type: 'soft', name: { fa: '', en: '' }, defaultValue: 0, sort: 0, metadata: {} }; }
+    defaults: function () { return { type: 'soft', name: {}, defaultValue: 0, sort: 0, metadata: {} }; }
   },
   metas: {
     columns: [
@@ -2634,12 +2991,12 @@ var RESOURCES = {
     ],
     fields: [
       { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, lockOnEdit: true },
-      nameRow('name'),
+      tr('name', { required: true, max: 128 }),
       { name: 'defaultValue', type: 'number', int: false, label: 'f.defaultValue', hint: 'f.defaultValue.meta.hint' },
       { name: 'serverOnly', type: 'bool', inline: true, label: 'f.serverOnly', hint: 'f.serverOnly.hint' },
       { name: 'settings', type: 'json', label: 'f.settings', optional: true, empty: {} }
     ],
-    defaults: function () { return { name: { fa: '', en: '' }, defaultValue: 0, serverOnly: false, settings: {} }; }
+    defaults: function () { return { name: {}, defaultValue: 0, serverOnly: false, settings: {} }; }
   },
   prizes: {
     columns: [
@@ -2653,17 +3010,14 @@ var RESOURCES = {
     ],
     fields: [
       { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
-      nameRow('name'),
-      nameTextareas('message'),
-      { type: 'row', fields: [
-        { name: 'categoryId', type: 'ref', resource: 'categories', filter: { kind: 'prize' }, label: 'f.category', optional: true },
-        { name: 'tagIds', type: 'refMulti', resource: 'tags', label: 'f.tags', optional: true, empty: [] }
-      ] },
+      tr('name', { required: true, max: 128 }),
+      tr('message', { multiline: true, max: 1000, optional: true }),
+      { type: 'row', fields: [categoryField('prize'), tagsField('prize')] },
       { name: 'isRepeatable', type: 'bool', inline: true, label: 'f.isRepeatable', hint: 'f.isRepeatable.hint' },
       { name: 'items', type: 'items', label: 'f.items' },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function () { return { name: { fa: '', en: '' }, message: { fa: '', en: '' }, tagIds: [], isRepeatable: false, items: [{ type: 'currency', key: '', action: 'add', value: 0 }], metadata: {} }; }
+    defaults: function () { return { name: {}, message: {}, tagIds: [], isRepeatable: false, items: [{ type: 'currency', key: '', action: 'add', value: 0 }], metadata: {} }; }
   },
   products: {
     filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
@@ -2679,12 +3033,9 @@ var RESOURCES = {
         { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
         { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
       ] },
-      nameRow('name'),
-      nameTextareas('description'),
-      { type: 'row', fields: [
-        { name: 'categoryId', type: 'ref', resource: 'categories', filter: { kind: 'product' }, label: 'f.category', optional: true },
-        { name: 'tagIds', type: 'refMulti', resource: 'tags', label: 'f.tags', optional: true, empty: [] }
-      ] },
+      tr('name', { required: true, max: 128 }),
+      tr('description', { multiline: true, max: 4000, optional: true }),
+      { type: 'row', fields: [categoryField('product'), tagsField('product')] },
       { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', hint: 'f.prize.product.hint', required: true },
       { type: 'heading', label: 'f.paymentMethods' },
       { name: 'paymentMethods', type: 'multi', required: true, options: opts('method.', METHODS) },
@@ -2715,7 +3066,7 @@ var RESOURCES = {
       ] },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function () { return { isActive: true, name: { fa: '', en: '' }, description: { fa: '', en: '' }, tagIds: [], paymentMethods: ['zarinpal'], discountPercent: 0, sku: {}, coinPrice: null, isSubscription: false, minLevel: 0, sort: 0, metadata: {} }; },
+    defaults: function () { return { isActive: true, name: {}, description: {}, tagIds: [], paymentMethods: ['zarinpal'], discountPercent: 0, sku: {}, coinPrice: null, isSubscription: false, minLevel: 0, sort: 0, metadata: {} }; },
     fixPayload: function (p) {
       if (p.coinPrice && p.coinPrice.currencyKey == null && p.coinPrice.amount == null) p.coinPrice = null;
       var sku = {};
@@ -2728,17 +3079,15 @@ var RESOURCES = {
   gifts: {
     filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
     columns: [
-      { label: 'col.name', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: it.name || '' }), it.code ? h('div', { class: 'text-secondary-500' }, mono(it.code)) : null); }, skeleton: '50%' },
+      { label: 'col.name', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.name) }), it.code ? h('div', { class: 'text-secondary-500' }, mono(it.code)) : null); }, skeleton: '50%' },
       { label: 'col.type', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, tag(t('gift.' + it.type), it.type === 'discount' ? 'warning' : 'primary'), it.type === 'discount' && it.discountPercent ? tag(t('percent', { n: it.discountPercent }), 'secondary') : null); }, width: 150 },
       { label: 'col.usage', render: function (it) { return h('span', { class: 'tabular-nums whitespace-nowrap', text: fmtNum(it.totalUsed || 0) + ' / ' + (it.maxTotalUses ? fmtNum(it.maxTotalUses) : t('unlimited')) }); }, width: 130 },
       { label: 'col.expire', render: function (it) { return dateCell(it.expireAt); }, width: 190 },
       { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 }
     ],
     fields: [
-      { type: 'row', fields: [
-        { name: 'name', label: 'f.gift.name', required: true },
-        { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
-      ] },
+      tr('name', { label: 'f.gift.name', required: true, max: 128 }),
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' },
       { type: 'row', fields: [
         { name: 'type', type: 'select', label: 'f.type', required: true, options: opts('gift.', ['reward', 'discount']) },
         { name: 'code', type: 'code', label: 'f.code', hint: 'f.code.hint', optional: true, check: function (c, v) { return v.type === 'discount' && !c ? t('code.CODE_REQUIRED') : null; } }
@@ -2756,42 +3105,93 @@ var RESOURCES = {
       { name: 'isPromo', type: 'bool', inline: true, label: 'f.isPromo' },
       { name: 'totalUsed', type: 'static', label: 'f.totalUsed', readonly: true, when: function (v) { return !!v.id; }, render: function (v) { return numCell(v.totalUsed || 0); } }
     ],
-    defaults: function () { return { type: 'reward', isActive: true, isPromo: false, perUserLimit: 1, maxTotalUses: null, code: '' }; },
+    defaults: function () { return { name: {}, type: 'reward', isActive: true, isPromo: false, perUserLimit: 1, maxTotalUses: null, code: '' }; },
     fixPayload: function (p) { if (p.code === '') p.code = null; return p; }
   },
   categories: {
-    filters: [{ name: 'kind', label: 'filter.kind', options: opts('kind.', CATEGORY_KINDS) }],
+    api: 'base',
+    filters: [{ name: 'keyType', label: 'filter.keyType', options: keyTypeOptions('categories') }],
     columns: [
-      { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '55%' },
-      { label: 'col.kind', render: function (it) { return tag(t('kind.' + it.kind), 'secondary'); }, width: 130 },
+      { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '55%' },
+      { label: 'col.keyType', render: function (it) { return tag(keyTypeLabel('categories', it.keyType), 'secondary'); }, width: 140 },
       { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 90 },
       { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
     ],
     fields: [
       { type: 'row', fields: [
         { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
-        { name: 'kind', type: 'select', label: 'f.kind', required: true, options: opts('kind.', CATEGORY_KINDS) }
+        { name: 'keyType', type: 'select', label: 'f.keyType', hint: 'f.keyType.category.hint', required: true, options: keyTypeOptions('categories') }
       ] },
-      nameRow('name'),
-      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+      tr('name', { required: true, max: 128 }),
+      tr('description', { multiline: true, max: 1000, optional: true }),
+      { type: 'row', fields: [
+        { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
+        { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+      ] },
+      { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function (query) { return { kind: (query && query.kind) || 'product', name: { fa: '', en: '' }, sort: 0 }; }
+    defaults: function (query) { return { keyType: (query && query.keyType) || 'product', name: {}, description: {}, iconUrl: '', metadata: {}, sort: 0 }; },
+    fixPayload: function (p) { if (!p.iconUrl) p.iconUrl = ''; if (p.sort == null) p.sort = 0; return p; }
   },
   tags: {
+    api: 'base',
+    filters: [{ name: 'keyType', label: 'filter.keyType', options: keyTypeOptions('tags') }],
     columns: [
-      { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '55%' },
+      { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '55%' },
+      { label: 'col.keyType', render: function (it) { return tag(keyTypeLabel('tags', it.keyType), it.keyType === 'general' ? 'primary' : 'secondary'); }, width: 140 },
+      { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 90 },
       { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
     ],
     fields: [
-      { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
-      nameRow('name')
+      { type: 'row', fields: [
+        { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
+        { name: 'keyType', type: 'select', label: 'f.keyType', hint: 'f.keyType.tag.hint', required: true, options: keyTypeOptions('tags') }
+      ] },
+      tr('name', { required: true, max: 128 }),
+      tr('description', { multiline: true, max: 1000, optional: true }),
+      { type: 'row', fields: [
+        { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
+        { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+      ] },
+      { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function () { return { name: { fa: '', en: '' } }; }
+    defaults: function (query) { return { keyType: (query && query.keyType) || 'general', name: {}, description: {}, iconUrl: '', metadata: {}, sort: 0 }; },
+    fixPayload: function (p) { if (!p.iconUrl) p.iconUrl = ''; if (p.sort == null) p.sort = 0; return p; }
+  },
+  languages: {
+    api: 'base',
+    settings: true,
+    filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
+    columns: [
+      { label: 'col.language', render: languageCell, skeleton: '60%' },
+      { label: 'col.status', render: languageActive, width: 150 },
+      { label: 'col.direction', render: function (it) { return tag(t('dir.' + it.direction), 'secondary'); }, width: 150 },
+      { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 90 }
+    ],
+    fields: [
+      { type: 'row', fields: [
+        { name: 'code', type: 'key', label: 'f.lang.code', hint: 'f.lang.code.hint', required: true, keyRe: LANG_CODE_RE, keyErr: 'code.INVALID_LANGUAGE_CODE', lockOnEdit: true },
+        { name: 'nativeName', label: 'f.lang.nativeName', hint: 'f.lang.nativeName.hint', required: true, check: function (v) { return v && Array.from(v.trim()).length > 64 ? t('code.INVALID_NATIVE_NAME') : null; } }
+      ] },
+      tr('name', { label: 'f.lang.name', hint: 'f.lang.name.hint', required: true, max: 64 }),
+      { type: 'row', fields: [
+        { name: 'direction', type: 'select', label: 'f.lang.direction', required: true, options: opts('dir.', ['rtl', 'ltr']) },
+        { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+      ] },
+      { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
+      { type: 'row', fields: [
+        { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.lang.active.hint' },
+        { name: 'isDefault', type: 'bool', inline: true, label: 'f.lang.default', hint: 'f.lang.default.hint' }
+      ] }
+    ],
+    defaults: function () { return { code: '', name: {}, nativeName: '', direction: 'ltr', iconUrl: '', isActive: true, isDefault: false, sort: 0 }; },
+    fixPayload: function (p) { p.code = String(p.code || '').trim().toLowerCase().replace(/_/g, '-'); if (!p.iconUrl) p.iconUrl = ''; if (p.sort == null) p.sort = 0; return p; },
+    afterSave: function () { languagesChanged(); }
   },
   faqs: {
     api: 'publication',
     filters: [
-      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', filter: { kind: 'faq' } },
+      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'faq' } },
       { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }
     ],
     columns: [
@@ -2806,21 +3206,20 @@ var RESOURCES = {
       { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
     ],
     fields: [
-      nameRow('question'),
-      { name: 'answer.fa', type: 'markdown', label: 'f.answer.fa', required: true },
-      { name: 'answer.en', type: 'markdown', label: 'f.answer.en', ltr: true, optional: true },
+      tr('question', { required: true, max: 500 }),
+      tr('answer', { markdown: true, required: true, max: 10000 }),
       { type: 'row', fields: [
-        { name: 'categoryId', type: 'ref', resource: 'categories', filter: { kind: 'faq' }, label: 'f.category', optional: true },
+        categoryField('faq'),
         { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
       ] },
       { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.faq.active.hint' }
     ],
-    defaults: function (query) { return { question: { fa: '', en: '' }, answer: { fa: '', en: '' }, categoryId: (query && query.categoryId) || null, isActive: true, sort: 0 }; }
+    defaults: function (query) { return { question: {}, answer: {}, categoryId: (query && query.categoryId) || null, isActive: true, sort: 0 }; }
   },
   news: {
     api: 'publication',
     filters: [
-      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', filter: { kind: 'news' } },
+      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'news' } },
       { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } },
       { name: 'isPinned', label: 'filter.pinned', options: function () { return [{ value: 'true', label: t('news.pinned') }, { value: 'false', label: t('news.notPinned') }]; } }
     ],
@@ -2847,13 +3246,12 @@ var RESOURCES = {
       { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
     ],
     fields: [
-      nameRow('title'),
-      nameTextareas('summary'),
-      { name: 'body.fa', type: 'markdown', label: 'f.body.fa', required: true, rows: 8 },
-      { name: 'body.en', type: 'markdown', label: 'f.body.en', ltr: true, optional: true, rows: 8 },
+      tr('title', { required: true, max: 200 }),
+      tr('summary', { multiline: true, max: 1000, optional: true }),
+      tr('body', { markdown: true, required: true, max: 50000, rows: 8 }),
       { name: 'coverUrl', type: 'image', label: 'f.cover', optional: true },
       { type: 'row', fields: [
-        { name: 'categoryId', type: 'ref', resource: 'categories', filter: { kind: 'news' }, label: 'f.category', optional: true },
+        categoryField('news'),
         { name: 'publishedAt', type: 'datetime', label: 'f.publishedAt', hint: 'f.publishedAt.hint', optional: true }
       ] },
       { type: 'row', fields: [
@@ -2869,29 +3267,35 @@ var RESOURCES = {
       { name: 'actions', type: 'actions', empty: [] },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function (query) { return { title: { fa: '', en: '' }, summary: { fa: '', en: '' }, body: { fa: '', en: '' }, coverUrl: '', categoryId: (query && query.categoryId) || null, publishedAt: null, isActive: true, isPinned: false, allowComment: true, freeComment: false, actions: [], metadata: {} }; },
+    defaults: function (query) { return { title: {}, summary: {}, body: {}, coverUrl: '', categoryId: (query && query.categoryId) || null, publishedAt: null, isActive: true, isPinned: false, allowComment: true, freeComment: false, actions: [], metadata: {} }; },
     fixPayload: function (p) { if (!p.coverUrl) p.coverUrl = ''; if (!p.publishedAt) delete p.publishedAt; return p; }
   }
 };
 
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments', 'categories', 'tags'],
+  base: ['categories', 'tags'],
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments'],
   publication: ['faqs', 'news', 'comments', 'notifications']
 };
-var SETTINGS_TABS = ['payment-methods', 'sms', 'email'];
+var SETTINGS_TABS = ['payment-methods', 'sms', 'email', 'languages'];
 var LEGACY_HASHES = { economy: { 'payment-methods': 'payment-methods' }, publication: { providers: 'sms' } };
-var SECTION_ORDER = ['economy', 'publication'];
-var PAGES = SECTIONS.economy.concat(SECTIONS.publication);
+var SECTION_ORDER = ['base', 'economy', 'publication'];
+var MOVED_PAGES = { 'economy/categories': 'base/categories', 'economy/tags': 'base/tags' };
+var PAGES = SECTIONS.base.concat(SECTIONS.economy, SECTIONS.publication);
 var LIMIT = 20;
 var lastQuery = { comments: { status: 'pending' } };
 
 function sectionOf(page) {
   if (SETTINGS_TABS.indexOf(page) !== -1) return 'settings';
+  if (SECTIONS.base.indexOf(page) !== -1) return 'base';
   return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
 }
 
 function apiFor(page) {
-  return sectionOf(page) === 'publication' ? pubApi : api;
+  var def = RESOURCES[page];
+  if (def && def.api === 'base') return baseApi;
+  var sec = sectionOf(page);
+  return sec === 'publication' ? pubApi : sec === 'base' ? baseApi : api;
 }
 
 function hashFor(page, id, query) {
@@ -2915,7 +3319,7 @@ function listPage(container, name, query, ctx) {
   lastQuery[name] = currentQuery();
 
   var create = def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new', currentQuery()); } }) : def.create ? def.create() : null;
-  var frame = pageFrame(t('nav.' + name), t('desc.' + name), create);
+  var frame = def.settings ? tabFrame(t('desc.' + name), create) : pageFrame(t('nav.' + name), t('desc.' + name), create);
   var pagerTop = h('div', { class: 'relative flex items-center justify-end' });
   var pagerBottom = h('div', { class: 'flex gap-2 py-4 items-center justify-end' });
   var tableBox = h('div', {});
@@ -2928,7 +3332,7 @@ function listPage(container, name, query, ctx) {
   var filters = (def.filters || []).map(function (f) {
     var opts2 = typeof f.options === 'function' ? f.options() : f.options;
     if (f.type === 'ref') {
-      var picker = refPicker({ resource: f.resource, api: f.api === 'publication' ? pubApi : api, filter: f.filter, value: state.filters[f.name] || '', label: t(f.label), placeholder: t(f.label) + ': ' + t('all'), onchange: function (v) {
+      var picker = refPicker({ resource: f.resource, api: typeof f.api === 'function' ? f.api : f.api === 'publication' ? pubApi : api, filter: f.filter, value: state.filters[f.name] || '', label: t(f.label), placeholder: t(f.label) + ': ' + t('all'), onchange: function (v) {
         state.filters[f.name] = v || '';
         state.page = 1;
         sync();
@@ -3062,7 +3466,7 @@ function openEditor(name, id, query, onSaved) {
 
   var call = apiFor(name);
   var item = isNew ? Promise.resolve(def.defaults(query)) : call('GET', '/' + name + '/' + encodeURIComponent(id));
-  item.then(function (data) {
+  Promise.all([item, freshLanguages(), loadKeyTypes()]).then(function (all) { return all[0]; }).then(function (data) {
     if (!panelState || panelState.el !== el) return;
     var values = clone(data) || {};
     var form = buildForm(def.fields, values);
@@ -3082,6 +3486,7 @@ function openEditor(name, id, query, onSaved) {
       var doDelete = function () {
         call('DELETE', '/' + name + '/' + encodeURIComponent(id)).then(function () {
           toast('success', t('deleted'));
+          if (def.afterSave) def.afterSave();
           back();
           if (onSaved) onSaved();
         }, function (err) {
@@ -3104,6 +3509,7 @@ function openEditor(name, id, query, onSaved) {
       setBusy(saveBtn, true, t('saving'));
       call(isNew ? 'POST' : 'PUT', '/' + name + (isNew ? '' : '/' + encodeURIComponent(id)), payload).then(function () {
         toast('success', t('saved'));
+        if (def.afterSave) def.afterSave();
         back();
         if (onSaved) onSaved();
       }, function (err) {
@@ -3355,6 +3761,76 @@ function paymentMethodsPage(container) {
 
 var OVERVIEW_CATALOG = ['currencies', 'metas', 'prizes', 'products', 'gifts', 'categories', 'tags'];
 
+var COVERAGE_PAGES = { languages: 'languages', categories: 'categories', tags: 'tags', currencies: 'currencies', metas: 'metas', prizes: 'prizes', products: 'products', gifts: 'gifts', faqs: 'faqs', news: 'news' };
+
+function coverageLabel(resource) {
+  return resource === 'languages' ? t('tab.languages') : has('nav.' + resource) ? t('nav.' + resource) : resource;
+}
+
+function coveragePanel() {
+  var body = h('div', {});
+  var box = section('cov.title', h('div', {}, h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 mb-4', text: t('cov.desc') }), body),
+    button({ variant: 'muted', size: 'icon', icon: 'refresh', iconClass: 'h-3 w-3', title: t('refresh'), onclick: function () { load(); } }));
+  box.classList.add('mt-6');
+  box.setAttribute('data-coverage', '');
+  var seq = 0;
+  function cols(langs) {
+    return [{ label: t('cov.resource'), skeleton: '55%' }, { label: t('cov.total'), width: 90 }].concat(langs.map(function (code) { return { label: langName(code), width: 120 }; }));
+  }
+  function skeleton() {
+    var langs = LANGS.active.map(function (l) { return l.code; });
+    var chips = h('div', { class: 'flex flex-wrap gap-2 mb-4' }, langs.map(function () { return bar('8rem', 'h-6'); }));
+    clear(body).appendChild(h('div', {}, chips, table(cols(langs), skeletonRows(cols(langs), 6))));
+  }
+  function render(c) {
+    var langs = (c && c.languages) || [];
+    var missing = (c && c.missing) || {};
+    var chips = h('div', { class: 'flex flex-wrap gap-2 mb-4' }, langs.map(function (code) {
+      var n = missing[code] || 0;
+      return h('span', { class: 'eco-tag eco-tag--' + (n ? 'warning' : 'success') + ' inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded-md', 'data-cov-lang': code, 'data-cov-missing': String(n) },
+        h('span', { class: 'font-medium', text: langName(code) + (code === c.default ? ' (' + t('tr.default') + ')' : '') }),
+        h('span', { class: 'tabular-nums', text: n ? t('cov.missingN', { n: n }) : t('cov.complete') }));
+    }));
+    var rows = ((c && c.items) || []).map(function (it) {
+      var page = COVERAGE_PAGES[it.resource];
+      var href = page ? hashFor(page) : null;
+      var name = h('div', { class: 'min-w-0' },
+        href ? h('a', { href: href, class: 'eco-link font-medium', text: coverageLabel(it.resource) }) : h('span', { class: 'font-medium', text: coverageLabel(it.resource) }),
+        h('div', { class: 'text-xs text-secondary-500', text: t('cov.module.' + it.module) }));
+      var cells = [name, h('span', { class: 'tabular-nums', text: fmtNum(it.total || 0) })];
+      langs.forEach(function (code) {
+        var n = (it.missing || {})[code] || 0;
+        cells.push(n
+          ? h('a', { href: href || '#', class: 'eco-tag eco-tag--warning inline-flex leading-tight px-2 py-0.5 text-xs rounded-md whitespace-nowrap tabular-nums', 'data-cov': it.resource + ':' + code, text: t('cov.missingN', { n: n }), title: t('cov.open') })
+          : h('span', { class: 'eco-text-success inline-flex items-center gap-1 text-xs', 'data-cov': it.resource + ':' + code }, icon('check', 'h-3.5 w-3.5'), h('span', { text: t('cov.complete') })));
+      });
+      return { item: it, cells: cells };
+    });
+    clear(body).appendChild(h('div', {}, chips, table(cols(langs), rows)));
+  }
+  function load() {
+    var my = ++seq;
+    skeleton();
+    baseApi('GET', '/languages/coverage').then(function (c) { if (my === seq) render(c); }, function (err) { if (my === seq) clear(body).appendChild(errorBlock(err, load)); });
+  }
+  load();
+  box.reload = load;
+  return box;
+}
+
+function languagesPage(container, query, ctx) {
+  var list = listPage(container, 'languages', query, ctx);
+  var cov = coveragePanel();
+  container.appendChild(cov);
+  var hook = function () {
+    if (!cov.isConnected) { languageHooks.splice(languageHooks.indexOf(hook), 1); return; }
+    cov.reload();
+    list.reload();
+  };
+  languageHooks.push(hook);
+  return list;
+}
+
 function statCard(label, value, sub, href, opts) {
   opts = opts || {};
   var inner = h('div', { class: 'p-4 flex flex-col gap-1 h-full' },
@@ -3579,11 +4055,14 @@ function statTile(label, value, color) {
 function i18nBlock(v, markdown) {
   v = v || {};
   var out = h('div', { class: 'flex flex-col gap-3' });
-  ['fa', 'en'].forEach(function (l) {
+  var order = LANGS.items.map(function (l) { return l.code; });
+  Object.keys(v).sort().forEach(function (k) { if (order.indexOf(k) === -1) order.push(k); });
+  order.forEach(function (l) {
     if (!v[l]) return;
-    out.appendChild(h('div', {},
-      h('div', { class: 'text-xs text-secondary-500 mb-1', text: t('lang.' + l) }),
-      markdown ? mdPreview(v[l], l === 'en') : h('div', { class: 'text-sm eco-pre-line break-words', dir: l === 'en' ? 'ltr' : 'rtl', text: v[l] })));
+    var ltr = langDir(l) === 'ltr';
+    out.appendChild(h('div', { 'data-lang': l },
+      h('div', { class: 'text-xs text-secondary-500 mb-1', text: langName(l) + (l === LANGS.def ? ' (' + t('tr.default') + ')' : '') }),
+      markdown ? mdPreview(v[l], ltr) : h('div', { class: 'text-sm eco-pre-line break-words', dir: ltr ? 'ltr' : 'rtl', text: v[l] })));
   });
   return out;
 }
@@ -3648,7 +4127,7 @@ function notificationDetail(container, id) {
     clear(grid);
     clear(titleBox).appendChild(h('span', { text: t('nt.title') + ' ' }));
     titleBox.appendChild(h('span', { class: 'font-mono text-base text-secondary-500', dir: 'ltr', text: String(n.id).slice(0, 8) }));
-    var action = n.action && n.action.type ? h('div', { class: 'flex items-center gap-1.5' }, tag(t('act.' + n.action.type), 'secondary'), mono(n.action.value)) : null;
+    var action = n.action && n.action.type ? h('div', { class: 'flex flex-wrap items-center gap-1.5' }, tag(t('act.' + n.action.type), 'secondary'), mono(n.action.value), n.action.label && i18nText(n.action.label) ? h('span', { class: 'text-sm', text: i18nText(n.action.label) }) : null) : null;
     grid.appendChild(section('nt.info', dl([
       ['col.status', statusBox],
       ['col.channel', h('div', { class: 'flex flex-wrap items-center gap-1.5' }, tag(t('ch.' + n.channel), n.channel === 'in_app' ? 'primary' : 'secondary'), n.providerKind ? h('span', { class: 'text-sm', text: kindLabel(n.providerKind) }) : null)],
@@ -3692,7 +4171,7 @@ function notificationDetail(container, id) {
         var sandbox = it.error === 'sandbox';
         return { item: it, cells: [
           userCell(it.userId, it.username, it.displayName),
-          h('div', { class: 'flex flex-wrap gap-1' }, tag(t('rst.' + it.status), RECIPIENT_COLOR[it.status]), sandbox ? tag(t('pv.sandbox.short'), 'warning') : null),
+          h('div', { class: 'flex flex-wrap gap-1' }, tag(t('rst.' + it.status), RECIPIENT_COLOR[it.status]), sandbox ? tag(t('pv.sandbox.short'), 'warning') : null, it.lang ? h('span', { 'data-recipient-lang': it.lang }, tag(langName(it.lang), 'secondary')) : null),
           it.address ? mono(it.address) : h('span', {}),
           it.error && !sandbox && it.error !== 'no address' ? h('span', { class: 'text-xs text-error-600 dark:text-error-400 break-words', dir: 'auto', text: it.error }) : h('span', {}),
           h('span', { class: 'tabular-nums', text: fmtNum(it.attempts || 0) }),
@@ -3774,9 +4253,9 @@ function composePage(container, query) {
   var v = {
     channel: CHANNELS.indexOf(query.channel) !== -1 ? query.channel : 'in_app',
     providerId: '',
-    title: { fa: '', en: '' },
-    body: { fa: '', en: '' },
-    action: { type: '', value: '' },
+    title: {},
+    body: {},
+    action: { type: '', value: '', label: {} },
     target: { mode: 'users', userIds: query.userId ? [query.userId] : [], groupId: '' }
   };
   var providers = [];
@@ -3813,11 +4292,11 @@ function composePage(container, query) {
     }, t('col.channel'), 'md');
     main.appendChild(section('nt.s.channel', h('div', {}, h('div', { class: 'mb-4' }, channelSeg), providerBox)));
 
-    var titleRow = h('div', { class: 'eco-form-row' });
-    fields.titleFa = field(t('nt.f.title.fa'), textInput('', { label: t('nt.f.title.fa'), oninput: function (x) { v.title.fa = x; fields.titleFa.setError(''); } }));
-    fields.titleEn = field(t('nt.f.title.en'), textInput('', { ltr: true, label: t('nt.f.title.en'), oninput: function (x) { v.title.en = x; } }), null, { optional: true });
-    titleRow.appendChild(fields.titleFa);
-    titleRow.appendChild(fields.titleEn);
+    var titleRow = h('div', {});
+    var titleCtl = translatedInput(v.title, { label: t('nt.f.title'), oninput: function (x) { v.title = x; fields.title.setError(''); titleCtl.markLang(null); } });
+    fields.title = field(t('nt.f.title'), titleCtl);
+    fields.title.ctl = titleCtl;
+    titleRow.appendChild(fields.title);
     var bodyBox = h('div', {});
     main.appendChild(section('nt.s.content', h('div', {}, titleRow, bodyBox)));
 
@@ -3831,7 +4310,13 @@ function composePage(container, query) {
     var actValue = textInput('', { ltr: true, mono: true, label: t('act.value'), oninput: function (x) { v.action.value = x.trim(); fields.action.setError(''); } });
     actValue.hidden = true;
     fields.action = field(null, h('div', { class: 'eco-form-row' }, actType, actValue, h('datalist', { id: 'eco-nt-goto' }, GOTO_SCREENS.map(function (s) { return h('option', { value: s }); }))), t('nt.action.hint'));
-    var actionSection = section('nt.s.action', fields.action);
+    var actLabelCtl = translatedInput(v.action.label, { label: t('act.label'), oninput: function (x) { v.action.label = x; fields.actionLabel.setError(''); actLabelCtl.markLang(null); } });
+    fields.actionLabel = field(t('act.label'), actLabelCtl, t('nt.action.label.hint'), { optional: true });
+    fields.actionLabel.ctl = actLabelCtl;
+    fields.actionLabel.hidden = true;
+    var actType0 = actType;
+    actType0.addEventListener('change', function () { fields.actionLabel.hidden = !actType0.value; });
+    var actionSection = section('nt.s.action', h('div', {}, fields.action, fields.actionLabel));
     main.appendChild(actionSection);
 
     var targetBox = h('div', {});
@@ -3854,23 +4339,10 @@ function composePage(container, query) {
       actionSection.hidden = v.channel === 'sms';
       clear(bodyBox);
       var max = v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : 2000;
-      if (v.channel === 'sms') {
-        var counter = function (lang) {
-          var c = h('span', { class: 'text-xs tabular-nums text-secondary-500' });
-          c.paint = function () { var n = Array.from(v.body[lang]).length; c.textContent = t('chars', { n: n, max: SMS_MAX }); c.classList.toggle('text-error-600', n > SMS_MAX); };
-          c.paint();
-          return c;
-        };
-        var cFa = counter('fa');
-        var cEn = counter('en');
-        fields.bodyFa = field(t('nt.f.sms.fa'), h('div', {}, textInput(v.body.fa, { multiline: true, rows: 4, label: t('nt.f.sms.fa'), oninput: function (x) { v.body.fa = x; cFa.paint(); fields.bodyFa.setError(''); } }), h('div', { class: 'flex justify-end mt-1' }, cFa)), t('nt.sms.hint'));
-        fields.bodyEn = field(t('nt.f.sms.en'), h('div', {}, textInput(v.body.en, { multiline: true, rows: 4, ltr: true, label: t('nt.f.sms.en'), oninput: function (x) { v.body.en = x; cEn.paint(); } }), h('div', { class: 'flex justify-end mt-1' }, cEn)), null, { optional: true });
-      } else {
-        fields.bodyFa = field(t('nt.f.body.fa'), markdownInput(v.body.fa, { max: max, label: t('nt.f.body.fa'), oninput: function (x) { v.body.fa = x; fields.bodyFa.setError(''); } }));
-        fields.bodyEn = field(t('nt.f.body.en'), markdownInput(v.body.en, { max: max, ltr: true, label: t('nt.f.body.en'), oninput: function (x) { v.body.en = x; } }), null, { optional: true });
-      }
-      bodyBox.appendChild(fields.bodyFa);
-      bodyBox.appendChild(fields.bodyEn);
+      var bodyCtl = translatedInput(v.body, { label: t(v.channel === 'sms' ? 'nt.f.sms' : 'nt.f.body'), markdown: v.channel !== 'sms', multiline: true, rows: 4, max: max, counter: v.channel === 'sms', oninput: function (x) { v.body = x; fields.body.setError(''); bodyCtl.markLang(null); } });
+      fields.body = field(t(v.channel === 'sms' ? 'nt.f.sms' : 'nt.f.body'), bodyCtl, v.channel === 'sms' ? t('nt.sms.hint') : null);
+      fields.body.ctl = bodyCtl;
+      bodyBox.appendChild(fields.body);
       if (v.channel === 'in_app') {
         providerBox.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('nt.inapp.hint') }));
         return;
@@ -3963,10 +4435,16 @@ function composePage(container, query) {
     function validate() {
       var ok = true;
       var setErr = function (f, msg) { if (f) f.setError(msg); if (msg) ok = false; };
-      [fields.titleFa, fields.bodyFa, fields.action, fields.target].forEach(function (f) { if (f) f.setError(''); });
-      if (v.channel !== 'sms' && !v.title.fa.trim()) setErr(fields.titleFa, t('err.required'));
-      if (!v.body.fa.trim()) setErr(fields.bodyFa, t('err.required'));
-      else if (v.channel === 'sms' && (Array.from(v.body.fa).length > SMS_MAX || Array.from(v.body.en).length > SMS_MAX)) setErr(fields.bodyFa, t('nt.sms.tooLong'));
+      [fields.title, fields.body, fields.action, fields.actionLabel, fields.target].forEach(function (f) { if (f) f.setError(''); });
+      var max = v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : 2000;
+      var trErr = function (f, val, o) {
+        var hit = trCheck(val, o);
+        f.ctl.markLang(hit ? hit.lang : null);
+        if (hit) setErr(f, hit.code === 'TEXT_TOO_LONG' && v.channel === 'sms' ? t('nt.sms.tooLong') : t('code.' + hit.code, { lang: langName(hit.lang) }));
+      };
+      if (v.channel !== 'sms') trErr(fields.title, v.title, { required: true, max: 200 });
+      trErr(fields.body, v.body, { required: true, max: max });
+      if (v.channel !== 'sms' && v.action.type) trErr(fields.actionLabel, v.action.label, { max: 64 });
       if (v.channel !== 'sms' && v.action.type) {
         if (!v.action.value) setErr(fields.action, t('act.value') + ': ' + t('err.required'));
         else if (v.action.type === 'url' && !/^https?:\/\/\S+$/i.test(v.action.value)) setErr(fields.action, t('code.INVALID_ACTION'));
@@ -3978,12 +4456,14 @@ function composePage(container, query) {
     }
 
     function payload() {
-      var p = { channel: v.channel, body: { fa: v.body.fa.trim() }, target: { mode: v.target.mode } };
-      if (v.body.en.trim()) p.body.en = v.body.en.trim();
+      var p = { channel: v.channel, body: trClean(v.body), target: { mode: v.target.mode } };
       if (v.channel !== 'sms') {
-        p.title = { fa: v.title.fa.trim() };
-        if (v.title.en.trim()) p.title.en = v.title.en.trim();
-        if (v.action.type) p.action = { type: v.action.type, value: v.action.value };
+        p.title = trClean(v.title);
+        if (v.action.type) {
+          p.action = { type: v.action.type, value: v.action.value };
+          var lbl = trClean(v.action.label);
+          if (Object.keys(lbl).length) p.action.label = lbl;
+        }
       }
       if (v.target.mode === 'users') p.target.userIds = v.target.userIds.slice();
       if (v.target.mode === 'group') p.target.groupId = v.target.groupId;
@@ -4019,9 +4499,12 @@ function composePage(container, query) {
           go('notifications', res.id);
         }, function (err) {
           setBusy(sendBtn, false);
-          var map = { title: fields.titleFa, body: fields.bodyFa, action: fields.action, 'target.userIds': fields.target, 'target.groupId': fields.target, providerId: fields.provider };
+          var map = { title: fields.title, body: fields.body, action: fields.action, 'action.label': fields.actionLabel, 'target.userIds': fields.target, 'target.groupId': fields.target, providerId: fields.provider };
           var f = err && err.field && map[err.field];
-          if (f) { f.setError(errorText(err)); f.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+          var vals = { title: v.title, body: v.body, 'action.label': v.action.label };
+          var code = f && f.ctl ? trServerLang(err, vals[err.field], { max: err.field === 'title' ? 200 : err.field === 'action.label' ? 64 : v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : 2000 }) : null;
+          if (f && f.ctl) f.ctl.markLang(code);
+          if (f) { f.hidden = false; f.setError(errorText(err, code)); f.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
           else errTop.appendChild(notice('error', errorText(err)));
         });
       });
@@ -4035,7 +4518,8 @@ function composePage(container, query) {
 
   function load() {
     skeleton();
-    pubApi('GET', '/providers').then(function (res) {
+    Promise.all([pubApi('GET', '/providers'), freshLanguages()]).then(function (all) {
+      var res = all[0];
       if (!container.isConnected) return;
       providers = (res && res.items) || [];
       build();
@@ -4050,7 +4534,7 @@ function providerField(f, cfg, onchange) {
   if (f.type === 'select') {
     ctl = selectInput(cfg[f.name] || f.default || '', (f.options || []).map(function (o) { return { value: o, label: has('pv.opt.' + o) ? t('pv.opt.' + o) : o }; }), function (x) { cfg[f.name] = x; onchange(); }, { placeholder: false, label: label });
   } else {
-    ctl = textInput(cfg[f.name] == null ? '' : (f.type === 'number' ? localDigits(String(cfg[f.name])) : cfg[f.name]), { ltr: true, mono: true, label: label, inputmode: f.type === 'number' ? 'numeric' : f.type === 'email' ? 'email' : null, placeholder: f.default ? localDigits(f.default) : null, oninput: function (x) { cfg[f.name] = f.type === 'number' ? toLatinDigits(x).trim() : x; onchange(); } });
+    ctl = textInput(cfg[f.name] == null ? '' : toLatinDigits(String(cfg[f.name])), { ltr: true, mono: true, label: label, inputmode: f.type === 'number' ? 'numeric' : f.type === 'email' ? 'email' : null, placeholder: f.default ? toLatinDigits(f.default) : null, oninput: function (x) { cfg[f.name] = f.type === 'number' ? toLatinDigits(x).trim() : x; onchange(); } });
     ctl.classList.add('text-sm');
     if (f.type === 'secret') ctl.classList.add('eco-secret');
   }
@@ -4243,11 +4727,16 @@ function captureRouter(app) {
     if (!layout || !layout.components) return;
     SECTION_ORDER.forEach(function (sec) {
       if (r.hasRoute(sec)) return;
-      r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { title: sec === 'economy' ? 'Economy' : 'Publishing' } }] });
+      r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { title: SECTION_TITLE[sec] } }] });
+    });
+    Object.keys(MOVED_PAGES).forEach(function (from) {
+      var name = 'moved-' + from.replace('/', '-');
+      if (!r.hasRoute(name)) r.addRoute({ path: '/' + from + '/:rest(.*)*', name: name, redirect: function (to) { return to.fullPath.replace('/' + from, '/' + MOVED_PAGES[from]); } });
     });
     if (r.hasRoute('settings')) {
       SETTINGS_TABS.forEach(function (tab) {
         if (!r.hasRoute('settings-' + tab)) r.addRoute('settings', { path: tab, name: 'settings-' + tab, component: EmptyPage, meta: tabMeta(tab) });
+        if (RESOURCES[tab] && !r.hasRoute('settings-' + tab + '-item')) r.addRoute('settings', { path: tab + '/:id(.*)', name: 'settings-' + tab + '-item', component: EmptyPage, meta: tabMeta(tab) });
       });
       Object.keys(LEGACY_HASHES).forEach(function (sec) {
         Object.keys(LEGACY_HASHES[sec]).forEach(function (page) {
@@ -4268,11 +4757,20 @@ function captureRouter(app) {
   }
 }
 
+var SECTION_TITLE = { base: 'General', economy: 'Economy', publication: 'Publishing' };
+
+function movedHash(hash) {
+  var m = /^#\/([^/?]+\/[^/?]+)(.*)$/.exec(hash || '');
+  return m && MOVED_PAGES[m[1]] ? '#/' + MOVED_PAGES[m[1]] + m[2] : null;
+}
+
 function tabMeta(tab) {
   return { get title() { return t('settings') + ' - ' + t('tab.' + tab); } };
 }
 
 function legacyHash(hash) {
+  var moved = movedHash(hash);
+  if (moved) return moved;
   var m = /^#\/(economy|publication)\/([^/?]+)/.exec(hash);
   var to = m && LEGACY_HASHES[m[1]][m[2]];
   return to ? hashFor(to) : null;
@@ -4299,12 +4797,15 @@ function replaceHash(hash) {
 }
 
 function parseRoute(hash) {
-  var m = /^#\/(economy|publication|settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(base|economy|publication|settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
-  if (section === 'settings') return SETTINGS_TABS.indexOf(m[2]) === -1 ? null : { section: section, page: m[2], id: null, query: {} };
-  var page = m[2] || SECTIONS[section][0];
-  if (SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
+  if (section === 'settings') {
+    if (SETTINGS_TABS.indexOf(m[2]) === -1) return null;
+    if (!RESOURCES[m[2]]) return { section: section, page: m[2], id: null, query: {} };
+  }
+  var page = section === 'settings' ? m[2] : m[2] || SECTIONS[section][0];
+  if (section !== 'settings' && SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   var query = {};
   (m[4] || '').split('&').forEach(function (pair) {
     if (!pair) return;
@@ -4338,8 +4839,8 @@ function buildNav(section, collapsed, active) {
     if (badge) a.appendChild(badge);
     ul.appendChild(h('li', {}, a));
   });
-  var title = section === 'economy' ? 'section' : 'section.pub';
-  return h('div', { 'data-economy-nav': section, 'data-l10n-skip': '', class: section === 'economy' ? null : 'eco-nav-next' },
+  var title = section === 'economy' ? 'section' : section === 'base' ? 'section.base' : 'section.pub';
+  return h('div', { 'data-economy-nav': section, 'data-l10n-skip': '', class: section === SECTION_ORDER[0] ? null : 'eco-nav-next' },
     h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 ' + (collapsed ? 'text-[8px] text-center' : 'px-3 text-[10px]'), text: collapsed ? t(title + '.short') : t(title) }),
     h('nav', { 'aria-label': t(title) }, ul));
 }
@@ -4478,6 +4979,7 @@ function render(root, route) {
     if (route.page === 'overview') overviewPage(root);
     else if (route.page === 'payment-methods') paymentMethodsPage(root);
     else if (route.page === 'sms' || route.page === 'email') providersPage(root, route.page);
+    else if (route.page === 'languages') ctl.list = languagesPage(root, route.query, ctx);
     else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
     else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
     else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
@@ -4499,6 +5001,11 @@ function sync() {
     else history.replaceState(history.state, '', location.pathname + location.search + moved);
   }
   var route = parseRoute(hash);
+  if (route && !LANGS.tried && token()) {
+    LANGS.tried = true;
+    loadLanguages().then(function () { if (LANGS.loaded && LANGS.def !== 'fa' && rendered) { rendered.key = ''; schedule(); } });
+    loadKeyTypes();
+  }
   var settings = route && route.section === 'settings';
   syncSidebar(settings ? null : route);
   var row = syncSettingsTabs(route);
@@ -4573,7 +5080,7 @@ function boot() {
   sync();
 }
 
-if (/^#\/(economy|publication)/.test(location.hash) || parseRoute(location.hash)) {
+if (/^#\/(base|economy|publication)/.test(location.hash) || parseRoute(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }
