@@ -1,4 +1,6 @@
 var API_BASE = '/v2/console/economy';
+var PUB_BASE = '/v2/console/publication';
+var CONSOLE_BASE = '/v2/console';
 var PERSIAN = '۰۱۲۳۴۵۶۷۸۹';
 var SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -154,7 +156,7 @@ function qs(params) {
   return out.length ? '?' + out.join('&') : '';
 }
 
-function api(method, path, body, isForm) {
+function request(base, method, path, body, isForm) {
   var headers = { Accept: 'application/json' };
   var tk = token();
   if (tk) headers.Authorization = 'Bearer ' + tk;
@@ -163,7 +165,7 @@ function api(method, path, body, isForm) {
     if (isForm) init.body = body;
     else { headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(body); }
   }
-  return fetch(API_BASE + path, init).then(function (res) {
+  return fetch(base + path, init).then(function (res) {
     if (res.status === 401) {
       toLogin();
       throw new ApiError(401, 'UNAUTHENTICATED', '');
@@ -182,6 +184,18 @@ function api(method, path, body, isForm) {
   }, function () {
     throw new ApiError(0, 'NETWORK', '');
   });
+}
+
+function api(method, path, body, isForm) {
+  return request(API_BASE, method, path, body, isForm);
+}
+
+function pubApi(method, path, body, isForm) {
+  return request(PUB_BASE, method, path, body, isForm);
+}
+
+function consoleApi(method, path) {
+  return request(CONSOLE_BASE, method, path);
 }
 
 function errorText(err) {
@@ -221,9 +235,20 @@ var ICONS = {
   empty: '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>',
   alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>',
   check: '<path d="M20 6L9 17l-5-5"/>',
+  faqs: '<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
+  news: '<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/>',
+  comments: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  notifications: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  providers: '<path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5M19.1 4.9C23 8.8 23 15.1 19.1 19"/><circle cx="12" cy="12" r="2"/>',
+  send: '<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',
+  eye: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+  reply: '<path d="M9 17l-5-5 5-5"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/>',
+  pin: '<path d="M12 17v5M9 10.8a2 2 0 0 1-1.1 1.8l-1.8.9A2 2 0 0 0 5 15.2V17h14v-1.8a2 2 0 0 0-1.1-1.8l-1.8-.9A2 2 0 0 1 15 10.8V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+  flask: '<path d="M9 3h6M10 3v6.5L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9.5V3"/><path d="M7 15h10"/>',
   image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>'
 };
-var MIRROR = { first: 1, prev: 1, next: 1, back: 1 };
+var MIRROR = { first: 1, prev: 1, next: 1, back: 1, reply: 1 };
 
 function icon(name, cls) {
   var el = document.createElementNS(SVG_NS, 'svg');

@@ -1,6 +1,7 @@
 var METHODS = ['zarinpal', 'zibal', 'bazaar', 'myket', 'in_app'];
 var GATEWAYS = ['zarinpal', 'zibal'];
 var STORES = ['bazaar', 'myket'];
+var CATEGORY_KINDS = ['product', 'prize', 'gift', 'currency', 'faq', 'news'];
 var STATUS_COLOR = { pending: 'warning', success: 'success', failed: 'error', expired: 'secondary' };
 
 function opts(prefix, keys) {
@@ -222,7 +223,7 @@ var RESOURCES = {
     fixPayload: function (p) { if (p.code === '') p.code = null; return p; }
   },
   categories: {
-    filters: [{ name: 'kind', label: 'filter.kind', options: opts('kind.', ['product', 'prize', 'gift', 'currency']) }],
+    filters: [{ name: 'kind', label: 'filter.kind', options: opts('kind.', CATEGORY_KINDS) }],
     columns: [
       { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '55%' },
       { label: 'col.kind', render: function (it) { return tag(t('kind.' + it.kind), 'secondary'); }, width: 130 },
@@ -232,7 +233,7 @@ var RESOURCES = {
     fields: [
       { type: 'row', fields: [
         { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
-        { name: 'kind', type: 'select', label: 'f.kind', required: true, options: opts('kind.', ['product', 'prize', 'gift', 'currency']) }
+        { name: 'kind', type: 'select', label: 'f.kind', required: true, options: opts('kind.', CATEGORY_KINDS) }
       ] },
       nameRow('name'),
       { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
@@ -249,5 +250,89 @@ var RESOURCES = {
       nameRow('name')
     ],
     defaults: function () { return { name: { fa: '', en: '' } }; }
+  },
+  faqs: {
+    api: 'publication',
+    filters: [
+      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', filter: { kind: 'faq' } },
+      { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }
+    ],
+    columns: [
+      { label: 'col.question', render: function (it) {
+        return h('div', { class: 'min-w-0' },
+          h('div', { class: 'font-medium eco-clamp', text: i18nText(it.question) }),
+          h('div', { class: 'text-xs text-secondary-500 eco-clamp', text: mdPlain(i18nText(it.answer)) }));
+      }, skeleton: '70%' },
+      { label: 'col.category', render: function (it) { return it.categoryName ? tag(i18nText(it.categoryName), 'secondary') : h('span', { class: 'text-secondary-400', text: t('none') }); }, width: 150 },
+      { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 },
+      { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 80 },
+      { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
+    ],
+    fields: [
+      nameRow('question'),
+      { name: 'answer.fa', type: 'markdown', label: 'f.answer.fa', required: true },
+      { name: 'answer.en', type: 'markdown', label: 'f.answer.en', ltr: true, optional: true },
+      { type: 'row', fields: [
+        { name: 'categoryId', type: 'ref', resource: 'categories', filter: { kind: 'faq' }, label: 'f.category', optional: true },
+        { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+      ] },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.faq.active.hint' }
+    ],
+    defaults: function (query) { return { question: { fa: '', en: '' }, answer: { fa: '', en: '' }, categoryId: (query && query.categoryId) || null, isActive: true, sort: 0 }; }
+  },
+  news: {
+    api: 'publication',
+    filters: [
+      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', filter: { kind: 'news' } },
+      { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } },
+      { name: 'isPinned', label: 'filter.pinned', options: function () { return [{ value: 'true', label: t('news.pinned') }, { value: 'false', label: t('news.notPinned') }]; } }
+    ],
+    columns: [
+      { label: 'col.title', render: function (it) {
+        var pic = h('div', { class: 'h-10 w-16 shrink-0 rounded-md bg-secondary-100 dark:bg-secondary-700 overflow-hidden flex items-center justify-center text-secondary-400' });
+        pic.appendChild(it.coverUrl ? img(it.coverUrl) : icon('image', 'h-4 w-4'));
+        return h('div', { class: 'flex items-center gap-3 min-w-0' }, pic,
+          h('div', { class: 'min-w-0' },
+            h('div', { class: 'font-medium flex items-center gap-1.5 min-w-0' }, it.isPinned ? h('span', { class: 'eco-text-warning', title: t('news.pinned') }, icon('pin', 'h-3.5 w-3.5')) : null, h('span', { class: 'eco-clamp', text: i18nText(it.title) })),
+            i18nText(it.summary) ? h('div', { class: 'text-xs text-secondary-500 eco-clamp', text: i18nText(it.summary) }) : null));
+      }, skeleton: '70%' },
+      { label: 'col.category', render: function (it) { return it.categoryName ? tag(i18nText(it.categoryName), 'secondary') : h('span', { class: 'text-secondary-400', text: t('none') }); }, width: 130 },
+      { label: 'col.comments', render: function (it) {
+        if (!it.allowComment) return tag(t('news.commentsOff'), 'secondary');
+        return h('div', { class: 'flex flex-wrap gap-1' },
+          h('span', { class: 'tabular-nums text-sm', text: fmtNum(it.commentCount || 0) }),
+          it.pendingComments ? h('a', { href: hashFor('comments', null, { status: 'pending', newsId: it.id }), class: 'eco-tag eco-tag--warning inline-flex leading-tight px-2 py-0.5 text-xs rounded-md whitespace-nowrap', text: t('cm.pendingN', { n: it.pendingComments }) }) : null);
+      }, width: 130 },
+      { label: 'col.published', render: function (it) {
+        var future = it.publishedAt && new Date(it.publishedAt).getTime() > Date.now();
+        return h('div', { class: 'flex flex-col items-start gap-0.5' }, dateCell(it.publishedAt), future ? tag(t('news.scheduled'), 'primary') : null);
+      }, width: 190 },
+      { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
+    ],
+    fields: [
+      nameRow('title'),
+      nameTextareas('summary'),
+      { name: 'body.fa', type: 'markdown', label: 'f.body.fa', required: true, rows: 8 },
+      { name: 'body.en', type: 'markdown', label: 'f.body.en', ltr: true, optional: true, rows: 8 },
+      { name: 'coverUrl', type: 'image', label: 'f.cover', optional: true },
+      { type: 'row', fields: [
+        { name: 'categoryId', type: 'ref', resource: 'categories', filter: { kind: 'news' }, label: 'f.category', optional: true },
+        { name: 'publishedAt', type: 'datetime', label: 'f.publishedAt', hint: 'f.publishedAt.hint', optional: true }
+      ] },
+      { type: 'row', fields: [
+        { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.news.active.hint' },
+        { name: 'isPinned', type: 'bool', inline: true, label: 'f.isPinned', hint: 'f.isPinned.hint' }
+      ] },
+      { type: 'heading', label: 'f.comments' },
+      { type: 'row', fields: [
+        { name: 'allowComment', type: 'bool', inline: true, label: 'f.allowComment', hint: 'f.allowComment.hint' },
+        { name: 'freeComment', type: 'bool', inline: true, label: 'f.freeComment', hint: 'f.freeComment.hint', empty: false, when: function (v) { return !!v.allowComment; } }
+      ] },
+      { type: 'heading', label: 'f.actions' },
+      { name: 'actions', type: 'actions', empty: [] },
+      { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
+    ],
+    defaults: function (query) { return { title: { fa: '', en: '' }, summary: { fa: '', en: '' }, body: { fa: '', en: '' }, coverUrl: '', categoryId: (query && query.categoryId) || null, publishedAt: null, isActive: true, isPinned: false, allowComment: true, freeComment: false, actions: [], metadata: {} }; },
+    fixPayload: function (p) { if (!p.coverUrl) p.coverUrl = ''; if (!p.publishedAt) delete p.publishedAt; return p; }
   }
 };

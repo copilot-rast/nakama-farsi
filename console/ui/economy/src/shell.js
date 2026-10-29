@@ -13,9 +13,10 @@ function captureRouter(app) {
     if (!r || typeof r.addRoute !== 'function') return;
     var layout = r.resolve('/').matched[0];
     if (!layout || !layout.components) return;
-    if (!r.hasRoute('economy')) {
-      r.addRoute({ path: '/economy/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: 'economy', component: EmptyPage, meta: { title: 'Economy' } }] });
-    }
+    SECTION_ORDER.forEach(function (sec) {
+      if (r.hasRoute(sec)) return;
+      r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { title: sec === 'economy' ? 'Economy' : 'Publishing' } }] });
+    });
     router = r;
   } catch (e) {
     router = null;
@@ -49,24 +50,25 @@ function replaceHash(hash) {
 }
 
 function parseRoute(hash) {
-  var m = /^#\/economy(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(economy|publication)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
-  var page = m[1] || 'overview';
-  if (PAGES.indexOf(page) === -1) page = 'overview';
+  var section = m[1];
+  var page = m[2] || SECTIONS[section][0];
+  if (SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   var query = {};
-  (m[3] || '').split('&').forEach(function (pair) {
+  (m[4] || '').split('&').forEach(function (pair) {
     if (!pair) return;
     var i = pair.indexOf('=');
     var k = decodeURIComponent(i === -1 ? pair : pair.slice(0, i));
     var v = i === -1 ? '' : decodeURIComponent(pair.slice(i + 1).replace(/\+/g, ' '));
     query[k] = v;
   });
-  return { page: page, id: m[2] ? decodeURIComponent(m[2]) : null, query: query };
+  return { section: section, page: page, id: m[3] ? decodeURIComponent(m[3]) : null, query: query };
 }
 
 function keyOf(r) {
   if (!r) return '';
-  var detail = r.page === 'payments' && r.id ? '/' + r.id : '';
+  var detail = (r.page === 'payments' || r.page === 'notifications') && r.id ? '/' + r.id : '';
   return lang() + '|' + r.page + detail + '|' + JSON.stringify(r.query);
 }
 
@@ -75,18 +77,34 @@ function navIcon(name) {
   return svg;
 }
 
-function buildNav(collapsed, active) {
+function buildNav(section, collapsed, active) {
   var ul = h('ul', { class: 'space-y-0.5' });
-  PAGES.forEach(function (p) {
+  SECTIONS[section].forEach(function (p) {
     var on = p === active;
     var a = h('a', { href: hashFor(p, null, p === active ? null : lastQuery[p]), class: (on ? NAV_ACTIVE + ' ' : '') + NAV_LINK, 'aria-current': on ? 'page' : null, title: collapsed ? t('nav.' + p) : null, 'data-economy-page': p });
     a.appendChild(collapsed ? h('div', { class: 'x-tooltip flex' }, navIcon(p)) : navIcon(p));
-    a.appendChild(h('div', { class: 'font-medium relative truncate' }, h('span', { text: collapsed ? ' ' : t('nav.' + p) })));
+    a.appendChild(h('div', { class: 'font-medium relative truncate' + (collapsed ? '' : ' flex-1') }, h('span', { text: collapsed ? ' ' : t('nav.' + p) })));
+    var badge = navBadge(p, collapsed);
+    if (badge) a.appendChild(badge);
     ul.appendChild(h('li', {}, a));
   });
-  return h('div', { 'data-economy-nav': '', 'data-l10n-skip': '' },
-    h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 ' + (collapsed ? 'text-[8px] text-center' : 'px-3 text-[10px]'), text: collapsed ? t('section.short') : t('section') }),
-    h('nav', { 'aria-label': t('section') }, ul));
+  var title = section === 'economy' ? 'section' : 'section.pub';
+  return h('div', { 'data-economy-nav': section, 'data-l10n-skip': '', class: section === 'economy' ? null : 'eco-nav-next' },
+    h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 ' + (collapsed ? 'text-[8px] text-center' : 'px-3 text-[10px]'), text: collapsed ? t(title + '.short') : t(title) }),
+    h('nav', { 'aria-label': t(title) }, ul));
+}
+
+function placeNav(prev, section, collapsed, active, key) {
+  var next = prev.nextElementSibling;
+  var existing = next && next.getAttribute('data-economy-nav') === section ? next : null;
+  if (!existing || existing.getAttribute('data-key') !== key) {
+    var built = buildNav(section, collapsed, active);
+    built.setAttribute('data-key', key);
+    if (existing) existing.replaceWith(built);
+    else prev.after(built);
+    existing = built;
+  }
+  return existing;
 }
 
 function isCollapsed(anchor) {
@@ -107,17 +125,13 @@ function syncSidebar(route) {
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
     var collapsed = isCollapsed(a);
-    var key = lang() + '|' + collapsed + '|' + active + '|' + JSON.stringify(lastQuery);
-    var next = group.nextElementSibling;
-    var existing = next && next.hasAttribute('data-economy-nav') ? next : null;
-    if (!existing || existing.getAttribute('data-key') !== key) {
-      var built = buildNav(collapsed, active);
-      built.setAttribute('data-key', key);
-      if (existing) existing.replaceWith(built);
-      else group.after(built);
-      existing = built;
+    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + JSON.stringify(lastQuery);
+    var prev = group;
+    for (var si = 0; si < SECTION_ORDER.length; si++) {
+      prev = placeNav(prev, SECTION_ORDER[si], collapsed, active, key);
+      keep.push(prev);
     }
-    keep.push(existing);
+    refreshBadge(false);
     var vueActive = group.parentElement.querySelectorAll('a[aria-current="page"]:not([data-economy-page])');
     for (var j = 0; j < vueActive.length && active; j++) {
       if (vueActive[j].getAttribute('href') === '#/') vueActive[j].setAttribute('data-economy-dimmed', '');
@@ -151,9 +165,13 @@ function render(root, route) {
     ctl = { root: root, key: key, id: undefined, list: null };
     rendered = ctl;
     var ctx = { id: route.id, query: route.query };
+    if (route.page === 'comments') refreshBadge(true);
     if (route.page === 'overview') overviewPage(root);
     else if (route.page === 'payment-methods') paymentMethodsPage(root);
+    else if (route.page === 'providers') providersPage(root);
     else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
+    else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
+    else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
     else ctl.list = listPage(root, route.page, route.query, ctx);
   }
   if (RESOURCES[route.page] && ctl.id !== route.id) {
@@ -215,7 +233,7 @@ function boot() {
   sync();
 }
 
-if (/^#\/economy/.test(location.hash)) {
+if (/^#\/(economy|publication)/.test(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }

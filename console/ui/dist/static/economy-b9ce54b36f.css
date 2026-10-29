@@ -89,3 +89,55 @@ html[data-economy-active] .dark a[data-economy-dimmed][aria-current='page']{colo
 @media (min-width:1024px){.eco-filters{flex-wrap:nowrap}}
 .eco-readonly.eco-readonly{background-color:rgb(var(--secondary-color-100));color:rgb(var(--secondary-color-500));cursor:not-allowed}
 .dark .eco-readonly.eco-readonly{background-color:rgb(var(--secondary-color-900));color:rgb(var(--secondary-color-400))}
+
+.eco-nav-next{margin-top:1.5rem}
+.eco-nav-badge{flex:0 0 auto;min-width:1.25rem;padding:0 .375rem;border-radius:9999px;font-size:.6875rem;line-height:1.125rem;font-weight:600;text-align:center;background-color:rgb(var(--warning-color-500));color:#fff}
+.eco-nav-dot{position:absolute;inset-block-start:.45rem;inset-inline-end:.45rem;width:.5rem;height:.5rem;border-radius:9999px;background-color:rgb(var(--warning-color-500))}
+a[data-economy-page]{position:relative}
+.eco-clamp{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.eco-clamp-3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.eco-seg{background-color:rgb(var(--secondary-color-100))}
+.dark .eco-seg{background-color:rgb(var(--secondary-color-900))}
+.eco-seg-btn{color:rgb(var(--secondary-color-600));transition:background-color .15s,color .15s}
+.eco-seg-btn:hover{color:rgb(var(--secondary-color-900))}
+.dark .eco-seg-btn{color:rgb(var(--secondary-color-300))}
+.dark .eco-seg-btn:hover{color:#fff}
+.eco-seg-btn.eco-seg-on{background-color:#fff;color:rgb(var(--primary-color-700));box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.dark .eco-seg-btn.eco-seg-on{background-color:rgb(var(--secondary-color-700));color:rgb(var(--primary-color-200))}
+.eco-md{line-height:1.8;overflow-wrap:anywhere}
+.eco-md > * + *{margin-top:.6em}
+.eco-md h2{font-size:1.125rem;font-weight:600}
+.eco-md h3{font-size:1rem;font-weight:600}
+.eco-md ul{list-style:disc;padding-inline-start:1.25rem}
+.eco-md ol{list-style:decimal;padding-inline-start:1.25rem}
+.eco-md a{color:rgb(var(--primary-color-700));text-decoration:underline}
+.dark .eco-md a{color:rgb(var(--primary-color-300))}
+.eco-md img{max-width:100%;border-radius:.375rem}
+.eco-md-box{min-height:8rem}
+.eco-sandbox-note{border:1px solid rgb(var(--warning-color-300));background-color:rgb(var(--warning-color-50));color:rgb(var(--warning-color-800))}
+.dark .eco-sandbox-note{border-color:rgb(var(--warning-color-700));background-color:rgb(var(--warning-color-900));color:rgb(var(--warning-color-100))}
+.eco-live-note{border:1px solid rgb(var(--error-color-300));background-color:rgb(var(--error-color-50));color:rgb(var(--error-color-800))}
+.dark .eco-live-note{border-color:rgb(var(--error-color-700));background-color:rgb(var(--error-color-900));color:rgb(var(--error-color-100))}
+.eco-sandbox-note .x-toggle span,.eco-live-note .x-toggle span{color:inherit;font-weight:600}
+.eco-text-success{color:rgb(var(--success-color-600))}
+.eco-text-warning{color:rgb(var(--warning-color-700))}
+.eco-text-error{color:rgb(var(--error-color-600))}
+.dark .eco-text-success{color:rgb(var(--success-color-400))}
+.dark .eco-text-warning{color:rgb(var(--warning-color-400))}
+.dark .eco-text-error{color:rgb(var(--error-color-400))}
+.eco-tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(8rem,1fr));gap:.75rem}
+.eco-compose{display:grid;grid-template-columns:1fr;gap:1rem;align-items:start}
+@media (min-width:1024px){.eco-compose{grid-template-columns:minmax(0,1fr) 20rem}.eco-compose-aside{position:sticky;top:1rem}}
+.eco-actions-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;align-items:end}
+@media (min-width:768px){.eco-actions-row{grid-template-columns:7.5rem minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) auto}}
+.eco-filter-ref{min-width:13rem}
+.eco-filter-ref .eco-ref > button.eco-select{min-height:2.125rem;padding-block:.375rem;font-size:.875rem}
+.eco-test summary::marker{color:rgb(var(--secondary-color-400))}
+.eco-row-actions{flex-wrap:nowrap}
+@media (max-width:767px){.eco-compose-aside{position:static}.eco-row-actions{flex-wrap:wrap}}
+.eco-dialog{max-width:28rem}
+.eco-meta{column-gap:.5rem;row-gap:.125rem}
+.eco-pre-line{white-space:pre-line}
+.eco-pt-3{padding-top:.75rem}
+.eco-md-token{font-family:ui-monospace,Menlo,monospace;font-size:.6875rem;padding:0 .3rem;border-radius:.25rem;background-color:rgb(var(--secondary-color-100))}
+.dark .eco-md-token{background-color:rgb(var(--secondary-color-800))}

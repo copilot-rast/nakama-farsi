@@ -12,7 +12,7 @@ const MANIFEST = path.join(ROOT, 'dist-manifest.json');
 export const START = '<!-- nakama-economy:start -->';
 export const END = '<!-- nakama-economy:end -->';
 const L10N_START = '<!-- nakama-l10n:start -->';
-export const SOURCES = ['i18n.js', 'core.js', 'ui.js', 'form.js', 'resources.js', 'pages.js', 'shell.js'];
+export const SOURCES = ['i18n.js', 'core.js', 'ui.js', 'form.js', 'resources.js', 'pages.js', 'publication.js', 'shell.js'];
 
 function hash(content) {
   return crypto.createHash('sha256').update(content).digest('hex').slice(0, 10);

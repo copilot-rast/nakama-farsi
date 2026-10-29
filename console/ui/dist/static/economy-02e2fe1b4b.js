@@ -23,7 +23,7 @@ var MESSAGES = {
     'desc.gifts': 'کدهای هدیه و تخفیف.',
     'desc.payments': 'همهٔ خریدها و وضعیت هرکدام.',
     'desc.payment-methods': 'درگاه‌ها و فروشگاه‌ها را تنظیم و فعال کنید.',
-    'desc.categories': 'دسته‌بندی محصولات، جایزه‌ها، هدیه‌ها و ارزها.',
+    'desc.categories': 'دسته‌بندی محصولات، جایزه‌ها، هدیه‌ها، ارزها، سؤال‌ها و خبرها.',
     'desc.tags': 'برچسب‌هایی برای گروه‌بندی محصولات و جایزه‌ها.',
 
     'new.currencies': 'ارز جدید',
@@ -87,7 +87,7 @@ var MESSAGES = {
 
     'err.network': 'اتصال به سرور برقرار نشد. دوباره تلاش کنید.',
     'err.forbidden': 'دسترسی به این بخش را ندارید.',
-    'err.notfound': 'این بخش روی سرور فعال نیست. ماژول اقتصاد بارگذاری شده است؟',
+    'err.notfound': 'این بخش روی سرور فعال نیست. ماژول مربوط بارگذاری شده است؟',
     'err.item.notfound': 'این مورد پیدا نشد.',
     'err.generic': 'خطایی رخ داد. دوباره تلاش کنید.',
     'err.load': 'بارگذاری انجام نشد.',
@@ -342,7 +342,269 @@ var MESSAGES = {
     'ov.revenue': 'درآمد',
     'ov.open': 'مشاهده',
     'ov.today': 'امروز',
-    'ov.total': 'کل'
+    'ov.total': 'کل',
+
+    'section.pub': 'انتشار',
+    'section.pub.short': 'انتشار',
+    'nav.faqs': 'سؤال‌های متداول',
+    'nav.news': 'اخبار',
+    'nav.comments': 'کامنت‌ها',
+    'nav.notifications': 'اعلان‌ها',
+    'nav.providers': 'سرویس‌های ارسال',
+    'desc.faqs': 'پرسش و پاسخ‌هایی که بازیکن در بخش راهنما می‌بیند.',
+    'desc.news': 'خبرها و اطلاعیه‌هایی که در بازی نمایش داده می‌شوند.',
+    'desc.comments': 'کامنت‌های بازیکنان روی خبرها را بررسی و تأیید کنید.',
+    'desc.notifications': 'اعلان درون بازی، پیامک و ایمیل به بازیکنان بفرستید.',
+    'desc.providers': 'سرویس‌های پیامک و ایمیل را تنظیم کنید. در حالت آزمایشی چیزی واقعاً فرستاده نمی‌شود.',
+    'new.faqs': 'سؤال جدید',
+    'new.news': 'خبر جدید',
+    'edit.faqs': 'ویرایش سؤال',
+    'edit.news': 'ویرایش خبر',
+    'search.faqs': 'جستجو در سؤال یا پاسخ…',
+    'search.news': 'جستجو در عنوان یا خلاصه…',
+    'search.comments': 'جستجو در متن کامنت، نام کاربری یا خبر…',
+    'search.notifications': 'جستجو در عنوان، متن یا شناسه…',
+    'empty.hint.faqs': 'سؤال‌های پرتکرار بازیکنان را با پاسخشان اینجا بنویسید.',
+    'empty.hint.news': 'اولین خبر را بنویسید تا در بازی دیده شود.',
+    'empty.hint.comments': 'کامنتی برای بررسی نیست.',
+    'empty.hint.notifications': 'هنوز اعلانی نفرستاده‌اید.',
+
+    'kind.faq': 'سؤال متداول',
+    'kind.news': 'خبر',
+    'filter.category': 'دسته‌بندی',
+    'filter.pinned': 'سنجاق',
+    'filter.news': 'خبر',
+    'filter.channel': 'کانال',
+
+    'col.question': 'سؤال',
+    'col.category': 'دسته‌بندی',
+    'col.title': 'عنوان',
+    'col.comments': 'کامنت‌ها',
+    'col.published': 'زمان انتشار',
+    'col.comment': 'کامنت',
+    'col.news': 'خبر',
+    'col.actions': 'کارها',
+    'col.notification': 'اعلان',
+    'col.channel': 'کانال',
+    'col.target': 'گیرندگان',
+    'col.delivery': 'ارسال',
+    'col.address': 'نشانی',
+    'col.error': 'خطا',
+    'col.attempts': 'تلاش',
+    'col.time': 'زمان',
+
+    'f.question.fa': 'سؤال فارسی',
+    'f.question.en': 'سؤال انگلیسی',
+    'f.answer.fa': 'پاسخ فارسی',
+    'f.answer.en': 'پاسخ انگلیسی',
+    'f.faq.active.hint': 'سؤال غیرفعال در بازی دیده نمی‌شود.',
+    'f.title.fa': 'عنوان فارسی',
+    'f.title.en': 'عنوان انگلیسی',
+    'f.summary.fa': 'خلاصهٔ فارسی',
+    'f.summary.en': 'خلاصهٔ انگلیسی',
+    'f.body.fa': 'متن فارسی',
+    'f.body.en': 'متن انگلیسی',
+    'f.publishedAt': 'زمان انتشار',
+    'f.publishedAt.hint': 'خالی یعنی همین حالا. اگر زمانی در آینده بدهید، خبر از همان موقع دیده می‌شود.',
+    'f.news.active.hint': 'خبر غیرفعال در بازی دیده نمی‌شود.',
+    'f.isPinned': 'سنجاق‌شده',
+    'f.isPinned.hint': 'بالای فهرست خبرها می‌ماند.',
+    'f.comments': 'کامنت‌ها',
+    'f.allowComment': 'کامنت باز است',
+    'f.allowComment.hint': 'بازیکنان می‌توانند زیر این خبر کامنت بگذارند.',
+    'f.freeComment': 'انتشار بدون بررسی',
+    'f.freeComment.hint': 'اگر خاموش باشد، هر کامنت اول باید در صفحهٔ کامنت‌ها تأیید شود.',
+    'f.actions': 'دکمه‌های خبر',
+
+    'md.write': 'نوشتن',
+    'md.preview': 'پیش‌نمایش',
+    'md.mode': 'حالت ویرایشگر',
+    'md.empty': 'متنی برای پیش‌نمایش نیست.',
+    'md.hint': 'قالب‌بندی:',
+    'chars': '{n} از {max} نویسه',
+
+    'act.add': 'افزودن دکمه',
+    'act.empty': 'دکمه‌ای اضافه نشده است.',
+    'act.type': 'نوع',
+    'act.url': 'باز کردن پیوند',
+    'act.goto': 'رفتن به بخشی از بازی',
+    'act.none': 'بدون دکمه',
+    'act.value': 'مقصد',
+    'act.label.fa': 'متن دکمه (فارسی)',
+    'act.label.en': 'متن دکمه (انگلیسی)',
+    'act.url.hint': 'پیوند در زبانهٔ تازه باز می‌شود.',
+    'act.goto.hint': 'نام بخش بازی، مثل shop یا play.',
+
+    'news.pinned': 'سنجاق‌شده',
+    'news.notPinned': 'بدون سنجاق',
+    'news.scheduled': 'زمان‌بندی‌شده',
+    'news.commentsOff': 'بسته',
+
+    'cm.pending': 'در انتظار تأیید',
+    'cm.accepted': 'تأییدشده',
+    'cm.pendingN': '{n} در انتظار',
+    'cm.accept': 'تأیید',
+    'cm.reject': 'رد کردن',
+    'cm.reject.hint': 'کامنت از دید بازیکنان پنهان می‌شود.',
+    'cm.accepted.done': 'کامنت تأیید شد.',
+    'cm.rejected.done': 'کامنت رد شد.',
+    'cm.reply': 'پاسخ',
+    'cm.replies': '{n} پاسخ',
+
+    'ch.in_app': 'درون بازی',
+    'ch.sms': 'پیامک',
+    'ch.email': 'ایمیل',
+    'nst.queued': 'در صف',
+    'nst.sending': 'در حال ارسال',
+    'nst.done': 'انجام شد',
+    'nst.failed': 'ناموفق',
+    'rst.pending': 'در انتظار',
+    'rst.sent': 'ارسال‌شده',
+    'rst.skipped': 'بدون نشانی',
+    'rst.failed': 'ناموفق',
+    'lang.fa': 'فارسی',
+    'lang.en': 'انگلیسی',
+
+    'tg.all': 'همهٔ کاربران',
+    'tg.users': 'کاربران مشخص',
+    'tg.group': 'یک گروه',
+    'tg.usersN': '{n} کاربر',
+    'tg.pickUsers': 'کاربران',
+    'tg.searchUsers': 'جستجو و افزودن کاربر…',
+    'tg.searchUsers.hint': 'نام کاربری، نام نمایشی یا شناسه را بنویسید.',
+    'tg.users.hint': 'تا ۱۰۰۰ کاربر.',
+    'tg.pickGroup': 'انتخاب گروه',
+    'tg.group.hint': 'به همهٔ اعضای گروه فرستاده می‌شود، نه درخواست‌های عضویت.',
+    'tg.all.hint': 'به همهٔ کاربرانی که حسابشان غیرفعال نشده فرستاده می‌شود.',
+    'tg.none': 'هنوز گیرنده‌ای انتخاب نشده است.',
+    'tg.withPhone': '{n} نفر شماره دارند',
+    'tg.withEmail': '{n} نفر ایمیل دارند',
+    'tg.skipped': '{n} نفر نشانی ندارند و کنار گذاشته می‌شوند.',
+
+    'nt.title': 'اعلان',
+    'nt.new': 'ارسال اعلان',
+    'nt.new.desc': 'پیام را بنویسید، گیرندگان را انتخاب کنید و بفرستید.',
+    'nt.s.channel': 'کانال',
+    'nt.s.content': 'متن پیام',
+    'nt.s.action': 'دکمهٔ اعلان',
+    'nt.s.target': 'گیرندگان',
+    'nt.summary': 'خلاصه',
+    'nt.f.title': 'عنوان',
+    'nt.f.body': 'متن',
+    'nt.f.title.fa': 'عنوان فارسی',
+    'nt.f.title.en': 'عنوان انگلیسی',
+    'nt.f.body.fa': 'متن فارسی',
+    'nt.f.body.en': 'متن انگلیسی',
+    'nt.f.sms.fa': 'متن پیامک فارسی',
+    'nt.f.sms.en': 'متن پیامک انگلیسی',
+    'nt.f.provider': 'سرویس ارسال',
+    'nt.sms.hint': 'پیامک عنوان ندارد. متن ساده بنویسید.',
+    'nt.sms.tooLong': 'متن پیامک حداکثر ۶۰۰ نویسه است.',
+    'nt.action.hint': 'اختیاری. با زدن اعلان، پیوند باز می‌شود یا بازیکن به آن بخش بازی می‌رود.',
+    'nt.inapp.hint': 'در صندوق پیام بازیکن ذخیره می‌شود و اگر بازی باز باشد، همان لحظه نشان داده می‌شود.',
+    'nt.noProvider': 'سرویس فعالی برای این کانال نیست.',
+    'nt.sandbox.note': 'این سرویس در حالت آزمایشی است؛ پیامی واقعاً فرستاده نمی‌شود.',
+    'nt.live.note': 'این سرویس آزمایشی نیست؛ پیام واقعاً برای کاربران فرستاده می‌شود.',
+    'nt.recipientsWord': 'گیرنده',
+    'nt.send': 'ارسال اعلان',
+    'nt.sending': 'در حال ارسال…',
+    'nt.queued': 'اعلان در صف ارسال قرار گرفت.',
+    'nt.confirmAll.title': 'برای همه فرستاده شود؟',
+    'nt.confirmAll.text': 'این اعلان برای همهٔ {n} کاربر فرستاده می‌شود و پس‌گرفتنی نیست.',
+    'nt.confirmAll.textNoCount': 'این اعلان برای همهٔ کاربران فرستاده می‌شود و پس‌گرفتنی نیست.',
+    'nt.confirmAll.ok': 'بله، برای همه بفرست',
+    'nt.confirmLive.title': 'ارسال واقعی',
+    'nt.confirmLive.text': 'سرویس انتخاب‌شده آزمایشی نیست و پیام واقعاً فرستاده می‌شود.',
+    'nt.info': 'مشخصات',
+    'nt.content': 'متن',
+    'nt.delivery': 'وضعیت ارسال',
+    'nt.recipientsList': 'گیرندگان',
+    'nt.recipients': 'گیرندگان',
+    'nt.seen': 'دیده‌شده',
+    'nt.live': 'خودکار تازه می‌شود',
+    'nt.action': 'دکمه',
+    'nt.createdBy': 'فرستنده',
+    'nt.noRecipients': 'گیرنده‌ای ندارد.',
+    'nt.sentAt': 'ارسال: {t}',
+    'nt.seenAt': 'دیده شد: {t}',
+    'nt.sentOf': '{sent} از {total}',
+    'nt.skippedN': '{n} بی‌نشانی',
+    'nt.failedN': '{n} ناموفق',
+
+    'pv.kind': 'نوع سرویس',
+    'pv.kind.kavenegar': 'کاوه‌نگار',
+    'pv.kind.smsir': 'sms.ir',
+    'pv.kind.twilio': 'Twilio',
+    'pv.kind.smtp': 'SMTP',
+    'pv.kind.resend': 'Resend',
+    'pv.add': 'افزودن سرویس',
+    'pv.added': 'سرویس اضافه شد. حالت آزمایشی روشن است.',
+    'pv.allAdded': 'همهٔ سرویس‌های این کانال اضافه شده‌اند.',
+    'pv.default': 'پیش‌فرض',
+    'pv.empty.sms': 'هنوز سرویس پیامکی ندارید.',
+    'pv.empty.email': 'هنوز سرویس ایمیلی ندارید.',
+    'pv.empty.hint': 'از فهرست بالا یک سرویس اضافه کنید.',
+    'pv.sandbox': 'حالت آزمایشی',
+    'pv.sandbox.short': 'آزمایشی',
+    'pv.sandbox.on': 'روشن است: هیچ پیامی واقعاً فرستاده نمی‌شود و فقط در گزارش سرور ثبت می‌شود.',
+    'pv.sandbox.off': 'خاموش است: پیام‌ها واقعاً برای کاربران فرستاده می‌شوند.',
+    'pv.live.title': 'حالت آزمایشی خاموش شود؟',
+    'pv.live.text': 'از این به بعد پیام‌های این سرویس واقعاً برای کاربران فرستاده می‌شوند و هزینه دارند.',
+    'pv.live.ok': 'بله، خاموش شود',
+    'pv.field.apiKey': 'کلید API',
+    'pv.field.sender': 'شمارهٔ فرستنده',
+    'pv.field.lineNumber': 'شمارهٔ خط',
+    'pv.field.accountSid': 'Account SID',
+    'pv.field.authToken': 'Auth Token',
+    'pv.field.from': 'فرستنده',
+    'pv.field.host': 'میزبان',
+    'pv.field.port': 'پورت',
+    'pv.field.security': 'رمزگذاری',
+    'pv.field.username': 'نام کاربری',
+    'pv.field.password': 'رمز عبور',
+    'pv.field.fromName': 'نام فرستنده',
+    'pv.hint.host': 'فقط نام میزبان، بدون http و پورت.',
+    'pv.hint.from': 'شماره یا نشانی‌ای که پیام از آن فرستاده می‌شود.',
+    'pv.opt.starttls': 'STARTTLS',
+    'pv.opt.tls': 'TLS',
+    'pv.opt.none': 'بدون رمزگذاری',
+    'pv.test': 'ارسال آزمایشی',
+    'pv.test.hint': 'با تنظیمات ذخیره‌شده یک پیام می‌فرستد. در حالت آزمایشی چیزی ارسال نمی‌شود.',
+    'pv.test.to': 'گیرنده',
+    'pv.test.subject': 'موضوع',
+    'pv.test.subject.ph': 'پیام آزمایشی',
+    'pv.test.message': 'متن',
+    'pv.test.message.default': 'این یک پیام آزمایشی است.',
+    'pv.test.send': 'ارسال آزمایشی',
+    'pv.test.sandbox': 'حالت آزمایشی: چیزی ارسال نشد. پاسخ:',
+    'pv.test.ok': 'ارسال شد.',
+    'pv.test.failed': 'ارسال نشد:',
+
+    'code.FA_REQUIRED_TEXT': 'متن فارسی لازم است.',
+    'code.TARGET_USERS_REQUIRED': 'دست‌کم یک کاربر انتخاب کنید.',
+    'code.USERS_NOT_FOUND': 'بعضی از کاربران انتخاب‌شده وجود ندارند.',
+    'code.TOO_MANY_USERS': 'حداکثر ۱۰۰۰ کاربر.',
+    'code.GROUP_NOT_FOUND': 'این گروه پیدا نشد.',
+    'code.INVALID_TARGET': 'گیرندگان معتبر نیستند.',
+    'code.INVALID_CHANNEL': 'کانال معتبر نیست.',
+    'code.PROVIDER_NOT_FOUND': 'این سرویس پیدا نشد.',
+    'code.PROVIDER_NOT_CONFIGURED': 'سرویس فعال و کاملی برای این کانال نیست؛ فیلدهای لازم را پر کنید.',
+    'code.PROVIDER_INACTIVE': 'این سرویس فعال نیست.',
+    'code.PROVIDER_CHANNEL_MISMATCH': 'این سرویس برای این کانال نیست.',
+    'code.PROVIDER_KIND_FIXED': 'نوع سرویس بعد از ساخت عوض نمی‌شود.',
+    'code.INVALID_PROVIDER_KIND': 'این نوع سرویس شناخته‌شده نیست.',
+    'code.DEFAULT_MUST_BE_ACTIVE': 'فقط سرویس فعال می‌تواند پیش‌فرض باشد.',
+    'code.INVALID_PHONE': 'شماره را به شکل ۰۹۱۲۳۴۵۶۷۸۹ یا با کد کشور بنویسید.',
+    'code.INVALID_EMAIL': 'نشانی ایمیل معتبر نیست.',
+    'code.INVALID_MESSAGE': 'متن لازم است (حداکثر ۶۰۰ نویسه).',
+    'code.TOO_MANY_ACTIONS': 'حداکثر ۵ دکمه.',
+    'code.COMMENT_NOT_FOUND': 'این کامنت پیدا نشد.',
+    'code.NOTIFICATION_NOT_FOUND': 'این اعلان پیدا نشد.',
+    'code.INVALID_FILTER': 'فیلتر معتبر نیست.',
+    'code.QUERY_TOO_LONG': 'متن جستجو بیش از حد بلند است.',
+    'code.URL_TOO_LONG': 'نشانی بیش از حد بلند است.',
+    'code.INVALID_LANGUAGE': 'فقط فارسی و انگلیسی پذیرفته می‌شود.',
+    'code.PROVIDER_NOT_ALLOWED': 'اعلان درون بازی سرویس ارسال ندارد.'
   },
   en: {
     'section': 'Economy',
@@ -366,7 +628,7 @@ var MESSAGES = {
     'desc.gifts': 'Gift and discount codes.',
     'desc.payments': 'Every purchase and its status.',
     'desc.payment-methods': 'Configure and enable gateways and stores.',
-    'desc.categories': 'Categories for products, prizes, gifts and currencies.',
+    'desc.categories': 'Categories for products, prizes, gifts, currencies, FAQ and news.',
     'desc.tags': 'Labels to group products and prizes.',
 
     'new.currencies': 'New Currency',
@@ -430,7 +692,7 @@ var MESSAGES = {
 
     'err.network': 'Could not reach the server. Try again.',
     'err.forbidden': 'You do not have access to this section.',
-    'err.notfound': 'This endpoint is not available. Is the economy module loaded?',
+    'err.notfound': 'This endpoint is not available. Is the module loaded?',
     'err.item.notfound': 'This item was not found.',
     'err.generic': 'Something went wrong. Try again.',
     'err.load': 'Could not load.',
@@ -685,11 +947,275 @@ var MESSAGES = {
     'ov.revenue': 'Revenue',
     'ov.open': 'Open',
     'ov.today': 'Today',
-    'ov.total': 'Total'
+    'ov.total': 'Total',
+
+    'section.pub': 'Publishing',
+    'section.pub.short': 'Pub',
+    'nav.faqs': 'FAQ',
+    'nav.news': 'News',
+    'nav.comments': 'Comments',
+    'nav.notifications': 'Notifications',
+    'nav.providers': 'Delivery Services',
+    'desc.faqs': 'Questions and answers players see in the help section.',
+    'desc.news': 'News and announcements shown in the game.',
+    'desc.comments': 'Review and approve player comments on news.',
+    'desc.notifications': 'Send in-game notifications, SMS and email to players.',
+    'desc.providers': 'Set up SMS and email services. In sandbox mode nothing is actually sent.',
+    'new.faqs': 'New question',
+    'new.news': 'New article',
+    'edit.faqs': 'Edit question',
+    'edit.news': 'Edit article',
+    'search.faqs': 'Search questions or answers…',
+    'search.news': 'Search titles or summaries…',
+    'search.comments': 'Search comment text, username or article…',
+    'search.notifications': 'Search title, text or ID…',
+    'empty.hint.faqs': 'Write the questions players ask most, with their answers.',
+    'empty.hint.news': 'Write your first article so players can see it in the game.',
+    'empty.hint.comments': 'Nothing to review.',
+    'empty.hint.notifications': 'You have not sent any notifications yet.',
+
+    'kind.faq': 'FAQ',
+    'kind.news': 'News',
+    'filter.category': 'Category',
+    'filter.pinned': 'Pinned',
+    'filter.news': 'Article',
+    'filter.channel': 'Channel',
+
+    'col.question': 'Question',
+    'col.category': 'Category',
+    'col.title': 'Title',
+    'col.comments': 'Comments',
+    'col.published': 'Published',
+    'col.comment': 'Comment',
+    'col.news': 'Article',
+    'col.actions': 'Actions',
+    'col.notification': 'Notification',
+    'col.channel': 'Channel',
+    'col.target': 'Recipients',
+    'col.delivery': 'Delivery',
+    'col.address': 'Address',
+    'col.error': 'Error',
+    'col.attempts': 'Attempts',
+    'col.time': 'Time',
+
+    'f.question.fa': 'Question (Persian)',
+    'f.question.en': 'Question (English)',
+    'f.answer.fa': 'Answer (Persian)',
+    'f.answer.en': 'Answer (English)',
+    'f.faq.active.hint': 'Inactive questions are hidden in the game.',
+    'f.title.fa': 'Title (Persian)',
+    'f.title.en': 'Title (English)',
+    'f.summary.fa': 'Summary (Persian)',
+    'f.summary.en': 'Summary (English)',
+    'f.body.fa': 'Body (Persian)',
+    'f.body.en': 'Body (English)',
+    'f.publishedAt': 'Publish time',
+    'f.publishedAt.hint': 'Empty means now. A future time keeps the article hidden until then.',
+    'f.news.active.hint': 'Inactive articles are hidden in the game.',
+    'f.isPinned': 'Pinned',
+    'f.isPinned.hint': 'Stays at the top of the news list.',
+    'f.comments': 'Comments',
+    'f.allowComment': 'Comments open',
+    'f.allowComment.hint': 'Players can comment on this article.',
+    'f.freeComment': 'Publish without review',
+    'f.freeComment.hint': 'When off, each comment must be approved on the Comments page first.',
+    'f.actions': 'Article buttons',
+
+    'md.write': 'Write',
+    'md.preview': 'Preview',
+    'md.mode': 'Editor mode',
+    'md.empty': 'Nothing to preview.',
+    'md.hint': 'Formatting:',
+    'chars': '{n} / {max} characters',
+
+    'act.add': 'Add button',
+    'act.empty': 'No buttons yet.',
+    'act.type': 'Type',
+    'act.url': 'Open a link',
+    'act.goto': 'Go to a game screen',
+    'act.none': 'No button',
+    'act.value': 'Target',
+    'act.label.fa': 'Button text (Persian)',
+    'act.label.en': 'Button text (English)',
+    'act.url.hint': 'The link opens in a new tab.',
+    'act.goto.hint': 'A game screen name, like shop or play.',
+
+    'news.pinned': 'Pinned',
+    'news.notPinned': 'Not pinned',
+    'news.scheduled': 'Scheduled',
+    'news.commentsOff': 'Closed',
+
+    'cm.pending': 'Awaiting review',
+    'cm.accepted': 'Approved',
+    'cm.pendingN': '{n} awaiting',
+    'cm.accept': 'Approve',
+    'cm.reject': 'Reject',
+    'cm.reject.hint': 'The comment is hidden from players.',
+    'cm.accepted.done': 'Comment approved.',
+    'cm.rejected.done': 'Comment rejected.',
+    'cm.reply': 'Reply',
+    'cm.replies': '{n} replies',
+
+    'ch.in_app': 'In-game',
+    'ch.sms': 'SMS',
+    'ch.email': 'Email',
+    'nst.queued': 'Queued',
+    'nst.sending': 'Sending',
+    'nst.done': 'Done',
+    'nst.failed': 'Failed',
+    'rst.pending': 'Pending',
+    'rst.sent': 'Sent',
+    'rst.skipped': 'No address',
+    'rst.failed': 'Failed',
+    'lang.fa': 'Persian',
+    'lang.en': 'English',
+
+    'tg.all': 'All users',
+    'tg.users': 'Chosen users',
+    'tg.group': 'A group',
+    'tg.usersN': '{n} users',
+    'tg.pickUsers': 'Users',
+    'tg.searchUsers': 'Search and add users…',
+    'tg.searchUsers.hint': 'Type a username, display name or ID.',
+    'tg.users.hint': 'Up to 1,000 users.',
+    'tg.pickGroup': 'Choose a group',
+    'tg.group.hint': 'Sent to all group members, not to join requests.',
+    'tg.all.hint': 'Sent to every user whose account is not disabled.',
+    'tg.none': 'No recipients chosen yet.',
+    'tg.withPhone': '{n} have a phone number',
+    'tg.withEmail': '{n} have an email',
+    'tg.skipped': '{n} have no address and will be skipped.',
+
+    'nt.title': 'Notification',
+    'nt.new': 'Send notification',
+    'nt.new.desc': 'Write the message, choose recipients and send.',
+    'nt.s.channel': 'Channel',
+    'nt.s.content': 'Message',
+    'nt.s.action': 'Notification button',
+    'nt.s.target': 'Recipients',
+    'nt.summary': 'Summary',
+    'nt.f.title': 'Title',
+    'nt.f.body': 'Body',
+    'nt.f.title.fa': 'Title (Persian)',
+    'nt.f.title.en': 'Title (English)',
+    'nt.f.body.fa': 'Body (Persian)',
+    'nt.f.body.en': 'Body (English)',
+    'nt.f.sms.fa': 'SMS text (Persian)',
+    'nt.f.sms.en': 'SMS text (English)',
+    'nt.f.provider': 'Delivery service',
+    'nt.sms.hint': 'SMS has no title. Write plain text.',
+    'nt.sms.tooLong': 'SMS text can be at most 600 characters.',
+    'nt.action.hint': 'Optional. Tapping the notification opens the link or takes the player to that screen.',
+    'nt.inapp.hint': 'Saved to the player\'s inbox and shown right away if the game is open.',
+    'nt.noProvider': 'There is no active service for this channel.',
+    'nt.sandbox.note': 'This service is in sandbox mode; nothing is actually sent.',
+    'nt.live.note': 'This service is not in sandbox mode; messages really go to users.',
+    'nt.recipientsWord': 'recipients',
+    'nt.send': 'Send notification',
+    'nt.sending': 'Sending…',
+    'nt.queued': 'Notification queued for delivery.',
+    'nt.confirmAll.title': 'Send to everyone?',
+    'nt.confirmAll.text': 'This notification goes to all {n} users and cannot be taken back.',
+    'nt.confirmAll.textNoCount': 'This notification goes to all users and cannot be taken back.',
+    'nt.confirmAll.ok': 'Yes, send to everyone',
+    'nt.confirmLive.title': 'Real delivery',
+    'nt.confirmLive.text': 'The chosen service is not in sandbox mode, so messages really go out.',
+    'nt.info': 'Details',
+    'nt.content': 'Message',
+    'nt.delivery': 'Delivery',
+    'nt.recipientsList': 'Recipients',
+    'nt.recipients': 'Recipients',
+    'nt.seen': 'Seen',
+    'nt.live': 'Refreshing automatically',
+    'nt.action': 'Button',
+    'nt.createdBy': 'Sent by',
+    'nt.noRecipients': 'No recipients.',
+    'nt.sentAt': 'Sent: {t}',
+    'nt.seenAt': 'Seen: {t}',
+    'nt.sentOf': '{sent} of {total}',
+    'nt.skippedN': '{n} no address',
+    'nt.failedN': '{n} failed',
+
+    'pv.kind': 'Service type',
+    'pv.kind.kavenegar': 'Kavenegar',
+    'pv.kind.smsir': 'sms.ir',
+    'pv.kind.twilio': 'Twilio',
+    'pv.kind.smtp': 'SMTP',
+    'pv.kind.resend': 'Resend',
+    'pv.add': 'Add service',
+    'pv.added': 'Service added. Sandbox mode is on.',
+    'pv.allAdded': 'All services for this channel are added.',
+    'pv.default': 'Default',
+    'pv.empty.sms': 'No SMS service yet.',
+    'pv.empty.email': 'No email service yet.',
+    'pv.empty.hint': 'Add one from the list above.',
+    'pv.sandbox': 'Sandbox mode',
+    'pv.sandbox.short': 'Sandbox',
+    'pv.sandbox.on': 'On: nothing is actually sent; messages are only written to the server log.',
+    'pv.sandbox.off': 'Off: messages really go to users.',
+    'pv.live.title': 'Turn off sandbox mode?',
+    'pv.live.text': 'From now on this service sends real messages to users, and they cost money.',
+    'pv.live.ok': 'Yes, turn it off',
+    'pv.field.apiKey': 'API key',
+    'pv.field.sender': 'Sender number',
+    'pv.field.lineNumber': 'Line number',
+    'pv.field.accountSid': 'Account SID',
+    'pv.field.authToken': 'Auth token',
+    'pv.field.from': 'From',
+    'pv.field.host': 'Host',
+    'pv.field.port': 'Port',
+    'pv.field.security': 'Encryption',
+    'pv.field.username': 'Username',
+    'pv.field.password': 'Password',
+    'pv.field.fromName': 'Sender name',
+    'pv.hint.host': 'Host name only, without http or port.',
+    'pv.hint.from': 'The number or address messages are sent from.',
+    'pv.opt.starttls': 'STARTTLS',
+    'pv.opt.tls': 'TLS',
+    'pv.opt.none': 'None',
+    'pv.test': 'Test send',
+    'pv.test.hint': 'Sends one message with the saved settings. In sandbox mode nothing is sent.',
+    'pv.test.to': 'To',
+    'pv.test.subject': 'Subject',
+    'pv.test.subject.ph': 'Test message',
+    'pv.test.message': 'Text',
+    'pv.test.message.default': 'This is a test message.',
+    'pv.test.send': 'Send test',
+    'pv.test.sandbox': 'Sandbox: nothing was sent. Reply:',
+    'pv.test.ok': 'Sent.',
+    'pv.test.failed': 'Not sent:',
+
+    'code.FA_REQUIRED_TEXT': 'Persian text is required.',
+    'code.TARGET_USERS_REQUIRED': 'Pick at least one user.',
+    'code.USERS_NOT_FOUND': 'Some chosen users do not exist.',
+    'code.TOO_MANY_USERS': 'At most 1,000 users.',
+    'code.GROUP_NOT_FOUND': 'Group not found.',
+    'code.INVALID_TARGET': 'The recipients are not valid.',
+    'code.INVALID_CHANNEL': 'The channel is not valid.',
+    'code.PROVIDER_NOT_FOUND': 'Service not found.',
+    'code.PROVIDER_NOT_CONFIGURED': 'No active, complete service for this channel; fill in the required fields.',
+    'code.PROVIDER_INACTIVE': 'This service is not active.',
+    'code.PROVIDER_CHANNEL_MISMATCH': 'This service is for another channel.',
+    'code.PROVIDER_KIND_FIXED': 'The service type cannot change after creation.',
+    'code.INVALID_PROVIDER_KIND': 'Unknown service type.',
+    'code.DEFAULT_MUST_BE_ACTIVE': 'Only an active service can be the default.',
+    'code.INVALID_PHONE': 'Write the number like 09123456789 or with a country code.',
+    'code.INVALID_EMAIL': 'The email address is not valid.',
+    'code.INVALID_MESSAGE': 'Text is required (at most 600 characters).',
+    'code.TOO_MANY_ACTIONS': 'At most 5 buttons.',
+    'code.COMMENT_NOT_FOUND': 'Comment not found.',
+    'code.NOTIFICATION_NOT_FOUND': 'Notification not found.',
+    'code.INVALID_FILTER': 'The filter is not valid.',
+    'code.QUERY_TOO_LONG': 'The search text is too long.',
+    'code.URL_TOO_LONG': 'The URL is too long.',
+    'code.INVALID_LANGUAGE': 'Only Persian and English are accepted.',
+    'code.PROVIDER_NOT_ALLOWED': 'In-game notifications do not use a delivery service.'
   }
 };
 
 var API_BASE = '/v2/console/economy';
+var PUB_BASE = '/v2/console/publication';
+var CONSOLE_BASE = '/v2/console';
 var PERSIAN = '۰۱۲۳۴۵۶۷۸۹';
 var SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -845,7 +1371,7 @@ function qs(params) {
   return out.length ? '?' + out.join('&') : '';
 }
 
-function api(method, path, body, isForm) {
+function request(base, method, path, body, isForm) {
   var headers = { Accept: 'application/json' };
   var tk = token();
   if (tk) headers.Authorization = 'Bearer ' + tk;
@@ -854,7 +1380,7 @@ function api(method, path, body, isForm) {
     if (isForm) init.body = body;
     else { headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(body); }
   }
-  return fetch(API_BASE + path, init).then(function (res) {
+  return fetch(base + path, init).then(function (res) {
     if (res.status === 401) {
       toLogin();
       throw new ApiError(401, 'UNAUTHENTICATED', '');
@@ -873,6 +1399,18 @@ function api(method, path, body, isForm) {
   }, function () {
     throw new ApiError(0, 'NETWORK', '');
   });
+}
+
+function api(method, path, body, isForm) {
+  return request(API_BASE, method, path, body, isForm);
+}
+
+function pubApi(method, path, body, isForm) {
+  return request(PUB_BASE, method, path, body, isForm);
+}
+
+function consoleApi(method, path) {
+  return request(CONSOLE_BASE, method, path);
 }
 
 function errorText(err) {
@@ -912,9 +1450,20 @@ var ICONS = {
   empty: '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>',
   alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>',
   check: '<path d="M20 6L9 17l-5-5"/>',
+  faqs: '<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
+  news: '<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/>',
+  comments: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  notifications: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  providers: '<path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5M19.1 4.9C23 8.8 23 15.1 19.1 19"/><circle cx="12" cy="12" r="2"/>',
+  send: '<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',
+  eye: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+  reply: '<path d="M9 17l-5-5 5-5"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/>',
+  pin: '<path d="M12 17v5M9 10.8a2 2 0 0 1-1.1 1.8l-1.8.9A2 2 0 0 0 5 15.2V17h14v-1.8a2 2 0 0 0-1.1-1.8l-1.8-.9A2 2 0 0 1 15 10.8V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+  flask: '<path d="M9 3h6M10 3v6.5L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9.5V3"/><path d="M7 15h10"/>',
   image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>'
 };
-var MIRROR = { first: 1, prev: 1, next: 1, back: 1 };
+var MIRROR = { first: 1, prev: 1, next: 1, back: 1, reply: 1 };
 
 function icon(name, cls) {
   var el = document.createElementNS(SVG_NS, 'svg');
@@ -1238,6 +1787,58 @@ function sidePanel(title, body, footer, onclose) {
   return root;
 }
 
+function segmented(options, value, onchange, label, size) {
+  var wrap = h('div', { class: 'eco-seg inline-flex flex-wrap items-center gap-0.5 rounded-md p-0.5', role: 'radiogroup', 'aria-label': label || null });
+  var btns = options.map(function (o) {
+    return h('button', { type: 'button', role: 'radio', class: 'eco-seg-btn inline-flex items-center gap-1.5 rounded font-medium ' + (size === 'md' ? 'px-3 py-1.5 text-sm' : 'px-2 py-1 text-xs'), 'data-value': o.value,
+      onclick: function () { if (String(value) === String(o.value)) return; pick(o.value); onchange(o.value); } },
+      o.icon ? icon(o.icon, 'h-4 w-4') : null, h('span', { text: o.label }));
+  });
+  function pick(v) {
+    value = v;
+    btns.forEach(function (b) {
+      var on = b.getAttribute('data-value') === String(v);
+      b.setAttribute('aria-checked', on ? 'true' : 'false');
+      b.classList.toggle('eco-seg-on', on);
+    });
+  }
+  btns.forEach(function (b) { wrap.appendChild(b); });
+  pick(value);
+  wrap.set = pick;
+  return wrap;
+}
+
+function confirmModal(opts) {
+  return new Promise(function (resolve) {
+    var done = false;
+    function finish(v) {
+      if (done) return;
+      done = true;
+      root.remove();
+      document.removeEventListener('keydown', esc, true);
+      resolve(v);
+    }
+    function esc(e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); finish(false); } }
+    var ok = button({ variant: opts.danger ? 'dangerSolid' : 'primary', size: 'footer', label: opts.ok || t('yes'), onclick: function () { finish(true); } });
+    var box = h('div', { class: 'relative w-full eco-dialog bg-white dark:bg-secondary-900 rounded-md shadow-lg overflow-hidden', role: 'alertdialog', 'aria-modal': 'true', 'aria-label': opts.title },
+      h('div', { class: 'p-6 flex gap-3' },
+        h('div', { class: 'shrink-0 ' + (opts.danger ? 'text-error-600 dark:text-error-400' : 'eco-selected') }, icon(opts.icon || 'alert', 'h-6 w-6')),
+        h('div', { class: 'min-w-0' },
+          h('h2', { class: 'text-lg font-semibold mb-1', text: opts.title }),
+          opts.text ? h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300', text: opts.text }) : null,
+          opts.body || null)),
+      h('div', { class: 'flex gap-3 justify-end bg-secondary-50 dark:bg-secondary-800 px-6 py-3' },
+        button({ variant: 'ghost', size: 'footer', label: opts.cancel || t('cancel'), onclick: function () { finish(false); } }), ok));
+    var holder = h('div', { class: 'fixed z-[70] inset-0 flex items-center justify-center p-4' }, box);
+    holder.addEventListener('mousedown', function (e) { if (e.target === holder) finish(false); });
+    var root = h('div', { 'data-economy': 'dialog', 'data-l10n-skip': '', dir: document.documentElement.getAttribute('dir') || 'ltr' },
+      h('div', { class: 'fixed z-[70] inset-0 opacity-60 dark:opacity-70 dark:bg-black bg-secondary-900' }), holder);
+    document.body.appendChild(root);
+    document.addEventListener('keydown', esc, true);
+    ok.focus();
+  });
+}
+
 var KEY_RE = /^[a-z0-9][a-z0-9_.-]{0,63}$/;
 var CURRENCY_KEY_RE = /^[a-z0-9_]{2,32}$/;
 var CODE_RE = /^[A-Z0-9_-]{3,32}$/;
@@ -1245,8 +1846,8 @@ var refCache = {};
 
 function refLabel(item) {
   if (!item) return '';
-  var name = i18nText(item.name);
-  return name || item.key || item.id || '';
+  var name = i18nText(item.name) || i18nText(item.title) || i18nText(item.question);
+  return name || item.key || item.username || item.id || '';
 }
 
 function textInput(value, opts) {
@@ -1303,6 +1904,7 @@ function selectInput(value, options, onchange, opts) {
 }
 
 function refPicker(opts) {
+  var call = opts.api || api;
   var value = opts.value == null ? '' : opts.value;
   var cacheKey = function (v) { return opts.resource + ':' + (opts.valueKey || 'id') + ':' + v; };
   var boxLabel = h('span', { class: 'flex items-center gap-2 min-w-0 truncate' });
@@ -1341,11 +1943,11 @@ function refPicker(opts) {
     clear(list);
     for (var i = 0; i < 3; i++) list.appendChild(h('div', { class: 'px-2 py-2' }, bar(['60%', '40%', '50%'][i])));
     var params = Object.assign({ q: q, page: 1, limit: 20 }, opts.filter || {});
-    api('GET', '/' + opts.resource + qs(params)).then(function (res) {
+    call('GET', '/' + opts.resource + qs(params)).then(function (res) {
       if (my !== seq) return;
       clear(list);
       var items = (res && res.items) || [];
-      if (!items.length) list.appendChild(h('div', { class: 'px-2 py-2 text-sm text-secondary-500', text: t('no.results') }));
+      if (!items.length) list.appendChild(h('div', { class: 'px-2 py-2 text-sm text-secondary-500', text: !q && opts.emptyText ? opts.emptyText : t('no.results') }));
       items.forEach(function (it) {
         var v = it[opts.valueKey || 'id'];
         refCache[cacheKey(v)] = it;
@@ -1382,8 +1984,8 @@ function refPicker(opts) {
   paint(refCache[cacheKey(value)]);
   if (value && !refCache[cacheKey(value)]) {
     var req = (opts.valueKey || 'id') === 'id'
-      ? api('GET', '/' + opts.resource + '/' + encodeURIComponent(value))
-      : api('GET', '/' + opts.resource + qs(Object.assign({ q: value, limit: 20 }, opts.filter || {}))).then(function (res) {
+      ? call('GET', '/' + opts.resource + '/' + encodeURIComponent(value))
+      : call('GET', '/' + opts.resource + qs(Object.assign({ q: value, limit: 20 }, opts.filter || {}))).then(function (res) {
         return ((res && res.items) || []).filter(function (it) { return it[opts.valueKey] === value; })[0] || null;
       });
     req.then(function (item) { if (item) { refCache[cacheKey(value)] = item; paint(item); } }, function () { return null; });
@@ -1408,7 +2010,8 @@ function refMulti(opts) {
         } }, icon('close', 'h-3 w-3'))));
     });
   }
-  var picker = refPicker({ resource: opts.resource, filter: opts.filter, label: opts.label, placeholder: t('choose'), value: '', onchange: function (v) {
+  var call = opts.api || api;
+  var picker = refPicker({ resource: opts.resource, api: opts.api, emptyText: opts.emptyText, filter: opts.filter, label: opts.label, placeholder: opts.placeholder || t('choose'), value: '', onchange: function (v) {
     if (v && values.indexOf(v) === -1) {
       values.push(v);
       paint();
@@ -1418,7 +2021,8 @@ function refMulti(opts) {
   } });
   var missing = values.filter(function (v) { return !refCache[opts.resource + ':id:' + v]; });
   missing.forEach(function (v) {
-    api('GET', '/' + opts.resource + '/' + encodeURIComponent(v)).then(function (it) {
+    call('GET', '/' + opts.resource + '/' + encodeURIComponent(v)).then(function (it) {
+      if (!it) return;
       refCache[opts.resource + ':id:' + v] = it;
       paint();
     }, function () { return null; });
@@ -1480,6 +2084,178 @@ function dateInput(value, onchange) {
   });
   paint();
   return h('div', {}, el, shown);
+}
+
+function mdEscape(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&#34;').replace(/'/g, '&#39;');
+}
+
+function mdSafeUrl(u) {
+  if (/[\s"'<>`]/.test(u)) return false;
+  if (/^https?:\/\//i.test(u)) return true;
+  return u.charAt(0) === '/' && u.charAt(1) !== '/' && u.charAt(1) !== '\\';
+}
+
+function mdLink(s, start) {
+  var depth = 0;
+  var i = start + 1;
+  for (; i < s.length; i++) {
+    if (s[i] === '[') depth++;
+    else if (s[i] === ']') { if (depth === 0) break; depth--; }
+  }
+  if (i >= s.length - 1 || s[i + 1] !== '(') return null;
+  var close = s.indexOf(')', i + 2);
+  if (close < 0) return null;
+  return { text: s.slice(start + 1, i), url: s.slice(i + 2, close).trim(), end: close + 1 };
+}
+
+function mdInline(s, links) {
+  var out = '';
+  var i = 0;
+  while (i < s.length) {
+    var m;
+    if (s.slice(i, i + 2) === '![' && (m = mdLink(s, i + 1)) && mdSafeUrl(m.url)) {
+      out += '<img src="' + mdEscape(m.url) + '" alt="' + mdEscape(m.text) + '">';
+      i = m.end;
+      continue;
+    }
+    if (s[i] === '[' && links && (m = mdLink(s, i)) && mdSafeUrl(m.url)) {
+      out += '<a href="' + mdEscape(m.url) + '" rel="noopener noreferrer" target="_blank">' + mdInline(m.text, false) + '</a>';
+      i = m.end;
+      continue;
+    }
+    if (s.slice(i, i + 2) === '**') {
+      var e2 = s.indexOf('**', i + 2);
+      if (e2 > i + 2) { out += '<strong>' + mdInline(s.slice(i + 2, e2), links) + '</strong>'; i = e2 + 2; continue; }
+    }
+    if (s[i] === '*' && i + 1 < s.length && s[i + 1] !== ' ' && s[i + 1] !== '*') {
+      var e1 = s.indexOf('*', i + 1);
+      if (e1 > i + 1) { out += '<em>' + mdInline(s.slice(i + 1, e1), links) + '</em>'; i = e1 + 1; continue; }
+    }
+    var j = i + 1;
+    while (j < s.length && s[j] !== '*' && s[j] !== '[' && s[j] !== '!') j++;
+    out += mdEscape(s.slice(i, j));
+    i = j;
+  }
+  return out;
+}
+
+function mdHtml(src) {
+  var blocks = [];
+  var cur = null;
+  function flush() { if (cur && cur.lines.length) blocks.push(cur); cur = null; }
+  String(src || '').replace(/\r\n?/g, '\n').split('\n').forEach(function (line) {
+    var tl = line.trim();
+    if (!tl) { flush(); return; }
+    if (/^### /.test(tl)) { flush(); blocks.push({ kind: 'h3', lines: [tl.slice(4).trim()] }); return; }
+    if (/^## /.test(tl)) { flush(); blocks.push({ kind: 'h2', lines: [tl.slice(3).trim()] }); return; }
+    var kind = /^[-*] /.test(tl) ? 'ul' : /^[0-9]{1,3}[.)] /.test(tl) ? 'ol' : 'p';
+    if (!cur || cur.kind !== kind) { flush(); cur = { kind: kind, lines: [] }; }
+    cur.lines.push(kind === 'ul' ? tl.slice(2).trim() : kind === 'ol' ? tl.replace(/^[0-9]{1,3}[.)] /, '').trim() : tl);
+  });
+  flush();
+  return blocks.map(function (b) {
+    if (b.kind === 'h2' || b.kind === 'h3') return '<' + b.kind + '>' + mdInline(b.lines[0], true) + '</' + b.kind + '>';
+    if (b.kind === 'ul' || b.kind === 'ol') return '<' + b.kind + '>' + b.lines.map(function (l) { return '<li>' + mdInline(l, true) + '</li>'; }).join('') + '</' + b.kind + '>';
+    return '<p>' + b.lines.map(function (l) { return mdInline(l, true); }).join('<br>') + '</p>';
+  }).join('');
+}
+
+function mdPlain(s) {
+  return String(s || '').replace(/!\[[^\]]*\]\([^)]*\)/g, '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/^\s*(#{2,3}|[-*]|\d{1,3}[.)])\s+/gm, '').replace(/\*\*|\*/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function mdPreview(src, ltr) {
+  var box = h('div', { class: 'eco-md text-sm text-secondary-800 dark:text-secondary-200', dir: ltr ? 'ltr' : 'rtl' });
+  var html = mdHtml(src);
+  if (html) box.innerHTML = html;
+  else box.appendChild(h('p', { class: 'text-secondary-400', text: t('md.empty') }));
+  return box;
+}
+
+function markdownInput(value, opts) {
+  var text = value == null ? '' : String(value);
+  var ta = textInput(text, { multiline: true, rows: opts.rows || 6, ltr: opts.ltr, label: opts.label, oninput: function (v) { text = v; opts.oninput(v); if (counter) paintCount(); } });
+  var preview = h('div', { class: 'eco-md-box border border-secondary-200 dark:border-secondary-700 rounded-md px-3 py-2 bg-secondary-50 dark:bg-secondary-900', hidden: true });
+  var counter = opts.max ? h('span', { class: 'text-xs tabular-nums text-secondary-500' }) : null;
+  function paintCount() {
+    var n = Array.from(text).length;
+    counter.textContent = t('chars', { n: n, max: opts.max });
+    counter.classList.toggle('text-error-600', n > opts.max);
+  }
+  var seg = segmented([{ value: 'write', label: t('md.write') }, { value: 'preview', label: t('md.preview') }], 'write', function (v) {
+    ta.hidden = v === 'preview';
+    preview.hidden = v !== 'preview';
+    if (v === 'preview') clear(preview).appendChild(mdPreview(text, opts.ltr));
+  }, t('md.mode'));
+  if (counter) paintCount();
+  return h('div', { class: 'eco-md-input' },
+    h('div', { class: 'flex items-center justify-between gap-2 mb-2' }, seg, counter),
+    ta, preview,
+    h('div', { class: 'flex flex-wrap items-center gap-1 text-xs text-secondary-500 dark:text-secondary-400 mt-1' },
+      h('span', { text: t('md.hint') }),
+      ['**bold**', '*italic*', '[text](https://…)', '## heading', '- list', '![](https://…)'].map(function (s) { return h('code', { class: 'eco-md-token', dir: 'ltr', text: s }); })));
+}
+
+var GOTO_SCREENS = ['home', 'play', 'shop', 'gift', 'payments', 'news', 'faq', 'inbox'];
+
+function actionsEditor(value, onchange) {
+  var rows = (value || []).map(function (r) { return { type: r.type || 'url', value: r.value || '', label: { fa: (r.label && r.label.fa) || '', en: (r.label && r.label.en) || '' } }; });
+  var listEl = h('div', { class: 'flex flex-col gap-2' });
+  var errors = [];
+  var listId = 'eco-goto-' + Math.random().toString(36).slice(2, 8);
+  var datalist = h('datalist', { id: listId }, GOTO_SCREENS.map(function (s) { return h('option', { value: s }); }));
+  function emit() { onchange(rows.map(function (r) { return { type: r.type, value: r.value, label: { fa: r.label.fa, en: r.label.en } }; })); }
+  var add = button({ variant: 'link', size: 'sm', icon: 'plus', label: t('act.add'), onclick: function () {
+    rows.push({ type: 'url', value: '', label: { fa: '', en: '' } });
+    render();
+    emit();
+  } });
+  function render() {
+    clear(listEl);
+    errors = [];
+    add.hidden = rows.length >= 5;
+    if (!rows.length) listEl.appendChild(h('div', { class: 'text-sm text-secondary-500 dark:text-secondary-400 border border-dashed border-secondary-300 dark:border-secondary-700 rounded-md px-3 py-4 text-center', text: t('act.empty') }));
+    rows.forEach(function (row, idx) {
+      var cell = function (labelKey, ctl) {
+        return h('div', { class: 'min-w-0' }, h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t(labelKey) }), ctl);
+      };
+      var typeSel = selectInput(row.type, [{ value: 'url', label: t('act.url') }, { value: 'goto', label: t('act.goto') }], function (v) { row.type = v; render(); emit(); }, { placeholder: false, label: t('act.type') });
+      var val = textInput(row.value, { ltr: true, mono: true, label: t('act.value'), placeholder: row.type === 'url' ? 'https://' : 'shop', oninput: function (v) { row.value = v.trim(); emit(); } });
+      if (row.type === 'goto') val.setAttribute('list', listId);
+      var fa = textInput(row.label.fa, { label: t('act.label.fa'), oninput: function (v) { row.label.fa = v; emit(); } });
+      var en = textInput(row.label.en, { ltr: true, label: t('act.label.en'), oninput: function (v) { row.label.en = v; emit(); } });
+      var err = h('p', { class: 'text-xs text-error-600 dark:text-error-400 eco-items-err', hidden: true });
+      errors.push({ row: row, el: err });
+      listEl.appendChild(h('div', { class: 'border border-secondary-200 dark:border-secondary-700 rounded-md p-3', 'data-action-row': '' },
+        h('div', { class: 'eco-actions-row' },
+          cell('act.type', typeSel),
+          cell('act.value', val),
+          cell('act.label.fa', fa),
+          cell('act.label.en', en),
+          h('div', { class: 'eco-items-remove' }, button({ variant: 'danger', size: 'iconLg', icon: 'trash', title: t('remove'), onclick: function () { rows.splice(idx, 1); render(); emit(); } }))),
+        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1.5', text: t(row.type === 'url' ? 'act.url.hint' : 'act.goto.hint') }),
+        err));
+    });
+  }
+  render();
+  var el = h('div', {}, listEl, datalist, h('div', { class: 'mt-2' }, add));
+  el.validate = function () {
+    var bad = false;
+    errors.forEach(function (e) {
+      var r = e.row;
+      var msg = '';
+      if (!r.label.fa.trim()) msg = t('act.label.fa') + ': ' + t('err.required');
+      else if (!r.value) msg = t('act.value') + ': ' + t('err.required');
+      else if (r.type === 'url' && !/^https?:\/\/\S+$/i.test(r.value)) msg = t('code.INVALID_ACTION');
+      e.el.textContent = msg;
+      e.el.hidden = !msg;
+      e.el.parentElement.classList.toggle('eco-row-invalid', !!msg);
+      if (msg) bad = true;
+    });
+    return bad ? t('err.form') : null;
+  };
+  return el;
 }
 
 var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'] };
@@ -1633,6 +2409,10 @@ function buildForm(fields, values, ctx) {
       control = dateInput(cur, function (v) { change(v); });
     } else if (t2 === 'items') {
       control = itemsEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
+    } else if (t2 === 'markdown') {
+      control = markdownInput(cur, { ltr: f.ltr, rows: f.rows, max: f.max, label: label, oninput: function (v) { change(v); } });
+    } else if (t2 === 'actions') {
+      control = actionsEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
     } else if (t2 === 'static') {
       control = h('div', { class: 'py-2 text-secondary-700 dark:text-secondary-200' }, f.render(values));
     }
@@ -1679,7 +2459,7 @@ function buildForm(fields, values, ctx) {
         if (n === null) { if (f.required) msg = t('err.required'); setPath(values, f.name, null); }
         else if (isNaN(n) || (f.min !== undefined && n < f.min) || (f.max !== undefined && n > f.max)) msg = t('err.number');
         else setPath(values, f.name, n);
-      } else if (t2 === 'items') {
+      } else if (t2 === 'items' || t2 === 'actions') {
         msg = e.control.validate();
       } else if (f.required && (v === null || v === undefined || v === '' || (Array.isArray(v) && !v.length))) {
         msg = t('err.required');
@@ -1718,6 +2498,7 @@ function buildForm(fields, values, ctx) {
       var visible = !f.when || f.when(values);
       var v = getPath(values, f.name);
       if (!visible) v = f.empty !== undefined ? f.empty : null;
+      if (f.type === 'actions' && Array.isArray(v)) v = v.map(function (r) { var label = { fa: r.label.fa.trim() }; if (r.label.en.trim()) label.en = r.label.en.trim(); return { type: r.type, value: r.value, label: label }; });
       if (f.type === 'items' && Array.isArray(v)) v = v.map(function (r) { return { type: r.type, key: r.key, action: r.action, value: r.value }; });
       if (/\.(fa|en)$/.test(f.name)) {
         var parentPath = f.name.slice(0, -3);
@@ -1738,6 +2519,7 @@ function buildForm(fields, values, ctx) {
 var METHODS = ['zarinpal', 'zibal', 'bazaar', 'myket', 'in_app'];
 var GATEWAYS = ['zarinpal', 'zibal'];
 var STORES = ['bazaar', 'myket'];
+var CATEGORY_KINDS = ['product', 'prize', 'gift', 'currency', 'faq', 'news'];
 var STATUS_COLOR = { pending: 'warning', success: 'success', failed: 'error', expired: 'secondary' };
 
 function opts(prefix, keys) {
@@ -1959,7 +2741,7 @@ var RESOURCES = {
     fixPayload: function (p) { if (p.code === '') p.code = null; return p; }
   },
   categories: {
-    filters: [{ name: 'kind', label: 'filter.kind', options: opts('kind.', ['product', 'prize', 'gift', 'currency']) }],
+    filters: [{ name: 'kind', label: 'filter.kind', options: opts('kind.', CATEGORY_KINDS) }],
     columns: [
       { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '55%' },
       { label: 'col.kind', render: function (it) { return tag(t('kind.' + it.kind), 'secondary'); }, width: 130 },
@@ -1969,7 +2751,7 @@ var RESOURCES = {
     fields: [
       { type: 'row', fields: [
         { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
-        { name: 'kind', type: 'select', label: 'f.kind', required: true, options: opts('kind.', ['product', 'prize', 'gift', 'currency']) }
+        { name: 'kind', type: 'select', label: 'f.kind', required: true, options: opts('kind.', CATEGORY_KINDS) }
       ] },
       nameRow('name'),
       { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
@@ -1986,15 +2768,112 @@ var RESOURCES = {
       nameRow('name')
     ],
     defaults: function () { return { name: { fa: '', en: '' } }; }
+  },
+  faqs: {
+    api: 'publication',
+    filters: [
+      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', filter: { kind: 'faq' } },
+      { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }
+    ],
+    columns: [
+      { label: 'col.question', render: function (it) {
+        return h('div', { class: 'min-w-0' },
+          h('div', { class: 'font-medium eco-clamp', text: i18nText(it.question) }),
+          h('div', { class: 'text-xs text-secondary-500 eco-clamp', text: mdPlain(i18nText(it.answer)) }));
+      }, skeleton: '70%' },
+      { label: 'col.category', render: function (it) { return it.categoryName ? tag(i18nText(it.categoryName), 'secondary') : h('span', { class: 'text-secondary-400', text: t('none') }); }, width: 150 },
+      { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 },
+      { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 80 },
+      { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
+    ],
+    fields: [
+      nameRow('question'),
+      { name: 'answer.fa', type: 'markdown', label: 'f.answer.fa', required: true },
+      { name: 'answer.en', type: 'markdown', label: 'f.answer.en', ltr: true, optional: true },
+      { type: 'row', fields: [
+        { name: 'categoryId', type: 'ref', resource: 'categories', filter: { kind: 'faq' }, label: 'f.category', optional: true },
+        { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+      ] },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.faq.active.hint' }
+    ],
+    defaults: function (query) { return { question: { fa: '', en: '' }, answer: { fa: '', en: '' }, categoryId: (query && query.categoryId) || null, isActive: true, sort: 0 }; }
+  },
+  news: {
+    api: 'publication',
+    filters: [
+      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', filter: { kind: 'news' } },
+      { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } },
+      { name: 'isPinned', label: 'filter.pinned', options: function () { return [{ value: 'true', label: t('news.pinned') }, { value: 'false', label: t('news.notPinned') }]; } }
+    ],
+    columns: [
+      { label: 'col.title', render: function (it) {
+        var pic = h('div', { class: 'h-10 w-16 shrink-0 rounded-md bg-secondary-100 dark:bg-secondary-700 overflow-hidden flex items-center justify-center text-secondary-400' });
+        pic.appendChild(it.coverUrl ? img(it.coverUrl) : icon('image', 'h-4 w-4'));
+        return h('div', { class: 'flex items-center gap-3 min-w-0' }, pic,
+          h('div', { class: 'min-w-0' },
+            h('div', { class: 'font-medium flex items-center gap-1.5 min-w-0' }, it.isPinned ? h('span', { class: 'eco-text-warning', title: t('news.pinned') }, icon('pin', 'h-3.5 w-3.5')) : null, h('span', { class: 'eco-clamp', text: i18nText(it.title) })),
+            i18nText(it.summary) ? h('div', { class: 'text-xs text-secondary-500 eco-clamp', text: i18nText(it.summary) }) : null));
+      }, skeleton: '70%' },
+      { label: 'col.category', render: function (it) { return it.categoryName ? tag(i18nText(it.categoryName), 'secondary') : h('span', { class: 'text-secondary-400', text: t('none') }); }, width: 130 },
+      { label: 'col.comments', render: function (it) {
+        if (!it.allowComment) return tag(t('news.commentsOff'), 'secondary');
+        return h('div', { class: 'flex flex-wrap gap-1' },
+          h('span', { class: 'tabular-nums text-sm', text: fmtNum(it.commentCount || 0) }),
+          it.pendingComments ? h('a', { href: hashFor('comments', null, { status: 'pending', newsId: it.id }), class: 'eco-tag eco-tag--warning inline-flex leading-tight px-2 py-0.5 text-xs rounded-md whitespace-nowrap', text: t('cm.pendingN', { n: it.pendingComments }) }) : null);
+      }, width: 130 },
+      { label: 'col.published', render: function (it) {
+        var future = it.publishedAt && new Date(it.publishedAt).getTime() > Date.now();
+        return h('div', { class: 'flex flex-col items-start gap-0.5' }, dateCell(it.publishedAt), future ? tag(t('news.scheduled'), 'primary') : null);
+      }, width: 190 },
+      { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
+    ],
+    fields: [
+      nameRow('title'),
+      nameTextareas('summary'),
+      { name: 'body.fa', type: 'markdown', label: 'f.body.fa', required: true, rows: 8 },
+      { name: 'body.en', type: 'markdown', label: 'f.body.en', ltr: true, optional: true, rows: 8 },
+      { name: 'coverUrl', type: 'image', label: 'f.cover', optional: true },
+      { type: 'row', fields: [
+        { name: 'categoryId', type: 'ref', resource: 'categories', filter: { kind: 'news' }, label: 'f.category', optional: true },
+        { name: 'publishedAt', type: 'datetime', label: 'f.publishedAt', hint: 'f.publishedAt.hint', optional: true }
+      ] },
+      { type: 'row', fields: [
+        { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.news.active.hint' },
+        { name: 'isPinned', type: 'bool', inline: true, label: 'f.isPinned', hint: 'f.isPinned.hint' }
+      ] },
+      { type: 'heading', label: 'f.comments' },
+      { type: 'row', fields: [
+        { name: 'allowComment', type: 'bool', inline: true, label: 'f.allowComment', hint: 'f.allowComment.hint' },
+        { name: 'freeComment', type: 'bool', inline: true, label: 'f.freeComment', hint: 'f.freeComment.hint', empty: false, when: function (v) { return !!v.allowComment; } }
+      ] },
+      { type: 'heading', label: 'f.actions' },
+      { name: 'actions', type: 'actions', empty: [] },
+      { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
+    ],
+    defaults: function (query) { return { title: { fa: '', en: '' }, summary: { fa: '', en: '' }, body: { fa: '', en: '' }, coverUrl: '', categoryId: (query && query.categoryId) || null, publishedAt: null, isActive: true, isPinned: false, allowComment: true, freeComment: false, actions: [], metadata: {} }; },
+    fixPayload: function (p) { if (!p.coverUrl) p.coverUrl = ''; if (!p.publishedAt) delete p.publishedAt; return p; }
   }
 };
 
-var PAGES = ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments', 'payment-methods', 'categories', 'tags'];
+var SECTIONS = {
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments', 'payment-methods', 'categories', 'tags'],
+  publication: ['faqs', 'news', 'comments', 'notifications', 'providers']
+};
+var SECTION_ORDER = ['economy', 'publication'];
+var PAGES = SECTIONS.economy.concat(SECTIONS.publication);
 var LIMIT = 20;
-var lastQuery = {};
+var lastQuery = { comments: { status: 'pending' } };
+
+function sectionOf(page) {
+  return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
+}
+
+function apiFor(page) {
+  return sectionOf(page) === 'publication' ? pubApi : api;
+}
 
 function hashFor(page, id, query) {
-  return '#/economy/' + page + (id ? '/' + encodeURIComponent(id) : '') + qs(query || {});
+  return '#/' + sectionOf(page) + '/' + page + (id ? '/' + encodeURIComponent(id) : '') + qs(query || {});
 }
 
 function go(page, id, query) {
@@ -2006,18 +2885,19 @@ function errorBlock(err, retry) {
 }
 
 function listPage(container, name, query, ctx) {
-  var def = RESOURCES[name] || PAYMENT_LIST;
+  var def = RESOURCES[name] || LISTS[name];
+  var call = apiFor(name);
   var columns = def.columns.map(function (c) { return { label: t(c.label), width: c.width, align: c.align, skeleton: c.skeleton }; });
   var state = { q: query.q || '', page: Math.max(1, parseInt(query.page, 10) || 1), limit: LIMIT, filters: {}, total: 0, loading: true, loaded: false };
   (def.filters || []).forEach(function (f) { if (query[f.name]) state.filters[f.name] = query[f.name]; });
   lastQuery[name] = currentQuery();
 
-  var create = def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new', currentQuery()); } }) : null;
+  var create = def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new', currentQuery()); } }) : def.create ? def.create() : null;
   var frame = pageFrame(t('nav.' + name), t('desc.' + name), create);
   var pagerTop = h('div', { class: 'relative flex items-center justify-end' });
   var pagerBottom = h('div', { class: 'flex gap-2 py-4 items-center justify-end' });
   var tableBox = h('div', {});
-  var search = searchInput(state.q, t(name === 'payments' ? 'search.payments' : 'search'), debounce(function (e) {
+  var search = searchInput(state.q, t(has('search.' + name) ? 'search.' + name : 'search'), debounce(function (e) {
     state.q = toLatinDigits(e.target.value).trim();
     state.page = 1;
     sync();
@@ -2025,6 +2905,15 @@ function listPage(container, name, query, ctx) {
   }, 300));
   var filters = (def.filters || []).map(function (f) {
     var opts2 = typeof f.options === 'function' ? f.options() : f.options;
+    if (f.type === 'ref') {
+      var picker = refPicker({ resource: f.resource, api: f.api === 'publication' ? pubApi : api, filter: f.filter, value: state.filters[f.name] || '', label: t(f.label), placeholder: t(f.label) + ': ' + t('all'), onchange: function (v) {
+        state.filters[f.name] = v || '';
+        state.page = 1;
+        sync();
+        load();
+      } });
+      return h('div', { class: 'x-label x-input eco-filter-ref', style: INPUT_VARS }, picker);
+    }
     if (f.type === 'text') {
       var inp = h('input', { class: INPUT_SM + ' font-mono eco-filter-text', dir: 'ltr', type: 'text', value: state.filters[f.name] || '', placeholder: t(f.label), 'aria-label': t(f.label) });
       inp.addEventListener('input', debounce(function () { state.filters[f.name] = toLatinDigits(inp.value).trim(); state.page = 1; sync(); load(); }, 300));
@@ -2070,7 +2959,7 @@ function listPage(container, name, query, ctx) {
     }
     paintPager();
     var params = Object.assign({ q: state.q, page: state.page, limit: state.limit }, state.filters);
-    return api('GET', '/' + name + qs(params)).then(function (res) {
+    return call('GET', '/' + name + qs(params)).then(function (res) {
       if (my !== seq) return;
       state.loading = false;
       state.loaded = true;
@@ -2086,11 +2975,11 @@ function listPage(container, name, query, ctx) {
       if (!items.length) {
         var filtered = state.q || Object.keys(state.filters).some(function (k) { return state.filters[k]; });
         tableBox.appendChild(card(emptyBlock(filtered ? t('empty.search') : t('empty.title'), filtered ? null : t('empty.hint.' + name),
-          !filtered && def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new'); } }) : null)));
+          !filtered && def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new'); } }) : !filtered && def.create ? def.create() : null)));
       } else {
         tableBox.appendChild(table(columns, items.map(function (it) {
           return { item: it, cells: def.columns.map(function (c) { return c.render(it); }) };
-        }), { onrow: open }));
+        }), { onrow: def.noRow ? null : open }));
       }
       paintPager();
     }, function (err) {
@@ -2149,7 +3038,8 @@ function openEditor(name, id, query, onSaved) {
   document.body.appendChild(el);
   body.appendChild(formSkeleton(def));
 
-  var item = isNew ? Promise.resolve(def.defaults(query)) : api('GET', '/' + name + '/' + encodeURIComponent(id));
+  var call = apiFor(name);
+  var item = isNew ? Promise.resolve(def.defaults(query)) : call('GET', '/' + name + '/' + encodeURIComponent(id));
   item.then(function (data) {
     if (!panelState || panelState.el !== el) return;
     var values = clone(data) || {};
@@ -2168,7 +3058,7 @@ function openEditor(name, id, query, onSaved) {
       };
       var resetDelete = function () { clear(del).appendChild(button({ variant: 'danger', size: 'footer', icon: 'trash', label: t('delete'), onclick: askDelete })); };
       var doDelete = function () {
-        api('DELETE', '/' + name + '/' + encodeURIComponent(id)).then(function () {
+        call('DELETE', '/' + name + '/' + encodeURIComponent(id)).then(function () {
           toast('success', t('deleted'));
           back();
           if (onSaved) onSaved();
@@ -2190,7 +3080,7 @@ function openEditor(name, id, query, onSaved) {
       var payload = form.payload();
       if (def.fixPayload) payload = def.fixPayload(payload);
       setBusy(saveBtn, true, t('saving'));
-      api(isNew ? 'POST' : 'PUT', '/' + name + (isNew ? '' : '/' + encodeURIComponent(id)), payload).then(function () {
+      call(isNew ? 'POST' : 'PUT', '/' + name + (isNew ? '' : '/' + encodeURIComponent(id)), payload).then(function () {
         toast('success', t('saved'));
         back();
         if (onSaved) onSaved();
@@ -2510,6 +3400,813 @@ function overviewPage(container) {
   load();
 }
 
+var CHANNELS = ['in_app', 'sms', 'email'];
+var CHANNEL_ICON = { in_app: 'notifications', sms: 'comments', email: 'send' };
+var NOTIF_STATUS = ['queued', 'sending', 'done', 'failed'];
+var NOTIF_COLOR = { queued: 'secondary', sending: 'primary', done: 'success', failed: 'error' };
+var RECIPIENT_STATUS = ['pending', 'sent', 'skipped', 'failed'];
+var RECIPIENT_COLOR = { pending: 'secondary', sent: 'success', skipped: 'warning', failed: 'error' };
+var SMS_MAX = 600;
+var pendingComments = null;
+var badgeAt = 0;
+
+function kindLabel(kind) {
+  return has('pv.kind.' + kind) ? t('pv.kind.' + kind) : kind;
+}
+
+function quietGet(path) {
+  var tk = token();
+  if (!tk) return Promise.reject(new ApiError(401, 'UNAUTHENTICATED', ''));
+  return fetch(PUB_BASE + path, { headers: { Accept: 'application/json', Authorization: 'Bearer ' + tk }, credentials: 'same-origin' }).then(function (res) {
+    if (!res.ok) throw new ApiError(res.status, null, '');
+    return res.json();
+  });
+}
+
+function refreshBadge(force) {
+  var now = Date.now();
+  if (!force && now - badgeAt < 60000) return;
+  badgeAt = now;
+  quietGet('/comments?status=pending&limit=1').then(function (res) {
+    var n = (res && res.total) || 0;
+    if (n !== pendingComments) {
+      pendingComments = n;
+      schedule();
+    }
+  }, function () { return null; });
+}
+
+function navBadge(page, collapsed) {
+  if (page !== 'comments' || !pendingComments) return null;
+  if (collapsed) return h('span', { class: 'eco-nav-dot', 'aria-label': t('cm.pendingN', { n: pendingComments }) });
+  return h('span', { class: 'eco-nav-badge tabular-nums', 'aria-label': t('cm.pendingN', { n: pendingComments }), text: fmtNum(pendingComments) });
+}
+
+function userCell(id, username, displayName) {
+  return h('div', { class: 'min-w-0' },
+    h('a', { href: '#/players/' + encodeURIComponent(id || ''), class: 'eco-link font-medium truncate block', text: displayName || username || String(id || '').slice(0, 8) }),
+    h('div', { class: 'text-xs text-secondary-500 truncate' }, mono(username && displayName ? username : String(id || '').slice(0, 8))));
+}
+
+function commentAct(btn, id, accepted) {
+  setBusy(btn, true);
+  pubApi('PUT', '/comments/' + encodeURIComponent(id), { isAccepted: accepted }).then(function () {
+    toast('success', t(accepted ? 'cm.accepted.done' : 'cm.rejected.done'));
+    refreshBadge(true);
+    if (rendered && rendered.list) rendered.list.reload();
+  }, function (err) {
+    setBusy(btn, false);
+    toast('error', errorText(err));
+  });
+}
+
+function commentActions(it) {
+  var box = h('div', { class: 'flex flex-wrap items-center gap-1 justify-end eco-row-actions' });
+  function reset() {
+    clear(box);
+    if (!it.isAccepted) box.appendChild(button({ variant: 'primary', size: 'sm', icon: 'check', label: t('cm.accept'), onclick: function (e) { commentAct(e.currentTarget, it.id, true); } }));
+    else box.appendChild(button({ variant: 'ghost', size: 'sm', icon: 'close', label: t('cm.reject'), title: t('cm.reject.hint'), onclick: function (e) { commentAct(e.currentTarget, it.id, false); } }));
+    box.appendChild(button({ variant: 'danger', size: 'sm', icon: 'trash', title: t('delete'), onclick: ask }));
+  }
+  function ask() {
+    clear(box);
+    box.appendChild(h('span', { class: 'text-sm text-secondary-700 dark:text-secondary-200', text: t('delete.confirm') }));
+    box.appendChild(button({ variant: 'dangerSolid', size: 'sm', label: t('delete.yes'), onclick: function (e) {
+      setBusy(e.currentTarget, true);
+      pubApi('DELETE', '/comments/' + encodeURIComponent(it.id)).then(function () {
+        toast('success', t('deleted'));
+        refreshBadge(true);
+        if (rendered && rendered.list) rendered.list.reload();
+      }, function (err) { reset(); toast('error', errorText(err)); });
+    } }));
+    box.appendChild(button({ variant: 'ghost', size: 'sm', label: t('no'), onclick: reset }));
+  }
+  reset();
+  return box;
+}
+
+var COMMENT_LIST = {
+  noRow: true,
+  filters: [
+    { name: 'status', label: 'filter.status', options: opts('cm.', ['pending', 'accepted']) },
+    { name: 'newsId', label: 'filter.news', type: 'ref', resource: 'news', api: 'publication' }
+  ],
+  columns: [
+    { label: 'col.comment', render: function (it) {
+      return h('div', { class: 'min-w-0 flex flex-col gap-1' },
+        h('div', { class: 'flex items-start gap-1.5' },
+          it.parentId ? h('span', { class: 'text-secondary-400 mt-0.5', title: t('cm.reply') }, icon('reply', 'h-3.5 w-3.5')) : null,
+          h('div', { class: 'eco-clamp-3 eco-pre-line break-words', dir: 'auto', text: it.message })),
+        h('div', { class: 'flex flex-wrap items-center eco-meta text-xs text-secondary-500' },
+          h('a', { href: '#/players/' + encodeURIComponent(it.userId), class: 'eco-link font-medium', text: it.displayName || it.username || String(it.userId).slice(0, 8) }),
+          h('span', { text: fmtDate(it.createdAt) }),
+          it.parentId ? h('span', { text: t('cm.reply') }) : null,
+          it.replyCount ? h('span', { text: t('cm.replies', { n: it.replyCount }) }) : null));
+    }, skeleton: '75%' },
+    { label: 'col.news', render: function (it) { return h('a', { href: hashFor('news', it.newsId), class: 'eco-link eco-clamp', text: i18nText(it.newsTitle) }); }, width: 220, skeleton: '60%' },
+    { label: 'col.status', render: function (it) { return tag(t(it.isAccepted ? 'cm.accepted' : 'cm.pending'), it.isAccepted ? 'success' : 'warning'); }, width: 120 },
+    { label: 'col.actions', render: commentActions, width: 210, skeleton: '80%' }
+  ]
+};
+
+function targetText(tg) {
+  tg = tg || {};
+  if (tg.mode === 'all') return t('tg.all');
+  if (tg.mode === 'group') return t('tg.group');
+  return t('tg.usersN', { n: (tg.userIds || []).length });
+}
+
+function notifTitle(it) {
+  return i18nText(it.title) || mdPlain(i18nText(it.body));
+}
+
+var NOTIFICATION_LIST = {
+  create: function () { return button({ variant: 'primary', size: 'page', icon: 'send', label: t('nt.new'), onclick: function () { go('notifications', 'new'); } }); },
+  filters: [
+    { name: 'channel', label: 'filter.channel', options: opts('ch.', CHANNELS) },
+    { name: 'status', label: 'filter.status', options: opts('nst.', NOTIF_STATUS) }
+  ],
+  columns: [
+    { label: 'col.notification', render: function (it) {
+      return h('div', { class: 'min-w-0' },
+        h('div', { class: 'font-medium eco-clamp', dir: 'auto', text: notifTitle(it) }),
+        h('div', { class: 'text-xs text-secondary-500 flex flex-wrap eco-meta' }, h('span', { text: fmtDate(it.createdAt) }), it.createdBy ? h('span', { text: it.createdBy }) : null));
+    }, skeleton: '65%' },
+    { label: 'col.channel', render: function (it) {
+      return h('div', { class: 'flex flex-wrap items-center gap-1' }, tag(t('ch.' + it.channel), it.channel === 'in_app' ? 'primary' : 'secondary'), it.providerKind ? h('span', { class: 'text-xs text-secondary-500', text: kindLabel(it.providerKind) }) : null);
+    }, width: 170 },
+    { label: 'col.target', render: function (it) { return h('span', { class: 'whitespace-nowrap', text: targetText(it.target) }); }, width: 120 },
+    { label: 'col.delivery', render: function (it) {
+      return h('div', { class: 'flex flex-wrap items-center gap-1' },
+        h('span', { class: 'tabular-nums whitespace-nowrap text-sm', text: t('nt.sentOf', { sent: it.sentCount || 0, total: it.recipientCount || 0 }) }),
+        it.skippedCount ? tag(t('nt.skippedN', { n: it.skippedCount }), 'warning') : null,
+        it.failedCount ? tag(t('nt.failedN', { n: it.failedCount }), 'error') : null);
+    }, width: 210 },
+    { label: 'col.status', render: function (it) { return tag(t('nst.' + it.status), NOTIF_COLOR[it.status]); }, width: 120 }
+  ]
+};
+
+var LISTS = { payments: PAYMENT_LIST, comments: COMMENT_LIST, notifications: NOTIFICATION_LIST };
+
+function statTile(label, value, color) {
+  return h('div', { class: 'rounded-md border border-secondary-200 dark:border-secondary-700 px-3 py-2' },
+    h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: label }),
+    h('div', { class: 'text-2xl font-semibold tabular-nums' + (color ? ' eco-text-' + color : ''), text: fmtNum(value || 0) }));
+}
+
+function i18nBlock(v, markdown) {
+  v = v || {};
+  var out = h('div', { class: 'flex flex-col gap-3' });
+  ['fa', 'en'].forEach(function (l) {
+    if (!v[l]) return;
+    out.appendChild(h('div', {},
+      h('div', { class: 'text-xs text-secondary-500 mb-1', text: t('lang.' + l) }),
+      markdown ? mdPreview(v[l], l === 'en') : h('div', { class: 'text-sm eco-pre-line break-words', dir: l === 'en' ? 'ltr' : 'rtl', text: v[l] })));
+  });
+  return out;
+}
+
+function notificationDetail(container, id) {
+  var backBtn = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('back'), onclick: function () { go('notifications', null, lastQuery.notifications || {}); } });
+  var frame = pageFrame(t('nt.title'), null, backBtn);
+  var titleBox = frame.el.querySelector('h1');
+  clear(container).appendChild(frame.el);
+  var grid = h('div', { class: 'eco-detail-grid' });
+  frame.content.appendChild(grid);
+  var rState = { page: 1, limit: 20, status: '', total: 0, loading: true, loaded: false };
+  var recBox = h('div', {});
+  var recPagerTop = h('div', { class: 'flex items-center justify-end' });
+  var recPagerBottom = h('div', { class: 'flex items-center justify-end eco-pt-3' });
+  var timer = null;
+  var built = false;
+  var statsBox = h('div', { class: 'eco-tile-grid' });
+  var statusBox = h('div', {});
+
+  function alive() { return container.isConnected && rendered && rendered.root === container; }
+
+  function skeleton() {
+    clear(grid);
+    [5, 4].forEach(function (n) {
+      var rows = [];
+      for (var i = 0; i < n; i++) rows.push([h('dt', {}, bar('6rem')), h('dd', {}, bar(['70%', '50%', '40%'][i % 3]))]);
+      grid.appendChild(card(h('div', { class: 'p-4' }, h('div', { class: 'mb-4' }, bar('8rem', 'h-4')), h('dl', { class: 'eco-dl' }, rows))));
+    });
+    var tiles = [];
+    for (var k = 0; k < 6; k++) tiles.push(h('div', { class: 'rounded-md border border-secondary-200 dark:border-secondary-700 px-3 py-2' }, bar('4rem'), bar('2.5rem', 'h-7 mt-2')));
+    grid.appendChild(card(h('div', { class: 'p-4' }, h('div', { class: 'mb-4' }, bar('8rem', 'h-4')), h('div', { class: 'eco-tile-grid' }, tiles)), 'eco-span-all'));
+    grid.appendChild(card(h('div', { class: 'p-4' }, h('div', { class: 'mb-4' }, bar('8rem', 'h-4')), table(recColumns(), skeletonRows(recColumns(), 5))), 'eco-span-all'));
+  }
+
+  function recColumns() {
+    return [
+      { label: t('col.user'), skeleton: '50%' },
+      { label: t('col.status'), width: 120 },
+      { label: t('col.address'), width: 200, skeleton: '70%' },
+      { label: t('col.error'), skeleton: '40%' },
+      { label: t('col.attempts'), width: 80 },
+      { label: t('col.time'), width: 180 }
+    ];
+  }
+
+  function paintStats(n) {
+    clear(statusBox).appendChild(h('div', { class: 'flex flex-wrap items-center gap-1.5' },
+      tag(t('nst.' + n.status), NOTIF_COLOR[n.status]),
+      n.status === 'queued' || n.status === 'sending' ? h('span', { class: 'text-xs text-secondary-500', text: t('nt.live') }) : null));
+    clear(statsBox);
+    statsBox.appendChild(statTile(t('nt.recipients'), n.recipientCount));
+    statsBox.appendChild(statTile(t('rst.sent'), n.sentCount, 'success'));
+    statsBox.appendChild(statTile(t('rst.skipped'), n.skippedCount, n.skippedCount ? 'warning' : null));
+    statsBox.appendChild(statTile(t('rst.failed'), n.failedCount, n.failedCount ? 'error' : null));
+    statsBox.appendChild(statTile(t('rst.pending'), n.pendingCount));
+    if (n.channel === 'in_app') statsBox.appendChild(statTile(t('nt.seen'), n.seenCount));
+  }
+
+  function build(n) {
+    built = true;
+    clear(grid);
+    clear(titleBox).appendChild(h('span', { text: t('nt.title') + ' ' }));
+    titleBox.appendChild(h('span', { class: 'font-mono text-base text-secondary-500', dir: 'ltr', text: String(n.id).slice(0, 8) }));
+    var action = n.action && n.action.type ? h('div', { class: 'flex items-center gap-1.5' }, tag(t('act.' + n.action.type), 'secondary'), mono(n.action.value)) : null;
+    grid.appendChild(section('nt.info', dl([
+      ['col.status', statusBox],
+      ['col.channel', h('div', { class: 'flex flex-wrap items-center gap-1.5' }, tag(t('ch.' + n.channel), n.channel === 'in_app' ? 'primary' : 'secondary'), n.providerKind ? h('span', { class: 'text-sm', text: kindLabel(n.providerKind) }) : null)],
+      ['col.target', h('span', { text: targetText(n.target) })],
+      ['nt.action', action],
+      ['nt.createdBy', n.createdBy || null],
+      ['pay.createdAt', dateCell(n.createdAt)],
+      ['pay.updatedAt', dateCell(n.updatedAt)]
+    ])));
+    var content = h('div', { class: 'flex flex-col gap-4' });
+    var hasTitle = !!i18nText(n.title);
+    if (hasTitle) content.appendChild(h('div', {}, h('div', { class: 'text-sm font-medium mb-1', text: t('nt.f.title') }), i18nBlock(n.title)));
+    content.appendChild(h('div', {}, hasTitle ? h('div', { class: 'text-sm font-medium mb-1', text: t('nt.f.body') }) : null, i18nBlock(n.body, n.channel !== 'sms')));
+    grid.appendChild(section('nt.content', content));
+    var stats = section('nt.delivery', statsBox);
+    stats.classList.add('eco-span-all');
+    grid.appendChild(stats);
+    var filter = filterSelect(t('filter.status'), rState.status, opts('rst.', RECIPIENT_STATUS)(), function (v) { rState.status = v; rState.page = 1; loadRecipients(); });
+    var recs = section('nt.recipientsList', h('div', {}, recBox, recPagerBottom), h('div', { class: 'flex flex-wrap items-center gap-2 justify-end' }, filter, recPagerTop));
+    recs.classList.add('eco-span-all');
+    grid.appendChild(recs);
+  }
+
+  function paintRecPager() {
+    clear(recPagerTop).appendChild(pager(rState, function (p) { rState.page = p; loadRecipients(); }));
+    clear(recPagerBottom).appendChild(pager(rState, function (p) { rState.page = p; loadRecipients(); }));
+  }
+
+  function renderRecipients(r) {
+    var items = (r && r.items) || [];
+    rState.total = (r && r.total) || 0;
+    rState.loaded = true;
+    rState.loading = false;
+    recBox.classList.remove('opacity-60');
+    clear(recBox);
+    if (!items.length) {
+      recBox.appendChild(h('div', { class: 'text-sm text-secondary-500 py-6 text-center', text: rState.status ? t('empty.search') : t('nt.noRecipients') }));
+    } else {
+      var cols = recColumns();
+      recBox.appendChild(table(cols, items.map(function (it) {
+        var sandbox = it.error === 'sandbox';
+        return { item: it, cells: [
+          userCell(it.userId, it.username, it.displayName),
+          h('div', { class: 'flex flex-wrap gap-1' }, tag(t('rst.' + it.status), RECIPIENT_COLOR[it.status]), sandbox ? tag(t('pv.sandbox.short'), 'warning') : null),
+          it.address ? mono(it.address) : h('span', {}),
+          it.error && !sandbox && it.error !== 'no address' ? h('span', { class: 'text-xs text-error-600 dark:text-error-400 break-words', dir: 'auto', text: it.error }) : h('span', {}),
+          h('span', { class: 'tabular-nums', text: fmtNum(it.attempts || 0) }),
+          h('div', { class: 'flex flex-col text-xs text-secondary-600 dark:text-secondary-300' },
+            it.sentAt ? h('span', { class: 'whitespace-nowrap', text: t('nt.sentAt', { t: fmtDate(it.sentAt) }) }) : null,
+            it.seenAt ? h('span', { class: 'whitespace-nowrap', text: t('nt.seenAt', { t: fmtDate(it.seenAt) }) }) : null)
+        ] };
+      })));
+    }
+    paintRecPager();
+  }
+
+  function fetchDetail() {
+    return pubApi('GET', '/notifications/' + encodeURIComponent(id) + qs({ rPage: rState.page, rLimit: rState.limit, rStatus: rState.status }));
+  }
+
+  function loadRecipients() {
+    rState.loading = true;
+    recBox.classList.add('opacity-60');
+    paintRecPager();
+    fetchDetail().then(function (n) {
+      if (!alive()) return;
+      paintStats(n);
+      renderRecipients(n.recipients);
+    }, function (err) { recBox.classList.remove('opacity-60'); toast('error', errorText(err)); });
+  }
+
+  function poll() {
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      if (!alive()) return;
+      fetchDetail().then(function (n) {
+        if (!alive()) return;
+        paintStats(n);
+        renderRecipients(n.recipients);
+        if (n.status === 'queued' || n.status === 'sending') poll();
+      }, function () { poll(); });
+    }, 2500);
+  }
+
+  function load() {
+    skeleton();
+    fetchDetail().then(function (n) {
+      if (!alive()) return;
+      build(n);
+      paintStats(n);
+      renderRecipients(n.recipients);
+      if (n.status === 'queued' || n.status === 'sending') poll();
+    }, function (err) { clear(grid).appendChild(h('div', { class: 'eco-span-all' }, errorBlock(err, load))); });
+  }
+  load();
+}
+
+function groupsApi(method, path) {
+  var m = /^\/groups\/([^?]+)$/.exec(path);
+  if (m) return consoleApi('GET', '/group/' + m[1]).then(function (g) { return g && g.id ? { id: g.id, name: g.name, key: null } : null; });
+  var q = new URLSearchParams(path.split('?')[1] || '').get('q') || '';
+  return consoleApi('GET', '/group' + qs({ filter: q })).then(function (res) {
+    return { items: ((res && res.groups) || []).map(function (g) { return { id: g.id, name: g.name }; }) };
+  });
+}
+
+function usersApi(method, path) {
+  var m = /^\/users\/([^?]+)$/.exec(path);
+  var q = m ? decodeURIComponent(m[1]) : new URLSearchParams(path.split('?')[1] || '').get('q') || '';
+  if (!q) return Promise.resolve(m ? null : { items: [] });
+  return pubApi('GET', '/users/search' + qs({ q: q })).then(function (list) {
+    var items = (list || []).map(function (u) { return { id: u.id, name: u.displayName || u.username, key: u.username }; });
+    return m ? items.filter(function (u) { return u.id === q; })[0] || null : { items: items };
+  });
+}
+
+function composePage(container, query) {
+  var backBtn = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('back'), onclick: function () { go('notifications', null, lastQuery.notifications || {}); } });
+  var frame = pageFrame(t('nt.new'), t('nt.new.desc'), backBtn);
+  clear(container).appendChild(frame.el);
+  var layout = h('div', { class: 'eco-compose' });
+  frame.content.appendChild(layout);
+  var v = {
+    channel: CHANNELS.indexOf(query.channel) !== -1 ? query.channel : 'in_app',
+    providerId: '',
+    title: { fa: '', en: '' },
+    body: { fa: '', en: '' },
+    action: { type: '', value: '' },
+    target: { mode: 'users', userIds: query.userId ? [query.userId] : [], groupId: '' }
+  };
+  var providers = [];
+  var preview = null;
+  var previewSeq = 0;
+
+  function skeleton() {
+    clear(layout);
+    var main = h('div', { class: 'flex flex-col gap-4 min-w-0' });
+    [2, 3, 1, 2].forEach(function (n) {
+      var f = [];
+      for (var i = 0; i < n; i++) f.push(skeletonField(i === 1 ? 'h-24' : 'h-10'));
+      main.appendChild(card(h('div', { class: 'p-4' }, h('div', { class: 'mb-4' }, bar('8rem', 'h-4')), f)));
+    });
+    layout.appendChild(main);
+    layout.appendChild(h('div', {}, card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('6rem', 'h-4'), bar('4rem', 'h-9'), bar('80%'), bar('100%', 'h-9')))));
+  }
+
+  function build() {
+    clear(layout);
+    var main = h('div', { class: 'flex flex-col gap-4 min-w-0' });
+    var aside = h('div', { class: 'eco-compose-aside' });
+    layout.appendChild(main);
+    layout.appendChild(aside);
+    var errTop = h('div', {});
+    var fields = {};
+
+    var providerBox = h('div', {});
+    var channelSeg = segmented(CHANNELS.map(function (c) { return { value: c, label: t('ch.' + c), icon: CHANNEL_ICON[c] }; }), v.channel, function (c) {
+      v.channel = c;
+      v.providerId = '';
+      paintChannel();
+      paintCount();
+    }, t('col.channel'), 'md');
+    main.appendChild(section('nt.s.channel', h('div', {}, h('div', { class: 'mb-4' }, channelSeg), providerBox)));
+
+    var titleRow = h('div', { class: 'eco-form-row' });
+    fields.titleFa = field(t('nt.f.title.fa'), textInput('', { label: t('nt.f.title.fa'), oninput: function (x) { v.title.fa = x; fields.titleFa.setError(''); } }));
+    fields.titleEn = field(t('nt.f.title.en'), textInput('', { ltr: true, label: t('nt.f.title.en'), oninput: function (x) { v.title.en = x; } }), null, { optional: true });
+    titleRow.appendChild(fields.titleFa);
+    titleRow.appendChild(fields.titleEn);
+    var bodyBox = h('div', {});
+    main.appendChild(section('nt.s.content', h('div', {}, titleRow, bodyBox)));
+
+    var actType = selectInput('', [{ value: 'url', label: t('act.url') }, { value: 'goto', label: t('act.goto') }], function (x) {
+      v.action.type = x;
+      actValue.hidden = !x;
+      actValue.placeholder = x === 'url' ? 'https://' : 'shop';
+      if (x === 'goto') actValue.setAttribute('list', 'eco-nt-goto'); else actValue.removeAttribute('list');
+      fields.action.setError('');
+    }, { label: t('act.type'), placeholder: t('act.none') });
+    var actValue = textInput('', { ltr: true, mono: true, label: t('act.value'), oninput: function (x) { v.action.value = x.trim(); fields.action.setError(''); } });
+    actValue.hidden = true;
+    fields.action = field(null, h('div', { class: 'eco-form-row' }, actType, actValue, h('datalist', { id: 'eco-nt-goto' }, GOTO_SCREENS.map(function (s) { return h('option', { value: s }); }))), t('nt.action.hint'));
+    var actionSection = section('nt.s.action', fields.action);
+    main.appendChild(actionSection);
+
+    var targetBox = h('div', {});
+    var modeSeg = segmented([{ value: 'users', label: t('tg.users'), icon: 'users' }, { value: 'group', label: t('tg.group'), icon: 'categories' }, { value: 'all', label: t('tg.all'), icon: 'notifications' }], v.target.mode, function (m) {
+      v.target.mode = m;
+      paintTarget();
+      refreshPreview();
+    }, t('col.target'), 'md');
+    main.appendChild(section('nt.s.target', h('div', {}, h('div', { class: 'mb-4' }, modeSeg), targetBox)));
+
+    var countBox = h('div', { class: 'flex flex-col gap-1', 'aria-live': 'polite' });
+    var sendBtn = button({ variant: 'primary', size: 'footer', icon: 'send', label: t('nt.send'), class: 'w-full', onclick: function () { send(); } });
+    aside.appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' },
+      h('h2', { class: 'text-lg font-medium', text: t('nt.summary') }),
+      countBox, errTop, sendBtn)));
+
+    function paintChannel() {
+      clear(providerBox);
+      titleRow.hidden = v.channel === 'sms';
+      actionSection.hidden = v.channel === 'sms';
+      clear(bodyBox);
+      var max = v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : 2000;
+      if (v.channel === 'sms') {
+        var counter = function (lang) {
+          var c = h('span', { class: 'text-xs tabular-nums text-secondary-500' });
+          c.paint = function () { var n = Array.from(v.body[lang]).length; c.textContent = t('chars', { n: n, max: SMS_MAX }); c.classList.toggle('text-error-600', n > SMS_MAX); };
+          c.paint();
+          return c;
+        };
+        var cFa = counter('fa');
+        var cEn = counter('en');
+        fields.bodyFa = field(t('nt.f.sms.fa'), h('div', {}, textInput(v.body.fa, { multiline: true, rows: 4, label: t('nt.f.sms.fa'), oninput: function (x) { v.body.fa = x; cFa.paint(); fields.bodyFa.setError(''); } }), h('div', { class: 'flex justify-end mt-1' }, cFa)), t('nt.sms.hint'));
+        fields.bodyEn = field(t('nt.f.sms.en'), h('div', {}, textInput(v.body.en, { multiline: true, rows: 4, ltr: true, label: t('nt.f.sms.en'), oninput: function (x) { v.body.en = x; cEn.paint(); } }), h('div', { class: 'flex justify-end mt-1' }, cEn)), null, { optional: true });
+      } else {
+        fields.bodyFa = field(t('nt.f.body.fa'), markdownInput(v.body.fa, { max: max, label: t('nt.f.body.fa'), oninput: function (x) { v.body.fa = x; fields.bodyFa.setError(''); } }));
+        fields.bodyEn = field(t('nt.f.body.en'), markdownInput(v.body.en, { max: max, ltr: true, label: t('nt.f.body.en'), oninput: function (x) { v.body.en = x; } }), null, { optional: true });
+      }
+      bodyBox.appendChild(fields.bodyFa);
+      bodyBox.appendChild(fields.bodyEn);
+      if (v.channel === 'in_app') {
+        providerBox.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('nt.inapp.hint') }));
+        return;
+      }
+      var list = providers.filter(function (p) { return p.channel === v.channel && p.isActive; });
+      if (!list.length) {
+        providerBox.appendChild(notice('error', t('nt.noProvider'), h('a', { href: hashFor('providers'), class: 'eco-link text-sm font-medium', text: t('nav.providers') })));
+        return;
+      }
+      var def = list.filter(function (p) { return p.isDefault; })[0] || list[0];
+      var options = list.map(function (p) { return { value: p.id, label: kindLabel(p.kind) + (p.id === def.id ? ' (' + t('pv.default') + ')' : '') + (p.sandbox ? ' · ' + t('pv.sandbox.short') : '') }; });
+      if (!v.providerId) v.providerId = def.id;
+      var sandboxNote = h('div', {});
+      var paintNote = function () {
+        var p = list.filter(function (x) { return x.id === v.providerId; })[0];
+        clear(sandboxNote);
+        if (!p) return;
+        if (p.sandbox) sandboxNote.appendChild(h('div', { class: 'eco-sandbox-note rounded-md px-3 py-2 text-sm flex items-center gap-2' }, icon('flask', 'h-4 w-4 shrink-0'), h('span', { text: t('nt.sandbox.note') })));
+        else sandboxNote.appendChild(notice('error', t('nt.live.note')));
+      };
+      fields.provider = field(t('nt.f.provider'), selectInput(v.providerId, options, function (x) { v.providerId = x; paintNote(); }, { placeholder: false, label: t('nt.f.provider') }));
+      providerBox.appendChild(fields.provider);
+      providerBox.appendChild(sandboxNote);
+      paintNote();
+    }
+
+    function paintTarget() {
+      clear(targetBox);
+      fields.target = null;
+      if (v.target.mode === 'users') {
+        fields.target = field(t('tg.pickUsers'), refMulti({ resource: 'users', api: usersApi, value: v.target.userIds, label: t('tg.pickUsers'), placeholder: t('tg.searchUsers'), emptyText: t('tg.searchUsers.hint'), onchange: function (ids) {
+          v.target.userIds = ids;
+          fields.target.setError('');
+          refreshPreview();
+        } }), t('tg.users.hint'));
+      } else if (v.target.mode === 'group') {
+        fields.target = field(t('tg.pickGroup'), refPicker({ resource: 'groups', api: groupsApi, value: v.target.groupId, required: false, label: t('tg.pickGroup'), placeholder: t('tg.pickGroup'), onchange: function (id) {
+          v.target.groupId = id || '';
+          fields.target.setError('');
+          refreshPreview();
+        } }), t('tg.group.hint'));
+      } else {
+        targetBox.appendChild(notice('secondary', t('tg.all.hint')));
+      }
+      if (fields.target) targetBox.appendChild(fields.target);
+    }
+
+    function paintCount() {
+      clear(countBox);
+      if (preview === 'loading') {
+        countBox.appendChild(bar('4rem', 'h-9'));
+        countBox.appendChild(bar('80%'));
+        return;
+      }
+      if (!preview || preview.error) {
+        countBox.appendChild(h('div', { class: 'text-sm text-secondary-500', text: preview && preview.error ? errorText(preview.error) : t('tg.none') }));
+        return;
+      }
+      countBox.appendChild(h('div', { class: 'flex items-end gap-2' },
+        h('span', { class: 'text-3xl font-semibold tabular-nums', 'data-recipient-count': String(preview.count), text: fmtNum(preview.count) }),
+        h('span', { class: 'text-sm text-secondary-500', text: t('nt.recipientsWord') })));
+      var reach = v.channel === 'sms' ? preview.withPhone : v.channel === 'email' ? preview.withEmail : preview.count;
+      countBox.appendChild(h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300', text: t('tg.withPhone', { n: preview.withPhone }) + '، ' + t('tg.withEmail', { n: preview.withEmail }) }));
+      if (v.channel !== 'in_app' && reach < preview.count) {
+        countBox.appendChild(h('div', { class: 'text-sm eco-text-warning', text: t('tg.skipped', { n: preview.count - reach }) }));
+      }
+    }
+
+    var runPreview = debounce(function () {
+      var my = ++previewSeq;
+      var tg = v.target;
+      if ((tg.mode === 'users' && !tg.userIds.length) || (tg.mode === 'group' && !tg.groupId)) { preview = null; paintCount(); return; }
+      pubApi('GET', '/notifications/preview-target' + qs({ mode: tg.mode, groupId: tg.mode === 'group' ? tg.groupId : '', userIds: tg.mode === 'users' ? tg.userIds.join(',') : '' })).then(function (res) {
+        if (my !== previewSeq) return;
+        preview = res;
+        paintCount();
+      }, function (err) {
+        if (my !== previewSeq) return;
+        preview = { error: err };
+        paintCount();
+      });
+    }, 250);
+
+    function refreshPreview() {
+      preview = 'loading';
+      paintCount();
+      runPreview();
+    }
+
+    function validate() {
+      var ok = true;
+      var setErr = function (f, msg) { if (f) f.setError(msg); if (msg) ok = false; };
+      [fields.titleFa, fields.bodyFa, fields.action, fields.target].forEach(function (f) { if (f) f.setError(''); });
+      if (v.channel !== 'sms' && !v.title.fa.trim()) setErr(fields.titleFa, t('err.required'));
+      if (!v.body.fa.trim()) setErr(fields.bodyFa, t('err.required'));
+      else if (v.channel === 'sms' && (Array.from(v.body.fa).length > SMS_MAX || Array.from(v.body.en).length > SMS_MAX)) setErr(fields.bodyFa, t('nt.sms.tooLong'));
+      if (v.channel !== 'sms' && v.action.type) {
+        if (!v.action.value) setErr(fields.action, t('act.value') + ': ' + t('err.required'));
+        else if (v.action.type === 'url' && !/^https?:\/\/\S+$/i.test(v.action.value)) setErr(fields.action, t('code.INVALID_ACTION'));
+      }
+      if (v.target.mode === 'users' && !v.target.userIds.length) setErr(fields.target, t('code.TARGET_USERS_REQUIRED'));
+      if (v.target.mode === 'group' && !v.target.groupId) setErr(fields.target, t('err.required'));
+      if (v.channel !== 'in_app' && !providers.some(function (p) { return p.channel === v.channel && p.isActive; })) ok = false;
+      return ok;
+    }
+
+    function payload() {
+      var p = { channel: v.channel, body: { fa: v.body.fa.trim() }, target: { mode: v.target.mode } };
+      if (v.body.en.trim()) p.body.en = v.body.en.trim();
+      if (v.channel !== 'sms') {
+        p.title = { fa: v.title.fa.trim() };
+        if (v.title.en.trim()) p.title.en = v.title.en.trim();
+        if (v.action.type) p.action = { type: v.action.type, value: v.action.value };
+      }
+      if (v.target.mode === 'users') p.target.userIds = v.target.userIds.slice();
+      if (v.target.mode === 'group') p.target.groupId = v.target.groupId;
+      if (v.channel !== 'in_app' && v.providerId) p.providerId = v.providerId;
+      return p;
+    }
+
+    function send() {
+      clear(errTop);
+      if (!validate()) {
+        var bad = layout.querySelector('.eco-invalid');
+        if (bad) bad.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        return;
+      }
+      var prov = providers.filter(function (p) { return p.id === v.providerId; })[0];
+      var live = v.channel !== 'in_app' && prov && !prov.sandbox;
+      var count = preview && !preview.error && preview !== 'loading' ? preview.count : null;
+      var ask = Promise.resolve(true);
+      if (v.target.mode === 'all' || live) {
+        ask = confirmModal({
+          title: v.target.mode === 'all' ? t('nt.confirmAll.title') : t('nt.confirmLive.title'),
+          text: (v.target.mode === 'all' ? (count !== null ? t('nt.confirmAll.text', { n: count }) : t('nt.confirmAll.textNoCount')) : '') + (live ? (v.target.mode === 'all' ? ' ' : '') + t('nt.confirmLive.text') : ''),
+          ok: v.target.mode === 'all' ? t('nt.confirmAll.ok') : t('nt.send'),
+          danger: live,
+          icon: 'send'
+        });
+      }
+      ask.then(function (yes) {
+        if (!yes) return;
+        setBusy(sendBtn, true, t('nt.sending'));
+        pubApi('POST', '/notifications', payload()).then(function (res) {
+          toast('success', t('nt.queued'));
+          go('notifications', res.id);
+        }, function (err) {
+          setBusy(sendBtn, false);
+          var map = { title: fields.titleFa, body: fields.bodyFa, action: fields.action, 'target.userIds': fields.target, 'target.groupId': fields.target, providerId: fields.provider };
+          var f = err && err.field && map[err.field];
+          if (f) { f.setError(errorText(err)); f.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+          else errTop.appendChild(notice('error', errorText(err)));
+        });
+      });
+    }
+
+    paintChannel();
+    paintTarget();
+    paintCount();
+    if (v.target.userIds.length) refreshPreview();
+  }
+
+  function load() {
+    skeleton();
+    pubApi('GET', '/providers').then(function (res) {
+      if (!container.isConnected) return;
+      providers = (res && res.items) || [];
+      build();
+    }, function (err) { clear(layout).appendChild(h('div', { class: 'eco-span-all' }, errorBlock(err, load))); });
+  }
+  load();
+}
+
+function providerField(f, cfg, onchange) {
+  var label = has('pv.field.' + f.name) ? t('pv.field.' + f.name) : f.name;
+  var ctl;
+  if (f.type === 'select') {
+    ctl = selectInput(cfg[f.name] || f.default || '', (f.options || []).map(function (o) { return { value: o, label: has('pv.opt.' + o) ? t('pv.opt.' + o) : o }; }), function (x) { cfg[f.name] = x; onchange(); }, { placeholder: false, label: label });
+  } else {
+    ctl = textInput(cfg[f.name] == null ? '' : (f.type === 'number' ? localDigits(String(cfg[f.name])) : cfg[f.name]), { ltr: true, mono: true, label: label, inputmode: f.type === 'number' ? 'numeric' : f.type === 'email' ? 'email' : null, placeholder: f.default ? localDigits(f.default) : null, oninput: function (x) { cfg[f.name] = f.type === 'number' ? toLatinDigits(x).trim() : x; onchange(); } });
+    ctl.classList.add('text-sm');
+    if (f.type === 'secret') ctl.classList.add('eco-secret');
+  }
+  var hintKey = f.type === 'secret' && cfg[f.name] ? 'pm.secret.hint' : has('pv.hint.' + f.name) ? 'pv.hint.' + f.name : null;
+  return field(label, ctl, hintKey ? t(hintKey) : null, { optional: !f.required });
+}
+
+function providersPage(container) {
+  var frame = pageFrame(t('nav.providers'), t('desc.providers'));
+  clear(container).appendChild(frame.el);
+  var body = h('div', { class: 'flex flex-col gap-8' });
+  frame.content.appendChild(body);
+  var catalog = [];
+
+  function skeleton() {
+    clear(body);
+    ['sms', 'email'].forEach(function (c, k) {
+      var grid = h('div', { class: 'eco-card-grid' });
+      for (var i = 0; i < (k ? 2 : 3); i++) {
+        grid.appendChild(card(h('div', { class: 'p-4' },
+          h('div', { class: 'flex items-center justify-between mb-4' }, bar('7rem', 'h-4'), bar('2rem', 'h-5 rounded-full')),
+          bar('100%', 'h-14 mb-4'),
+          skeletonField(), skeletonField(),
+          h('div', { class: 'flex justify-end' }, bar('5rem', 'h-8')))));
+      }
+      body.appendChild(h('div', {}, h('div', { class: 'flex items-center justify-between mb-3' }, bar('6rem', 'h-5'), bar('10rem', 'h-8')), grid));
+    });
+  }
+
+  function testBox(p) {
+    var email = p.channel === 'email';
+    var to = textInput('', { ltr: true, mono: true, label: t('pv.test.to'), placeholder: email ? 'name@example.com' : '09xxxxxxxxx', inputmode: email ? 'email' : 'tel' });
+    to.classList.add('text-sm');
+    var subject = email ? textInput('', { label: t('pv.test.subject'), placeholder: t('pv.test.subject.ph') }) : null;
+    if (subject) subject.classList.add('text-sm');
+    var msg = textInput(t('pv.test.message.default'), { multiline: true, rows: 2, label: t('pv.test.message') });
+    msg.classList.add('text-sm');
+    var out = h('div', { 'aria-live': 'polite' });
+    var sendBtn = button({ variant: 'link', size: 'sm', icon: 'send', label: t('pv.test.send'), onclick: function () {
+      clear(out);
+      setBusy(sendBtn, true, t('nt.sending'));
+      var payload = { to: toLatinDigits(to.value).trim(), message: msg.value };
+      if (subject) payload.subject = subject.value;
+      pubApi('POST', '/providers/' + encodeURIComponent(p.id) + '/test', payload).then(function (r) {
+        setBusy(sendBtn, false);
+        if (r && r.ok && r.sandbox) out.appendChild(h('div', { class: 'eco-sandbox-note rounded-md px-3 py-2 text-sm flex items-start gap-2', 'data-test-result': 'sandbox' }, icon('flask', 'h-4 w-4 shrink-0 mt-0.5'), h('span', {}, h('span', { text: t('pv.test.sandbox') + ' ' }), r.reply ? mono(r.reply) : null)));
+        else if (r && r.ok) out.appendChild(h('div', { 'data-test-result': 'ok' }, notice('success', t('pv.test.ok') + (r.reply ? ' ' + r.reply : ''))));
+        else out.appendChild(h('div', { 'data-test-result': 'error' }, notice('error', t('pv.test.failed') + ' ' + ((r && r.error) || ''))));
+      }, function (err) {
+        setBusy(sendBtn, false);
+        out.appendChild(notice('error', errorText(err)));
+      });
+    } });
+    var details = h('details', { class: 'eco-test border-t border-secondary-200 dark:border-secondary-700 mt-4 eco-pt-3' },
+      h('summary', { class: 'cursor-pointer text-sm font-medium text-secondary-700 dark:text-secondary-200 select-none', text: t('pv.test') }),
+      h('div', { class: 'mt-3' },
+        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: t('pv.test.hint') }),
+        field(t('pv.test.to'), to),
+        subject ? field(t('pv.test.subject'), subject, null, { optional: true }) : null,
+        field(t('pv.test.message'), msg),
+        h('div', { class: 'flex justify-end -mt-2 mb-2' }, sendBtn),
+        out));
+    return details;
+  }
+
+  function providerCard(p) {
+    var cfg = clone(p.config || {}) || {};
+    var st = { isActive: !!p.isActive, isDefault: !!p.isDefault, sandbox: !!p.sandbox };
+    var errTop = h('div', {});
+    var fieldEls = {};
+    var fieldsBox = h('div', {});
+    (p.fields || []).forEach(function (f) {
+      var w = providerField(f, cfg, function () { if (fieldEls[f.name]) fieldEls[f.name].setError(''); });
+      fieldEls[f.name] = w;
+      fieldsBox.appendChild(w);
+    });
+    var sandboxText = h('p', { class: 'text-xs mt-1.5' });
+    var sandboxBox = h('div', { class: 'rounded-md px-3 py-2.5 mb-4', 'data-sandbox-box': '' });
+    var sandboxToggle = toggle(st.sandbox, t('pv.sandbox'), function (on) { st.sandbox = on; paintSandbox(); });
+    sandboxBox.appendChild(h('div', { class: 'flex items-center gap-2' }, icon('flask', 'h-4 w-4 shrink-0'), sandboxToggle));
+    sandboxBox.appendChild(sandboxText);
+    function paintSandbox() {
+      sandboxBox.className = 'rounded-md px-3 py-2.5 mb-4 ' + (st.sandbox ? 'eco-sandbox-note' : 'eco-live-note');
+      sandboxText.textContent = st.sandbox ? t('pv.sandbox.on') : t('pv.sandbox.off');
+    }
+    paintSandbox();
+    var defToggle = toggle(st.isDefault, t('pv.default'), function (on) { st.isDefault = on; if (on && !st.isActive) { st.isActive = true; activeToggle.set(true); } }, 'sm');
+    var activeToggle = toggle(st.isActive, t('pm.active'), function (on) { st.isActive = on; if (!on && st.isDefault) { st.isDefault = false; defToggle.set(false); } }, 'sm');
+
+    var saveBtn = button({ variant: 'primary', size: 'sm', label: t('save'), onclick: function () { save(); } });
+    var del = h('div', { class: 'flex items-center gap-2' });
+    function resetDelete() { clear(del).appendChild(button({ variant: 'danger', size: 'sm', icon: 'trash', title: t('delete'), onclick: askDelete })); }
+    function askDelete() {
+      clear(del);
+      del.appendChild(h('span', { class: 'text-sm text-secondary-700 dark:text-secondary-200', text: t('delete.confirm') }));
+      del.appendChild(button({ variant: 'dangerSolid', size: 'sm', label: t('delete.yes'), onclick: function () {
+        pubApi('DELETE', '/providers/' + encodeURIComponent(p.id)).then(function () { toast('success', t('deleted')); load(); }, function (err) { resetDelete(); clear(errTop).appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err)))); });
+      } }));
+      del.appendChild(button({ variant: 'ghost', size: 'sm', label: t('no'), onclick: resetDelete }));
+    }
+    resetDelete();
+
+    function save() {
+      clear(errTop);
+      Object.keys(fieldEls).forEach(function (k) { fieldEls[k].setError(''); });
+      var goingLive = p.sandbox && !st.sandbox;
+      var ask = goingLive ? confirmModal({ title: t('pv.live.title'), text: t('pv.live.text'), ok: t('pv.live.ok'), danger: true, icon: 'alert' }) : Promise.resolve(true);
+      ask.then(function (yes) {
+        if (!yes) return;
+        var out = {};
+        (p.fields || []).forEach(function (f) { if (cfg[f.name] !== undefined && cfg[f.name] !== null) out[f.name] = String(cfg[f.name]); });
+        setBusy(saveBtn, true, t('saving'));
+        pubApi('PUT', '/providers/' + encodeURIComponent(p.id), { isActive: st.isActive, isDefault: st.isDefault, sandbox: st.sandbox, config: out }).then(function () {
+          toast('success', t('saved'));
+          load();
+        }, function (err) {
+          setBusy(saveBtn, false);
+          if (err.field && fieldEls[err.field]) fieldEls[err.field].setError(errorText(err));
+          else errTop.appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err))));
+        });
+      });
+    }
+
+    var el = card(h('div', { class: 'p-4 flex flex-col h-full' },
+      h('div', { class: 'flex items-start justify-between gap-3 mb-4' },
+        h('div', { class: 'min-w-0' },
+          h('div', { class: 'text-lg font-medium', text: kindLabel(p.kind) }),
+          h('div', { class: 'flex flex-wrap items-center gap-1.5 mt-1' }, mono(p.kind),
+            tag(p.configured ? t('pm.configured') : t('pm.notConfigured'), p.configured ? 'success' : 'secondary'),
+            p.isDefault ? tag(t('pv.default'), 'primary') : null)),
+        h('div', { class: 'flex flex-col items-end gap-2 shrink-0' }, activeToggle, defToggle)),
+      sandboxBox,
+      errTop,
+      h('div', { class: 'flex-1' }, fieldsBox),
+      h('div', { class: 'flex items-center justify-between gap-2 pt-2' }, del, saveBtn),
+      testBox(p)));
+    el.setAttribute('data-provider', p.kind);
+    return el;
+  }
+
+  function addControl(channel, existing) {
+    var free = catalog.filter(function (k) { return k.channel === channel && existing.indexOf(k.kind) === -1; });
+    if (!free.length) return h('span', { class: 'text-xs text-secondary-500', text: t('pv.allAdded') });
+    var kind = free[0].kind;
+    var sel = h('select', { class: SELECT_SM, 'aria-label': t('pv.kind'), onchange: function () { kind = sel.value; } }, free.map(function (k) { return h('option', { value: k.kind, text: kindLabel(k.kind) }); }));
+    var add = button({ variant: 'primary', size: 'page', icon: 'plus', label: t('pv.add'), onclick: function () {
+      setBusy(add, true);
+      pubApi('POST', '/providers', { channel: channel, kind: kind, sandbox: true, isActive: false, isDefault: false, config: {} }).then(function () {
+        toast('success', t('pv.added'));
+        load();
+      }, function (err) { setBusy(add, false); toast('error', errorText(err)); });
+    } });
+    return h('div', { class: 'flex items-center gap-2' }, h('label', { class: 'x-label block relative x-input', style: INPUT_VARS }, sel), add);
+  }
+
+  function load() {
+    skeleton();
+    pubApi('GET', '/providers').then(function (res) {
+      if (!container.isConnected) return;
+      var items = (res && res.items) || [];
+      catalog = (res && res.catalog) || [];
+      clear(body);
+      ['sms', 'email'].forEach(function (channel) {
+        var list = items.filter(function (p) { return p.channel === channel; });
+        var grid = h('div', { class: 'eco-card-grid' });
+        if (!list.length) grid.appendChild(h('div', { class: 'eco-span-all' }, card(emptyBlock(t('pv.empty.' + channel), t('pv.empty.hint')))));
+        list.forEach(function (p) { grid.appendChild(providerCard(p)); });
+        body.appendChild(h('section', { 'data-channel': channel },
+          h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-3' },
+            h('h2', { class: 'text-lg font-medium', text: t('ch.' + channel) }),
+            addControl(channel, list.map(function (p) { return p.kind; }))),
+          grid));
+      });
+    }, function (err) { clear(body).appendChild(errorBlock(err, load)); });
+  }
+  load();
+}
+
 var ROOT_ID = 'economy-root';
 var NAV_LINK = 'h-[37px] px-3 py-2 flex items-center gap-2 text-secondary-800 hover:text-primary-700 dark:text-[#afbccb] dark:hover:text-primary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-md border-l-[2px] border-transparent dark:border-transparent';
 var NAV_ACTIVE = '!border-primary-600 !text-primary-700 dark:!text-primary-300 !bg-secondary-50 dark:!bg-secondary-800 !border-primary-700';
@@ -2525,9 +4222,10 @@ function captureRouter(app) {
     if (!r || typeof r.addRoute !== 'function') return;
     var layout = r.resolve('/').matched[0];
     if (!layout || !layout.components) return;
-    if (!r.hasRoute('economy')) {
-      r.addRoute({ path: '/economy/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: 'economy', component: EmptyPage, meta: { title: 'Economy' } }] });
-    }
+    SECTION_ORDER.forEach(function (sec) {
+      if (r.hasRoute(sec)) return;
+      r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { title: sec === 'economy' ? 'Economy' : 'Publishing' } }] });
+    });
     router = r;
   } catch (e) {
     router = null;
@@ -2561,24 +4259,25 @@ function replaceHash(hash) {
 }
 
 function parseRoute(hash) {
-  var m = /^#\/economy(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(economy|publication)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
-  var page = m[1] || 'overview';
-  if (PAGES.indexOf(page) === -1) page = 'overview';
+  var section = m[1];
+  var page = m[2] || SECTIONS[section][0];
+  if (SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   var query = {};
-  (m[3] || '').split('&').forEach(function (pair) {
+  (m[4] || '').split('&').forEach(function (pair) {
     if (!pair) return;
     var i = pair.indexOf('=');
     var k = decodeURIComponent(i === -1 ? pair : pair.slice(0, i));
     var v = i === -1 ? '' : decodeURIComponent(pair.slice(i + 1).replace(/\+/g, ' '));
     query[k] = v;
   });
-  return { page: page, id: m[2] ? decodeURIComponent(m[2]) : null, query: query };
+  return { section: section, page: page, id: m[3] ? decodeURIComponent(m[3]) : null, query: query };
 }
 
 function keyOf(r) {
   if (!r) return '';
-  var detail = r.page === 'payments' && r.id ? '/' + r.id : '';
+  var detail = (r.page === 'payments' || r.page === 'notifications') && r.id ? '/' + r.id : '';
   return lang() + '|' + r.page + detail + '|' + JSON.stringify(r.query);
 }
 
@@ -2587,18 +4286,34 @@ function navIcon(name) {
   return svg;
 }
 
-function buildNav(collapsed, active) {
+function buildNav(section, collapsed, active) {
   var ul = h('ul', { class: 'space-y-0.5' });
-  PAGES.forEach(function (p) {
+  SECTIONS[section].forEach(function (p) {
     var on = p === active;
     var a = h('a', { href: hashFor(p, null, p === active ? null : lastQuery[p]), class: (on ? NAV_ACTIVE + ' ' : '') + NAV_LINK, 'aria-current': on ? 'page' : null, title: collapsed ? t('nav.' + p) : null, 'data-economy-page': p });
     a.appendChild(collapsed ? h('div', { class: 'x-tooltip flex' }, navIcon(p)) : navIcon(p));
-    a.appendChild(h('div', { class: 'font-medium relative truncate' }, h('span', { text: collapsed ? ' ' : t('nav.' + p) })));
+    a.appendChild(h('div', { class: 'font-medium relative truncate' + (collapsed ? '' : ' flex-1') }, h('span', { text: collapsed ? ' ' : t('nav.' + p) })));
+    var badge = navBadge(p, collapsed);
+    if (badge) a.appendChild(badge);
     ul.appendChild(h('li', {}, a));
   });
-  return h('div', { 'data-economy-nav': '', 'data-l10n-skip': '' },
-    h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 ' + (collapsed ? 'text-[8px] text-center' : 'px-3 text-[10px]'), text: collapsed ? t('section.short') : t('section') }),
-    h('nav', { 'aria-label': t('section') }, ul));
+  var title = section === 'economy' ? 'section' : 'section.pub';
+  return h('div', { 'data-economy-nav': section, 'data-l10n-skip': '', class: section === 'economy' ? null : 'eco-nav-next' },
+    h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 ' + (collapsed ? 'text-[8px] text-center' : 'px-3 text-[10px]'), text: collapsed ? t(title + '.short') : t(title) }),
+    h('nav', { 'aria-label': t(title) }, ul));
+}
+
+function placeNav(prev, section, collapsed, active, key) {
+  var next = prev.nextElementSibling;
+  var existing = next && next.getAttribute('data-economy-nav') === section ? next : null;
+  if (!existing || existing.getAttribute('data-key') !== key) {
+    var built = buildNav(section, collapsed, active);
+    built.setAttribute('data-key', key);
+    if (existing) existing.replaceWith(built);
+    else prev.after(built);
+    existing = built;
+  }
+  return existing;
 }
 
 function isCollapsed(anchor) {
@@ -2619,17 +4334,13 @@ function syncSidebar(route) {
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
     var collapsed = isCollapsed(a);
-    var key = lang() + '|' + collapsed + '|' + active + '|' + JSON.stringify(lastQuery);
-    var next = group.nextElementSibling;
-    var existing = next && next.hasAttribute('data-economy-nav') ? next : null;
-    if (!existing || existing.getAttribute('data-key') !== key) {
-      var built = buildNav(collapsed, active);
-      built.setAttribute('data-key', key);
-      if (existing) existing.replaceWith(built);
-      else group.after(built);
-      existing = built;
+    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + JSON.stringify(lastQuery);
+    var prev = group;
+    for (var si = 0; si < SECTION_ORDER.length; si++) {
+      prev = placeNav(prev, SECTION_ORDER[si], collapsed, active, key);
+      keep.push(prev);
     }
-    keep.push(existing);
+    refreshBadge(false);
     var vueActive = group.parentElement.querySelectorAll('a[aria-current="page"]:not([data-economy-page])');
     for (var j = 0; j < vueActive.length && active; j++) {
       if (vueActive[j].getAttribute('href') === '#/') vueActive[j].setAttribute('data-economy-dimmed', '');
@@ -2663,9 +4374,13 @@ function render(root, route) {
     ctl = { root: root, key: key, id: undefined, list: null };
     rendered = ctl;
     var ctx = { id: route.id, query: route.query };
+    if (route.page === 'comments') refreshBadge(true);
     if (route.page === 'overview') overviewPage(root);
     else if (route.page === 'payment-methods') paymentMethodsPage(root);
+    else if (route.page === 'providers') providersPage(root);
     else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
+    else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
+    else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
     else ctl.list = listPage(root, route.page, route.query, ctx);
   }
   if (RESOURCES[route.page] && ctl.id !== route.id) {
@@ -2727,7 +4442,7 @@ function boot() {
   sync();
 }
 
-if (/^#\/economy/.test(location.hash)) {
+if (/^#\/(economy|publication)/.test(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }

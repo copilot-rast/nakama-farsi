@@ -288,3 +288,55 @@ function sidePanel(title, body, footer, onclose) {
   var root = h('div', { 'data-economy': 'panel', 'data-l10n-skip': '', dir: document.documentElement.getAttribute('dir') || 'ltr' }, shade, holder);
   return root;
 }
+
+function segmented(options, value, onchange, label, size) {
+  var wrap = h('div', { class: 'eco-seg inline-flex flex-wrap items-center gap-0.5 rounded-md p-0.5', role: 'radiogroup', 'aria-label': label || null });
+  var btns = options.map(function (o) {
+    return h('button', { type: 'button', role: 'radio', class: 'eco-seg-btn inline-flex items-center gap-1.5 rounded font-medium ' + (size === 'md' ? 'px-3 py-1.5 text-sm' : 'px-2 py-1 text-xs'), 'data-value': o.value,
+      onclick: function () { if (String(value) === String(o.value)) return; pick(o.value); onchange(o.value); } },
+      o.icon ? icon(o.icon, 'h-4 w-4') : null, h('span', { text: o.label }));
+  });
+  function pick(v) {
+    value = v;
+    btns.forEach(function (b) {
+      var on = b.getAttribute('data-value') === String(v);
+      b.setAttribute('aria-checked', on ? 'true' : 'false');
+      b.classList.toggle('eco-seg-on', on);
+    });
+  }
+  btns.forEach(function (b) { wrap.appendChild(b); });
+  pick(value);
+  wrap.set = pick;
+  return wrap;
+}
+
+function confirmModal(opts) {
+  return new Promise(function (resolve) {
+    var done = false;
+    function finish(v) {
+      if (done) return;
+      done = true;
+      root.remove();
+      document.removeEventListener('keydown', esc, true);
+      resolve(v);
+    }
+    function esc(e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); finish(false); } }
+    var ok = button({ variant: opts.danger ? 'dangerSolid' : 'primary', size: 'footer', label: opts.ok || t('yes'), onclick: function () { finish(true); } });
+    var box = h('div', { class: 'relative w-full eco-dialog bg-white dark:bg-secondary-900 rounded-md shadow-lg overflow-hidden', role: 'alertdialog', 'aria-modal': 'true', 'aria-label': opts.title },
+      h('div', { class: 'p-6 flex gap-3' },
+        h('div', { class: 'shrink-0 ' + (opts.danger ? 'text-error-600 dark:text-error-400' : 'eco-selected') }, icon(opts.icon || 'alert', 'h-6 w-6')),
+        h('div', { class: 'min-w-0' },
+          h('h2', { class: 'text-lg font-semibold mb-1', text: opts.title }),
+          opts.text ? h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300', text: opts.text }) : null,
+          opts.body || null)),
+      h('div', { class: 'flex gap-3 justify-end bg-secondary-50 dark:bg-secondary-800 px-6 py-3' },
+        button({ variant: 'ghost', size: 'footer', label: opts.cancel || t('cancel'), onclick: function () { finish(false); } }), ok));
+    var holder = h('div', { class: 'fixed z-[70] inset-0 flex items-center justify-center p-4' }, box);
+    holder.addEventListener('mousedown', function (e) { if (e.target === holder) finish(false); });
+    var root = h('div', { 'data-economy': 'dialog', 'data-l10n-skip': '', dir: document.documentElement.getAttribute('dir') || 'ltr' },
+      h('div', { class: 'fixed z-[70] inset-0 opacity-60 dark:opacity-70 dark:bg-black bg-secondary-900' }), holder);
+    document.body.appendChild(root);
+    document.addEventListener('keydown', esc, true);
+    ok.focus();
+  });
+}

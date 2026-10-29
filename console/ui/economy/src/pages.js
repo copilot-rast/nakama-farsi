@@ -1,9 +1,22 @@
-var PAGES = ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments', 'payment-methods', 'categories', 'tags'];
+var SECTIONS = {
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments', 'payment-methods', 'categories', 'tags'],
+  publication: ['faqs', 'news', 'comments', 'notifications', 'providers']
+};
+var SECTION_ORDER = ['economy', 'publication'];
+var PAGES = SECTIONS.economy.concat(SECTIONS.publication);
 var LIMIT = 20;
-var lastQuery = {};
+var lastQuery = { comments: { status: 'pending' } };
+
+function sectionOf(page) {
+  return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
+}
+
+function apiFor(page) {
+  return sectionOf(page) === 'publication' ? pubApi : api;
+}
 
 function hashFor(page, id, query) {
-  return '#/economy/' + page + (id ? '/' + encodeURIComponent(id) : '') + qs(query || {});
+  return '#/' + sectionOf(page) + '/' + page + (id ? '/' + encodeURIComponent(id) : '') + qs(query || {});
 }
 
 function go(page, id, query) {
@@ -15,18 +28,19 @@ function errorBlock(err, retry) {
 }
 
 function listPage(container, name, query, ctx) {
-  var def = RESOURCES[name] || PAYMENT_LIST;
+  var def = RESOURCES[name] || LISTS[name];
+  var call = apiFor(name);
   var columns = def.columns.map(function (c) { return { label: t(c.label), width: c.width, align: c.align, skeleton: c.skeleton }; });
   var state = { q: query.q || '', page: Math.max(1, parseInt(query.page, 10) || 1), limit: LIMIT, filters: {}, total: 0, loading: true, loaded: false };
   (def.filters || []).forEach(function (f) { if (query[f.name]) state.filters[f.name] = query[f.name]; });
   lastQuery[name] = currentQuery();
 
-  var create = def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new', currentQuery()); } }) : null;
+  var create = def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new', currentQuery()); } }) : def.create ? def.create() : null;
   var frame = pageFrame(t('nav.' + name), t('desc.' + name), create);
   var pagerTop = h('div', { class: 'relative flex items-center justify-end' });
   var pagerBottom = h('div', { class: 'flex gap-2 py-4 items-center justify-end' });
   var tableBox = h('div', {});
-  var search = searchInput(state.q, t(name === 'payments' ? 'search.payments' : 'search'), debounce(function (e) {
+  var search = searchInput(state.q, t(has('search.' + name) ? 'search.' + name : 'search'), debounce(function (e) {
     state.q = toLatinDigits(e.target.value).trim();
     state.page = 1;
     sync();
@@ -34,6 +48,15 @@ function listPage(container, name, query, ctx) {
   }, 300));
   var filters = (def.filters || []).map(function (f) {
     var opts2 = typeof f.options === 'function' ? f.options() : f.options;
+    if (f.type === 'ref') {
+      var picker = refPicker({ resource: f.resource, api: f.api === 'publication' ? pubApi : api, filter: f.filter, value: state.filters[f.name] || '', label: t(f.label), placeholder: t(f.label) + ': ' + t('all'), onchange: function (v) {
+        state.filters[f.name] = v || '';
+        state.page = 1;
+        sync();
+        load();
+      } });
+      return h('div', { class: 'x-label x-input eco-filter-ref', style: INPUT_VARS }, picker);
+    }
     if (f.type === 'text') {
       var inp = h('input', { class: INPUT_SM + ' font-mono eco-filter-text', dir: 'ltr', type: 'text', value: state.filters[f.name] || '', placeholder: t(f.label), 'aria-label': t(f.label) });
       inp.addEventListener('input', debounce(function () { state.filters[f.name] = toLatinDigits(inp.value).trim(); state.page = 1; sync(); load(); }, 300));
@@ -79,7 +102,7 @@ function listPage(container, name, query, ctx) {
     }
     paintPager();
     var params = Object.assign({ q: state.q, page: state.page, limit: state.limit }, state.filters);
-    return api('GET', '/' + name + qs(params)).then(function (res) {
+    return call('GET', '/' + name + qs(params)).then(function (res) {
       if (my !== seq) return;
       state.loading = false;
       state.loaded = true;
@@ -95,11 +118,11 @@ function listPage(container, name, query, ctx) {
       if (!items.length) {
         var filtered = state.q || Object.keys(state.filters).some(function (k) { return state.filters[k]; });
         tableBox.appendChild(card(emptyBlock(filtered ? t('empty.search') : t('empty.title'), filtered ? null : t('empty.hint.' + name),
-          !filtered && def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new'); } }) : null)));
+          !filtered && def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new'); } }) : !filtered && def.create ? def.create() : null)));
       } else {
         tableBox.appendChild(table(columns, items.map(function (it) {
           return { item: it, cells: def.columns.map(function (c) { return c.render(it); }) };
-        }), { onrow: open }));
+        }), { onrow: def.noRow ? null : open }));
       }
       paintPager();
     }, function (err) {
@@ -158,7 +181,8 @@ function openEditor(name, id, query, onSaved) {
   document.body.appendChild(el);
   body.appendChild(formSkeleton(def));
 
-  var item = isNew ? Promise.resolve(def.defaults(query)) : api('GET', '/' + name + '/' + encodeURIComponent(id));
+  var call = apiFor(name);
+  var item = isNew ? Promise.resolve(def.defaults(query)) : call('GET', '/' + name + '/' + encodeURIComponent(id));
   item.then(function (data) {
     if (!panelState || panelState.el !== el) return;
     var values = clone(data) || {};
@@ -177,7 +201,7 @@ function openEditor(name, id, query, onSaved) {
       };
       var resetDelete = function () { clear(del).appendChild(button({ variant: 'danger', size: 'footer', icon: 'trash', label: t('delete'), onclick: askDelete })); };
       var doDelete = function () {
-        api('DELETE', '/' + name + '/' + encodeURIComponent(id)).then(function () {
+        call('DELETE', '/' + name + '/' + encodeURIComponent(id)).then(function () {
           toast('success', t('deleted'));
           back();
           if (onSaved) onSaved();
@@ -199,7 +223,7 @@ function openEditor(name, id, query, onSaved) {
       var payload = form.payload();
       if (def.fixPayload) payload = def.fixPayload(payload);
       setBusy(saveBtn, true, t('saving'));
-      api(isNew ? 'POST' : 'PUT', '/' + name + (isNew ? '' : '/' + encodeURIComponent(id)), payload).then(function () {
+      call(isNew ? 'POST' : 'PUT', '/' + name + (isNew ? '' : '/' + encodeURIComponent(id)), payload).then(function () {
         toast('success', t('saved'));
         back();
         if (onSaved) onSaved();
