@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/heroiclabs/nakama-common/runtime"
+	"github.com/heroiclabs/nakama/v3/internal/secretbox"
 )
 
 type settings struct {
@@ -69,16 +70,14 @@ func newService(db *sql.DB, nk runtime.NakamaModule, logger runtime.Logger, cfg 
 
 func loadSettings(env map[string]string, args []string) (settings, error) {
 	var cfg settings
-	secret := strings.TrimSpace(env["ECONOMY_SECRET_KEY"])
-	if len(secret) < 32 {
-		return cfg, errors.New("ECONOMY_SECRET_KEY must be at least 32 characters")
-	}
-	cfg.secret = []byte(secret)
 	var err error
-	if cfg.sealKey, err = deriveKey(cfg.secret, "economy-config-seal"); err != nil {
+	if cfg.secret, err = secretbox.Secret(env); err != nil {
 		return cfg, err
 	}
-	if cfg.ticketKey, err = deriveKey(cfg.secret, "economy-callback-ticket"); err != nil {
+	if cfg.sealKey, err = deriveKey(cfg.secret, secretbox.EconomyConfigInfo); err != nil {
+		return cfg, err
+	}
+	if cfg.ticketKey, err = deriveKey(cfg.secret, secretbox.EconomyTicketInfo); err != nil {
 		return cfg, err
 	}
 	cfg.publicBase = strings.TrimRight(strings.TrimSpace(env["ECONOMY_PUBLIC_BASE_URL"]), "/")

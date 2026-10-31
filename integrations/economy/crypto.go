@@ -1,65 +1,30 @@
 package main
 
 import (
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/hkdf"
 	"crypto/hmac"
-	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/base64"
-	"errors"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/secretbox"
 )
 
 const ticketLifetime = 48 * time.Hour
 
 func deriveKey(secret []byte, info string) ([]byte, error) {
-	return hkdf.Key(sha256.New, secret, []byte("nakama-economy"), info, 32)
+	return secretbox.Economy.DeriveKey(secret, info)
 }
 
 func seal(key []byte, plain []byte) (string, error) {
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return "", err
-	}
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return "", err
-	}
-	nonce := make([]byte, gcm.NonceSize())
-	if _, err := rand.Read(nonce); err != nil {
-		return "", err
-	}
-	out := gcm.Seal(nonce, nonce, plain, []byte("economy-payment-method"))
-	return base64.StdEncoding.EncodeToString(out), nil
+	return secretbox.Economy.Seal(key, plain)
 }
 
 func unseal(key []byte, text string) ([]byte, error) {
-	if text == "" {
-		return nil, nil
-	}
-	raw, err := base64.StdEncoding.DecodeString(text)
-	if err != nil {
-		return nil, err
-	}
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return nil, err
-	}
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return nil, err
-	}
-	if len(raw) < gcm.NonceSize() {
-		return nil, errors.New("sealed value too short")
-	}
-	return gcm.Open(nil, raw[:gcm.NonceSize()], raw[gcm.NonceSize():], []byte("economy-payment-method"))
+	return secretbox.Economy.Open(key, text)
 }
 
 func signTicket(key []byte, paymentID string, expires time.Time) string {

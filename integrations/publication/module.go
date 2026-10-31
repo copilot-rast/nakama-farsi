@@ -4,12 +4,11 @@ import (
 	"context"
 	"crypto/tls"
 	"database/sql"
-	"errors"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/heroiclabs/nakama-common/runtime"
+	"github.com/heroiclabs/nakama/v3/internal/secretbox"
 )
 
 type settings struct {
@@ -70,12 +69,11 @@ func newService(db *sql.DB, nk runtime.NakamaModule, logger runtime.Logger, cfg 
 
 func loadSettings(env map[string]string) (settings, error) {
 	cfg := settings{workerEvery: 5 * time.Second, workerBatch: 50, maxAttempts: 3, retryBackoff: 30 * time.Second, claimLease: 2 * time.Minute}
-	secret := strings.TrimSpace(env["ECONOMY_SECRET_KEY"])
-	if len(secret) < 32 {
-		return cfg, errors.New("ECONOMY_SECRET_KEY must be at least 32 characters")
+	secret, err := secretbox.Secret(env)
+	if err != nil {
+		return cfg, err
 	}
-	var err error
-	if cfg.sealKey, err = deriveKey([]byte(secret), "publication-provider-config"); err != nil {
+	if cfg.sealKey, err = deriveKey(secret, secretbox.PublicationKeyInfo); err != nil {
 		return cfg, err
 	}
 	return cfg, nil
