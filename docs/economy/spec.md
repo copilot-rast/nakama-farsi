@@ -14,6 +14,8 @@ References:
 | Migrations (embedded in Nakama's migrator) | `migrate/sql/2026103000xxxx-economy-*.sql`, `20261101000002-economy-gift-name-localized.sql` |
 | Languages, categories, tags | Base module (`docs/base/spec.md`, `integrations/base`); economy reads `base_language`, `base_category`, `base_tag` |
 | Translated text helper | `internal/localized` (shared with publication and base) |
+| Secret sealing (HKDF + AES-GCM) | `internal/secretbox` (shared with publication and `samples/stargame`) |
+| Sample game and its seed data | `samples/stargame` (served at `/stargame/`, seeds its shop on start; see its README) |
 | Console auth for `/v2/console/economy/` | `server/console.go`, `console/acl/acl.go` |
 | Console pages (overlay, like the l10n layer) | `console/ui/economy/` → injected into `console/ui/dist/index.html` |
 
@@ -23,10 +25,10 @@ Rules: SQL must run on PostgreSQL 16 (CockroachDB is legacy, but avoid Postgres-
 
 | Key | Meaning | Default |
 |---|---|---|
-| `ECONOMY_SECRET_KEY` | 32+ chars; AES-GCM key for gateway secrets and HMAC for callback tickets (derive two keys with HKDF) | required, module refuses to start without it |
+| `ECONOMY_SECRET_KEY` | 32+ chars; AES-GCM key for gateway secrets and HMAC for callback tickets (derive two keys with HKDF, salt `nakama-economy`, info `economy-config-seal` / `economy-callback-ticket`; helpers in `internal/secretbox`, shared with publication and the stargame sample). Changing it makes stored secrets unreadable | required, module refuses to start without it; compose falls back to `NAKAMA_SESSION_ENCRYPTION_KEY` |
 | `ECONOMY_PUBLIC_BASE_URL` | Public base of the API port, used for callback and file URLs | required |
 | `ECONOMY_DEEP_LINK` | Redirect after a gateway payment; `{success}` and `{paymentId}` are replaced | `nakama://payment?success={success}&paymentId={paymentId}` |
-| `ECONOMY_WEB_REDIRECT_URL` | If set, used instead of the deep link (same placeholders) | empty |
+| `ECONOMY_WEB_REDIRECT_URL` | If set, used instead of the deep link (same placeholders) | empty; compose sets `https://nakama.dastar.dev/stargame/?payment={paymentId}&success={success}` |
 | `ECONOMY_PENDING_TTL_MINUTES` | Pending payment expiry | 45 |
 | `ECONOMY_UPLOAD_DIR` | Where admin uploads are written | `<data_dir>/economy-uploads` |
 
