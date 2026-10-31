@@ -160,3 +160,19 @@ a.eco-tab-on::after{content:'';position:absolute;inset-inline:0;bottom:-1px;heig
 .eco-tr-dot{width:.4rem;height:.4rem;border-radius:9999px;background-color:rgb(var(--warning-color-500))}
 .eco-tr-dot[hidden]{display:none}
 .eco-invalid .eco-tr input,.eco-invalid .eco-tr textarea{border-color:rgb(var(--error-color-500))}
+
+.economy-theme {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 2rem;
+  min-width: 2rem;
+}
+.economy-theme:not(.l10n-switcher--docked) {
+  inset-inline-end: calc(12px + 3rem);
+}
+.economy-theme.l10n-switcher--docked {
+  width: 1.75rem;
+  min-width: 1.75rem;
+}

@@ -2,6 +2,8 @@
 'use strict';
 var MESSAGES = {
   fa: {
+    'theme.toDark': 'حالت تیره',
+    'theme.toLight': 'حالت روشن',
     'section': 'اقتصاد',
     'section.short': 'اقتصاد',
     'nav.overview': 'نمای کلی',
@@ -644,6 +646,8 @@ var MESSAGES = {
     'code.LANGUAGE_NOT_AVAILABLE': 'این زبان در دسترس نیست.'
   },
   en: {
+    'theme.toDark': 'Dark mode',
+    'theme.toLight': 'Light mode',
     'section': 'Economy',
     'section.short': 'Econ',
     'nav.overview': 'Overview',
@@ -4993,6 +4997,7 @@ function render(root, route) {
 }
 
 function sync() {
+  dockTheme();
   var hash = location.hash;
   var moved = legacyHash(hash);
   if (moved) {
@@ -5050,6 +5055,62 @@ function sync() {
   render(root, route);
 }
 
+var THEME_KEY = 'color-mode';
+var THEME_ICONS = {
+  moon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+  sun: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'
+};
+var themeButton = null;
+
+function storedTheme() {
+  try {
+    var v = localStorage.getItem(THEME_KEY);
+    if (v === 'dark' || v === 'light') return v;
+  } catch (e) {}
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function isDarkTheme() {
+  return document.documentElement.classList.contains('dark');
+}
+
+function paintThemeButton() {
+  if (!themeButton) return;
+  var dark = isDarkTheme();
+  var label = t(dark ? 'theme.toLight' : 'theme.toDark');
+  themeButton.innerHTML = dark ? THEME_ICONS.sun : THEME_ICONS.moon;
+  themeButton.setAttribute('title', label);
+  themeButton.setAttribute('aria-label', label);
+  themeButton.setAttribute('aria-pressed', dark ? 'true' : 'false');
+}
+
+function toggleTheme() {
+  var next = isDarkTheme() ? 'light' : 'dark';
+  try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+  document.documentElement.classList.toggle('dark', next === 'dark');
+  paintThemeButton();
+}
+
+function dockTheme() {
+  if (!themeButton) {
+    themeButton = document.createElement('button');
+    themeButton.type = 'button';
+    themeButton.className = 'l10n-switcher economy-theme';
+    themeButton.setAttribute('data-l10n-skip', '');
+    themeButton.addEventListener('click', toggleTheme);
+    paintThemeButton();
+  }
+  var switcher = document.querySelector('.l10n-switcher:not(.economy-theme)');
+  if (switcher) {
+    if (themeButton.nextElementSibling !== switcher) switcher.before(themeButton);
+    themeButton.classList.toggle('l10n-switcher--docked', switcher.classList.contains('l10n-switcher--docked'));
+  } else if (!themeButton.parentElement) {
+    document.body.appendChild(themeButton);
+  }
+}
+
+document.documentElement.classList.toggle('dark', storedTheme() === 'dark');
+
 var scheduled = false;
 function schedule() {
   if (scheduled) return;
@@ -5076,7 +5137,7 @@ function boot() {
   window.addEventListener('hashchange', sync);
   window.addEventListener('popstate', schedule);
   new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
-  new MutationObserver(function () { if (rendered) rendered.key = ''; schedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  new MutationObserver(function () { if (rendered) rendered.key = ''; paintThemeButton(); schedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   sync();
 }
 

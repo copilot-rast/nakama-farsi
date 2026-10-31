@@ -1,5 +1,7 @@
 var MESSAGES = {
   fa: {
+    'theme.toDark': 'حالت تیره',
+    'theme.toLight': 'حالت روشن',
     'section': 'اقتصاد',
     'section.short': 'اقتصاد',
     'nav.overview': 'نمای کلی',
@@ -642,6 +644,8 @@ var MESSAGES = {
     'code.LANGUAGE_NOT_AVAILABLE': 'این زبان در دسترس نیست.'
   },
   en: {
+    'theme.toDark': 'Dark mode',
+    'theme.toLight': 'Light mode',
     'section': 'Economy',
     'section.short': 'Econ',
     'nav.overview': 'Overview',
