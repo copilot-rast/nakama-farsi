@@ -7,11 +7,24 @@ const SERVER = (() => {
     if (v === "reset") localStorage.removeItem("stargame." + name);
     else if (v) localStorage.setItem("stargame." + name, v);
   }
-  const api = (localStorage.getItem("stargame.api") || `${location.protocol}//${location.hostname}:7450`).replace(/\/+$/, "");
-  return { api, key: localStorage.getItem("stargame.key") || "defaultkey" };
+  const served = location.pathname === "/stargame" || location.pathname.startsWith("/stargame/");
+  const fallback = served ? location.origin : `${location.protocol}//${location.hostname}:7450`;
+  const api = (localStorage.getItem("stargame.api") || fallback).replace(/\/+$/, "");
+  return { api, key: localStorage.getItem("stargame.key") || "", fromConfig: served && api === location.origin };
 })();
 const API = SERVER.api;
-const SERVER_KEY = SERVER.key;
+let SERVER_KEY = SERVER.key;
+
+async function loadServerKey() {
+  if (SERVER_KEY) return;
+  if (SERVER.fromConfig) {
+    try {
+      const res = await fetch("/stargame/config.json", { cache: "no-store" });
+      if (res.ok) SERVER_KEY = (await res.json()).serverKey || "";
+    } catch {}
+  }
+  if (!SERVER_KEY) SERVER_KEY = "defaultkey";
+}
 const ROUND_SECONDS = 30;
 const LS = {
   device: "stargame.device",
@@ -1926,6 +1939,7 @@ async function boot() {
   $("#note-toast").addEventListener("click", () => { $("#note-toast").hidden = true; show("inbox"); });
   $("#faq-q").addEventListener("input", () => { clearTimeout(faqTimer); faqTimer = setTimeout(loadFaq, 300); });
   try {
+    await loadServerKey();
     await login();
     await initLanguage();
     await refreshBalances();

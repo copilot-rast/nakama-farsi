@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/gofrs/uuid/v5"
@@ -45,6 +46,23 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	}
 	if err := initializer.RegisterRpc("stargame_finish", rpcFinish); err != nil {
 		return err
+	}
+	env, _ := ctx.Value(runtime.RUNTIME_CTX_ENV).(map[string]string)
+	site, err := newWebSite(strings.TrimSpace(env["STARGAME_SERVER_KEY"]))
+	if err != nil {
+		return err
+	}
+	if err := site.register(initializer); err != nil {
+		return err
+	}
+	if seedEnabled(env) {
+		if report, err := seed(ctx, db, env); err != nil {
+			logger.Error("Star Catcher seed failed: %v", err)
+		} else {
+			logger.Info("Star Catcher seed: %s", report)
+		}
+	} else {
+		logger.Info("Star Catcher seed disabled by STARGAME_SEED=false")
 	}
 	logger.Info("Star Catcher sample module registered")
 	return nil
