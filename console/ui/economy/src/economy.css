@@ -166,13 +166,30 @@ a.eco-tab-on::after{content:'';position:absolute;inset-inline:0;bottom:-1px;heig
   align-items: center;
   justify-content: center;
   padding: 0;
-  width: 2rem;
-  min-width: 2rem;
+  width: 2.25rem;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  color: rgb(71 85 105);
+}
+.economy-theme svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+.dark .economy-theme {
+  color: rgb(251 191 36);
+  border-color: rgb(71 85 105);
+}
+.economy-theme:hover,
+.dark .economy-theme:hover {
+  color: rgb(107 89 238);
+  border-color: rgb(107 89 238);
 }
 .economy-theme:not(.l10n-switcher--docked) {
   inset-inline-end: calc(12px + 3rem);
 }
 .economy-theme.l10n-switcher--docked {
-  width: 1.75rem;
-  min-width: 1.75rem;
+  width: 2rem;
+  min-width: 2rem;
+  height: 2rem;
 }
