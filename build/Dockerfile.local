@@ -28,7 +28,11 @@ WORKDIR /go/build/nakama
 COPY . .
 
 RUN go build -o /go/build-out/nakama -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "-s -w -X main.version=local"
-RUN go build -buildmode=plugin -o /go/build-out/jazebe.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" ./integrations/jazebe/native
+RUN go build -buildmode=plugin -o /go/build-out/modules/jazebe.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" ./integrations/jazebe/native
+RUN go build -buildmode=plugin -o /go/build-out/modules/base.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" ./integrations/base
+RUN go build -buildmode=plugin -o /go/build-out/modules/economy.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" ./integrations/economy
+RUN go build -buildmode=plugin -o /go/build-out/modules/publication.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" ./integrations/publication
+RUN go build -buildmode=plugin -o /go/build-out/modules/stargame.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" ./samples/stargame
 
 FROM debian:bookworm-slim
 
@@ -40,7 +44,7 @@ LABEL version=$version
 LABEL variant=nakama
 LABEL description="Distributed server for social and realtime games and apps."
 
-RUN mkdir -p /nakama/data/modules && \
+RUN mkdir -p /nakama/data/modules /nakama/uploads && \
     apt-get update && \
     apt-get -y upgrade && \
     apt-get install -y --no-install-recommends ca-certificates tzdata iproute2 tini postgresql-client && \
@@ -49,7 +53,7 @@ RUN mkdir -p /nakama/data/modules && \
 
 WORKDIR /nakama/
 COPY --from=builder "/go/build-out/nakama" /nakama/
-COPY --from=builder "/go/build-out/jazebe.so" /nakama/data/modules/
+COPY --from=builder "/go/build-out/modules/" /nakama/data/modules/
 COPY --chmod=755 build/nakama-db.sh /nakama/
 EXPOSE 7349 7350 7351
 

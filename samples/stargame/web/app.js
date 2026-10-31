@@ -1,7 +1,17 @@
 "use strict";
 
-const API = `${location.protocol}//${location.hostname}:7450`;
-const SERVER_KEY = "defaultkey";
+const SERVER = (() => {
+  const q = new URLSearchParams(location.search);
+  for (const name of ["api", "key"]) {
+    const v = q.get(name);
+    if (v === "reset") localStorage.removeItem("stargame." + name);
+    else if (v) localStorage.setItem("stargame." + name, v);
+  }
+  const api = (localStorage.getItem("stargame.api") || `${location.protocol}//${location.hostname}:7450`).replace(/\/+$/, "");
+  return { api, key: localStorage.getItem("stargame.key") || "defaultkey" };
+})();
+const API = SERVER.api;
+const SERVER_KEY = SERVER.key;
 const ROUND_SECONDS = 30;
 const LS = {
   device: "stargame.device",
@@ -1759,8 +1769,7 @@ function connectSocket() {
     state.socket = null;
   }
   if (!state.token) return;
-  const proto = location.protocol === "https:" ? "wss:" : "ws:";
-  const ws = new WebSocket(`${proto}//${location.hostname}:7450/ws?token=${encodeURIComponent(state.token)}&format=json`);
+  const ws = new WebSocket(`${API.replace(/^http/, "ws")}/ws?token=${encodeURIComponent(state.token)}&format=json`);
   state.socket = ws;
   ws.onopen = () => {
     state.socketRetry = 0;
