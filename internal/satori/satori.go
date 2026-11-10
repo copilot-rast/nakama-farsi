@@ -149,6 +149,10 @@ func NewSatoriClient(ctx context.Context, logger *zap.Logger, satoriUrl, apiKeyN
 	return sc
 }
 
+func (s *SatoriClient) Configured() bool {
+	return s != nil && !s.invalidConfig
+}
+
 func (s *SatoriClient) validateConfig() error {
 	errorStrings := make([]string, 0)
 	satoriUrl, err := url.Parse(s.urlString)

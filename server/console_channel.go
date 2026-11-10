@@ -20,6 +20,10 @@ func (s *ConsoleServer) ListChannelMessages(ctx context.Context, in *console.Lis
 	logger, _ := LoggerWithTraceId(ctx, s.logger)
 	const limit = 50
 
+	if channelTargetMissing(in) {
+		return &api.ChannelMessageList{Messages: []*api.ChannelMessage{}}, nil
+	}
+
 	stream, err := buildStream(in)
 	if err != nil {
 		return nil, err
@@ -88,6 +92,18 @@ func (s *ConsoleServer) DeleteChannelMessages(ctx context.Context, in *console.D
 	}
 
 	return &console.DeleteChannelMessagesResponse{Total: affected}, nil
+}
+
+func channelTargetMissing(in *console.ListChannelMessagesRequest) bool {
+	switch in.Type {
+	case console.ListChannelMessagesRequest_ROOM:
+		return in.Label == ""
+	case console.ListChannelMessagesRequest_GROUP:
+		return in.GroupId == ""
+	case console.ListChannelMessagesRequest_DIRECT:
+		return in.UserIdOne == "" && in.UserIdTwo == ""
+	}
+	return false
 }
 
 func buildStream(in *console.ListChannelMessagesRequest) (*PresenceStream, error) {

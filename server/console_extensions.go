@@ -73,7 +73,7 @@ func (s *ConsoleServer) RegisteredExtensions(ctx context.Context, in *emptypb.Em
 	extensions := &console.Extensions{
 		Hiro:        hiroRegistered,
 		HiroSystems: hiroSystems,
-		Satori:      s.satori != nil,
+		Satori:      s.satori.Configured(),
 	}
 
 	return extensions, nil
