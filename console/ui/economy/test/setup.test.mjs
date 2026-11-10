@@ -17,8 +17,8 @@ function brandHelpers() {
     }
     throw new Error(name);
   };
-  const consts = src.split('\n').filter((l) => /^var (BRAND_SHADES|BRAND_HEX_RE|BRAND_DEFAULT_SHADES|BRAND_RGB_RE) /.test(l)).join('\n');
-  const names = ['brandHex', 'hexRgb', 'brandPalette', 'luminance', 'contrastRatio', 'brandContrast', 'contrastLevel', 'brandCss'];
+  const consts = src.split('\n').filter((l) => /^var (BRAND_SHADES|BRAND_HEX_RE|BRAND_DEFAULT_SHADES|BRAND_RGB_RE|SP_INK_LIGHT_BG|SP_INK_DARK_BG) /.test(l)).join('\n');
+  const names = ['brandHex', 'hexRgb', 'brandPalette', 'luminance', 'contrastRatio', 'brandContrast', 'contrastLevel', 'pickShade', 'spatialAccent', 'brandCss'];
   const sandbox = {};
   vm.runInNewContext(consts + '\n' + names.map(pick).join('\n') + ';this.out = {' + names.join(',') + '};', sandbox);
   return sandbox.out;

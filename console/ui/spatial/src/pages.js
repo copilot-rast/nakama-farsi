@@ -1,0 +1,63 @@
+var CARD_SEL = '.rounded-md.shadow.bg-white';
+
+function contentRoot() {
+  var eco = document.getElementById('economy-root');
+  if (eco && eco.offsetParent !== null) return eco;
+  var mains = document.querySelectorAll('#main > main');
+  for (var i = 0; i < mains.length; i++) if (mains[i].style.display !== 'none') return mains[i];
+  return null;
+}
+
+function routeName() {
+  var p = routePath().split('/').filter(Boolean);
+  if (!p.length) return 'dashboard';
+  if (p[0] === 'economy' || p[0] === 'publication' || p[0] === 'settings') return p[0] + '-' + (p[1] || 'index');
+  if (p[0] === 'players' || p[0] === 'groups' || p[0] === 'leaderboards' || p[0] === 'storage-indexes') return p.length > 1 ? p[0] + '-detail' : p[0];
+  return p[0];
+}
+
+function markPage() {
+  var name = routeName();
+  if (root.getAttribute('data-sp-route') !== name) root.setAttribute('data-sp-route', name);
+  var main = contentRoot();
+  if (!main || main.id === 'economy-root') return;
+  var box = main.querySelector('div.max-w-\\[1600px\\]');
+  if (!box) return;
+  var cards = box.querySelectorAll(CARD_SEL + ', .bg-white.shadow.rounded-md');
+  var tables = box.querySelectorAll('table');
+  var tabs = box.querySelector('.x-tab-group');
+  var list = !tabs && tables.length >= 1 && cards.length === tables.length && cards.length <= 2 && !box.querySelector('[_echarts_instance_]');
+  if (list !== box.hasAttribute('data-sp-list')) box.toggleAttribute('data-sp-list', list);
+}
+
+var labelSeq = 0;
+function labelTables() {
+  if (!mqMobile.matches) return;
+  var tables = document.querySelectorAll('#main table, [data-economy] table, .ps-window table');
+  for (var i = 0; i < tables.length; i++) {
+    var t = tables[i];
+    if (t.classList.contains('eco-table')) continue;
+    var heads = Array.prototype.map.call(t.querySelectorAll('thead th'), function (th) { return th.textContent.trim(); });
+    if (!heads.length) continue;
+    var rows = t.tBodies.length ? t.tBodies[0].rows : [];
+    var key = heads.join('|') + '#' + rows.length + '#' + (rows[0] ? rows[0].cells.length : 0);
+    if (t.__spLabels === key) continue;
+    t.__spLabels = key;
+    labelSeq++;
+    for (var r = 0; r < rows.length; r++) {
+      var cells = rows[r].cells;
+      if (cells.length === 1 && heads.length > 1) { cells[0].setAttribute('data-sp-full', ''); continue; }
+      for (var c = 0; c < cells.length; c++) {
+        var lab = heads[c] || '';
+        if (lab) cells[c].setAttribute('data-sp-label', lab);
+        else cells[c].removeAttribute('data-sp-label');
+      }
+    }
+    t.setAttribute('data-sp-cards', '');
+  }
+}
+
+function isAuthPage() {
+  if (/^#\/(login|reset|reset-mfa|mfa)(\/|\?|$)/.test(currentHash())) return true;
+  return !document.querySelector('#main') && !!document.querySelector('#app form');
+}

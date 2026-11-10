@@ -24,10 +24,12 @@ function captureRouter(app) {
       if (!r.hasRoute(name)) r.addRoute({ path: '/' + from + '/:rest(.*)*', name: name, redirect: function (to) { return to.fullPath.replace('/' + from, '/' + PS_ROUTE + '/' + PS_LEGACY[from]); } });
     });
     router = r;
+    r.afterEach(function (to, from) { fireRoute(to, from); });
   } catch (e) {
     router = null;
     return;
   }
+  try { window.dispatchEvent(new CustomEvent('nakama-console:ready')); } catch (e) { router = router || null; }
   if (pendingHash) {
     var target = pendingHash;
     pendingHash = null;
@@ -354,6 +356,52 @@ function boot() {
   new MutationObserver(function () { if (rendered) rendered.key = ''; if (ps) { ps.listKey = null; if (ps.ctl) ps.ctl.key = ''; } paintThemeButton(); schedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   sync();
 }
+
+var routeHooks = [];
+
+function fireRoute(to, from) {
+  for (var i = 0; i < routeHooks.length; i++) {
+    try { routeHooks[i](to, from); } catch (e) { continue; }
+  }
+}
+
+function consoleSections() {
+  return SECTION_ORDER.map(function (sec) {
+    return {
+      id: sec,
+      label: t(sec === 'economy' ? 'section' : 'section.pub'),
+      pages: SECTIONS[sec].map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : 0 }; })
+    };
+  });
+}
+
+window.NakamaConsole = {
+  version: 1,
+  get router() { return router; },
+  lang: function () { return lang(); },
+  t: function (key, vars) { return t(key, vars); },
+  sections: consoleSections,
+  badges: function () { return { comments: pendingComments || 0 }; },
+  onRoute: function (fn) {
+    if (typeof fn !== 'function') return function () {};
+    routeHooks.push(fn);
+    return function () { var i = routeHooks.indexOf(fn); if (i !== -1) routeHooks.splice(i, 1); };
+  },
+  projectSettings: {
+    allowed: function () { return !!token() && psAllowed().length > 0; },
+    href: function () { return psEntryHash(); },
+    isOpen: function () { return !!ps; },
+    open: function () { if (!ps) psNavigate(psEntryHash(), false); },
+    sections: function () { return psAllowed().map(function (s) { return { id: s.id, href: hashFor(s.id), label: t(s.label) }; }); }
+  },
+  brand: function () {
+    var b = BRAND.data;
+    if (!b) return null;
+    return { name: brandName(), shortName: b.shortName || '', markUrl: b.markUrl || '', logoUrl: b.logoUrl || '', logoDarkUrl: b.logoDarkUrl || '' };
+  },
+  toggleTheme: function () { toggleTheme(); },
+  isDark: function () { return isDarkTheme(); }
+};
 
 if (legacyHash(location.hash) || /^#\/(economy|publication|project-settings)(\/|\?|$)/.test(location.hash)) {
   pendingHash = location.hash;

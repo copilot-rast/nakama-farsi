@@ -108,9 +108,31 @@ function brandLoad(force) {
   return BRAND.promise;
 }
 
+var SP_INK_LIGHT_BG = [223, 228, 238];
+var SP_INK_DARK_BG = [74, 77, 95];
+
+function pickShade(p, shades, bg) {
+  for (var i = 0; i < shades.length; i++) if (contrastRatio(p[shades[i]], bg) >= 4.5) return shades[i];
+  return shades[shades.length - 1];
+}
+
+function spatialAccent(hex) {
+  var p = brandPalette(hex);
+  var a = pickShade(p, [500, 600, 700, 800, 900], [255, 255, 255]);
+  var ink = pickShade(p, [600, 700, 800, 900, 950], SP_INK_LIGHT_BG);
+  var inkDark = pickShade(p, [300, 200, 100, 50], SP_INK_DARK_BG);
+  return {
+    accent: p[a], ink: p[ink], inkDark: p[inkDark],
+    shades: { accent: +a, ink: +ink, inkDark: +inkDark },
+    ratios: { onAccent: contrastRatio(p[a], [255, 255, 255]), ink: contrastRatio(p[ink], SP_INK_LIGHT_BG), inkDark: contrastRatio(p[inkDark], SP_INK_DARK_BG) }
+  };
+}
+
 function brandCss(hex) {
   var p = brandPalette(hex);
-  return 'html:root{' + Object.keys(p).map(function (k) { return '--primary-color-' + k + ':' + p[k].join(' ') + ';'; }).join('') + '}';
+  var sp = spatialAccent(hex);
+  return 'html:root{' + Object.keys(p).map(function (k) { return '--primary-color-' + k + ':' + p[k].join(' ') + ';'; }).join('') +
+    '--sp-accent:rgb(' + sp.accent.join(' ') + ');--sp-accent-ink:rgb(' + sp.ink.join(' ') + ');--sp-accent-ink-dark:rgb(' + sp.inkDark.join(' ') + ');}';
 }
 
 function recolorEl(el) {
