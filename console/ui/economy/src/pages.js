@@ -3,7 +3,7 @@ var SECTIONS = {
   economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments'],
   publication: ['faqs', 'news', 'comments', 'notifications']
 };
-var SETTINGS_TABS = ['payment-methods', 'sms', 'email', 'languages'];
+var SETTINGS_TABS = ['payment-methods', 'sms', 'email', 'languages', 'brand', 'setup'];
 var LEGACY_HASHES = { economy: { 'payment-methods': 'payment-methods' }, publication: { providers: 'sms' } };
 var SECTION_ORDER = ['base', 'economy', 'publication'];
 var MOVED_PAGES = { 'economy/categories': 'base/categories', 'economy/tags': 'base/tags' };

@@ -8,7 +8,7 @@ var EmptyPage = { name: 'EconomyPage', render: function () { return null; } };
 var TAB_ON = 'text-[color:var(--x-tab-group-text)] dark:text-[color:var(--x-tab-group-dark-text)]';
 var TAB_VARS = {
   off: '--x-link-text: #475569; --x-link-text-hover: #334155; --x-link-shadow: #f1f5f9; --x-link-dark-text: #94a3b8; --x-link-dark-text-hover: #cbd5e1; --x-link-dark-shadow: #0f172a;',
-  on: '--x-link-text: rgb(102,84,226); --x-link-text-hover: rgb(93,77,206); --x-link-shadow: rgb(233,232,252); --x-link-dark-text: rgb(130,117,240); --x-link-dark-text-hover: rgb(181,175,245); --x-link-dark-shadow: rgb(59,49,130);'
+  on: '--x-link-text: rgb(var(--primary-color-600)); --x-link-text-hover: rgb(var(--primary-color-700)); --x-link-shadow: rgb(var(--primary-color-100)); --x-link-dark-text: rgb(var(--primary-color-400)); --x-link-dark-text-hover: rgb(var(--primary-color-300)); --x-link-dark-shadow: rgb(var(--primary-color-900));'
 };
 
 function captureRouter(app) {
@@ -289,6 +289,8 @@ function render(root, route) {
     else if (route.page === 'payment-methods') paymentMethodsPage(root);
     else if (route.page === 'sms' || route.page === 'email') providersPage(root, route.page);
     else if (route.page === 'languages') ctl.list = languagesPage(root, route.query, ctx);
+    else if (route.page === 'brand') brandPage(root);
+    else if (route.page === 'setup') setupPage(root);
     else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
     else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
     else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
@@ -303,6 +305,8 @@ function render(root, route) {
 
 function sync() {
   dockTheme();
+  applyBrand();
+  maybeClaimSetup();
   var hash = location.hash;
   var moved = legacyHash(hash);
   if (moved) {

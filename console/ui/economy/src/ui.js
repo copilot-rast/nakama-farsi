@@ -1,9 +1,9 @@
 var BTN = 'x-button eco-btn relative transition duration-150 focus-visible:outline-secondary-300 outline-transparent outline outline-1 outline-offset-2 inline-flex items-center justify-center font-medium whitespace-nowrap overflow-hidden align-middle active:!shadow-none border appearance-none shrink-0 rounded-md';
 var BTN_STYLE = {
-  primary: '--x-button-text: #fff; --x-button-border: rgb(102,84,226); --x-button-dark-text: #fff; --x-button-dark-border: rgb(107 89 238); --x-button-bg: rgb(107 89 238); --x-button-bg-hover: rgb(102,84,226); --x-button-bg-active: rgb(69,58,154); --x-button-dark-bg: rgb(102,84,226); --x-button-dark-bg-hover: rgb(93,77,206); --x-button-dark-bg-active: rgb(69,58,154);',
+  primary: '--x-button-text: #fff; --x-button-border: rgb(var(--primary-color-600)); --x-button-dark-text: #fff; --x-button-dark-border: rgb(var(--primary-color-500)); --x-button-bg: rgb(var(--primary-color-500)); --x-button-bg-hover: rgb(var(--primary-color-600)); --x-button-bg-active: rgb(var(--primary-color-800)); --x-button-dark-bg: rgb(var(--primary-color-600)); --x-button-dark-bg-hover: rgb(var(--primary-color-700)); --x-button-dark-bg-active: rgb(var(--primary-color-800));',
   ghost: '--x-button-border: transparent; --x-button-text: #1f2937; --x-button-dark-text: white; --x-button-bg-hover: #f3f4f6; --x-button-bg-active: #e5e7eb; --x-button-dark-bg-hover: #1f2937; --x-button-dark-bg-active: #374151;',
   muted: '--x-button-border: transparent; --x-button-text: #475569; --x-button-dark-text: #64748b; --x-button-bg-hover: #f8fafc; --x-button-bg-active: #f1f5f9; --x-button-dark-bg-hover: #1f2937; --x-button-dark-bg-active: #374151;',
-  link: '--x-button-border: transparent; --x-button-text: rgb(102,84,226); --x-button-dark-text: rgb(130,117,240); --x-button-bg-hover: rgb(244,244,253); --x-button-bg-active: rgb(233,232,252); --x-button-dark-bg-hover: #1f2937; --x-button-dark-bg-active: #374151;',
+  link: '--x-button-border: transparent; --x-button-text: rgb(var(--primary-color-600)); --x-button-dark-text: rgb(var(--primary-color-400)); --x-button-bg-hover: rgb(var(--primary-color-50)); --x-button-bg-active: rgb(var(--primary-color-100)); --x-button-dark-bg-hover: #1f2937; --x-button-dark-bg-active: #374151;',
   danger: '--x-button-border: transparent; --x-button-text: rgb(var(--error-color-600)); --x-button-dark-text: rgb(var(--error-color-400)); --x-button-bg-hover: rgb(var(--error-color-50)); --x-button-bg-active: rgb(var(--error-color-100)); --x-button-dark-bg-hover: #1f2937; --x-button-dark-bg-active: #374151;',
   dangerSolid: '--x-button-text: #fff; --x-button-border: rgb(var(--error-color-600)); --x-button-bg: rgb(var(--error-color-600)); --x-button-bg-hover: rgb(var(--error-color-700)); --x-button-bg-active: rgb(var(--error-color-800)); --x-button-dark-text: #fff; --x-button-dark-border: rgb(var(--error-color-600)); --x-button-dark-bg: rgb(var(--error-color-600)); --x-button-dark-bg-hover: rgb(var(--error-color-500));',
   disabled: '--x-button-bg: #f9fafb; --x-button-text: #d1d5db; --x-button-border: #e5e7eb; --x-button-dark-bg: #111827; --x-button-dark-text: #4b5563; --x-button-dark-border: #374151;'
@@ -52,7 +52,7 @@ function setBusy(btn, busy, label) {
 var INPUT = 'appearance-none block w-full placeholder-secondary-400 dark:placeholder-secondary-500 outline-transparent outline outline-2 outline-offset-[-1px] transition-all duration-150 ease-in-out border-secondary-300 dark:border-secondary-700 border shadow-sm rounded-md hover:border-secondary-400 dark:hover:border-secondary-500 bg-white dark:bg-secondary-800 text-secondary-700 dark:text-secondary-200 focus:outline-[color:var(--x-input-border)]';
 var INPUT_SM = INPUT + ' px-2 py-1.5 text-sm';
 var INPUT_MD = INPUT + ' px-3 py-2';
-var INPUT_VARS = '--x-input-border: rgb(130,117,240);';
+var INPUT_VARS = '--x-input-border: rgb(var(--primary-color-400));';
 var SELECT_MD = INPUT_MD + ' eco-select';
 var SELECT_SM = INPUT_SM + ' eco-select';
 
@@ -84,7 +84,7 @@ function filterSelect(label, value, options, onchange) {
 
 function toggle(checked, label, onchange, size) {
   var on = !!checked;
-  var track = h('div', { class: '', style: '--x-toggle-bg: rgb(107 89 238); --x-toggle-dark-bg: rgb(102,84,226);' });
+  var track = h('div', { class: '', style: '--x-toggle-bg: rgb(var(--primary-color-500)); --x-toggle-dark-bg: rgb(var(--primary-color-600));' });
   var knob = h('div', { class: '' });
   var input = h('input', { type: 'checkbox', class: 'hidden', role: 'switch' });
   var sm = size === 'sm';
@@ -121,7 +121,7 @@ function checkbox(checked, label, onchange) {
   var wrap = h('label', { class: 'x-checkbox inline-block relative cursor-pointer align-middle', tabindex: '0', role: 'checkbox' });
   function paint() {
     wrap.setAttribute('style', on
-      ? '--x-checkbox-bg: rgb(107 89 238); --x-checkbox-border: rgb(107 89 238); --x-checkbox-dark-bg: rgb(107 89 238); --x-checkbox-dark-border: rgb(107 89 238);'
+      ? '--x-checkbox-bg: rgb(var(--primary-color-500)); --x-checkbox-border: rgb(var(--primary-color-500)); --x-checkbox-dark-bg: rgb(var(--primary-color-500)); --x-checkbox-dark-border: rgb(var(--primary-color-500));'
       : '--x-checkbox-bg: #fff; --x-checkbox-border: #d1d5db; --x-checkbox-dark-bg: #111827; --x-checkbox-dark-border: #9ca3af;');
     box.setAttribute('class', 'rounded flex justify-center items-center shrink-0 border border-[color:var(--x-checkbox-border)] bg-[color:var(--x-checkbox-bg)] dark:border-[color:var(--x-checkbox-dark-border)] dark:bg-[color:var(--x-checkbox-dark-bg)] h-4 w-4');
     mark.setAttribute('class', 'fill-current text-white h-2.5 w-2.5' + (on ? '' : ' opacity-0'));
