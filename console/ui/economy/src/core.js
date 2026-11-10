@@ -273,7 +273,7 @@ function errorText(err, langCode) {
   if (err.status === 404) return t('err.item.notfound');
   if (err.message && lang() === 'en') return err.message;
   if (err.message && /[؀-ۿ]/.test(err.message)) return err.message;
-  return t('err.generic') + (err.code ? ' (' + err.code + ')' : '');
+  return t('err.generic') + (err.code ? ' \u2068(' + err.code + ')\u2069' : '');
 }
 
 var ICONS = {
@@ -290,7 +290,7 @@ var ICONS = {
   search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   close: '<path d="M18 6L6 18M6 6l12 12"/>',
-  first: '<path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>',
+  first: '<path d="M7 6v12M17 18l-6-6 6-6"/>',
   prev: '<path d="M15 18l-6-6 6-6"/>',
   next: '<path d="M9 18l6-6-6-6"/>',
   back: '<path d="M19 12H5M12 19l-7-7 7-7"/>',

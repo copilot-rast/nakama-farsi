@@ -62,7 +62,7 @@ function listPage(container, name, query, ctx) {
       return h('div', { class: 'x-label x-input eco-filter-ref', style: INPUT_VARS }, picker);
     }
     if (f.type === 'text') {
-      var inp = h('input', { class: INPUT_SM + ' font-mono eco-filter-text', dir: 'ltr', type: 'text', value: state.filters[f.name] || '', placeholder: t(f.label), 'aria-label': t(f.label) });
+      var inp = h('input', { class: INPUT_SM + ' font-mono eco-filter-text', dir: 'ltr', 'data-ltr': '', 'data-ph-rtl': /[\u0600-\u06FF]/.test(t(f.label)) ? '' : null, type: 'text', value: state.filters[f.name] || '', placeholder: t(f.label), 'aria-label': t(f.label) });
       inp.addEventListener('input', debounce(function () { state.filters[f.name] = toLatinDigits(inp.value).trim(); state.page = 1; sync(); load(); }, 300));
       return h('label', { class: 'x-label block relative x-input', style: INPUT_VARS }, inp);
     }

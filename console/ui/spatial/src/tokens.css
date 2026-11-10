@@ -61,6 +61,7 @@ html.sp {
   --star: #e5a50a;
   --star-edge: #a26f00;
   --scrim: rgb(30 36 50 / .10);
+  --scrim-modal: rgb(30 36 50 / .30);
   --shimmer: rgb(255 255 255 / .35);
 
   --accent: var(--sp-accent, rgb(107 89 238));
@@ -108,6 +109,7 @@ html.sp.dark {
   --star: #f6bd2a;
   --star-edge: #b98500;
   --scrim: rgb(0 0 0 / .34);
+  --scrim-modal: rgb(0 0 0 / .5);
   --shimmer: rgb(255 255 255 / .06);
   --accent-ink: var(--sp-accent-ink-dark, rgb(196 189 248));
   --accent-soft: color-mix(in srgb, var(--accent) 17%, transparent);

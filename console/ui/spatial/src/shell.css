@@ -338,6 +338,29 @@ html.sp.sp-pinned:not(.sp-sheet-open) .sp-rail {
   color: var(--ink-3);
 }
 
+html.sp .sp-row[aria-expanded="true"] .sp-row-chev {
+  transform: rotate(90deg);
+}
+
+.sp-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 2px 0 6px;
+  padding-inline-start: 18px;
+  border-inline-start: 1px solid var(--line-2);
+  margin-inline-start: 18px;
+  animation: sp-sub-in var(--d2) var(--ease) backwards;
+}
+
+.sp-sub .sp-sub-row {
+  min-height: 44px;
+}
+
+@keyframes sp-sub-in {
+  from { opacity: 0; transform: translateY(-4px); }
+}
+
 .sp-chip {
   flex: none;
   min-width: 20px;
@@ -790,7 +813,7 @@ html.sp.sp-railed #main > div.sticky:first-child .hidden.md\:flex.text-xs {
   padding: 12px 14px 14px;
   border: 1px solid var(--line);
   border-radius: var(--r-card);
-  background: var(--thick);
+  background: var(--solid);
   box-shadow: var(--thick-shadow);
   color: var(--ink-1);
   transform-origin: top center;

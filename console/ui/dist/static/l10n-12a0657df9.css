@@ -110,6 +110,21 @@ html[dir='rtl'] :is(input:not([type='checkbox'], [type='radio'], [type='range'],
   unicode-bidi: plaintext;
 }
 
+html[dir='rtl'] :is(input:not([type='checkbox'], [type='radio']), textarea)[data-ltr]:not(.monaco-editor *) {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
+}
+html[dir='rtl'] :is(input:not([type='checkbox'], [type='radio']), textarea)[data-ltr][data-ph-rtl]:placeholder-shown:not(.monaco-editor *) {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir='rtl'] [data-l10n-token] {
+  unicode-bidi: plaintext;
+  text-align: right;
+}
+
 /* Identifiers in tables/labels are a single LTR run; isolate them from the
    surrounding Persian so punctuation does not jump sides. */
 html[dir='rtl'] .font-mono {
@@ -166,6 +181,10 @@ html[dir='rtl'] .font-mono {
 html[dir='rtl'] [data-l10n-ltr] {
   direction: ltr;
   unicode-bidi: isolate;
+}
+
+.monaco-editor :is(.view-lines, .view-line) {
+  font-family: 'Vazirmatn', Menlo, Monaco, Consolas, 'Droid Sans Mono', 'Courier New', monospace !important;
 }
 
 /* Monaco does not support RTL: its host must be LTR too or it scrolls/clips. */

@@ -116,7 +116,16 @@
       "Unfold the content in the editor",
       "View",
       "{0} of {1} problem",
-      "{0} of {1} problems"
+      "{0} of {1} problems",
+      "WebKitCSSMatrix",
+      "MozPerspective",
+      "ObservableValue",
+      "Observable Signal",
+      "LazyObservableValue",
+      "Unknown Outline Provider",
+      "An unexpected bug occurred.",
+      "Host's domain name can not be converted to ASCII:",
+      "Unidentified"
     ],
     "developerOnly": [
       "Callback Error",

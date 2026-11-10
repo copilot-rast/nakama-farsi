@@ -320,6 +320,24 @@
         "#/"
       ],
       "min": 5
+    },
+    {
+      "id": "card-header-action",
+      "what": "card header row with a trailing action (settings config export button) that wraps on mobile",
+      "selector": "#main .rounded-md.shadow > div.px-4.py-3.border-b.flex.items-center > .translate-x-1.shrink-0",
+      "classes": [
+        "px-4",
+        "py-3",
+        "border-b",
+        "flex",
+        "items-center",
+        "translate-x-1",
+        "shrink-0"
+      ],
+      "routes": [
+        "#/settings/config"
+      ],
+      "min": 1
     }
   ]
 }

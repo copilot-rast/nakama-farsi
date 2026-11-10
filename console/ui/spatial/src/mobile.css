@@ -183,12 +183,13 @@
     width: auto !important;
     min-width: 0 !important;
     max-width: none !important;
-    height: auto;
+    height: auto !important;
+    max-height: none !important;
     min-height: 36px;
     padding: 6px 10px;
     border: 0;
     text-align: end;
-    white-space: normal;
+    white-space: normal !important;
     overflow-wrap: anywhere;
     background: transparent;
   }
@@ -266,6 +267,46 @@
 
   html.sp .x-button {
     min-height: 36px;
+  }
+
+  html.sp :is(#main, [data-economy], .ps-window) table.eco-table tbody tr {
+    margin: 0 0 8px;
+    padding: 6px 4px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    background: var(--capsule);
+  }
+
+  html.sp :is(#main, [data-economy], .ps-window) table.eco-table tbody tr td {
+    align-items: center;
+    min-height: 36px;
+    padding: 6px 10px;
+    border: 0;
+    background: transparent;
+    overflow-wrap: anywhere;
+  }
+
+  html.sp :is(#main, [data-economy], .ps-window) table.eco-table tbody tr td::before {
+    padding-top: 0;
+    color: var(--ink-3);
+    font-size: 12px;
+  }
+
+  html.sp :is(#main, [data-economy], .ps-window) table.eco-table tbody tr:hover td {
+    background: transparent;
+  }
+
+  html.sp #main .rounded-md.shadow > div.px-4.py-3.border-b.flex.items-center {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  html.sp #main .rounded-md.shadow > div.px-4.py-3.border-b.flex.items-center > .translate-x-1.shrink-0 {
+    flex-basis: 100%;
+    max-width: 100%;
+    translate: none;
+    --tw-translate-x: 0;
+    transform: none;
   }
 
   html.sp #main .x-tab-group .x-scroll {

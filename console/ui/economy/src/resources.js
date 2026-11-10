@@ -2,7 +2,7 @@ var METHODS = ['zarinpal', 'zibal', 'bazaar', 'myket', 'in_app'];
 var GATEWAYS = ['zarinpal', 'zibal'];
 var STORES = ['bazaar', 'myket'];
 var CATEGORY_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news'];
-var TAG_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'news', 'faq', 'general', 'user'];
+var TAG_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news', 'general', 'user'];
 var LANG_CODE_RE = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/;
 var keyTypeCache = {};
 var keyTypePromise = null;
@@ -110,10 +110,46 @@ function activeTag(on) {
   return tag(on ? t('active') : t('inactive'), on ? 'success' : 'secondary');
 }
 
+var KEY_NAMES = { data: null, promise: null, at: 0 };
+
+function keyNames() {
+  if (KEY_NAMES.data && Date.now() - KEY_NAMES.at < 30000) return Promise.resolve(KEY_NAMES.data);
+  if (KEY_NAMES.promise) return KEY_NAMES.promise;
+  var pick = function (res) {
+    var out = {};
+    ((res && res.items) || []).forEach(function (it) { out[it.key] = it.name; });
+    return out;
+  };
+  KEY_NAMES.promise = Promise.all([
+    api('GET', '/currencies?limit=100').then(pick, function () { return {}; }),
+    api('GET', '/metas?limit=100').then(pick, function () { return {}; })
+  ]).then(function (r) {
+    KEY_NAMES.data = { currency: r[0], meta: r[1] };
+    KEY_NAMES.at = Date.now();
+    KEY_NAMES.promise = null;
+    return KEY_NAMES.data;
+  });
+  return KEY_NAMES.promise;
+}
+
+function keyName(kind, key) {
+  var names = KEY_NAMES.data && KEY_NAMES.data[kind];
+  var name = names && names[key] ? i18nText(names[key]) : '';
+  return name || key || '';
+}
+
+function withKeyNames(build) {
+  var box = h('div', { class: 'contents' });
+  var paint = function () { clear(box); append(box, build()); };
+  paint();
+  if (!KEY_NAMES.data || Date.now() - KEY_NAMES.at >= 30000) keyNames().then(function () { if (box.isConnected || box.parentNode) paint(); });
+  return box;
+}
+
 function priceText(it) {
   var parts = [];
   if (it.priceToman !== null && it.priceToman !== undefined) parts.push(t('toman', { n: it.priceToman }));
-  if (it.coinPrice && it.coinPrice.amount !== undefined && it.coinPrice.amount !== null) parts.push(fmtNum(it.coinPrice.amount) + ' ' + (it.coinPrice.currencyKey || ''));
+  if (it.coinPrice && it.coinPrice.amount !== undefined && it.coinPrice.amount !== null) parts.push(t('amount.of', { n: fmtNum(it.coinPrice.amount), name: keyName('currency', it.coinPrice.currencyKey) }));
   return parts;
 }
 
@@ -121,7 +157,7 @@ function itemSummary(items) {
   return (items || []).map(function (r) {
     if (r.type === 'storage') return r.key;
     var sign = r.action === 'add' && Number(r.value) > 0 ? '+' : '';
-    return (r.action === 'set' ? '= ' : sign) + fmtNum(r.value) + ' ' + r.key;
+    return t('amount.of', { n: (r.action === 'set' ? '= ' : sign) + fmtNum(r.value), name: keyName(r.type === 'meta' ? 'meta' : 'currency', r.key) });
   });
 }
 
@@ -212,8 +248,10 @@ var RESOURCES = {
     columns: [
       { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '55%' },
       { label: 'col.items', render: function (it) {
-        var s = itemSummary(it.items);
-        return h('div', { class: 'flex flex-wrap gap-1' }, s.slice(0, 3).map(function (x) { return tag(x, 'secondary'); }), s.length > 3 ? tag('+' + fmtNum(s.length - 3), 'secondary') : null);
+        return h('div', { class: 'flex flex-wrap gap-1' }, withKeyNames(function () {
+          var s = itemSummary(it.items);
+          return [s.slice(0, 3).map(function (x) { return tag(x, 'secondary'); }), s.length > 3 ? tag('+' + fmtNum(s.length - 3), 'secondary') : null];
+        }));
       }, skeleton: '40%' },
       { label: 'col.type', render: function (it) { return tag(it.isRepeatable ? t('repeatable') : t('once'), it.isRepeatable ? 'primary' : 'secondary'); }, width: 120 },
       { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
@@ -233,7 +271,7 @@ var RESOURCES = {
     filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
     columns: [
       { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '60%' },
-      { label: 'col.price', render: function (it) { return h('div', { class: 'flex flex-col tabular-nums whitespace-nowrap' }, priceText(it).map(function (p) { return h('span', { text: p }); }), it.discountPercent ? h('span', { class: 'text-xs text-success-600', text: t('percent', { n: it.discountPercent }) }) : null); }, width: 160 },
+      { label: 'col.price', render: function (it) { return h('div', { class: 'flex flex-col tabular-nums whitespace-nowrap' }, withKeyNames(function () { return priceText(it).map(function (p) { return h('span', { text: p }); }); }), it.discountPercent ? h('span', { class: 'text-xs text-success-600', text: t('percent', { n: it.discountPercent }) }) : null); }, width: 160 },
       { label: 'col.methods', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, (it.paymentMethods || []).map(function (m) { return tag(t('method.' + m), 'secondary'); })); }, skeleton: '45%' },
       { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 },
       { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 80 }

@@ -15,6 +15,8 @@ function textInput(value, opts) {
     class: INPUT_MD + (opts.mono ? ' font-mono text-sm' : '') + (opts.multiline ? ' eco-textarea' : ''),
     type: opts.multiline ? null : 'text',
     dir: opts.ltr ? 'ltr' : 'auto',
+    'data-ltr': opts.ltr ? '' : null,
+    'data-ph-rtl': opts.ltr && /[\u0600-\u06FF]/.test(opts.placeholder || '') ? '' : null,
     rows: opts.multiline ? (opts.rows || 4) : null,
     inputmode: opts.inputmode,
     placeholder: opts.placeholder,
@@ -339,7 +341,7 @@ function toLocalInput(v) {
 }
 
 function dateInput(value, onchange) {
-  var el = h('input', { type: 'datetime-local', class: INPUT_MD + ' tabular-nums', dir: 'ltr' });
+  var el = h('input', { type: 'datetime-local', class: INPUT_MD + ' tabular-nums', dir: 'ltr', 'data-ltr': '' });
   el.value = toLocalInput(value);
   var shown = h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1' });
   function paint() { shown.textContent = el.value ? fmtDate(new Date(el.value).toISOString()) : ''; shown.hidden = !el.value || lang() !== 'fa'; }

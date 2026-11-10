@@ -160,6 +160,10 @@ html.sp .ps-item:focus-visible {
   outline-offset: -2px;
 }
 
+html.sp:not([data-eco-kbd]) .ps-item[aria-selected="true"]:focus-visible {
+  outline: none;
+}
+
 html.sp .ps-head {
   min-height: 68px;
   padding: 20px 28px 14px;

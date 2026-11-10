@@ -216,7 +216,7 @@ function hookTitle() {
   Object.defineProperty(document, 'title', {
     configurable: true,
     get: function () { return nativeTitle.get.call(document); },
-    set: function (v) { nativeTitle.set.call(document, brandTitle(v)); }
+    set: function (v) { nativeTitle.set.call(document, brandTitle(sectionPageTitle(v))); }
   });
 }
 

@@ -249,6 +249,7 @@ var MESSAGES = {
     'unlimited': 'بی‌سقف',
     'toman': '{n} تومان',
     'percent': '{n}٪',
+    'amount.of': '{n} {name}',
 
     'method.zarinpal': 'زرین‌پال',
     'method.zibal': 'زیبال',
@@ -786,19 +787,25 @@ var MESSAGES = {
     'setup.rv.ready': 'همه‌چیز آماده است.',
     'setup.open': 'باز کردن راهنما',
     'setup.progress': '{n} از {total} مرحله',
+    'setup.nudge.title': 'راه‌اندازی پروژه هنوز تمام نشده',
+    'setup.nudge.skipped': 'راه‌اندازی پروژه را برای بعد گذاشته‌اید',
+    'setup.nudge.desc': 'چند قدم کوتاه مانده تا برند، زبان‌ها، سکه و پرداخت آماده شوند.',
+    'setup.nudge.go': 'ادامهٔ راه‌اندازی',
+    'account': 'حساب کاربری',
+    'notFound': 'صفحهٔ {path} پیدا نشد؛ به داشبورد برگشتید.',
     'setup.meta.opened': 'اولین باز شدن',
     'setup.meta.completed': 'پایان',
     'tab.countries': 'کشورها',
     'tab.accounts': 'قوانین حساب',
     'tab.otp': 'ورود با پیامک',
     'tab.app-versions': 'نسخه‌های برنامه',
-    'desc.countries': 'کشورهایی که بازیکن می‌تواند انتخاب کند و شماره‌اش را با پیش‌شماره‌ی آن‌ها وارد کند.',
-    'desc.app-versions': 'آخرین نسخه و کمترین نسخه‌ی مجاز هر پلتفرم. نسخه‌های قدیمی‌تر از کمترین نسخه باید به‌روز شوند.',
+    'desc.countries': 'کشورهایی که بازیکن می‌تواند انتخاب کند و شماره‌اش را با پیش‌شمارهٔ آن‌ها وارد کند.',
+    'desc.app-versions': 'آخرین نسخه و کمترین نسخهٔ مجاز هر پلتفرم. نسخه‌های قدیمی‌تر از کمترین نسخه باید به‌روز شوند.',
     'desc.accounts': 'قانون‌های ساختن حساب. سرور همین‌ها را برای نام کاربری، رمز و نام نمایشی چک می‌کند.',
     'desc.otp': 'آخرین درخواست‌های کد. خود کد هیچ‌جا نشان داده نمی‌شود.',
     'new.countries': 'کشور تازه',
     'edit.countries': 'ویرایش کشور',
-    'new.app-versions': 'نسخه‌ی تازه',
+    'new.app-versions': 'نسخهٔ تازه',
     'edit.app-versions': 'ویرایش نسخه',
     'empty.hint.countries': 'هنوز کشوری نساخته‌اید.',
     'empty.hint.app-versions': 'برای هر پلتفرم یک ردیف بسازید تا بازی بتواند نسخه‌اش را چک کند.',
@@ -854,19 +861,19 @@ var MESSAGES = {
     'av.link.store': 'فروشگاه',
     'av.link.url': 'لینک',
     'av.link.label': 'نام نمایشی',
-    'av.link.hint': 'لینک https یا لینک خود فروشگاه (bazaar:// ، myket:// ، market://). نام نمایشی اختیاری است.',
+    'av.link.hint': 'لینک https یا لینک خود فروشگاه ({schemes}). نام نمایشی اختیاری است.',
     'f.av.platform': 'پلتفرم',
     'f.av.active.hint': 'خاموش باشد، بازی همیشه «همه‌چیز درست است» می‌گیرد.',
     'f.av.latest': 'آخرین نسخه',
-    'f.av.latest.hint': 'نسخه‌های قدیمی‌تر پیام «نسخه‌ی تازه آمده» می‌گیرند.',
+    'f.av.latest.hint': 'نسخه‌های قدیمی‌تر پیام «نسخهٔ تازه آمده» می‌گیرند.',
     'f.av.min': 'کمترین نسخه',
     'f.av.min.hint': 'نسخه‌های قدیمی‌تر از این باید به‌روز شوند (به‌روزرسانی اجباری).',
     'f.av.stores': 'لینک فروشگاه‌ها',
     'f.av.messages': 'پیام‌ها',
     'f.av.updateMessage': 'پیام به‌روزرسانی',
-    'f.av.updateMessage.hint': 'وقتی نسخه‌ی تازه‌تری هست ولی اجباری نیست.',
+    'f.av.updateMessage.hint': 'وقتی نسخهٔ تازه‌تری هست ولی اجباری نیست.',
     'f.av.forceMessage': 'پیام به‌روزرسانی اجباری',
-    'f.av.forceMessage.hint': 'وقتی نسخه‌ی بازیکن از کمترین نسخه قدیمی‌تر است.',
+    'f.av.forceMessage.hint': 'وقتی نسخهٔ بازیکن از کمترین نسخه قدیمی‌تر است.',
     'otp.status.pending': 'منتظر کد',
     'otp.status.verified': 'وارد شد',
     'otp.status.expired': 'منقضی',
@@ -896,7 +903,7 @@ var MESSAGES = {
     'f.otp.ttl.hint': 'بعد از این زمان کد کار نمی‌کند.',
     'f.otp.attempts': 'تعداد تلاش برای هر کد',
     'f.otp.attempts.hint': 'بعد از این تعداد کد اشتباه، باید کد تازه خواست.',
-    'f.otp.resend': 'فاصله‌ی ارسال دوباره (ثانیه)',
+    'f.otp.resend': 'فاصلهٔ ارسال دوباره (ثانیه)',
     'f.otp.resend.hint': 'بازیکن تا این زمان نمی‌تواند کد تازه بخواهد.',
     'f.otp.phoneHourly': 'کد در ساعت برای هر شماره',
     'f.otp.phoneDaily': 'کد در روز برای هر شماره',
@@ -947,7 +954,7 @@ var MESSAGES = {
     'nav.products': 'Shop',
     'nav.gifts': 'Gifts',
     'nav.payments': 'Payments',
-    'tab.payment-methods': 'Payment Gateways',
+    'tab.payment-methods': 'Payment gateways',
     'tab.sms': 'SMS',
     'tab.email': 'Email',
     'settings': 'Settings',
@@ -963,20 +970,20 @@ var MESSAGES = {
     'desc.payments': 'Every purchase and its status.',
     'desc.payment-methods': 'Configure and enable gateways and stores.',
 
-    'new.currencies': 'New Currency',
-    'new.metas': 'New Meta',
-    'new.prizes': 'New Prize',
-    'new.products': 'New Product',
-    'new.gifts': 'New Gift',
-    'new.categories': 'New Category',
-    'new.tags': 'New Tag',
-    'edit.currencies': 'Edit Currency',
-    'edit.metas': 'Edit Meta',
-    'edit.prizes': 'Edit Prize',
-    'edit.products': 'Edit Product',
-    'edit.gifts': 'Edit Gift',
-    'edit.categories': 'Edit Category',
-    'edit.tags': 'Edit Tag',
+    'new.currencies': 'New currency',
+    'new.metas': 'New meta',
+    'new.prizes': 'New prize',
+    'new.products': 'New product',
+    'new.gifts': 'New gift',
+    'new.categories': 'New category',
+    'new.tags': 'New tag',
+    'edit.currencies': 'Edit currency',
+    'edit.metas': 'Edit meta',
+    'edit.prizes': 'Edit prize',
+    'edit.products': 'Edit product',
+    'edit.gifts': 'Edit gift',
+    'edit.categories': 'Edit category',
+    'edit.tags': 'Edit tag',
 
     'search': 'Search by key or name…',
     'search.payments': 'Search by ID, reference or product…',
@@ -1183,6 +1190,7 @@ var MESSAGES = {
     'unlimited': 'Unlimited',
     'toman': '{n} Toman',
     'percent': '{n}%',
+    'amount.of': '{n} {name}',
 
     'method.zarinpal': 'ZarinPal',
     'method.zibal': 'Zibal',
@@ -1720,6 +1728,12 @@ var MESSAGES = {
     'setup.rv.ready': 'Everything is ready.',
     'setup.open': 'Open the guide',
     'setup.progress': '{n} of {total} steps',
+    'setup.nudge.title': 'Project setup is not finished',
+    'setup.nudge.skipped': 'You left project setup for later',
+    'setup.nudge.desc': 'A few short steps are left to set up the brand, languages, currency and payments.',
+    'setup.nudge.go': 'Continue setup',
+    'account': 'Account',
+    'notFound': 'Page {path} was not found; you are back on the dashboard.',
     'setup.meta.opened': 'First opened',
     'setup.meta.completed': 'Completed',
     'tab.countries': 'Countries',
@@ -1788,7 +1802,7 @@ var MESSAGES = {
     'av.link.store': 'Store',
     'av.link.url': 'Link',
     'av.link.label': 'Display name',
-    'av.link.hint': 'An https link or the store\'s own link (bazaar://, myket://, market://). The display name is optional.',
+    'av.link.hint': 'An https link or the store\'s own link ({schemes}). The display name is optional.',
     'f.av.platform': 'Platform',
     'f.av.active.hint': 'When off, the game always gets "all good".',
     'f.av.latest': 'Latest version',
@@ -2146,7 +2160,7 @@ function errorText(err, langCode) {
   if (err.status === 404) return t('err.item.notfound');
   if (err.message && lang() === 'en') return err.message;
   if (err.message && /[؀-ۿ]/.test(err.message)) return err.message;
-  return t('err.generic') + (err.code ? ' (' + err.code + ')' : '');
+  return t('err.generic') + (err.code ? ' \u2068(' + err.code + ')\u2069' : '');
 }
 
 var ICONS = {
@@ -2163,7 +2177,7 @@ var ICONS = {
   search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   close: '<path d="M18 6L6 18M6 6l12 12"/>',
-  first: '<path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>',
+  first: '<path d="M7 6v12M17 18l-6-6 6-6"/>',
   prev: '<path d="M15 18l-6-6 6-6"/>',
   next: '<path d="M9 18l6-6-6-6"/>',
   back: '<path d="M19 12H5M12 19l-7-7 7-7"/>',
@@ -2595,6 +2609,8 @@ function textInput(value, opts) {
     class: INPUT_MD + (opts.mono ? ' font-mono text-sm' : '') + (opts.multiline ? ' eco-textarea' : ''),
     type: opts.multiline ? null : 'text',
     dir: opts.ltr ? 'ltr' : 'auto',
+    'data-ltr': opts.ltr ? '' : null,
+    'data-ph-rtl': opts.ltr && /[\u0600-\u06FF]/.test(opts.placeholder || '') ? '' : null,
     rows: opts.multiline ? (opts.rows || 4) : null,
     inputmode: opts.inputmode,
     placeholder: opts.placeholder,
@@ -2919,7 +2935,7 @@ function toLocalInput(v) {
 }
 
 function dateInput(value, onchange) {
-  var el = h('input', { type: 'datetime-local', class: INPUT_MD + ' tabular-nums', dir: 'ltr' });
+  var el = h('input', { type: 'datetime-local', class: INPUT_MD + ' tabular-nums', dir: 'ltr', 'data-ltr': '' });
   el.value = toLocalInput(value);
   var shown = h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1' });
   function paint() { shown.textContent = el.value ? fmtDate(new Date(el.value).toISOString()) : ''; shown.hidden = !el.value || lang() !== 'fa'; }
@@ -3525,7 +3541,7 @@ var METHODS = ['zarinpal', 'zibal', 'bazaar', 'myket', 'in_app'];
 var GATEWAYS = ['zarinpal', 'zibal'];
 var STORES = ['bazaar', 'myket'];
 var CATEGORY_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news'];
-var TAG_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'news', 'faq', 'general', 'user'];
+var TAG_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news', 'general', 'user'];
 var LANG_CODE_RE = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/;
 var keyTypeCache = {};
 var keyTypePromise = null;
@@ -3633,10 +3649,46 @@ function activeTag(on) {
   return tag(on ? t('active') : t('inactive'), on ? 'success' : 'secondary');
 }
 
+var KEY_NAMES = { data: null, promise: null, at: 0 };
+
+function keyNames() {
+  if (KEY_NAMES.data && Date.now() - KEY_NAMES.at < 30000) return Promise.resolve(KEY_NAMES.data);
+  if (KEY_NAMES.promise) return KEY_NAMES.promise;
+  var pick = function (res) {
+    var out = {};
+    ((res && res.items) || []).forEach(function (it) { out[it.key] = it.name; });
+    return out;
+  };
+  KEY_NAMES.promise = Promise.all([
+    api('GET', '/currencies?limit=100').then(pick, function () { return {}; }),
+    api('GET', '/metas?limit=100').then(pick, function () { return {}; })
+  ]).then(function (r) {
+    KEY_NAMES.data = { currency: r[0], meta: r[1] };
+    KEY_NAMES.at = Date.now();
+    KEY_NAMES.promise = null;
+    return KEY_NAMES.data;
+  });
+  return KEY_NAMES.promise;
+}
+
+function keyName(kind, key) {
+  var names = KEY_NAMES.data && KEY_NAMES.data[kind];
+  var name = names && names[key] ? i18nText(names[key]) : '';
+  return name || key || '';
+}
+
+function withKeyNames(build) {
+  var box = h('div', { class: 'contents' });
+  var paint = function () { clear(box); append(box, build()); };
+  paint();
+  if (!KEY_NAMES.data || Date.now() - KEY_NAMES.at >= 30000) keyNames().then(function () { if (box.isConnected || box.parentNode) paint(); });
+  return box;
+}
+
 function priceText(it) {
   var parts = [];
   if (it.priceToman !== null && it.priceToman !== undefined) parts.push(t('toman', { n: it.priceToman }));
-  if (it.coinPrice && it.coinPrice.amount !== undefined && it.coinPrice.amount !== null) parts.push(fmtNum(it.coinPrice.amount) + ' ' + (it.coinPrice.currencyKey || ''));
+  if (it.coinPrice && it.coinPrice.amount !== undefined && it.coinPrice.amount !== null) parts.push(t('amount.of', { n: fmtNum(it.coinPrice.amount), name: keyName('currency', it.coinPrice.currencyKey) }));
   return parts;
 }
 
@@ -3644,7 +3696,7 @@ function itemSummary(items) {
   return (items || []).map(function (r) {
     if (r.type === 'storage') return r.key;
     var sign = r.action === 'add' && Number(r.value) > 0 ? '+' : '';
-    return (r.action === 'set' ? '= ' : sign) + fmtNum(r.value) + ' ' + r.key;
+    return t('amount.of', { n: (r.action === 'set' ? '= ' : sign) + fmtNum(r.value), name: keyName(r.type === 'meta' ? 'meta' : 'currency', r.key) });
   });
 }
 
@@ -3735,8 +3787,10 @@ var RESOURCES = {
     columns: [
       { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '55%' },
       { label: 'col.items', render: function (it) {
-        var s = itemSummary(it.items);
-        return h('div', { class: 'flex flex-wrap gap-1' }, s.slice(0, 3).map(function (x) { return tag(x, 'secondary'); }), s.length > 3 ? tag('+' + fmtNum(s.length - 3), 'secondary') : null);
+        return h('div', { class: 'flex flex-wrap gap-1' }, withKeyNames(function () {
+          var s = itemSummary(it.items);
+          return [s.slice(0, 3).map(function (x) { return tag(x, 'secondary'); }), s.length > 3 ? tag('+' + fmtNum(s.length - 3), 'secondary') : null];
+        }));
       }, skeleton: '40%' },
       { label: 'col.type', render: function (it) { return tag(it.isRepeatable ? t('repeatable') : t('once'), it.isRepeatable ? 'primary' : 'secondary'); }, width: 120 },
       { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
@@ -3756,7 +3810,7 @@ var RESOURCES = {
     filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
     columns: [
       { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '60%' },
-      { label: 'col.price', render: function (it) { return h('div', { class: 'flex flex-col tabular-nums whitespace-nowrap' }, priceText(it).map(function (p) { return h('span', { text: p }); }), it.discountPercent ? h('span', { class: 'text-xs text-success-600', text: t('percent', { n: it.discountPercent }) }) : null); }, width: 160 },
+      { label: 'col.price', render: function (it) { return h('div', { class: 'flex flex-col tabular-nums whitespace-nowrap' }, withKeyNames(function () { return priceText(it).map(function (p) { return h('span', { text: p }); }); }), it.discountPercent ? h('span', { class: 'text-xs text-success-600', text: t('percent', { n: it.discountPercent }) }) : null); }, width: 160 },
       { label: 'col.methods', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, (it.paymentMethods || []).map(function (m) { return tag(t('method.' + m), 'secondary'); })); }, skeleton: '45%' },
       { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 },
       { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 80 }
@@ -4073,7 +4127,7 @@ function listPage(container, name, query, ctx) {
       return h('div', { class: 'x-label x-input eco-filter-ref', style: INPUT_VARS }, picker);
     }
     if (f.type === 'text') {
-      var inp = h('input', { class: INPUT_SM + ' font-mono eco-filter-text', dir: 'ltr', type: 'text', value: state.filters[f.name] || '', placeholder: t(f.label), 'aria-label': t(f.label) });
+      var inp = h('input', { class: INPUT_SM + ' font-mono eco-filter-text', dir: 'ltr', 'data-ltr': '', 'data-ph-rtl': /[\u0600-\u06FF]/.test(t(f.label)) ? '' : null, type: 'text', value: state.filters[f.name] || '', placeholder: t(f.label), 'aria-label': t(f.label) });
       inp.addEventListener('input', debounce(function () { state.filters[f.name] = toLatinDigits(inp.value).trim(); state.page = 1; sync(); load(); }, 300));
       return h('label', { class: 'x-label block relative x-input', style: INPUT_VARS }, inp);
     }
@@ -5531,6 +5585,13 @@ function compareVersions(a, b) {
   return x.pre < y.pre ? -1 : 1;
 }
 
+function richText(str, nodes) {
+  return String(str).split(/(\{\w+\})/).map(function (part) {
+    var m = /^\{(\w+)\}$/.exec(part);
+    return m && nodes[m[1]] ? nodes[m[1]] : part;
+  });
+}
+
 function storeLinksEditor(value, onchange) {
   var rows = (value || []).map(function (r) { return { store: r.store || 'web', url: r.url || '', label: trValue(r.label) }; });
   var listEl = h('div', { class: 'flex flex-col gap-2' });
@@ -5561,12 +5622,12 @@ function storeLinksEditor(value, onchange) {
       var err = h('p', { class: 'text-xs text-error-600 dark:text-error-400 eco-items-err', hidden: true });
       errors.push({ row: row, el: err, label: label });
       listEl.appendChild(h('div', { class: 'border border-secondary-200 dark:border-secondary-700 rounded-md p-3', 'data-store-row': '' },
-        h('div', { class: 'eco-actions-row' },
+        h('div', { class: 'eco-actions-row eco-store-row' },
           cell('av.link.store', storeSel),
           cell('av.link.url', url),
           h('div', { class: 'min-w-0 eco-actions-label' }, h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('av.link.label') }), label),
           h('div', { class: 'eco-items-remove' }, button({ variant: 'danger', size: 'iconLg', icon: 'trash', title: t('remove'), onclick: function () { rows.splice(idx, 1); render(); emit(); } }))),
-        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1.5', text: t('av.link.hint') }),
+        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1.5' }, richText(t('av.link.hint'), { schemes: h('span', { dir: 'ltr', class: 'font-mono', text: 'bazaar://, myket://, market://' }) })),
         err));
     });
   }
@@ -6094,7 +6155,7 @@ function hookTitle() {
   Object.defineProperty(document, 'title', {
     configurable: true,
     get: function () { return nativeTitle.get.call(document); },
-    set: function (v) { nativeTitle.set.call(document, brandTitle(v)); }
+    set: function (v) { nativeTitle.set.call(document, brandTitle(sectionPageTitle(v))); }
   });
 }
 
@@ -6774,13 +6835,6 @@ function stepCurrency(box) {
     var values = clone(item) || { type: 'soft', name: {}, defaultValue: 0, sort: 0, metadata: {} };
     form = buildForm(SETUP_CURRENCY_FIELDS, values, { onchange: function () { dirty = true; } });
     dirty = false;
-    var num = form.el.querySelector('input[inputmode="numeric"]');
-    if (num) {
-      num.setAttribute('dir', 'ltr');
-      num.value = toLatinDigits(num.value);
-      num.addEventListener('input', function () { latinize(num); });
-      num.addEventListener('blur', function () { num.value = toLatinDigits(num.value); });
-    }
     return form.el;
   }
   function paint() {
@@ -7204,20 +7258,21 @@ function setupPage(container) {
           h('div', { class: 'setup-section-icon setup-section-icon--sm' }, icon(SETUP_ICONS[k], 'h-4 w-4')),
           h('div', { class: 'min-w-0 flex-1' },
             h('div', { class: 'font-medium', text: localDigits(i + 1) + '. ' + t('setup.step.' + k) }),
-            h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 truncate', text: t('setup.step.' + k + '.desc') })),
+            h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('setup.step.' + k + '.desc') })),
           h('div', { class: 'flex items-center gap-2 shrink-0' }, tag(t('setup.st.' + s), STEP_COLOR[s]),
             button({ variant: 'link', size: 'sm', label: t('setup.rv.edit'), title: t('setup.rv.editStep', { step: t('setup.step.' + k) }), onclick: function () { openFromPage(k); } }))));
       });
       var meta = [];
-      if (st.firstOpenedAt) meta.push([t('setup.meta.opened'), (st.firstOpenedBy || '') + ' · ' + fmtDate(st.firstOpenedAt)]);
-      if (st.completedAt) meta.push([t('setup.meta.completed'), (st.completedBy || '') + ' · ' + fmtDate(st.completedAt)]);
+      var who = function (user, at) { return [user ? h('bdi', { text: user }) : null, user ? ' · ' : null, h('bdi', { text: fmtDate(at) })]; };
+      if (st.firstOpenedAt) meta.push([t('setup.meta.opened'), who(st.firstOpenedBy, st.firstOpenedAt)]);
+      if (st.completedAt) meta.push([t('setup.meta.completed'), who(st.completedBy, st.completedAt)]);
       clear(body).appendChild(card(h('div', { class: 'p-4' },
         h('div', { class: 'flex flex-wrap items-center justify-between gap-3 mb-3' },
           h('div', { class: 'flex items-center gap-2' }, h('span', { class: 'text-lg font-medium', text: t('setup.title') }), tag(t('setup.status.' + st.status), SETUP_STATUS_COLOR[st.status] || 'secondary')),
           h('span', { class: 'text-sm text-secondary-500 tabular-nums', text: t('setup.progress', { n: localDigits(finished), total: localDigits(steps.length) }) })),
         h('div', { class: 'setup-progress', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(steps.length), 'aria-valuenow': String(finished), 'aria-label': t('setup.progress', { n: localDigits(finished), total: localDigits(steps.length) }) },
           h('div', { class: 'setup-progress-bar', style: 'width:' + Math.round(finished / steps.length * 100) + '%' })),
-        meta.length ? h('dl', { class: 'eco-dl mt-4 mb-2' }, meta.map(function (m) { return [h('dt', { class: 'text-secondary-500', text: m[0] }), h('dd', { text: m[1] })]; })) : null,
+        meta.length ? h('dl', { class: 'eco-dl mt-4 mb-2' }, meta.map(function (m) { return [h('dt', { class: 'text-secondary-500', text: m[0] }), h('dd', {}, m[1])]; })) : null,
         list)));
     }, function (err) { clear(body).appendChild(errorBlock(err, load)); });
   }
@@ -7540,6 +7595,392 @@ function dockPsButton() {
   if (psButton.nextElementSibling !== menu) menu.before(psButton);
 }
 
+document.addEventListener('keydown', function (e) {
+  if (e.key && e.key.length > 1 && !/^(Shift|Control|Alt|Meta|CapsLock)$/.test(e.key)) document.documentElement.setAttribute('data-eco-kbd', '');
+}, true);
+document.addEventListener('pointerdown', function () { document.documentElement.removeAttribute('data-eco-kbd'); }, true);
+
+var NATIVE_PURPLE = /^(#6b59ee|rgb\(107, ?89, ?238\))$/i;
+var CHART_AXIS = '20px';
+var CHART_EDGE = '24px';
+var CHART = { key: '', patched: false };
+var MONACO = { node: null, len: -1, el: null };
+
+function vueFind(test) {
+  var app = document.getElementById('app');
+  var out = [];
+  var seen = new Set();
+  function walkVnode(v, depth) {
+    if (!v || depth > 800) return;
+    if (v.component) walkInstance(v.component, depth + 1);
+    if (Array.isArray(v.children)) {
+      for (var i = 0; i < v.children.length; i++) {
+        var c = v.children[i];
+        if (c && typeof c === 'object') walkVnode(c, depth + 1);
+      }
+    }
+    if (v.suspense && v.suspense.activeBranch) walkVnode(v.suspense.activeBranch, depth + 1);
+  }
+  function walkInstance(inst, depth) {
+    if (seen.has(inst)) return;
+    seen.add(inst);
+    if (test(inst)) out.push(inst);
+    walkVnode(inst.subTree, depth + 1);
+  }
+  walkVnode(app && app._vnode, 0);
+  return out;
+}
+
+function faDigits(s) {
+  return String(s).replace(/(\d),(?=\d{3}\b)/g, '$1٬').replace(/(\d)\.(?=\d)/g, '$1٫').replace(/\d/g, function (d) { return PERSIAN[+d]; });
+}
+
+function compactFa(v) {
+  var s = String(v);
+  var m = /^(-?\d+(?:\.\d+)?)\s?([kKM])$/.exec(s);
+  if (m) s = String(Number(m[1])) + ' ' + (m[2] === 'M' ? 'میلیون' : 'هزار');
+  return faDigits(s);
+}
+
+function chartAccent() {
+  var b = BRAND.data;
+  return b && b.accent ? brandHex(b.accent) : null;
+}
+
+function asList(v) {
+  return Array.isArray(v) ? v : [v];
+}
+
+function mapAxis(v, fn) {
+  if (!v) return v;
+  return Array.isArray(v) ? v.map(fn) : fn(v);
+}
+
+function wrapFn(fn, make) {
+  if (typeof fn !== 'function' || fn.__nk) return fn;
+  var out = make(fn);
+  out.__nk = true;
+  return out;
+}
+
+function htmlDigits(html) {
+  return String(html).replace(/>([^<]+)</g, function (m, text) { return '>' + faDigits(text) + '<'; });
+}
+
+function accentGradient(hex) {
+  var rgb = hexRgb(hex).join(',');
+  return { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(' + rgb + ',0.3)' }, { offset: 1, color: 'rgba(' + rgb + ',0)' }] };
+}
+
+var CHART_SECONDS = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+
+function seriesSpan(series) {
+  var min = Infinity;
+  var max = -Infinity;
+  asList(series || []).forEach(function (s) {
+    (s && Array.isArray(s.data) ? s.data : []).forEach(function (d) {
+      var v = Array.isArray(d) ? d[0] : d && d.value ? d.value[0] : null;
+      if (typeof v === 'string') v = Date.parse(v);
+      if (typeof v !== 'number' || !isFinite(v)) return;
+      if (v < 1e11) v *= 1000;
+      if (v < min) min = v;
+      if (v > max) max = v;
+    });
+  });
+  return max > min ? max - min : 0;
+}
+
+function chartOption(opt) {
+  if (!opt || typeof opt !== 'object' || Array.isArray(opt)) return opt;
+  var rtl = document.documentElement.getAttribute('dir') === 'rtl';
+  var fa = lang() === 'fa';
+  var accent = chartAccent();
+  var o = Object.assign({}, opt);
+  if (o.xAxis) {
+    o.xAxis = mapAxis(o.xAxis, function (a) {
+      var x = Object.assign({}, a, { inverse: rtl });
+      var span = seriesSpan(o.series);
+      if (x.type === 'time' && span > 0 && span < 900000 && x.axisLabel && typeof x.axisLabel.formatter === 'function' && !x.axisLabel.formatter.__nkSec) {
+        var sec = function (v) { return CHART_SECONDS.format(new Date(v)); };
+        sec.__nk = true;
+        sec.__nkSec = true;
+        x.axisLabel = Object.assign({}, x.axisLabel, { formatter: sec });
+      }
+      return x;
+    });
+  }
+  if (o.yAxis) {
+    o.yAxis = mapAxis(o.yAxis, function (a) {
+      var y = Object.assign({}, a, { position: rtl ? 'right' : 'left' });
+      if (fa && y.axisLabel && typeof y.axisLabel.formatter === 'function') {
+        y.axisLabel = Object.assign({}, y.axisLabel, { formatter: wrapFn(y.axisLabel.formatter, function (f) { return function () { return compactFa(f.apply(this, arguments)); }; }) });
+      }
+      return y;
+    });
+  }
+  if (o.grid) {
+    o.grid = mapAxis(o.grid, function (g) {
+      if (!g || !g.containLabel) return g;
+      return Object.assign({}, g, rtl ? { left: CHART_EDGE, right: CHART_AXIS } : { left: CHART_AXIS, right: CHART_EDGE });
+    });
+  }
+  if (o.title && rtl) {
+    o.title = mapAxis(o.title, function (t) { return Object.assign({}, t, { left: 'right' }); });
+  }
+  if (o.legend && rtl) {
+    o.legend = mapAxis(o.legend, function (l) { return Object.assign({}, l, { left: 'right' }); });
+  }
+  if (o.tooltip) {
+    o.tooltip = mapAxis(o.tooltip, function (tt) {
+      var x = Object.assign({}, tt);
+      if (rtl) x.extraCssText = 'direction:rtl;text-align:right;';
+      if (fa && typeof x.formatter === 'function') x.formatter = wrapFn(x.formatter, function (f) { return function () { return htmlDigits(f.apply(this, arguments)); }; });
+      return x;
+    });
+  }
+  if (accent && o.series) {
+    o.series = asList(o.series).map(function (s) {
+      if (!s || typeof s !== 'object') return s;
+      var line = s.lineStyle && s.lineStyle.color;
+      var item = s.itemStyle && s.itemStyle.color;
+      if (!(typeof line === 'string' && NATIVE_PURPLE.test(line)) && !(typeof item === 'string' && NATIVE_PURPLE.test(item))) return s;
+      var x = Object.assign({}, s);
+      if (x.lineStyle) x.lineStyle = Object.assign({}, x.lineStyle, { color: accent });
+      if (x.itemStyle) x.itemStyle = Object.assign({}, x.itemStyle, { color: accent });
+      if (x.areaStyle) x.areaStyle = Object.assign({}, x.areaStyle, { color: accentGradient(accent) });
+      x.emphasis = Object.assign({}, x.emphasis, { lineStyle: Object.assign({}, x.emphasis && x.emphasis.lineStyle, { color: accent }), itemStyle: Object.assign({}, x.emphasis && x.emphasis.itemStyle, { color: accent }) });
+      return x;
+    });
+  }
+  return o;
+}
+
+function patchCharts(proto) {
+  if (!proto || proto.__nkCharts) return;
+  var setOption = proto.setOption;
+  Object.defineProperty(proto, '__nkCharts', { value: true });
+  proto.setOption = function (opt) {
+    var args = Array.prototype.slice.call(arguments);
+    args[0] = chartOption(opt);
+    return setOption.apply(this, args);
+  };
+}
+
+function restyleChart(chart) {
+  if (!chart || chart.isDisposed && chart.isDisposed()) return;
+  var o;
+  try { o = chart.getOption(); } catch (e) { return; }
+  if (!o) return;
+  var part = {};
+  ['xAxis', 'yAxis', 'grid', 'title', 'legend', 'tooltip', 'series'].forEach(function (k) { if (o[k] && o[k].length) part[k] = o[k]; });
+  chart.setOption(part);
+}
+
+function syncCharts() {
+  var els = document.querySelectorAll('[_echarts_instance_]');
+  if (!els.length) return;
+  var key = Array.prototype.map.call(els, function (e) { return e.getAttribute('_echarts_instance_'); }).join(',') + '|' + chartAccent() + '|' + lang();
+  if (key === CHART.key) return;
+  CHART.key = key;
+  vueFind(function (inst) { return inst.type && inst.type.name === 'echarts'; }).forEach(function (inst) {
+    var chart = inst.setupState && inst.setupState.chart;
+    if (!chart || typeof chart.setOption !== 'function') return;
+    patchCharts(Object.getPrototypeOf(chart));
+    restyleChart(chart);
+  });
+}
+
+function hexHsl(hex) {
+  var c = hexRgb(hex).map(function (v) { return v / 255; });
+  var max = Math.max(c[0], c[1], c[2]);
+  var min = Math.min(c[0], c[1], c[2]);
+  var l = (max + min) / 2;
+  var d = max - min;
+  var hue = 0;
+  var s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+  if (d) {
+    if (max === c[0]) hue = ((c[1] - c[2]) / d) % 6;
+    else if (max === c[1]) hue = (c[2] - c[0]) / d + 2;
+    else hue = (c[0] - c[1]) / d + 4;
+  }
+  return [(hue * 60 + 360) % 360, s, l];
+}
+
+function darkToken(hex) {
+  var hsl = hexHsl(hex);
+  if (hsl[2] >= 0.6) return hex;
+  var l = Math.min(0.86, 0.7 + (0.6 - hsl[2]) * 0.3);
+  var s = hsl[1] < 0.15 ? hsl[1] : Math.min(0.85, Math.max(0.5, hsl[1]));
+  return 'hsl(' + Math.round(hsl[0]) + ' ' + Math.round(s * 100) + '% ' + Math.round(l * 100) + '%)';
+}
+
+function syncMonaco() {
+  var node = document.querySelector('style.monaco-colors');
+  if (!node) return;
+  var len = node.textContent.length;
+  if (node === MONACO.node && len === MONACO.len && MONACO.el && MONACO.el.isConnected) return;
+  MONACO.node = node;
+  MONACO.len = len;
+  var rules = [];
+  var re = /\.(mtk\d+) \{ color: (#[0-9a-fA-F]{6}); \}/g;
+  var m;
+  while ((m = re.exec(node.textContent))) rules.push('html.dark .monaco-editor .' + m[1] + '{color:' + darkToken(m[2]) + '}');
+  if (!MONACO.el) MONACO.el = h('style', { id: 'nk-monaco-dark' });
+  MONACO.el.textContent = rules.join('\n');
+  if (MONACO.el.parentNode !== document.head || MONACO.el.nextSibling) document.head.appendChild(MONACO.el);
+}
+
+var SETUP_NUDGE = { state: null, at: 0, loading: false };
+
+function dashboardSetup() {
+  var path = (location.hash || '#/').replace(/^#/, '').split('?')[0];
+  var card = document.querySelector('[data-setup-nudge]');
+  if (path !== '/' && path !== '') { if (card) card.remove(); return; }
+  var main = null;
+  var mains = document.querySelectorAll('#main > main');
+  for (var i = 0; i < mains.length; i++) if (mains[i].style.display !== 'none') main = mains[i];
+  var grid = main && main.querySelector('div.max-w-\\[1600px\\] .grid.grid-cols-1.gap-6');
+  if (!grid || !token()) return;
+  if (!SETUP_NUDGE.loading && Date.now() - SETUP_NUDGE.at > 15000) {
+    SETUP_NUDGE.loading = true;
+    quietBase('GET', '/setup').then(function (st) {
+      SETUP_NUDGE.loading = false;
+      SETUP_NUDGE.at = Date.now();
+      SETUP_NUDGE.state = st;
+      schedule();
+    });
+  }
+  var st = SETUP_NUDGE.state;
+  var show = !!st && st.status !== 'completed' && !wiz;
+  if (!show) { if (card) card.remove(); return; }
+  var steps = SETUP_ORDER.slice(0, -1);
+  var done = steps.filter(function (k) { return setupStepStatus(st, k) !== 'pending'; }).length;
+  var key = lang() + '|' + st.status + '|' + done;
+  if (card && card.getAttribute('data-key') === key && card.parentNode === grid && grid.firstChild === card) return;
+  if (card) card.remove();
+  var progress = t('setup.progress', { n: localDigits(done), total: localDigits(steps.length) });
+  var go = button({ variant: 'primary', size: 'sm', icon: 'flask', label: t('setup.nudge.go'), onclick: function () { openWizard(SETUP_NUDGE.state, false); SETUP_NUDGE.at = 0; } });
+  go.setAttribute('data-setup-nudge-go', '');
+  card = h('section', { 'data-setup-nudge': '', 'data-key': key, 'data-economy': 'nudge', 'data-l10n-skip': '', class: 'setup-nudge', 'aria-labelledby': 'setup-nudge-title', dir: document.documentElement.getAttribute('dir') || 'ltr' },
+    h('div', { class: 'setup-nudge-mark' }, icon('flask', 'h-5 w-5')),
+    h('div', { class: 'setup-nudge-text' },
+      h('h2', { id: 'setup-nudge-title', class: 'font-medium', text: t(st.status === 'skipped' ? 'setup.nudge.skipped' : 'setup.nudge.title') }),
+      h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400' }, t('setup.nudge.desc') + ' ', h('span', { class: 'tabular-nums', text: progress }))),
+    h('div', { class: 'setup-nudge-bar', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(steps.length), 'aria-valuenow': String(done), 'aria-label': progress },
+      h('div', { class: 'setup-progress-bar', style: 'width:' + Math.round(done / steps.length * 100) + '%' })),
+    go);
+  grid.insertBefore(card, grid.firstChild);
+}
+
+var AUDIT_LABELS = /^(base|economy|publication) (create|update|delete|invoke) /;
+
+function auditLogSources() {
+  if (!/^#\/settings\/audit-log/.test(location.hash || '')) return;
+  var rows = document.querySelectorAll('#main table tbody tr');
+  for (var i = 0; i < rows.length; i++) {
+    var row = rows[i];
+    var msg = row.getAttribute('data-nk-audit');
+    if (msg === null) {
+      var cells = row.cells;
+      msg = '';
+      for (var c = 0; c < cells.length; c++) {
+        var txt = cells[c].textContent.replace(/[⁦-⁩]/g, '').trim();
+        if (AUDIT_LABELS.test(txt) || /^(پایه|اقتصاد|انتشار) · /.test(txt)) { msg = 'module'; break; }
+      }
+      row.setAttribute('data-nk-audit', msg);
+    }
+    if (msg !== 'module') continue;
+    var walker = document.createTreeWalker(row, NodeFilter.SHOW_TEXT);
+    var n;
+    while ((n = walker.nextNode())) {
+      var v = n.nodeValue.trim();
+      if (v === 'Hiro Economy' || v === 'اقتصاد Hiro') n.nodeValue = n.nodeValue.replace(v, t('section'));
+    }
+  }
+}
+
+var SATORI = { state: null, promise: null };
+
+function satoriState() {
+  if (SATORI.state !== null) return Promise.resolve(SATORI.state);
+  if (SATORI.promise) return SATORI.promise;
+  var tk = token();
+  if (!tk) return Promise.resolve(true);
+  SATORI.promise = fetch(CONSOLE_BASE + '/extensions', { headers: { Accept: 'application/json', Authorization: 'Bearer ' + tk } }).then(function (res) { return res.ok ? res.json() : null; }).then(function (ext) {
+    SATORI.promise = null;
+    SATORI.state = ext ? !!ext.satori : true;
+    return SATORI.state;
+  }, function () { SATORI.promise = null; return true; });
+  return SATORI.promise;
+}
+
+function satoriGuard(to) {
+  if (!to || !/^\/players\/[^/]+\/satori(\/|$)/.test(to.path)) return true;
+  return satoriState().then(function (on) { return on ? true : to.path.replace(/\/satori(\/.*)?$/, ''); });
+}
+
+function satoriRoutes() {
+  if (!/^#\/players\/[^/?]+\/satori(\/|\?|$)/.test(location.hash || '')) return;
+  satoriState().then(function (on) {
+    if (on || !router) return;
+    var m = /^#(\/players\/[^/?]+)\/satori/.exec(location.hash);
+    if (m) router.replace(m[1]);
+  });
+}
+
+var NOT_FOUND = { last: '', at: 0 };
+
+function notFoundHook(arg) {
+  var path = null;
+  if (arg && arg.newURL) path = (new URL(arg.newURL).hash || '#/').replace(/^#/, '').split('?')[0];
+  else if (arg && arg.redirectedFrom) path = arg.redirectedFrom.path;
+  else path = (location.hash || '#/').replace(/^#/, '').split('?')[0];
+  checkNotFound(path || '/');
+}
+
+function checkNotFound(path) {
+  if (!router || !token()) return;
+  var r;
+  try { r = router.resolve(path); } catch (e) { return; }
+  if (!r || r.name !== '404') return;
+  if (NOT_FOUND.last === path && Date.now() - NOT_FOUND.at < 1500) return;
+  NOT_FOUND.last = path;
+  NOT_FOUND.at = Date.now();
+  toast('info', t('notFound', { path: '\u2068' + path + '\u2069' }));
+  setTimeout(function () {
+    var now = (location.hash || '#/').replace(/^#/, '').split('?')[0];
+    if (now === path) history.replaceState(history.state, '', location.pathname + location.search + '#/');
+  }, 0);
+}
+
+window.addEventListener('hashchange', notFoundHook);
+
+function nativeLabels() {
+  var acct = document.querySelector('#main > div.sticky:first-child .justify-end > .x-popover > button.x-button');
+  if (acct && acct.getAttribute('aria-label') !== t('account')) {
+    acct.setAttribute('aria-label', t('account'));
+    acct.setAttribute('title', t('account'));
+  }
+  if (document.getElementById('main')) return;
+  var links = document.querySelectorAll('a[href="/"]');
+  for (var i = 0; i < links.length; i++) {
+    var a = links[i];
+    if (!a.querySelector('img')) continue;
+    var label = brandName() || 'Nakama';
+    if (a.getAttribute('aria-label') !== label) a.setAttribute('aria-label', label);
+    if (a.getAttribute('tabindex') !== '-1') a.setAttribute('tabindex', '-1');
+  }
+}
+
+function nativeTweaks() {
+  nativeLabels();
+  syncCharts();
+  syncMonaco();
+  dashboardSetup();
+  auditLogSources();
+  satoriRoutes();
+}
+
 var ROOT_ID = 'economy-root';
 var NAV_LINK = 'h-[37px] px-3 py-2 flex items-center gap-2 text-secondary-800 hover:text-primary-700 dark:text-[#afbccb] dark:hover:text-primary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-md border-l-[2px] border-transparent dark:border-transparent';
 var NAV_ACTIVE = '!text-primary-700 dark:!text-primary-300 !bg-secondary-50 dark:!bg-secondary-800 !border-primary-700';
@@ -7547,7 +7988,6 @@ var rendered = null;
 var router = null;
 var pendingHash = null;
 var EmptyPage = { name: 'EconomyPage', render: function () { return null; } };
-var SECTION_TITLE = { economy: 'Economy', publication: 'Publishing' };
 
 function captureRouter(app) {
   if (router) return;
@@ -7558,7 +7998,7 @@ function captureRouter(app) {
     if (!layout || !layout.components) return;
     SECTION_ORDER.forEach(function (sec) {
       if (r.hasRoute(sec)) return;
-      r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { title: SECTION_TITLE[sec] } }] });
+      r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { get title() { return sectionTitle(sec); } } }] });
     });
     if (!r.hasRoute(PS_ROUTE)) r.addRoute({ path: '/' + PS_ROUTE + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: PS_ROUTE, component: EmptyPage, meta: { get title() { return psTitle(); } } }] });
     Object.keys(PS_LEGACY).forEach(function (from) {
@@ -7566,6 +8006,7 @@ function captureRouter(app) {
       if (!r.hasRoute(name)) r.addRoute({ path: '/' + from + '/:rest(.*)*', name: name, redirect: function (to) { return to.fullPath.replace('/' + from, '/' + PS_ROUTE + '/' + PS_LEGACY[from]); } });
     });
     router = r;
+    r.beforeEach(satoriGuard);
     r.afterEach(function (to, from) { fireRoute(to, from); });
   } catch (e) {
     router = null;
@@ -7577,6 +8018,21 @@ function captureRouter(app) {
     pendingHash = null;
     router.replace(target.slice(1));
   }
+}
+
+function sectionTitle(sec) {
+  var r = parseRoute(location.hash);
+  var page = r && r.section === sec ? r.page : null;
+  return t(sec === 'economy' ? 'section' : 'section.pub') + (page ? ' - ' + t('nav.' + page) : '');
+}
+
+function sectionPageTitle(v) {
+  var r = parseRoute(location.hash);
+  if (!r || r.section === PS_ROUTE || !SECTIONS[r.section]) return v;
+  var parts = String(v == null ? '' : v).split(' | ');
+  if (parts.length < 2) return v;
+  parts[0] = sectionTitle(r.section);
+  return parts.join(' | ');
 }
 
 function psTitle() {
@@ -7766,6 +8222,7 @@ function sync() {
   dockTheme();
   applyBrand();
   maybeClaimSetup();
+  nativeTweaks();
   var hash = location.hash;
   var moved = legacyHash(hash);
   if (moved) {
@@ -7899,7 +8356,7 @@ function boot() {
   sync();
 }
 
-var routeHooks = [];
+var routeHooks = [notFoundHook];
 
 function fireRoute(to, from) {
   for (var i = 0; i < routeHooks.length; i++) {

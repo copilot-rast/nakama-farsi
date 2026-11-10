@@ -5,7 +5,6 @@ var rendered = null;
 var router = null;
 var pendingHash = null;
 var EmptyPage = { name: 'EconomyPage', render: function () { return null; } };
-var SECTION_TITLE = { economy: 'Economy', publication: 'Publishing' };
 
 function captureRouter(app) {
   if (router) return;
@@ -16,7 +15,7 @@ function captureRouter(app) {
     if (!layout || !layout.components) return;
     SECTION_ORDER.forEach(function (sec) {
       if (r.hasRoute(sec)) return;
-      r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { title: SECTION_TITLE[sec] } }] });
+      r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { get title() { return sectionTitle(sec); } } }] });
     });
     if (!r.hasRoute(PS_ROUTE)) r.addRoute({ path: '/' + PS_ROUTE + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: PS_ROUTE, component: EmptyPage, meta: { get title() { return psTitle(); } } }] });
     Object.keys(PS_LEGACY).forEach(function (from) {
@@ -24,6 +23,7 @@ function captureRouter(app) {
       if (!r.hasRoute(name)) r.addRoute({ path: '/' + from + '/:rest(.*)*', name: name, redirect: function (to) { return to.fullPath.replace('/' + from, '/' + PS_ROUTE + '/' + PS_LEGACY[from]); } });
     });
     router = r;
+    r.beforeEach(satoriGuard);
     r.afterEach(function (to, from) { fireRoute(to, from); });
   } catch (e) {
     router = null;
@@ -35,6 +35,21 @@ function captureRouter(app) {
     pendingHash = null;
     router.replace(target.slice(1));
   }
+}
+
+function sectionTitle(sec) {
+  var r = parseRoute(location.hash);
+  var page = r && r.section === sec ? r.page : null;
+  return t(sec === 'economy' ? 'section' : 'section.pub') + (page ? ' - ' + t('nav.' + page) : '');
+}
+
+function sectionPageTitle(v) {
+  var r = parseRoute(location.hash);
+  if (!r || r.section === PS_ROUTE || !SECTIONS[r.section]) return v;
+  var parts = String(v == null ? '' : v).split(' | ');
+  if (parts.length < 2) return v;
+  parts[0] = sectionTitle(r.section);
+  return parts.join(' | ');
 }
 
 function psTitle() {
@@ -224,6 +239,7 @@ function sync() {
   dockTheme();
   applyBrand();
   maybeClaimSetup();
+  nativeTweaks();
   var hash = location.hash;
   var moved = legacyHash(hash);
   if (moved) {
@@ -357,7 +373,7 @@ function boot() {
   sync();
 }
 
-var routeHooks = [];
+var routeHooks = [notFoundHook];
 
 function fireRoute(to, from) {
   for (var i = 0; i < routeHooks.length; i++) {

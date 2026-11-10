@@ -365,13 +365,6 @@ function stepCurrency(box) {
     var values = clone(item) || { type: 'soft', name: {}, defaultValue: 0, sort: 0, metadata: {} };
     form = buildForm(SETUP_CURRENCY_FIELDS, values, { onchange: function () { dirty = true; } });
     dirty = false;
-    var num = form.el.querySelector('input[inputmode="numeric"]');
-    if (num) {
-      num.setAttribute('dir', 'ltr');
-      num.value = toLatinDigits(num.value);
-      num.addEventListener('input', function () { latinize(num); });
-      num.addEventListener('blur', function () { num.value = toLatinDigits(num.value); });
-    }
     return form.el;
   }
   function paint() {
@@ -795,20 +788,21 @@ function setupPage(container) {
           h('div', { class: 'setup-section-icon setup-section-icon--sm' }, icon(SETUP_ICONS[k], 'h-4 w-4')),
           h('div', { class: 'min-w-0 flex-1' },
             h('div', { class: 'font-medium', text: localDigits(i + 1) + '. ' + t('setup.step.' + k) }),
-            h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 truncate', text: t('setup.step.' + k + '.desc') })),
+            h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('setup.step.' + k + '.desc') })),
           h('div', { class: 'flex items-center gap-2 shrink-0' }, tag(t('setup.st.' + s), STEP_COLOR[s]),
             button({ variant: 'link', size: 'sm', label: t('setup.rv.edit'), title: t('setup.rv.editStep', { step: t('setup.step.' + k) }), onclick: function () { openFromPage(k); } }))));
       });
       var meta = [];
-      if (st.firstOpenedAt) meta.push([t('setup.meta.opened'), (st.firstOpenedBy || '') + ' · ' + fmtDate(st.firstOpenedAt)]);
-      if (st.completedAt) meta.push([t('setup.meta.completed'), (st.completedBy || '') + ' · ' + fmtDate(st.completedAt)]);
+      var who = function (user, at) { return [user ? h('bdi', { text: user }) : null, user ? ' · ' : null, h('bdi', { text: fmtDate(at) })]; };
+      if (st.firstOpenedAt) meta.push([t('setup.meta.opened'), who(st.firstOpenedBy, st.firstOpenedAt)]);
+      if (st.completedAt) meta.push([t('setup.meta.completed'), who(st.completedBy, st.completedAt)]);
       clear(body).appendChild(card(h('div', { class: 'p-4' },
         h('div', { class: 'flex flex-wrap items-center justify-between gap-3 mb-3' },
           h('div', { class: 'flex items-center gap-2' }, h('span', { class: 'text-lg font-medium', text: t('setup.title') }), tag(t('setup.status.' + st.status), SETUP_STATUS_COLOR[st.status] || 'secondary')),
           h('span', { class: 'text-sm text-secondary-500 tabular-nums', text: t('setup.progress', { n: localDigits(finished), total: localDigits(steps.length) }) })),
         h('div', { class: 'setup-progress', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(steps.length), 'aria-valuenow': String(finished), 'aria-label': t('setup.progress', { n: localDigits(finished), total: localDigits(steps.length) }) },
           h('div', { class: 'setup-progress-bar', style: 'width:' + Math.round(finished / steps.length * 100) + '%' })),
-        meta.length ? h('dl', { class: 'eco-dl mt-4 mb-2' }, meta.map(function (m) { return [h('dt', { class: 'text-secondary-500', text: m[0] }), h('dd', { text: m[1] })]; })) : null,
+        meta.length ? h('dl', { class: 'eco-dl mt-4 mb-2' }, meta.map(function (m) { return [h('dt', { class: 'text-secondary-500', text: m[0] }), h('dd', {}, m[1])]; })) : null,
         list)));
     }, function (err) { clear(body).appendChild(errorBlock(err, load)); });
   }

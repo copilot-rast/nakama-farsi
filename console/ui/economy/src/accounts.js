@@ -92,6 +92,13 @@ function compareVersions(a, b) {
   return x.pre < y.pre ? -1 : 1;
 }
 
+function richText(str, nodes) {
+  return String(str).split(/(\{\w+\})/).map(function (part) {
+    var m = /^\{(\w+)\}$/.exec(part);
+    return m && nodes[m[1]] ? nodes[m[1]] : part;
+  });
+}
+
 function storeLinksEditor(value, onchange) {
   var rows = (value || []).map(function (r) { return { store: r.store || 'web', url: r.url || '', label: trValue(r.label) }; });
   var listEl = h('div', { class: 'flex flex-col gap-2' });
@@ -122,12 +129,12 @@ function storeLinksEditor(value, onchange) {
       var err = h('p', { class: 'text-xs text-error-600 dark:text-error-400 eco-items-err', hidden: true });
       errors.push({ row: row, el: err, label: label });
       listEl.appendChild(h('div', { class: 'border border-secondary-200 dark:border-secondary-700 rounded-md p-3', 'data-store-row': '' },
-        h('div', { class: 'eco-actions-row' },
+        h('div', { class: 'eco-actions-row eco-store-row' },
           cell('av.link.store', storeSel),
           cell('av.link.url', url),
           h('div', { class: 'min-w-0 eco-actions-label' }, h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('av.link.label') }), label),
           h('div', { class: 'eco-items-remove' }, button({ variant: 'danger', size: 'iconLg', icon: 'trash', title: t('remove'), onclick: function () { rows.splice(idx, 1); render(); emit(); } }))),
-        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1.5', text: t('av.link.hint') }),
+        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1.5' }, richText(t('av.link.hint'), { schemes: h('span', { dir: 'ltr', class: 'font-mono', text: 'bazaar://, myket://, market://' }) })),
         err));
     });
   }

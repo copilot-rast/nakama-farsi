@@ -179,8 +179,22 @@ function toggleStats(force) {
   clearInterval(statsTimer);
   if (on) {
     paintStats();
+    placeStats(b);
     statsTimer = setInterval(paintStats, 1000);
   }
+}
+
+function placeStats(b) {
+  var pop = tb.stats;
+  var box = pop && pop.offsetParent;
+  if (!b || !box) return;
+  var br = box.getBoundingClientRect();
+  var pr = b.getBoundingClientRect();
+  var start = Math.max(0, Math.round(isRtl() ? br.right - pr.right : pr.left - br.left));
+  var room = isRtl() ? br.right - start - 8 : window.innerWidth - 8 - (br.left + start);
+  var w = pop.offsetWidth;
+  if (w > room) start = Math.max(0, start - Math.ceil(w - room));
+  pop.style.insetInlineStart = start + 'px';
 }
 
 function buildEnd() {
@@ -239,7 +253,20 @@ function paletteItems(q) {
   var items = allPages();
   q = (q || '').trim().toLowerCase();
   if (!q) return items;
-  return items.filter(function (it) { return (it.label + ' ' + (it.group || '')).toLowerCase().indexOf(q) !== -1; });
+  var rank = function (text) {
+    var i = String(text || '').toLowerCase().indexOf(q);
+    if (i === -1) return -1;
+    return i === 0 ? 0 : /[\s\u200c]/.test(String(text).charAt(i - 1)) ? 1 : 2;
+  };
+  var byLabel = [];
+  var byGroup = [];
+  items.forEach(function (it, i) {
+    var r = rank(it.label);
+    if (r !== -1) byLabel.push({ it: it, r: r, i: i });
+    else if (rank(it.group) !== -1) byGroup.push(it);
+  });
+  byLabel.sort(function (a, b) { return a.r - b.r || a.i - b.i; });
+  return byLabel.length ? byLabel.map(function (x) { return x.it; }) : byGroup;
 }
 
 function openPalette() {

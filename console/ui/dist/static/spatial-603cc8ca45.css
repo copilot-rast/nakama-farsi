@@ -61,6 +61,7 @@ html.sp {
   --star: #e5a50a;
   --star-edge: #a26f00;
   --scrim: rgb(30 36 50 / .10);
+  --scrim-modal: rgb(30 36 50 / .30);
   --shimmer: rgb(255 255 255 / .35);
 
   --accent: var(--sp-accent, rgb(107 89 238));
@@ -108,6 +109,7 @@ html.sp.dark {
   --star: #f6bd2a;
   --star-edge: #b98500;
   --scrim: rgb(0 0 0 / .34);
+  --scrim-modal: rgb(0 0 0 / .5);
   --shimmer: rgb(255 255 255 / .06);
   --accent-ink: var(--sp-accent-ink-dark, rgb(196 189 248));
   --accent-soft: color-mix(in srgb, var(--accent) 17%, transparent);
@@ -649,6 +651,29 @@ html.sp.sp-pinned:not(.sp-sheet-open) .sp-rail {
   color: var(--ink-3);
 }
 
+html.sp .sp-row[aria-expanded="true"] .sp-row-chev {
+  transform: rotate(90deg);
+}
+
+.sp-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 2px 0 6px;
+  padding-inline-start: 18px;
+  border-inline-start: 1px solid var(--line-2);
+  margin-inline-start: 18px;
+  animation: sp-sub-in var(--d2) var(--ease) backwards;
+}
+
+.sp-sub .sp-sub-row {
+  min-height: 44px;
+}
+
+@keyframes sp-sub-in {
+  from { opacity: 0; transform: translateY(-4px); }
+}
+
 .sp-chip {
   flex: none;
   min-width: 20px;
@@ -1101,7 +1126,7 @@ html.sp.sp-railed #main > div.sticky:first-child .hidden.md\:flex.text-xs {
   padding: 12px 14px 14px;
   border: 1px solid var(--line);
   border-radius: var(--r-card);
-  background: var(--thick);
+  background: var(--solid);
   box-shadow: var(--thick-shadow);
   color: var(--ink-1);
   transform-origin: top center;
@@ -1989,6 +2014,10 @@ html.sp div.fixed.inset-0.flex.justify-end > .x-form {
   overflow: hidden;
 }
 
+html.sp:not(.dark) div.fixed.inset-0.flex.justify-end > .x-form {
+  background: linear-gradient(180deg, rgb(255 255 255), rgb(250 251 253));
+}
+
 html.sp div.fixed.inset-0.flex.justify-end > .x-form .\!absolute.top-2 {
   top: 14px;
   inset-inline-end: 14px;
@@ -2026,8 +2055,12 @@ html.sp div.fixed.inset-0.flex.justify-end > .x-form :is(.border-b, .border-t, .
   border-color: var(--line);
 }
 
+html.sp .x-modal.fixed {
+  z-index: var(--z-scrim);
+}
+
 html.sp .x-modal > div.fixed.inset-0 {
-  background: var(--scrim);
+  background: var(--scrim-modal);
   opacity: 1;
 }
 
@@ -2332,6 +2365,10 @@ html.sp .ps-item:active {
 html.sp .ps-item:focus-visible {
   outline: 2px solid var(--accent-ink);
   outline-offset: -2px;
+}
+
+html.sp:not([data-eco-kbd]) .ps-item[aria-selected="true"]:focus-visible {
+  outline: none;
 }
 
 html.sp .ps-head {
@@ -3055,12 +3092,13 @@ html.sp .setup-card {
     width: auto !important;
     min-width: 0 !important;
     max-width: none !important;
-    height: auto;
+    height: auto !important;
+    max-height: none !important;
     min-height: 36px;
     padding: 6px 10px;
     border: 0;
     text-align: end;
-    white-space: normal;
+    white-space: normal !important;
     overflow-wrap: anywhere;
     background: transparent;
   }
@@ -3138,6 +3176,46 @@ html.sp .setup-card {
 
   html.sp .x-button {
     min-height: 36px;
+  }
+
+  html.sp :is(#main, [data-economy], .ps-window) table.eco-table tbody tr {
+    margin: 0 0 8px;
+    padding: 6px 4px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    background: var(--capsule);
+  }
+
+  html.sp :is(#main, [data-economy], .ps-window) table.eco-table tbody tr td {
+    align-items: center;
+    min-height: 36px;
+    padding: 6px 10px;
+    border: 0;
+    background: transparent;
+    overflow-wrap: anywhere;
+  }
+
+  html.sp :is(#main, [data-economy], .ps-window) table.eco-table tbody tr td::before {
+    padding-top: 0;
+    color: var(--ink-3);
+    font-size: 12px;
+  }
+
+  html.sp :is(#main, [data-economy], .ps-window) table.eco-table tbody tr:hover td {
+    background: transparent;
+  }
+
+  html.sp #main .rounded-md.shadow > div.px-4.py-3.border-b.flex.items-center {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  html.sp #main .rounded-md.shadow > div.px-4.py-3.border-b.flex.items-center > .translate-x-1.shrink-0 {
+    flex-basis: 100%;
+    max-width: 100%;
+    translate: none;
+    --tw-translate-x: 0;
+    transform: none;
   }
 
   html.sp #main .x-tab-group .x-scroll {

@@ -97,6 +97,8 @@ export function extractStrings(code) {
     const prev = tokens[start - 1];
     const prev2 = tokens[start - 2];
     if (prev?.type.label === ':' && prev2 && UI_PROPS.has(String(prev2.value))) add(value, `prop:${prev2.value}`);
+    else if (prev?.type.label === '=' && prev2?.value === 'value' && /^[A-Z]/.test(value)) add(value, 'assign:value');
+    else if ((prev?.value === '||' || prev?.value === '??') && /^[A-Z][a-z]/.test(value)) add(value, 'fallback');
     else if (prev?.type.label === '(' && prev2?.type.label === 'name' && calls.has(prev2.value)) add(value, prev2.value === alias ? 'text' : `call:${prev2.value}`);
     else if (prev?.type.label === ',') {
       // Third argument of an element vnode: H("div", props, "Text")

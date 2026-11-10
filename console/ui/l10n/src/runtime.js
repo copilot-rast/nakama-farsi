@@ -38,6 +38,7 @@
   var SVG_NS = 'http://www.w3.org/2000/svg';
   var PERSIAN_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
   var PLACEHOLDER = /\{(\w+)\}/g;
+  var ISO_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/;
   var TRANSLATED_ATTRIBUTES = ['placeholder', 'title', 'aria-label', 'alt', 'aria-placeholder', 'aria-description'];
   // Never translate or reshape text inside these: code, editors, user input.
   var SKIP_SELECTOR = [
@@ -387,6 +388,7 @@
     // The console sets <html lang> itself on boot; keep ours.
     new win.MutationObserver(applyRoot).observe(html, { attributes: true, attributeFilter: ['lang', 'dir'] });
 
+    patchIntl(win, info.lang);
     var catalog = build.catalogs && build.catalogs[locale];
     if (!catalog) {
       win.addEventListener('DOMContentLoaded', function () {
@@ -396,7 +398,6 @@
       return api;
     }
 
-    patchIntl(win, info.lang);
     index = compile(build.source, catalog, info.lang);
     patchMailto(win, index);
     var debug = false;
@@ -406,6 +407,11 @@
     var mirror = Object.create(null);
     (build.mirrorIcons || []).forEach(function (svg) { mirror[normalizeSvg(doc, svg)] = true; });
 
+    var isoFormat = new win.Intl.DateTimeFormat(info.lang, { dateStyle: 'medium', timeStyle: 'short' });
+    var isoDate = function (text) {
+      var d = new win.Date(text);
+      return isNaN(d.getTime()) ? text : isoFormat.format(d);
+    };
     var skip = function (el) { return !el || (el.closest && el.closest(SKIP_SELECTOR)); };
     var options = function (el) {
       return { digits: !(el && el.closest && el.closest(LATIN_DIGITS_SELECTOR)), isolate: true };
@@ -420,6 +426,7 @@
       var el = node.parentElement;
       if (skip(el)) return;
       var out = translate(index, value, el, options(el));
+      if (out === null && ISO_TIME.test(normalize(value))) out = value.replace(normalize(value), isoDate(normalize(value)));
       if (out === null) {
         note(value);
         textDone.set(node, value);
@@ -450,8 +457,12 @@
     // Single tokens (IDs, usernames) are left untouched so copying them is exact.
     var isolateLatin = function (node, value) {
       var key = normalize(value);
-      if (!/\s/.test(key) || RTL_CHARS.test(key) || !/[A-Za-z0-9]/.test(key)) return;
+      if (RTL_CHARS.test(key) || !/[A-Za-z0-9]/.test(key)) return;
       if (node.parentElement && node.parentElement.namespaceURI === SVG_NS) return;
+      if (!/\s/.test(key)) {
+        if (/[A-Za-z]/.test(key) && /^[^A-Za-z0-9]|[^A-Za-z0-9]$|\//.test(key) && !RTL_CHARS.test(node.parentElement.textContent)) node.parentElement.setAttribute('data-l10n-token', '');
+        return;
+      }
       var out = value.replace(key, LRI + key + PDI);
       textDone.set(node, out);
       node.nodeValue = out;

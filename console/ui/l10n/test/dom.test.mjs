@@ -180,3 +180,33 @@ test('the password-reset email opened via mailto: is localized', () => {
   win.open('https://heroiclabs.com/docs');
   assert.equal(forwarded[1], 'https://heroiclabs.com/docs');
 });
+
+test('English still formats with English digits when the browser default is another locale', () => {
+  const win = boot({ locale: 'en' });
+  assert.equal(new win.Intl.NumberFormat().resolvedOptions().locale, 'en');
+  assert.equal(new win.Intl.DateTimeFormat().resolvedOptions().locale, 'en');
+  const digits = new win.Intl.NumberFormat().formatToParts(1234).filter((p) => p.type === 'integer').map((p) => p.value).join('');
+  assert.equal(digits, '1234');
+});
+
+test('paths keep their leading slash in RTL and ISO times are localized', async () => {
+  const win = boot();
+  const { document } = win;
+  document.body.innerHTML = '<table><tr><td id="path">/Users/me/modules/base.so</td><td id="when">2026-11-10T19:14:52Z</td><td id="id">e2e_user</td></tr></table>';
+  await tick(win);
+  assert.ok(document.getElementById('path').hasAttribute('data-l10n-token'));
+  assert.equal(document.getElementById('path').textContent, '/Users/me/modules/base.so');
+  assert.ok(!document.getElementById('id').hasAttribute('data-l10n-token'));
+  assert.match(document.getElementById('when').textContent, /۱۴۰۵/);
+});
+
+test('native confirm dialogs and audit messages are translated', async () => {
+  const win = boot();
+  const { document } = win;
+  document.body.innerHTML = '<h2 id="t">Confirm Deletion</h2><p id="q">Are you sure you want to delete \'Bob\'?</p><span id="m">economy update currencies/abc</span><span id="a">console user deleted</span>';
+  await tick(win);
+  assert.equal(document.getElementById('t').textContent, 'تأیید حذف');
+  assert.match(document.getElementById('q').textContent, /^از حذف «.*Bob.*» مطمئن هستید؟$/);
+  assert.match(document.getElementById('m').textContent, /^اقتصاد · ویرایش · /);
+  assert.equal(document.getElementById('a').textContent, 'کاربر کنسول حذف شد');
+});

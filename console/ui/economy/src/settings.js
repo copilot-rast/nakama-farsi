@@ -313,3 +313,8 @@ function dockPsButton() {
   else psButton.removeAttribute('aria-current');
   if (psButton.nextElementSibling !== menu) menu.before(psButton);
 }
+
+document.addEventListener('keydown', function (e) {
+  if (e.key && e.key.length > 1 && !/^(Shift|Control|Alt|Meta|CapsLock)$/.test(e.key)) document.documentElement.setAttribute('data-eco-kbd', '');
+}, true);
+document.addEventListener('pointerdown', function () { document.documentElement.removeAttribute('data-eco-kbd'); }, true);
