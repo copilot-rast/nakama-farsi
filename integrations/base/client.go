@@ -117,10 +117,10 @@ func (s *service) rpcTags(ctx context.Context, userID, payload string) (any, err
 	}
 	kt := strings.TrimSpace(in.KeyType)
 	if kt == "" {
-		return s.taxonomyItems(ctx, userID, in.Lang, "base_tag", "true")
+		return s.taxonomyItems(ctx, userID, in.Lang, "base_tag", "key_type <> 'user'")
 	}
-	if !validKeyType(tagKeyTypes, kt) {
-		return nil, badRequest("INVALID_KEY_TYPE", "keyType", "keyType must be one of "+strings.Join(tagKeyTypes, ", "))
+	if !validKeyType(clientTagKeyTypes, kt) {
+		return nil, badRequest("INVALID_KEY_TYPE", "keyType", "keyType must be one of "+strings.Join(clientTagKeyTypes, ", "))
 	}
 	return s.taxonomyItems(ctx, userID, in.Lang, "base_tag", "key_type IN ($1, 'general')", kt)
 }

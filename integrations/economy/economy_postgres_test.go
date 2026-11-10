@@ -310,6 +310,10 @@ func TestEconomyPostgresFlows(t *testing.T) {
 	if code, out := h.api(http.MethodPost, "/prizes", map[string]any{"key": "bad3", "tagIds": []string{newsTag["id"].(string)}, "name": map[string]string{"fa": "x"}, "items": []map[string]any{{"type": "currency", "key": "coin", "action": "add", "value": 1}}}); code != 400 || out["error"] != "TAG_KIND_MISMATCH" {
 		t.Fatalf("tag key type = %d %v", code, out)
 	}
+	playerTag := h.taxonomy("base_tag", "user", "vip", map[string]string{"fa": "ویژه"})
+	if code, out := h.api(http.MethodPost, "/prizes", map[string]any{"key": "bad4", "tagIds": []string{playerTag["id"].(string)}, "name": map[string]string{"fa": "x"}, "items": []map[string]any{{"type": "currency", "key": "coin", "action": "add", "value": 1}}}); code != 400 || out["error"] != "TAG_KIND_MISMATCH" {
+		t.Fatalf("player tag on a prize = %d %v", code, out)
+	}
 
 	if code, out := h.api(http.MethodPost, "/prizes", map[string]any{"key": "bad", "name": map[string]string{"fa": "x"}, "items": []map[string]any{{"type": "currency", "key": "nope", "action": "add", "value": 1}}}); code != 400 || out["error"] != "CURRENCY_NOT_FOUND" {
 		t.Fatalf("unknown currency in prize = %d %v", code, out)

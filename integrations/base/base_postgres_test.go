@@ -210,9 +210,16 @@ func TestCategoriesAndTagsConsole(t *testing.T) {
 	if len(types) != 6 || types[0]["key"] != "product" || types[0]["name"].(map[string]any)["fa"] == "" {
 		t.Fatalf("key types = %v", types)
 	}
-	if tt := items(h.mustAPI(200, http.MethodGet, "/tags/key-types", nil)); len(tt) != 5 || tt[4]["key"] != "general" {
+	tt := items(h.mustAPI(200, http.MethodGet, "/tags/key-types", nil))
+	if len(tt) != 6 || tt[4]["key"] != "general" || tt[5]["key"] != "user" || tt[5]["name"].(map[string]any)["fa"] != "بازیکن" || tt[5]["name"].(map[string]any)["en"] != "Player" {
 		t.Fatalf("tag key types = %v", tt)
 	}
+	for _, kt := range types {
+		if kt["key"] == "user" {
+			t.Fatalf("categories must not offer the user key type: %v", types)
+		}
+	}
+	h.expectError(400, "INVALID_KEY_TYPE", http.MethodPost, "/categories", map[string]any{"keyType": "user", "key": "c", "name": map[string]string{"fa": "x"}})
 	h.expectError(400, "INVALID_KEY_TYPE", http.MethodPost, "/categories", map[string]any{"keyType": "general", "key": "c", "name": map[string]string{"fa": "x"}})
 	h.expectError(400, "INVALID_LANGUAGE", http.MethodPost, "/categories", map[string]any{"keyType": "product", "key": "c", "name": map[string]string{"fa": "x", "de": "y"}})
 	h.expectError(400, "DEFAULT_LANGUAGE_REQUIRED", http.MethodPost, "/categories", map[string]any{"keyType": "product", "key": "c", "name": map[string]string{"en": "x"}})
@@ -241,6 +248,14 @@ func TestCategoriesAndTagsConsole(t *testing.T) {
 	tag := h.mustAPI(201, http.MethodPost, "/tags", map[string]any{"keyType": "general", "key": "hot", "name": map[string]string{"fa": "داغ", "en": "Hot"}})
 	h.mustAPI(201, http.MethodPost, "/tags", map[string]any{"keyType": "news", "key": "hot", "name": map[string]string{"fa": "داغ"}})
 	h.expectError(400, "INVALID_KEY_TYPE", http.MethodPost, "/tags", map[string]any{"keyType": "gift", "key": "g", "name": map[string]string{"fa": "x"}})
+	vip := h.mustAPI(201, http.MethodPost, "/tags", map[string]any{"keyType": "user", "key": "vip", "name": map[string]string{"fa": "ویژه", "en": "VIP"}})
+	if vip["keyType"] != "user" {
+		t.Fatalf("user tag = %v", vip)
+	}
+	if l := h.mustAPI(200, http.MethodGet, "/tags?keyType=user", nil); l["total"].(float64) != 1 {
+		t.Fatalf("user tag filter = %v", l)
+	}
+	h.mustAPI(200, http.MethodDelete, "/tags/"+vip["id"].(string), nil)
 
 	prizeID := uuid.Must(uuid.NewV4()).String()
 	if _, err := h.s.db.Exec(`INSERT INTO economy_prize (id, key, name, items, tag_ids) VALUES ($1,$2,'{"fa":"x"}','[]',ARRAY[$3])`, prizeID, "base-test-"+prizeID[:8], tag["id"]); err != nil {
@@ -325,6 +340,13 @@ func TestClientRPCsResolveLanguage(t *testing.T) {
 	}
 	if code := h.rpcCode(faUser, "base_tags", map[string]any{"keyType": "gift"}); code != "INVALID_KEY_TYPE" {
 		t.Fatal(code)
+	}
+	h.mustAPI(201, http.MethodPost, "/tags", map[string]any{"keyType": "user", "key": "cheater", "name": map[string]string{"fa": "متقلب"}})
+	if code := h.rpcCode(faUser, "base_tags", map[string]any{"keyType": "user"}); code != "INVALID_KEY_TYPE" {
+		t.Fatalf("players must not list player tags: %s", code)
+	}
+	if tags := items(h.mustRPC(faUser, "base_tags", map[string]any{})); len(tags) != 3 {
+		t.Fatalf("all tags must leave player tags out = %v", tags)
 	}
 
 	if out := h.mustRPC(faUser, "base_set_language", map[string]any{"lang": "AR"}); out["lang"] != "ar" {

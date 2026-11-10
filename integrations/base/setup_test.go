@@ -41,3 +41,27 @@ func TestApplySetupTransitions(t *testing.T) {
 		t.Fatal("unknown status must fail")
 	}
 }
+
+func TestKeyTypes(t *testing.T) {
+	for _, list := range [][]string{categoryKeyTypes, tagKeyTypes} {
+		for _, kt := range keyTypeList(list) {
+			if kt.Name["fa"] == "" || kt.Name["en"] == "" {
+				t.Errorf("key type %q has no fa/en name", kt.Key)
+			}
+		}
+	}
+	if !validKeyType(tagKeyTypes, "user") || validKeyType(categoryKeyTypes, "user") {
+		t.Fatal("user is a tag key type only")
+	}
+	if validKeyType(clientTagKeyTypes, "user") {
+		t.Fatal("players must not list player tags")
+	}
+	for _, kt := range clientTagKeyTypes {
+		if !validKeyType(tagKeyTypes, kt) {
+			t.Errorf("client tag key type %q is not a tag key type", kt)
+		}
+	}
+	if tagKeyTypes[len(tagKeyTypes)-1] != "user" || tagKeyTypes[len(tagKeyTypes)-2] != "general" {
+		t.Fatalf("tag key types order = %v", tagKeyTypes)
+	}
+}
