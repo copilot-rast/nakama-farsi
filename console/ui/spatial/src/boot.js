@@ -15,6 +15,7 @@ function tick() {
     if (typeof paintTopbar === 'function') paintTopbar();
     markPage();
     labelTables();
+    paintNativeTabs();
   }
 }
 
@@ -51,7 +52,7 @@ function boot() {
   new MutationObserver(function (records) {
     for (var i = 0; i < records.length; i++) {
       var t = records[i].target;
-      if (t.nodeType === 1 && t.closest && t.closest('.sp-rail, .sp-rail-full, .sp-flyout, .sp-tb-start, .sp-tb-end, .sp-sky, .sp-tip, .sp-pal-holder, [_echarts_instance_], number-flow-vue')) continue;
+      if (t.nodeType === 1 && t.closest && t.closest('.sp-tabind, .sp-rail, .sp-rail-full, .sp-flyout, .sp-tb-start, .sp-tb-end, .sp-sky, .sp-tip, .sp-pal-holder, [_echarts_instance_], number-flow-vue')) continue;
       schedule();
       return;
     }

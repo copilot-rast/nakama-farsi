@@ -203,7 +203,7 @@ function onIdle(fn) {
 
 var SKY = {
   light: { top: '#dfe7f3', mid: '#e9edf3', low: '#f4ece6', wash: 'rgb(170 196 236 / .55)', wash2: 'rgb(248 212 192 / .55)', glow: 'rgb(255 222 190 / .85)', sun: 'rgb(255 246 234 / .9)', sunR: 48, h1: '#d5dcea', h2: '#ccd5e6', h3: '#c5cfe2' },
-  dark: { top: '#0b0e1a', mid: '#111528', low: '#1a1630', wash: 'rgb(70 96 190 / .30)', wash2: 'rgb(120 70 150 / .18)', glow: 'rgb(255 214 150 / .20)', sun: 'rgb(255 236 200 / .55)', sunR: 34, h1: '#171a2e', h2: '#121424', h3: '#0d0f1a' }
+  dark: { top: '#0b0e1a', mid: '#111528', low: '#1a1630', wash: 'rgb(70 96 190 / .30)', wash2: 'rgb(120 70 150 / .18)', glow: 'rgb(255 214 150 / .20)', sun: 'rgb(255 236 200 / .30)', sunR: 34, h1: '#171a2e', h2: '#121424', h3: '#0d0f1a' }
 };
 
 function skyStars() {
@@ -1091,6 +1091,34 @@ function isAuthPage() {
   return !document.querySelector('#main') && !!document.querySelector('#app form');
 }
 
+function activeTab(bar) {
+  return bar.querySelector('.x-tab.router-link-exact-active') || bar.querySelector('.x-tab[aria-current="page"], .x-tab[aria-selected="true"], .x-tab.eco-tab-on') || bar.querySelector('.x-tab.router-link-active');
+}
+
+function paintNativeTabs() {
+  var bars = document.querySelectorAll('#main .x-tab-group .relative.flex.min-w-full.w-fit.border-b, [data-economy] .x-tab-group .relative.flex.min-w-full.w-fit.border-b');
+  for (var i = 0; i < bars.length; i++) {
+    var bar = bars[i];
+    var ind = bar.querySelector(':scope > .sp-tabind');
+    var fresh = false;
+    if (!ind) {
+      ind = el('span', { class: 'sp-tabind sp-still', 'aria-hidden': 'true' });
+      bar.appendChild(ind);
+      fresh = true;
+    }
+    var on = activeTab(bar);
+    if (!on) { ind.style.opacity = '0'; continue; }
+    var br = bar.getBoundingClientRect();
+    var r = on.getBoundingClientRect();
+    if (!r.width) continue;
+    var x = r.left - br.left + bar.scrollLeft;
+    var t = 'translateX(' + x.toFixed(1) + 'px) scaleX(' + (r.width / 100).toFixed(4) + ')';
+    if (ind.style.transform !== t) ind.style.transform = t;
+    ind.style.opacity = '1';
+    if (fresh) requestAnimationFrame(function (n) { return function () { requestAnimationFrame(function () { n.classList.remove('sp-still'); }); }; }(ind));
+  }
+}
+
 function pageKey(path) {
   var seg = String(path || '/').split('?')[0].split('/').filter(Boolean);
   if (!seg.length) return '/';
@@ -1176,6 +1204,7 @@ function tick() {
     if (typeof paintTopbar === 'function') paintTopbar();
     markPage();
     labelTables();
+    paintNativeTabs();
   }
 }
 
@@ -1212,7 +1241,7 @@ function boot() {
   new MutationObserver(function (records) {
     for (var i = 0; i < records.length; i++) {
       var t = records[i].target;
-      if (t.nodeType === 1 && t.closest && t.closest('.sp-rail, .sp-rail-full, .sp-flyout, .sp-tb-start, .sp-tb-end, .sp-sky, .sp-tip, .sp-pal-holder, [_echarts_instance_], number-flow-vue')) continue;
+      if (t.nodeType === 1 && t.closest && t.closest('.sp-tabind, .sp-rail, .sp-rail-full, .sp-flyout, .sp-tb-start, .sp-tb-end, .sp-sky, .sp-tip, .sp-pal-holder, [_echarts_instance_], number-flow-vue')) continue;
       schedule();
       return;
     }

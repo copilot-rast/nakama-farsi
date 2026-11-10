@@ -160,7 +160,8 @@
         "h-12",
         "w-12",
         "rounded-full",
-        "shiki"
+        "shiki",
+        "even:bg-secondary-50"
       ],
       "routes": [
         "#/players/00000000-0000-0000-0000-000000000000"
@@ -182,8 +183,7 @@
         "bg-primary-500"
       ],
       "routes": [
-        "#/players",
-        "#/settings/general"
+        "#/players"
       ],
       "min": 1
     },
@@ -256,7 +256,11 @@
         "v-popper__arrow-container",
         "v-popper__popper--shown",
         "x-notifications",
-        "x-modal"
+        "x-modal",
+        "opacity-0",
+        "top-2",
+        "contents",
+        "text-xl"
       ],
       "routes": [],
       "min": 0
@@ -268,7 +272,8 @@
       "classes": [
         "animate-pulse",
         "monaco-editor",
-        "monaco-editor-background"
+        "monaco-editor-background",
+        "overflow-guard"
       ],
       "routes": [
         "#/"
@@ -291,6 +296,23 @@
         "#/login"
       ],
       "min": 1
+    },
+    {
+      "id": "dashboard",
+      "what": "dashboard KPI grid, chart cards and live badge",
+      "selector": "#main .grid.xl\\:grid-cols-5 > .rounded-md.shadow.bg-white",
+      "classes": [
+        "xl:grid-cols-5",
+        "md:grid-cols-2",
+        "h-60",
+        "items-center",
+        "justify-between",
+        "x-input-footer"
+      ],
+      "routes": [
+        "#/"
+      ],
+      "min": 5
     }
   ]
 }

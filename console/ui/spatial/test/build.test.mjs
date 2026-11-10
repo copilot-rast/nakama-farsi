@@ -63,7 +63,7 @@ test('the bundle parses, has no comments and keeps everything under html.sp', ()
     .flatMap((sel) => splitTop(sel))
     .filter((s) => !/^html(\[[^\]]+\])?(\.sp|:not\(\.sp\))|^[a-z]*\.sp-|^html\[dir=/.test(s));
   assert.deepEqual(loose, []);
-  assert.ok(!/(^|[^-])(margin|padding|border)-(left|right)\s*:|(^|[;{\s])(left|right)\s*:\s*[^;]*;/.test(css.replace(/\.sp-seg-ind[^}]*}/g, '').replace(/html\[dir="rtl"\] \.sp-seg-ind[^}]*}/g, '')), 'physical left/right outside the segmented indicator');
+  assert.ok(!/(^|[^-])(margin|padding|border)-(left|right)\s*:|(^|[;{\s])(left|right)\s*:\s*[^;]*;/.test(css.replace(/\.sp-(seg-ind|tabind)[^}]*}/g, '').replace(/html\[dir="rtl"\] \.sp-seg-ind[^}]*}/g, '')), 'physical left/right outside the segmented indicator');
 });
 
 test('turning spatial off leaves the page untouched', () => {

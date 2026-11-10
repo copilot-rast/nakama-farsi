@@ -1,6 +1,6 @@
 var SKY = {
   light: { top: '#dfe7f3', mid: '#e9edf3', low: '#f4ece6', wash: 'rgb(170 196 236 / .55)', wash2: 'rgb(248 212 192 / .55)', glow: 'rgb(255 222 190 / .85)', sun: 'rgb(255 246 234 / .9)', sunR: 48, h1: '#d5dcea', h2: '#ccd5e6', h3: '#c5cfe2' },
-  dark: { top: '#0b0e1a', mid: '#111528', low: '#1a1630', wash: 'rgb(70 96 190 / .30)', wash2: 'rgb(120 70 150 / .18)', glow: 'rgb(255 214 150 / .20)', sun: 'rgb(255 236 200 / .55)', sunR: 34, h1: '#171a2e', h2: '#121424', h3: '#0d0f1a' }
+  dark: { top: '#0b0e1a', mid: '#111528', low: '#1a1630', wash: 'rgb(70 96 190 / .30)', wash2: 'rgb(120 70 150 / .18)', glow: 'rgb(255 214 150 / .20)', sun: 'rgb(255 236 200 / .30)', sunR: 34, h1: '#171a2e', h2: '#121424', h3: '#0d0f1a' }
 };
 
 function skyStars() {

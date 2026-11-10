@@ -56,6 +56,7 @@ html.sp {
   --depth-lift: .36;
   --pos: #146638;
   --neg: #ad3226;
+  --danger-fill: #b42318;
   --warn: #7f5300;
   --star: #e5a50a;
   --star-edge: #a26f00;
@@ -1634,6 +1635,22 @@ html.sp .x-button[style*="--x-button-text: rgb(var(--primary-color"]:not([style*
   --x-button-dark-text: var(--accent-ink) !important;
 }
 
+html.sp .x-button[style*="--x-button-bg: rgb(var(--error-color"],
+html.sp .x-button[style*="--x-button-bg:rgb(var(--error-color"],
+html.sp .x-button[style*="--x-button-bg: #ef4444"],
+html.sp .x-button[style*="--x-button-bg: #dc2626"] {
+  --x-button-bg: var(--danger-fill) !important;
+  --x-button-bg-hover: color-mix(in srgb, var(--danger-fill) 88%, #000) !important;
+  --x-button-bg-active: color-mix(in srgb, var(--danger-fill) 80%, #000) !important;
+  --x-button-dark-bg: var(--danger-fill) !important;
+  --x-button-dark-bg-hover: color-mix(in srgb, var(--danger-fill) 88%, #000) !important;
+  --x-button-dark-bg-active: color-mix(in srgb, var(--danger-fill) 80%, #000) !important;
+  --x-button-text: #fff !important;
+  --x-button-dark-text: #fff !important;
+  --x-button-border: transparent !important;
+  --x-button-dark-border: transparent !important;
+}
+
 @media (hover: hover) {
   html.sp .x-button:not(:disabled):hover {
     transform: translateY(-1px);
@@ -1676,7 +1693,7 @@ html.sp .x-tag[style*="warning-color"] {
 
 html.sp .x-tag[style*="primary-color"] {
   color: var(--accent-ink);
-  background-color: var(--accent-soft);
+  background-color: var(--capsule-hi);
   border-color: var(--accent-line);
 }
 
@@ -1717,6 +1734,32 @@ html.sp :is(#main, [data-economy]) .x-tab-group .pointer-events-none.absolute.h-
   display: none;
 }
 
+html.sp :is(#main, [data-economy]) .x-tab-group .x-tooltip,
+html.sp :is(#main, [data-economy]) .x-tab-group .x-tab {
+  position: relative;
+  z-index: 1;
+}
+
+.sp-tabind {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  width: 100px;
+  border-radius: var(--r-pill);
+  background: var(--capsule-hi);
+  box-shadow: var(--seg-shadow);
+  transform-origin: left center;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: transform var(--d2) var(--ease), opacity var(--d1) var(--ease);
+}
+
+.sp-tabind.sp-still {
+  transition: none;
+}
+
 html.sp :is(#main, [data-economy]) .x-tab {
   display: inline-flex;
   align-items: center;
@@ -1736,10 +1779,13 @@ html.sp :is(#main, [data-economy]) .x-tab:hover {
 }
 
 html.sp :is(#main, [data-economy]) .x-tab:is(.router-link-exact-active, .router-link-active, [aria-current="page"], [aria-selected="true"], .eco-tab-on) {
-  background: var(--capsule-hi);
-  box-shadow: var(--seg-shadow);
   color: var(--ink-1);
   font-weight: 500;
+}
+
+html.sp :is(#main, [data-economy]) .x-tab-group:not(:has(.sp-tabind)) .x-tab:is(.router-link-exact-active, [aria-current="page"], [aria-selected="true"], .eco-tab-on) {
+  background: var(--capsule-hi);
+  box-shadow: var(--seg-shadow);
 }
 
 html.sp :is(#main, [data-economy]) .x-tab :is(span, div) {
@@ -1791,13 +1837,113 @@ html.sp :is(#main, [data-economy]) [_echarts_instance_] text {
 }
 
 html.sp :is(#main, [data-economy]) [_echarts_instance_] path[stroke="#E0E6F1"],
-html.sp :is(#main, [data-economy]) [_echarts_instance_] path[stroke="#e0e6f1"],
-html.sp :is(#main, [data-economy]) [_echarts_instance_] path[stroke="#6E7079"] {
+html.sp :is(#main, [data-economy]) [_echarts_instance_] path[stroke="#e0e6f1"] {
   stroke: var(--line-2);
 }
 
 html.sp :is(#main, [data-economy]) .x-container {
   max-width: none;
+}
+
+html.sp[data-sp-route="dashboard"] #main .grid.xl\:grid-cols-5 {
+  gap: 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-window);
+  background: var(--glass);
+  box-shadow: var(--glass-shadow);
+}
+
+html.sp[data-sp-route="dashboard"] #main .grid.xl\:grid-cols-5 > .rounded-md.shadow.bg-white {
+  position: relative;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+html.sp[data-sp-route="dashboard"] #main .grid.xl\:grid-cols-5 > .rounded-md.shadow.bg-white + .rounded-md.shadow.bg-white::before {
+  content: "";
+  position: absolute;
+  inset-block: 20px;
+  inset-inline-start: 0;
+  border-inline-start: 1px solid var(--line-2);
+}
+
+html.sp[data-sp-route="dashboard"] #main .grid.xl\:grid-cols-5 > .rounded-md.shadow.bg-white > .px-4.py-3 {
+  padding: 16px 20px 18px;
+}
+
+html.sp[data-sp-route="dashboard"] #main .grid.xl\:grid-cols-5 .flex.items-center.justify-between {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+html.sp[data-sp-route="dashboard"] #main .grid.xl\:grid-cols-5 .flex.items-center.justify-between + div {
+  margin-top: 6px;
+  font-size: 32px;
+  line-height: 1.25;
+  font-weight: 500;
+  color: var(--ink-1);
+}
+
+html.sp[data-sp-route="dashboard"] #main .grid.xl\:grid-cols-5 .x-input-footer {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+html.sp[data-sp-route="dashboard"] #main .grid.md\:grid-cols-2 .h-60 {
+  height: 15.5rem;
+}
+
+html.sp #main .x-badge .x-tag {
+  height: 28px;
+  padding-inline: 22px 10px;
+  border-radius: var(--r-pill);
+  background: var(--well);
+  color: var(--ink-2);
+  font-size: 12px;
+}
+
+html.sp #main .x-badge .absolute.rounded-full {
+  top: 50%;
+  bottom: auto;
+  inset-inline-start: 9px;
+  inset-inline-end: auto;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0;
+  background: var(--pos);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--pos) 22%, transparent);
+}
+
+html.sp #main .x-badge .absolute.rounded-full > * {
+  display: none;
+}
+
+html.sp #main [_echarts_instance_] text[fill="#464646"] {
+  fill: var(--ink-2);
+}
+
+html.sp #main [_echarts_instance_] path[stroke="#6b59ee"] {
+  stroke: var(--accent);
+}
+
+html.sp.dark #main [_echarts_instance_] path[stroke="#6b59ee"] {
+  stroke: var(--accent-ink);
+}
+
+html.sp #main [_echarts_instance_] linearGradient stop {
+  stop-color: var(--accent);
+}
+
+html.sp #main [_echarts_instance_] path[stroke="#e6eaef"] {
+  stroke: var(--line-2);
+}
+
+html.sp #main .monaco-editor,
+html.sp #main .monaco-editor .overflow-guard {
+  border-radius: var(--r-card);
 }
 html.sp body > div > div.fixed.inset-0.bg-secondary-900,
 html.sp div.fixed.inset-0.bg-secondary-900.opacity-60 {
@@ -1843,26 +1989,13 @@ html.sp div.fixed.inset-0.flex.justify-end > .x-form {
   overflow: hidden;
 }
 
-html.sp div.fixed.inset-0.flex.justify-end > .x-form > .text-lg.font-semibold > div {
-  padding-block: 20px 14px;
-  padding-inline: 28px 64px;
-  font-size: 20px;
-  font-weight: 600;
-  border-color: var(--line);
-}
-
-html.sp div.fixed.inset-0.flex.justify-end > .x-form > .\!absolute {
+html.sp div.fixed.inset-0.flex.justify-end > .x-form .\!absolute.top-2 {
   top: 14px;
   inset-inline-end: 14px;
 }
 
 html.sp div.fixed.inset-0.flex.justify-end > .x-form :is(.bg-white, .bg-secondary-50) {
   background: transparent;
-}
-
-html.sp div.fixed.inset-0.flex.justify-end > .x-form > .flex.gap-4.p-4 {
-  padding: 14px 28px 16px;
-  border-top: 1px solid var(--line);
 }
 
 html.sp div.fixed.inset-0.flex.justify-end > .x-form :is(input.appearance-none, textarea.appearance-none, select.appearance-none) {
@@ -1893,8 +2026,12 @@ html.sp div.fixed.inset-0.flex.justify-end > .x-form :is(.border-b, .border-t, .
   border-color: var(--line);
 }
 
-html.sp .x-modal,
-html.sp div.relative.flex.flex-col.z-10.bg-white.rounded-md.shadow-lg.transform {
+html.sp .x-modal > div.fixed.inset-0 {
+  background: var(--scrim);
+  opacity: 1;
+}
+
+html.sp .x-modal form.x-form.shadow-lg {
   border: 1px solid var(--line);
   border-radius: var(--r-window);
   background: var(--thick);
@@ -1902,10 +2039,58 @@ html.sp div.relative.flex.flex-col.z-10.bg-white.rounded-md.shadow-lg.transform 
   -webkit-backdrop-filter: var(--blur);
   backdrop-filter: var(--blur);
   color: var(--ink-1);
+  transform-origin: center top;
+  transition-timing-function: var(--ease);
 }
 
-html.sp div.relative.flex.flex-col.z-10.bg-white.rounded-md.shadow-lg.transform :is(.bg-white, .bg-secondary-50) {
+html.sp .x-modal form.x-form.shadow-lg.opacity-0 {
+  transform: scale(.96);
+}
+
+html.sp .x-modal form.x-form :is(.bg-white, .bg-secondary-50) {
   background: transparent;
+}
+
+html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > fieldset.contents > .text-lg > :is(div, .text-xl),
+html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > .text-lg > :is(div, .text-xl) {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > fieldset.contents > .text-lg,
+html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > .text-lg {
+  padding-block: 20px 14px;
+  padding-inline: 28px 64px;
+  border-color: var(--line);
+}
+
+html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > fieldset.contents > .text-lg > div.border-b,
+html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > .text-lg > div.border-b {
+  padding: 0;
+  border: 0;
+}
+
+html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > fieldset.contents > .flex.gap-4.p-4.justify-end,
+html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > .flex.gap-4.p-4.justify-end {
+  padding: 14px 28px 16px;
+  border-top: 1px solid var(--line);
+  background: transparent;
+}
+
+html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form :is(.border-b, .border-t, .border) {
+  border-color: var(--line);
+}
+
+html.sp .x-modal .x-form :is(input.appearance-none, textarea.appearance-none) {
+  min-height: 44px;
+  border-color: var(--line);
+  border-radius: var(--r-field);
+  background-color: var(--well);
+  color: var(--ink-1);
+}
+
+html.sp .x-modal .x-form :is(.text-secondary-500, .text-secondary-600, .text-secondary-700) {
+  color: var(--ink-2);
 }
 
 html.sp .v-popper__popper .v-popper__inner {
@@ -1949,6 +2134,12 @@ html.sp .x-notifications > * > * {
   -webkit-backdrop-filter: var(--blur);
   backdrop-filter: var(--blur);
   color: var(--ink-1);
+}
+
+html.sp .x-form .even\:bg-secondary-50:nth-child(even),
+html.sp :is(#main, [data-economy]) .even\:bg-secondary-50:nth-child(even) {
+  background-color: var(--well);
+  border-radius: var(--r-control);
 }
 html.sp .eco-tag {
   border-radius: var(--r-pill);

@@ -43,6 +43,7 @@ export function bundle() {
 
 export function cssClasses(css) {
   const out = new Set();
+  css = css.replace(/url\([^)]*\)/g, '');
   for (const m of css.matchAll(/\.((?:\\.|[A-Za-z_])(?:\\.|[A-Za-z0-9_-])*)/g)) out.add(m[1].replace(/\\(.)/g, '$1'));
   return out;
 }
