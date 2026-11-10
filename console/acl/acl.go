@@ -80,6 +80,9 @@ func (p Permission) IsNone() bool {
 }
 
 func (p Permission) IsAdmin() bool {
+	if len(p.bitmap) == 0 {
+		return false
+	}
 	for _, b := range p.bitmap {
 		if b != 0xFF {
 			return false
@@ -174,6 +177,12 @@ func CheckACLHttp(method, path string, userPermissions Permission) bool {
 		requiredPermissions = NewPermission(console.AclResources_HIRO_STATS, PermissionWrite)
 	case method == http.MethodPost && path == "/v2/console/hiro/energy/{user_id}": // HiroEnergyGrant
 		requiredPermissions = NewPermission(console.AclResources_HIRO_ENERGY, PermissionWrite)
+	case method == http.MethodGet && path == "/v2/console/hiro/streaks/{user_id}": // HiroStreaksList
+		requiredPermissions = NewPermission(console.AclResources_HIRO_STREAKS, PermissionRead)
+	case method == http.MethodPost && path == "/v2/console/hiro/streaks/{user_id}": // HiroStreaksRevert
+		requiredPermissions = NewPermission(console.AclResources_HIRO_STREAKS, PermissionWrite)
+	case method == http.MethodPut && path == "/v2/console/hiro/streaks/{user_id}": // HiroStreaksSet
+		requiredPermissions = NewPermission(console.AclResources_HIRO_STREAKS, PermissionWrite)
 	case method == http.MethodGet && strings.HasPrefix(path, "/v2/console/economy/"):
 		requiredPermissions = NewPermission(console.AclResources_HIRO_ECONOMY, PermissionRead)
 	case method != "" && strings.HasPrefix(path, "/v2/console/economy/"):
@@ -434,10 +443,21 @@ func New(acl map[string]*console.Permissions) Permission {
 // Create Permission from raw bitmap bytes.
 // Do not use for JSON deserialization. Use NewFromJson instead.
 func NewFromBytes(b []byte) Permission {
-	if len(b) != byteCount {
-		return None()
+	// Tokens issued before resources were appended carry a shorter bitmap: zero-extend it so new
+	// resources start without access, except admin (every bit set), which must stay admin.
+	// Tokens issued by a newer version, after a rollback or during a rolling deploy, carry a longer
+	// one: truncate it to the resources this version knows and clear the padding bits, which a
+	// limited user's bitmap never sets here.
+	if (Permission{bitmap: b}).IsAdmin() {
+		return Admin()
 	}
-	return Permission{bitmap: b}
+	bitmap := make([]byte, byteCount)
+	copy(bitmap, b)
+	if len(b) > byteCount {
+		paddingBits := byteCount*8 - len(console.AclResources_value)*3
+		bitmap[byteCount-1] &^= byte(1<<paddingBits - 1)
+	}
+	return Permission{bitmap: bitmap}
 }
 
 func (p Permission) ACL() map[string]*console.Permissions {

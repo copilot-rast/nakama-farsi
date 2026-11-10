@@ -49,8 +49,8 @@ export function extractIcons(bundle, names) {
   const icons = {};
   for (const name of names) {
     const key = /^[a-z][a-z0-9]*$/.test(name) ? `(?:"${name}"|\\b${name})` : `"${name}"`;
-    const m = new RegExp(`${key}:(?:\\{icon:)?'(<[^']*)'`).exec(bundle);
-    if (m) icons[name] = m[1];
+    const m = new RegExp(`${key}:(?:\\{icon:)?(?:'(<[^']*)'|\`(<[^\`]*)\`)`).exec(bundle);
+    if (m) icons[name] = m[1] ?? m[2];
   }
   return icons;
 }
