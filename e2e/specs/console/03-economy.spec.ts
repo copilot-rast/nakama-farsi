@@ -1,11 +1,12 @@
 import { expect, test } from '../../lib/fixtures';
-import { deleteUser, devicePlayer, eco, rpc, uid } from '../../lib/api';
+import { base, deleteUser, devicePlayer, eco, rpc, uid } from '../../lib/api';
 import { restoreConfig } from '../../lib/db';
 import { field, fillTranslated, go, open, panel, pickRef, root, rows, savePanel, search, settle, settlePanel, toasts } from '../../lib/console';
 
 const k = uid();
 const ids: Record<string, string> = {};
 const players: string[] = [];
+const taxo: { categories: string[]; tags: string[] } = { categories: [], tags: [] };
 
 test.describe.configure({ mode: 'serial' });
 
@@ -15,7 +16,24 @@ test.afterAll(async () => {
     if (id) await eco.del('/' + r.split(':')[0] + '/' + id);
   }
   for (const p of players) await deleteUser(p);
+  for (const id of taxo.tags) await base.del('/tags/' + id);
+  for (const id of taxo.categories) await base.del('/categories/' + id);
 });
+
+async function quickCreate(page: import('@playwright/test').Page, label: RegExp, resource: 'categories' | 'tags', name: string) {
+  const f = field(panel(page), label);
+  await f.locator(`[data-quick-create="${resource}"]`).click();
+  const pop = f.locator('.eco-qc-pop');
+  await expect(pop).toBeVisible();
+  await pop.locator('input').fill(name);
+  await pop.locator('[data-qc-create]').click();
+  await expect(pop).toBeHidden();
+  const r = await base.get(`/${resource}?q=${encodeURIComponent(name)}&limit=10`);
+  const item = r.items.find((x: any) => x.name?.fa === name);
+  expect(item).toBeTruthy();
+  taxo[resource].push(item.id);
+  return item;
+}
 
 async function byKey(resource: string, key: string, prop = 'key') {
   const r = await eco.get(`/${resource}?q=${encodeURIComponent(key)}&limit=10`);
@@ -195,6 +213,64 @@ test.describe('economy', () => {
     await expect(rRow).toContainText('جایزه');
     await expect(dRow).toContainText('تخفیف');
     await expect(dRow).toContainText('۳۰٪');
+  });
+
+  test('currency and gift: category and tag pickers by key type, quick-create, list column and catalog', async ({ page }) => {
+    const curCat = await base.post('/categories', { key: k + '_cc', keyType: 'currency', name: { fa: 'ارز ویژه ' + k } });
+    const prodCat = await base.post('/categories', { key: k + '_pc', keyType: 'product', name: { fa: 'ارز محصول ' + k } });
+    const general = await base.post('/tags', { key: k + '_gt', keyType: 'general', name: { fa: 'همه‌جا ' + k } });
+    taxo.categories.push(curCat.id, prodCat.id);
+    taxo.tags.push(general.id);
+
+    await open(page, '#/economy/currencies/' + ids.currencies);
+    await settlePanel(page);
+    let p = panel(page);
+    const catField = field(p, /^دسته‌بندی$/);
+    await catField.locator('button[aria-haspopup="listbox"]').first().click();
+    const pop = catField.locator('.eco-pop').first();
+    await pop.locator('input').fill('ارز');
+    await expect(pop.locator('[role="option"]', { hasText: 'ارز ویژه ' + k })).toBeVisible();
+    await expect(pop.locator('[role="option"]', { hasText: 'ارز محصول ' + k })).toHaveCount(0);
+    await pop.locator('[role="option"]', { hasText: 'ارز ویژه ' + k }).click();
+    const tagName = 'تگ ارز ' + k;
+    const curTag = await quickCreate(page, /^تگ‌ها$/, 'tags', tagName);
+    expect(curTag.keyType).toBe('currency');
+    await savePanel(page);
+    const c = await eco.get('/currencies/' + ids.currencies);
+    expect(c.categoryId).toBe(curCat.id);
+    expect(c.tagIds).toEqual([curTag.id]);
+    await search(page, k + 'c');
+    await expect(rows(page).first().locator('[data-taxonomy]')).toContainText('ارز ویژه ' + k);
+    await expect(rows(page).first().locator('[data-taxonomy]')).toContainText(tagName);
+
+    const player = await devicePlayer('e2e-tax-' + k);
+    players.push(player.id);
+    const cat = await rpc(player, 'economy_catalog', { lang: 'fa' });
+    const cur = cat.data.currencies.find((x: any) => x.key === k + 'c');
+    expect(cur).toMatchObject({ categoryKey: k + '_cc', tags: [curTag.key] });
+
+    await open(page, '#/economy/gifts/' + ids['gifts:reward']);
+    await settlePanel(page);
+    p = panel(page);
+    const giftCat = await quickCreate(page, /^دسته‌بندی$/, 'categories', 'دسته هدیه ' + k);
+    expect(giftCat.keyType).toBe('gift');
+    const giftTag = await quickCreate(page, /^تگ‌ها$/, 'tags', 'تگ هدیه ' + k);
+    expect(giftTag.keyType).toBe('gift');
+    const tagsField = field(p, /^تگ‌ها$/);
+    await tagsField.locator('button[aria-haspopup="listbox"]').first().click();
+    const tpop = tagsField.locator('.eco-pop').first();
+    await tpop.locator('input').fill(k);
+    await expect(tpop.locator('[role="option"]', { hasText: 'همه‌جا ' + k })).toBeVisible();
+    await expect(tpop.locator('[role="option"]', { hasText: tagName })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await savePanel(page);
+    const g = await eco.get('/gifts/' + ids['gifts:reward']);
+    expect(g.categoryId).toBe(giftCat.id);
+    expect(g.tagIds).toEqual([giftTag.id]);
+    await go(page, '#/economy/gifts?categoryId=' + giftCat.id);
+    await expect(rows(page)).toHaveCount(1);
+    await expect(rows(page).first().locator('[data-taxonomy]')).toContainText('دسته هدیه ' + k);
+    await expect(rows(page).first().locator('[data-taxonomy]')).toContainText('تگ هدیه ' + k);
   });
 
   test('payment methods page masks secrets and keeps them on save', async ({ page }) => {

@@ -408,7 +408,7 @@ function stepCurrency(box) {
       clear(top);
       if (!form.validate()) return false;
       var payload = form.payload();
-      var body = current ? { key: current.key, type: current.type, name: current.name, defaultValue: current.defaultValue, iconUrl: current.iconUrl, metadata: current.metadata || {}, sort: current.sort || 0 } : { metadata: {}, sort: 0 };
+      var body = current ? { key: current.key, type: current.type, name: current.name, defaultValue: current.defaultValue, iconUrl: current.iconUrl, categoryId: current.categoryId || null, tagIds: current.tagIds || [], metadata: current.metadata || {}, sort: current.sort || 0 } : { metadata: {}, sort: 0 };
       Object.keys(payload).forEach(function (k) { body[k] = payload[k]; });
       if (body.iconUrl == null) body.iconUrl = '';
       return api(current ? 'PUT' : 'POST', '/currencies' + (current ? '/' + encodeURIComponent(current.id) : ''), body).then(function (saved) {

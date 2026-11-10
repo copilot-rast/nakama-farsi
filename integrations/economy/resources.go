@@ -27,9 +27,9 @@ func resources() []resource {
 		{
 			name:    "currencies",
 			table:   "economy_currency",
-			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'type',t.type,'defaultValue',t.default_value,'iconUrl',t.icon_url,'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`,
+			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'type',t.type,'defaultValue',t.default_value,'iconUrl',t.icon_url,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`,
 			search:  []string{"t.key", translatedSearch("t.name")},
-			filters: map[string]string{"type": "t.type = ?"},
+			filters: map[string]string{"type": "t.type = ?", "categoryId": "t.category_id::text = ?"},
 			save:    saveCurrency,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
 				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_currency c JOIN economy_product p ON p.coin_price->>'currencyKey' = c.key WHERE c.id=$1)
@@ -72,9 +72,9 @@ func resources() []resource {
 		{
 			name:    "gifts",
 			table:   "economy_gift",
-			json:    `jsonb_build_object('id',t.id,'name',t.name,'type',t.type,'code',t.code,'prizeId',t.prize_id,'discountPercent',t.discount_percent,'isPromo',t.is_promo,'perUserLimit',t.per_user_limit,'maxTotalUses',t.max_total_uses,'totalUsed',t.total_used,'validFrom',t.valid_from,'expireAt',t.expire_at,'isActive',t.is_active,'createdAt',t.created_at,'updatedAt',t.updated_at)`,
+			json:    `jsonb_build_object('id',t.id,'name',t.name,'type',t.type,'code',t.code,'prizeId',t.prize_id,'discountPercent',t.discount_percent,'isPromo',t.is_promo,'perUserLimit',t.per_user_limit,'maxTotalUses',t.max_total_uses,'totalUsed',t.total_used,'validFrom',t.valid_from,'expireAt',t.expire_at,'isActive',t.is_active,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'createdAt',t.created_at,'updatedAt',t.updated_at)`,
 			search:  []string{translatedSearch("t.name"), "t.code"},
-			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "type": "t.type = ?"},
+			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "type": "t.type = ?", "categoryId": "t.category_id::text = ?"},
 			save:    saveGift,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
 				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_gift_use WHERE gift_id=$1) OR EXISTS (SELECT 1 FROM economy_payment WHERE gift_id=$1)`)
@@ -376,6 +376,8 @@ func saveCurrency(s *service, ctx context.Context, tx *sql.Tx, id string, create
 		Type         string          `json:"type"`
 		DefaultValue int64           `json:"defaultValue"`
 		IconURL      string          `json:"iconUrl"`
+		CategoryID   string          `json:"categoryId"`
+		TagIDs       []string        `json:"tagIds"`
 		Metadata     json.RawMessage `json:"metadata"`
 		Sort         int             `json:"sort"`
 	}
@@ -414,8 +416,19 @@ func saveCurrency(s *service, ctx context.Context, tx *sql.Tx, id string, create
 	if err != nil {
 		return err
 	}
-	return execSave(ctx, tx, "economy_currency", id, create, []string{"key", "name", "type", "default_value", "icon_url", "metadata", "sort"},
-		[]any{key, i18nJSON(name), in.Type, in.DefaultValue, icon, meta, in.Sort})
+	category, err := cleanUUID("categoryId", in.CategoryID, false)
+	if err != nil {
+		return err
+	}
+	if err := checkCategory(ctx, tx, category, "currency"); err != nil {
+		return err
+	}
+	tags, err := checkTags(ctx, tx, in.TagIDs, "currency")
+	if err != nil {
+		return err
+	}
+	return execSave(ctx, tx, "economy_currency", id, create, []string{"key", "name", "type", "default_value", "icon_url", "category_id", "tag_ids", "metadata", "sort"},
+		[]any{key, i18nJSON(name), in.Type, in.DefaultValue, icon, category, tags, meta, in.Sort})
 }
 
 func saveMeta(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
@@ -722,17 +735,19 @@ func saveProduct(s *service, ctx context.Context, tx *sql.Tx, id string, create 
 
 func saveGift(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
 	var in struct {
-		Name            i18n    `json:"name"`
-		Type            string  `json:"type"`
-		Code            *string `json:"code"`
-		PrizeID         string  `json:"prizeId"`
-		DiscountPercent *int    `json:"discountPercent"`
-		IsPromo         bool    `json:"isPromo"`
-		PerUserLimit    *int    `json:"perUserLimit"`
-		MaxTotalUses    *int    `json:"maxTotalUses"`
-		ValidFrom       string  `json:"validFrom"`
-		ExpireAt        string  `json:"expireAt"`
-		IsActive        *bool   `json:"isActive"`
+		Name            i18n     `json:"name"`
+		Type            string   `json:"type"`
+		Code            *string  `json:"code"`
+		PrizeID         string   `json:"prizeId"`
+		DiscountPercent *int     `json:"discountPercent"`
+		IsPromo         bool     `json:"isPromo"`
+		PerUserLimit    *int     `json:"perUserLimit"`
+		MaxTotalUses    *int     `json:"maxTotalUses"`
+		ValidFrom       string   `json:"validFrom"`
+		ExpireAt        string   `json:"expireAt"`
+		IsActive        *bool    `json:"isActive"`
+		CategoryID      string   `json:"categoryId"`
+		TagIDs          []string `json:"tagIds"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -803,7 +818,18 @@ func saveGift(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	if in.IsActive != nil {
 		active = *in.IsActive
 	}
+	category, err := cleanUUID("categoryId", in.CategoryID, false)
+	if err != nil {
+		return err
+	}
+	if err := checkCategory(ctx, tx, category, "gift"); err != nil {
+		return err
+	}
+	tags, err := checkTags(ctx, tx, in.TagIDs, "gift")
+	if err != nil {
+		return err
+	}
 	return execSave(ctx, tx, "economy_gift", id, create,
-		[]string{"name", "type", "code", "prize_id", "discount_percent", "is_promo", "per_user_limit", "max_total_uses", "valid_from", "expire_at", "is_active"},
-		[]any{i18nJSON(name), in.Type, code, prize, percent, in.IsPromo, perUser, in.MaxTotalUses, from, expire, active})
+		[]string{"name", "type", "code", "prize_id", "discount_percent", "is_promo", "per_user_limit", "max_total_uses", "valid_from", "expire_at", "is_active", "category_id", "tag_ids"},
+		[]any{i18nJSON(name), in.Type, code, prize, percent, in.IsPromo, perUser, in.MaxTotalUses, from, expire, active, category, tags})
 }

@@ -3525,7 +3525,7 @@ var METHODS = ['zarinpal', 'zibal', 'bazaar', 'myket', 'in_app'];
 var GATEWAYS = ['zarinpal', 'zibal'];
 var STORES = ['bazaar', 'myket'];
 var CATEGORY_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news'];
-var TAG_KEY_TYPES = ['product', 'prize', 'news', 'faq', 'general', 'user'];
+var TAG_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'news', 'faq', 'general', 'user'];
 var LANG_CODE_RE = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/;
 var keyTypeCache = {};
 var keyTypePromise = null;
@@ -3581,6 +3581,44 @@ function nameCell(it, withIcon) {
   if (it.iconUrl) pic.appendChild(img(it.iconUrl));
   else pic.appendChild(icon('image', 'h-4 w-4'));
   return h('div', { class: 'flex items-center gap-3 min-w-0' }, pic, text);
+}
+
+var taxonomyNames = { categories: {}, tags: {} };
+var taxonomyPending = { categories: {}, tags: {} };
+
+function taxonomyLookup(kind, id) {
+  if (taxonomyNames[kind][id]) return Promise.resolve(taxonomyNames[kind][id]);
+  if (!taxonomyPending[kind][id]) {
+    taxonomyPending[kind][id] = baseApi('GET', '/' + kind + '/' + encodeURIComponent(id)).then(function (res) {
+      taxonomyNames[kind][id] = res;
+      return res;
+    }, function () { delete taxonomyPending[kind][id]; return null; });
+  }
+  return taxonomyPending[kind][id];
+}
+
+function taxonomyCell(it) {
+  var box = h('div', { class: 'flex flex-wrap gap-1', 'data-taxonomy': '' });
+  var ids = (it.tagIds || []).slice(0, 3);
+  function paint() {
+    clear(box);
+    var cat = it.categoryId ? taxonomyNames.categories[it.categoryId] : null;
+    if (cat) box.appendChild(tag(i18nText(cat.name) || cat.key, 'secondary'));
+    ids.forEach(function (id) {
+      var tg = taxonomyNames.tags[id];
+      if (tg) box.appendChild(tag(i18nText(tg.name) || tg.key, 'primary'));
+    });
+    if ((it.tagIds || []).length > 3) box.appendChild(tag('+' + fmtNum(it.tagIds.length - 3), 'secondary'));
+    if (!box.childNodes.length) box.appendChild(h('span', { class: 'text-secondary-400', text: t('none') }));
+  }
+  var jobs = [];
+  if (it.categoryId && !taxonomyNames.categories[it.categoryId]) jobs.push(taxonomyLookup('categories', it.categoryId));
+  ids.forEach(function (id) { if (!taxonomyNames.tags[id]) jobs.push(taxonomyLookup('tags', id)); });
+  if (jobs.length) {
+    box.appendChild(bar('4rem', 'h-4'));
+    Promise.all(jobs).then(paint);
+  } else paint();
+  return box;
 }
 
 function numCell(v) {
@@ -3652,9 +3690,11 @@ function languagesChanged() {
 
 var RESOURCES = {
   currencies: {
+    filters: [{ name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'currency' } }],
     columns: [
       { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '60%' },
       { label: 'col.type', render: function (it) { return tag(t('type.' + it.type), it.type === 'hard' ? 'warning' : 'primary'); }, width: 110 },
+      { label: 'col.category', render: taxonomyCell, skeleton: '30%' },
       { label: 'col.default', render: function (it) { return numCell(it.defaultValue); }, width: 130 },
       { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 90 },
       { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
@@ -3665,6 +3705,7 @@ var RESOURCES = {
         { name: 'type', type: 'select', label: 'f.type', required: true, options: opts('type.', ['soft', 'hard']) }
       ] },
       tr('name', { required: true, max: 128 }),
+      { type: 'row', fields: [categoryField('currency'), tagsField('currency')] },
       { type: 'row', fields: [
         { name: 'defaultValue', type: 'number', label: 'f.defaultValue', hint: 'f.defaultValue.currency.hint', min: 0 },
         { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
@@ -3672,7 +3713,7 @@ var RESOURCES = {
       { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function () { return { type: 'soft', name: {}, defaultValue: 0, sort: 0, metadata: {} }; }
+    defaults: function () { return { type: 'soft', name: {}, categoryId: null, tagIds: [], defaultValue: 0, sort: 0, metadata: {} }; }
   },
   metas: {
     columns: [
@@ -3769,10 +3810,14 @@ var RESOURCES = {
     }
   },
   gifts: {
-    filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
+    filters: [
+      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'gift' } },
+      { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }
+    ],
     columns: [
       { label: 'col.name', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.name) }), it.code ? h('div', { class: 'text-secondary-500' }, mono(it.code)) : null); }, skeleton: '50%' },
       { label: 'col.type', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, tag(t('gift.' + it.type), it.type === 'discount' ? 'warning' : 'primary'), it.type === 'discount' && it.discountPercent ? tag(t('percent', { n: it.discountPercent }), 'secondary') : null); }, width: 150 },
+      { label: 'col.category', render: taxonomyCell, skeleton: '30%' },
       { label: 'col.usage', render: function (it) { return h('span', { class: 'tabular-nums whitespace-nowrap', text: fmtNum(it.totalUsed || 0) + ' / ' + (it.maxTotalUses ? fmtNum(it.maxTotalUses) : t('unlimited')) }); }, width: 130 },
       { label: 'col.expire', render: function (it) { return dateCell(it.expireAt); }, width: 190 },
       { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 }
@@ -3780,6 +3825,7 @@ var RESOURCES = {
     fields: [
       tr('name', { label: 'f.gift.name', required: true, max: 128 }),
       { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' },
+      { type: 'row', fields: [categoryField('gift'), tagsField('gift')] },
       { type: 'row', fields: [
         { name: 'type', type: 'select', label: 'f.type', required: true, options: opts('gift.', ['reward', 'discount']) },
         { name: 'code', type: 'code', label: 'f.code', hint: 'f.code.hint', optional: true, check: function (c, v) { return v.type === 'discount' && !c ? t('code.CODE_REQUIRED') : null; } }
@@ -3797,7 +3843,7 @@ var RESOURCES = {
       { name: 'isPromo', type: 'bool', inline: true, label: 'f.isPromo' },
       { name: 'totalUsed', type: 'static', label: 'f.totalUsed', readonly: true, when: function (v) { return !!v.id; }, render: function (v) { return numCell(v.totalUsed || 0); } }
     ],
-    defaults: function () { return { name: {}, type: 'reward', isActive: true, isPromo: false, perUserLimit: 1, maxTotalUses: null, code: '' }; },
+    defaults: function (query) { return { name: {}, type: 'reward', isActive: true, isPromo: false, perUserLimit: 1, maxTotalUses: null, code: '', categoryId: (query && query.categoryId) || null, tagIds: [] }; },
     fixPayload: function (p) { if (p.code === '') p.code = null; return p; }
   },
   categories: {
@@ -6771,7 +6817,7 @@ function stepCurrency(box) {
       clear(top);
       if (!form.validate()) return false;
       var payload = form.payload();
-      var body = current ? { key: current.key, type: current.type, name: current.name, defaultValue: current.defaultValue, iconUrl: current.iconUrl, metadata: current.metadata || {}, sort: current.sort || 0 } : { metadata: {}, sort: 0 };
+      var body = current ? { key: current.key, type: current.type, name: current.name, defaultValue: current.defaultValue, iconUrl: current.iconUrl, categoryId: current.categoryId || null, tagIds: current.tagIds || [], metadata: current.metadata || {}, sort: current.sort || 0 } : { metadata: {}, sort: 0 };
       Object.keys(payload).forEach(function (k) { body[k] = payload[k]; });
       if (body.iconUrl == null) body.iconUrl = '';
       return api(current ? 'PUT' : 'POST', '/currencies' + (current ? '/' + encodeURIComponent(current.id) : ''), body).then(function (saved) {

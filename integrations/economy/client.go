@@ -48,17 +48,17 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 		return nil, err
 	}
 	currencies := []map[string]any{}
-	rows, err := s.db.QueryContext(ctx, `SELECT key, name::text, type, icon_url FROM economy_currency ORDER BY sort, key`)
+	rows, err := s.db.QueryContext(ctx, `SELECT t.key, t.name::text, t.type, t.icon_url, `+taxonomyKeysSQL("currency")+` FROM economy_currency t ORDER BY t.sort, t.key`)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		var key, name, typ, icon string
-		if err := rows.Scan(&key, &name, &typ, &icon); err != nil {
+		var key, name, typ, icon, catKey, tagsRaw string
+		if err := rows.Scan(&key, &name, &typ, &icon, &catKey, &tagsRaw); err != nil {
 			rows.Close()
 			return nil, err
 		}
-		currencies = append(currencies, map[string]any{"key": key, "name": langs.Resolve(localized.Parse(name), lang), "type": typ, "iconUrl": icon})
+		currencies = append(currencies, map[string]any{"key": key, "name": langs.Resolve(localized.Parse(name), lang), "type": typ, "iconUrl": icon, "categoryKey": catKey, "tags": tagKeyList(tagsRaw)})
 	}
 	rows.Close()
 
@@ -321,7 +321,26 @@ func (s *service) rpcGiftRedeem(ctx context.Context, userID, payload string) (an
 		})
 		return nil, err
 	}
-	return map[string]any{"rewards": rewards}, nil
+	out := map[string]any{"rewards": rewards}
+	langs, lang, err := localized.ForUser(ctx, s.db, userID, "")
+	if err != nil {
+		return out, nil
+	}
+	var name, catKey, tagsRaw string
+	if err := s.db.QueryRowContext(ctx, `SELECT t.name::text, `+taxonomyKeysSQL("gift")+` FROM economy_gift t JOIN economy_gift_use u ON u.gift_id=t.id WHERE u.id=$1`, useID).Scan(&name, &catKey, &tagsRaw); err == nil {
+		out["gift"] = map[string]any{"name": langs.Resolve(localized.Parse(name), lang), "categoryKey": catKey, "tags": tagKeyList(tagsRaw), "lang": lang}
+	}
+	return out, nil
+}
+
+func taxonomyKeysSQL(keyType string) string {
+	return `COALESCE((SELECT c.key FROM base_category c WHERE c.id=t.category_id),''), COALESCE((SELECT jsonb_agg(g.key ORDER BY g.sort, g.key) FROM base_tag g WHERE g.id::text = ANY(t.tag_ids) AND g.key_type IN ('` + keyType + `','general')),'[]'::jsonb)::text`
+}
+
+func tagKeyList(raw string) []string {
+	out := []string{}
+	_ = json.Unmarshal([]byte(raw), &out)
+	return out
 }
 
 func (s *service) checkLevel(ctx context.Context, userID string, minLevel int) error {

@@ -211,7 +211,7 @@ func TestCategoriesAndTagsConsole(t *testing.T) {
 		t.Fatalf("key types = %v", types)
 	}
 	tt := items(h.mustAPI(200, http.MethodGet, "/tags/key-types", nil))
-	if len(tt) != 6 || tt[4]["key"] != "general" || tt[5]["key"] != "user" || tt[5]["name"].(map[string]any)["fa"] != "بازیکن" || tt[5]["name"].(map[string]any)["en"] != "Player" {
+	if len(tt) != 8 || tt[2]["key"] != "gift" || tt[3]["key"] != "currency" || tt[6]["key"] != "general" || tt[7]["key"] != "user" || tt[7]["name"].(map[string]any)["fa"] != "بازیکن" || tt[7]["name"].(map[string]any)["en"] != "Player" {
 		t.Fatalf("tag key types = %v", tt)
 	}
 	for _, kt := range types {
@@ -247,7 +247,7 @@ func TestCategoriesAndTagsConsole(t *testing.T) {
 
 	tag := h.mustAPI(201, http.MethodPost, "/tags", map[string]any{"keyType": "general", "key": "hot", "name": map[string]string{"fa": "داغ", "en": "Hot"}})
 	h.mustAPI(201, http.MethodPost, "/tags", map[string]any{"keyType": "news", "key": "hot", "name": map[string]string{"fa": "داغ"}})
-	h.expectError(400, "INVALID_KEY_TYPE", http.MethodPost, "/tags", map[string]any{"keyType": "gift", "key": "g", "name": map[string]string{"fa": "x"}})
+	h.expectError(400, "INVALID_KEY_TYPE", http.MethodPost, "/tags", map[string]any{"keyType": "shop", "key": "g", "name": map[string]string{"fa": "x"}})
 	vip := h.mustAPI(201, http.MethodPost, "/tags", map[string]any{"keyType": "user", "key": "vip", "name": map[string]string{"fa": "ویژه", "en": "VIP"}})
 	if vip["keyType"] != "user" {
 		t.Fatalf("user tag = %v", vip)
@@ -338,7 +338,7 @@ func TestClientRPCsResolveLanguage(t *testing.T) {
 	if tags := items(h.mustRPC(faUser, "base_tags", map[string]any{})); len(tags) != 3 {
 		t.Fatalf("all tags = %v", tags)
 	}
-	if code := h.rpcCode(faUser, "base_tags", map[string]any{"keyType": "gift"}); code != "INVALID_KEY_TYPE" {
+	if code := h.rpcCode(faUser, "base_tags", map[string]any{"keyType": "shop"}); code != "INVALID_KEY_TYPE" {
 		t.Fatal(code)
 	}
 	h.mustAPI(201, http.MethodPost, "/tags", map[string]any{"keyType": "user", "key": "cheater", "name": map[string]string{"fa": "متقلب"}})

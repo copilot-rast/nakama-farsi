@@ -230,3 +230,36 @@ func TestCountriesPostgres(t *testing.T) {
 	}
 	h.mustAPI(http.StatusOK, http.MethodDelete, "/countries/XA", nil)
 }
+
+func TestGiftAndCurrencyTaxonomyInUse(t *testing.T) {
+	h := newHarness(t)
+	cat := h.mustAPI(http.StatusCreated, http.MethodPost, "/categories", map[string]any{"key": "premium", "keyType": "currency", "name": map[string]any{"fa": "ویژه"}})
+	tg := h.mustAPI(http.StatusCreated, http.MethodPost, "/tags", map[string]any{"key": "spring", "keyType": "gift", "name": map[string]any{"fa": "بهار"}})
+	h.mustAPI(http.StatusCreated, http.MethodPost, "/tags", map[string]any{"key": "shiny", "keyType": "currency", "name": map[string]any{"fa": "براق"}})
+	types := h.mustAPI(http.StatusOK, http.MethodGet, "/tags/key-types", nil)
+	keys := map[string]bool{}
+	for _, it := range types["items"].([]any) {
+		keys[it.(map[string]any)["key"].(string)] = true
+	}
+	if !keys["gift"] || !keys["currency"] {
+		t.Fatalf("tag key types = %v", types)
+	}
+	if _, err := h.s.db.Exec(`DELETE FROM economy_currency WHERE key='e2e_tax'`); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _, _ = h.s.db.Exec(`DELETE FROM economy_currency WHERE key='e2e_tax'`) })
+	if _, err := h.s.db.Exec(`INSERT INTO economy_currency (id, key, name, type, category_id, tag_ids) VALUES (gen_random_uuid(), 'e2e_tax', '{"fa":"x"}', 'soft', $1, ARRAY[$2::text])`, cat["id"], tg["id"]); err != nil {
+		t.Fatal(err)
+	}
+	h.expectError(http.StatusConflict, "IN_USE", http.MethodDelete, "/categories/"+cat["id"].(string), nil)
+	h.mustAPI(http.StatusOK, http.MethodDelete, "/tags/"+tg["id"].(string), nil)
+	var left int
+	if err := h.s.db.QueryRow(`SELECT cardinality(tag_ids) FROM economy_currency WHERE key='e2e_tax'`).Scan(&left); err != nil || left != 0 {
+		t.Fatalf("deleted tag must leave tag_ids: %d %v", left, err)
+	}
+	user := h.user("fa")
+	out := h.mustRPC(user, "base_tags", map[string]any{"keyType": "currency"})
+	if len(items(out)) != 1 || items(out)[0]["key"] != "shiny" {
+		t.Fatalf("currency tags for clients = %v", out)
+	}
+}
