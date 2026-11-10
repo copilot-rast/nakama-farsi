@@ -84,3 +84,37 @@ Console JSON:
 Translated-text errors on every module: 400 `INVALID_LANGUAGE` (key is not an existing language code), `DEFAULT_LANGUAGE_REQUIRED`, `TEXT_TOO_LONG`, each with `field`. Clients must send only codes from `GET /languages` (drop keys of deleted languages before saving).
 
 Client RPC outputs: `base_languages` → `{default, lang, items:[{code, name, nativeName, direction, iconUrl, isDefault}]}` (`name` falls back to `nativeName`); `base_set_language` → `{lang}` or `LANGUAGE_NOT_AVAILABLE`; `base_categories` (`keyType` required, else `INVALID_KEY_TYPE`) and `base_tags` (`keyType` optional; a key type also returns `general` tags) → `{lang, items:[{key, keyType, name, description, iconUrl, metadata, sort}]}` ordered by `sort`, `key`.
+
+## Branding and setup wizard
+
+Per-server console branding plus a first-login setup wizard. Both live in the base plugin; the wizard writes only through the existing APIs (base languages, economy currencies and payment methods, publication providers), so everything it sets stays editable from the normal pages.
+
+### Data (`20261110000000-base-brand-setup.sql`, Up re-runnable, Down raises)
+
+- `base_brand` (single row, `id = 1`): `name jsonb` (translated), `short_name`, `logo_url`, `logo_dark_url`, `mark_url` (favicon and collapsed-sidebar mark), `accent` (`''` or `#rrggbb`), `welcome jsonb` (translated sign-in text), `updated_by`, `updated_at`. Empty row = the stock Nakama look.
+- `base_setup` (single row, `id = 1`): `status` (`pending` | `in_progress` | `completed` | `skipped`), `steps jsonb` (`{brand|languages|currency|payment|sms|email: "done"|"skipped"}`; missing = not touched), `first_opened_by/at`, `completed_by/at`, `updated_by/at`. Seeded `pending`, so an upgraded server shows the wizard once to the first admin who signs in.
+
+### Console API
+
+| Route | ACL | Notes |
+|---|---|---|
+| `GET /v2/console/base/brand` | `SETTINGS` read | full brand incl. `updatedBy` |
+| `PUT /v2/console/base/brand` | `SETTINGS` write | full replace; `{}` resets to defaults. Body `{name, shortName (≤24), logoUrl, logoDarkUrl, markUrl, accent, welcome}`; `name` ≤64 and `welcome` ≤280 per language, translated-text rules apply (default language required once any value is set). Errors `INVALID_COLOR`, `INVALID_URL`, `TEXT_TOO_LONG`, `INVALID_LANGUAGE`, `DEFAULT_LANGUAGE_REQUIRED` with `field`. Accent accepts `#rgb`/`#rrggbb`, stored lower-case `#rrggbb`. |
+| `GET /v2/console/base/brand/public` | none | the only unauthenticated console route: `server/console_public.go` allow-lists exact path + GET/HEAD and strips identity headers. Non-secret fields only, `Cache-Control: public, max-age=60, stale-while-revalidate=300`, `ETag` + `If-None-Match` → 304. |
+| `GET /v2/console/base/setup` | `SETTINGS` read | `{status, steps, nextStep, stepOrder, firstOpenedBy/At, completedBy/At, updatedBy/At}`; `nextStep` is the first step not done/skipped, else `review`. |
+| `PUT /v2/console/base/setup` | `SETTINGS` write | `{status?, steps?}`; steps merge (`"pending"` clears one). `completed` stamps `completedBy/At`; `skipped` and `in_progress` never downgrade a `completed` setup; `pending` is a full reset (clears steps and stamps, so the wizard auto-opens again). Any non-pending write on a never-opened setup stamps `firstOpenedBy/At`. |
+| `POST /v2/console/base/setup/claim` | `SETTINGS` write | atomic `UPDATE … WHERE status='pending' RETURNING`: exactly one caller ever gets `{claimed: true}`; everyone else gets `{claimed: false, setup}`. Audited as `INVOKE`. |
+
+Brand and setup writes are audit-logged under `SETTINGS`.
+
+### Client RPC
+
+`base_brand {lang?}` → `{lang, custom, name, shortName, logoUrl, logoDarkUrl, markUrl, accent, welcome, updatedAt}` with `name`/`welcome` resolved by the usual language rules; `custom: false` and empty strings when nothing is set (games fall back to their own defaults).
+
+### Console behaviour
+
+- Brand is read from the public endpoint (cached in `localStorage` for a flash-free start) and applied before and after sign-in: sidebar logo (light/dark variants, mark when collapsed), sign-in logo, sign-in heading «برای ادامه به داشبورد {name} وارد شوید» plus the welcome text, `document.title` (`Page | {name} (host)`), favicon (= mark), and the accent. The accent overrides `--primary-color-50…950` (palette mixed from the hex like the UI kit does) and rewrites inline `--x-*` colors the native bundle hardcodes from the default palette to `rgb(var(--primary-color-N))`; the overlay's own buttons, toggles, tabs and inputs use the variables directly. Native ECharts series colors keep the stock purple.
+- The brand form shows a live light/dark preview and WCAG contrast for white text on the accent and the accent link on a dark background (≥4.5 readable, ≥3 large text only).
+- Settings tabs «برند» (`#/settings/brand`) and «راه‌اندازی» (`#/settings/setup`: status, progress, per-step state, who opened/finished, «باز کردن راهنما», per-step edit links).
+- Auto-open: once per page load per session token, when the signed-in shell is visible, the console calls `setup/claim`; only `claimed: true` opens the wizard. Opening it by hand on a `pending`/`skipped` setup marks it `in_progress`, so it never auto-opens afterwards.
+- Wizard: full-screen overlay (`data-economy="setup"`), clickable step bar (compact numbers on mobile), «قبلی», «رد کردن این مرحله», «ذخیره و ادامه», «تمام» on review, «بعداً» (status `skipped`, progress kept; Esc asks first). Focus is trapped in the overlay; leaving a step with unsaved changes asks first. Steps: brand; languages (toggle active, make default, quick add fa/en/ar/tr/ru/de/fr/es/ur/zh, all saved at once); currency (pick existing or new, key/type/name/starting balance/icon; other fields kept on save; Latin digits in the number input); payments («پرداخت لازم دارید؟», pick gateways, sandbox box first, new gateways default to sandbox); SMS and email («… لازم دارید؟», service, sandbox, fields with masked secrets, saved as active + default; test-send saves first and is only allowed in sandbox); review (status per step, summaries, edit links). Answering «نه» marks the step skipped.
