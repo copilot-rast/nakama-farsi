@@ -114,4 +114,165 @@
   html.sp .sp-pal {
     max-height: 80vh;
   }
+
+  html.sp :is(#main, [data-economy]) :is(.rounded-md.shadow.bg-white, .bg-white.shadow.rounded-md),
+  html.sp #main div.max-w-\[1600px\][data-sp-list],
+  html.sp #main aside.bg-secondary-50.border-l {
+    border-radius: var(--r-panel);
+  }
+
+  html.sp #main div.max-w-\[1600px\][data-sp-list] {
+    padding: 16px 4px 8px;
+  }
+
+  html.sp #main div.max-w-\[1600px\] > div.mb-4.relative,
+  html.sp #main div.max-w-\[1600px\] > div.px-4,
+  html.sp #main div.max-w-\[1600px\] > div.flex-col.px-4 {
+    padding-inline: 12px;
+  }
+
+  html.sp[data-sp-route="dashboard"] #main .grid.xl\:grid-cols-5 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  html.sp[data-sp-route="dashboard"] #main .grid.xl\:grid-cols-5 > .rounded-md.shadow.bg-white:nth-child(odd)::before {
+    display: none;
+  }
+
+  html.sp[data-sp-route="dashboard"] #main .grid.xl\:grid-cols-5 > .rounded-md.shadow.bg-white > .px-4.py-3 {
+    padding: 12px 14px;
+  }
+
+  html.sp[data-sp-route="dashboard"] #main .grid.xl\:grid-cols-5 .flex.items-center.justify-between + div {
+    font-size: 26px;
+  }
+
+  html.sp :is(#main, [data-economy]) .eco-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  html.sp :is(#main, [data-economy]) .eco-stat-grid > :is(a, div).rounded-md.shadow:nth-child(odd)::before {
+    display: none;
+  }
+
+  html.sp #main table[data-sp-cards] thead {
+    display: none;
+  }
+
+  html.sp #main table[data-sp-cards],
+  html.sp #main table[data-sp-cards] tbody {
+    display: block;
+    width: 100%;
+  }
+
+  html.sp #main table[data-sp-cards] tbody tr {
+    display: block;
+    margin: 0 0 8px;
+    padding: 6px 4px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    background: var(--capsule);
+  }
+
+  html.sp #main table[data-sp-cards] tbody tr td {
+    display: grid;
+    grid-template-columns: minmax(80px, 36%) minmax(0, 1fr);
+    align-items: center;
+    justify-items: end;
+    gap: 12px;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto;
+    min-height: 36px;
+    padding: 6px 10px;
+    border: 0;
+    text-align: end;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    background: transparent;
+  }
+
+  html.sp #main table[data-sp-cards] tbody tr td:not([data-sp-label]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  html.sp #main table[data-sp-cards] tbody tr td > * {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  html.sp #main div.max-w-\[1600px\] > div.mb-4 .font-semibold.truncate {
+    max-width: calc(100vw - 120px);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 17px;
+  }
+
+  html.sp #main table[data-sp-cards] tbody tr td[data-sp-label]::before {
+    content: attr(data-sp-label);
+    justify-self: start;
+    color: var(--ink-3);
+    font-size: 12px;
+    text-align: start;
+  }
+
+  html.sp #main table[data-sp-cards] tbody tr td:empty {
+    display: none;
+  }
+
+  html.sp #main table[data-sp-cards] tbody tr td[data-sp-full] {
+    display: block;
+    text-align: center;
+  }
+
+  html.sp #main table[data-sp-cards] tbody tr:hover td {
+    background: transparent;
+  }
+
+  html.sp div.fixed.inset-0.flex.justify-end:has(> .x-form) {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  html.sp div.fixed.inset-0.flex.justify-end > .x-form {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92vh;
+    max-height: 92dvh;
+    border-radius: var(--r-panel) var(--r-panel) 0 0;
+    border-bottom: 0;
+  }
+
+  html.sp [data-economy="panel"] div.fixed.inset-0.flex.justify-end > .x-form {
+    max-width: 100%;
+    animation-name: sp-sheet-in;
+  }
+
+  html.sp div.fixed.inset-0.flex.justify-end.translate-x-full:has(> .x-form) {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+
+  html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > fieldset.contents > .text-lg,
+  html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > .text-lg {
+    padding-inline: 18px 56px;
+  }
+
+  html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > fieldset.contents > .flex.gap-4.p-4.justify-end,
+  html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > .flex.gap-4.p-4.justify-end {
+    padding: 12px 18px calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  html.sp .x-button {
+    min-height: 36px;
+  }
+
+  html.sp #main .x-tab-group .x-scroll {
+    max-width: calc(100vw - 48px);
+  }
+}
+
+@keyframes sp-sheet-in {
+  from { opacity: 0; transform: translateY(32px); }
 }
