@@ -44,7 +44,7 @@ function onRouteChange(to, from) {
 }
 
 function countUp(node, to, fmt) {
-  if (reduced() || !isFinite(to)) { node.textContent = fmt(to); return; }
+  if (reduced() || !isFinite(to)) return;
   var from = node.__spValue || 0;
   node.__spValue = to;
   var start = performance.now();

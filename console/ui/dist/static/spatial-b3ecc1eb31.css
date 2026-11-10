@@ -278,7 +278,7 @@ html.sp.sp-auth #app .sm\:w-\[512px\] {
   box-shadow: var(--thick-shadow);
   -webkit-backdrop-filter: var(--blur);
   backdrop-filter: var(--blur);
-  animation: sp-win-in var(--d3) var(--ease) both;
+  animation: sp-win-in var(--d3) var(--ease) backwards;
 }
 
 html.sp.sp-auth #app .sm\:w-\[512px\] h1 {
@@ -1109,7 +1109,7 @@ html.sp.sp-railed #main > div.sticky:first-child .hidden.md\:flex.text-xs {
 
 html.sp.sp-stats-open .sp-stats {
   display: block;
-  animation: sp-pop-in var(--d2) var(--ease) both;
+  animation: sp-pop-in var(--d2) var(--ease) backwards;
 }
 
 .sp-stats-head {
@@ -1195,7 +1195,7 @@ html.sp #main > div.sticky:first-child .justify-end > .x-popover > button.x-butt
   position: fixed;
   inset: 0;
   background: var(--scrim);
-  animation: sp-fade-in var(--d2) var(--ease) both;
+  animation: sp-fade-in var(--d2) var(--ease) backwards;
 }
 
 .sp-pal {
@@ -1212,7 +1212,7 @@ html.sp #main > div.sticky:first-child .justify-end > .x-popover > button.x-butt
   backdrop-filter: var(--blur);
   color: var(--ink-1);
   overflow: hidden;
-  animation: sp-win-in var(--d3) var(--ease) both;
+  animation: sp-win-in var(--d3) var(--ease) backwards;
   transform-origin: center top;
 }
 
@@ -2123,7 +2123,7 @@ html.sp .v-popper__popper :is(a, button, [role="menuitem"]):hover {
 }
 
 html.sp .v-popper__popper.v-popper__popper--shown .v-popper__wrapper {
-  animation: sp-pop-in var(--d2) var(--ease) both;
+  animation: sp-pop-in var(--d2) var(--ease) backwards;
 }
 
 html.sp .x-notifications > * > * {
@@ -2145,6 +2145,32 @@ html.sp :is(#main, [data-economy]) .even\:bg-secondary-50:nth-child(even) {
 html.sp div.fixed.inset-0.flex.justify-end > .x-form > :is(.overflow-y-auto, .x-scroll),
 html.sp div.fixed.inset-0.flex.justify-end > .x-form > fieldset.contents > :is(.overflow-y-auto, .x-scroll) {
   min-height: 0;
+}
+
+html.sp .x-notifications > * > * {
+  animation: sp-toast-in var(--d3) var(--ease) backwards;
+}
+
+html.sp .eco-pop:not([hidden]),
+html.sp .eco-qc-pop:not([hidden]) {
+  border-color: var(--line);
+  border-radius: var(--r-card);
+  background: var(--thick);
+  box-shadow: var(--thick-shadow);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  animation: sp-pop-in var(--d2) var(--ease) backwards;
+  transform-origin: top center;
+}
+
+html.sp .eco-pop [role="option"] {
+  border-radius: 10px;
+  color: var(--ink-1);
+}
+
+html.sp .eco-pop [role="option"]:hover,
+html.sp .eco-pop [role="option"][aria-selected="true"] {
+  background: var(--capsule-hi);
 }
 html.sp .eco-tag {
   border-radius: var(--r-pill);
@@ -2214,7 +2240,7 @@ html.sp .eco-nav-dot {
 html.sp .ps-shade {
   background: var(--scrim);
   opacity: 1;
-  animation: sp-fade-in var(--d2) var(--ease) both;
+  animation: sp-fade-in var(--d2) var(--ease) backwards;
 }
 
 html.sp .ps-holder {
@@ -2231,7 +2257,7 @@ html.sp .ps-window {
   -webkit-backdrop-filter: var(--blur);
   backdrop-filter: var(--blur);
   color: var(--ink-1);
-  animation: sp-win-in var(--d3) var(--ease) both;
+  animation: sp-win-in var(--d3) var(--ease) backwards;
 }
 
 html.sp .ps-side {
@@ -2417,7 +2443,7 @@ html.sp .eco-tr-dot {
 }
 
 html.sp .eco-tr-panels > * {
-  animation: sp-fade-in var(--d2) var(--ease) both;
+  animation: sp-fade-in var(--d2) var(--ease) backwards;
 }
 
 html.sp .eco-seg {
@@ -2479,7 +2505,7 @@ html.sp .x-checkbox svg.opacity-0 {
 
 html.sp [data-economy="panel"] div.fixed.inset-0.flex.justify-end > .x-form {
   max-width: min(680px, 100%);
-  animation: sp-win-in var(--d3) var(--ease) both;
+  animation: sp-win-in var(--d3) var(--ease) backwards;
   transform-origin: var(--win-origin, left) center;
 }
 
@@ -2500,7 +2526,7 @@ html.sp [data-economy="dialog"] .eco-dialog {
   -webkit-backdrop-filter: var(--blur);
   backdrop-filter: var(--blur);
   color: var(--ink-1);
-  animation: sp-win-in var(--d3) var(--ease) both;
+  animation: sp-win-in var(--d3) var(--ease) backwards;
 }
 
 html.sp [data-economy="dialog"] .eco-dialog > div:last-child {
@@ -2519,7 +2545,7 @@ html.sp .eco-toasts .eco-notice {
   backdrop-filter: var(--blur);
   color: var(--ink-1);
   font-size: 14px;
-  animation: sp-toast-in var(--d3) var(--ease) both;
+  animation: sp-toast-in var(--d3) var(--ease) backwards;
 }
 
 html.sp .eco-toasts .eco-notice--success > svg {
@@ -2687,7 +2713,7 @@ html.sp .setup-overlay {
   z-index: var(--z-wizard);
   background: radial-gradient(circle at 22% 14%, rgb(255 222 190 / .85), transparent 42%), radial-gradient(circle at 82% 20%, rgb(170 196 236 / .55), transparent 50%), linear-gradient(180deg, #dfe7f3, #e9edf3 60%, #f4ece6);
   color: var(--ink-1);
-  animation: sp-fade-in var(--d3) var(--ease) both;
+  animation: sp-fade-in var(--d3) var(--ease) backwards;
 }
 
 html.sp.dark .setup-overlay {
@@ -2766,7 +2792,7 @@ html.sp .setup-inner {
   border-radius: var(--r-editor);
   background: var(--thick);
   box-shadow: var(--thick-shadow);
-  animation: sp-win-in var(--d3) var(--ease) both;
+  animation: sp-win-in var(--d3) var(--ease) backwards;
 }
 
 html.sp .setup-card {
@@ -3146,11 +3172,11 @@ html.sp .setup-card {
 }
 
 html.sp .sp-enter {
-  animation: sp-page-in var(--d3) var(--ease) both;
+  animation: sp-page-in var(--d3) var(--ease) backwards;
 }
 
 html.sp .sp-enter :is(.grid, .eco-stat-grid) > :nth-child(-n+8) {
-  animation: sp-item-in var(--d3) var(--ease) both;
+  animation: sp-item-in var(--d3) var(--ease) backwards;
 }
 
 html.sp .sp-enter :is(.grid, .eco-stat-grid) > :nth-child(2) { animation-delay: 30ms; }

@@ -145,7 +145,7 @@ html.sp.sp-auth #app .sm\:w-\[512px\] {
   box-shadow: var(--thick-shadow);
   -webkit-backdrop-filter: var(--blur);
   backdrop-filter: var(--blur);
-  animation: sp-win-in var(--d3) var(--ease) both;
+  animation: sp-win-in var(--d3) var(--ease) backwards;
 }
 
 html.sp.sp-auth #app .sm\:w-\[512px\] h1 {

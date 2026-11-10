@@ -798,7 +798,7 @@ html.sp.sp-railed #main > div.sticky:first-child .hidden.md\:flex.text-xs {
 
 html.sp.sp-stats-open .sp-stats {
   display: block;
-  animation: sp-pop-in var(--d2) var(--ease) both;
+  animation: sp-pop-in var(--d2) var(--ease) backwards;
 }
 
 .sp-stats-head {
@@ -884,7 +884,7 @@ html.sp #main > div.sticky:first-child .justify-end > .x-popover > button.x-butt
   position: fixed;
   inset: 0;
   background: var(--scrim);
-  animation: sp-fade-in var(--d2) var(--ease) both;
+  animation: sp-fade-in var(--d2) var(--ease) backwards;
 }
 
 .sp-pal {
@@ -901,7 +901,7 @@ html.sp #main > div.sticky:first-child .justify-end > .x-popover > button.x-butt
   backdrop-filter: var(--blur);
   color: var(--ink-1);
   overflow: hidden;
-  animation: sp-win-in var(--d3) var(--ease) both;
+  animation: sp-win-in var(--d3) var(--ease) backwards;
   transform-origin: center top;
 }
 

@@ -88,3 +88,17 @@ Acceptance:
 - Baselines approved by the user once; later diffs need an explicit baseline update in the same commit.
 
 e2e: new `11-spatial-motion.spec.ts` (route enter class added and removed, flyout/editor timings within ±40ms of tokens, exit faster than enter, reduced-motion instant, interaction during animation, no transformed ancestors), `10-spatial-visual.spec.ts` baselines + contrast, `README.md` table rows for 09–11.
+
+## Status (2026-11-10)
+
+All steps done, one local commit each (`git log --oneline` D0…D6), screenshots per step in `.local/shots-spatial/d0…d6/` and sent to Telegram.
+
+| Step | Result |
+|---|---|
+| D0 | `window.NakamaConsole` hook in economy `shell.js`; `brand.js` writes `--sp-accent*` picked by contrast; `console/ui/spatial` package with build/check/test and `selectors.json` (the `z-[60]` fix had already landed in `economy.css`) |
+| D1 | tokens, sky (rebuilt on theme change), glass levels, dark, native colour roles mapped, `?spatial=0` |
+| D2 | floating rail (collapsed + pinned, flyouts with keyboard, badges, settings flyout with «تنظیمات پروژه»), glass top bar (breadcrumb, section tabs with sliding indicator, page search Ctrl K, EN/FA segment, theme, server status popover, project settings gear, user menu), project settings window, sign-in window |
+| D3 | every native page: list windows with the header inside, tables, tabs with a sliding capsule, side panels as floating windows, modals, menus, dashboard KPI strip and chart theming, Monaco, contrast fixes (danger buttons, primary tags, moon) |
+| D4 | our pages: list windows, KPI strips on the economy overview, editor window with full-width language segment and payment chips, toasts, dialogs, brand preview on the sky, setup wizard |
+| D5 | ≤ 767px: rail as a sheet from the start side, compact top bar, native tables as labelled cards, editors as bottom sheets, KPI strips in two columns |
+| D6 | motion audit (one easing family, four durations, `backwards` fill so nothing keeps a transform after entering, KPI count-up, popover/toast entries, reduced motion), specs 09/10/11, contrast gate in every visual spec, docs |

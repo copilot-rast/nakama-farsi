@@ -89,3 +89,24 @@ function paintNativeTabs() {
     if (fresh) requestAnimationFrame(function (n) { return function () { requestAnimationFrame(function () { n.classList.remove('sp-still'); }); }; }(ind));
   }
 }
+
+function readNumber(text) {
+  var s = String(text || '').replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); }).replace(/[٬,\s]/g, '').replace('٫', '.');
+  return /^-?\d+(\.\d+)?$/.test(s) ? parseFloat(s) : NaN;
+}
+
+function countKpis() {
+  var nodes = document.querySelectorAll('#economy-root .eco-stat-grid .text-3xl');
+  if (!nodes.length) return;
+  var nf = new Intl.NumberFormat(spLang() === 'fa' ? 'fa-IR' : 'en-US', { maximumFractionDigits: 0 });
+  for (var i = 0; i < nodes.length; i++) {
+    var n = nodes[i];
+    if (n.__spCounted) continue;
+    n.__spCounted = true;
+    var v = readNumber(n.textContent);
+    if (isNaN(v) || v === 0) continue;
+    var final = n.textContent;
+    countUp(n, v, function (x) { return nf.format(Math.round(x)); });
+    setTimeout(function (node, text) { return function () { if (node.isConnected) node.textContent = text; }; }(n, final), reduced() ? 0 : 560);
+  }
+}

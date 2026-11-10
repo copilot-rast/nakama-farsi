@@ -1,12 +1,13 @@
 # Roadmap (agreed 2026-11-10)
 
-Order is fixed. Each phase is verified end to end with the stargame sample. Commits stay local (no push) until the owner asks. The console keeps its current look until a redesign direction is picked.
+Order is fixed. Each phase is verified end to end with the stargame sample. Commits stay local (no push) until the owner asks. The console uses the Spatial look (phase D) from 2026-11-10; `?spatial=0` turns it off.
 
 | Phase | Scope |
 |---|---|
 | 0 | Branding + first-login setup wizard (done) |
 | 0b | Cluster readiness (runs right after phase 0, before phase 1): audit every plugin for single-node assumptions and fix them now so the cluster phase needs no rework: uploads behind a storage interface (local disk default, S3/MinIO option), background workers safe on many nodes (claims with SKIP LOCKED or a lease, never double-run), no in-memory state that must be shared (caches get a short TTL or DB-backed invalidation, rate limits in the DB), config only from env. From now on every phase follows these rules. Database stays as it is. Done 2026-11-10: audit, rules and results in `docs/cluster-readiness.md`. |
 | 1 | Project settings window like the asp dashboard: one large window with a section list (brand, setup, languages, categories, tags, payment gateways, SMS, email, and later sections), opened from the top bar and the sidebar, deep-linkable, sections gated by admin ACL. Existing settings tabs and the «عمومی» sidebar section move into it; Nakama's own settings stay. Categories and tags follow asp: key type per item, pickers filtered by key type (+ `general` for tags), a «+» quick-create next to every picker, new key type `user` for player tags. Done 2026-11-10: `#/project-settings/<section>`, details in `docs/base/spec.md` (Console pages). |
+| D | Spatial redesign of the whole console (done 2026-11-10): third overlay `console/ui/spatial` (sky, glass windows, floating rail and top bar, motion) over every native and overlay page, contrast ≥ 4.5:1 measured per page in both themes, phone layout, e2e 09–11. Details in `docs/design/spatial*.md`. |
 | 2 | Accounts: phone + SMS OTP login on the existing SMS providers (rate limits, sandbox shows the code in the log), account rules (username/password length), app versions per platform with forced update and store links + client RPC, countries with flags. |
 | 3 | Players and chat: player tags (and targeting notifications/offers by tag), temporary suspension with end date and a message shown to the player, chat moderation (Persian-aware word filter, message reports with report titles, temporary mute, review page). |
 | 4 | Events and economy phase 2: player event tracking, event → prize rules, meta rules, streaks. |

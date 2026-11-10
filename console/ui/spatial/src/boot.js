@@ -16,6 +16,7 @@ function tick() {
     markPage();
     labelTables();
     paintNativeTabs();
+    countKpis();
   }
 }
 

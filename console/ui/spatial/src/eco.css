@@ -66,7 +66,7 @@ html.sp .eco-nav-dot {
 html.sp .ps-shade {
   background: var(--scrim);
   opacity: 1;
-  animation: sp-fade-in var(--d2) var(--ease) both;
+  animation: sp-fade-in var(--d2) var(--ease) backwards;
 }
 
 html.sp .ps-holder {
@@ -83,7 +83,7 @@ html.sp .ps-window {
   -webkit-backdrop-filter: var(--blur);
   backdrop-filter: var(--blur);
   color: var(--ink-1);
-  animation: sp-win-in var(--d3) var(--ease) both;
+  animation: sp-win-in var(--d3) var(--ease) backwards;
 }
 
 html.sp .ps-side {
@@ -269,7 +269,7 @@ html.sp .eco-tr-dot {
 }
 
 html.sp .eco-tr-panels > * {
-  animation: sp-fade-in var(--d2) var(--ease) both;
+  animation: sp-fade-in var(--d2) var(--ease) backwards;
 }
 
 html.sp .eco-seg {
@@ -331,7 +331,7 @@ html.sp .x-checkbox svg.opacity-0 {
 
 html.sp [data-economy="panel"] div.fixed.inset-0.flex.justify-end > .x-form {
   max-width: min(680px, 100%);
-  animation: sp-win-in var(--d3) var(--ease) both;
+  animation: sp-win-in var(--d3) var(--ease) backwards;
   transform-origin: var(--win-origin, left) center;
 }
 
@@ -352,7 +352,7 @@ html.sp [data-economy="dialog"] .eco-dialog {
   -webkit-backdrop-filter: var(--blur);
   backdrop-filter: var(--blur);
   color: var(--ink-1);
-  animation: sp-win-in var(--d3) var(--ease) both;
+  animation: sp-win-in var(--d3) var(--ease) backwards;
 }
 
 html.sp [data-economy="dialog"] .eco-dialog > div:last-child {
@@ -371,7 +371,7 @@ html.sp .eco-toasts .eco-notice {
   backdrop-filter: var(--blur);
   color: var(--ink-1);
   font-size: 14px;
-  animation: sp-toast-in var(--d3) var(--ease) both;
+  animation: sp-toast-in var(--d3) var(--ease) backwards;
 }
 
 html.sp .eco-toasts .eco-notice--success > svg {
@@ -539,7 +539,7 @@ html.sp .setup-overlay {
   z-index: var(--z-wizard);
   background: radial-gradient(circle at 22% 14%, rgb(255 222 190 / .85), transparent 42%), radial-gradient(circle at 82% 20%, rgb(170 196 236 / .55), transparent 50%), linear-gradient(180deg, #dfe7f3, #e9edf3 60%, #f4ece6);
   color: var(--ink-1);
-  animation: sp-fade-in var(--d3) var(--ease) both;
+  animation: sp-fade-in var(--d3) var(--ease) backwards;
 }
 
 html.sp.dark .setup-overlay {
@@ -618,7 +618,7 @@ html.sp .setup-inner {
   border-radius: var(--r-editor);
   background: var(--thick);
   box-shadow: var(--thick-shadow);
-  animation: sp-win-in var(--d3) var(--ease) both;
+  animation: sp-win-in var(--d3) var(--ease) backwards;
 }
 
 html.sp .setup-card {

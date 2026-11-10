@@ -8,6 +8,8 @@ Sources of truth:
 - Proven recipes reused from `creative-platform` (`packages/ui/src/spatial.css`, `spatialPage.css`, `apps/web/src/features/shell/spatialRail.module.css`): blur only on floating layers, `prefers-reduced-transparency` fallback, capsule buttons, shimmer.
 - Technique proof and native DOM recipes: `docs/design/spatial-inventory.md`. Order of work: `docs/design/spatial-plan.md`.
 
+Built in D0–D6 (`console/ui/spatial`, see `spatial-plan.md` § Status). Where the build changed a value it is changed below too; the reasons are in `spatial-inventory.md` §7.
+
 All CSS below is scoped under `html.sp` (the class the spatial overlay puts on `<html>`), so removing that class gives back the stock look.
 
 ## 1. Tokens
@@ -44,7 +46,7 @@ html.sp {
   --fs-kpi: 32px/1.25 500;
 
   --z-sky: -1; --z-content: auto; --z-sticky: 10; --z-topbar: 30; --z-rail: 40; --z-flyout: 45;
-  --z-scrim: 50; --z-window: 60; --z-settings: 65; --z-wizard: 70; --z-toast: 80;
+  --z-scrim: 50; --z-window: 60; --z-settings: 55; --z-wizard: 70; --z-toast: 80;
 
   --blur: blur(32px) saturate(165%);
 }
@@ -66,7 +68,7 @@ html.sp {
   --capsule: rgb(255 255 255 / .74);  --capsule-hi: rgb(255 255 255 / .96);
   --hl: inset 0 1px 0 rgb(255 255 255 / .95);
   --shade: 20 24 33;  --depth: .24;  --depth-lift: .36;
-  --pos: #17703f;  --neg: #ad3226;  --warn: #7f5300;
+  --pos: #146638;  --neg: #ad3226;  --warn: #7f5300;  --danger-fill: #b42318;
   --star: #e5a50a;  --star-edge: #a26f00;
   --scrim: rgb(30 36 50 / .10);
 }
@@ -78,7 +80,7 @@ html.sp {
 html.sp.dark {
   color-scheme: dark;
   --base: #0a0c12;
-  --ink-1: #f1f2f6;  --ink-2: #bec3ce;  --ink-3: #a0a6b4;
+  --ink-1: #f1f2f6;  --ink-2: #c5cad4;  --ink-3: #a0a6b4;
   --glass-top: rgb(52 55 70 / .62);  --glass-bot: rgb(40 43 56 / .62);
   --thick-top: rgb(42 45 58 / .92);  --thick-bot: rgb(34 36 47 / .92);
   --line: rgb(255 255 255 / .09);  --line-2: rgb(255 255 255 / .15);
@@ -109,7 +111,7 @@ The brand colour (Settings → Brand, `brand.js`) must drive the accent. `brand.
 | `--accent-line` | chip-on border, input focus border | `color-mix(… 30%, transparent)` | `color-mix(… 36%, transparent)` |
 | `--on-accent` | text on `--accent` | `#fff` | `#fff` |
 
-Default accent when no brand is set: `#2457d6` light / `#3e6bec` dark, ink `#1c46b3` / `#a9c0ff` (mockup values). Inline `rgb(...)` styles that the native app writes keep being recoloured by the existing `startRecolor()` observer.
+Default accent when no brand is set: the console's own palette (`#6b59ee`) through the same rule: accent shade 500 (4.90:1), ink 600 (4.55:1), dark ink 200 (4.76:1). The mockup blue was dropped so native components (which keep `--primary-color-*`) and spatial never show two accents. Inline `rgb(...)` styles that the native app writes keep being recoloured by the existing `startRecolor()` observer.
 
 ## 2. Background (sky)
 
@@ -124,7 +126,7 @@ Layers, bottom to top (same in both themes, colours differ):
 | wash 2, radial at (.35, 1) r .55 | `rgb(248 212 192 / .55)` | `rgb(120 70 150 / .18)` |
 | glow, radial at (.22, .14) r .42 | `rgb(255 222 190 / .85)` | `rgb(255 214 150 / .20)` |
 | stars | none | 140 dots, seeded PRNG (seed 7, ×16807 mod 2³¹−1), y < 560, r .7 (85%) or 1.2, opacity .25–.70 |
-| sun/moon at (300, 128), blur 34 | r 48, `rgb(255 246 234 / .9)` | r 34, `rgb(255 236 200 / .55)` |
+| sun/moon at (300, 128), blur 34 | r 48, `rgb(255 246 234 / .9)` | r 34, `rgb(255 236 200 / .30)` |
 | three hills, blur 18 | `#d5dcea`, `#ccd5e6`, `#c5cfe2` | `#171a2e`, `#121424`, `#0d0f1a` |
 
 The glow sits top-left in both directions (it is scenery, not layout; do not mirror it). The sky is rebuilt when `html.dark` changes (a `MutationObserver` on `<html>` class). With `prefers-reduced-transparency: reduce` the sky stays but every glass level falls back to its thick values.
@@ -244,7 +246,7 @@ The native `.x-tab-group` / `.x-tab` (player and group detail tabs, settings tab
 Every side panel (native `x-form … sm:max-w-3xl` teleported to `body`, our `ui.js` panel) becomes a floating window:
 
 - holder: `position: fixed; inset: 0; z-index: var(--z-window); padding: var(--gap)`, panel at the inline-end side (left in fa, right in en, as today).
-- window: `.thick`, radius 30, width 536 (editors) / up to 768 (native `max-w-3xl` panels keep their width), height `auto`, `max-height: 100%`, flex column. Head `padding: 20px 28px 14px` (kicker 12px `ink-3`, title 20px/600, status chip at the end). Body `padding: 14px 28px 0`, gap 12. Footer `padding: 14px 28px 16px`, `border-top: 1px solid var(--line)`: danger at start, spacer, cancel, primary.
+- window: `.thick`, radius 30, width 680 (our editors; 536 clipped the item rows and pickers) / up to 768 (native `max-w-3xl` panels keep their width), height `auto`, `max-height: 100%`, flex column. Head `padding: 20px 28px 14px` (kicker 12px `ink-3`, title 20px/600, status chip at the end). Body `padding: 14px 28px 0`, gap 12. Footer `padding: 14px 28px 16px`, `border-top: 1px solid var(--line)`: danger at start, spacer, cancel, primary.
 - Under the window a handle bar (mockup): close button 28px round glass + a 132×6 grab bar `ink-2` at .38, 12px below the window. Optional; Escape and the close button must always work.
 - The page behind recedes: scrim `--scrim` (z 50), the list window `transform: scale(.985)` (on the window, never on an ancestor of the overlay) and `inert` on `main`.
 - Native panels that contain Monaco (storage object, player metadata, wallet ledger JSON) keep the editor on an opaque `--thick-top` surface (Monaco paints its own background).
@@ -255,7 +257,7 @@ Native `x-modal` (confirm dialogs, "add user"): centered, `.thick`, radius 28, p
 
 ### 6.3 Project settings window
 
-The settings window being built in `economy/src/settings.js` (`.ps-window`, sections: brand, setup, languages, categories, tags, payment methods, SMS, email) is a centered `.thick` window, radius 30, `z-index: var(--z-settings)`, 880×min(720px, 100vh − 2×gap): a 220px section list (rows 40px radius 12, icon 16px, current `--accent-soft`) at the start and the section body on the right, own header with title 20px/600 and a 28px close. Entry points: the rail's settings item (flyout: "Console settings" → `#/settings/users`, "Project settings" → the window) and the gear in the top bar.
+The settings window being built in `economy/src/settings.js` (`.ps-window`, sections: brand, setup, languages, categories, tags, payment methods, SMS, email) is a centered `.thick` window, radius 30, `z-index: var(--z-settings)`, min(1040px, 100%)×min(760px, 100vh − 2×gap): a 236px section list (rows 40px radius 12, icon 16px, current `--accent-soft`) at the start and the section body on the right, own header with title 20px/600 and a 28px close. Entry points: the rail's settings item (flyout: "Console settings" → `#/settings/users`, "Project settings" → the window) and the gear in the top bar.
 
 ### 6.4 Popovers, menus, tooltips
 

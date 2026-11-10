@@ -166,3 +166,29 @@ Coexistence:
 ## 6. Regenerating the inventory
 
 Scripts in `.local/spatial-inventory/proof/src/` (git-excluded; they write a session file next to themselves, set `SP`/`OUT` in `common.mjs` first): `common.mjs` (login from `~/.config/nakama-farsi/mac-dev.env`, one Chrome per run, closes the browser not pages), `routes.mjs` (router dump), `ids.mjs`/`ids2.mjs` (sample player/group ids by clicking rows), `crawl.mjs` (screens + component census), `extras.mjs` (login, panels, menus), `proof.mjs` (before/after/motion + contrast input), contrast with `contrast.py` (needs Pillow). D6 turns the useful parts into `e2e/specs/console/10-spatial-visual.spec.ts`.
+
+## 7. As built (D0–D6, 2026-11-10)
+
+The architecture of §5 was built as described: `console/ui/spatial` (sources `src/*.js` + `src/*.css`, `scripts/build.mjs`, `selectors.json`, `test/`), injected last before `</head>` as a synchronous script so `html.sp` is set before the first paint, `?spatial=0` / `?spatial=1` persisted in `localStorage['nakama.spatial']`. Economy exposes `window.NakamaConsole` (`router`, `lang()`, `t()`, `sections()`, `badges()`, `onRoute(fn)`, `projectSettings.{allowed,href,isOpen,open,sections}`, `brand()`, `toggleTheme()`, `isDark()`) and fires `nakama-console:ready`; spatial never traps the router itself. `brand.js` writes `--sp-accent`, `--sp-accent-ink`, `--sp-accent-ink-dark` picked by contrast (green brand: white on shade 600 = 4.53, links on 700 = 4.73, dark links on 200 = 5.04).
+
+`npm run check` in `console/ui/spatial` fails when (a) a class listed in `selectors.json` disappears from the console bundle (CSS, or a component name `av('Name')`/`` `XName` `` in the JS for `x-*` markers), or (b) spatial CSS uses a native class that is not listed. `e2e/specs/console/10-spatial-visual.spec.ts` checks every manifest selector on its routes.
+
+### Could not be restyled (documented exceptions)
+
+| What | Why | Screenshot |
+|---|---|---|
+| Native chart time axis runs left to right in fa | ECharts options are not reachable (instance not exposed); colours, grid and text are themed by CSS on the SVG renderer, the draw-in on first load is ECharts' own | `.local/shots-spatial/d3/dashboard-fa-light.jpg` |
+| Monaco keeps its light theme in dark mode (storage object, player metadata, API explorer) | Monaco paints its own theme; the editor sits on an opaque rounded surface as the spec asks | `.local/shots-spatial/d3/storage-panel-fa-light.jpg` (dark: `.local/spatial-inventory/proof/motion-editor-open-dark.jpg`) |
+| Server stats in English read `NaN` in the native top bar (and `–` in the spatial status popover) | pre-existing: the l10n `Intl` patch and `number-flow` disagree in `en`; Persian shows digits | `.local/shots-spatial/d2/groups-en-light.jpg` |
+| Some native dialogs keep English strings (`Confirm Deletion`) | missing in the l10n catalog, not a spatial issue | — |
+| Native tab indicator | the native 2px underline animates `left/width`; it is hidden and spatial draws its own capsule moved by `transform` (`.sp-tabind`) | — |
+
+### Deviations from `spatial.md`, decided while building
+
+- Without a brand accent the default accent is the console's own purple (`#6b59ee` palette, shades picked by the same contrast rule), not the mockup blue: the native components keep using `--primary-color-*`, and two different accents on one screen looked wrong. A brand accent replaces both.
+- `--z-settings` is 55 (economy's own value): the editor panel opened from inside the settings window must sit above it (60).
+- Our editor window is 680px wide, not 536: product and prize forms have five-column item rows and reference pickers whose popovers were clipped at 536.
+- The dark-mode moon is `rgb(255 236 200 / .30)` (spec `.55`): text sitting on the sky right under it measured 3.91:1.
+- `--pos` light is `#146638` (spec `#17703f`) and dark `--ink-2` is `#c5cad4` (spec `#bec3ce`) so status text and secondary text stay ≥ 4.5:1 on every glass level over the darkest hill.
+- Danger buttons use a fixed `--danger-fill: #b42318` (native `#ef4444` with white text measured 3.76:1).
+- Visual regression is screenshots attached to every `10-spatial-visual` test (fa light, fa dark, en, 390) plus the measured contrast gate; pixel baselines were left out because seeded data (dates, uptime, notifications created by other specs) changes between runs.

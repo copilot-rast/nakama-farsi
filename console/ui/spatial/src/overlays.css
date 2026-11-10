@@ -176,7 +176,7 @@ html.sp .v-popper__popper :is(a, button, [role="menuitem"]):hover {
 }
 
 html.sp .v-popper__popper.v-popper__popper--shown .v-popper__wrapper {
-  animation: sp-pop-in var(--d2) var(--ease) both;
+  animation: sp-pop-in var(--d2) var(--ease) backwards;
 }
 
 html.sp .x-notifications > * > * {
@@ -198,4 +198,30 @@ html.sp :is(#main, [data-economy]) .even\:bg-secondary-50:nth-child(even) {
 html.sp div.fixed.inset-0.flex.justify-end > .x-form > :is(.overflow-y-auto, .x-scroll),
 html.sp div.fixed.inset-0.flex.justify-end > .x-form > fieldset.contents > :is(.overflow-y-auto, .x-scroll) {
   min-height: 0;
+}
+
+html.sp .x-notifications > * > * {
+  animation: sp-toast-in var(--d3) var(--ease) backwards;
+}
+
+html.sp .eco-pop:not([hidden]),
+html.sp .eco-qc-pop:not([hidden]) {
+  border-color: var(--line);
+  border-radius: var(--r-card);
+  background: var(--thick);
+  box-shadow: var(--thick-shadow);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  animation: sp-pop-in var(--d2) var(--ease) backwards;
+  transform-origin: top center;
+}
+
+html.sp .eco-pop [role="option"] {
+  border-radius: 10px;
+  color: var(--ink-1);
+}
+
+html.sp .eco-pop [role="option"]:hover,
+html.sp .eco-pop [role="option"][aria-selected="true"] {
+  background: var(--capsule-hi);
 }
