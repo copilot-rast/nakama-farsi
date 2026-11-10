@@ -1,19 +1,13 @@
 var SECTIONS = {
-  base: ['categories', 'tags'],
   economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments'],
   publication: ['faqs', 'news', 'comments', 'notifications']
 };
-var SETTINGS_TABS = ['payment-methods', 'sms', 'email', 'languages', 'brand', 'setup'];
-var LEGACY_HASHES = { economy: { 'payment-methods': 'payment-methods' }, publication: { providers: 'sms' } };
-var SECTION_ORDER = ['base', 'economy', 'publication'];
-var MOVED_PAGES = { 'economy/categories': 'base/categories', 'economy/tags': 'base/tags' };
-var PAGES = SECTIONS.base.concat(SECTIONS.economy, SECTIONS.publication);
+var SECTION_ORDER = ['economy', 'publication'];
 var LIMIT = 20;
 var lastQuery = { comments: { status: 'pending' } };
 
 function sectionOf(page) {
-  if (SETTINGS_TABS.indexOf(page) !== -1) return 'settings';
-  if (SECTIONS.base.indexOf(page) !== -1) return 'base';
+  if (psSection(page)) return PS_ROUTE;
   return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
 }
 
@@ -21,7 +15,7 @@ function apiFor(page) {
   var def = RESOURCES[page];
   if (def && def.api === 'base') return baseApi;
   var sec = sectionOf(page);
-  return sec === 'publication' ? pubApi : sec === 'base' ? baseApi : api;
+  return sec === 'publication' ? pubApi : api;
 }
 
 function hashFor(page, id, query) {
@@ -45,7 +39,7 @@ function listPage(container, name, query, ctx) {
   lastQuery[name] = currentQuery();
 
   var create = def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new', currentQuery()); } }) : def.create ? def.create() : null;
-  var frame = def.settings ? tabFrame(t('desc.' + name), create) : pageFrame(t('nav.' + name), t('desc.' + name), create);
+  var frame = def.settings || sectionOf(name) === PS_ROUTE ? tabFrame(t('desc.' + name), create) : pageFrame(t('nav.' + name), t('desc.' + name), create);
   var pagerTop = h('div', { class: 'relative flex items-center justify-end' });
   var pagerBottom = h('div', { class: 'flex gap-2 py-4 items-center justify-end' });
   var tableBox = h('div', {});
@@ -184,7 +178,7 @@ function openEditor(name, id, query, onSaved) {
   var footer = h('div', { class: 'flex gap-4 w-full items-center' });
   var back = function () { go(name, null, lastQuery[name] || {}); };
   var el = sidePanel(title, body, footer, back);
-  var esc = function (e) { if (e.key === 'Escape' && panelState && !document.querySelector('[data-economy="panel"] .eco-pop:not([hidden])')) { e.preventDefault(); back(); } };
+  var esc = function (e) { if (e.key === 'Escape' && panelState && !document.querySelector('[data-economy="panel"] .eco-pop:not([hidden]), [data-economy="panel"] .eco-qc-pop:not([hidden])')) { e.preventDefault(); back(); } };
   document.addEventListener('keydown', esc, true);
   panelState = { el: el, key: name + '/' + id, esc: esc };
   document.body.appendChild(el);

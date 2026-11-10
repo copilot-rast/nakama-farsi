@@ -559,7 +559,7 @@ var MESSAGES = {
     'code.INVALID_TARGET': 'گیرندگان معتبر نیستند.',
     'code.INVALID_CHANNEL': 'کانال معتبر نیست.',
     'code.PROVIDER_NOT_FOUND': 'این سرویس پیدا نشد.',
-    'code.PROVIDER_NOT_CONFIGURED': 'سرویس فعال و کاملی برای این کانال نیست؛ در تنظیمات، فیلدهای لازم را پر کنید.',
+    'code.PROVIDER_NOT_CONFIGURED': 'سرویس فعال و کاملی برای این کانال نیست؛ در تنظیمات پروژه، فیلدهای لازم را پر کنید.',
     'code.PROVIDER_INACTIVE': 'این سرویس فعال نیست.',
     'code.PROVIDER_CHANNEL_MISMATCH': 'این سرویس برای این کانال نیست.',
     'code.PROVIDER_KIND_FIXED': 'نوع سرویس بعد از ساخت عوض نمی‌شود.',
@@ -590,6 +590,20 @@ var MESSAGES = {
     'f.keyType.category.hint': 'مشخص می‌کند این دسته‌بندی در کدام بخش دیده شود.',
     'f.keyType.tag.hint': 'تگ «عمومی» برای همهٔ بخش‌ها قابل انتخاب است.',
     'kind.general': 'عمومی',
+    'kind.user': 'بازیکن',
+    'ps.title': 'تنظیمات پروژه',
+    'ps.sections': 'بخش‌های تنظیمات پروژه',
+    'ps.noAccess': 'به هیچ بخشی از تنظیمات پروژه دسترسی ندارید.',
+    'ps.noAccess.hint': 'از مدیر کنسول بخواهید دسترسی لازم را برایتان باز کند.',
+    'qc.add.categories': 'دسته‌بندی تازه',
+    'qc.add.tags': 'تگ تازه',
+    'qc.name': 'نام',
+    'qc.name.ph.categories': 'مثلاً بسته‌های ویژه',
+    'qc.name.ph.tags': 'مثلاً پرفروش',
+    'qc.hint': 'برای «{type}»، به {lang}. کلید خودکار ساخته می‌شود.',
+    'qc.create': 'بساز',
+    'qc.err.name': 'یک نام بنویسید.',
+    'qc.created': '«{name}» ساخته و انتخاب شد.',
     'f.name': 'نام',
     'f.message': 'پیام',
     'f.description': 'توضیح',
@@ -689,8 +703,8 @@ var MESSAGES = {
     'setup.later': 'بعداً',
     'setup.stay': 'ادامه می‌دهم',
     'setup.later.title': 'بقیه را بعداً انجام می‌دهید؟',
-    'setup.later.text': 'هرچه ذخیره کرده‌اید می‌ماند. هر وقت خواستید از تنظیمات › راه‌اندازی ادامه دهید.',
-    'setup.later.toast': 'هر وقت خواستید از تنظیمات › راه‌اندازی ادامه دهید.',
+    'setup.later.text': 'هرچه ذخیره کرده‌اید می‌ماند. هر وقت خواستید از تنظیمات پروژه › راه‌اندازی ادامه دهید.',
+    'setup.later.toast': 'هر وقت خواستید از تنظیمات پروژه › راه‌اندازی ادامه دهید.',
     'setup.unsaved.title': 'تغییرات ذخیره نشده‌اند',
     'setup.unsaved.text': 'اگر از این مرحله بروید، تغییرات آن از بین می‌رود.',
     'setup.unsaved.ok': 'بدون ذخیره برو',
@@ -733,13 +747,13 @@ var MESSAGES = {
     'setup.sandbox.on': 'روشن است: همه‌چیز آزمایشی است و هیچ پیام یا پرداختی واقعی نیست.',
     'setup.sandbox.off': 'خاموش است: پیام‌ها و پرداخت‌ها واقعی‌اند.',
     'setup.pay.need': 'پرداخت لازم دارید؟',
-    'setup.pay.no': 'باشد. هر وقت لازم شد، از تنظیمات › درگاه‌های پرداخت روشنش کنید.',
+    'setup.pay.no': 'باشد. هر وقت لازم شد، از تنظیمات پروژه › درگاه‌های پرداخت روشنش کنید.',
     'setup.pay.pickOne': 'دست‌کم یک درگاه را انتخاب کنید.',
     'setup.pay.secret.sandbox': 'در حالت آزمایشی لازم نیست.',
     'setup.sms.need': 'پیامک لازم دارید؟',
-    'setup.sms.no': 'باشد. هر وقت لازم شد، از تنظیمات › پیامک اضافه‌اش کنید.',
+    'setup.sms.no': 'باشد. هر وقت لازم شد، از تنظیمات پروژه › پیامک اضافه‌اش کنید.',
     'setup.email.need': 'ایمیل لازم دارید؟',
-    'setup.email.no': 'باشد. هر وقت لازم شد، از تنظیمات › ایمیل اضافه‌اش کنید.',
+    'setup.email.no': 'باشد. هر وقت لازم شد، از تنظیمات پروژه › ایمیل اضافه‌اش کنید.',
     'setup.pv.kind': 'سرویس',
     'setup.pv.kind.hint': 'همین سرویس، سرویس پیش‌فرض این کانال می‌شود.',
     'setup.pv.new': 'این سرویس هنوز ساخته نشده است. با ذخیره، در حالت آزمایشی ساخته می‌شود.',
@@ -1333,7 +1347,7 @@ var MESSAGES = {
     'code.INVALID_TARGET': 'The recipients are not valid.',
     'code.INVALID_CHANNEL': 'The channel is not valid.',
     'code.PROVIDER_NOT_FOUND': 'Service not found.',
-    'code.PROVIDER_NOT_CONFIGURED': 'No active, complete service for this channel; fill in the required fields in Settings.',
+    'code.PROVIDER_NOT_CONFIGURED': 'No active, complete service for this channel; fill in the required fields in Project settings.',
     'code.PROVIDER_INACTIVE': 'This service is not active.',
     'code.PROVIDER_CHANNEL_MISMATCH': 'This service is for another channel.',
     'code.PROVIDER_KIND_FIXED': 'The service type cannot change after creation.',
@@ -1364,6 +1378,20 @@ var MESSAGES = {
     'f.keyType.category.hint': 'Where this category can be used.',
     'f.keyType.tag.hint': 'A General tag can be picked in every section.',
     'kind.general': 'General',
+    'kind.user': 'Player',
+    'ps.title': 'Project settings',
+    'ps.sections': 'Project settings sections',
+    'ps.noAccess': "You don't have access to any project settings section.",
+    'ps.noAccess.hint': 'Ask a console admin to give you access.',
+    'qc.add.categories': 'New category',
+    'qc.add.tags': 'New tag',
+    'qc.name': 'Name',
+    'qc.name.ph.categories': 'e.g. Special packs',
+    'qc.name.ph.tags': 'e.g. Best seller',
+    'qc.hint': 'For {type}, in {lang}. The key is made automatically.',
+    'qc.create': 'Create',
+    'qc.err.name': 'Type a name.',
+    'qc.created': '“{name}” was created and selected.',
     'f.name': 'Name',
     'f.message': 'Message',
     'f.description': 'Description',
@@ -1463,8 +1491,8 @@ var MESSAGES = {
     'setup.later': 'Later',
     'setup.stay': 'Keep going',
     'setup.later.title': 'Finish the rest later?',
-    'setup.later.text': 'Everything you saved stays. Continue any time from Settings › Setup.',
-    'setup.later.toast': 'Continue any time from Settings › Setup.',
+    'setup.later.text': 'Everything you saved stays. Continue any time from Project settings › Setup.',
+    'setup.later.toast': 'Continue any time from Project settings › Setup.',
     'setup.unsaved.title': 'Unsaved changes',
     'setup.unsaved.text': 'If you leave this step, its changes are lost.',
     'setup.unsaved.ok': 'Leave without saving',
@@ -1507,13 +1535,13 @@ var MESSAGES = {
     'setup.sandbox.on': 'On: everything is a test and no message or payment is real.',
     'setup.sandbox.off': 'Off: messages and payments are real.',
     'setup.pay.need': 'Do you need payments?',
-    'setup.pay.no': 'OK. Turn them on any time from Settings › Payment Gateways.',
+    'setup.pay.no': 'OK. Turn them on any time from Project settings › Payment Gateways.',
     'setup.pay.pickOne': 'Pick at least one gateway.',
     'setup.pay.secret.sandbox': 'Not needed in test mode.',
     'setup.sms.need': 'Do you need SMS?',
-    'setup.sms.no': 'OK. Add it any time from Settings › SMS.',
+    'setup.sms.no': 'OK. Add it any time from Project settings › SMS.',
     'setup.email.need': 'Do you need email?',
-    'setup.email.no': 'OK. Add it any time from Settings › Email.',
+    'setup.email.no': 'OK. Add it any time from Project settings › Email.',
     'setup.pv.kind': 'Service',
     'setup.pv.kind.hint': 'This service becomes the default for the channel.',
     'setup.pv.new': 'This service does not exist yet. Saving creates it in test mode.',
@@ -1864,7 +1892,9 @@ var ICONS = {
   pin: '<path d="M12 17v5M9 10.8a2 2 0 0 1-1.1 1.8l-1.8.9A2 2 0 0 0 5 15.2V17h14v-1.8a2 2 0 0 0-1.1-1.8l-1.8-.9A2 2 0 0 1 15 10.8V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>',
   users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
   flask: '<path d="M9 3h6M10 3v6.5L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9.5V3"/><path d="M7 15h10"/>',
-  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>'
+  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
+  gear: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/>'
 };
 var MIRROR = { first: 1, prev: 1, next: 1, back: 1, reply: 1 };
 
@@ -2405,6 +2435,7 @@ function refPicker(opts) {
   search.addEventListener('input', debounce(function () { load(toLatinDigits(search.value).trim()); }, 250));
   wrap.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) { e.stopPropagation(); close(); box.focus(); } });
 
+  wrap.select = function (item) { set(item[opts.valueKey || 'id'], item); };
   paint(refCache[cacheKey(value)]);
   if (value && !refCache[cacheKey(value)]) {
     var req = (opts.valueKey || 'id') === 'id'
@@ -2443,6 +2474,13 @@ function refMulti(opts) {
     }
     picker.querySelector('.eco-ref-clear') && picker.querySelector('.eco-ref-clear').click();
   } });
+  function add(item) {
+    refCache[opts.resource + ':id:' + item.id] = item;
+    if (values.indexOf(item.id) !== -1) return;
+    values.push(item.id);
+    paint();
+    opts.onchange(values.slice());
+  }
   var missing = values.filter(function (v) { return !refCache[opts.resource + ':id:' + v]; });
   missing.forEach(function (v) {
     call('GET', '/' + opts.resource + '/' + encodeURIComponent(v)).then(function (it) {
@@ -2452,7 +2490,95 @@ function refMulti(opts) {
     }, function () { return null; });
   });
   paint();
-  return h('div', {}, chips, picker);
+  var out = h('div', {}, chips, opts.quick ? h('div', { class: 'eco-ref-row' }, picker, quickCreate({ resource: opts.resource, keyType: opts.quick, onCreated: add })) : picker);
+  out.select = add;
+  return out;
+}
+
+var FA_LATIN = { 'ا': 'a', 'آ': 'a', 'أ': 'a', 'إ': 'e', 'ب': 'b', 'پ': 'p', 'ت': 't', 'ث': 's', 'ج': 'j', 'چ': 'ch', 'ح': 'h', 'خ': 'kh', 'د': 'd', 'ذ': 'z', 'ر': 'r', 'ز': 'z', 'ژ': 'zh', 'س': 's', 'ش': 'sh', 'ص': 's', 'ض': 'z', 'ط': 't', 'ظ': 'z', 'ع': 'a', 'غ': 'gh', 'ف': 'f', 'ق': 'gh', 'ک': 'k', 'ك': 'k', 'گ': 'g', 'ل': 'l', 'م': 'm', 'ن': 'n', 'و': 'v', 'ؤ': 'v', 'ه': 'h', 'ة': 'h', 'ی': 'i', 'ي': 'i', 'ئ': 'i', 'ى': 'i', 'ء': '' };
+
+function slugKey(text, prefix) {
+  var s = toLatinDigits(text).toLowerCase().split('').map(function (c) { return FA_LATIN[c] !== undefined ? FA_LATIN[c] : c; }).join('');
+  if (s.normalize) s = s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+  s = s.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48).replace(/-+$/, '');
+  return s || prefix + '-' + Date.now().toString(36).slice(-5);
+}
+
+function quickCreate(opts) {
+  var title = t('qc.add.' + opts.resource);
+  var btn = button({ variant: 'ghost', size: 'iconLg', icon: 'plus', title: title, class: 'eco-qc-btn border-secondary-300 dark:border-secondary-700' });
+  btn.setAttribute('aria-haspopup', 'dialog');
+  btn.setAttribute('aria-expanded', 'false');
+  btn.setAttribute('data-quick-create', opts.resource);
+  var input = textInput('', { label: t('qc.name'), placeholder: t('qc.name.ph.' + opts.resource) });
+  input.classList.add('text-sm');
+  var hint = h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1' });
+  var err = h('p', { class: 'eco-qc-err text-xs text-error-600 dark:text-error-400 mt-1', 'aria-live': 'assertive', hidden: true });
+  var create = button({ variant: 'primary', size: 'sm', label: t('qc.create'), onclick: function () { submit(); } });
+  create.setAttribute('data-qc-create', '');
+  var cancel = button({ variant: 'ghost', size: 'sm', label: t('cancel'), onclick: function () { close(true); } });
+  var pop = h('div', { class: 'eco-qc-pop bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 rounded-md shadow-lg p-3', role: 'dialog', 'aria-label': title, hidden: true },
+    h('div', { class: 'text-sm font-medium text-secondary-800 dark:text-secondary-100 mb-2', text: title }),
+    h('label', { class: 'x-label block x-input', style: INPUT_VARS }, input),
+    hint, err,
+    h('div', { class: 'flex justify-end gap-2 mt-3' }, cancel, create));
+  var wrap = h('div', { class: 'eco-qc relative shrink-0' }, btn, pop);
+  var busy = false;
+  function showErr(msg) {
+    err.textContent = msg || '';
+    err.hidden = !msg;
+    input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+  }
+  function outside(e) { if (!wrap.contains(e.target)) close(false); }
+  function open() {
+    pop.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    input.value = '';
+    hint.textContent = t('qc.hint', { type: keyTypeLabel(opts.resource, opts.keyType), lang: langName(LANGS.def) });
+    input.setAttribute('dir', langDir(LANGS.def));
+    showErr('');
+    input.focus();
+    document.addEventListener('mousedown', outside, true);
+  }
+  function close(refocus) {
+    if (pop.hidden) return;
+    pop.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('mousedown', outside, true);
+    if (refocus) btn.focus();
+  }
+  function submit() {
+    if (busy) return;
+    var text = input.value.trim();
+    if (!text) { showErr(t('qc.err.name')); input.focus(); return; }
+    showErr('');
+    busy = true;
+    setBusy(create, true, t('saving'));
+    attempt(slugKey(text, opts.keyType), 1, text);
+  }
+  function attempt(base, n, text) {
+    var name = {};
+    name[LANGS.def] = text;
+    var key = n === 1 ? base : base + '-' + n;
+    baseApi('POST', '/' + opts.resource, { keyType: opts.keyType, key: key, name: name, description: {}, iconUrl: '', metadata: {}, sort: 0 }).then(function (item) {
+      busy = false;
+      setBusy(create, false);
+      close(true);
+      opts.onCreated(item);
+      toast('success', t('qc.created', { name: text }));
+    }, function (e) {
+      if (e.code === 'ALREADY_EXISTS' && n < 9) return attempt(base, n + 1, text);
+      busy = false;
+      setBusy(create, false);
+      showErr(errorText(e));
+      input.focus();
+    });
+  }
+  btn.addEventListener('click', function () { if (pop.hidden) open(); else close(true); });
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); submit(); } });
+  input.addEventListener('input', function () { if (!err.hidden) showErr(''); });
+  wrap.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) { e.preventDefault(); e.stopPropagation(); close(true); } });
+  return wrap;
 }
 
 function imageInput(value, onchange) {
@@ -2971,8 +3097,12 @@ function buildForm(fields, values, ctx) {
       } });
     } else if (t2 === 'ref') {
       control = refPicker({ resource: f.resource, api: f.api, valueKey: f.valueKey, filter: f.filter, value: cur, required: f.required, label: label, onchange: function (v) { change(v); } });
+      if (f.quick) {
+        var single = control;
+        control = h('div', { class: 'eco-ref-row' }, single, quickCreate({ resource: f.resource, keyType: f.quick, onCreated: function (item) { single.select(item); } }));
+      }
     } else if (t2 === 'refMulti') {
-      control = refMulti({ resource: f.resource, api: f.api, filter: f.filter, value: cur, label: label, onchange: function (v) { change(v); } });
+      control = refMulti({ resource: f.resource, api: f.api, filter: f.filter, value: cur, label: label, quick: f.quick, onchange: function (v) { change(v); } });
     } else if (t2 === 'image') {
       control = imageInput(cur, function (v) { change(v); });
     } else if (t2 === 'datetime') {
@@ -3097,7 +3227,7 @@ var METHODS = ['zarinpal', 'zibal', 'bazaar', 'myket', 'in_app'];
 var GATEWAYS = ['zarinpal', 'zibal'];
 var STORES = ['bazaar', 'myket'];
 var CATEGORY_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news'];
-var TAG_KEY_TYPES = ['product', 'prize', 'news', 'faq', 'general'];
+var TAG_KEY_TYPES = ['product', 'prize', 'news', 'faq', 'general', 'user'];
 var LANG_CODE_RE = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/;
 var keyTypeCache = {};
 var keyTypePromise = null;
@@ -3123,11 +3253,11 @@ function keyTypeOptions(resource) {
 }
 
 function categoryField(keyType) {
-  return { name: 'categoryId', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: keyType }, label: 'f.category', optional: true };
+  return { name: 'categoryId', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: keyType }, quick: keyType, label: 'f.category', optional: true };
 }
 
 function tagsField(keyType) {
-  return { name: 'tagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: [{ keyType: keyType }, { keyType: 'general' }], label: 'f.tags', optional: true, empty: [] };
+  return { name: 'tagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: [{ keyType: keyType }, { keyType: 'general' }], quick: keyType, label: 'f.tags', optional: true, empty: [] };
 }
 
 function tr(name, opts) {
@@ -3424,7 +3554,6 @@ var RESOURCES = {
   },
   languages: {
     api: 'base',
-    settings: true,
     filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
     columns: [
       { label: 'col.language', render: languageCell, skeleton: '60%' },
@@ -3537,21 +3666,15 @@ var RESOURCES = {
 };
 
 var SECTIONS = {
-  base: ['categories', 'tags'],
   economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments'],
   publication: ['faqs', 'news', 'comments', 'notifications']
 };
-var SETTINGS_TABS = ['payment-methods', 'sms', 'email', 'languages', 'brand', 'setup'];
-var LEGACY_HASHES = { economy: { 'payment-methods': 'payment-methods' }, publication: { providers: 'sms' } };
-var SECTION_ORDER = ['base', 'economy', 'publication'];
-var MOVED_PAGES = { 'economy/categories': 'base/categories', 'economy/tags': 'base/tags' };
-var PAGES = SECTIONS.base.concat(SECTIONS.economy, SECTIONS.publication);
+var SECTION_ORDER = ['economy', 'publication'];
 var LIMIT = 20;
 var lastQuery = { comments: { status: 'pending' } };
 
 function sectionOf(page) {
-  if (SETTINGS_TABS.indexOf(page) !== -1) return 'settings';
-  if (SECTIONS.base.indexOf(page) !== -1) return 'base';
+  if (psSection(page)) return PS_ROUTE;
   return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
 }
 
@@ -3559,7 +3682,7 @@ function apiFor(page) {
   var def = RESOURCES[page];
   if (def && def.api === 'base') return baseApi;
   var sec = sectionOf(page);
-  return sec === 'publication' ? pubApi : sec === 'base' ? baseApi : api;
+  return sec === 'publication' ? pubApi : api;
 }
 
 function hashFor(page, id, query) {
@@ -3583,7 +3706,7 @@ function listPage(container, name, query, ctx) {
   lastQuery[name] = currentQuery();
 
   var create = def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new', currentQuery()); } }) : def.create ? def.create() : null;
-  var frame = def.settings ? tabFrame(t('desc.' + name), create) : pageFrame(t('nav.' + name), t('desc.' + name), create);
+  var frame = def.settings || sectionOf(name) === PS_ROUTE ? tabFrame(t('desc.' + name), create) : pageFrame(t('nav.' + name), t('desc.' + name), create);
   var pagerTop = h('div', { class: 'relative flex items-center justify-end' });
   var pagerBottom = h('div', { class: 'flex gap-2 py-4 items-center justify-end' });
   var tableBox = h('div', {});
@@ -3722,7 +3845,7 @@ function openEditor(name, id, query, onSaved) {
   var footer = h('div', { class: 'flex gap-4 w-full items-center' });
   var back = function () { go(name, null, lastQuery[name] || {}); };
   var el = sidePanel(title, body, footer, back);
-  var esc = function (e) { if (e.key === 'Escape' && panelState && !document.querySelector('[data-economy="panel"] .eco-pop:not([hidden])')) { e.preventDefault(); back(); } };
+  var esc = function (e) { if (e.key === 'Escape' && panelState && !document.querySelector('[data-economy="panel"] .eco-pop:not([hidden]), [data-economy="panel"] .eco-qc-pop:not([hidden])')) { e.preventDefault(); back(); } };
   document.addEventListener('keydown', esc, true);
   panelState = { el: el, key: name + '/' + id, esc: esc };
   document.body.appendChild(el);
@@ -5562,12 +5685,24 @@ function openWizard(state, auto, step) {
 
 function trapKeys(e) {
   if (e.key !== 'Tab' || !wiz || document.querySelector('[data-economy="dialog"]')) return;
-  var list = focusables(wiz.el);
+  trapTab(e, wiz.el);
+}
+
+function trapTab(e, root) {
+  var list = focusables(root).filter(function (el) { return el.getAttribute('tabindex') !== '-1'; });
   if (!list.length) return;
   var first = list[0];
   var last = list[list.length - 1];
-  if (e.shiftKey && (document.activeElement === first || !wiz.el.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
-  else if (!e.shiftKey && (document.activeElement === last || !wiz.el.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+  var active = document.activeElement;
+  if (active && root.contains(active) && list.indexOf(active) === -1) {
+    var after = list.some(function (el) { return active.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING; });
+    var before = list.some(function (el) { return active.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_PRECEDING; });
+    if (!e.shiftKey && !after) { e.preventDefault(); first.focus(); }
+    else if (e.shiftKey && !before) { e.preventDefault(); last.focus(); }
+    return;
+  }
+  if (e.shiftKey && (document.activeElement === first || !root.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && (document.activeElement === last || !root.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
 }
 
 function wizardEsc(e) {
@@ -5589,7 +5724,7 @@ function closeWizard(later, done) {
     document.documentElement.classList.remove('setup-open');
     wiz = null;
     if (w.prevFocus && w.prevFocus.isConnected) { try { w.prevFocus.focus(); } catch (e) {} }
-    if (rendered && rendered.key && rendered.key.indexOf('|setup|') !== -1) { rendered.key = ''; schedule(); }
+    psRefresh('setup');
   };
   if (done) { go(); return; }
   if (later && (!w.ctl || !w.ctl.dirty || !w.ctl.dirty())) {
@@ -6282,18 +6417,326 @@ function setupPage(container) {
   load();
 }
 
+var PS_ROUTE = 'project-settings';
+var PS_SECTIONS = [
+  { id: 'brand', label: 'tab.brand', icon: 'image', acl: 'SETTINGS', render: function (box) { brandPage(box); } },
+  { id: 'setup', label: 'tab.setup', icon: 'flask', acl: 'SETTINGS', render: function (box) { setupPage(box); } },
+  { id: 'languages', label: 'tab.languages', icon: 'languages', acl: 'SETTINGS', render: function (box, route, ctx) { return languagesPage(box, route.query, ctx); } },
+  { id: 'categories', label: 'nav.categories', icon: 'categories', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'categories', route.query, ctx); } },
+  { id: 'tags', label: 'nav.tags', icon: 'tags', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'tags', route.query, ctx); } },
+  { id: 'payment-methods', label: 'tab.payment-methods', icon: 'payments', acl: 'HIRO_ECONOMY', render: function (box) { paymentMethodsPage(box); } },
+  { id: 'sms', label: 'tab.sms', icon: 'comments', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'sms'); } },
+  { id: 'email', label: 'tab.email', icon: 'mail', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'email'); } }
+];
+var PS_LEGACY = {
+  'settings/brand': 'brand',
+  'settings/setup': 'setup',
+  'settings/languages': 'languages',
+  'settings/payment-methods': 'payment-methods',
+  'settings/sms': 'sms',
+  'settings/email': 'email',
+  'base/categories': 'categories',
+  'base/tags': 'tags',
+  'economy/categories': 'categories',
+  'economy/tags': 'tags',
+  'economy/payment-methods': 'payment-methods',
+  'publication/providers': 'sms'
+};
+var ACL_RESOURCES = { NOTIFICATION: 20, SETTINGS: 22, HIRO_ECONOMY: 27 };
+var PS_RETURN_KEY = 'economy.ps.return';
+var aclCache = { tk: null, bits: null };
+var ps = null;
+var psReturn = null;
+try { psReturn = sessionStorage.getItem(PS_RETURN_KEY); } catch (e) { psReturn = null; }
+
+function psSection(id) {
+  for (var i = 0; i < PS_SECTIONS.length; i++) if (PS_SECTIONS[i].id === id) return PS_SECTIONS[i];
+  return null;
+}
+
+function b64urlBytes(s) {
+  s = String(s || '').replace(/-/g, '+').replace(/_/g, '/');
+  while (s.length % 4) s += '=';
+  var bin = atob(s);
+  var out = [];
+  for (var i = 0; i < bin.length; i++) out.push(bin.charCodeAt(i));
+  return out;
+}
+
+function consoleAcl() {
+  var tk = token();
+  if (!tk) return null;
+  if (aclCache.tk === tk) return aclCache.bits;
+  var bits = null;
+  try {
+    var payload = JSON.parse(new TextDecoder().decode(new Uint8Array(b64urlBytes(tk.split('.')[1]))));
+    if (payload && typeof payload.acl === 'string' && payload.acl) bits = b64urlBytes(payload.acl);
+  } catch (e) { bits = null; }
+  aclCache = { tk: tk, bits: bits };
+  return bits;
+}
+
+function aclCan(resource, level) {
+  var bits = consoleAcl();
+  if (!bits || !bits.length) return true;
+  if (bits.every(function (b) { return b === 0xFF; })) return true;
+  var idx = ACL_RESOURCES[resource] * 3 + (level || 0);
+  return !!(bits[idx >> 3] & (1 << (7 - (idx & 7))));
+}
+
+function psAllowed() {
+  return PS_SECTIONS.filter(function (s) { return aclCan(s.acl, 0); });
+}
+
+function psEntryHash() {
+  var allowed = psAllowed();
+  return hashFor(allowed.length ? allowed[0].id : PS_SECTIONS[0].id);
+}
+
+function psRemember(hash) {
+  if (!hash || /^#\/login/.test(hash)) return;
+  psReturn = hash;
+  try { sessionStorage.setItem(PS_RETURN_KEY, hash); } catch (e) { return; }
+}
+
+function psNavigate(hash, replace) {
+  if (router) {
+    var p = replace ? router.replace(hash.slice(1)) : router.push(hash.slice(1));
+    Promise.resolve(p).then(schedule, schedule);
+    return;
+  }
+  if (replace) history.replaceState(history.state, '', location.pathname + location.search + hash);
+  else location.hash = hash;
+  schedule();
+}
+
+function psEnter(e) {
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+  e.preventDefault();
+  if (ps) { if (ps.list) { var tab = ps.list.querySelector('[aria-selected="true"]'); if (tab) tab.focus(); } return; }
+  psNavigate(e.currentTarget.getAttribute('href'), false);
+}
+
+function psExit() {
+  var back = psReturn || '#/';
+  var st = history.state;
+  if (st && typeof st.back === 'string' && '#' + st.back === back) history.back();
+  else psNavigate(back, true);
+}
+
+function psRefresh(page) {
+  if (ps && ps.ctl && ps.ctl.key && ps.ctl.key.indexOf('|' + page + '|') !== -1) { ps.ctl.key = ''; schedule(); }
+}
+
+function psKeys(e) {
+  if (!ps || wiz || document.querySelector('[data-economy="dialog"]') || panelState) return;
+  if (e.key === 'Tab') { trapTab(e, ps.win); return; }
+  if (e.key !== 'Escape' || e.defaultPrevented) return;
+  if (ps.el.querySelector('.eco-pop:not([hidden]), .eco-qc-pop:not([hidden])')) return;
+  e.preventDefault();
+  psExit();
+}
+
+function psFocusIn(e) {
+  if (!ps || wiz || panelState || document.querySelector('[data-economy="dialog"]')) return;
+  if (ps.el.contains(e.target) || (e.target.closest && e.target.closest('.eco-toasts'))) return;
+  var list = focusables(ps.win).filter(function (el) { return el.getAttribute('tabindex') !== '-1'; });
+  var target = ps.list.querySelector('[aria-selected="true"]') || list[0];
+  if (target) target.focus({ preventScroll: true });
+}
+
+function psListKeys(e) {
+  var items = Array.prototype.slice.call(ps.list.querySelectorAll('[role="tab"]'));
+  var i = items.indexOf(document.activeElement);
+  if (i === -1) return;
+  var rtl = (document.documentElement.getAttribute('dir') || 'ltr') === 'rtl';
+  var next = null;
+  if (e.key === 'ArrowDown' || e.key === (rtl ? 'ArrowLeft' : 'ArrowRight')) next = items[(i + 1) % items.length];
+  else if (e.key === 'ArrowUp' || e.key === (rtl ? 'ArrowRight' : 'ArrowLeft')) next = items[(i - 1 + items.length) % items.length];
+  else if (e.key === 'Home') next = items[0];
+  else if (e.key === 'End') next = items[items.length - 1];
+  if (!next) return;
+  e.preventDefault();
+  next.focus();
+  psNavigate(next.getAttribute('href'), true);
+}
+
+function psMount() {
+  var list = h('div', { class: 'ps-list', role: 'tablist', 'aria-orientation': 'vertical' });
+  list.addEventListener('keydown', psListKeys);
+  var headIcon = h('span', { class: 'ps-head-icon' });
+  var headTitle = h('h3', { id: 'ps-section-title', class: 'ps-head-title' });
+  var body = h('div', { id: 'project-settings-body', class: 'ps-body', role: 'tabpanel', 'aria-labelledby': 'ps-section-title', 'data-l10n-skip': '' });
+  var scroller = h('div', { class: 'ps-scroll' }, body);
+  var title = h('h2', { id: 'ps-title', class: 'ps-title' });
+  var close = button({ variant: 'ghost', size: 'iconLg', icon: 'close', title: t('close'), class: 'ps-close', onclick: psExit });
+  close.setAttribute('data-ps-close', '');
+  var win = h('div', { class: 'ps-window', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'ps-title' },
+    h('aside', { class: 'ps-side' },
+      h('div', { class: 'ps-side-head' }, h('span', { class: 'ps-mark' }, icon('gear', 'h-5 w-5')), title),
+      list),
+    h('section', { class: 'ps-main' },
+      h('header', { class: 'ps-head' }, headIcon, headTitle),
+      scroller),
+    close);
+  var holder = h('div', { class: 'ps-holder' }, win);
+  holder.addEventListener('mousedown', function (e) { if (e.target === holder) psExit(); });
+  var el = h('div', { 'data-economy': 'project-settings', 'data-l10n-skip': '' }, h('div', { class: 'ps-shade' }), holder);
+  ps = { el: el, win: win, list: list, body: body, scroller: scroller, title: title, headIcon: headIcon, headTitle: headTitle, ctl: null, listKey: null, page: null, prevFocus: document.activeElement };
+  if (rendered) rendered.id = undefined;
+  closePanel();
+  document.body.appendChild(el);
+  document.documentElement.classList.add('ps-open');
+  document.documentElement.setAttribute('data-ps-open', '');
+  document.addEventListener('keydown', psKeys, true);
+  document.addEventListener('focusin', psFocusIn, true);
+}
+
+function psHide() {
+  if (!ps) return;
+  var old = ps;
+  ps = null;
+  closePanel();
+  old.el.remove();
+  document.removeEventListener('keydown', psKeys, true);
+  document.removeEventListener('focusin', psFocusIn, true);
+  document.documentElement.classList.remove('ps-open');
+  document.documentElement.removeAttribute('data-ps-open');
+  if (old.prevFocus && old.prevFocus.isConnected && !old.el.contains(old.prevFocus)) { try { old.prevFocus.focus({ preventScroll: true }); } catch (e) { return; } }
+}
+
+function psPaintList(allowed, page) {
+  var key = lang() + '|' + page + '|' + allowed.map(function (s) { return s.id; }).join(',');
+  if (ps.listKey === key) return;
+  ps.listKey = key;
+  ps.title.textContent = t('ps.title');
+  ps.list.setAttribute('aria-label', t('ps.sections'));
+  ps.list.setAttribute('aria-orientation', window.matchMedia && window.matchMedia('(max-width: 767px)').matches ? 'horizontal' : 'vertical');
+  var focused = ps.list.contains(document.activeElement);
+  var have = Array.prototype.map.call(ps.list.children, function (a) { return a.getAttribute('data-ps-section'); }).join(',');
+  if (have && have === allowed.map(function (s) { return s.id; }).join(',')) {
+    var cur = null;
+    Array.prototype.forEach.call(ps.list.children, function (a) {
+      var id = a.getAttribute('data-ps-section');
+      var on = id === page;
+      a.setAttribute('aria-selected', on ? 'true' : 'false');
+      a.setAttribute('tabindex', on ? '0' : '-1');
+      a.querySelector('span').textContent = t(psSection(id).label);
+      if (on) cur = a;
+    });
+    if (cur && focused && document.activeElement !== cur) cur.focus({ preventScroll: true });
+    if (cur && cur.scrollIntoView && ps.list.scrollWidth > ps.list.clientWidth) cur.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    return;
+  }
+  clear(ps.list);
+  var current = null;
+  allowed.forEach(function (s) {
+    var on = s.id === page;
+    var a = h('a', { href: hashFor(s.id), role: 'tab', id: 'ps-tab-' + s.id, class: 'ps-item', 'aria-selected': on ? 'true' : 'false', 'aria-controls': 'project-settings-body', tabindex: on ? '0' : '-1', 'data-ps-section': s.id },
+      icon(s.icon, 'h-4 w-4'), h('span', { class: 'truncate', text: t(s.label) }));
+    a.addEventListener('click', function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      if (s.id !== (ps && ps.page)) psNavigate(hashFor(s.id), true);
+    });
+    if (on) current = a;
+    ps.list.appendChild(a);
+  });
+  if (current) {
+    if (focused) current.focus({ preventScroll: true });
+    if (current.scrollIntoView && ps.list.scrollWidth > ps.list.clientWidth) current.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
+}
+
+function psShow(route) {
+  var allowed = psAllowed();
+  var sec = psSection(route.page);
+  if (allowed.length && allowed.indexOf(sec) === -1) {
+    var to = '#/' + PS_ROUTE + '/' + allowed[0].id;
+    if (router) router.replace(to.slice(1)).then(schedule, schedule);
+    else { history.replaceState(history.state, '', location.pathname + location.search + to); schedule(); }
+    return;
+  }
+  var fresh = !ps;
+  if (fresh) psMount();
+  ps.el.setAttribute('dir', document.documentElement.getAttribute('dir') || 'ltr');
+  psPaintList(allowed, route.page);
+  if (!allowed.length) {
+    if (ps.page !== null || fresh) {
+      ps.page = null;
+      ps.ctl = null;
+      clear(ps.headIcon);
+      ps.headTitle.textContent = t('ps.title');
+      clear(ps.body).appendChild(card(emptyBlock(t('ps.noAccess'), t('ps.noAccess.hint'))));
+    }
+    if (fresh) ps.win.querySelector('[data-ps-close]').focus();
+    return;
+  }
+  if (ps.page !== route.page || !ps.ctl || ps.headTitle.textContent !== t(sec.label)) {
+    clear(ps.headIcon).appendChild(icon(sec.icon, 'h-5 w-5'));
+    ps.headTitle.textContent = t(sec.label);
+  }
+  ps.page = route.page;
+  ps.ctl = pageCtl(ps.ctl, ps.body, route, function (ctl) {
+    ps.scroller.scrollTop = 0;
+    ps.ctl = ctl;
+  });
+  if (fresh) {
+    var tab = ps.list.querySelector('[aria-selected="true"]');
+    if (tab) tab.focus({ preventScroll: true });
+  }
+}
+
+function placePsNav(drawer, collapsed, on, key) {
+  var scroll = drawer.querySelector(':scope > .x-scroll');
+  var existing = drawer.querySelector(':scope > [data-ps-nav]');
+  if (!scroll || !psAllowed().length) {
+    if (existing) existing.remove();
+    return null;
+  }
+  if (existing && existing.getAttribute('data-key') === key && existing.previousElementSibling === scroll) return existing;
+  var a = h('a', { href: psEntryHash(), class: (on ? NAV_ACTIVE + ' ' : '') + NAV_LINK, 'aria-current': on ? 'page' : null, title: collapsed ? t('ps.title') : null, 'data-ps-entry': 'sidebar', onclick: psEnter });
+  a.appendChild(collapsed ? h('div', { class: 'x-tooltip flex' }, icon('gear', 'h-4 w-4')) : icon('gear', 'h-4 w-4'));
+  a.appendChild(h('div', { class: 'font-medium relative truncate' + (collapsed ? '' : ' flex-1') }, h('span', { text: collapsed ? ' ' : t('ps.title') })));
+  var box = h('div', { class: 'ps-nav', 'data-ps-nav': '', 'data-l10n-skip': '', 'data-key': key }, h('nav', { 'aria-label': t('ps.title') }, a));
+  if (existing) existing.replaceWith(box);
+  else scroll.after(box);
+  return box;
+}
+
+var psButton = null;
+
+function dockPsButton() {
+  if (!psButton) {
+    psButton = h('a', { class: 'economy-ps', 'data-l10n-skip': '', 'data-ps-entry': 'topbar', onclick: psEnter }, icon('gear', 'h-4 w-4'));
+  }
+  var counter = document.querySelector('number-flow-vue');
+  var bar = counter && counter.closest('.justify-end');
+  var menu = bar && bar.querySelector(':scope > .x-popover');
+  var show = !!menu && !!token() && psAllowed().length > 0;
+  if (!show) {
+    if (psButton.parentElement) psButton.remove();
+    return;
+  }
+  var href = psEntryHash();
+  if (psButton.getAttribute('href') !== href) psButton.setAttribute('href', href);
+  if (psButton.getAttribute('aria-label') !== t('ps.title')) {
+    psButton.setAttribute('title', t('ps.title'));
+    psButton.setAttribute('aria-label', t('ps.title'));
+  }
+  if (ps) psButton.setAttribute('aria-current', 'page');
+  else psButton.removeAttribute('aria-current');
+  if (psButton.nextElementSibling !== menu) menu.before(psButton);
+}
+
 var ROOT_ID = 'economy-root';
 var NAV_LINK = 'h-[37px] px-3 py-2 flex items-center gap-2 text-secondary-800 hover:text-primary-700 dark:text-[#afbccb] dark:hover:text-primary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-md border-l-[2px] border-transparent dark:border-transparent';
-var NAV_ACTIVE = '!border-primary-600 !text-primary-700 dark:!text-primary-300 !bg-secondary-50 dark:!bg-secondary-800 !border-primary-700';
+var NAV_ACTIVE = '!text-primary-700 dark:!text-primary-300 !bg-secondary-50 dark:!bg-secondary-800 !border-primary-700';
 var rendered = null;
 var router = null;
 var pendingHash = null;
 var EmptyPage = { name: 'EconomyPage', render: function () { return null; } };
-var TAB_ON = 'text-[color:var(--x-tab-group-text)] dark:text-[color:var(--x-tab-group-dark-text)]';
-var TAB_VARS = {
-  off: '--x-link-text: #475569; --x-link-text-hover: #334155; --x-link-shadow: #f1f5f9; --x-link-dark-text: #94a3b8; --x-link-dark-text-hover: #cbd5e1; --x-link-dark-shadow: #0f172a;',
-  on: '--x-link-text: rgb(var(--primary-color-600)); --x-link-text-hover: rgb(var(--primary-color-700)); --x-link-shadow: rgb(var(--primary-color-100)); --x-link-dark-text: rgb(var(--primary-color-400)); --x-link-dark-text-hover: rgb(var(--primary-color-300)); --x-link-dark-shadow: rgb(var(--primary-color-900));'
-};
+var SECTION_TITLE = { economy: 'Economy', publication: 'Publishing' };
 
 function captureRouter(app) {
   if (router) return;
@@ -6306,22 +6749,11 @@ function captureRouter(app) {
       if (r.hasRoute(sec)) return;
       r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { title: SECTION_TITLE[sec] } }] });
     });
-    Object.keys(MOVED_PAGES).forEach(function (from) {
-      var name = 'moved-' + from.replace('/', '-');
-      if (!r.hasRoute(name)) r.addRoute({ path: '/' + from + '/:rest(.*)*', name: name, redirect: function (to) { return to.fullPath.replace('/' + from, '/' + MOVED_PAGES[from]); } });
+    if (!r.hasRoute(PS_ROUTE)) r.addRoute({ path: '/' + PS_ROUTE + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: PS_ROUTE, component: EmptyPage, meta: { get title() { return psTitle(); } } }] });
+    Object.keys(PS_LEGACY).forEach(function (from) {
+      var name = 'legacy-' + from.replace('/', '-');
+      if (!r.hasRoute(name)) r.addRoute({ path: '/' + from + '/:rest(.*)*', name: name, redirect: function (to) { return to.fullPath.replace('/' + from, '/' + PS_ROUTE + '/' + PS_LEGACY[from]); } });
     });
-    if (r.hasRoute('settings')) {
-      SETTINGS_TABS.forEach(function (tab) {
-        if (!r.hasRoute('settings-' + tab)) r.addRoute('settings', { path: tab, name: 'settings-' + tab, component: EmptyPage, meta: tabMeta(tab) });
-        if (RESOURCES[tab] && !r.hasRoute('settings-' + tab + '-item')) r.addRoute('settings', { path: tab + '/:id(.*)', name: 'settings-' + tab + '-item', component: EmptyPage, meta: tabMeta(tab) });
-      });
-      Object.keys(LEGACY_HASHES).forEach(function (sec) {
-        Object.keys(LEGACY_HASHES[sec]).forEach(function (page) {
-          var name = 'legacy-' + sec + '-' + page;
-          if (!r.hasRoute(name)) r.addRoute({ path: '/' + sec + '/' + page + '/:rest(.*)*', name: name, redirect: hashFor(LEGACY_HASHES[sec][page]).slice(1) });
-        });
-      });
-    }
     router = r;
   } catch (e) {
     router = null;
@@ -6334,23 +6766,15 @@ function captureRouter(app) {
   }
 }
 
-var SECTION_TITLE = { base: 'General', economy: 'Economy', publication: 'Publishing' };
-
-function movedHash(hash) {
-  var m = /^#\/([^/?]+\/[^/?]+)(.*)$/.exec(hash || '');
-  return m && MOVED_PAGES[m[1]] ? '#/' + MOVED_PAGES[m[1]] + m[2] : null;
-}
-
-function tabMeta(tab) {
-  return { get title() { return t('settings') + ' - ' + t('tab.' + tab); } };
+function psTitle() {
+  var r = parseRoute(location.hash);
+  var sec = r && psSection(r.page);
+  return t('ps.title') + (sec ? ' - ' + t(sec.label) : '');
 }
 
 function legacyHash(hash) {
-  var moved = movedHash(hash);
-  if (moved) return moved;
-  var m = /^#\/(economy|publication)\/([^/?]+)/.exec(hash);
-  var to = m && LEGACY_HASHES[m[1]][m[2]];
-  return to ? hashFor(to) : null;
+  var m = /^#\/([^/?]+\/[^/?]+)(.*)$/.exec(hash || '');
+  return m && PS_LEGACY[m[1]] ? '#/' + PS_ROUTE + '/' + PS_LEGACY[m[1]] + m[2] : null;
 }
 
 function trapApp() {
@@ -6368,21 +6792,23 @@ function trapApp() {
 }
 
 function replaceHash(hash) {
-  if (rendered) rendered.key = keyOf(parseRoute(hash));
+  var r = parseRoute(hash);
+  if (r && r.section === PS_ROUTE) { if (ps && ps.ctl) ps.ctl.key = keyOf(r); }
+  else if (rendered) rendered.key = keyOf(r);
   if (router) router.replace(hash.slice(1));
   else history.replaceState(history.state, '', location.pathname + location.search + hash);
 }
 
 function parseRoute(hash) {
-  var m = /^#\/(base|economy|publication|settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(economy|publication|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
-  if (section === 'settings') {
-    if (SETTINGS_TABS.indexOf(m[2]) === -1) return null;
-    if (!RESOURCES[m[2]]) return { section: section, page: m[2], id: null, query: {} };
+  var page;
+  if (section === PS_ROUTE) page = psSection(m[2]) ? m[2] : null;
+  else {
+    page = m[2] || SECTIONS[section][0];
+    if (SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   }
-  var page = section === 'settings' ? m[2] : m[2] || SECTIONS[section][0];
-  if (section !== 'settings' && SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   var query = {};
   (m[4] || '').split('&').forEach(function (pair) {
     if (!pair) return;
@@ -6400,23 +6826,18 @@ function keyOf(r) {
   return lang() + '|' + r.page + detail + '|' + JSON.stringify(r.query);
 }
 
-function navIcon(name) {
-  var svg = icon(name, 'h-4 w-4');
-  return svg;
-}
-
 function buildNav(section, collapsed, active) {
   var ul = h('ul', { class: 'space-y-0.5' });
   SECTIONS[section].forEach(function (p) {
     var on = p === active;
     var a = h('a', { href: hashFor(p, null, p === active ? null : lastQuery[p]), class: (on ? NAV_ACTIVE + ' ' : '') + NAV_LINK, 'aria-current': on ? 'page' : null, title: collapsed ? t('nav.' + p) : null, 'data-economy-page': p });
-    a.appendChild(collapsed ? h('div', { class: 'x-tooltip flex' }, navIcon(p)) : navIcon(p));
-    a.appendChild(h('div', { class: 'font-medium relative truncate' + (collapsed ? '' : ' flex-1') }, h('span', { text: collapsed ? ' ' : t('nav.' + p) })));
+    a.appendChild(collapsed ? h('div', { class: 'x-tooltip flex' }, icon(p, 'h-4 w-4')) : icon(p, 'h-4 w-4'));
+    a.appendChild(h('div', { class: 'font-medium relative truncate' + (collapsed ? '' : ' flex-1') }, h('span', { text: collapsed ? ' ' : t('nav.' + p) })));
     var badge = navBadge(p, collapsed);
     if (badge) a.appendChild(badge);
     ul.appendChild(h('li', {}, a));
   });
-  var title = section === 'economy' ? 'section' : section === 'base' ? 'section.base' : 'section.pub';
+  var title = section === 'economy' ? 'section' : 'section.pub';
   return h('div', { 'data-economy-nav': section, 'data-l10n-skip': '', class: section === SECTION_ORDER[0] ? null : 'eco-nav-next' },
     h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 ' + (collapsed ? 'text-[8px] text-center' : 'px-3 text-[10px]'), text: collapsed ? t(title + '.short') : t(title) }),
     h('nav', { 'aria-label': t(title) }, ul));
@@ -6439,16 +6860,17 @@ function isCollapsed(anchor) {
   var drawer = anchor.closest('.x-drawer');
   if (drawer && drawer.getBoundingClientRect().width > 0 && drawer.getBoundingClientRect().width < 100) return true;
   var span = anchor.querySelector('span');
-  return !!span && span.textContent === ' ';
+  return !!span && span.textContent === ' ';
 }
 
-function syncSidebar(route) {
+function syncSidebar(route, psOn) {
   var active = route ? route.page : null;
   var anchors = document.querySelectorAll('a[href="#/players"]');
   var keep = [];
   for (var i = 0; i < anchors.length; i++) {
     var a = anchors[i];
-    if (!a.closest('.x-drawer') || a.closest('#' + ROOT_ID)) continue;
+    var drawer = a.closest('.x-drawer');
+    if (!drawer || a.closest('#' + ROOT_ID)) continue;
     var nav = a.closest('nav');
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
@@ -6459,15 +6881,17 @@ function syncSidebar(route) {
       prev = placeNav(prev, SECTION_ORDER[si], collapsed, active, key);
       keep.push(prev);
     }
+    var psNav = placePsNav(drawer, collapsed, !!psOn, lang() + '|' + collapsed + '|' + !!psOn + '|' + psEntryHash());
+    if (psNav) keep.push(psNav);
     refreshBadge(false);
     var vueActive = group.parentElement.querySelectorAll('a[aria-current="page"]:not([data-economy-page])');
-    for (var j = 0; j < vueActive.length && active; j++) {
+    for (var j = 0; j < vueActive.length && (active || psOn); j++) {
       if (vueActive[j].getAttribute('href') === '#/') vueActive[j].setAttribute('data-economy-dimmed', '');
     }
   }
-  var all = document.querySelectorAll('[data-economy-nav]');
+  var all = document.querySelectorAll('[data-economy-nav],[data-ps-nav]');
   for (var k = 0; k < all.length; k++) if (keep.indexOf(all[k]) === -1) all[k].remove();
-  document.documentElement.toggleAttribute('data-economy-active', !!active);
+  document.documentElement.toggleAttribute('data-economy-active', !!active || !!psOn);
 }
 
 function showMains() {
@@ -6486,105 +6910,43 @@ function unmount() {
   rendered = null;
 }
 
-var NATIVE_TAB = 'a.x-tab[href^="#/settings/"]:not([data-settings-tab])';
-
-function settingsTabRow() {
-  var tabs = document.querySelectorAll('#main > main .x-tab-group ' + NATIVE_TAB);
-  if (!tabs.length) return null;
-  var row = tabs[0].parentElement;
-  while (row && !row.contains(tabs[tabs.length - 1])) row = row.parentElement;
-  return row;
+function mountPage(root, route, ctl) {
+  var ps2 = psSection(route.page);
+  var ctx = { id: route.id, query: route.query };
+  if (ps2) { ctl.list = ps2.render(root, route, ctx) || null; return; }
+  if (route.page === 'comments') refreshBadge(true);
+  if (route.page === 'overview') overviewPage(root);
+  else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
+  else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
+  else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
+  else ctl.list = listPage(root, route.page, route.query, ctx);
 }
 
-function tabItem(row, a) {
-  var item = a;
-  while (item.parentElement && item.parentElement !== row) item = item.parentElement;
-  return item;
-}
-
-function settingsTab(baseItem, tab, on) {
-  var item = baseItem.cloneNode(true);
-  var a = item.matches('a.x-tab') ? item : item.querySelector('a.x-tab');
-  a.removeAttribute('aria-current');
-  a.classList.remove('router-link-active', 'router-link-exact-active');
-  TAB_ON.split(' ').forEach(function (c) { a.classList.remove(c); });
-  if (on) TAB_ON.split(' ').forEach(function (c) { a.classList.add(c); });
-  a.classList.add('eco-tab');
-  a.classList.toggle('eco-tab-on', on);
-  a.setAttribute('href', hashFor(tab));
-  a.setAttribute('aria-selected', on ? 'true' : 'false');
-  if (on) a.setAttribute('aria-current', 'page');
-  item.setAttribute('data-value', location.origin + location.pathname + hashFor(tab));
-  item.setAttribute('data-settings-tab', tab);
-  a.setAttribute('data-settings-tab', tab);
-  item.setAttribute('data-l10n-skip', '');
-  a.setAttribute('style', on ? TAB_VARS.on : TAB_VARS.off);
-  var label = a.querySelector('.font-medium');
-  if (label) label.textContent = t('tab.' + tab);
-  else a.textContent = t('tab.' + tab);
-  return item;
-}
-
-function syncSettingsTabs(route) {
-  var row = settingsTabRow();
-  if (!row) return null;
-  var active = route && route.section === 'settings' ? route.page : null;
-  var group = row.closest('.x-tab-group') || row;
-  if (active) group.setAttribute('data-eco-active', '');
-  else group.removeAttribute('data-eco-active');
-  var key = lang() + '|' + active;
-  var ours = row.querySelectorAll(':scope > [data-settings-tab]');
-  var natives = row.querySelectorAll(NATIVE_TAB);
-  var last = tabItem(row, natives[natives.length - 1]);
-  var inOrder = ours.length === SETTINGS_TABS.length && last.nextElementSibling === ours[0];
-  if (inOrder && ours[0].getAttribute('data-key') === key) return row;
-  for (var i = 0; i < ours.length; i++) ours[i].remove();
-  var base = tabItem(row, natives[0]);
-  var anchor = last;
-  SETTINGS_TABS.forEach(function (tab) {
-    var item = settingsTab(base, tab, tab === active);
-    item.setAttribute('data-key', key);
-    anchor.after(item);
-    anchor = item;
-  });
-  return row;
-}
-
-function settingsSlot(row) {
-  var group = row && row.closest('.x-tab-group');
-  var box = group && group.parentElement && group.parentElement.parentElement;
-  var slot = box && box.nextElementSibling;
-  return slot && slot.tagName === 'DIV' ? slot : null;
-}
-
-function render(root, route) {
+function pageCtl(prev, root, route, onNew) {
   var key = keyOf(route);
-  var ctl = rendered && rendered.root === root ? rendered : null;
+  var ctl = prev && prev.root === root ? prev : null;
   if (!ctl || ctl.key !== key) {
     closePanel();
-    window.scrollTo(0, 0);
-    var scroller = document.getElementById('main');
-    if (scroller) scroller.scrollTop = 0;
     ctl = { root: root, key: key, id: undefined, list: null };
-    rendered = ctl;
-    var ctx = { id: route.id, query: route.query };
-    if (route.page === 'comments') refreshBadge(true);
-    if (route.page === 'overview') overviewPage(root);
-    else if (route.page === 'payment-methods') paymentMethodsPage(root);
-    else if (route.page === 'sms' || route.page === 'email') providersPage(root, route.page);
-    else if (route.page === 'languages') ctl.list = languagesPage(root, route.query, ctx);
-    else if (route.page === 'brand') brandPage(root);
-    else if (route.page === 'setup') setupPage(root);
-    else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
-    else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
-    else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
-    else ctl.list = listPage(root, route.page, route.query, ctx);
+    onNew(ctl);
+    mountPage(root, route, ctl);
   }
   if (RESOURCES[route.page] && ctl.id !== route.id) {
     ctl.id = route.id;
-    if (route.id) openEditor(route.page, route.id, route.query, function () { if (ctl.list) ctl.list.reload(); });
+    var mine = ctl;
+    if (route.id) openEditor(route.page, route.id, route.query, function () { if (mine.list) mine.list.reload(); });
     else closePanel();
   }
+  return ctl;
+}
+
+function render(root, route) {
+  pageCtl(rendered, root, route, function (ctl) {
+    window.scrollTo(0, 0);
+    var scroller = document.getElementById('main');
+    if (scroller) scroller.scrollTop = 0;
+    rendered = ctl;
+  });
 }
 
 function sync() {
@@ -6601,36 +6963,26 @@ function sync() {
   var route = parseRoute(hash);
   if (route && !LANGS.tried && token()) {
     LANGS.tried = true;
-    loadLanguages().then(function () { if (LANGS.loaded && LANGS.def !== 'fa' && rendered) { rendered.key = ''; schedule(); } });
+    loadLanguages().then(function () {
+      if (!LANGS.loaded || LANGS.def === 'fa') return;
+      if (rendered) rendered.key = '';
+      if (ps && ps.ctl) ps.ctl.key = '';
+      schedule();
+    });
     loadKeyTypes();
   }
-  var settings = route && route.section === 'settings';
-  syncSidebar(settings ? null : route);
-  var row = syncSettingsTabs(route);
-  if (!route) { if (rendered || document.getElementById(ROOT_ID)) unmount(); return; }
-  var root = document.getElementById(ROOT_ID);
-  if (settings) {
-    if (root && root.getAttribute('data-economy') !== 'settings') {
-      root.remove();
-      closePanel();
-      root = null;
-    }
-    showMains();
-    var slot = settingsSlot(row);
-    if (!slot) return;
-    if (!root) {
-      root = h('div', { id: ROOT_ID, class: 'flex flex-col flex-1 min-w-0', 'data-l10n-skip': '', 'data-economy': 'settings' });
-      rendered = null;
-    }
-    if (root.parentElement !== slot) slot.appendChild(root);
-    render(root, route);
+  if (route && route.section === PS_ROUTE) {
+    syncSidebar(null, true);
+    psShow(route);
+    dockPsButton();
     return;
   }
-  if (root && root.getAttribute('data-economy') !== 'root') {
-    root.remove();
-    root = null;
-    rendered = null;
-  }
+  if (ps) psHide();
+  psRemember(hash || '#/');
+  syncSidebar(route, false);
+  dockPsButton();
+  if (!route) { if (rendered || document.getElementById(ROOT_ID)) unmount(); return; }
+  var root = document.getElementById(ROOT_ID);
   var main = document.querySelector('#main > main');
   if (!main) return;
   var mains = document.querySelectorAll('#main > main');
@@ -6730,11 +7082,11 @@ function boot() {
   window.addEventListener('hashchange', sync);
   window.addEventListener('popstate', schedule);
   new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
-  new MutationObserver(function () { if (rendered) rendered.key = ''; paintThemeButton(); schedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  new MutationObserver(function () { if (rendered) rendered.key = ''; if (ps) { ps.listKey = null; if (ps.ctl) ps.ctl.key = ''; } paintThemeButton(); schedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   sync();
 }
 
-if (/^#\/(base|economy|publication)/.test(location.hash) || parseRoute(location.hash)) {
+if (legacyHash(location.hash) || /^#\/(economy|publication|project-settings)(\/|\?|$)/.test(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }

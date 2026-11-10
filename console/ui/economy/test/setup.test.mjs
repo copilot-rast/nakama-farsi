@@ -64,9 +64,14 @@ test('every setup step, status and channel has fa and en copy', () => {
   assert.ok(m.fa['brand.signIn'].includes('{name}') && m.en['brand.signIn'].includes('{name}'));
 });
 
-test('setup and brand pages are registered as settings tabs and bundled', () => {
+test('project settings sections are one registry with brand and setup first', () => {
+  const settings = fs.readFileSync(path.join(ROOT, 'src', 'settings.js'), 'utf8');
+  const ids = [...settings.matchAll(/^  \{ id: '([a-z-]+)', label: '([a-z.-]+)', icon: '([a-z]+)', acl: '([A-Z_]+)'/gm)].map((m) => m[1]);
+  assert.deepEqual(ids, ['brand', 'setup', 'languages', 'categories', 'tags', 'payment-methods', 'sms', 'email']);
   const pages = fs.readFileSync(path.join(ROOT, 'src', 'pages.js'), 'utf8');
-  assert.match(pages, /SETTINGS_TABS = \[[^\]]*'brand', 'setup'\]/);
+  assert.doesNotMatch(pages, /SETTINGS_TABS|MOVED_PAGES/);
+  assert.match(settings, /'settings\/sms': 'sms'/);
+  assert.match(settings, /'base\/categories': 'categories'/);
   const setup = fs.readFileSync(path.join(ROOT, 'src', 'setup.js'), 'utf8');
   assert.match(setup, /var SETUP_ORDER = \['brand', 'languages', 'currency', 'payment', 'sms', 'email', 'review'\];/);
   assert.match(setup, /'\/setup\/claim'/);

@@ -2,7 +2,7 @@ var METHODS = ['zarinpal', 'zibal', 'bazaar', 'myket', 'in_app'];
 var GATEWAYS = ['zarinpal', 'zibal'];
 var STORES = ['bazaar', 'myket'];
 var CATEGORY_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news'];
-var TAG_KEY_TYPES = ['product', 'prize', 'news', 'faq', 'general'];
+var TAG_KEY_TYPES = ['product', 'prize', 'news', 'faq', 'general', 'user'];
 var LANG_CODE_RE = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/;
 var keyTypeCache = {};
 var keyTypePromise = null;
@@ -28,11 +28,11 @@ function keyTypeOptions(resource) {
 }
 
 function categoryField(keyType) {
-  return { name: 'categoryId', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: keyType }, label: 'f.category', optional: true };
+  return { name: 'categoryId', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: keyType }, quick: keyType, label: 'f.category', optional: true };
 }
 
 function tagsField(keyType) {
-  return { name: 'tagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: [{ keyType: keyType }, { keyType: 'general' }], label: 'f.tags', optional: true, empty: [] };
+  return { name: 'tagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: [{ keyType: keyType }, { keyType: 'general' }], quick: keyType, label: 'f.tags', optional: true, empty: [] };
 }
 
 function tr(name, opts) {
@@ -329,7 +329,6 @@ var RESOURCES = {
   },
   languages: {
     api: 'base',
-    settings: true,
     filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
     columns: [
       { label: 'col.language', render: languageCell, skeleton: '60%' },

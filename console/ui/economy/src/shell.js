@@ -1,15 +1,11 @@
 var ROOT_ID = 'economy-root';
 var NAV_LINK = 'h-[37px] px-3 py-2 flex items-center gap-2 text-secondary-800 hover:text-primary-700 dark:text-[#afbccb] dark:hover:text-primary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-md border-l-[2px] border-transparent dark:border-transparent';
-var NAV_ACTIVE = '!border-primary-600 !text-primary-700 dark:!text-primary-300 !bg-secondary-50 dark:!bg-secondary-800 !border-primary-700';
+var NAV_ACTIVE = '!text-primary-700 dark:!text-primary-300 !bg-secondary-50 dark:!bg-secondary-800 !border-primary-700';
 var rendered = null;
 var router = null;
 var pendingHash = null;
 var EmptyPage = { name: 'EconomyPage', render: function () { return null; } };
-var TAB_ON = 'text-[color:var(--x-tab-group-text)] dark:text-[color:var(--x-tab-group-dark-text)]';
-var TAB_VARS = {
-  off: '--x-link-text: #475569; --x-link-text-hover: #334155; --x-link-shadow: #f1f5f9; --x-link-dark-text: #94a3b8; --x-link-dark-text-hover: #cbd5e1; --x-link-dark-shadow: #0f172a;',
-  on: '--x-link-text: rgb(var(--primary-color-600)); --x-link-text-hover: rgb(var(--primary-color-700)); --x-link-shadow: rgb(var(--primary-color-100)); --x-link-dark-text: rgb(var(--primary-color-400)); --x-link-dark-text-hover: rgb(var(--primary-color-300)); --x-link-dark-shadow: rgb(var(--primary-color-900));'
-};
+var SECTION_TITLE = { economy: 'Economy', publication: 'Publishing' };
 
 function captureRouter(app) {
   if (router) return;
@@ -22,22 +18,11 @@ function captureRouter(app) {
       if (r.hasRoute(sec)) return;
       r.addRoute({ path: '/' + sec + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: sec, component: EmptyPage, meta: { title: SECTION_TITLE[sec] } }] });
     });
-    Object.keys(MOVED_PAGES).forEach(function (from) {
-      var name = 'moved-' + from.replace('/', '-');
-      if (!r.hasRoute(name)) r.addRoute({ path: '/' + from + '/:rest(.*)*', name: name, redirect: function (to) { return to.fullPath.replace('/' + from, '/' + MOVED_PAGES[from]); } });
+    if (!r.hasRoute(PS_ROUTE)) r.addRoute({ path: '/' + PS_ROUTE + '/:rest(.*)*', component: layout.components.default, meta: { requiresAuth: true }, children: [{ path: '', name: PS_ROUTE, component: EmptyPage, meta: { get title() { return psTitle(); } } }] });
+    Object.keys(PS_LEGACY).forEach(function (from) {
+      var name = 'legacy-' + from.replace('/', '-');
+      if (!r.hasRoute(name)) r.addRoute({ path: '/' + from + '/:rest(.*)*', name: name, redirect: function (to) { return to.fullPath.replace('/' + from, '/' + PS_ROUTE + '/' + PS_LEGACY[from]); } });
     });
-    if (r.hasRoute('settings')) {
-      SETTINGS_TABS.forEach(function (tab) {
-        if (!r.hasRoute('settings-' + tab)) r.addRoute('settings', { path: tab, name: 'settings-' + tab, component: EmptyPage, meta: tabMeta(tab) });
-        if (RESOURCES[tab] && !r.hasRoute('settings-' + tab + '-item')) r.addRoute('settings', { path: tab + '/:id(.*)', name: 'settings-' + tab + '-item', component: EmptyPage, meta: tabMeta(tab) });
-      });
-      Object.keys(LEGACY_HASHES).forEach(function (sec) {
-        Object.keys(LEGACY_HASHES[sec]).forEach(function (page) {
-          var name = 'legacy-' + sec + '-' + page;
-          if (!r.hasRoute(name)) r.addRoute({ path: '/' + sec + '/' + page + '/:rest(.*)*', name: name, redirect: hashFor(LEGACY_HASHES[sec][page]).slice(1) });
-        });
-      });
-    }
     router = r;
   } catch (e) {
     router = null;
@@ -50,23 +35,15 @@ function captureRouter(app) {
   }
 }
 
-var SECTION_TITLE = { base: 'General', economy: 'Economy', publication: 'Publishing' };
-
-function movedHash(hash) {
-  var m = /^#\/([^/?]+\/[^/?]+)(.*)$/.exec(hash || '');
-  return m && MOVED_PAGES[m[1]] ? '#/' + MOVED_PAGES[m[1]] + m[2] : null;
-}
-
-function tabMeta(tab) {
-  return { get title() { return t('settings') + ' - ' + t('tab.' + tab); } };
+function psTitle() {
+  var r = parseRoute(location.hash);
+  var sec = r && psSection(r.page);
+  return t('ps.title') + (sec ? ' - ' + t(sec.label) : '');
 }
 
 function legacyHash(hash) {
-  var moved = movedHash(hash);
-  if (moved) return moved;
-  var m = /^#\/(economy|publication)\/([^/?]+)/.exec(hash);
-  var to = m && LEGACY_HASHES[m[1]][m[2]];
-  return to ? hashFor(to) : null;
+  var m = /^#\/([^/?]+\/[^/?]+)(.*)$/.exec(hash || '');
+  return m && PS_LEGACY[m[1]] ? '#/' + PS_ROUTE + '/' + PS_LEGACY[m[1]] + m[2] : null;
 }
 
 function trapApp() {
@@ -84,21 +61,23 @@ function trapApp() {
 }
 
 function replaceHash(hash) {
-  if (rendered) rendered.key = keyOf(parseRoute(hash));
+  var r = parseRoute(hash);
+  if (r && r.section === PS_ROUTE) { if (ps && ps.ctl) ps.ctl.key = keyOf(r); }
+  else if (rendered) rendered.key = keyOf(r);
   if (router) router.replace(hash.slice(1));
   else history.replaceState(history.state, '', location.pathname + location.search + hash);
 }
 
 function parseRoute(hash) {
-  var m = /^#\/(base|economy|publication|settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(economy|publication|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
-  if (section === 'settings') {
-    if (SETTINGS_TABS.indexOf(m[2]) === -1) return null;
-    if (!RESOURCES[m[2]]) return { section: section, page: m[2], id: null, query: {} };
+  var page;
+  if (section === PS_ROUTE) page = psSection(m[2]) ? m[2] : null;
+  else {
+    page = m[2] || SECTIONS[section][0];
+    if (SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   }
-  var page = section === 'settings' ? m[2] : m[2] || SECTIONS[section][0];
-  if (section !== 'settings' && SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   var query = {};
   (m[4] || '').split('&').forEach(function (pair) {
     if (!pair) return;
@@ -116,23 +95,18 @@ function keyOf(r) {
   return lang() + '|' + r.page + detail + '|' + JSON.stringify(r.query);
 }
 
-function navIcon(name) {
-  var svg = icon(name, 'h-4 w-4');
-  return svg;
-}
-
 function buildNav(section, collapsed, active) {
   var ul = h('ul', { class: 'space-y-0.5' });
   SECTIONS[section].forEach(function (p) {
     var on = p === active;
     var a = h('a', { href: hashFor(p, null, p === active ? null : lastQuery[p]), class: (on ? NAV_ACTIVE + ' ' : '') + NAV_LINK, 'aria-current': on ? 'page' : null, title: collapsed ? t('nav.' + p) : null, 'data-economy-page': p });
-    a.appendChild(collapsed ? h('div', { class: 'x-tooltip flex' }, navIcon(p)) : navIcon(p));
-    a.appendChild(h('div', { class: 'font-medium relative truncate' + (collapsed ? '' : ' flex-1') }, h('span', { text: collapsed ? ' ' : t('nav.' + p) })));
+    a.appendChild(collapsed ? h('div', { class: 'x-tooltip flex' }, icon(p, 'h-4 w-4')) : icon(p, 'h-4 w-4'));
+    a.appendChild(h('div', { class: 'font-medium relative truncate' + (collapsed ? '' : ' flex-1') }, h('span', { text: collapsed ? ' ' : t('nav.' + p) })));
     var badge = navBadge(p, collapsed);
     if (badge) a.appendChild(badge);
     ul.appendChild(h('li', {}, a));
   });
-  var title = section === 'economy' ? 'section' : section === 'base' ? 'section.base' : 'section.pub';
+  var title = section === 'economy' ? 'section' : 'section.pub';
   return h('div', { 'data-economy-nav': section, 'data-l10n-skip': '', class: section === SECTION_ORDER[0] ? null : 'eco-nav-next' },
     h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 ' + (collapsed ? 'text-[8px] text-center' : 'px-3 text-[10px]'), text: collapsed ? t(title + '.short') : t(title) }),
     h('nav', { 'aria-label': t(title) }, ul));
@@ -155,16 +129,17 @@ function isCollapsed(anchor) {
   var drawer = anchor.closest('.x-drawer');
   if (drawer && drawer.getBoundingClientRect().width > 0 && drawer.getBoundingClientRect().width < 100) return true;
   var span = anchor.querySelector('span');
-  return !!span && span.textContent === ' ';
+  return !!span && span.textContent === ' ';
 }
 
-function syncSidebar(route) {
+function syncSidebar(route, psOn) {
   var active = route ? route.page : null;
   var anchors = document.querySelectorAll('a[href="#/players"]');
   var keep = [];
   for (var i = 0; i < anchors.length; i++) {
     var a = anchors[i];
-    if (!a.closest('.x-drawer') || a.closest('#' + ROOT_ID)) continue;
+    var drawer = a.closest('.x-drawer');
+    if (!drawer || a.closest('#' + ROOT_ID)) continue;
     var nav = a.closest('nav');
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
@@ -175,15 +150,17 @@ function syncSidebar(route) {
       prev = placeNav(prev, SECTION_ORDER[si], collapsed, active, key);
       keep.push(prev);
     }
+    var psNav = placePsNav(drawer, collapsed, !!psOn, lang() + '|' + collapsed + '|' + !!psOn + '|' + psEntryHash());
+    if (psNav) keep.push(psNav);
     refreshBadge(false);
     var vueActive = group.parentElement.querySelectorAll('a[aria-current="page"]:not([data-economy-page])');
-    for (var j = 0; j < vueActive.length && active; j++) {
+    for (var j = 0; j < vueActive.length && (active || psOn); j++) {
       if (vueActive[j].getAttribute('href') === '#/') vueActive[j].setAttribute('data-economy-dimmed', '');
     }
   }
-  var all = document.querySelectorAll('[data-economy-nav]');
+  var all = document.querySelectorAll('[data-economy-nav],[data-ps-nav]');
   for (var k = 0; k < all.length; k++) if (keep.indexOf(all[k]) === -1) all[k].remove();
-  document.documentElement.toggleAttribute('data-economy-active', !!active);
+  document.documentElement.toggleAttribute('data-economy-active', !!active || !!psOn);
 }
 
 function showMains() {
@@ -202,105 +179,43 @@ function unmount() {
   rendered = null;
 }
 
-var NATIVE_TAB = 'a.x-tab[href^="#/settings/"]:not([data-settings-tab])';
-
-function settingsTabRow() {
-  var tabs = document.querySelectorAll('#main > main .x-tab-group ' + NATIVE_TAB);
-  if (!tabs.length) return null;
-  var row = tabs[0].parentElement;
-  while (row && !row.contains(tabs[tabs.length - 1])) row = row.parentElement;
-  return row;
+function mountPage(root, route, ctl) {
+  var ps2 = psSection(route.page);
+  var ctx = { id: route.id, query: route.query };
+  if (ps2) { ctl.list = ps2.render(root, route, ctx) || null; return; }
+  if (route.page === 'comments') refreshBadge(true);
+  if (route.page === 'overview') overviewPage(root);
+  else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
+  else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
+  else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
+  else ctl.list = listPage(root, route.page, route.query, ctx);
 }
 
-function tabItem(row, a) {
-  var item = a;
-  while (item.parentElement && item.parentElement !== row) item = item.parentElement;
-  return item;
-}
-
-function settingsTab(baseItem, tab, on) {
-  var item = baseItem.cloneNode(true);
-  var a = item.matches('a.x-tab') ? item : item.querySelector('a.x-tab');
-  a.removeAttribute('aria-current');
-  a.classList.remove('router-link-active', 'router-link-exact-active');
-  TAB_ON.split(' ').forEach(function (c) { a.classList.remove(c); });
-  if (on) TAB_ON.split(' ').forEach(function (c) { a.classList.add(c); });
-  a.classList.add('eco-tab');
-  a.classList.toggle('eco-tab-on', on);
-  a.setAttribute('href', hashFor(tab));
-  a.setAttribute('aria-selected', on ? 'true' : 'false');
-  if (on) a.setAttribute('aria-current', 'page');
-  item.setAttribute('data-value', location.origin + location.pathname + hashFor(tab));
-  item.setAttribute('data-settings-tab', tab);
-  a.setAttribute('data-settings-tab', tab);
-  item.setAttribute('data-l10n-skip', '');
-  a.setAttribute('style', on ? TAB_VARS.on : TAB_VARS.off);
-  var label = a.querySelector('.font-medium');
-  if (label) label.textContent = t('tab.' + tab);
-  else a.textContent = t('tab.' + tab);
-  return item;
-}
-
-function syncSettingsTabs(route) {
-  var row = settingsTabRow();
-  if (!row) return null;
-  var active = route && route.section === 'settings' ? route.page : null;
-  var group = row.closest('.x-tab-group') || row;
-  if (active) group.setAttribute('data-eco-active', '');
-  else group.removeAttribute('data-eco-active');
-  var key = lang() + '|' + active;
-  var ours = row.querySelectorAll(':scope > [data-settings-tab]');
-  var natives = row.querySelectorAll(NATIVE_TAB);
-  var last = tabItem(row, natives[natives.length - 1]);
-  var inOrder = ours.length === SETTINGS_TABS.length && last.nextElementSibling === ours[0];
-  if (inOrder && ours[0].getAttribute('data-key') === key) return row;
-  for (var i = 0; i < ours.length; i++) ours[i].remove();
-  var base = tabItem(row, natives[0]);
-  var anchor = last;
-  SETTINGS_TABS.forEach(function (tab) {
-    var item = settingsTab(base, tab, tab === active);
-    item.setAttribute('data-key', key);
-    anchor.after(item);
-    anchor = item;
-  });
-  return row;
-}
-
-function settingsSlot(row) {
-  var group = row && row.closest('.x-tab-group');
-  var box = group && group.parentElement && group.parentElement.parentElement;
-  var slot = box && box.nextElementSibling;
-  return slot && slot.tagName === 'DIV' ? slot : null;
-}
-
-function render(root, route) {
+function pageCtl(prev, root, route, onNew) {
   var key = keyOf(route);
-  var ctl = rendered && rendered.root === root ? rendered : null;
+  var ctl = prev && prev.root === root ? prev : null;
   if (!ctl || ctl.key !== key) {
     closePanel();
-    window.scrollTo(0, 0);
-    var scroller = document.getElementById('main');
-    if (scroller) scroller.scrollTop = 0;
     ctl = { root: root, key: key, id: undefined, list: null };
-    rendered = ctl;
-    var ctx = { id: route.id, query: route.query };
-    if (route.page === 'comments') refreshBadge(true);
-    if (route.page === 'overview') overviewPage(root);
-    else if (route.page === 'payment-methods') paymentMethodsPage(root);
-    else if (route.page === 'sms' || route.page === 'email') providersPage(root, route.page);
-    else if (route.page === 'languages') ctl.list = languagesPage(root, route.query, ctx);
-    else if (route.page === 'brand') brandPage(root);
-    else if (route.page === 'setup') setupPage(root);
-    else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
-    else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
-    else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
-    else ctl.list = listPage(root, route.page, route.query, ctx);
+    onNew(ctl);
+    mountPage(root, route, ctl);
   }
   if (RESOURCES[route.page] && ctl.id !== route.id) {
     ctl.id = route.id;
-    if (route.id) openEditor(route.page, route.id, route.query, function () { if (ctl.list) ctl.list.reload(); });
+    var mine = ctl;
+    if (route.id) openEditor(route.page, route.id, route.query, function () { if (mine.list) mine.list.reload(); });
     else closePanel();
   }
+  return ctl;
+}
+
+function render(root, route) {
+  pageCtl(rendered, root, route, function (ctl) {
+    window.scrollTo(0, 0);
+    var scroller = document.getElementById('main');
+    if (scroller) scroller.scrollTop = 0;
+    rendered = ctl;
+  });
 }
 
 function sync() {
@@ -317,36 +232,26 @@ function sync() {
   var route = parseRoute(hash);
   if (route && !LANGS.tried && token()) {
     LANGS.tried = true;
-    loadLanguages().then(function () { if (LANGS.loaded && LANGS.def !== 'fa' && rendered) { rendered.key = ''; schedule(); } });
+    loadLanguages().then(function () {
+      if (!LANGS.loaded || LANGS.def === 'fa') return;
+      if (rendered) rendered.key = '';
+      if (ps && ps.ctl) ps.ctl.key = '';
+      schedule();
+    });
     loadKeyTypes();
   }
-  var settings = route && route.section === 'settings';
-  syncSidebar(settings ? null : route);
-  var row = syncSettingsTabs(route);
-  if (!route) { if (rendered || document.getElementById(ROOT_ID)) unmount(); return; }
-  var root = document.getElementById(ROOT_ID);
-  if (settings) {
-    if (root && root.getAttribute('data-economy') !== 'settings') {
-      root.remove();
-      closePanel();
-      root = null;
-    }
-    showMains();
-    var slot = settingsSlot(row);
-    if (!slot) return;
-    if (!root) {
-      root = h('div', { id: ROOT_ID, class: 'flex flex-col flex-1 min-w-0', 'data-l10n-skip': '', 'data-economy': 'settings' });
-      rendered = null;
-    }
-    if (root.parentElement !== slot) slot.appendChild(root);
-    render(root, route);
+  if (route && route.section === PS_ROUTE) {
+    syncSidebar(null, true);
+    psShow(route);
+    dockPsButton();
     return;
   }
-  if (root && root.getAttribute('data-economy') !== 'root') {
-    root.remove();
-    root = null;
-    rendered = null;
-  }
+  if (ps) psHide();
+  psRemember(hash || '#/');
+  syncSidebar(route, false);
+  dockPsButton();
+  if (!route) { if (rendered || document.getElementById(ROOT_ID)) unmount(); return; }
+  var root = document.getElementById(ROOT_ID);
   var main = document.querySelector('#main > main');
   if (!main) return;
   var mains = document.querySelectorAll('#main > main');
@@ -446,11 +351,11 @@ function boot() {
   window.addEventListener('hashchange', sync);
   window.addEventListener('popstate', schedule);
   new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
-  new MutationObserver(function () { if (rendered) rendered.key = ''; paintThemeButton(); schedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  new MutationObserver(function () { if (rendered) rendered.key = ''; if (ps) { ps.listKey = null; if (ps.ctl) ps.ctl.key = ''; } paintThemeButton(); schedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   sync();
 }
 
-if (/^#\/(base|economy|publication)/.test(location.hash) || parseRoute(location.hash)) {
+if (legacyHash(location.hash) || /^#\/(economy|publication|project-settings)(\/|\?|$)/.test(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }
