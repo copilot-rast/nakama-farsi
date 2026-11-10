@@ -228,3 +228,22 @@ func TestCheckACLHttpBaseBrandSetup(t *testing.T) {
 		t.Fatal("claim must need settings write")
 	}
 }
+
+func TestCheckACLHttpBaseAccounts(t *testing.T) {
+	settingsRead := NewPermission(console.AclResources_SETTINGS, PermissionRead)
+	settingsWrite := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
+	notificationWrite := NewPermission(console.AclResources_NOTIFICATION, PermissionWrite)
+	for _, path := range []string{"/v2/console/base/account-rules", "/v2/console/base/app-versions", "/v2/console/base/app-versions/{id}", "/v2/console/base/app-versions/catalog", "/v2/console/base/countries", "/v2/console/base/countries/{id}"} {
+		if !CheckACLHttp(http.MethodGet, path, settingsRead) || CheckACLHttp(http.MethodGet, path, notificationWrite) {
+			t.Fatalf("GET %s must need settings read", path)
+		}
+		for _, method := range []string{http.MethodPut, http.MethodPost, http.MethodDelete} {
+			if !CheckACLHttp(method, path, settingsWrite) || CheckACLHttp(method, path, settingsRead) {
+				t.Fatalf("%s %s must need settings write", method, path)
+			}
+		}
+	}
+	if !CheckACLHttp(http.MethodPut, "/v2/console/publication/otp/settings", notificationWrite) || CheckACLHttp(http.MethodPut, "/v2/console/publication/otp/settings", settingsWrite) {
+		t.Fatal("otp settings must need notification write")
+	}
+}

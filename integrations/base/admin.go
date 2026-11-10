@@ -28,6 +28,19 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/setup", http.MethodGet, s.setupGet},
 		{consolePrefix + "/setup", http.MethodPut, s.setupPut},
 		{consolePrefix + "/setup/claim", http.MethodPost, s.setupClaim},
+		{consolePrefix + "/account-rules", http.MethodGet, s.rulesGet},
+		{consolePrefix + "/account-rules", http.MethodPut, s.rulesPut},
+		{consolePrefix + "/app-versions", http.MethodGet, s.appVersionList},
+		{consolePrefix + "/app-versions", http.MethodPost, s.appVersionWrite(true)},
+		{consolePrefix + "/app-versions/catalog", http.MethodGet, s.appVersionCatalog},
+		{consolePrefix + "/app-versions/{id}", http.MethodGet, s.appVersionGet},
+		{consolePrefix + "/app-versions/{id}", http.MethodPut, s.appVersionWrite(false)},
+		{consolePrefix + "/app-versions/{id}", http.MethodDelete, s.appVersionDelete},
+		{consolePrefix + "/countries", http.MethodGet, s.countryList},
+		{consolePrefix + "/countries", http.MethodPost, s.countryWrite(true)},
+		{consolePrefix + "/countries/{id}", http.MethodGet, s.countryGet},
+		{consolePrefix + "/countries/{id}", http.MethodPut, s.countryWrite(false)},
+		{consolePrefix + "/countries/{id}", http.MethodDelete, s.countryDelete},
 	}
 	for _, res := range []resource{categoriesResource, tagsResource} {
 		base := consolePrefix + "/" + res.name
