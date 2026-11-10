@@ -4913,13 +4913,25 @@ function unmount() {
   rendered = null;
 }
 
+var NATIVE_TAB = 'a.x-tab[href^="#/settings/"]:not([data-settings-tab])';
+
 function settingsTabRow() {
-  var native = document.querySelector('#main > main .x-tab-group a.x-tab[href^="#/settings/"]:not([data-settings-tab])');
-  return native ? native.parentElement : null;
+  var tabs = document.querySelectorAll('#main > main .x-tab-group ' + NATIVE_TAB);
+  if (!tabs.length) return null;
+  var row = tabs[0].parentElement;
+  while (row && !row.contains(tabs[tabs.length - 1])) row = row.parentElement;
+  return row;
 }
 
-function settingsTab(base, tab, on) {
-  var a = base.cloneNode(true);
+function tabItem(row, a) {
+  var item = a;
+  while (item.parentElement && item.parentElement !== row) item = item.parentElement;
+  return item;
+}
+
+function settingsTab(baseItem, tab, on) {
+  var item = baseItem.cloneNode(true);
+  var a = item.matches('a.x-tab') ? item : item.querySelector('a.x-tab');
   a.removeAttribute('aria-current');
   a.classList.remove('router-link-active', 'router-link-exact-active');
   TAB_ON.split(' ').forEach(function (c) { a.classList.remove(c); });
@@ -4929,14 +4941,15 @@ function settingsTab(base, tab, on) {
   a.setAttribute('href', hashFor(tab));
   a.setAttribute('aria-selected', on ? 'true' : 'false');
   if (on) a.setAttribute('aria-current', 'page');
-  a.setAttribute('data-value', location.origin + location.pathname + hashFor(tab));
+  item.setAttribute('data-value', location.origin + location.pathname + hashFor(tab));
+  item.setAttribute('data-settings-tab', tab);
   a.setAttribute('data-settings-tab', tab);
-  a.setAttribute('data-l10n-skip', '');
+  item.setAttribute('data-l10n-skip', '');
   a.setAttribute('style', on ? TAB_VARS.on : TAB_VARS.off);
   var label = a.querySelector('.font-medium');
   if (label) label.textContent = t('tab.' + tab);
   else a.textContent = t('tab.' + tab);
-  return a;
+  return item;
 }
 
 function syncSettingsTabs(route) {
@@ -4944,19 +4957,19 @@ function syncSettingsTabs(route) {
   if (!row) return null;
   var active = route && route.section === 'settings' ? route.page : null;
   var key = lang() + '|' + active;
-  var ours = row.querySelectorAll('[data-settings-tab]');
-  var natives = row.querySelectorAll('a.x-tab:not([data-settings-tab])');
-  var last = natives[natives.length - 1];
+  var ours = row.querySelectorAll(':scope > [data-settings-tab]');
+  var natives = row.querySelectorAll(NATIVE_TAB);
+  var last = tabItem(row, natives[natives.length - 1]);
   var inOrder = ours.length === SETTINGS_TABS.length && last.nextElementSibling === ours[0];
   if (inOrder && ours[0].getAttribute('data-key') === key) return row;
   for (var i = 0; i < ours.length; i++) ours[i].remove();
-  var base = natives[0];
+  var base = tabItem(row, natives[0]);
   var anchor = last;
   SETTINGS_TABS.forEach(function (tab) {
-    var a = settingsTab(base, tab, tab === active);
-    a.setAttribute('data-key', key);
-    anchor.after(a);
-    anchor = a;
+    var item = settingsTab(base, tab, tab === active);
+    item.setAttribute('data-key', key);
+    anchor.after(item);
+    anchor = item;
   });
   return row;
 }

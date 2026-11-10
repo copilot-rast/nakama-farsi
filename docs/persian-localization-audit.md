@@ -66,20 +66,21 @@ Priorities: P1 = every session, P2 = common admin tasks, P3 = specialized or opt
 `npm run audit` (in `console/ui/l10n`) recovers user-facing strings from the
 compiled bundle by syntactic context (Vue text vnodes, element text, UI props,
 toast calls), runs each through the runtime matcher, and classifies the rest
-with `audit-ignore.json`. Result for `index-CNoeGISM.js`:
+with `audit-ignore.json`. Result for `index-DW49RXDm.js` (Nakama 3.42.0):
 
 | | Count |
 | --- | --- |
-| User-facing candidates | 1204 |
-| Translated | 1039 |
-| Intentionally untranslated: technical (CSS classes, identifiers, expression syntax) | 49 |
+| User-facing candidates | 1658 |
+| Translated | 1170 |
+| Intentionally untranslated: technical (CSS classes, identifiers, expression syntax) | 51 |
 | Intentionally untranslated: third-party (Monaco editor) | 50 |
-| Intentionally untranslated: developer-only (console logs) | 43 |
+| Intentionally untranslated: developer-only (console logs) | 46 |
+| Intentionally untranslated: component docs (prop/slot/emit descriptions of the design-system components, never rendered) | 318 |
 | Covered by fragments (HTML/concatenated text translated piecewise) | 15 |
 | Brand and protocol names (Google Authenticator, Authy, OneSignal, UTC, HTML, JSON, UID, `DIRECT_MESSAGE_SENT`) | 8 |
 | **Untranslated user-facing strings** | **0** |
 
-The catalog holds 1636 messages; besides the audited contexts it covers strings
+The catalog holds 1827 messages; besides the audited contexts it covers strings
 the audit cannot see syntactically: enum labels the console title-cases at run
 time, relative times, server messages, the reset email, and date-picker labels.
 Crawling every route in a browser (desktop 1440×900, tablet 820×1180, phone

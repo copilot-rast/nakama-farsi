@@ -272,6 +272,13 @@ npm run audit -- --list       # new or reworded strings
 npm test
 ```
 
+The audit reads string literals in any quote style (`'x'`, `"x"`, `` `x` ``)
+and finds the minified name of Vue's `createTextVNode` from the bundle's
+re-export map, so a new minifier does not hide text children. Component
+prop, slot and emit descriptions embedded in the bundle (`description:` next
+to `type:String`, `docs:{slots,emits}`) are never rendered; list them under
+`componentDocs` in `audit-ignore.json`.
+
 Then check the main screens in both languages. If a directional icon was
 added upstream, add its name to `mirrorIcons`.
 

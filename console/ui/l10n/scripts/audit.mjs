@@ -25,7 +25,11 @@ const UI_PROPS = new Set([
   'empty-text', 'weighted-title', 'toggle-label', 'documentation-label', 'advertisingDescription', 'msg',
   'actionItem', 'hint', 'caption', 'message', 'loadingLabel', 'searchPlaceholder', 'filterPlaceholder',
 ]);
-const UI_CALLS = new Set(['success', 'info', 'warning', 'error', 'pe']);
+const UI_CALLS = ['success', 'info', 'warning', 'error'];
+
+export function textVNodeAlias(code) {
+  return /\bcreateTextVNode:\(\)=>([\w$]+)/.exec(code)?.[1] ?? null;
+}
 
 export function loadRuntime() {
   const sandbox = { module: { exports: {} }, Intl, URLSearchParams };
@@ -40,10 +44,20 @@ function bundlePath() {
   return path.join(DIST, src);
 }
 
+function literalAt(tokens, i) {
+  const t = tokens[i];
+  if (t?.type.label === 'string') return t.value;
+  if (t?.type.label === '`' && tokens[i + 1]?.type.label === 'template' && tokens[i + 2]?.type.label === '`') return tokens[i + 1].value;
+  return null;
+}
+
 // extractStrings returns UI strings found in the bundle with the context that
 // marked them as user-facing. Template literals become "{0}" placeholders.
 export function extractStrings(code) {
   const tokens = [...acorn.tokenizer(code, { ecmaVersion: 'latest', sourceType: 'module' })];
+  const alias = textVNodeAlias(code);
+  if (!alias) throw new Error('createTextVNode alias not found in the console bundle');
+  const calls = new Set([...UI_CALLS, alias]);
   const found = new Map();
   const add = (text, ctx) => {
     const t = text.replace(/\s+/g, ' ').trim();
@@ -83,8 +97,8 @@ export function extractStrings(code) {
     const prev = tokens[start - 1];
     const prev2 = tokens[start - 2];
     if (prev?.type.label === ':' && prev2 && UI_PROPS.has(String(prev2.value))) add(value, `prop:${prev2.value}`);
-    else if (prev?.type.label === '(' && prev2?.type.label === 'name' && UI_CALLS.has(prev2.value)) add(value, `call:${prev2.value}`);
-    else if (prev?.type.label === ',' ) {
+    else if (prev?.type.label === '(' && prev2?.type.label === 'name' && calls.has(prev2.value)) add(value, prev2.value === alias ? 'text' : `call:${prev2.value}`);
+    else if (prev?.type.label === ',') {
       // Third argument of an element vnode: H("div", props, "Text")
       let depth = 0;
       let k = start - 1;
@@ -96,9 +110,8 @@ export function extractStrings(code) {
           depth--;
         }
       }
-      if (tokens[k]?.type.label === '(' && tokens[k - 1]?.type.label === 'name' && tokens[k + 1]?.type.label === 'string' && /^[a-z][a-z0-9]*$/.test(tokens[k + 1].value)) {
-        add(value, `element:${tokens[k + 1].value}`);
-      }
+      const tag = tokens[k]?.type.label === '(' && tokens[k - 1]?.type.label === 'name' ? literalAt(tokens, k + 1) : null;
+      if (tag !== null && /^[a-z][a-z0-9]*$/.test(tag)) add(value, `element:${tag}`);
     }
   }
   return found;

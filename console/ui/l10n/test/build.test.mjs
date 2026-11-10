@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import test from 'node:test';
+import { extractStrings } from '../scripts/audit.mjs';
 import { extractIcons, restoreIndex } from '../scripts/build.mjs';
 import { negate, negateTransform, toLogical } from '../scripts/logical-css.mjs';
 import { ROOT } from '../scripts/catalog.mjs';
@@ -56,4 +57,17 @@ test('committed dist output matches the sources', () => {
 
 test('translation audit finds no untranslated user-facing strings', () => {
   execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'audit.mjs'), '--strict'], { stdio: 'pipe' });
+});
+
+test('audit finds UI strings whatever quotes and minified names the bundle uses', () => {
+  const bundle = 'var vue={createTextVNode:()=>W};' +
+    'H(`div`,{class:`x`},`Element text`);H("span",null,"Quoted text");W(`Text vnode`);U(a,{label:`Label ${n}`});t.error(`Toast`);' +
+    'var docs={props:{tag:{type:String,description:`Root element tag.`}}};';
+  const found = extractStrings(bundle);
+  assert.equal(found.get('Element text'), 'element:div');
+  assert.equal(found.get('Quoted text'), 'element:span');
+  assert.equal(found.get('Text vnode'), 'text');
+  assert.equal(found.get('Label {0}'), 'prop:label');
+  assert.equal(found.get('Toast'), 'call:error');
+  assert.equal(found.get('Root element tag.'), 'prop:description');
 });
