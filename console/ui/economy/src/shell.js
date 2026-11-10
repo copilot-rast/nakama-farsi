@@ -245,6 +245,9 @@ function syncSettingsTabs(route) {
   var row = settingsTabRow();
   if (!row) return null;
   var active = route && route.section === 'settings' ? route.page : null;
+  var group = row.closest('.x-tab-group') || row;
+  if (active) group.setAttribute('data-eco-active', '');
+  else group.removeAttribute('data-eco-active');
   var key = lang() + '|' + active;
   var ours = row.querySelectorAll(':scope > [data-settings-tab]');
   var natives = row.querySelectorAll(NATIVE_TAB);

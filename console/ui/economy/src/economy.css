@@ -193,3 +193,16 @@ a.eco-tab-on::after{content:'';position:absolute;inset-inline:0;bottom:-1px;heig
   min-width: 2rem;
   height: 2rem;
 }
+
+[data-eco-active] a.x-tab:not(.eco-tab) {
+  color: rgb(71 85 105) !important;
+}
+[data-eco-active] a.x-tab:not(.eco-tab):hover {
+  color: rgb(51 65 85) !important;
+}
+.dark [data-eco-active] a.x-tab:not(.eco-tab) {
+  color: rgb(148 163 184) !important;
+}
+.dark [data-eco-active] a.x-tab:not(.eco-tab):hover {
+  color: rgb(203 213 225) !important;
+}
