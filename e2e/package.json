@@ -1,0 +1,14 @@
+{
+  "name": "nakama-farsi-e2e",
+  "private": true,
+  "description": "Playwright end-to-end suite for the console overlay and the stargame sample.",
+  "scripts": {
+    "test": "playwright test",
+    "test:console": "playwright test --project=console",
+    "test:game": "playwright test --project=game",
+    "report": "playwright show-report playwright-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.0"
+  }
+}

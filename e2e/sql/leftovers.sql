@@ -1,0 +1,11 @@
+select 'categories', count(*) from base_category where key like 'e2e%';
+select 'tags', count(*) from base_tag where key like 'e2e%';
+select 'languages', count(*) from base_language where code like 'xa-%';
+select 'currencies', count(*) from economy_currency where key like 'e2e%';
+select 'metas', count(*) from economy_meta where key like 'e2e%';
+select 'prizes', count(*) from economy_prize where key like 'e2e%';
+select 'products', count(*) from economy_product where key like 'e2e%';
+select 'gifts', count(*) from economy_gift where code like 'E2E%';
+select 'faqs', count(*) from publication_faq where question::text like '%e2e%';
+select 'news', count(*) from publication_news where title::text like '%e2e%';
+select 'players', count(*) from user_device where id like 'e2e-%';

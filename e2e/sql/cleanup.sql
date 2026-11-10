@@ -1,0 +1,14 @@
+BEGIN;
+DELETE FROM economy_gift WHERE code LIKE 'E2E%' OR name::text LIKE '%e2e\_%';
+DELETE FROM economy_product WHERE key LIKE 'e2e%';
+DELETE FROM economy_gift WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%');
+DELETE FROM economy_prize WHERE key LIKE 'e2e%';
+DELETE FROM economy_meta WHERE key LIKE 'e2e%';
+DELETE FROM economy_currency WHERE key LIKE 'e2e%';
+DELETE FROM publication_faq WHERE question::text LIKE '%e2e%';
+DELETE FROM publication_news WHERE title::text LIKE '%e2e%';
+DELETE FROM base_category WHERE key LIKE 'e2e%';
+DELETE FROM base_tag WHERE key LIKE 'e2e%';
+DELETE FROM base_language WHERE code LIKE 'xa-%' AND NOT is_default;
+DELETE FROM users WHERE id IN (SELECT user_id FROM user_device WHERE id LIKE 'e2e-%');
+COMMIT;
