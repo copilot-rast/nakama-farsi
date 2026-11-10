@@ -36,6 +36,7 @@ On every start the plugin creates what the game needs if it is missing, in one t
 - product categories `star_coin_packs`, `star_skins`; prizes `star_coins_100/500/1200`, `star_skin_gold/neon/galaxy`
 - products `star_pack_small/medium/large` (Toman, ZarinPal, Zibal, Bazaar, Myket) and `star_skin_gold/neon/galaxy` (coins, in_app)
 - gift codes `STAR100` (100 coins) and `HALF50` (50% off a bank payment)
+- app versions for `web` and `android` (latest `1.4.0`, lowest `1.0.0`, store links, fa/en/ar update messages)
 - payment methods, only while a method was never saved in the console: in_app active; zarinpal and zibal active in sandbox; bazaar and myket active in sandbox with package `ir.nakama.stargame`
 
 Rows are matched by key and never updated: names, prices or methods changed in the console stay as they are. A seeded row that an admin deletes comes back on the next start. The log shows one line, `Star Catcher seed: created …` or `nothing new`. Set the runtime env `STARGAME_SEED=false` (compose: `STARGAME_SEED=false` in the environment) to turn it off.
@@ -49,3 +50,11 @@ Rows are matched by key and never updated: names, prices or methods changed in t
 ```sh
 CONSOLE_URL=https://nakama-console.dastar.dev CONSOLE_USER=admin CONSOLE_PASSWORD=... python3 samples/stargame/seed.py
 ```
+
+## Accounts (phase 2)
+
+- **Phone sign-in** («حساب من»): the player starts as a device guest. Pick the country (dialling code), type the number, «کد را بفرست», type the code. «پیشرفت این دستگاه را نگه دار» (on by default) attaches the number to the guest account; off, a new account is made. The game stores the returned `loginKey` and signs in with `authenticateCustom` next time; «خروج از حساب موبایل» goes back to the device guest. In sandbox (the default) no SMS is sent: the code is in the server log (`OTP sandbox code …`). Wrong codes, expiry, resend wait and limits show as messages.
+- **Country picker**: «کشور من» opens a searchable list with flags (`base_countries`), saved with `base_set_country`; the phone form uses the same list for the dialling code.
+- **Username**: the account screen shows the rules from `base_account_rules` and saves with Nakama's account update, so the server-side rules apply.
+- **Version check**: on start the game calls `base_app_version` with platform `web` and its version (`GAME_VERSION` in `app.js`, shown at the bottom of the page). An optional update shows a banner with the store link («بعداً» hides it until the next version); a forced update replaces every screen with «باید بازی را به‌روز کنی» and the store buttons. `?v=1.3.0` pretends to be another version, for testing.
+

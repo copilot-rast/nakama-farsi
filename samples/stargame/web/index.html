@@ -35,6 +35,10 @@
   </section>
 
   <section class="screen" id="screen-home" hidden>
+    <div class="update-banner" id="update-banner" role="status" hidden>
+      <div class="update-text"><b data-i18n="updateAvailable">نسخه‌ی تازه آمده</b><span class="muted small" id="update-banner-text"></span></div>
+      <div class="update-actions"><a class="btn btn-primary" id="update-banner-go" target="_blank" rel="noopener" data-i18n="updateNow">به‌روزرسانی</a><button class="btn btn-ghost" type="button" id="update-banner-later" data-i18n="later">بعداً</button></div>
+    </div>
     <div class="lang-picker" id="lang-picker" role="group" aria-labelledby="lang-label" hidden>
       <span class="lang-label" id="lang-label"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span data-i18n="language">زبان</span></span>
       <div class="lang-options" id="lang-options"></div>
@@ -50,6 +54,7 @@
       <button class="menu-card" type="button" data-go="gift"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></span><span data-i18n="gift">کد هدیه</span></button>
       <button class="menu-card" type="button" data-go="news" id="menu-news"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg></span><span data-i18n="news">اخبار</span><span class="menu-dot" id="news-dot" hidden></span></button>
       <button class="menu-card" type="button" data-go="faq"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg></span><span data-i18n="faq">سؤال‌های متداول</span></button>
+      <button class="menu-card" type="button" data-go="account" id="menu-account"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span data-i18n="account">حساب من</span></button>
       <button class="menu-card" type="button" data-go="payments"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span><span data-i18n="payments">پرداخت‌های من</span></button>
     </div>
     <div class="panel">
@@ -59,6 +64,62 @@
       </div>
       <div class="skins" id="skins"></div>
     </div>
+  </section>
+
+  <section class="screen" id="screen-update" hidden>
+    <div class="update-block panel">
+      <div class="update-icon" aria-hidden="true">★</div>
+      <h1 data-i18n="updateRequired">باید بازی را به‌روز کنی</h1>
+      <p id="update-text"></p>
+      <p class="muted small" id="update-versions"></p>
+      <div class="update-stores" id="update-stores"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-account" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="account">حساب من</h1>
+      <span></span>
+    </div>
+    <div class="panel account-status" id="account-status"></div>
+    <div class="panel">
+      <div class="panel-head"><h2 data-i18n="myCountry">کشور من</h2><span class="muted small" data-i18n="myCountryHint">برای نشان دادن پرچم و پیش‌شماره</span></div>
+      <button class="country-btn" type="button" id="btn-country"></button>
+    </div>
+    <form class="panel form otp-form" id="otp-form" novalidate>
+      <h2 data-i18n="otpTitle">ورود با شماره موبایل</h2>
+      <p class="muted small" data-i18n="otpHint">کد یک‌بار مصرف برایت پیامک می‌شود.</p>
+      <div class="otp-step" id="otp-step-phone">
+        <label for="otp-phone" data-i18n="phone">شماره موبایل</label>
+        <div class="phone-row">
+          <button class="country-btn small-btn" type="button" id="otp-country"></button>
+          <input id="otp-phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" class="mono" placeholder="0912 345 6789">
+        </div>
+        <label class="check-row"><input type="checkbox" id="otp-link" checked><span data-i18n="otpKeep">پیشرفت این دستگاه را نگه دار</span></label>
+        <button class="btn btn-primary" type="submit" id="otp-send" data-i18n="sendCode">بفرست</button>
+      </div>
+      <div class="otp-step" id="otp-step-code" hidden>
+        <p id="otp-sent" class="small"></p>
+        <label for="otp-code" data-i18n="code">کد</label>
+        <input id="otp-code" type="text" inputmode="numeric" autocomplete="one-time-code" dir="ltr" class="mono otp-code">
+        <div class="otp-row">
+          <button class="btn btn-primary" type="submit" id="otp-verify" data-i18n="verify">ورود</button>
+          <button class="btn btn-ghost" type="button" id="otp-resend"></button>
+          <button class="btn btn-ghost" type="button" id="otp-change" data-i18n="changeNumber">شماره‌ی دیگر</button>
+        </div>
+      </div>
+      <p class="form-msg" id="otp-msg" role="status"></p>
+    </form>
+    <form class="panel form" id="name-form" novalidate>
+      <h2 data-i18n="username">نام کاربری</h2>
+      <label for="name-input" class="sr-only" data-i18n="username">نام کاربری</label>
+      <input id="name-input" type="text" autocomplete="off" spellcheck="false">
+      <p class="muted small" id="name-hint"></p>
+      <button class="btn btn-primary" type="submit" data-i18n="saveName">ذخیره</button>
+      <p class="form-msg" id="name-msg" role="status"></p>
+    </form>
+    <button class="btn btn-ghost wide" type="button" id="btn-signout" hidden data-i18n="signOut">خروج از حساب موبایل</button>
   </section>
 
   <section class="screen" id="screen-play" hidden>
@@ -164,6 +225,7 @@
     <div class="inbox-list" id="inbox-list"></div>
     <button class="btn btn-ghost wide" type="button" id="btn-inbox-more" hidden data-i18n="olderMessages">پیام‌های قدیمی‌تر</button>
   </section>
+  <p class="game-version muted small center" id="game-version"></p>
 </main>
 
 <dialog id="dialog">

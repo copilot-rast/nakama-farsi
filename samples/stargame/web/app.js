@@ -26,12 +26,16 @@ async function loadServerKey() {
   if (!SERVER_KEY) SERVER_KEY = "defaultkey";
 }
 const ROUND_SECONDS = 30;
+const GAME_VERSION = "1.4.0";
+const PLATFORM = "web";
 const LS = {
   device: "stargame.device",
   skin: "stargame.skin",
   storeToken: "stargame.lastStoreToken",
   lang: "stargame.lang",
   langDir: "stargame.langDir",
+  loginKey: "stargame.loginKey",
+  skipUpdate: "stargame.skipUpdate",
 };
 
 const STRINGS = {
@@ -156,11 +160,75 @@ const STRINGS = {
     inboxEmpty: "صندوقت خالی است.",
     allRead: "همه‌ی پیام‌ها خوانده شد.",
     newMessage: "پیام تازه",
+    account: "حساب من",
+    guest: "مهمان",
+    guestHint: "پیشرفتت فقط روی همین دستگاه است. با شماره موبایل وارد شو تا روی هر دستگاهی داشته باشی‌اش.",
+    signedInAs: (p) => `با شماره‌ی ${p} وارد شده‌ای`,
+    signedInHint: "با همین شماره روی هر دستگاهی وارد شو.",
+    myCountry: "کشور من",
+    myCountryHint: "برای نشان دادن پرچم و پیش‌شماره",
+    chooseCountry: "انتخاب کشور",
+    searchCountry: "جستجوی کشور…",
+    noCountry: "کشوری پیدا نشد.",
+    countrySaved: (n) => `کشورت شد ${n}`,
+    otpTitle: "ورود با شماره موبایل",
+    otpHint: "کد یک‌بار مصرف برایت پیامک می‌شود.",
+    phone: "شماره موبایل",
+    otpKeep: "پیشرفت این دستگاه را نگه دار",
+    sendCode: "کد را بفرست",
+    sending: "در حال فرستادن…",
+    codeSent: (p) => `کد به ${p} فرستاده شد.`,
+    codeSandbox: "حالت آزمایشی: پیامکی نمی‌آید؛ کد در لاگ سرور است.",
+    code: "کد",
+    codeDigits: (n) => `کد ${num(n)} رقمی`,
+    verify: "ورود",
+    verifying: "در حال بررسی…",
+    resendIn: (n) => `ارسال دوباره تا ${num(n)} ثانیه`,
+    resend: "ارسال دوباره",
+    changeNumber: "شماره‌ی دیگر",
+    welcomeBack: (p) => `خوش آمدی! با ${p} وارد شدی.`,
+    newAccount: (p) => `حساب تازه با ${p} ساخته شد.`,
+    linked: (p) => `شماره‌ی ${p} به همین حساب وصل شد.`,
+    signOut: "خروج از حساب موبایل",
+    signedOut: "از حساب موبایل خارج شدی. حالا مهمانی.",
+    username: "نام کاربری",
+    saveName: "ذخیره",
+    nameSaved: "نام کاربری ذخیره شد.",
+    nameRule: (min, max, latin) => `بین ${num(min)} تا ${num(max)} حرف${latin ? "، فقط حرف لاتین، رقم و _ . -" : ""}.`,
+    updateAvailable: "نسخه‌ی تازه آمده",
+    updateRequired: "باید بازی را به‌روز کنی",
+    updateNow: "به‌روزرسانی",
+    later: "بعداً",
+    updateDefault: "برای ادامه، بازی را به‌روز کن.",
+    versions: (cur, min) => `نسخه‌ی تو: ${cur} — کمترین نسخه‌ی مجاز: ${min}`,
+    versionLabel: (v) => `نسخه‌ی ${v}`,
     errorCode: (code) => `خطا: ${code}`,
     methods: { zarinpal: "زرین‌پال", zibal: "زیبال", bazaar: "کافه‌بازار", myket: "مایکت", in_app: "پرداخت با سکه" },
     statuses: { success: "موفق", pending: "در انتظار", failed: "ناموفق", expired: "منقضی" },
     skins: { default: "سبد ساده", skin_gold: "سبد طلایی", skin_neon: "سبد نئونی", skin_galaxy: "سبد کهکشانی" },
     errors: {
+      OTP_DISABLED: "ورود با پیامک فعلاً خاموش است.",
+      OTP_UNAVAILABLE: "سرویس پیامک آماده نیست. کمی بعد امتحان کن.",
+      OTP_SEND_FAILED: "پیامک فرستاده نشد. دوباره امتحان کن.",
+      OTP_TOO_SOON: "کمی صبر کن و بعد کد تازه بخواه.",
+      OTP_RATE_LIMITED: "برای این شماره کد زیادی خواسته شده. بعداً امتحان کن.",
+      OTP_NOT_FOUND: "اول کد بخواه.",
+      OTP_EXPIRED: "کد منقضی شد. کد تازه بخواه.",
+      OTP_INVALID_CODE: "کد درست نیست.",
+      OTP_TOO_MANY_ATTEMPTS: "چند بار کد اشتباه زدی. کد تازه بخواه.",
+      INVALID_PHONE: "شماره‌ی موبایل درست نیست.",
+      PHONE_COUNTRY_NOT_ALLOWED: "شماره‌های این کشور پذیرفته نمی‌شوند.",
+      ACCOUNT_DISABLED: "این حساب بسته شده است.",
+      ACCOUNT_HAS_PHONE: "این حساب شماره‌ی دیگری دارد.",
+      COUNTRY_NOT_AVAILABLE: "این کشور در دسترس نیست.",
+      USERNAME_TOO_SHORT: "نام کاربری کوتاه است.",
+      USERNAME_TOO_LONG: "نام کاربری بلند است.",
+      USERNAME_INVALID_CHARACTERS: "نام کاربری فقط حرف لاتین، رقم و _ . - می‌تواند داشته باشد.",
+      USERNAME_TAKEN: "این نام کاربری را کس دیگری دارد.",
+      PASSWORD_TOO_SHORT: "رمز کوتاه است.",
+      PASSWORD_NEEDS_LETTER: "رمز باید حرف داشته باشد.",
+      PASSWORD_NEEDS_DIGIT: "رمز باید عدد داشته باشد.",
+      DISPLAY_NAME_TOO_LONG: "نام نمایشی بلند است.",
       UNAUTHENTICATED: "نشست تمام شده؛ دوباره وارد شو.",
       REQUEST_TOO_LARGE: "درخواست خیلی بزرگ است.",
       INVALID_JSON: "درخواست نامعتبر است.",
@@ -352,11 +420,75 @@ const STRINGS = {
     inboxEmpty: "Your inbox is empty.",
     allRead: "All messages marked as read.",
     newMessage: "New message",
+    account: "My account",
+    guest: "Guest",
+    guestHint: "Your progress lives on this device only. Sign in with your phone to keep it on any device.",
+    signedInAs: (p) => `Signed in with ${p}`,
+    signedInHint: "Use this number to sign in on any device.",
+    myCountry: "My country",
+    myCountryHint: "Used for your flag and dialling code",
+    chooseCountry: "Choose a country",
+    searchCountry: "Search countries…",
+    noCountry: "No country found.",
+    countrySaved: (n) => `Your country is now ${n}`,
+    otpTitle: "Sign in with your phone",
+    otpHint: "We text you a one-time code.",
+    phone: "Mobile number",
+    otpKeep: "Keep the progress on this device",
+    sendCode: "Send code",
+    sending: "Sending…",
+    codeSent: (p) => `We sent a code to ${p}.`,
+    codeSandbox: "Sandbox: no SMS arrives; the code is in the server log.",
+    code: "Code",
+    codeDigits: (n) => `${num(n)}-digit code`,
+    verify: "Sign in",
+    verifying: "Checking…",
+    resendIn: (n) => `Resend in ${num(n)} s`,
+    resend: "Resend",
+    changeNumber: "Use another number",
+    welcomeBack: (p) => `Welcome back! Signed in with ${p}.`,
+    newAccount: (p) => `New account created with ${p}.`,
+    linked: (p) => `${p} is now linked to this account.`,
+    signOut: "Sign out of the phone account",
+    signedOut: "Signed out. You are a guest now.",
+    username: "Username",
+    saveName: "Save",
+    nameSaved: "Username saved.",
+    nameRule: (min, max, latin) => `${num(min)} to ${num(max)} characters${latin ? "; Latin letters, digits and _ . - only" : ""}.`,
+    updateAvailable: "A new version is out",
+    updateRequired: "Please update the game",
+    updateNow: "Update",
+    later: "Later",
+    updateDefault: "Update the game to keep playing.",
+    versions: (cur, min) => `Your version: ${cur} — lowest allowed: ${min}`,
+    versionLabel: (v) => `Version ${v}`,
     errorCode: (code) => `Error: ${code}`,
     methods: { zarinpal: "Zarinpal", zibal: "Zibal", bazaar: "Cafe Bazaar", myket: "Myket", in_app: "Paid with coins" },
     statuses: { success: "Successful", pending: "Pending", failed: "Failed", expired: "Expired" },
     skins: { default: "Plain basket", skin_gold: "Golden basket", skin_neon: "Neon basket", skin_galaxy: "Galaxy basket" },
     errors: {
+      OTP_DISABLED: "Phone sign-in is turned off for now.",
+      OTP_UNAVAILABLE: "The SMS service is not ready. Try again later.",
+      OTP_SEND_FAILED: "The SMS could not be sent. Try again.",
+      OTP_TOO_SOON: "Wait a little before asking for a new code.",
+      OTP_RATE_LIMITED: "Too many codes for this number. Try again later.",
+      OTP_NOT_FOUND: "Ask for a code first.",
+      OTP_EXPIRED: "The code has expired. Ask for a new one.",
+      OTP_INVALID_CODE: "That code is not right.",
+      OTP_TOO_MANY_ATTEMPTS: "Too many wrong codes. Ask for a new one.",
+      INVALID_PHONE: "That mobile number is not valid.",
+      PHONE_COUNTRY_NOT_ALLOWED: "Numbers from this country are not accepted.",
+      ACCOUNT_DISABLED: "This account is closed.",
+      ACCOUNT_HAS_PHONE: "This account already has another number.",
+      COUNTRY_NOT_AVAILABLE: "This country is not available.",
+      USERNAME_TOO_SHORT: "The username is too short.",
+      USERNAME_TOO_LONG: "The username is too long.",
+      USERNAME_INVALID_CHARACTERS: "The username can only use Latin letters, digits and _ . -",
+      USERNAME_TAKEN: "Someone else has this username.",
+      PASSWORD_TOO_SHORT: "The password is too short.",
+      PASSWORD_NEEDS_LETTER: "The password needs a letter.",
+      PASSWORD_NEEDS_DIGIT: "The password needs a digit.",
+      DISPLAY_NAME_TOO_LONG: "The display name is too long.",
       UNAUTHENTICATED: "Your session ended. Sign in again.",
       REQUEST_TOO_LARGE: "The request is too large.",
       INVALID_JSON: "The request is not valid.",
@@ -429,7 +561,7 @@ const STRINGS = {
   },
 };
 
-const SCREENS = ["home", "play", "shop", "gift", "payments", "news", "faq", "inbox"];
+const SCREENS = ["home", "play", "shop", "gift", "payments", "news", "faq", "inbox", "account", "update"];
 
 const SKINS = {
   default: { body: ["#c98a52", "#8a5a30"], rim: "#e4b383", glow: null },
@@ -497,6 +629,12 @@ const state = {
   languages: [],
   socket: null,
   socketRetry: 0,
+  phone: "",
+  countries: [],
+  country: "",
+  version: null,
+  rules: null,
+  otp: { step: "phone", phone: "", country: "", until: 0, timer: 0, codeLength: 5, sandbox: false },
 };
 
 class ApiError extends Error {
@@ -556,14 +694,33 @@ function decodeJwt(token) {
   }
 }
 
-async function login() {
-  const body = await request("/v2/account/authenticate/device?create=true", {
+async function authenticate(path, id) {
+  return request(path, {
     method: "POST",
     headers: { Authorization: "Basic " + btoa(SERVER_KEY + ":"), "Content-Type": "application/json" },
-    body: JSON.stringify({ id: deviceId() }),
+    body: JSON.stringify({ id }),
   });
-  state.token = body.token;
-  state.username = decodeJwt(body.token).usn || "";
+}
+
+async function login() {
+  let body = null;
+  const key = localStorage.getItem(LS.loginKey);
+  if (key) {
+    try {
+      body = await authenticate("/v2/account/authenticate/custom?create=false", key);
+    } catch (err) {
+      if (err.code === "NETWORK") throw err;
+      localStorage.removeItem(LS.loginKey);
+      state.phone = "";
+    }
+  }
+  if (!body) body = await authenticate("/v2/account/authenticate/device?create=true", deviceId());
+  useSession(body.token);
+}
+
+function useSession(token) {
+  state.token = token;
+  state.username = decodeJwt(token).usn || "";
   connectSocket();
 }
 
@@ -610,6 +767,7 @@ function el(tag, attrs = {}, children = []) {
 }
 
 function show(name) {
+  if (state.version && state.version.status === "update_required" && name !== "update") name = "update";
   if (name !== "play") stopGame();
   for (const s of document.querySelectorAll(".screen")) s.hidden = s.id !== "screen-" + name;
   window.scrollTo(0, 0);
@@ -625,6 +783,8 @@ function show(name) {
     $("#note-toast").hidden = true;
     loadInbox(true);
   }
+  if (name === "account") renderAccount();
+  if (name === "update") renderUpdate();
   if (name === "gift") {
     $("#gift-msg").textContent = "";
     $("#gift-code").focus();
@@ -1833,6 +1993,10 @@ function applyStatic() {
   setUnread(state.unread);
   setNewsDot(state.newsNew);
   renderLangPicker();
+  $("#game-version").textContent = t("versionLabel", gameVersion());
+  renderUpdateBanner();
+  if (!$("#screen-account").hidden) renderAccount();
+  if (!$("#screen-update").hidden) renderUpdate();
 }
 
 function renderLangPicker() {
@@ -1917,6 +2081,8 @@ async function changeLanguage(code) {
   else if (screen === "home") refreshBalances().then(renderHome).catch(() => renderHome());
   else if (["shop", "payments", "news", "faq", "inbox"].includes(screen)) show(screen);
   else refreshBalances().catch(() => {});
+  checkVersion().then(() => { if (state.version && state.version.status === "update_required") show("update"); }).catch(() => {});
+  loadCountries();
 }
 
 async function boot() {
@@ -1938,19 +2104,330 @@ async function boot() {
   $("#comment-form").addEventListener("submit", postComment);
   $("#note-toast").addEventListener("click", () => { $("#note-toast").hidden = true; show("inbox"); });
   $("#faq-q").addEventListener("input", () => { clearTimeout(faqTimer); faqTimer = setTimeout(loadFaq, 300); });
+  setupAccount();
   try {
     await loadServerKey();
     await login();
     await initLanguage();
+    await checkVersion();
+    if (state.version && state.version.status === "update_required") {
+      show("update");
+      return;
+    }
     await refreshBalances();
   } catch (err) {
     $("#loading-text").textContent = errorText(err);
     document.querySelector("#screen-loading .spinner").hidden = true;
     return;
   }
+  loadCountries();
+  loadPhone();
   refreshUnread();
   refreshNewsDot();
   if (!(await handleReturn())) show("home");
+}
+
+
+function gameVersion() {
+  const v = new URLSearchParams(location.search).get("v");
+  return v && /^\d{1,9}(\.\d{1,9}){0,3}$/.test(v) ? v : GAME_VERSION;
+}
+
+async function checkVersion() {
+  try {
+    state.version = await rpc("base_app_version", { platform: PLATFORM, version: gameVersion(), store: "web", lang: i18n.lang });
+  } catch (err) {
+    state.version = null;
+  }
+  renderUpdateBanner();
+  return state.version;
+}
+
+function renderUpdateBanner() {
+  const box = $("#update-banner");
+  const v = state.version;
+  const show = !!v && v.status === "update_available" && localStorage.getItem(LS.skipUpdate) !== v.latest;
+  box.hidden = !show;
+  if (!show) return;
+  $("#update-banner-text").textContent = v.message || t("versions", gameVersion(), v.latest);
+  const go = $("#update-banner-go");
+  if (v.storeUrl) {
+    go.href = v.storeUrl;
+    go.hidden = false;
+  } else go.hidden = true;
+}
+
+function renderUpdate() {
+  const v = state.version || {};
+  document.body.classList.toggle("blocked", v.status === "update_required");
+  $("#update-text").textContent = v.message || t("updateDefault");
+  $("#update-versions").textContent = t("versions", gameVersion(), v.minimum || "");
+  const box = $("#update-stores");
+  box.textContent = "";
+  for (const st of v.stores || []) box.append(el("a", { class: "btn btn-primary", href: st.url, target: "_blank", rel: "noopener", "data-store": st.store, text: st.name }));
+}
+
+async function loadCountries() {
+  try {
+    const r = await rpc("base_countries", { lang: i18n.lang });
+    state.countries = r.items || [];
+    if (r.selected) state.country = r.selected;
+  } catch (err) {
+    state.countries = [];
+  }
+  if (!state.otp.country || !state.countries.some((c) => c.code === state.otp.country)) state.otp.country = defaultCountry();
+  if (!$("#screen-account").hidden) renderAccount();
+}
+
+function defaultCountry() {
+  const codes = state.countries.map((c) => c.code);
+  if (state.country && codes.includes(state.country)) return state.country;
+  if (codes.includes("IR")) return "IR";
+  return codes[0] || "";
+}
+
+function countryOf(code) {
+  return state.countries.find((c) => c.code === code) || null;
+}
+
+function flagNode(c) {
+  if (c && c.flagUrl) return el("img", { class: "flag", src: c.flagUrl, alt: "", width: "24", height: "18" });
+  return el("span", { class: "flag", "aria-hidden": "true", text: c ? c.flag : "🏳️" });
+}
+
+function paintCountryButton(btn, code, withDial) {
+  const c = countryOf(code);
+  btn.textContent = "";
+  btn.dataset.country = code || "";
+  btn.append(flagNode(c));
+  if (!withDial) btn.append(el("span", { class: "name", text: c ? c.name : t("chooseCountry") }));
+  if (withDial && c) btn.append(el("bdi", { class: "dial", dir: "ltr", text: c.dialCode }));
+  btn.setAttribute("aria-label", t("chooseCountry") + (c ? ": " + c.name + " " + c.dialCode : ""));
+}
+
+function countryPicker(current) {
+  return openDialog((body, close) => {
+    const input = el("input", { type: "search", class: "country-search", id: "country-q", placeholder: t("searchCountry"), "aria-label": t("searchCountry"), autocomplete: "off" });
+    const list = el("div", { class: "country-list", role: "listbox", id: "country-list", "aria-label": t("chooseCountry") });
+    const paint = () => {
+      const q = input.value.trim().toLowerCase().replace(/^\+/, "");
+      list.textContent = "";
+      const hits = state.countries.filter((c) => !q || c.name.toLowerCase().includes(q) || c.code.toLowerCase() === q || c.dialCode.replace("+", "").startsWith(q));
+      for (const c of hits.slice(0, 80)) {
+        list.append(el("button", { class: "country-opt", type: "button", role: "option", "aria-selected": c.code === current ? "true" : "false", "data-code": c.code, onclick: () => close(c.code) }, [
+          flagNode(c), el("span", { class: "name", text: c.name }), el("bdi", { class: "dial", dir: "ltr", text: c.dialCode }),
+        ]));
+      }
+      if (!hits.length) list.append(el("p", { class: "muted center", text: t("noCountry") }));
+    };
+    input.addEventListener("input", paint);
+    body.append(el("h2", { text: t("chooseCountry") }), input, list, el("div", { class: "dialog-actions" }, [el("button", { class: "btn", type: "button", text: t("close"), onclick: () => close(undefined) })]));
+    paint();
+    setTimeout(() => input.focus(), 0);
+  });
+}
+
+async function loadPhone() {
+  try {
+    const r = await rpc("publication_phone", {});
+    state.phone = r.phone || "";
+    state.otp.codeLength = r.codeLength || state.otp.codeLength;
+  } catch (err) {
+    state.phone = "";
+  }
+  if (!$("#screen-account").hidden) renderAccount();
+}
+
+async function loadRules() {
+  if (state.rules) return state.rules;
+  try {
+    state.rules = await rpc("base_account_rules", {});
+  } catch (err) {
+    state.rules = null;
+  }
+  return state.rules;
+}
+
+function renderAccount() {
+  const st = $("#account-status");
+  st.textContent = "";
+  st.append(
+    el("span", { class: "avatar", "aria-hidden": "true", text: state.phone ? "★" : "?" }),
+    el("div", {}, [
+      el("b", { id: "account-title", text: state.phone ? t("signedInAs", "⁦" + state.phone + "⁩") : t("guest") }),
+      el("span", { class: "muted small", text: state.phone ? t("signedInHint") : t("guestHint") }),
+    ])
+  );
+  paintCountryButton($("#btn-country"), state.country || "", false);
+  paintCountryButton($("#otp-country"), state.otp.country, true);
+  $("#otp-form").hidden = !!state.phone;
+  $("#btn-signout").hidden = !state.phone;
+  $("#otp-link").closest(".check-row").hidden = !!localStorage.getItem(LS.loginKey);
+  const code = state.otp.step === "code";
+  $("#otp-step-phone").hidden = code;
+  $("#otp-step-code").hidden = !code;
+  if (code) {
+    $("#otp-sent").textContent = t("codeSent", "⁦" + state.otp.phone + "⁩") + (state.otp.sandbox ? " " + t("codeSandbox") : "");
+    $("#otp-code").setAttribute("maxlength", String(state.otp.codeLength));
+    $("#otp-code").setAttribute("placeholder", "•".repeat(state.otp.codeLength));
+    $("#otp-code").setAttribute("aria-label", t("codeDigits", state.otp.codeLength));
+  }
+  paintResend();
+  const name = $("#name-input");
+  if (document.activeElement !== name) name.value = state.username;
+  loadRules().then((r) => { $("#name-hint").textContent = r ? t("nameRule", r.usernameMin, r.usernameMax, r.usernameCharset === "latin") : ""; });
+}
+
+function paintResend() {
+  const btn = $("#otp-resend");
+  const left = Math.ceil((state.otp.until - Date.now()) / 1000);
+  btn.disabled = left > 0;
+  btn.textContent = left > 0 ? t("resendIn", left) : t("resend");
+  clearTimeout(state.otp.timer);
+  if (left > 0) state.otp.timer = setTimeout(paintResend, 1000);
+}
+
+function otpMsg(text, kind) {
+  const m = $("#otp-msg");
+  m.className = "form-msg" + (kind ? " " + kind : "");
+  m.textContent = text || "";
+}
+
+async function sendCode() {
+  const phone = $("#otp-phone").value.trim();
+  if (!phone) {
+    otpMsg(errorText({ code: "INVALID_PHONE" }), "bad");
+    $("#otp-phone").focus();
+    return;
+  }
+  const btn = state.otp.step === "code" ? $("#otp-resend") : $("#otp-send");
+  btn.disabled = true;
+  otpMsg(t("sending"));
+  try {
+    const r = await rpc("publication_otp_request", { phone, country: state.otp.country, lang: i18n.lang });
+    Object.assign(state.otp, { step: "code", phone: r.phone, until: Date.now() + (r.resendAfter || 60) * 1000, codeLength: r.codeLength || 5, sandbox: !!r.sandbox });
+    otpMsg("");
+    $("#otp-code").value = "";
+    renderAccount();
+    $("#otp-code").focus();
+  } catch (err) {
+    otpMsg(errorText(err), "bad");
+  } finally {
+    btn.disabled = false;
+    paintResend();
+  }
+}
+
+async function verifyCode() {
+  const code = $("#otp-code").value.replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0)).replace(/\D/g, "");
+  if (!code) {
+    otpMsg(errorText({ code: "OTP_INVALID_CODE" }), "bad");
+    return;
+  }
+  const btn = $("#otp-verify");
+  btn.disabled = true;
+  otpMsg(t("verifying"));
+  try {
+    const keep = !localStorage.getItem(LS.loginKey) && $("#otp-link").checked;
+    const r = await rpc("publication_otp_verify", { phone: state.otp.phone, country: state.otp.country, code, link: keep });
+    if (r.loginKey) localStorage.setItem(LS.loginKey, r.loginKey);
+    useSession(r.token);
+    state.phone = r.phone;
+    rpc("base_set_language", { lang: i18n.lang }).catch(() => {});
+    Object.assign(state.otp, { step: "phone", phone: "", until: 0 });
+    otpMsg("");
+    $("#otp-phone").value = "";
+    const shown = "⁦" + r.phone + "⁩";
+    toast(r.created ? t("newAccount", shown) : r.linked ? t("linked", shown) : t("welcomeBack", shown), "ok");
+    await refreshBalances().catch(() => {});
+    loadCountries();
+    refreshUnread();
+    refreshNewsDot();
+    renderAccount();
+  } catch (err) {
+    otpMsg(errorText(err), "bad");
+    if (err.code === "OTP_EXPIRED" || err.code === "OTP_TOO_MANY_ATTEMPTS" || err.code === "OTP_NOT_FOUND") state.otp.until = 0;
+    paintResend();
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function signOut() {
+  localStorage.removeItem(LS.loginKey);
+  state.phone = "";
+  try {
+    await login();
+    await refreshBalances();
+  } catch (err) {
+    toast(errorText(err), "bad");
+  }
+  toast(t("signedOut"), "ok");
+  loadCountries();
+  renderAccount();
+}
+
+async function saveName(e) {
+  e.preventDefault();
+  const name = $("#name-input").value.trim();
+  const msg = $("#name-msg");
+  msg.className = "form-msg";
+  msg.textContent = "";
+  try {
+    await request("/v2/account", { method: "PUT", headers: { Authorization: "Bearer " + state.token, "Content-Type": "application/json" }, body: JSON.stringify({ username: name }) });
+    await login();
+    msg.className = "form-msg ok";
+    msg.textContent = t("nameSaved");
+  } catch (err) {
+    msg.className = "form-msg bad";
+    msg.textContent = errorText(err.status === 409 ? { code: "USERNAME_TAKEN" } : err);
+  }
+}
+
+async function pickMyCountry() {
+  const code = await countryPicker(state.country);
+  if (!code || code === state.country) return;
+  try {
+    await rpc("base_set_country", { code });
+    state.country = code;
+    if (!state.otp.phone) state.otp.country = code;
+    renderAccount();
+    const c = countryOf(code);
+    toast(t("countrySaved", c ? c.name : code), "ok");
+  } catch (err) {
+    toast(errorText(err), "bad");
+  }
+}
+
+async function pickOtpCountry() {
+  const code = await countryPicker(state.otp.country);
+  if (!code) return;
+  state.otp.country = code;
+  renderAccount();
+  $("#otp-phone").focus();
+}
+
+function setupAccount() {
+  $("#btn-country").addEventListener("click", pickMyCountry);
+  $("#otp-country").addEventListener("click", pickOtpCountry);
+  $("#otp-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (state.otp.step === "code") verifyCode();
+    else sendCode();
+  });
+  $("#otp-resend").addEventListener("click", sendCode);
+  $("#otp-change").addEventListener("click", () => {
+    Object.assign(state.otp, { step: "phone", until: 0 });
+    otpMsg("");
+    renderAccount();
+    $("#otp-phone").focus();
+  });
+  $("#btn-signout").addEventListener("click", signOut);
+  $("#name-form").addEventListener("submit", saveName);
+  $("#update-banner-later").addEventListener("click", () => {
+    if (state.version && state.version.latest) localStorage.setItem(LS.skipUpdate, state.version.latest);
+    renderUpdateBanner();
+  });
 }
 
 boot();

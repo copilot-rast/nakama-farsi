@@ -252,6 +252,9 @@ func seed(ctx context.Context, db *sql.DB, env map[string]string) (*seedReport, 
 	if err := seedPaymentMethods(ctx, tx, env, report); err != nil {
 		return nil, err
 	}
+	if err := seedAppVersions(ctx, tx, env, report); err != nil {
+		return nil, err
+	}
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
@@ -281,6 +284,33 @@ func seedPaymentMethods(ctx context.Context, tx *sql.Tx, env map[string]string, 
 			return fmt.Errorf("payment method %s: %w", m.method, err)
 		}
 		report.add("method", m.method, ok)
+	}
+	return nil
+}
+
+const GameVersion = "1.4.0"
+
+func seedAppVersions(ctx context.Context, tx *sql.Tx, env map[string]string, report *seedReport) error {
+	base := strings.TrimRight(strings.TrimSpace(env["ECONOMY_PUBLIC_BASE_URL"]), "/")
+	if !strings.HasPrefix(base, "http://") && !strings.HasPrefix(base, "https://") {
+		base = "https://nakama.dastar.dev"
+	}
+	update := text{"fa": "نسخه‌ی تازه‌ی ستاره‌چین آمده. با به‌روزرسانی، ستاره‌های بیشتری می‌گیری!", "en": "A new Star Catcher is out. Update to catch more stars!", "ar": "إصدار جديد من صائد النجوم متاح. حدّث اللعبة!"}
+	force := text{"fa": "این نسخه دیگر کار نمی‌کند. برای ادامه، بازی را به‌روز کن.", "en": "This version no longer works. Please update to keep playing.", "ar": "هذا الإصدار لم يعد يعمل. يرجى التحديث للمتابعة."}
+	rows := []struct {
+		platform string
+		links    string
+	}{
+		{"web", `[{"store":"web","url":"` + base + `/stargame/","label":{}}]`},
+		{"android", `[{"store":"bazaar","url":"https://cafebazaar.ir/app/ir.nakama.stargame","label":{}},{"store":"myket","url":"https://myket.ir/app/ir.nakama.stargame","label":{}}]`},
+	}
+	for _, r := range rows {
+		ok, err := inserted(tx.ExecContext(ctx, `INSERT INTO base_app_version (id, platform, latest_version, min_version, store_links, update_message, force_message)
+			VALUES ($1, $2, $3, '1.0.0', $4::jsonb, $5::jsonb, $6::jsonb) ON CONFLICT DO NOTHING`, newID(), r.platform, GameVersion, r.links, update.json(), force.json()))
+		if err != nil {
+			return fmt.Errorf("app version %s: %w", r.platform, err)
+		}
+		report.add("app version", r.platform, ok)
 	}
 	return nil
 }

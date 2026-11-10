@@ -164,6 +164,7 @@ func resetSeedData(t *testing.T, db *sql.DB) {
 		`DELETE FROM base_category WHERE key_type='product' AND key IN ('star_coin_packs','star_skins')`,
 		`DELETE FROM economy_currency WHERE key='coin'`,
 		`DELETE FROM base_language WHERE code='ar'`,
+		`DELETE FROM base_app_version WHERE platform IN ('web','android')`,
 		`UPDATE economy_payment_method SET is_active=false, config='', updated_at=now()`,
 	} {
 		if _, err := db.Exec(q); err != nil {
@@ -212,7 +213,7 @@ func TestSeedPostgres(t *testing.T) {
 		}
 		created += len(reports[i].created)
 	}
-	if want := 1 + 1 + 2 + 6 + 6 + 2 + 4; created != want {
+	if want := 1 + 1 + 2 + 6 + 6 + 2 + 4 + 2; created != want {
 		t.Fatalf("created %d rows across nodes, want %d: %v", created, want, reports)
 	}
 
@@ -224,6 +225,7 @@ func TestSeedPostgres(t *testing.T) {
 		`SELECT count(*) FROM economy_prize WHERE key LIKE 'star\_%'`:                                                                                                                            6,
 		`SELECT count(*) FROM economy_product WHERE key LIKE 'star\_%' AND is_active`:                                                                                                            6,
 		`SELECT count(*) FROM economy_gift WHERE code IN ('STAR100','HALF50') AND is_active`:                                                                                                     2,
+		`SELECT count(*) FROM base_app_version WHERE platform IN ('web','android') AND latest_version='1.4.0' AND min_version='1.0.0'`:                                                           2,
 		`SELECT count(*) FROM economy_payment_method WHERE is_active`:                                                                                                                            4,
 		`SELECT count(*) FROM economy_product WHERE key='star_skin_gold' AND coin_price @> '{"currencyKey":"coin","amount":80}' AND payment_methods = ARRAY['in_app']`:                           1,
 		`SELECT count(*) FROM economy_product WHERE key='star_pack_small' AND price_toman=10000 AND sku @> '{"bazaar":"star_pack_small","myket":"star_pack_small"}'`:                             1,
