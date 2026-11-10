@@ -1,13 +1,17 @@
 var SECTIONS = {
   economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments'],
-  publication: ['faqs', 'news', 'comments', 'notifications']
+  publication: ['faqs', 'news', 'comments', 'notifications'],
+  moderation: ['players', 'reports', 'restrictions', 'chat-words']
 };
-var SECTION_ORDER = ['economy', 'publication'];
+var SECTION_ORDER = ['economy', 'publication', 'moderation'];
+var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod' };
+var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE' };
 var LIMIT = 20;
-var lastQuery = { comments: { status: 'pending' } };
+var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' } };
 
 function sectionOf(page) {
   if (psSection(page)) return PS_ROUTE;
+  if (SECTIONS.moderation.indexOf(page) !== -1) return 'moderation';
   return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
 }
 
@@ -94,7 +98,10 @@ function listPage(container, name, query, ctx) {
     clear(pagerTop).appendChild(pager(state, function (p) { state.page = p; sync(); load(); }, function () { load(); }));
     clear(pagerBottom).appendChild(pager(state, function (p) { state.page = p; sync(); load(); window.scrollTo(0, 0); }));
   }
-  function open(item) { go(name, item.id, currentQuery()); }
+  function open(item) {
+    if (def.rowHref) { location.hash = def.rowHref(item); return; }
+    go(name, item.id, currentQuery());
+  }
   var seq = 0;
   function load() {
     var my = ++seq;
@@ -112,6 +119,7 @@ function listPage(container, name, query, ctx) {
       state.loaded = true;
       state.total = (res && res.total) || 0;
       var items = (res && res.items) || [];
+      if (def.onItems) def.onItems(items);
       tableBox.classList.remove('opacity-60');
       if (!items.length && state.page > 1 && state.total > 0) {
         state.page = Math.max(1, Math.ceil(state.total / state.limit));

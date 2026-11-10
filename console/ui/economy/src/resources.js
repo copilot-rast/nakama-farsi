@@ -272,7 +272,7 @@ var RESOURCES = {
     columns: [
       { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '60%' },
       { label: 'col.price', render: function (it) { return h('div', { class: 'flex flex-col tabular-nums whitespace-nowrap' }, withKeyNames(function () { return priceText(it).map(function (p) { return h('span', { text: p }); }); }), it.discountPercent ? h('span', { class: 'text-xs text-success-600', text: t('percent', { n: it.discountPercent }) }) : null); }, width: 160 },
-      { label: 'col.methods', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, (it.paymentMethods || []).map(function (m) { return tag(t('method.' + m), 'secondary'); })); }, skeleton: '45%' },
+      { label: 'col.methods', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, (it.paymentMethods || []).map(function (m) { return tag(t('method.' + m), 'secondary'); }), (it.audienceTagIds || []).length ? tag(t('audience.only'), 'primary') : null); }, skeleton: '45%' },
       { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 },
       { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 80 }
     ],
@@ -284,6 +284,7 @@ var RESOURCES = {
       tr('name', { required: true, max: 128 }),
       tr('description', { multiline: true, max: 4000, optional: true }),
       { type: 'row', fields: [categoryField('product'), tagsField('product')] },
+      { name: 'audienceTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.audience', hint: 'f.audience.hint', optional: true, empty: [] },
       { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', hint: 'f.prize.product.hint', required: true },
       { type: 'heading', label: 'f.paymentMethods' },
       { name: 'paymentMethods', type: 'multi', required: true, options: opts('method.', METHODS) },
@@ -314,7 +315,7 @@ var RESOURCES = {
       ] },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function () { return { isActive: true, name: {}, description: {}, tagIds: [], paymentMethods: ['zarinpal'], discountPercent: 0, sku: {}, coinPrice: null, isSubscription: false, minLevel: 0, sort: 0, metadata: {} }; },
+    defaults: function () { return { isActive: true, name: {}, description: {}, tagIds: [], audienceTagIds: [], paymentMethods: ['zarinpal'], discountPercent: 0, sku: {}, coinPrice: null, isSubscription: false, minLevel: 0, sort: 0, metadata: {} }; },
     fixPayload: function (p) {
       if (p.coinPrice && p.coinPrice.currencyKey == null && p.coinPrice.amount == null) p.coinPrice = null;
       var sku = {};
@@ -391,7 +392,11 @@ var RESOURCES = {
     filters: [{ name: 'keyType', label: 'filter.keyType', options: keyTypeOptions('tags') }],
     columns: [
       { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '55%' },
-      { label: 'col.keyType', render: function (it) { return tag(keyTypeLabel('tags', it.keyType), it.keyType === 'general' ? 'primary' : 'secondary'); }, width: 140 },
+      { label: 'col.keyType', render: function (it) {
+        return h('div', { class: 'flex flex-wrap gap-1' }, tag(keyTypeLabel('tags', it.keyType), it.keyType === 'general' ? 'primary' : 'secondary'),
+          it.keyType === 'user' && it.isPublic ? tag(t('tag.public'), 'success') : null,
+          it.keyType === 'user' && it.players ? h('a', { href: hashFor('players', null, { tagId: it.id }), class: 'eco-link text-xs whitespace-nowrap', text: t('tag.playersN', { n: it.players }) }) : null);
+      }, width: 200 },
       { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 90 },
       { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
     ],
@@ -402,13 +407,14 @@ var RESOURCES = {
       ] },
       tr('name', { required: true, max: 128 }),
       tr('description', { multiline: true, max: 1000, optional: true }),
+      { name: 'isPublic', type: 'bool', inline: true, label: 'f.tag.public', hint: 'f.tag.public.hint', empty: false, when: function (v) { return v.keyType === 'user'; } },
       { type: 'row', fields: [
         { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
         { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
       ] },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function (query) { return { keyType: (query && query.keyType) || 'general', name: {}, description: {}, iconUrl: '', metadata: {}, sort: 0 }; },
+    defaults: function (query) { return { isPublic: false, keyType: (query && query.keyType) || 'general', name: {}, description: {}, iconUrl: '', metadata: {}, sort: 0 }; },
     fixPayload: function (p) { if (!p.iconUrl) p.iconUrl = ''; if (p.sort == null) p.sort = 0; return p; }
   },
   languages: {

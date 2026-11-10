@@ -35,9 +35,11 @@ function refreshBadge(force) {
 }
 
 function navBadge(page, collapsed) {
-  if (page !== 'comments' || !pendingComments) return null;
-  if (collapsed) return h('span', { class: 'eco-nav-dot', 'aria-label': t('cm.pendingN', { n: pendingComments }) });
-  return h('span', { class: 'eco-nav-badge tabular-nums', 'aria-label': t('cm.pendingN', { n: pendingComments }), text: fmtNum(pendingComments) });
+  var n = page === 'comments' ? pendingComments : page === 'reports' ? pendingReports : 0;
+  if (!n) return null;
+  var label = t(page === 'comments' ? 'cm.pendingN' : 'rp.openN', { n: n });
+  if (collapsed) return h('span', { class: 'eco-nav-dot', 'aria-label': label });
+  return h('span', { class: 'eco-nav-badge tabular-nums', 'aria-label': label, text: fmtNum(n) });
 }
 
 function userCell(id, username, displayName) {
@@ -111,6 +113,7 @@ function targetText(tg) {
   tg = tg || {};
   if (tg.mode === 'all') return t('tg.all');
   if (tg.mode === 'group') return t('tg.group');
+  if (tg.mode === 'tags') return t('tg.tagsN', { n: (tg.tagIds || []).length });
   return t('tg.usersN', { n: (tg.userIds || []).length });
 }
 
@@ -356,7 +359,7 @@ function composePage(container, query) {
     title: {},
     body: {},
     action: { type: '', value: '', label: {} },
-    target: { mode: 'users', userIds: query.userId ? [query.userId] : [], groupId: '' }
+    target: { mode: query.tagId ? 'tags' : 'users', userIds: query.userId ? [query.userId] : [], groupId: '', tagIds: query.tagId ? [query.tagId] : [] }
   };
   var providers = [];
   var preview = null;
@@ -420,7 +423,7 @@ function composePage(container, query) {
     main.appendChild(actionSection);
 
     var targetBox = h('div', {});
-    var modeSeg = segmented([{ value: 'users', label: t('tg.users'), icon: 'users' }, { value: 'group', label: t('tg.group'), icon: 'categories' }, { value: 'all', label: t('tg.all'), icon: 'notifications' }], v.target.mode, function (m) {
+    var modeSeg = segmented([{ value: 'users', label: t('tg.users'), icon: 'users' }, { value: 'group', label: t('tg.group'), icon: 'categories' }, { value: 'tags', label: t('tg.tags'), icon: 'tags' }, { value: 'all', label: t('tg.all'), icon: 'notifications' }], v.target.mode, function (m) {
       v.target.mode = m;
       paintTarget();
       refreshPreview();
@@ -484,6 +487,12 @@ function composePage(container, query) {
           fields.target.setError('');
           refreshPreview();
         } }), t('tg.group.hint'));
+      } else if (v.target.mode === 'tags') {
+        fields.target = field(t('tg.pickTags'), refMulti({ resource: 'tags', api: baseApi, filter: { keyType: 'user' }, value: v.target.tagIds, label: t('tg.pickTags'), placeholder: t('tg.pickTags'), onchange: function (ids) {
+          v.target.tagIds = ids;
+          fields.target.setError('');
+          refreshPreview();
+        } }), t('tg.tags.hint'));
       } else {
         targetBox.appendChild(notice('secondary', t('tg.all.hint')));
       }
@@ -514,8 +523,8 @@ function composePage(container, query) {
     var runPreview = debounce(function () {
       var my = ++previewSeq;
       var tg = v.target;
-      if ((tg.mode === 'users' && !tg.userIds.length) || (tg.mode === 'group' && !tg.groupId)) { preview = null; paintCount(); return; }
-      pubApi('GET', '/notifications/preview-target' + qs({ mode: tg.mode, groupId: tg.mode === 'group' ? tg.groupId : '', userIds: tg.mode === 'users' ? tg.userIds.join(',') : '' })).then(function (res) {
+      if ((tg.mode === 'users' && !tg.userIds.length) || (tg.mode === 'group' && !tg.groupId) || (tg.mode === 'tags' && !tg.tagIds.length)) { preview = null; paintCount(); return; }
+      pubApi('GET', '/notifications/preview-target' + qs({ mode: tg.mode, groupId: tg.mode === 'group' ? tg.groupId : '', userIds: tg.mode === 'users' ? tg.userIds.join(',') : '', tagIds: tg.mode === 'tags' ? tg.tagIds.join(',') : '' })).then(function (res) {
         if (my !== previewSeq) return;
         preview = res;
         paintCount();
@@ -551,6 +560,7 @@ function composePage(container, query) {
       }
       if (v.target.mode === 'users' && !v.target.userIds.length) setErr(fields.target, t('code.TARGET_USERS_REQUIRED'));
       if (v.target.mode === 'group' && !v.target.groupId) setErr(fields.target, t('err.required'));
+      if (v.target.mode === 'tags' && !v.target.tagIds.length) setErr(fields.target, t('code.TARGET_TAGS_REQUIRED'));
       if (v.channel !== 'in_app' && !providers.some(function (p) { return p.channel === v.channel && p.isActive; })) ok = false;
       return ok;
     }
@@ -567,6 +577,7 @@ function composePage(container, query) {
       }
       if (v.target.mode === 'users') p.target.userIds = v.target.userIds.slice();
       if (v.target.mode === 'group') p.target.groupId = v.target.groupId;
+      if (v.target.mode === 'tags') p.target.tagIds = v.target.tagIds.slice();
       if (v.channel !== 'in_app' && v.providerId) p.providerId = v.providerId;
       return p;
     }
@@ -599,7 +610,7 @@ function composePage(container, query) {
           go('notifications', res.id);
         }, function (err) {
           setBusy(sendBtn, false);
-          var map = { title: fields.title, body: fields.body, action: fields.action, 'action.label': fields.actionLabel, 'target.userIds': fields.target, 'target.groupId': fields.target, providerId: fields.provider };
+          var map = { title: fields.title, body: fields.body, action: fields.action, 'action.label': fields.actionLabel, 'target.userIds': fields.target, 'target.groupId': fields.target, 'target.tagIds': fields.target, providerId: fields.provider };
           var f = err && err.field && map[err.field];
           var vals = { title: v.title, body: v.body, 'action.label': v.action.label };
           var code = f && f.ctl ? trServerLang(err, vals[err.field], { max: err.field === 'title' ? 200 : err.field === 'action.label' ? 64 : v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : 2000 }) : null;
@@ -613,7 +624,7 @@ function composePage(container, query) {
     paintChannel();
     paintTarget();
     paintCount();
-    if (v.target.userIds.length) refreshPreview();
+    if (v.target.userIds.length || v.target.tagIds.length) refreshPreview();
   }
 
   function load() {

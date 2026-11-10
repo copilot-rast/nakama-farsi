@@ -940,7 +940,246 @@ var MESSAGES = {
     'code.USERNAME_INVALID_CHARACTERS': 'نام کاربری فقط حرف لاتین، رقم و _ . - دارد.',
     'code.PASSWORD_TOO_SHORT': 'رمز دست‌کم {n} حرف است.',
     'code.PASSWORD_NEEDS_LETTER': 'رمز باید حرف داشته باشد.',
-    'code.PASSWORD_NEEDS_DIGIT': 'رمز باید عدد داشته باشد.'
+    'code.PASSWORD_NEEDS_DIGIT': 'رمز باید عدد داشته باشد.',
+    'section.mod': 'بازیکنان و گفتگو',
+    'section.mod.short': 'گفتگو',
+    'nav.players': 'مدیریت بازیکنان',
+    'nav.reports': 'گزارش‌ها',
+    'nav.restrictions': 'تعلیق و سکوت',
+    'nav.chat-words': 'فیلتر کلمات',
+    'desc.players': 'برچسب بازیکنان را ببینید، گروهی برچسب بزنید و بازیکنان معلق یا بی‌صدا را پیدا کنید.',
+    'desc.reports': 'پیام‌هایی که بازیکنان گزارش کرده‌اند یا فیلتر علامت زده است.',
+    'desc.restrictions': 'همهٔ تعلیق‌ها، سکوت‌ها و اخطارها، با امکان برداشتن زودتر از موعد.',
+    'desc.chat-words': 'کلمه‌هایی که در گفتگو پنهان، رد یا برای بررسی علامت زده می‌شوند.',
+    'desc.report-titles': 'دلیل‌هایی که بازیکن هنگام گزارش یک پیام انتخاب می‌کند.',
+    'tab.report-titles': 'عنوان‌های گزارش',
+    'new.chat-words': 'کلمهٔ تازه',
+    'edit.chat-words': 'ویرایش کلمه',
+    'new.report-titles': 'عنوان تازه',
+    'edit.report-titles': 'ویرایش عنوان گزارش',
+    'empty.hint.players': 'هنوز بازیکنی ثبت‌نام نکرده است.',
+    'empty.hint.reports': 'گزارش تازه‌ای نیست. گزارش‌ها اینجا نشان داده می‌شوند.',
+    'empty.hint.restrictions': 'هنوز کسی تعلیق یا بی‌صدا نشده است.',
+    'empty.hint.chat-words': 'اولین کلمه را اضافه کنید تا گفتگو پاکیزه بماند.',
+    'empty.hint.report-titles': 'یک عنوان بسازید تا بازیکنان بتوانند پیام‌ها را گزارش کنند.',
+    'search.players': 'جست‌وجوی نام کاربری، نام یا شناسه',
+    'search.reports': 'جست‌وجوی متن پیام یا نام بازیکن',
+    'search.restrictions': 'جست‌وجوی بازیکن یا دلیل',
+    'search.chat-words': 'جست‌وجوی کلمه',
+    'rp.openN': '{n} گزارش باز',
+    'dur.hours': '{n} ساعت',
+    'dur.days': '{n} روز',
+    'dur.custom': 'تاریخ دلخواه',
+    'rs.until': 'تا {date}',
+    'rs.duration': 'مدت',
+    'rs.duration.suspend.hint': 'بعد از این زمان، تعلیق خودش برداشته می‌شود.',
+    'rs.duration.mute.hint': 'بعد از این زمان، بازیکن دوباره می‌تواند پیام بفرستد.',
+    'rs.reason': 'پیامی که بازیکن می‌بیند',
+    'rs.reason.hint.suspend': 'بازیکن هنگام ورود این پیام را با زمان پایان تعلیق می‌بیند.',
+    'rs.reason.hint.mute': 'بازیکن وقتی پیام می‌فرستد این را با زمان پایان سکوت می‌بیند.',
+    'rs.reason.hint.warn': 'این پیام همان لحظه برای بازیکن فرستاده می‌شود.',
+    'rs.reason.default.suspend': 'حسابت به خاطر زیر پا گذاشتن قوانین بازی موقتاً بسته شده است.',
+    'rs.reason.default.mute': 'به خاطر رعایت نکردن قوانین گفتگو، فعلاً نمی‌توانی پیام بفرستی.',
+    'rs.reason.default.warn': 'لطفاً در گفتگو محترمانه رفتار کن. دفعهٔ بعد ممکن است بی‌صدا شوی.',
+    'rs.note': 'یادداشت داخلی',
+    'rs.note.ph': 'فقط مدیران این را می‌بینند',
+    'rs.note.hint': 'برای همکاران؛ به بازیکن نشان داده نمی‌شود.',
+    'rs.liftNote': 'چرا زودتر برداشته می‌شود؟',
+    'rs.kind.suspend': 'تعلیق',
+    'rs.kind.mute': 'سکوت',
+    'rs.kind.warn': 'اخطار',
+    'rs.status.active': 'فعال',
+    'rs.status.expired': 'تمام شده',
+    'rs.status.lifted': 'برداشته شده',
+    'rs.liftedAt': 'برداشته شد در {date}',
+    'rs.do.suspend': 'تعلیق موقت',
+    'rs.do.mute': 'بی‌صدا کردن',
+    'rs.do.warn': 'اخطار',
+    'rs.dialog.suspend': 'تعلیق موقت {name}',
+    'rs.dialog.mute': 'بی‌صدا کردن {name}',
+    'rs.dialog.warn': 'اخطار به {name}',
+    'rs.dialog.suspend.text': 'بازیکن تا پایان این مدت نمی‌تواند وارد بازی شود و از بازی بیرون می‌رود.',
+    'rs.dialog.mute.text': 'بازیکن تا پایان این مدت نمی‌تواند در گفتگو پیام بفرستد.',
+    'rs.dialog.warn.text': 'بازیکن یک پیام اخطار می‌گیرد و در سابقه‌اش ثبت می‌شود.',
+    'rs.done.suspend': '{name} تعلیق شد.',
+    'rs.done.mute': '{name} بی‌صدا شد.',
+    'rs.done.warn': 'اخطار برای {name} فرستاده شد.',
+    'rs.lift': 'برداشتن',
+    'rs.lift.suspend': 'برداشتن تعلیق',
+    'rs.lift.mute': 'برداشتن سکوت',
+    'rs.lift.text': 'محدودیت {name} همین حالا برداشته می‌شود.',
+    'rs.lift.ok': 'بله، بردار',
+    'rs.lifted': 'محدودیت برداشته شد.',
+    'code.END_REQUIRED': 'زمان پایان را انتخاب کنید.',
+    'code.END_IN_PAST': 'زمان پایان باید در آینده باشد.',
+    'code.END_TOO_FAR': 'حداکثر ده سال؛ برای همیشه از مسدود کردن خود Nakama استفاده کنید.',
+    'code.INVALID_END': 'تاریخ درست نیست.',
+    'code.INVALID_RESTRICTION_KIND': 'نوع محدودیت درست نیست.',
+    'code.NOT_ACTIVE': 'این محدودیت قبلاً تمام شده است.',
+    'code.REPORT_CLOSED': 'این گزارش قبلاً بررسی شده است.',
+    'code.INVALID_MOD_ACTION': 'این کار مجاز نیست.',
+    'code.INVALID_MATCH': 'نوع جست‌وجو درست نیست.',
+    'code.INVALID_WORD': 'کلمه باید ۱ تا ۶۴ حرف داشته باشد و دست‌کم یک حرف الفبا.',
+    'code.TAGS_REQUIRED': 'دست‌کم یک برچسب انتخاب کنید.',
+    'code.TOO_MANY_TAGS': 'برچسب‌ها بیش از حد مجاز است.',
+    'code.USERS_REQUIRED': 'دست‌کم یک بازیکن انتخاب کنید.',
+    'code.USER_NOT_FOUND': 'این بازیکن پیدا نشد.',
+    'code.RESTRICTION_NOT_FOUND': 'این محدودیت پیدا نشد.',
+    'code.REPORT_NOT_FOUND': 'این گزارش پیدا نشد.',
+    'code.MESSAGE_NOT_FOUND': 'این پیام پیدا نشد.',
+    'code.INVALID_FILTER': 'این فیلتر درست نیست.',
+    'code.INVALID_OP': 'این کار مجاز نیست.',
+    'code.TARGET_TAGS_REQUIRED': 'دست‌کم یک برچسب بازیکن انتخاب کنید.',
+    'tag.public': 'دیدنی برای بازیکن',
+    'tag.playersN': '{n} بازیکن',
+    'f.tag.public': 'بازیکن این برچسب را ببیند',
+    'f.tag.public.hint': 'اگر روشن باشد، بازی می‌تواند این برچسب را به خود بازیکن نشان دهد؛ مثلاً «عضو ویژه».',
+    'f.audience': 'فقط برای این بازیکنان',
+    'f.audience.hint': 'اگر برچسبی انتخاب کنید، این محصول فقط به بازیکنانی نشان داده می‌شود که دست‌کم یکی از این برچسب‌ها را دارند.',
+    'audience.only': 'ویژهٔ برچسب',
+    'tg.tags': 'برچسب بازیکن',
+    'tg.tagsN': '{n} برچسب',
+    'tg.pickTags': 'برچسب‌ها',
+    'tg.tags.hint': 'بازیکنانی که دست‌کم یکی از این برچسب‌ها را دارند پیام را می‌گیرند.',
+    'pl.banned': 'مسدود دائمی',
+    'pl.suspendedUntil': 'معلق تا {date}',
+    'pl.mutedUntil': 'بی‌صدا تا {date}',
+    'pl.ok': 'بدون محدودیت',
+    'pl.status.suspended': 'معلق',
+    'pl.status.muted': 'بی‌صدا',
+    'pl.status.banned': 'مسدود دائمی',
+    'pl.status.tagged': 'برچسب‌دار',
+    'pl.select': 'انتخاب {name}',
+    'pl.bulk.tags': 'برچسب‌ها',
+    'pl.bulk.pick': 'انتخاب برچسب',
+    'pl.bulk.add': 'افزودن برچسب',
+    'pl.bulk.remove': 'برداشتن برچسب',
+    'pl.bulk.page': 'انتخاب همهٔ این صفحه',
+    'pl.bulk.clear': 'لغو انتخاب',
+    'pl.bulk.selected': '{n} بازیکن انتخاب شده',
+    'pl.bulk.none': 'بازیکنی انتخاب نشده؛ از ستون اول انتخاب کنید.',
+    'pl.bulk.added': 'برچسب برای {n} بازیکن ثبت شد.',
+    'pl.bulk.removed': 'برچسب از {n} بازیکن برداشته شد.',
+    'rp.title': 'بررسی گزارش',
+    'rp.gone': 'بازیکن حذف شده',
+    'rp.deleted': 'پیام پاک شده',
+    'rp.source.player': 'گزارش بازیکن',
+    'rp.source.filter': 'فیلتر کلمات',
+    'rp.noTitle': 'بدون عنوان',
+    'rp.byFilter': 'فیلتر خودکار',
+    'rp.reportsN': '{n} گزارش',
+    'rp.thisMessage': 'پیام گزارش‌شده',
+    'rp.noContext': 'گفتگویی پیدا نشد.',
+    'rp.conversation': 'گفتگو',
+    'rp.report': 'گزارش',
+    'rp.reason': 'دلیل',
+    'rp.playerNote': 'توضیح بازیکن',
+    'rp.matched': 'کلمه‌های پیدا شده',
+    'rp.others': 'گزارش‌های دیگر',
+    'rp.channel': 'اتاق',
+    'rp.sender': 'فرستنده',
+    'rp.history': 'سابقه',
+    'rp.links': 'پیوندها',
+    'rp.seeHistory': 'سابقهٔ محدودیت‌ها',
+    'rp.seeReports': 'همهٔ گزارش‌های او',
+    'rp.seeRestriction': 'دیدن محدودیت',
+    'rp.count.reports': '{n} گزارش',
+    'rp.count.warn': '{n} اخطار',
+    'rp.count.mute': '{n} سکوت',
+    'rp.count.suspend': '{n} تعلیق',
+    'rp.decide': 'تصمیم',
+    'rp.decision': 'نتیجه',
+    'rp.action': 'کار',
+    'rp.action.dismiss': 'رد گزارش',
+    'rp.action.delete': 'پاک کردن پیام',
+    'rp.action.warn': 'اخطار',
+    'rp.action.mute': 'بی‌صدا',
+    'rp.action.suspend': 'تعلیق',
+    'rp.action.dismiss.hint': 'پیام مشکلی ندارد؛ گزارش بسته می‌شود.',
+    'rp.action.delete.hint': 'پیام از گفتگو پاک می‌شود.',
+    'rp.action.warn.hint': 'فرستنده یک اخطار می‌گیرد.',
+    'rp.action.mute.hint': 'فرستنده تا زمانی که انتخاب می‌کنید نمی‌تواند پیام بفرستد.',
+    'rp.action.suspend.hint': 'فرستنده تا زمانی که انتخاب می‌کنید نمی‌تواند وارد بازی شود.',
+    'rp.alsoDelete': 'پیام هم پاک شود',
+    'rp.note.hint': 'برای همکاران ثبت می‌شود.',
+    'rp.submit': 'ثبت تصمیم',
+    'rp.submit.dismiss': 'رد گزارش',
+    'rp.submit.delete': 'پاک کردن پیام',
+    'rp.submit.warn': 'فرستادن اخطار',
+    'rp.submit.mute': 'بی‌صدا کردن',
+    'rp.submit.suspend': 'تعلیق کردن',
+    'rp.done.dismiss': 'گزارش رد شد.',
+    'rp.done.delete': 'پیام پاک شد.',
+    'rp.done.warn': 'اخطار فرستاده شد.',
+    'rp.done.mute': 'فرستنده بی‌صدا شد.',
+    'rp.done.suspend': 'فرستنده تعلیق شد.',
+    'rp.status.open': 'باز',
+    'rp.status.dismissed': 'رد شده',
+    'rp.status.resolved': 'بررسی شده',
+    'rp.messageDeleted': 'پیام پاک شد',
+    'rp.restriction': 'محدودیت',
+    'rp.resolvedBy': 'بررسی‌کننده',
+    'rp.resolvedAt': 'زمان بررسی',
+    'cw.action.mask': 'پنهان با ستاره',
+    'cw.action.block': 'رد پیام',
+    'cw.action.flag': 'علامت برای بررسی',
+    'cw.match.word': 'کلمهٔ کامل',
+    'cw.match.contains': 'هر جای متن',
+    'cw.try': 'امتحان فیلتر',
+    'cw.try.hint': 'یک جمله بنویسید تا ببینید بازیکنان چه می‌بینند. نیم‌فاصله، کشیده، اعراب، ي و ك عربی، فاصله بین حروف و حرف‌های تکراری هم شناخته می‌شوند.',
+    'cw.try.label': 'جملهٔ نمونه',
+    'cw.try.ph': 'مثلاً: تو اح‌ــمق هستی',
+    'cw.try.blocked': 'این پیام فرستاده نمی‌شود.',
+    'cw.try.masked': 'بخشی از پیام با ستاره پنهان می‌شود.',
+    'cw.try.flagged': 'پیام فرستاده می‌شود و برای بررسی در گزارش‌ها می‌آید.',
+    'cw.try.maskedFlagged': 'بخشی پنهان می‌شود و پیام برای بررسی در گزارش‌ها می‌آید.',
+    'cw.try.clean': 'این پیام بدون تغییر فرستاده می‌شود.',
+    'cw.try.shown': 'آنچه دیگران می‌بینند',
+    'cw.try.notSent': 'فرستاده نمی‌شود',
+    'cw.try.normalized': 'شکل یکسان‌شده:',
+    'f.cw.word': 'کلمه یا عبارت',
+    'f.cw.word.hint': 'شکل‌های دیگر همین کلمه (با ي عربی، نیم‌فاصله یا حرف تکراری) خودشان پیدا می‌شوند.',
+    'f.cw.action': 'چه شود؟',
+    'f.cw.action.hint': 'پنهان: با ستاره. رد: پیام فرستاده نمی‌شود. علامت: فرستاده می‌شود و برای بررسی می‌آید.',
+    'f.cw.match': 'کجا پیدا شود؟',
+    'f.cw.match.hint': 'کلمهٔ کامل پسوندهایی مثل «ها» و «ی» را هم می‌گیرد. «هر جای متن» برای کلمه‌های چسبیده به هم است.',
+    'f.cw.active.hint': 'کلمهٔ غیرفعال نادیده گرفته می‌شود.',
+    'f.cw.note': 'یادداشت',
+    'f.cw.note.hint': 'فقط مدیران می‌بینند.',
+    'f.rt.key.hint': 'شناسهٔ ثابت برای بازی، مثل spam.',
+    'f.rt.name': 'عنوان',
+    'f.rt.name.hint': 'بازیکن این را در فهرست دلیل‌ها می‌بیند.',
+    'f.rt.description': 'توضیح',
+    'f.rt.description.hint': 'یک جملهٔ کوتاه زیر عنوان.',
+    'f.rt.active.hint': 'عنوان غیرفعال به بازیکن نشان داده نمی‌شود.',
+    'pc.title': 'برچسب‌ها و محدودیت‌ها',
+    'pc.tags': 'برچسب‌ها',
+    'pc.tags.edit': 'ویرایش برچسب‌ها',
+    'pc.tags.edit.text': 'برچسب‌های بازیکن برای پیام‌ها و پیشنهادهای ویژه به کار می‌روند.',
+    'pc.tags.hint': 'فقط برچسب‌های نوع «بازیکن» اینجا می‌آیند.',
+    'pc.tags.saved': 'برچسب‌ها ذخیره شد.',
+    'pc.status': 'وضعیت',
+    'pc.history': 'سابقه',
+    'pc.historyN': '{n} مورد در سابقه',
+    'pc.reportsN': '{n} گزارش علیه او',
+    'pc.lastWarn': 'آخرین اخطار: {date}',
+    'filter.tag': 'برچسب',
+    'filter.kind': 'نوع',
+    'filter.playerId': 'شناسهٔ بازیکن',
+    'filter.source': 'منبع',
+    'filter.reportTitle': 'عنوان گزارش',
+    'filter.action': 'کار',
+    'col.select': 'انتخاب',
+    'col.tags': 'برچسب‌ها',
+    'col.kind': 'نوع',
+    'col.reason': 'دلیل',
+    'col.by': 'به دست',
+    'col.message': 'پیام',
+    'col.reporter': 'گزارش‌دهنده',
+    'col.word': 'کلمه',
+    'col.action': 'کار',
+    'col.match': 'جست‌وجو',
+    'col.used': 'استفاده'
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -1881,7 +2120,246 @@ var MESSAGES = {
     'code.USERNAME_INVALID_CHARACTERS': 'The username can only have Latin letters, digits and _ . -',
     'code.PASSWORD_TOO_SHORT': 'The password needs at least {n} characters.',
     'code.PASSWORD_NEEDS_LETTER': 'The password needs a letter.',
-    'code.PASSWORD_NEEDS_DIGIT': 'The password needs a digit.'
+    'code.PASSWORD_NEEDS_DIGIT': 'The password needs a digit.',
+    'section.mod': 'Players & chat',
+    'section.mod.short': 'Chat',
+    'nav.players': 'Player tags',
+    'nav.reports': 'Reports',
+    'nav.restrictions': 'Suspensions & mutes',
+    'nav.chat-words': 'Word filter',
+    'desc.players': 'See player tags, tag many players at once and find suspended or muted players.',
+    'desc.reports': 'Messages that players reported or the filter flagged.',
+    'desc.restrictions': 'Every suspension, mute and warning, with early lifting.',
+    'desc.chat-words': 'Words that are hidden, refused or flagged for review in chat.',
+    'desc.report-titles': 'Reasons a player picks when reporting a message.',
+    'tab.report-titles': 'Report reasons',
+    'new.chat-words': 'New word',
+    'edit.chat-words': 'Edit word',
+    'new.report-titles': 'New reason',
+    'edit.report-titles': 'Edit report reason',
+    'empty.hint.players': 'No player has signed up yet.',
+    'empty.hint.reports': 'No new reports. They show up here.',
+    'empty.hint.restrictions': 'Nobody has been suspended or muted yet.',
+    'empty.hint.chat-words': 'Add the first word to keep chat clean.',
+    'empty.hint.report-titles': 'Create a reason so players can report messages.',
+    'search.players': 'Search username, name or ID',
+    'search.reports': 'Search message text or player',
+    'search.restrictions': 'Search player or reason',
+    'search.chat-words': 'Search words',
+    'rp.openN': '{n} open reports',
+    'dur.hours': '{n} h',
+    'dur.days': '{n} d',
+    'dur.custom': 'Pick a date',
+    'rs.until': 'until {date}',
+    'rs.duration': 'How long',
+    'rs.duration.suspend.hint': 'The suspension lifts by itself after this.',
+    'rs.duration.mute.hint': 'After this the player can chat again.',
+    'rs.reason': 'Message the player sees',
+    'rs.reason.hint.suspend': 'Shown at sign-in together with the end time.',
+    'rs.reason.hint.mute': 'Shown when the player tries to chat, with the end time.',
+    'rs.reason.hint.warn': 'Sent to the player right away.',
+    'rs.reason.default.suspend': 'Your account is closed for a while because you broke the game rules.',
+    'rs.reason.default.mute': 'You cannot send messages for now because you broke the chat rules.',
+    'rs.reason.default.warn': 'Please be respectful in chat. Next time you may be muted.',
+    'rs.note': 'Internal note',
+    'rs.note.ph': 'Only admins see this',
+    'rs.note.hint': 'For your team; never shown to the player.',
+    'rs.liftNote': 'Why lift it early?',
+    'rs.kind.suspend': 'Suspension',
+    'rs.kind.mute': 'Mute',
+    'rs.kind.warn': 'Warning',
+    'rs.status.active': 'Active',
+    'rs.status.expired': 'Ended',
+    'rs.status.lifted': 'Lifted',
+    'rs.liftedAt': 'lifted {date}',
+    'rs.do.suspend': 'Suspend',
+    'rs.do.mute': 'Mute',
+    'rs.do.warn': 'Warn',
+    'rs.dialog.suspend': 'Suspend {name}',
+    'rs.dialog.mute': 'Mute {name}',
+    'rs.dialog.warn': 'Warn {name}',
+    'rs.dialog.suspend.text': 'The player cannot sign in until it ends and is signed out now.',
+    'rs.dialog.mute.text': 'The player cannot send chat messages until it ends.',
+    'rs.dialog.warn.text': 'The player gets a warning message and it is kept in the history.',
+    'rs.done.suspend': '{name} is suspended.',
+    'rs.done.mute': '{name} is muted.',
+    'rs.done.warn': 'Warning sent to {name}.',
+    'rs.lift': 'Lift',
+    'rs.lift.suspend': 'Lift suspension',
+    'rs.lift.mute': 'Lift mute',
+    'rs.lift.text': 'The restriction on {name} ends now.',
+    'rs.lift.ok': 'Yes, lift it',
+    'rs.lifted': 'Restriction lifted.',
+    'code.END_REQUIRED': 'Pick when it ends.',
+    'code.END_IN_PAST': 'The end must be in the future.',
+    'code.END_TOO_FAR': 'At most ten years; use the Nakama ban for longer.',
+    'code.INVALID_END': 'This date is not valid.',
+    'code.INVALID_RESTRICTION_KIND': 'Unknown restriction type.',
+    'code.NOT_ACTIVE': 'This restriction has already ended.',
+    'code.REPORT_CLOSED': 'This report was already handled.',
+    'code.INVALID_MOD_ACTION': 'This action is not allowed.',
+    'code.INVALID_MATCH': 'Unknown match type.',
+    'code.INVALID_WORD': 'A word is 1 to 64 characters with at least one letter.',
+    'code.TAGS_REQUIRED': 'Pick at least one tag.',
+    'code.TOO_MANY_TAGS': 'Too many tags.',
+    'code.USERS_REQUIRED': 'Pick at least one player.',
+    'code.USER_NOT_FOUND': 'Player not found.',
+    'code.RESTRICTION_NOT_FOUND': 'Restriction not found.',
+    'code.REPORT_NOT_FOUND': 'Report not found.',
+    'code.MESSAGE_NOT_FOUND': 'Message not found.',
+    'code.INVALID_FILTER': 'This filter is not valid.',
+    'code.INVALID_OP': 'This action is not allowed.',
+    'code.TARGET_TAGS_REQUIRED': 'Pick at least one player tag.',
+    'tag.public': 'Visible to the player',
+    'tag.playersN': '{n} players',
+    'f.tag.public': 'The player can see this tag',
+    'f.tag.public.hint': 'When on, the game can show this tag to the player, for example "VIP member".',
+    'f.audience': 'Only for these players',
+    'f.audience.hint': 'With tags picked, only players who have at least one of them see this product.',
+    'audience.only': 'Tagged players only',
+    'tg.tags': 'Player tags',
+    'tg.tagsN': '{n} tags',
+    'tg.pickTags': 'Tags',
+    'tg.tags.hint': 'Players with at least one of these tags get the message.',
+    'pl.banned': 'Banned',
+    'pl.suspendedUntil': 'Suspended until {date}',
+    'pl.mutedUntil': 'Muted until {date}',
+    'pl.ok': 'No restrictions',
+    'pl.status.suspended': 'Suspended',
+    'pl.status.muted': 'Muted',
+    'pl.status.banned': 'Banned',
+    'pl.status.tagged': 'Tagged',
+    'pl.select': 'Select {name}',
+    'pl.bulk.tags': 'Tags',
+    'pl.bulk.pick': 'Pick tags',
+    'pl.bulk.add': 'Add tags',
+    'pl.bulk.remove': 'Remove tags',
+    'pl.bulk.page': 'Select this page',
+    'pl.bulk.clear': 'Clear selection',
+    'pl.bulk.selected': '{n} players selected',
+    'pl.bulk.none': 'No player selected; use the first column.',
+    'pl.bulk.added': 'Tags added to {n} players.',
+    'pl.bulk.removed': 'Tags removed from {n} players.',
+    'rp.title': 'Review report',
+    'rp.gone': 'Deleted player',
+    'rp.deleted': 'Message deleted',
+    'rp.source.player': 'Player report',
+    'rp.source.filter': 'Word filter',
+    'rp.noTitle': 'No reason',
+    'rp.byFilter': 'Automatic filter',
+    'rp.reportsN': '{n} reports',
+    'rp.thisMessage': 'Reported message',
+    'rp.noContext': 'No conversation found.',
+    'rp.conversation': 'Conversation',
+    'rp.report': 'Report',
+    'rp.reason': 'Reason',
+    'rp.playerNote': 'Player comment',
+    'rp.matched': 'Matched words',
+    'rp.others': 'Other reports',
+    'rp.channel': 'Room',
+    'rp.sender': 'Sender',
+    'rp.history': 'History',
+    'rp.links': 'Links',
+    'rp.seeHistory': 'Restriction history',
+    'rp.seeReports': 'All reports about them',
+    'rp.seeRestriction': 'See restriction',
+    'rp.count.reports': '{n} reports',
+    'rp.count.warn': '{n} warnings',
+    'rp.count.mute': '{n} mutes',
+    'rp.count.suspend': '{n} suspensions',
+    'rp.decide': 'Decision',
+    'rp.decision': 'Outcome',
+    'rp.action': 'Action',
+    'rp.action.dismiss': 'Dismiss',
+    'rp.action.delete': 'Delete message',
+    'rp.action.warn': 'Warn',
+    'rp.action.mute': 'Mute',
+    'rp.action.suspend': 'Suspend',
+    'rp.action.dismiss.hint': 'Nothing is wrong; the report closes.',
+    'rp.action.delete.hint': 'The message is removed from the chat.',
+    'rp.action.warn.hint': 'The sender gets a warning.',
+    'rp.action.mute.hint': 'The sender cannot chat until the time you pick.',
+    'rp.action.suspend.hint': 'The sender cannot sign in until the time you pick.',
+    'rp.alsoDelete': 'Also delete the message',
+    'rp.note.hint': 'Kept for your team.',
+    'rp.submit': 'Save decision',
+    'rp.submit.dismiss': 'Dismiss report',
+    'rp.submit.delete': 'Delete message',
+    'rp.submit.warn': 'Send warning',
+    'rp.submit.mute': 'Mute sender',
+    'rp.submit.suspend': 'Suspend sender',
+    'rp.done.dismiss': 'Report dismissed.',
+    'rp.done.delete': 'Message deleted.',
+    'rp.done.warn': 'Warning sent.',
+    'rp.done.mute': 'Sender muted.',
+    'rp.done.suspend': 'Sender suspended.',
+    'rp.status.open': 'Open',
+    'rp.status.dismissed': 'Dismissed',
+    'rp.status.resolved': 'Handled',
+    'rp.messageDeleted': 'Message deleted',
+    'rp.restriction': 'Restriction',
+    'rp.resolvedBy': 'Handled by',
+    'rp.resolvedAt': 'Handled at',
+    'cw.action.mask': 'Hide with stars',
+    'cw.action.block': 'Refuse message',
+    'cw.action.flag': 'Flag for review',
+    'cw.match.word': 'Whole word',
+    'cw.match.contains': 'Anywhere in text',
+    'cw.try': 'Try the filter',
+    'cw.try.hint': 'Type a sentence to see what players see. ZWNJ, tatweel, diacritics, Arabic ي and ك, spaced letters and repeated letters are caught too.',
+    'cw.try.label': 'Sample sentence',
+    'cw.try.ph': 'For example: you are an i.d.i.o.t',
+    'cw.try.blocked': 'This message is not sent.',
+    'cw.try.masked': 'Part of the message is hidden with stars.',
+    'cw.try.flagged': 'The message is sent and goes to reports for review.',
+    'cw.try.maskedFlagged': 'Part is hidden and the message goes to reports for review.',
+    'cw.try.clean': 'This message is sent unchanged.',
+    'cw.try.shown': 'What others see',
+    'cw.try.notSent': 'Not sent',
+    'cw.try.normalized': 'Normalised form:',
+    'f.cw.word': 'Word or phrase',
+    'f.cw.word.hint': 'Other spellings (Arabic ي, ZWNJ, repeated letters) are found automatically.',
+    'f.cw.action': 'What happens',
+    'f.cw.action.hint': 'Hide: stars. Refuse: the message is not sent. Flag: sent and queued for review.',
+    'f.cw.match': 'Where to look',
+    'f.cw.match.hint': 'Whole word also catches endings like -s or Persian «ها» and «ی». "Anywhere" catches words glued to others.',
+    'f.cw.active.hint': 'An inactive word is ignored.',
+    'f.cw.note': 'Note',
+    'f.cw.note.hint': 'Only admins see this.',
+    'f.rt.key.hint': 'A fixed id for the game, like spam.',
+    'f.rt.name': 'Title',
+    'f.rt.name.hint': 'Players see this in the list of reasons.',
+    'f.rt.description': 'Description',
+    'f.rt.description.hint': 'One short line under the title.',
+    'f.rt.active.hint': 'Inactive reasons are not shown to players.',
+    'pc.title': 'Tags and restrictions',
+    'pc.tags': 'Tags',
+    'pc.tags.edit': 'Edit tags',
+    'pc.tags.edit.text': 'Player tags drive targeted messages and special offers.',
+    'pc.tags.hint': 'Only tags of the "Player" type are listed.',
+    'pc.tags.saved': 'Tags saved.',
+    'pc.status': 'Status',
+    'pc.history': 'History',
+    'pc.historyN': '{n} items in history',
+    'pc.reportsN': '{n} reports against them',
+    'pc.lastWarn': 'Last warning: {date}',
+    'filter.tag': 'Tag',
+    'filter.kind': 'Type',
+    'filter.playerId': 'Player ID',
+    'filter.source': 'Source',
+    'filter.reportTitle': 'Reason',
+    'filter.action': 'Action',
+    'col.select': 'Select',
+    'col.tags': 'Tags',
+    'col.kind': 'Type',
+    'col.reason': 'Reason',
+    'col.by': 'By',
+    'col.message': 'Message',
+    'col.reporter': 'Reporter',
+    'col.word': 'Word',
+    'col.action': 'Action',
+    'col.match': 'Match',
+    'col.used': 'Used'
   }
 };
 
@@ -2203,7 +2681,13 @@ var ICONS = {
   mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/>',
   flag: '<path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.3 2a6 6 0 0 0 4.1-1.6.5.5 0 0 1 .6.4V14a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.5"/>',
   phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/><path d="M9.5 9.5l1.5 1.5 3.5-3.5"/>',
-  versions: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 7v7M9 11l3 3 3-3M10 18h4"/>'
+  versions: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 7v7M9 11l3 3 3-3M10 18h4"/>',
+  ban: '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
+  players: '<path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.4-2-6.5-4-8a5 5 0 0 0-.4-8.7"/>',
+  reports: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/><path d="M12 8v4M12 16h.01"/>',
+  restrictions: '<path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+  'chat-words': '<path d="M22 3H2l8 9.5V19l4 2v-8.5z"/>',
+  'report-titles': '<path d="M3 5h.01M3 12h.01M3 19h.01M8 5h13M8 12h13M8 19h13"/>'
 };
 var MIRROR = { first: 1, prev: 1, next: 1, back: 1, reply: 1 };
 
@@ -3811,7 +4295,7 @@ var RESOURCES = {
     columns: [
       { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '60%' },
       { label: 'col.price', render: function (it) { return h('div', { class: 'flex flex-col tabular-nums whitespace-nowrap' }, withKeyNames(function () { return priceText(it).map(function (p) { return h('span', { text: p }); }); }), it.discountPercent ? h('span', { class: 'text-xs text-success-600', text: t('percent', { n: it.discountPercent }) }) : null); }, width: 160 },
-      { label: 'col.methods', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, (it.paymentMethods || []).map(function (m) { return tag(t('method.' + m), 'secondary'); })); }, skeleton: '45%' },
+      { label: 'col.methods', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, (it.paymentMethods || []).map(function (m) { return tag(t('method.' + m), 'secondary'); }), (it.audienceTagIds || []).length ? tag(t('audience.only'), 'primary') : null); }, skeleton: '45%' },
       { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 },
       { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 80 }
     ],
@@ -3823,6 +4307,7 @@ var RESOURCES = {
       tr('name', { required: true, max: 128 }),
       tr('description', { multiline: true, max: 4000, optional: true }),
       { type: 'row', fields: [categoryField('product'), tagsField('product')] },
+      { name: 'audienceTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.audience', hint: 'f.audience.hint', optional: true, empty: [] },
       { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', hint: 'f.prize.product.hint', required: true },
       { type: 'heading', label: 'f.paymentMethods' },
       { name: 'paymentMethods', type: 'multi', required: true, options: opts('method.', METHODS) },
@@ -3853,7 +4338,7 @@ var RESOURCES = {
       ] },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function () { return { isActive: true, name: {}, description: {}, tagIds: [], paymentMethods: ['zarinpal'], discountPercent: 0, sku: {}, coinPrice: null, isSubscription: false, minLevel: 0, sort: 0, metadata: {} }; },
+    defaults: function () { return { isActive: true, name: {}, description: {}, tagIds: [], audienceTagIds: [], paymentMethods: ['zarinpal'], discountPercent: 0, sku: {}, coinPrice: null, isSubscription: false, minLevel: 0, sort: 0, metadata: {} }; },
     fixPayload: function (p) {
       if (p.coinPrice && p.coinPrice.currencyKey == null && p.coinPrice.amount == null) p.coinPrice = null;
       var sku = {};
@@ -3930,7 +4415,11 @@ var RESOURCES = {
     filters: [{ name: 'keyType', label: 'filter.keyType', options: keyTypeOptions('tags') }],
     columns: [
       { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '55%' },
-      { label: 'col.keyType', render: function (it) { return tag(keyTypeLabel('tags', it.keyType), it.keyType === 'general' ? 'primary' : 'secondary'); }, width: 140 },
+      { label: 'col.keyType', render: function (it) {
+        return h('div', { class: 'flex flex-wrap gap-1' }, tag(keyTypeLabel('tags', it.keyType), it.keyType === 'general' ? 'primary' : 'secondary'),
+          it.keyType === 'user' && it.isPublic ? tag(t('tag.public'), 'success') : null,
+          it.keyType === 'user' && it.players ? h('a', { href: hashFor('players', null, { tagId: it.id }), class: 'eco-link text-xs whitespace-nowrap', text: t('tag.playersN', { n: it.players }) }) : null);
+      }, width: 200 },
       { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 90 },
       { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
     ],
@@ -3941,13 +4430,14 @@ var RESOURCES = {
       ] },
       tr('name', { required: true, max: 128 }),
       tr('description', { multiline: true, max: 1000, optional: true }),
+      { name: 'isPublic', type: 'bool', inline: true, label: 'f.tag.public', hint: 'f.tag.public.hint', empty: false, when: function (v) { return v.keyType === 'user'; } },
       { type: 'row', fields: [
         { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
         { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
       ] },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function (query) { return { keyType: (query && query.keyType) || 'general', name: {}, description: {}, iconUrl: '', metadata: {}, sort: 0 }; },
+    defaults: function (query) { return { isPublic: false, keyType: (query && query.keyType) || 'general', name: {}, description: {}, iconUrl: '', metadata: {}, sort: 0 }; },
     fixPayload: function (p) { if (!p.iconUrl) p.iconUrl = ''; if (p.sort == null) p.sort = 0; return p; }
   },
   languages: {
@@ -4065,14 +4555,18 @@ var RESOURCES = {
 
 var SECTIONS = {
   economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments'],
-  publication: ['faqs', 'news', 'comments', 'notifications']
+  publication: ['faqs', 'news', 'comments', 'notifications'],
+  moderation: ['players', 'reports', 'restrictions', 'chat-words']
 };
-var SECTION_ORDER = ['economy', 'publication'];
+var SECTION_ORDER = ['economy', 'publication', 'moderation'];
+var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod' };
+var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE' };
 var LIMIT = 20;
-var lastQuery = { comments: { status: 'pending' } };
+var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' } };
 
 function sectionOf(page) {
   if (psSection(page)) return PS_ROUTE;
+  if (SECTIONS.moderation.indexOf(page) !== -1) return 'moderation';
   return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
 }
 
@@ -4159,7 +4653,10 @@ function listPage(container, name, query, ctx) {
     clear(pagerTop).appendChild(pager(state, function (p) { state.page = p; sync(); load(); }, function () { load(); }));
     clear(pagerBottom).appendChild(pager(state, function (p) { state.page = p; sync(); load(); window.scrollTo(0, 0); }));
   }
-  function open(item) { go(name, item.id, currentQuery()); }
+  function open(item) {
+    if (def.rowHref) { location.hash = def.rowHref(item); return; }
+    go(name, item.id, currentQuery());
+  }
   var seq = 0;
   function load() {
     var my = ++seq;
@@ -4177,6 +4674,7 @@ function listPage(container, name, query, ctx) {
       state.loaded = true;
       state.total = (res && res.total) || 0;
       var items = (res && res.items) || [];
+      if (def.onItems) def.onItems(items);
       tableBox.classList.remove('opacity-60');
       if (!items.length && state.page > 1 && state.total > 0) {
         state.page = Math.max(1, Math.ceil(state.total / state.limit));
@@ -4721,9 +5219,11 @@ function refreshBadge(force) {
 }
 
 function navBadge(page, collapsed) {
-  if (page !== 'comments' || !pendingComments) return null;
-  if (collapsed) return h('span', { class: 'eco-nav-dot', 'aria-label': t('cm.pendingN', { n: pendingComments }) });
-  return h('span', { class: 'eco-nav-badge tabular-nums', 'aria-label': t('cm.pendingN', { n: pendingComments }), text: fmtNum(pendingComments) });
+  var n = page === 'comments' ? pendingComments : page === 'reports' ? pendingReports : 0;
+  if (!n) return null;
+  var label = t(page === 'comments' ? 'cm.pendingN' : 'rp.openN', { n: n });
+  if (collapsed) return h('span', { class: 'eco-nav-dot', 'aria-label': label });
+  return h('span', { class: 'eco-nav-badge tabular-nums', 'aria-label': label, text: fmtNum(n) });
 }
 
 function userCell(id, username, displayName) {
@@ -4797,6 +5297,7 @@ function targetText(tg) {
   tg = tg || {};
   if (tg.mode === 'all') return t('tg.all');
   if (tg.mode === 'group') return t('tg.group');
+  if (tg.mode === 'tags') return t('tg.tagsN', { n: (tg.tagIds || []).length });
   return t('tg.usersN', { n: (tg.userIds || []).length });
 }
 
@@ -5042,7 +5543,7 @@ function composePage(container, query) {
     title: {},
     body: {},
     action: { type: '', value: '', label: {} },
-    target: { mode: 'users', userIds: query.userId ? [query.userId] : [], groupId: '' }
+    target: { mode: query.tagId ? 'tags' : 'users', userIds: query.userId ? [query.userId] : [], groupId: '', tagIds: query.tagId ? [query.tagId] : [] }
   };
   var providers = [];
   var preview = null;
@@ -5106,7 +5607,7 @@ function composePage(container, query) {
     main.appendChild(actionSection);
 
     var targetBox = h('div', {});
-    var modeSeg = segmented([{ value: 'users', label: t('tg.users'), icon: 'users' }, { value: 'group', label: t('tg.group'), icon: 'categories' }, { value: 'all', label: t('tg.all'), icon: 'notifications' }], v.target.mode, function (m) {
+    var modeSeg = segmented([{ value: 'users', label: t('tg.users'), icon: 'users' }, { value: 'group', label: t('tg.group'), icon: 'categories' }, { value: 'tags', label: t('tg.tags'), icon: 'tags' }, { value: 'all', label: t('tg.all'), icon: 'notifications' }], v.target.mode, function (m) {
       v.target.mode = m;
       paintTarget();
       refreshPreview();
@@ -5170,6 +5671,12 @@ function composePage(container, query) {
           fields.target.setError('');
           refreshPreview();
         } }), t('tg.group.hint'));
+      } else if (v.target.mode === 'tags') {
+        fields.target = field(t('tg.pickTags'), refMulti({ resource: 'tags', api: baseApi, filter: { keyType: 'user' }, value: v.target.tagIds, label: t('tg.pickTags'), placeholder: t('tg.pickTags'), onchange: function (ids) {
+          v.target.tagIds = ids;
+          fields.target.setError('');
+          refreshPreview();
+        } }), t('tg.tags.hint'));
       } else {
         targetBox.appendChild(notice('secondary', t('tg.all.hint')));
       }
@@ -5200,8 +5707,8 @@ function composePage(container, query) {
     var runPreview = debounce(function () {
       var my = ++previewSeq;
       var tg = v.target;
-      if ((tg.mode === 'users' && !tg.userIds.length) || (tg.mode === 'group' && !tg.groupId)) { preview = null; paintCount(); return; }
-      pubApi('GET', '/notifications/preview-target' + qs({ mode: tg.mode, groupId: tg.mode === 'group' ? tg.groupId : '', userIds: tg.mode === 'users' ? tg.userIds.join(',') : '' })).then(function (res) {
+      if ((tg.mode === 'users' && !tg.userIds.length) || (tg.mode === 'group' && !tg.groupId) || (tg.mode === 'tags' && !tg.tagIds.length)) { preview = null; paintCount(); return; }
+      pubApi('GET', '/notifications/preview-target' + qs({ mode: tg.mode, groupId: tg.mode === 'group' ? tg.groupId : '', userIds: tg.mode === 'users' ? tg.userIds.join(',') : '', tagIds: tg.mode === 'tags' ? tg.tagIds.join(',') : '' })).then(function (res) {
         if (my !== previewSeq) return;
         preview = res;
         paintCount();
@@ -5237,6 +5744,7 @@ function composePage(container, query) {
       }
       if (v.target.mode === 'users' && !v.target.userIds.length) setErr(fields.target, t('code.TARGET_USERS_REQUIRED'));
       if (v.target.mode === 'group' && !v.target.groupId) setErr(fields.target, t('err.required'));
+      if (v.target.mode === 'tags' && !v.target.tagIds.length) setErr(fields.target, t('code.TARGET_TAGS_REQUIRED'));
       if (v.channel !== 'in_app' && !providers.some(function (p) { return p.channel === v.channel && p.isActive; })) ok = false;
       return ok;
     }
@@ -5253,6 +5761,7 @@ function composePage(container, query) {
       }
       if (v.target.mode === 'users') p.target.userIds = v.target.userIds.slice();
       if (v.target.mode === 'group') p.target.groupId = v.target.groupId;
+      if (v.target.mode === 'tags') p.target.tagIds = v.target.tagIds.slice();
       if (v.channel !== 'in_app' && v.providerId) p.providerId = v.providerId;
       return p;
     }
@@ -5285,7 +5794,7 @@ function composePage(container, query) {
           go('notifications', res.id);
         }, function (err) {
           setBusy(sendBtn, false);
-          var map = { title: fields.title, body: fields.body, action: fields.action, 'action.label': fields.actionLabel, 'target.userIds': fields.target, 'target.groupId': fields.target, providerId: fields.provider };
+          var map = { title: fields.title, body: fields.body, action: fields.action, 'action.label': fields.actionLabel, 'target.userIds': fields.target, 'target.groupId': fields.target, 'target.tagIds': fields.target, providerId: fields.provider };
           var f = err && err.field && map[err.field];
           var vals = { title: v.title, body: v.body, 'action.label': v.action.label };
           var code = f && f.ctl ? trServerLang(err, vals[err.field], { max: err.field === 'title' ? 200 : err.field === 'action.label' ? 64 : v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : 2000 }) : null;
@@ -5299,7 +5808,7 @@ function composePage(container, query) {
     paintChannel();
     paintTarget();
     paintCount();
-    if (v.target.userIds.length) refreshPreview();
+    if (v.target.userIds.length || v.target.tagIds.length) refreshPreview();
   }
 
   function load() {
@@ -5935,6 +6444,747 @@ function appVersionsPage(container, query, ctx) {
 
 function countriesPage(container, query, ctx) {
   return listPage(container, 'countries', query, ctx);
+}
+
+var RESTRICT_KINDS = ['suspend', 'mute', 'warn'];
+var RESTRICT_COLOR = { suspend: 'error', mute: 'warning', warn: 'primary' };
+var RESTRICT_STATUS_COLOR = { active: 'error', expired: 'secondary', lifted: 'success' };
+var REPORT_STATUS_COLOR = { open: 'warning', dismissed: 'secondary', resolved: 'success' };
+var WORD_ACTION_COLOR = { mask: 'primary', block: 'error', flag: 'warning' };
+var DURATIONS = [60, 1440, 4320, 10080, 43200];
+var REPORT_ACTIONS = ['dismiss', 'delete', 'warn', 'mute', 'suspend'];
+var pendingReports = null;
+var reportBadgeAt = 0;
+var playerSel = { ids: {}, items: {}, bar: null, page: [] };
+
+function refreshReportBadge(force) {
+  var now = Date.now();
+  if (!force && now - reportBadgeAt < 60000) return;
+  reportBadgeAt = now;
+  if (!aclCan('CHANNEL_MESSAGE', 0)) return;
+  quietBase('GET', '/reports/summary').then(function (res) {
+    var n = res && typeof res.open === 'number' ? res.open : null;
+    if (n !== pendingReports) {
+      pendingReports = n;
+      schedule();
+    }
+  });
+}
+
+function durationLabel(min) {
+  if (min < 1440) return t('dur.hours', { n: localDigits(min / 60) });
+  return t('dur.days', { n: localDigits(min / 1440) });
+}
+
+function untilText(iso) {
+  return t('rs.until', { date: fmtDate(iso, true) });
+}
+
+function playerLink(id, name, extra) {
+  if (!id) return h('span', { class: 'text-secondary-400', text: name || t('rp.gone') });
+  return h('a', { href: '#/players/' + encodeURIComponent(id), class: 'eco-link truncate' + (extra ? ' ' + extra : ''), text: name || String(id).slice(0, 8) });
+}
+
+function playerTags(tags, max) {
+  var list = tags || [];
+  var box = h('div', { class: 'flex flex-wrap gap-1', 'data-player-tags': '' });
+  list.slice(0, max || 6).forEach(function (tg) {
+    var chip = tag(i18nText(tg.name) || tg.key, tg.isPublic ? 'success' : 'primary');
+    if (tg.isPublic) chip.setAttribute('title', t('tag.public'));
+    box.appendChild(chip);
+  });
+  if (max && list.length > max) box.appendChild(tag('+' + fmtNum(list.length - max), 'secondary'));
+  if (!list.length) box.appendChild(h('span', { class: 'text-secondary-400', text: t('none') }));
+  return box;
+}
+
+function playerStatus(it) {
+  var box = h('div', { class: 'flex flex-col items-start gap-1', 'data-player-status': '' });
+  if (it.banned) box.appendChild(tag(t('pl.banned'), 'error'));
+  if (it.suspension) box.appendChild(h('span', { class: 'eco-tag eco-tag--error inline-flex leading-tight max-w-full px-2 py-0.5 text-xs rounded-md whitespace-nowrap', 'data-status': 'suspended', title: untilText(it.suspension.endsAt), text: t('pl.suspendedUntil', { date: fmtDate(it.suspension.endsAt, true) }) }));
+  if (it.mute) box.appendChild(h('span', { class: 'eco-tag eco-tag--warning inline-flex leading-tight max-w-full px-2 py-0.5 text-xs rounded-md whitespace-nowrap', 'data-status': 'muted', title: untilText(it.mute.endsAt), text: t('pl.mutedUntil', { date: fmtDate(it.mute.endsAt, true) }) }));
+  if (!box.childNodes.length) box.appendChild(tag(t('pl.ok'), 'success'));
+  return box;
+}
+
+function durationPicker(onchange) {
+  var state = { minutes: 1440, endsAt: null };
+  var custom = h('div', { class: 'mt-2', hidden: true });
+  var date = dateInput(null, function (v) { state.endsAt = v; emit(); });
+  custom.appendChild(date);
+  var options = DURATIONS.map(function (m) { return { value: String(m), label: durationLabel(m) }; }).concat([{ value: 'custom', label: t('dur.custom') }]);
+  var seg = segmented(options, '1440', function (v) {
+    custom.hidden = v !== 'custom';
+    if (v === 'custom') { state.minutes = 0; var inp = custom.querySelector('input'); if (inp) inp.focus(); }
+    else { state.minutes = Number(v); state.endsAt = null; }
+    emit();
+  }, t('rs.duration'), 'md');
+  seg.setAttribute('data-duration', '');
+  function emit() { if (onchange) onchange(value()); }
+  function value() { return state.minutes ? { minutes: state.minutes } : { endsAt: state.endsAt }; }
+  var el = h('div', {}, seg, custom);
+  el.value = value;
+  el.check = function () {
+    if (state.minutes) return null;
+    if (!state.endsAt) return t('code.END_REQUIRED');
+    if (new Date(state.endsAt).getTime() <= Date.now() + 30000) return t('code.END_IN_PAST');
+    return null;
+  };
+  return el;
+}
+
+function defaultReason(kind) {
+  var out = {};
+  LANGS.active.forEach(function (l) {
+    var cat = MESSAGES[l.code];
+    if (cat && cat['rs.reason.default.' + kind]) out[l.code] = cat['rs.reason.default.' + kind];
+  });
+  return out;
+}
+
+function restrictionForm(kind, opts) {
+  opts = opts || {};
+  var v = { reason: defaultReason(kind), note: '', deleteMessage: false };
+  var fields = {};
+  var box = h('div', { 'data-restrict-form': kind });
+  var dur = null;
+  if (kind === 'suspend' || kind === 'mute') {
+    dur = durationPicker(function () { fields.duration.setError(''); });
+    fields.duration = field(t('rs.duration'), dur, t(kind === 'suspend' ? 'rs.duration.suspend.hint' : 'rs.duration.mute.hint'));
+    box.appendChild(fields.duration);
+  }
+  var reason = translatedInput(v.reason, { label: t('rs.reason'), multiline: true, rows: 2, max: 500, name: 'reason', oninput: function (x) { v.reason = x; fields.reason.setError(''); } });
+  fields.reason = field(t('rs.reason'), reason, t('rs.reason.hint.' + kind));
+  box.appendChild(fields.reason);
+  if (opts.withDelete) {
+    box.appendChild(h('div', { class: 'mb-5' }, checkbox(false, t('rp.alsoDelete'), function (on) { v.deleteMessage = on; })));
+  }
+  var note = textInput('', { multiline: true, rows: 2, label: t('rs.note'), placeholder: t('rs.note.ph'), oninput: function (x) { v.note = x; } });
+  fields.note = field(t('rs.note'), note, t('rs.note.hint'), { optional: true });
+  box.appendChild(fields.note);
+  return {
+    el: box,
+    validate: function () {
+      var ok = true;
+      if (dur) {
+        var bad = dur.check();
+        fields.duration.setError(bad || '');
+        if (bad) ok = false;
+      }
+      var hit = trCheck(v.reason, { required: true, max: 500 });
+      if (hit) {
+        fields.reason.setError(t('code.' + hit.code, { lang: langName(hit.lang) }));
+        reason.markLang(hit.lang);
+        ok = false;
+      }
+      return ok;
+    },
+    payload: function () {
+      var p = { kind: kind, reason: trClean(v.reason), note: v.note.trim() };
+      if (dur) Object.assign(p, dur.value());
+      if (opts.withDelete) p.deleteMessage = v.deleteMessage;
+      return p;
+    },
+    showError: function (err) {
+      var f = err && err.field;
+      if (f === 'endsAt' && fields.duration) { fields.duration.setError(errorText(err)); return true; }
+      if (f === 'reason') { fields.reason.setError(errorText(err)); return true; }
+      if (f === 'note') { fields.note.setError(errorText(err)); return true; }
+      return false;
+    }
+  };
+}
+
+function formDialog(opts) {
+  return new Promise(function (resolve) {
+    var done = false;
+    var top = h('div', {});
+    function finish(v) {
+      if (done) return;
+      done = true;
+      root.remove();
+      document.removeEventListener('keydown', esc, true);
+      resolve(v);
+    }
+    function esc(e) {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); finish(null); return; }
+      if (e.key === 'Tab') trapTab(e, box);
+    }
+    var ok = button({ variant: opts.danger ? 'dangerSolid' : 'primary', size: 'footer', label: opts.ok, onclick: function () { submit(); } });
+    ok.setAttribute('data-dialog-ok', '');
+    function submit() {
+      clear(top);
+      if (opts.validate && !opts.validate()) return;
+      setBusy(ok, true, t('saving'));
+      opts.submit().then(function (res) { finish(res || true); }, function (err) {
+        setBusy(ok, false);
+        if (!opts.showError || !opts.showError(err)) top.appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err))));
+      });
+    }
+    var box = h('div', { class: 'relative w-full eco-dialog eco-dialog--form bg-white dark:bg-secondary-900 rounded-md shadow-lg overflow-hidden flex flex-col', role: 'dialog', 'aria-modal': 'true', 'aria-label': opts.title, 'data-form-dialog': opts.id || '' },
+      h('div', { class: 'p-6 overflow-y-auto' },
+        h('div', { class: 'flex gap-3 mb-4' },
+          h('div', { class: 'shrink-0 ' + (opts.danger ? 'text-error-600 dark:text-error-400' : 'eco-selected') }, icon(opts.icon || 'alert', 'h-6 w-6')),
+          h('div', { class: 'min-w-0' },
+            h('h2', { class: 'text-lg font-semibold mb-1', text: opts.title }),
+            opts.text ? h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300', text: opts.text }) : null)),
+        top, opts.body),
+      h('div', { class: 'flex gap-3 justify-end bg-secondary-50 dark:bg-secondary-800 px-6 py-3' },
+        button({ variant: 'ghost', size: 'footer', label: t('cancel'), onclick: function () { finish(null); } }), ok));
+    var holder = h('div', { class: 'fixed z-[70] inset-0 flex items-center justify-center p-4' }, box);
+    holder.addEventListener('mousedown', function (e) { if (e.target === holder) finish(null); });
+    var root = h('div', { 'data-economy': 'dialog', 'data-l10n-skip': '', dir: document.documentElement.getAttribute('dir') || 'ltr' },
+      h('div', { class: 'fixed z-[70] inset-0 opacity-60 dark:opacity-70 dark:bg-black bg-secondary-900' }), holder);
+    document.body.appendChild(root);
+    document.addEventListener('keydown', esc, true);
+    var first = box.querySelector('[data-duration] button, textarea, input');
+    (first || ok).focus();
+  });
+}
+
+function restrictDialog(player, kind) {
+  return freshLanguages().then(function () {
+    var form = restrictionForm(kind);
+    var name = player.displayName || player.username || String(player.id).slice(0, 8);
+    return formDialog({
+      id: 'restrict-' + kind,
+      title: t('rs.dialog.' + kind, { name: name }),
+      text: t('rs.dialog.' + kind + '.text'),
+      icon: kind === 'warn' ? 'alert' : 'ban',
+      danger: kind === 'suspend',
+      ok: t('rs.do.' + kind),
+      body: form.el,
+      validate: form.validate,
+      showError: form.showError,
+      submit: function () { return baseApi('POST', '/players/' + encodeURIComponent(player.id) + '/restrictions', form.payload()); }
+    });
+  }).then(function (res) {
+    if (res) toast('success', t('rs.done.' + kind, { name: player.displayName || player.username || '' }));
+    return res;
+  });
+}
+
+function liftDialog(r) {
+  var note = textInput('', { multiline: true, rows: 2, label: t('rs.liftNote'), placeholder: t('rs.note.ph') });
+  return formDialog({
+    id: 'lift',
+    title: t('rs.lift.' + r.kind),
+    text: t('rs.lift.text', { name: r.displayName || r.username || '' }),
+    icon: 'check',
+    ok: t('rs.lift.ok'),
+    body: field(t('rs.liftNote'), note, null, { optional: true }),
+    submit: function () { return baseApi('POST', '/restrictions/' + encodeURIComponent(r.id) + '/lift', { note: note.value.trim() }); }
+  }).then(function (res) {
+    if (res) toast('success', t('rs.lifted'));
+    return res;
+  });
+}
+
+function bulkTagBar(reload) {
+  var tagIds = [];
+  var count = h('span', { class: 'text-sm font-medium tabular-nums', 'aria-live': 'polite' });
+  var picker = refMulti({ resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', value: [], label: t('pl.bulk.tags'), placeholder: t('pl.bulk.pick'), onchange: function (v) { tagIds = v; } });
+  function run(op, btn) {
+    var ids = Object.keys(playerSel.ids);
+    if (!ids.length) return;
+    if (!tagIds.length) { toast('error', t('code.TAGS_REQUIRED')); return; }
+    setBusy(btn, true, t('saving'));
+    baseApi('POST', '/players/tags', { userIds: ids, tagIds: tagIds, op: op }).then(function (res) {
+      setBusy(btn, false);
+      toast('success', t(op === 'add' ? 'pl.bulk.added' : 'pl.bulk.removed', { n: res.players, changed: res.changed }));
+      reload();
+    }, function (err) {
+      setBusy(btn, false);
+      toast('error', errorText(err));
+    });
+  }
+  var add = button({ variant: 'primary', size: 'sm', icon: 'plus', label: t('pl.bulk.add'), onclick: function (e) { run('add', e.currentTarget); } });
+  var remove = button({ variant: 'danger', size: 'sm', icon: 'trash', label: t('pl.bulk.remove'), onclick: function (e) { run('remove', e.currentTarget); } });
+  var pageAll = button({ variant: 'link', size: 'sm', label: t('pl.bulk.page'), onclick: function () {
+    playerSel.page.forEach(function (it) { playerSel.ids[it.id] = true; });
+    paint();
+    reload();
+  } });
+  var none = button({ variant: 'ghost', size: 'sm', label: t('pl.bulk.clear'), onclick: function () { playerSel.ids = {}; paint(); reload(); } });
+  add.setAttribute('data-bulk', 'add');
+  remove.setAttribute('data-bulk', 'remove');
+  var el = h('div', { class: 'eco-bulk rounded-md border border-secondary-200 dark:border-secondary-700 p-3 mb-3', 'data-bulk-bar': '' },
+    h('div', { class: 'flex flex-wrap items-center gap-2 mb-2' }, count, pageAll, none),
+    h('div', { class: 'eco-bulk-row' }, h('div', { class: 'min-w-0 flex-1' }, picker), h('div', { class: 'flex flex-wrap gap-2' }, add, remove)));
+  function paint() {
+    var n = Object.keys(playerSel.ids).length;
+    count.textContent = n ? t('pl.bulk.selected', { n: n }) : t('pl.bulk.none');
+    add.disabled = remove.disabled = !n;
+  }
+  el.paint = paint;
+  paint();
+  return el;
+}
+
+function playerCheck(it) {
+  var box = checkbox(!!playerSel.ids[it.id], '', function (on) {
+    if (on) playerSel.ids[it.id] = true;
+    else delete playerSel.ids[it.id];
+    if (playerSel.bar) playerSel.bar.paint();
+  });
+  box.setAttribute('aria-label', t('pl.select', { name: it.displayName || it.username }));
+  box.setAttribute('data-select', it.id);
+  return box;
+}
+
+LISTS.players = {
+  api: 'base',
+  rowHref: function (it) { return '#/players/' + encodeURIComponent(it.id); },
+  onItems: function (items) { playerSel.page = items; },
+  filters: [
+    { name: 'tagId', label: 'filter.tag', type: 'ref', resource: 'tags', api: baseApi, filter: { keyType: 'user' } },
+    { name: 'status', label: 'filter.status', options: function () { return ['suspended', 'muted', 'banned', 'tagged'].map(function (s) { return { value: s, label: t('pl.status.' + s) }; }); } }
+  ],
+  columns: [
+    { label: 'col.select', render: playerCheck, width: 48 },
+    { label: 'col.player', render: function (it) {
+      return h('div', { class: 'min-w-0' },
+        h('div', { class: 'font-medium truncate', text: it.displayName || it.username }),
+        h('div', { class: 'text-secondary-500 flex items-center gap-2 min-w-0' }, it.displayName ? h('span', { class: 'truncate', text: it.username }) : null, mono(String(it.id).slice(0, 8))));
+    }, skeleton: '50%' },
+    { label: 'col.tags', render: function (it) { return playerTags(it.tags, 4); }, skeleton: '40%' },
+    { label: 'col.status', render: playerStatus, width: 220 },
+    { label: 'col.created', render: function (it) { return dateCell(it.createTime); }, width: 170 }
+  ]
+};
+
+function playersPage(container, query, ctx) {
+  playerSel.ids = {};
+  var list = listPage(container, 'players', query, ctx);
+  var bar = bulkTagBar(function () { list.reload(); });
+  playerSel.bar = bar;
+  var table = container.querySelector('.eco-filters');
+  var anchor = table ? table.closest('.flex.flex-col.items-start') : null;
+  if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(bar, anchor.nextSibling);
+  return list;
+}
+
+function restrictionReason(it) {
+  return h('div', { class: 'min-w-0' },
+    h('div', { class: 'eco-clamp', text: i18nText(it.reason) || '' }),
+    it.note ? h('div', { class: 'text-xs text-secondary-500 eco-clamp', text: it.note }) : null);
+}
+
+LISTS.restrictions = {
+  api: 'base',
+  noRow: true,
+  filters: [
+    { name: 'kind', label: 'filter.kind', options: function () { return RESTRICT_KINDS.map(function (k) { return { value: k, label: t('rs.kind.' + k) }; }); } },
+    { name: 'status', label: 'filter.status', options: function () { return ['active', 'expired', 'lifted'].map(function (s) { return { value: s, label: t('rs.status.' + s) }; }); } },
+    { name: 'userId', label: 'filter.playerId', type: 'text' }
+  ],
+  columns: [
+    { label: 'col.player', render: function (it) { return h('div', { class: 'min-w-0' }, playerLink(it.userId, it.displayName || it.username, 'font-medium block'), mono(String(it.userId || '').slice(0, 8))); }, skeleton: '40%' },
+    { label: 'col.kind', render: function (it) { return tag(t('rs.kind.' + it.kind), RESTRICT_COLOR[it.kind]); }, width: 110 },
+    { label: 'col.status', render: function (it) {
+      if (it.kind === 'warn') return h('span', { class: 'text-secondary-400', text: t('none') });
+      return h('div', { class: 'flex flex-col items-start gap-0.5' },
+        tag(t('rs.status.' + it.status), RESTRICT_STATUS_COLOR[it.status]),
+        h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: it.status === 'lifted' && it.liftedAt ? t('rs.liftedAt', { date: fmtDate(it.liftedAt, true) }) : untilText(it.endsAt) }));
+    }, width: 190 },
+    { label: 'col.reason', render: restrictionReason, skeleton: '60%' },
+    { label: 'col.by', render: function (it) { return h('div', { class: 'flex flex-col' }, h('span', { class: 'text-sm', text: it.createdBy || t('none') }), dateCell(it.createdAt)); }, width: 170 },
+    { label: 'col.actions', render: function (it) {
+      if (it.kind === 'warn' || it.status !== 'active') return h('span', {});
+      var b = button({ variant: 'link', size: 'sm', icon: 'check', label: t('rs.lift'), onclick: function () {
+        liftDialog(it).then(function (res) { if (res) psOrPageReload('restrictions'); });
+      } });
+      b.setAttribute('data-lift', it.id);
+      return b;
+    }, width: 140 }
+  ]
+};
+
+var listReloads = {};
+
+function psOrPageReload(name) {
+  if (listReloads[name]) listReloads[name]();
+}
+
+function restrictionsPage(container, query, ctx) {
+  var list = listPage(container, 'restrictions', query, ctx);
+  listReloads.restrictions = list.reload;
+  return list;
+}
+
+function reportMessage(it) {
+  return h('div', { class: 'min-w-0' },
+    h('div', { class: 'eco-clamp', dir: 'auto', text: it.content || '' }),
+    h('div', { class: 'text-xs text-secondary-500 flex items-center gap-1.5 min-w-0' }, icon('users', 'h-3 w-3'), h('span', { class: 'truncate', text: it.senderName || it.senderUsername || t('rp.gone') }), it.messageDeleted ? tag(t('rp.deleted'), 'secondary') : null));
+}
+
+function reportReason(it) {
+  if (it.source === 'filter') {
+    return h('div', { class: 'flex flex-wrap gap-1' }, tag(t('rp.source.filter'), 'warning'), (it.matched || []).slice(0, 3).map(function (m) { return tag(m.word, 'secondary'); }));
+  }
+  return h('div', { class: 'flex flex-wrap gap-1' }, tag(i18nText(it.title) || it.titleKey || t('rp.noTitle'), 'primary'));
+}
+
+LISTS.reports = {
+  api: 'base',
+  filters: [
+    { name: 'status', label: 'filter.status', options: function () { return ['open', 'dismissed', 'resolved'].map(function (s) { return { value: s, label: t('rp.status.' + s) }; }); } },
+    { name: 'source', label: 'filter.source', options: function () { return ['player', 'filter'].map(function (s) { return { value: s, label: t('rp.source.' + s) }; }); } },
+    { name: 'titleId', label: 'filter.reportTitle', type: 'ref', resource: 'report-titles', api: baseApi },
+    { name: 'senderId', label: 'filter.playerId', type: 'text' }
+  ],
+  columns: [
+    { label: 'col.message', render: reportMessage, skeleton: '70%' },
+    { label: 'col.reason', render: reportReason, width: 200 },
+    { label: 'col.reporter', render: function (it) { return it.source === 'filter' ? h('span', { class: 'text-secondary-500', text: t('rp.byFilter') }) : playerLink(it.reporterId, it.reporterName || it.reporterUsername); }, width: 160 },
+    { label: 'col.status', render: function (it) { return h('div', { class: 'flex flex-col items-start gap-0.5' }, tag(t('rp.status.' + it.status), REPORT_STATUS_COLOR[it.status]), it.reports > 1 ? h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: t('rp.reportsN', { n: it.reports }) }) : null); }, width: 130 },
+    { label: 'col.created', render: function (it) { return dateCell(it.createdAt); }, width: 170 }
+  ]
+};
+
+function contextView(lines, reportedId) {
+  var box = h('ol', { class: 'eco-chat flex flex-col gap-2', 'data-report-context': '' });
+  (lines || []).forEach(function (l) {
+    var hit = l.reported || l.id === reportedId;
+    box.appendChild(h('li', { class: 'eco-chat-line' + (hit ? ' eco-chat-hit' : ''), 'data-reported': hit ? 'true' : null },
+      h('div', { class: 'flex items-center gap-2 text-xs text-secondary-500 mb-0.5' },
+        playerLink(l.senderId, l.username, 'font-medium'),
+        h('span', { class: 'whitespace-nowrap', text: fmtDate(l.createdAt, true) }),
+        hit ? tag(t('rp.thisMessage'), 'warning') : null),
+      h('div', { class: 'text-sm text-secondary-800 dark:text-secondary-200 break-words', dir: 'auto', text: l.content })));
+  });
+  if (!box.childNodes.length) box.appendChild(h('li', { class: 'text-sm text-secondary-500', text: t('rp.noContext') }));
+  return box;
+}
+
+function reportDetail(container, id) {
+  var backBtn = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('back'), onclick: function () { go('reports', null, lastQuery.reports || {}); } });
+  var frame = pageFrame(t('rp.title'), null, null);
+  frame.actions.appendChild(backBtn);
+  clear(container).appendChild(frame.el);
+  var grid = h('div', { class: 'eco-detail-grid', 'data-report': id });
+  frame.content.appendChild(grid);
+
+  function skeleton() {
+    clear(grid);
+    [6, 5, 5, 4].forEach(function (n, i) {
+      var rows = [];
+      for (var j = 0; j < n; j++) rows.push(h('div', { class: 'py-1.5' }, bar(['70%', '50%', '40%'][j % 3])));
+      grid.appendChild(card(h('div', { class: 'p-4' }, h('div', { class: 'mb-4' }, bar('8rem', 'h-4')), rows), i === 0 ? 'eco-span-all' : null));
+    });
+  }
+
+  function decision(r) {
+    if (r.status !== 'open') {
+      return section('rp.decision', dl([
+        ['col.status', tag(t('rp.status.' + r.status), REPORT_STATUS_COLOR[r.status])],
+        ['rp.action', r.action ? tag(t('rp.action.' + r.action), r.action === 'dismiss' ? 'secondary' : 'primary') : null],
+        ['rp.messageDeleted', r.messageDeleted ? tag(t('yes'), 'secondary') : null],
+        ['rp.restriction', r.restrictionId ? h('a', { href: hashFor('restrictions', null, { userId: r.senderId }), class: 'eco-link', text: t('rp.seeRestriction') }) : null],
+        ['rp.resolvedBy', r.resolvedBy ? h('span', { text: r.resolvedBy }) : null],
+        ['rp.resolvedAt', r.resolvedAt ? dateCell(r.resolvedAt) : null],
+        ['rs.note', r.resolutionNote ? h('span', { class: 'break-words', text: r.resolutionNote }) : null]
+      ]));
+    }
+    var current = 'dismiss';
+    var formBox = h('div', { class: 'mt-4' });
+    var form = null;
+    var note = null;
+    var seg = segmented(REPORT_ACTIONS.map(function (a) { return { value: a, label: t('rp.action.' + a) }; }), current, function (a) { current = a; paintForm(); }, t('rp.action'), 'md');
+    seg.setAttribute('data-report-actions', '');
+    var hint = h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 mt-2' });
+    var top = h('div', {});
+    var submitBtn = button({ variant: 'primary', size: 'footer', label: t('rp.submit'), onclick: function () { submit(); } });
+    submitBtn.setAttribute('data-report-submit', '');
+    function paintForm() {
+      clear(formBox);
+      clear(top);
+      hint.textContent = t('rp.action.' + current + '.hint');
+      form = null;
+      note = null;
+      if (current === 'warn' || current === 'mute' || current === 'suspend') {
+        form = restrictionForm(current, { withDelete: true });
+        formBox.appendChild(form.el);
+      } else {
+        note = textInput('', { multiline: true, rows: 2, label: t('rs.note'), placeholder: t('rs.note.ph') });
+        formBox.appendChild(field(t('rs.note'), note, t('rp.note.hint'), { optional: true }));
+      }
+      submitBtn.querySelector('span').textContent = t('rp.submit.' + current);
+    }
+    function submit() {
+      clear(top);
+      if (form && !form.validate()) return;
+      var body = form ? form.payload() : { note: note.value.trim() };
+      body.action = current;
+      delete body.kind;
+      setBusy(submitBtn, true, t('saving'));
+      baseApi('POST', '/reports/' + encodeURIComponent(id) + '/resolve', body).then(function () {
+        toast('success', t('rp.done.' + current));
+        refreshReportBadge(true);
+        load();
+      }, function (err) {
+        setBusy(submitBtn, false);
+        if (!form || !form.showError(err)) top.appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err))));
+      });
+    }
+    paintForm();
+    return card(h('div', { class: 'p-4', 'data-report-decide': '' },
+      h('h2', { class: 'text-lg font-medium mb-3', text: t('rp.decide') }),
+      top, seg, hint, formBox,
+      h('div', { class: 'flex justify-end' }, submitBtn)), 'eco-span-all');
+  }
+
+  function render(r) {
+    clear(grid);
+    var head = h('div', { class: 'flex flex-wrap items-center gap-2' },
+      tag(t('rp.status.' + r.status), REPORT_STATUS_COLOR[r.status]),
+      r.source === 'filter' ? tag(t('rp.source.filter'), 'warning') : tag(t('rp.source.player'), 'secondary'),
+      r.messageDeleted ? tag(t('rp.deleted'), 'secondary') : null);
+    grid.appendChild(section('rp.conversation', h('div', {}, h('div', { class: 'mb-3' }, head), contextView(r.context, r.messageId)), null));
+    grid.lastChild.classList.add('eco-span-all');
+    var others = (r.others || []).filter(function (o) { return o.source === 'player'; });
+    grid.appendChild(section('rp.report', dl([
+      ['rp.reason', reportReason(r)],
+      ['col.reporter', r.source === 'filter' ? h('span', { text: t('rp.byFilter') }) : playerLink(r.reporterId, r.reporterName || r.reporterUsername)],
+      ['rp.playerNote', r.note ? h('span', { class: 'break-words', dir: 'auto', text: r.note }) : null],
+      ['rp.matched', (r.matched || []).length ? h('div', { class: 'flex flex-wrap gap-1' }, r.matched.map(function (m) { return tag(m.word, WORD_ACTION_COLOR[m.action] || 'secondary'); })) : null],
+      ['rp.others', others.length ? h('div', { class: 'flex flex-col gap-1' }, others.map(function (o) { return h('div', { class: 'text-sm' }, playerLink(o.reporterId, o.reporterName || o.reporterUsername), h('span', { class: 'text-secondary-500', text: ' · ' + (i18nText(o.title) || o.titleKey || '') })); })) : null],
+      ['col.created', dateCell(r.createdAt)],
+      ['rp.channel', r.channelLabel ? mono(r.channelLabel) : null]
+    ])));
+    var s = r.sender;
+    grid.appendChild(section('rp.sender', s ? dl([
+      ['col.player', playerLink(s.id, s.displayName || s.username, 'font-medium')],
+      ['col.tags', playerTags(s.tags)],
+      ['col.status', playerStatus(s)],
+      ['rp.history', h('div', { class: 'flex flex-wrap gap-1' },
+        tag(t('rp.count.reports', { n: s.counts.reports }), 'secondary'),
+        tag(t('rp.count.warn', { n: s.counts.warn }), 'primary'),
+        tag(t('rp.count.mute', { n: s.counts.mute }), 'warning'),
+        tag(t('rp.count.suspend', { n: s.counts.suspend }), 'error'))],
+      ['rp.links', h('div', { class: 'flex flex-wrap gap-3' },
+        h('a', { href: hashFor('restrictions', null, { userId: s.id }), class: 'eco-link text-sm', text: t('rp.seeHistory') }),
+        h('a', { href: hashFor('reports', null, { senderId: s.id }), class: 'eco-link text-sm', text: t('rp.seeReports') }))]
+    ]) : notice('secondary', t('rp.gone'))));
+    grid.appendChild(decision(r));
+  }
+
+  function load() {
+    skeleton();
+    baseApi('GET', '/reports/' + encodeURIComponent(id)).then(function (r) {
+      if (!grid.isConnected) return;
+      Promise.resolve(freshLanguages()).then(function () { render(r); });
+    }, function (err) {
+      clear(grid).appendChild(errorBlock(err, load));
+    });
+  }
+  load();
+}
+
+function wordTry() {
+  var input = textInput('', { multiline: true, rows: 2, label: t('cw.try.label'), placeholder: t('cw.try.ph') });
+  input.setAttribute('data-word-try', '');
+  var result = h('div', { class: 'flex flex-col gap-2 mt-3 text-sm', 'aria-live': 'polite', 'data-word-result': '' });
+  var seq = 0;
+  var run = debounce(function () {
+    var text = input.value;
+    var my = ++seq;
+    clear(result);
+    if (!text.trim()) return;
+    result.appendChild(bar('60%'));
+    baseApi('POST', '/chat-words/test', { text: text }).then(function (res) {
+      if (my !== seq) return;
+      clear(result);
+      var verdict = res.blocked ? notice('error', t('cw.try.blocked')) : res.flagged ? notice('warning', res.changed ? t('cw.try.maskedFlagged') : t('cw.try.flagged')) : res.changed ? notice('success', t('cw.try.masked')) : notice('secondary', t('cw.try.clean'));
+      result.appendChild(verdict);
+      result.appendChild(h('div', { class: 'eco-try-out rounded-md px-3 py-2' },
+        h('div', { class: 'text-xs text-secondary-500 mb-1', text: t('cw.try.shown') }),
+        h('div', { class: 'break-words', dir: 'auto', 'data-word-shown': '', text: res.blocked ? t('cw.try.notSent') : res.text })));
+      result.appendChild(h('div', { class: 'text-xs text-secondary-500' }, h('span', { text: t('cw.try.normalized') + ' ' }), h('span', { class: 'font-mono', dir: 'auto', 'data-word-normalized': '', text: res.normalized || '' })));
+      if ((res.hits || []).length) result.appendChild(h('div', { class: 'flex flex-wrap gap-1' }, res.hits.map(function (hh) { return tag(hh.word + ' · ' + t('cw.action.' + hh.action), WORD_ACTION_COLOR[hh.action]); })));
+    }, function (err) {
+      if (my !== seq) return;
+      clear(result).appendChild(notice('error', errorText(err)));
+    });
+  }, 300);
+  input.addEventListener('input', run);
+  return card(h('div', { class: 'p-4' },
+    h('h2', { class: 'text-base font-medium mb-1', text: t('cw.try') }),
+    h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 mb-3', text: t('cw.try.hint') }),
+    input, result), 'mb-4 eco-word-try');
+}
+
+RESOURCES['chat-words'] = {
+  api: 'base',
+  filters: [
+    { name: 'action', label: 'filter.action', options: function () { return ['mask', 'block', 'flag'].map(function (a) { return { value: a, label: t('cw.action.' + a) }; }); } },
+    { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }
+  ],
+  columns: [
+    { label: 'col.word', render: function (it) {
+      return h('div', { class: 'min-w-0' },
+        h('div', { class: 'font-medium truncate', dir: 'auto', text: it.word }),
+        it.normalized && it.normalized !== it.word ? h('div', { class: 'text-xs text-secondary-500 font-mono truncate', dir: 'auto', text: it.normalized }) : null);
+    }, skeleton: '40%' },
+    { label: 'col.action', render: function (it) { return tag(t('cw.action.' + it.action), WORD_ACTION_COLOR[it.action]); }, width: 140 },
+    { label: 'col.match', render: function (it) { return h('span', { class: 'text-sm', text: t('cw.match.' + it.match) }); }, width: 160 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 },
+    { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 170 }
+  ],
+  fields: [
+    { name: 'word', type: 'text', label: 'f.cw.word', hint: 'f.cw.word.hint', required: true, check: function (v) { return v && Array.from(v.trim()).length > 64 ? t('code.INVALID_WORD') : null; } },
+    { type: 'row', fields: [
+      { name: 'action', type: 'select', label: 'f.cw.action', hint: 'f.cw.action.hint', required: true, options: function () { return ['mask', 'block', 'flag'].map(function (a) { return { value: a, label: t('cw.action.' + a) }; }); } },
+      { name: 'match', type: 'select', label: 'f.cw.match', hint: 'f.cw.match.hint', required: true, options: function () { return ['word', 'contains'].map(function (a) { return { value: a, label: t('cw.match.' + a) }; }); } }
+    ] },
+    { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.cw.active.hint' },
+    { name: 'note', type: 'textarea', label: 'f.cw.note', hint: 'f.cw.note.hint', optional: true }
+  ],
+  defaults: function () { return { word: '', action: 'mask', match: 'word', isActive: true, note: '' }; },
+  fixPayload: function (p) { p.word = String(p.word || '').trim(); p.note = String(p.note || '').trim(); return p; }
+};
+
+function chatWordsPage(container, query, ctx) {
+  var list = listPage(container, 'chat-words', query, ctx);
+  var frameContent = container.querySelector('.flex.flex-col.flex-1.min-w-0.px-4');
+  if (frameContent) frameContent.insertBefore(wordTry(), frameContent.firstChild);
+  return list;
+}
+
+RESOURCES['report-titles'] = {
+  api: 'base',
+  settings: true,
+  filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it, false); }, skeleton: '50%' },
+    { label: 'col.used', render: function (it) { return it.used ? h('a', { href: hashFor('reports', null, { titleId: it.id }), class: 'eco-link tabular-nums', text: t('rp.reportsN', { n: it.used }) }) : h('span', { class: 'text-secondary-400', text: t('none') }); }, width: 140 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 },
+    { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 90 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.rt.key.hint', required: true },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+    ] },
+    tr('name', { label: 'f.rt.name', hint: 'f.rt.name.hint', required: true, max: 100 }),
+    tr('description', { label: 'f.rt.description', hint: 'f.rt.description.hint', multiline: true, max: 300, optional: true }),
+    { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.rt.active.hint' }
+  ],
+  defaults: function () { return { key: '', name: {}, description: {}, isActive: true, sort: 100 }; },
+  fixPayload: function (p) { if (p.sort == null) p.sort = 100; return p; }
+};
+
+var PLAYER_CARD = { id: null, data: null, loading: false, at: 0, err: null };
+
+function playerCardRoute() {
+  var m = /^#\/players\/([0-9a-f-]{36})(?:\/account)?(?:\?.*)?$/.exec(location.hash || '');
+  return m ? m[1] : null;
+}
+
+function loadPlayerCard(id) {
+  PLAYER_CARD.loading = true;
+  return baseApi('GET', '/players/' + encodeURIComponent(id)).then(function (res) {
+    PLAYER_CARD.loading = false;
+    PLAYER_CARD.at = Date.now();
+    PLAYER_CARD.data = res;
+    PLAYER_CARD.err = null;
+    var old = document.querySelector('[data-player-mod]');
+    if (old) old.removeAttribute('data-key');
+    schedule();
+  }, function (err) {
+    PLAYER_CARD.loading = false;
+    PLAYER_CARD.at = Date.now();
+    PLAYER_CARD.err = err;
+    schedule();
+  });
+}
+
+function editPlayerTags(p) {
+  var ids = (p.tags || []).map(function (x) { return x.id; });
+  (p.tags || []).forEach(function (x) { refCache['tags:id:' + x.id] = x; });
+  var picker = refMulti({ resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', value: ids, label: t('pc.tags'), placeholder: t('pl.bulk.pick'), onchange: function (v) { ids = v; } });
+  return formDialog({
+    id: 'player-tags',
+    title: t('pc.tags.edit'),
+    text: t('pc.tags.edit.text'),
+    icon: 'tags',
+    ok: t('save'),
+    body: field(t('pc.tags'), picker, t('pc.tags.hint')),
+    submit: function () { return baseApi('PUT', '/players/' + encodeURIComponent(p.id) + '/tags', { tagIds: ids }); }
+  }).then(function (res) {
+    if (res) toast('success', t('pc.tags.saved'));
+    return res;
+  });
+}
+
+function playerModCard() {
+  var id = playerCardRoute();
+  var existing = document.querySelector('[data-player-mod]');
+  if (!id || !token() || !aclCan('ACCOUNT', 0)) { if (existing) existing.remove(); return; }
+  var main = null;
+  var mains = document.querySelectorAll('#main > main');
+  for (var i = 0; i < mains.length; i++) if (mains[i].style.display !== 'none') main = mains[i];
+  var grid = main && main.querySelector('div.flex.flex-col.flex-1.min-w-0 > div.grid.grid-cols-1.gap-4');
+  if (!grid) return;
+  if (PLAYER_CARD.id !== id) { PLAYER_CARD.id = id; PLAYER_CARD.data = null; PLAYER_CARD.err = null; PLAYER_CARD.at = 0; }
+  if (!PLAYER_CARD.loading && Date.now() - PLAYER_CARD.at > 20000) loadPlayerCard(id);
+  var p = PLAYER_CARD.data;
+  var key = lang() + '|' + id + '|' + (p ? JSON.stringify([p.tags, p.suspension, p.mute, p.banned, (p.history || []).length]) : PLAYER_CARD.err ? 'err' : 'loading');
+  if (existing && existing.getAttribute('data-key') === key && existing.parentNode === grid && grid.firstChild === existing) return;
+  if (existing) existing.remove();
+  var body = h('div', { class: 'px-4 py-3' });
+  var cardEl = h('section', { class: 'flex flex-col dark:bg-secondary-800 rounded-md shadow bg-white', 'data-player-mod': '', 'data-key': key, 'data-economy': 'player-mod', 'data-l10n-skip': '', 'aria-labelledby': 'player-mod-title', dir: document.documentElement.getAttribute('dir') || 'ltr' }, body);
+  var title = h('h2', { id: 'player-mod-title', class: 'font-medium', text: t('pc.title') });
+  if (!p) {
+    body.appendChild(h('div', { class: 'flex items-center justify-between gap-2 mb-3' }, title));
+    body.appendChild(PLAYER_CARD.err ? notice('error', errorText(PLAYER_CARD.err), button({ variant: 'link', size: 'sm', label: t('try.again'), onclick: function () { PLAYER_CARD.at = 0; loadPlayerCard(id); } })) : h('div', { class: 'flex flex-col gap-2' }, bar('40%'), bar('60%')));
+    grid.insertBefore(cardEl, grid.firstChild);
+    return;
+  }
+  var write = aclCan('ACCOUNT', 1);
+  var after = function (res) { if (res) { PLAYER_CARD.at = 0; loadPlayerCard(id); } };
+  var actions = h('div', { class: 'flex flex-wrap items-center gap-2' });
+  if (write) {
+    if (p.suspension) actions.appendChild(liftButton(p.suspension.id, 'suspend', p, after));
+    else actions.appendChild(actionButton('suspend', 'dangerSolid', function () { restrictDialog(p, 'suspend').then(after); }));
+    if (p.mute) actions.appendChild(liftButton(p.mute.id, 'mute', p, after));
+    else actions.appendChild(actionButton('mute', 'ghost', function () { restrictDialog(p, 'mute').then(after); }));
+    actions.appendChild(actionButton('warn', 'ghost', function () { restrictDialog(p, 'warn').then(after); }));
+  }
+  var editTags = write ? button({ variant: 'link', size: 'sm', icon: 'tags', label: t('pc.tags.edit'), onclick: function () { editPlayerTags(p).then(after); } }) : null;
+  if (editTags) editTags.setAttribute('data-player-tags-edit', '');
+  var lastWarn = (p.history || []).filter(function (x) { return x.kind === 'warn'; })[0];
+  body.appendChild(h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-3' }, title, actions));
+  body.appendChild(h('div', { class: 'eco-pc-grid' },
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('pc.tags') }),
+      h('div', { class: 'flex flex-wrap items-center gap-2' }, playerTags(p.tags), editTags)),
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('pc.status') }),
+      playerStatus(p),
+      p.suspension && i18nText(p.suspension.reason) ? h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300 mt-1 eco-clamp', text: i18nText(p.suspension.reason) }) : null,
+      p.mute && i18nText(p.mute.reason) ? h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300 mt-1 eco-clamp', text: i18nText(p.mute.reason) }) : null),
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('pc.history') }),
+      h('div', { class: 'flex flex-wrap gap-3 text-sm' },
+        h('a', { href: hashFor('restrictions', null, { userId: id }), class: 'eco-link', 'data-player-history': '', text: t('pc.historyN', { n: (p.history || []).length }) }),
+        h('a', { href: hashFor('reports', null, { senderId: id }), class: 'eco-link', text: t('pc.reportsN', { n: p.reports ? p.reports.against : 0 }) })),
+      lastWarn ? h('p', { class: 'text-xs text-secondary-500 mt-1', text: t('pc.lastWarn', { date: fmtDate(lastWarn.createdAt, true) }) }) : null)));
+  grid.insertBefore(cardEl, grid.firstChild);
+}
+
+function actionButton(kind, variant, onclick) {
+  var b = button({ variant: variant, size: 'sm', icon: kind === 'warn' ? 'alert' : 'ban', label: t('rs.do.' + kind), onclick: onclick });
+  b.setAttribute('data-restrict', kind);
+  return b;
+}
+
+function liftButton(rid, kind, p, after) {
+  var b = button({ variant: 'link', size: 'sm', icon: 'check', label: t('rs.lift.' + kind), onclick: function () {
+    liftDialog({ id: rid, kind: kind, username: p.username, displayName: p.displayName }).then(after);
+  } });
+  b.setAttribute('data-lift-kind', kind);
+  return b;
 }
 
 var BRAND_KEY = 'nakama-brand';
@@ -7290,6 +8540,7 @@ var PS_SECTIONS = [
   { id: 'app-versions', label: 'tab.app-versions', icon: 'versions', acl: 'SETTINGS', render: function (box, route, ctx) { return appVersionsPage(box, route.query, ctx); } },
   { id: 'categories', label: 'nav.categories', icon: 'categories', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'categories', route.query, ctx); } },
   { id: 'tags', label: 'nav.tags', icon: 'tags', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'tags', route.query, ctx); } },
+  { id: 'report-titles', label: 'tab.report-titles', icon: 'report-titles', acl: 'CHANNEL_MESSAGE', render: function (box, route, ctx) { return listPage(box, 'report-titles', route.query, ctx); } },
   { id: 'payment-methods', label: 'tab.payment-methods', icon: 'payments', acl: 'HIRO_ECONOMY', render: function (box) { paymentMethodsPage(box); } },
   { id: 'sms', label: 'tab.sms', icon: 'comments', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'sms'); } },
   { id: 'email', label: 'tab.email', icon: 'mail', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'email'); } }
@@ -7308,7 +8559,7 @@ var PS_LEGACY = {
   'economy/payment-methods': 'payment-methods',
   'publication/providers': 'sms'
 };
-var ACL_RESOURCES = { NOTIFICATION: 20, SETTINGS: 22, HIRO_ECONOMY: 27 };
+var ACL_RESOURCES = { ACCOUNT: 0, CHANNEL_MESSAGE: 13, NOTIFICATION: 20, SETTINGS: 22, HIRO_ECONOMY: 27 };
 var PS_RETURN_KEY = 'economy.ps.return';
 var aclCache = { tk: null, bits: null };
 var ps = null;
@@ -7979,6 +9230,7 @@ function nativeTweaks() {
   dashboardSetup();
   auditLogSources();
   satoriRoutes();
+  playerModCard();
 }
 
 var ROOT_ID = 'economy-root';
@@ -8023,7 +9275,7 @@ function captureRouter(app) {
 function sectionTitle(sec) {
   var r = parseRoute(location.hash);
   var page = r && r.section === sec ? r.page : null;
-  return t(sec === 'economy' ? 'section' : 'section.pub') + (page ? ' - ' + t('nav.' + page) : '');
+  return t(SECTION_LABEL[sec]) + (page ? ' - ' + t('nav.' + page) : '');
 }
 
 function sectionPageTitle(v) {
@@ -8069,7 +9321,7 @@ function replaceHash(hash) {
 }
 
 function parseRoute(hash) {
-  var m = /^#\/(economy|publication|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(economy|publication|moderation|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
   var page;
@@ -8091,13 +9343,17 @@ function parseRoute(hash) {
 
 function keyOf(r) {
   if (!r) return '';
-  var detail = (r.page === 'payments' || r.page === 'notifications') && r.id ? '/' + r.id : '';
+  var detail = (r.page === 'payments' || r.page === 'notifications' || r.page === 'reports') && r.id ? '/' + r.id : '';
   return lang() + '|' + r.page + detail + '|' + JSON.stringify(r.query);
+}
+
+function navPages(section) {
+  return SECTIONS[section].filter(function (p) { return !PAGE_ACL[p] || aclCan(PAGE_ACL[p], 0); });
 }
 
 function buildNav(section, collapsed, active) {
   var ul = h('ul', { class: 'space-y-0.5' });
-  SECTIONS[section].forEach(function (p) {
+  navPages(section).forEach(function (p) {
     var on = p === active;
     var a = h('a', { href: hashFor(p, null, p === active ? null : lastQuery[p]), class: (on ? NAV_ACTIVE + ' ' : '') + NAV_LINK, 'aria-current': on ? 'page' : null, title: collapsed ? t('nav.' + p) : null, 'data-economy-page': p });
     a.appendChild(collapsed ? h('div', { class: 'x-tooltip flex' }, icon(p, 'h-4 w-4')) : icon(p, 'h-4 w-4'));
@@ -8106,7 +9362,7 @@ function buildNav(section, collapsed, active) {
     if (badge) a.appendChild(badge);
     ul.appendChild(h('li', {}, a));
   });
-  var title = section === 'economy' ? 'section' : 'section.pub';
+  var title = SECTION_LABEL[section];
   return h('div', { 'data-economy-nav': section, 'data-l10n-skip': '', class: section === SECTION_ORDER[0] ? null : 'eco-nav-next' },
     h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 ' + (collapsed ? 'text-[8px] text-center' : 'px-3 text-[10px]'), text: collapsed ? t(title + '.short') : t(title) }),
     h('nav', { 'aria-label': t(title) }, ul));
@@ -8134,7 +9390,11 @@ function isCollapsed(anchor) {
 
 function syncSidebar(route, psOn) {
   var active = route ? route.page : null;
-  var anchors = document.querySelectorAll('a[href="#/players"]');
+  var anchors = [];
+  var hrefs = ['#/players', '#/chat', '#/notifications', '#/groups', '#/storage', '#/'];
+  for (var hi = 0; hi < hrefs.length && !anchors.length; hi++) {
+    anchors = Array.prototype.filter.call(document.querySelectorAll('.x-drawer a[href="' + hrefs[hi] + '"]'), function (x) { return !!x.closest('nav') && !x.closest('[data-economy-nav]'); });
+  }
   var keep = [];
   for (var i = 0; i < anchors.length; i++) {
     var a = anchors[i];
@@ -8144,15 +9404,17 @@ function syncSidebar(route, psOn) {
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
     var collapsed = isCollapsed(a);
-    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + JSON.stringify(lastQuery);
+    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + pendingReports + '|' + JSON.stringify(lastQuery) + '|' + token();
     var prev = group;
     for (var si = 0; si < SECTION_ORDER.length; si++) {
+      if (!navPages(SECTION_ORDER[si]).length) continue;
       prev = placeNav(prev, SECTION_ORDER[si], collapsed, active, key);
       keep.push(prev);
     }
     var psNav = placePsNav(drawer, collapsed, !!psOn, lang() + '|' + collapsed + '|' + !!psOn + '|' + psEntryHash());
     if (psNav) keep.push(psNav);
     refreshBadge(false);
+    refreshReportBadge(false);
     var vueActive = group.parentElement.querySelectorAll('a[aria-current="page"]:not([data-economy-page])');
     for (var j = 0; j < vueActive.length && (active || psOn); j++) {
       if (vueActive[j].getAttribute('href') === '#/') vueActive[j].setAttribute('data-economy-dimmed', '');
@@ -8184,7 +9446,12 @@ function mountPage(root, route, ctl) {
   var ctx = { id: route.id, query: route.query };
   if (ps2) { ctl.list = ps2.render(root, route, ctx) || null; return; }
   if (route.page === 'comments') refreshBadge(true);
+  if (route.page === 'reports') refreshReportBadge(true);
   if (route.page === 'overview') overviewPage(root);
+  else if (route.page === 'reports' && route.id) reportDetail(root, route.id);
+  else if (route.page === 'players') ctl.list = playersPage(root, route.query, ctx);
+  else if (route.page === 'restrictions') ctl.list = restrictionsPage(root, route.query, ctx);
+  else if (route.page === 'chat-words') ctl.list = chatWordsPage(root, route.query, ctx);
   else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
   else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
   else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
@@ -8365,11 +9632,11 @@ function fireRoute(to, from) {
 }
 
 function consoleSections() {
-  return SECTION_ORDER.map(function (sec) {
+  return SECTION_ORDER.filter(function (sec) { return navPages(sec).length > 0; }).map(function (sec) {
     return {
       id: sec,
-      label: t(sec === 'economy' ? 'section' : 'section.pub'),
-      pages: SECTIONS[sec].map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : 0 }; })
+      label: t(SECTION_LABEL[sec]),
+      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : 0 }; })
     };
   });
 }
@@ -8380,7 +9647,7 @@ window.NakamaConsole = {
   lang: function () { return lang(); },
   t: function (key, vars) { return t(key, vars); },
   sections: consoleSections,
-  badges: function () { return { comments: pendingComments || 0 }; },
+  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0 }; },
   onRoute: function (fn) {
     if (typeof fn !== 'function') return function () {};
     routeHooks.push(fn);
@@ -8402,7 +9669,7 @@ window.NakamaConsole = {
   isDark: function () { return isDarkTheme(); }
 };
 
-if (legacyHash(location.hash) || /^#\/(economy|publication|project-settings)(\/|\?|$)/.test(location.hash)) {
+if (legacyHash(location.hash) || /^#\/(economy|publication|moderation|project-settings)(\/|\?|$)/.test(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }

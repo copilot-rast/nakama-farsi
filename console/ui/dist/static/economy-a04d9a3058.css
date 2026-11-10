@@ -408,3 +408,16 @@ html.dark .monaco-editor .cursors-layer :is(.cursor,.cursor-primary,.cursor-seco
 html.dark .monaco-editor .inputarea.ime-input{background-color:#1b1d25}
 html.dark .monaco-editor .line-numbers.dimmed-line-number{color:rgb(160 166 180 / .4)}
 html.dark .monaco-editor :is(.minimap canvas,canvas.decorationsOverviewRuler){filter:invert(.9) hue-rotate(180deg)}
+.eco-dialog.eco-dialog--form{max-width:36rem;max-height:calc(100vh - 2rem)}
+.eco-bulk{background-color:rgb(var(--secondary-color-50))}
+.dark .eco-bulk{background-color:rgb(var(--secondary-color-900))}
+.eco-bulk-row{display:flex;flex-wrap:wrap;align-items:flex-start;gap:.5rem}
+.eco-bulk-row > .min-w-0{min-width:14rem}
+.eco-chat{list-style:none;margin:0;padding:0}
+.eco-chat-line{border-radius:.375rem;padding:.4rem .6rem;border:1px solid transparent}
+.eco-chat-hit{border-color:rgb(var(--warning-color-300));background-color:rgb(var(--warning-color-50))}
+.dark .eco-chat-hit{border-color:rgb(var(--warning-color-700));background-color:rgba(120,80,0,.18)}
+.eco-try-out{background-color:rgb(var(--secondary-color-50));border:1px solid rgb(var(--secondary-color-200))}
+.dark .eco-try-out{background-color:rgb(var(--secondary-color-900));border-color:rgb(var(--secondary-color-700))}
+.eco-pc-grid{display:grid;grid-template-columns:1fr;gap:1rem}
+@media (min-width:1024px){.eco-pc-grid{grid-template-columns:1.4fr 1fr 1fr}}

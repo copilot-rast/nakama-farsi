@@ -40,7 +40,7 @@ function captureRouter(app) {
 function sectionTitle(sec) {
   var r = parseRoute(location.hash);
   var page = r && r.section === sec ? r.page : null;
-  return t(sec === 'economy' ? 'section' : 'section.pub') + (page ? ' - ' + t('nav.' + page) : '');
+  return t(SECTION_LABEL[sec]) + (page ? ' - ' + t('nav.' + page) : '');
 }
 
 function sectionPageTitle(v) {
@@ -86,7 +86,7 @@ function replaceHash(hash) {
 }
 
 function parseRoute(hash) {
-  var m = /^#\/(economy|publication|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(economy|publication|moderation|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
   var page;
@@ -108,13 +108,17 @@ function parseRoute(hash) {
 
 function keyOf(r) {
   if (!r) return '';
-  var detail = (r.page === 'payments' || r.page === 'notifications') && r.id ? '/' + r.id : '';
+  var detail = (r.page === 'payments' || r.page === 'notifications' || r.page === 'reports') && r.id ? '/' + r.id : '';
   return lang() + '|' + r.page + detail + '|' + JSON.stringify(r.query);
+}
+
+function navPages(section) {
+  return SECTIONS[section].filter(function (p) { return !PAGE_ACL[p] || aclCan(PAGE_ACL[p], 0); });
 }
 
 function buildNav(section, collapsed, active) {
   var ul = h('ul', { class: 'space-y-0.5' });
-  SECTIONS[section].forEach(function (p) {
+  navPages(section).forEach(function (p) {
     var on = p === active;
     var a = h('a', { href: hashFor(p, null, p === active ? null : lastQuery[p]), class: (on ? NAV_ACTIVE + ' ' : '') + NAV_LINK, 'aria-current': on ? 'page' : null, title: collapsed ? t('nav.' + p) : null, 'data-economy-page': p });
     a.appendChild(collapsed ? h('div', { class: 'x-tooltip flex' }, icon(p, 'h-4 w-4')) : icon(p, 'h-4 w-4'));
@@ -123,7 +127,7 @@ function buildNav(section, collapsed, active) {
     if (badge) a.appendChild(badge);
     ul.appendChild(h('li', {}, a));
   });
-  var title = section === 'economy' ? 'section' : 'section.pub';
+  var title = SECTION_LABEL[section];
   return h('div', { 'data-economy-nav': section, 'data-l10n-skip': '', class: section === SECTION_ORDER[0] ? null : 'eco-nav-next' },
     h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 ' + (collapsed ? 'text-[8px] text-center' : 'px-3 text-[10px]'), text: collapsed ? t(title + '.short') : t(title) }),
     h('nav', { 'aria-label': t(title) }, ul));
@@ -151,7 +155,11 @@ function isCollapsed(anchor) {
 
 function syncSidebar(route, psOn) {
   var active = route ? route.page : null;
-  var anchors = document.querySelectorAll('a[href="#/players"]');
+  var anchors = [];
+  var hrefs = ['#/players', '#/chat', '#/notifications', '#/groups', '#/storage', '#/'];
+  for (var hi = 0; hi < hrefs.length && !anchors.length; hi++) {
+    anchors = Array.prototype.filter.call(document.querySelectorAll('.x-drawer a[href="' + hrefs[hi] + '"]'), function (x) { return !!x.closest('nav') && !x.closest('[data-economy-nav]'); });
+  }
   var keep = [];
   for (var i = 0; i < anchors.length; i++) {
     var a = anchors[i];
@@ -161,15 +169,17 @@ function syncSidebar(route, psOn) {
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
     var collapsed = isCollapsed(a);
-    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + JSON.stringify(lastQuery);
+    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + pendingReports + '|' + JSON.stringify(lastQuery) + '|' + token();
     var prev = group;
     for (var si = 0; si < SECTION_ORDER.length; si++) {
+      if (!navPages(SECTION_ORDER[si]).length) continue;
       prev = placeNav(prev, SECTION_ORDER[si], collapsed, active, key);
       keep.push(prev);
     }
     var psNav = placePsNav(drawer, collapsed, !!psOn, lang() + '|' + collapsed + '|' + !!psOn + '|' + psEntryHash());
     if (psNav) keep.push(psNav);
     refreshBadge(false);
+    refreshReportBadge(false);
     var vueActive = group.parentElement.querySelectorAll('a[aria-current="page"]:not([data-economy-page])');
     for (var j = 0; j < vueActive.length && (active || psOn); j++) {
       if (vueActive[j].getAttribute('href') === '#/') vueActive[j].setAttribute('data-economy-dimmed', '');
@@ -201,7 +211,12 @@ function mountPage(root, route, ctl) {
   var ctx = { id: route.id, query: route.query };
   if (ps2) { ctl.list = ps2.render(root, route, ctx) || null; return; }
   if (route.page === 'comments') refreshBadge(true);
+  if (route.page === 'reports') refreshReportBadge(true);
   if (route.page === 'overview') overviewPage(root);
+  else if (route.page === 'reports' && route.id) reportDetail(root, route.id);
+  else if (route.page === 'players') ctl.list = playersPage(root, route.query, ctx);
+  else if (route.page === 'restrictions') ctl.list = restrictionsPage(root, route.query, ctx);
+  else if (route.page === 'chat-words') ctl.list = chatWordsPage(root, route.query, ctx);
   else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
   else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
   else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
@@ -382,11 +397,11 @@ function fireRoute(to, from) {
 }
 
 function consoleSections() {
-  return SECTION_ORDER.map(function (sec) {
+  return SECTION_ORDER.filter(function (sec) { return navPages(sec).length > 0; }).map(function (sec) {
     return {
       id: sec,
-      label: t(sec === 'economy' ? 'section' : 'section.pub'),
-      pages: SECTIONS[sec].map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : 0 }; })
+      label: t(SECTION_LABEL[sec]),
+      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : 0 }; })
     };
   });
 }
@@ -397,7 +412,7 @@ window.NakamaConsole = {
   lang: function () { return lang(); },
   t: function (key, vars) { return t(key, vars); },
   sections: consoleSections,
-  badges: function () { return { comments: pendingComments || 0 }; },
+  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0 }; },
   onRoute: function (fn) {
     if (typeof fn !== 'function') return function () {};
     routeHooks.push(fn);
@@ -419,7 +434,7 @@ window.NakamaConsole = {
   isDark: function () { return isDarkTheme(); }
 };
 
-if (legacyHash(location.hash) || /^#\/(economy|publication|project-settings)(\/|\?|$)/.test(location.hash)) {
+if (legacyHash(location.hash) || /^#\/(economy|publication|moderation|project-settings)(\/|\?|$)/.test(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }

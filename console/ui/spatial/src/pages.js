@@ -11,7 +11,7 @@ function contentRoot() {
 function routeName() {
   var p = routePath().split('/').filter(Boolean);
   if (!p.length) return 'dashboard';
-  if (p[0] === 'economy' || p[0] === 'publication' || p[0] === 'settings') return p[0] + '-' + (p[1] || 'index');
+  if (p[0] === 'economy' || p[0] === 'publication' || p[0] === 'moderation' || p[0] === 'settings') return p[0] + '-' + (p[1] || 'index');
   if (p[0] === 'players' || p[0] === 'groups' || p[0] === 'leaderboards' || p[0] === 'storage-indexes') return p.length > 1 ? p[0] + '-detail' : p[0];
   return p[0];
 }

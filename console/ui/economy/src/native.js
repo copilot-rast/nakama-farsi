@@ -377,4 +377,5 @@ function nativeTweaks() {
   dashboardSetup();
   auditLogSources();
   satoriRoutes();
+  playerModCard();
 }

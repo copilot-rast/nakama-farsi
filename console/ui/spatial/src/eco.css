@@ -700,3 +700,30 @@ html.sp .eco-tr-tab.eco-tr-on .eco-tr-def {
 html.sp .setup-card {
   background: var(--well);
 }
+
+html.sp .eco-bulk,
+html.sp .eco-try-out {
+  background: var(--well);
+  border-color: var(--line);
+}
+
+html.sp .eco-chat-line {
+  border-radius: var(--r-field);
+}
+
+html.sp .eco-chat-hit {
+  background: var(--well-2);
+  border-color: var(--warn);
+}
+
+html.sp:not(.dark) .eco-tag--error {
+  background-color: color-mix(in srgb, var(--neg) 10%, #fff);
+}
+
+html.sp:not(.dark) .eco-tag--warning {
+  background-color: color-mix(in srgb, var(--warn) 10%, #fff);
+}
+
+html.sp:not(.dark) .eco-tag--success {
+  background-color: color-mix(in srgb, var(--pos) 10%, #fff);
+}
