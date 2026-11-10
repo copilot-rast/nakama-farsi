@@ -179,7 +179,7 @@ function tabFrame(desc, actions) {
 }
 
 function notice(kind, text, action) {
-  var color = kind === 'error' ? 'error' : kind === 'success' ? 'success' : 'secondary';
+  var color = kind === 'error' ? 'error' : kind === 'success' ? 'success' : kind === 'warning' ? 'warning' : 'secondary';
   return h('div', { class: 'eco-notice eco-notice--' + color + ' flex items-center gap-2 rounded-md px-3 py-2 text-sm', role: kind === 'error' ? 'alert' : 'status' },
     icon(kind === 'success' ? 'check' : 'alert', 'h-4 w-4'),
     h('span', { class: 'flex-1', text: text }),

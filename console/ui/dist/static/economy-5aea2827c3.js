@@ -787,7 +787,153 @@ var MESSAGES = {
     'setup.open': 'باز کردن راهنما',
     'setup.progress': '{n} از {total} مرحله',
     'setup.meta.opened': 'اولین باز شدن',
-    'setup.meta.completed': 'پایان'
+    'setup.meta.completed': 'پایان',
+    'tab.countries': 'کشورها',
+    'tab.accounts': 'قوانین حساب',
+    'tab.otp': 'ورود با پیامک',
+    'tab.app-versions': 'نسخه‌های برنامه',
+    'desc.countries': 'کشورهایی که بازیکن می‌تواند انتخاب کند و شماره‌اش را با پیش‌شماره‌ی آن‌ها وارد کند.',
+    'desc.app-versions': 'آخرین نسخه و کمترین نسخه‌ی مجاز هر پلتفرم. نسخه‌های قدیمی‌تر از کمترین نسخه باید به‌روز شوند.',
+    'desc.accounts': 'قانون‌های ساختن حساب. سرور همین‌ها را برای نام کاربری، رمز و نام نمایشی چک می‌کند.',
+    'desc.otp': 'آخرین درخواست‌های کد. خود کد هیچ‌جا نشان داده نمی‌شود.',
+    'new.countries': 'کشور تازه',
+    'edit.countries': 'ویرایش کشور',
+    'new.app-versions': 'نسخه‌ی تازه',
+    'edit.app-versions': 'ویرایش نسخه',
+    'empty.hint.countries': 'هنوز کشوری نساخته‌اید.',
+    'empty.hint.app-versions': 'برای هر پلتفرم یک ردیف بسازید تا بازی بتواند نسخه‌اش را چک کند.',
+    'empty.hint.otp': 'هنوز کسی کد ورود نخواسته است.',
+    'search.countries': 'جستجو در نام، کد یا پیش‌شماره',
+    'search.app-versions': 'جستجو در پلتفرم یا نسخه',
+    'search.otp': 'جستجوی شماره',
+    'col.country': 'کشور',
+    'col.dialCode': 'پیش‌شماره',
+    'col.platform': 'پلتفرم',
+    'col.latest': 'آخرین نسخه',
+    'col.minimum': 'کمترین نسخه',
+    'col.stores': 'فروشگاه‌ها',
+    'col.phone': 'شماره',
+    'col.player': 'بازیکن',
+    'ct.activated': '{name} فعال شد',
+    'ct.deactivated': '{name} غیرفعال شد',
+    'f.ct.code': 'کد کشور',
+    'f.ct.code.hint': 'دو حرف لاتین، مثل IR یا DE.',
+    'f.ct.dialCode': 'پیش‌شماره',
+    'f.ct.dialCode.hint': 'مثل ‎+98‎. ورود با پیامک فقط شماره‌های کشورهای فعال را می‌پذیرد.',
+    'f.ct.name': 'نام کشور',
+    'f.ct.flag': 'تصویر پرچم',
+    'f.ct.flag.hint': 'اگر خالی بماند، پرچم از روی کد کشور ساخته می‌شود.',
+    'f.ct.active.hint': 'کشورهای غیرفعال در بازی نشان داده نمی‌شوند.',
+    'f.ct.sort.hint': 'عدد کمتر، بالاتر در فهرست بازی می‌آید.',
+    'code.INVALID_COUNTRY_CODE': 'کد کشور دو حرف لاتین است، مثل IR.',
+    'code.INVALID_DIAL_CODE': 'پیش‌شماره با + و حداکثر پنج رقم است، مثل ‎+98‎.',
+    'code.COUNTRY_NOT_FOUND': 'این کشور پیدا نشد.',
+    'platform.android': 'اندروید',
+    'platform.ios': 'آی‌اواس',
+    'platform.web': 'وب',
+    'platform.windows': 'ویندوز',
+    'platform.macos': 'مک',
+    'platform.linux': 'لینوکس',
+    'store.google_play': 'گوگل‌پلی',
+    'store.app_store': 'اپ‌استور',
+    'store.bazaar': 'کافه‌بازار',
+    'store.myket': 'مایکت',
+    'store.microsoft_store': 'مایکروسافت استور',
+    'store.steam': 'استیم',
+    'store.web': 'وب‌سایت',
+    'store.direct': 'دانلود مستقیم',
+    'code.INVALID_VERSION': 'نسخه را با عدد و نقطه بنویسید، مثل 1.4.2.',
+    'code.VERSION_REQUIRED': 'آخرین نسخه را بنویسید.',
+    'code.MIN_ABOVE_LATEST': 'کمترین نسخه نمی‌تواند از آخرین نسخه تازه‌تر باشد.',
+    'code.DUPLICATE_STORE': 'هر فروشگاه فقط یک بار می‌آید.',
+    'code.INVALID_PLATFORM': 'این پلتفرم پشتیبانی نمی‌شود.',
+    'code.INVALID_STORE': 'این فروشگاه پشتیبانی نمی‌شود.',
+    'code.TOO_MANY_LINKS': 'حداکثر هشت لینک.',
+    'av.link.add': 'افزودن لینک فروشگاه',
+    'av.link.empty': 'هنوز لینکی نیست. بازیکن برای به‌روزرسانی به همین لینک‌ها می‌رود.',
+    'av.link.store': 'فروشگاه',
+    'av.link.url': 'لینک',
+    'av.link.label': 'نام نمایشی',
+    'av.link.hint': 'لینک https یا لینک خود فروشگاه (bazaar:// ، myket:// ، market://). نام نمایشی اختیاری است.',
+    'f.av.platform': 'پلتفرم',
+    'f.av.active.hint': 'خاموش باشد، بازی همیشه «همه‌چیز درست است» می‌گیرد.',
+    'f.av.latest': 'آخرین نسخه',
+    'f.av.latest.hint': 'نسخه‌های قدیمی‌تر پیام «نسخه‌ی تازه آمده» می‌گیرند.',
+    'f.av.min': 'کمترین نسخه',
+    'f.av.min.hint': 'نسخه‌های قدیمی‌تر از این باید به‌روز شوند (به‌روزرسانی اجباری).',
+    'f.av.stores': 'لینک فروشگاه‌ها',
+    'f.av.messages': 'پیام‌ها',
+    'f.av.updateMessage': 'پیام به‌روزرسانی',
+    'f.av.updateMessage.hint': 'وقتی نسخه‌ی تازه‌تری هست ولی اجباری نیست.',
+    'f.av.forceMessage': 'پیام به‌روزرسانی اجباری',
+    'f.av.forceMessage.hint': 'وقتی نسخه‌ی بازیکن از کمترین نسخه قدیمی‌تر است.',
+    'otp.status.pending': 'منتظر کد',
+    'otp.status.verified': 'وارد شد',
+    'otp.status.expired': 'منقضی',
+    'otp.status.failed': 'تلاش زیاد',
+    'otp.status.replaced': 'کد تازه آمد',
+    'otp.status.send_failed': 'ارسال نشد',
+    'otp.sandbox': 'آزمایشی',
+    'otp.recent': 'درخواست‌های اخیر',
+    'otp.code': 'کد',
+    'otp.limits': 'محدودیت‌ها',
+    'otp.message': 'متن پیامک',
+    'otp.provider.default': 'سرویس پیش‌فرض پیامک',
+    'otp.mode.off': 'ورود با پیامک خاموش است.',
+    'otp.mode.sandbox': 'حالت آزمایشی: پیامکی فرستاده نمی‌شود و کد فقط در لاگ سرور نوشته می‌شود.',
+    'otp.mode.noProvider': 'هیچ سرویس پیامک فعالی نیست؛ کد فرستاده نمی‌شود.',
+    'otp.mode.setup': 'تنظیم پیامک',
+    'otp.mode.live': 'کدها با {name} فرستاده می‌شوند.',
+    'f.otp.enabled': 'ورود با پیامک روشن باشد',
+    'f.otp.enabled.hint': 'خاموش باشد، بازی نمی‌تواند کد بخواهد.',
+    'f.otp.sandbox': 'حالت آزمایشی',
+    'f.otp.sandbox.hint': 'پیامک واقعی فرستاده نمی‌شود؛ کد در لاگ سرور نوشته می‌شود.',
+    'f.otp.provider': 'سرویس پیامک',
+    'f.otp.provider.hint': 'سرویس‌ها را در بخش پیامک اضافه کنید.',
+    'f.otp.codeLength': 'تعداد رقم کد',
+    'f.otp.codeLength.hint': 'بین ۴ تا ۸ رقم.',
+    'f.otp.ttl': 'اعتبار کد (ثانیه)',
+    'f.otp.ttl.hint': 'بعد از این زمان کد کار نمی‌کند.',
+    'f.otp.attempts': 'تعداد تلاش برای هر کد',
+    'f.otp.attempts.hint': 'بعد از این تعداد کد اشتباه، باید کد تازه خواست.',
+    'f.otp.resend': 'فاصله‌ی ارسال دوباره (ثانیه)',
+    'f.otp.resend.hint': 'بازیکن تا این زمان نمی‌تواند کد تازه بخواهد.',
+    'f.otp.phoneHourly': 'کد در ساعت برای هر شماره',
+    'f.otp.phoneDaily': 'کد در روز برای هر شماره',
+    'f.otp.ipHourly': 'کد در ساعت برای هر IP',
+    'f.otp.ipHourly.hint': 'جلوی ساختن انبوه کد از یک جا را می‌گیرد.',
+    'f.otp.message': 'متن پیامک',
+    'f.otp.message.hint': '{code} جای کد است و باید در هر زبان باشد. {minutes} زمان اعتبار و {app} نام برند است.',
+    'code.DAILY_BELOW_HOURLY': 'سقف روزانه نمی‌تواند از سقف ساعتی کمتر باشد.',
+    'code.OTP_MESSAGE_NEEDS_CODE': 'متن هر زبان باید {code} داشته باشد.',
+    'code.PROVIDER_NOT_SMS': 'یک سرویس پیامک انتخاب کنید.',
+    'code.INVALID_RULE': 'این عدد مجاز نیست.',
+    'ar.username': 'نام کاربری',
+    'ar.password': 'رمز',
+    'ar.display': 'نام نمایشی',
+    'f.ar.usernameMin': 'کمترین طول',
+    'f.ar.usernameMax': 'بیشترین طول',
+    'f.ar.charset': 'حروف مجاز',
+    'f.ar.charset.hint': 'با «فقط لاتین» فقط A تا Z، رقم و _ . - پذیرفته می‌شود.',
+    'ar.charset.any': 'هر حرفی (فارسی هم)',
+    'ar.charset.latin': 'فقط لاتین',
+    'f.ar.passwordMin': 'کمترین طول رمز',
+    'f.ar.passwordMin.hint': 'نکاما رمز کمتر از ۸ حرف را نمی‌پذیرد.',
+    'f.ar.passwordLetter': 'رمز حرف داشته باشد',
+    'f.ar.passwordDigit': 'رمز عدد داشته باشد',
+    'f.ar.displayNameMax': 'بیشترین طول نام نمایشی',
+    'code.MAX_BELOW_MIN': 'بیشترین طول نمی‌تواند از کمترین طول کمتر باشد.',
+    'ar.try': 'امتحان کنید',
+    'ar.try.hint': 'یک نام کاربری و رمز بنویسید تا ببینید با همین عددهای فرم پذیرفته می‌شود یا نه.',
+    'ar.try.username': 'نام کاربری نمونه',
+    'ar.try.password': 'رمز نمونه',
+    'ar.try.ok': 'پذیرفته می‌شود.',
+    'code.USERNAME_TOO_SHORT': 'نام کاربری دست‌کم {n} حرف است.',
+    'code.USERNAME_TOO_LONG': 'نام کاربری حداکثر {n} حرف است.',
+    'code.USERNAME_INVALID_CHARACTERS': 'نام کاربری فقط حرف لاتین، رقم و _ . - دارد.',
+    'code.PASSWORD_TOO_SHORT': 'رمز دست‌کم {n} حرف است.',
+    'code.PASSWORD_NEEDS_LETTER': 'رمز باید حرف داشته باشد.',
+    'code.PASSWORD_NEEDS_DIGIT': 'رمز باید عدد داشته باشد.'
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -1575,7 +1721,153 @@ var MESSAGES = {
     'setup.open': 'Open the guide',
     'setup.progress': '{n} of {total} steps',
     'setup.meta.opened': 'First opened',
-    'setup.meta.completed': 'Completed'
+    'setup.meta.completed': 'Completed',
+    'tab.countries': 'Countries',
+    'tab.accounts': 'Account rules',
+    'tab.otp': 'SMS login',
+    'tab.app-versions': 'App versions',
+    'desc.countries': 'Countries players can pick, and whose dialling codes they can use to sign in.',
+    'desc.app-versions': 'The latest and the lowest allowed version per platform. Anything older than the lowest version must update.',
+    'desc.accounts': 'Rules for new accounts. The server checks usernames, passwords and display names against them.',
+    'desc.otp': 'Latest code requests. The code itself is never shown.',
+    'new.countries': 'New country',
+    'edit.countries': 'Edit country',
+    'new.app-versions': 'New version',
+    'edit.app-versions': 'Edit version',
+    'empty.hint.countries': 'No countries yet.',
+    'empty.hint.app-versions': 'Add one row per platform so the game can check its version.',
+    'empty.hint.otp': 'Nobody has asked for a login code yet.',
+    'search.countries': 'Search name, code or dialling code',
+    'search.app-versions': 'Search platform or version',
+    'search.otp': 'Search number',
+    'col.country': 'Country',
+    'col.dialCode': 'Dialling code',
+    'col.platform': 'Platform',
+    'col.latest': 'Latest',
+    'col.minimum': 'Lowest allowed',
+    'col.stores': 'Stores',
+    'col.phone': 'Number',
+    'col.player': 'Player',
+    'ct.activated': '{name} turned on',
+    'ct.deactivated': '{name} turned off',
+    'f.ct.code': 'Country code',
+    'f.ct.code.hint': 'Two Latin letters, like IR or DE.',
+    'f.ct.dialCode': 'Dialling code',
+    'f.ct.dialCode.hint': 'Like +98. SMS login only accepts numbers from active countries.',
+    'f.ct.name': 'Country name',
+    'f.ct.flag': 'Flag image',
+    'f.ct.flag.hint': 'Leave empty to use the flag made from the country code.',
+    'f.ct.active.hint': 'Inactive countries are hidden in the game.',
+    'f.ct.sort.hint': 'Lower numbers show first in the game list.',
+    'code.INVALID_COUNTRY_CODE': 'A country code is two Latin letters, like IR.',
+    'code.INVALID_DIAL_CODE': 'A dialling code is + and up to five digits, like +98.',
+    'code.COUNTRY_NOT_FOUND': 'This country was not found.',
+    'platform.android': 'Android',
+    'platform.ios': 'iOS',
+    'platform.web': 'Web',
+    'platform.windows': 'Windows',
+    'platform.macos': 'macOS',
+    'platform.linux': 'Linux',
+    'store.google_play': 'Google Play',
+    'store.app_store': 'App Store',
+    'store.bazaar': 'Cafe Bazaar',
+    'store.myket': 'Myket',
+    'store.microsoft_store': 'Microsoft Store',
+    'store.steam': 'Steam',
+    'store.web': 'Website',
+    'store.direct': 'Direct download',
+    'code.INVALID_VERSION': 'Write the version with numbers and dots, like 1.4.2.',
+    'code.VERSION_REQUIRED': 'Enter the latest version.',
+    'code.MIN_ABOVE_LATEST': 'The lowest version cannot be newer than the latest one.',
+    'code.DUPLICATE_STORE': 'Each store can be listed once.',
+    'code.INVALID_PLATFORM': 'This platform is not supported.',
+    'code.INVALID_STORE': 'This store is not supported.',
+    'code.TOO_MANY_LINKS': 'At most eight links.',
+    'av.link.add': 'Add store link',
+    'av.link.empty': 'No links yet. Players go to these links to update.',
+    'av.link.store': 'Store',
+    'av.link.url': 'Link',
+    'av.link.label': 'Display name',
+    'av.link.hint': 'An https link or the store\'s own link (bazaar://, myket://, market://). The display name is optional.',
+    'f.av.platform': 'Platform',
+    'f.av.active.hint': 'When off, the game always gets "all good".',
+    'f.av.latest': 'Latest version',
+    'f.av.latest.hint': 'Older versions get the "update available" message.',
+    'f.av.min': 'Lowest allowed version',
+    'f.av.min.hint': 'Versions older than this must update (forced update).',
+    'f.av.stores': 'Store links',
+    'f.av.messages': 'Messages',
+    'f.av.updateMessage': 'Update message',
+    'f.av.updateMessage.hint': 'When a newer version exists but updating is optional.',
+    'f.av.forceMessage': 'Forced update message',
+    'f.av.forceMessage.hint': 'When the player\'s version is older than the lowest allowed one.',
+    'otp.status.pending': 'Waiting',
+    'otp.status.verified': 'Signed in',
+    'otp.status.expired': 'Expired',
+    'otp.status.failed': 'Too many tries',
+    'otp.status.replaced': 'Replaced',
+    'otp.status.send_failed': 'Not sent',
+    'otp.sandbox': 'Sandbox',
+    'otp.recent': 'Recent requests',
+    'otp.code': 'Code',
+    'otp.limits': 'Limits',
+    'otp.message': 'SMS text',
+    'otp.provider.default': 'Default SMS service',
+    'otp.mode.off': 'SMS login is off.',
+    'otp.mode.sandbox': 'Sandbox: no SMS is sent; the code is only written to the server log.',
+    'otp.mode.noProvider': 'No active SMS service; codes cannot be sent.',
+    'otp.mode.setup': 'Set up SMS',
+    'otp.mode.live': 'Codes are sent with {name}.',
+    'f.otp.enabled': 'SMS login is on',
+    'f.otp.enabled.hint': 'When off, the game cannot ask for codes.',
+    'f.otp.sandbox': 'Sandbox',
+    'f.otp.sandbox.hint': 'No real SMS is sent; the code goes to the server log.',
+    'f.otp.provider': 'SMS service',
+    'f.otp.provider.hint': 'Add services in the SMS section.',
+    'f.otp.codeLength': 'Code digits',
+    'f.otp.codeLength.hint': 'Between 4 and 8.',
+    'f.otp.ttl': 'Code lifetime (seconds)',
+    'f.otp.ttl.hint': 'After this the code stops working.',
+    'f.otp.attempts': 'Tries per code',
+    'f.otp.attempts.hint': 'After this many wrong codes, a new code is needed.',
+    'f.otp.resend': 'Wait before resending (seconds)',
+    'f.otp.resend.hint': 'The player cannot ask for a new code before this.',
+    'f.otp.phoneHourly': 'Codes per number per hour',
+    'f.otp.phoneDaily': 'Codes per number per day',
+    'f.otp.ipHourly': 'Codes per IP per hour',
+    'f.otp.ipHourly.hint': 'Stops one place from asking for many codes.',
+    'f.otp.message': 'SMS text',
+    'f.otp.message.hint': '{code} is the code and must be in every language. {minutes} is the lifetime and {app} the brand name.',
+    'code.DAILY_BELOW_HOURLY': 'The daily limit cannot be lower than the hourly limit.',
+    'code.OTP_MESSAGE_NEEDS_CODE': 'Every language must contain {code}.',
+    'code.PROVIDER_NOT_SMS': 'Choose an SMS service.',
+    'code.INVALID_RULE': 'This number is not allowed.',
+    'ar.username': 'Username',
+    'ar.password': 'Password',
+    'ar.display': 'Display name',
+    'f.ar.usernameMin': 'Minimum length',
+    'f.ar.usernameMax': 'Maximum length',
+    'f.ar.charset': 'Allowed letters',
+    'f.ar.charset.hint': 'With "Latin only", only A to Z, digits and _ . - are accepted.',
+    'ar.charset.any': 'Any letters (Persian too)',
+    'ar.charset.latin': 'Latin only',
+    'f.ar.passwordMin': 'Minimum password length',
+    'f.ar.passwordMin.hint': 'Nakama never accepts passwords shorter than 8.',
+    'f.ar.passwordLetter': 'Password needs a letter',
+    'f.ar.passwordDigit': 'Password needs a digit',
+    'f.ar.displayNameMax': 'Maximum display name length',
+    'code.MAX_BELOW_MIN': 'The maximum cannot be lower than the minimum.',
+    'ar.try': 'Try it',
+    'ar.try.hint': 'Type a username and a password to see if the numbers in this form accept them.',
+    'ar.try.username': 'Sample username',
+    'ar.try.password': 'Sample password',
+    'ar.try.ok': 'Accepted.',
+    'code.USERNAME_TOO_SHORT': 'The username needs at least {n} letters.',
+    'code.USERNAME_TOO_LONG': 'The username can have at most {n} letters.',
+    'code.USERNAME_INVALID_CHARACTERS': 'The username can only have Latin letters, digits and _ . -',
+    'code.PASSWORD_TOO_SHORT': 'The password needs at least {n} characters.',
+    'code.PASSWORD_NEEDS_LETTER': 'The password needs a letter.',
+    'code.PASSWORD_NEEDS_DIGIT': 'The password needs a digit.'
   }
 };
 
@@ -1894,7 +2186,10 @@ var ICONS = {
   flask: '<path d="M9 3h6M10 3v6.5L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9.5V3"/><path d="M7 15h10"/>',
   image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
   gear: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
-  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/>'
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/>',
+  flag: '<path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.3 2a6 6 0 0 0 4.1-1.6.5.5 0 0 1 .6.4V14a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.5"/>',
+  phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/><path d="M9.5 9.5l1.5 1.5 3.5-3.5"/>',
+  versions: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 7v7M9 11l3 3 3-3M10 18h4"/>'
 };
 var MIRROR = { first: 1, prev: 1, next: 1, back: 1, reply: 1 };
 
@@ -2110,7 +2405,7 @@ function tabFrame(desc, actions) {
 }
 
 function notice(kind, text, action) {
-  var color = kind === 'error' ? 'error' : kind === 'success' ? 'success' : 'secondary';
+  var color = kind === 'error' ? 'error' : kind === 'success' ? 'success' : kind === 'warning' ? 'warning' : 'secondary';
   return h('div', { class: 'eco-notice eco-notice--' + color + ' flex items-center gap-2 rounded-md px-3 py-2 text-sm', role: kind === 'error' ? 'alert' : 'status' },
     icon(kind === 'success' ? 'check' : 'alert', 'h-4 w-4'),
     h('span', { class: 'flex-1', text: text }),
@@ -3074,7 +3369,7 @@ function buildForm(fields, values, ctx) {
     } else if (t2 === 'bool') {
       control = toggle(cur, f.inline ? label : null, function (v) { change(v); });
     } else if (t2 === 'select') {
-      control = selectInput(cur, f.options(), function (v) { change(v || null); }, { label: label, placeholder: f.required ? false : t('none') });
+      control = selectInput(cur, f.options(), function (v) { change(f.noPlaceholder ? v : v || null); }, { label: label, placeholder: f.required || f.noPlaceholder ? false : t('none') });
       if (f.required && (cur == null || cur === '')) { setPath(values, f.name, f.options()[0].value); }
     } else if (t2 === 'multi') {
       var set = (cur || []).slice();
@@ -3113,6 +3408,8 @@ function buildForm(fields, values, ctx) {
       control = markdownInput(cur, { ltr: f.ltr, rows: f.rows, max: f.max, label: label, oninput: function (v) { change(v); } });
     } else if (t2 === 'actions') {
       control = actionsEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
+    } else if (t2 === 'links') {
+      control = storeLinksEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
     } else if (t2 === 'static') {
       control = h('div', { class: 'py-2 text-secondary-700 dark:text-secondary-200' }, f.render(values));
     }
@@ -3159,7 +3456,7 @@ function buildForm(fields, values, ctx) {
         if (n === null) { if (f.required) msg = t('err.required'); setPath(values, f.name, null); }
         else if (isNaN(n) || (f.min !== undefined && n < f.min) || (f.max !== undefined && n > f.max)) msg = t('err.number');
         else setPath(values, f.name, n);
-      } else if (t2 === 'items' || t2 === 'actions') {
+      } else if (t2 === 'items' || t2 === 'actions' || t2 === 'links') {
         msg = e.control.validate();
       } else if (t2 === 'i18n') {
         var hit = trCheck(v, f);
@@ -3212,6 +3509,7 @@ function buildForm(fields, values, ctx) {
       if (!visible) v = f.empty !== undefined ? f.empty : null;
       if (f.type === 'actions' && Array.isArray(v)) v = v.map(function (r) { return { type: r.type, value: r.value, label: trClean(r.label) }; });
       if (f.type === 'i18n') v = trClean(v);
+      if (f.type === 'links' && Array.isArray(v)) v = v.map(function (r) { return { store: r.store, url: r.url, label: trClean(r.label) }; });
       if (f.type === 'items' && Array.isArray(v)) v = v.map(function (r) { return { type: r.type, key: r.key, action: r.action, value: r.value }; });
       setPath(out, f.name, v === undefined ? null : v);
     });
@@ -3679,8 +3977,9 @@ function sectionOf(page) {
 }
 
 function apiFor(page) {
-  var def = RESOURCES[page];
+  var def = RESOURCES[page] || LISTS[page];
   if (def && def.api === 'base') return baseApi;
+  if (def && def.api === 'publication') return pubApi;
   var sec = sectionOf(page);
   return sec === 'publication' ? pubApi : api;
 }
@@ -5092,6 +5391,445 @@ function providersPage(container, channel) {
   load();
 }
 
+var APP_PLATFORMS = ['android', 'ios', 'web', 'windows', 'macos', 'linux'];
+var APP_STORES = ['google_play', 'app_store', 'bazaar', 'myket', 'microsoft_store', 'steam', 'web', 'direct'];
+var VERSION_RE = /^v?\d{1,9}(\.\d{1,9}){0,3}([-+][0-9A-Za-z.-]{1,40})?$/;
+var STORE_URL_RE = /^(https?|market|bazaar|myket|itms-apps):\/\/\S+$/i;
+var COUNTRY_RE = /^[A-Za-z]{2}$/;
+var OTP_STATUS_COLOR = { pending: 'primary', verified: 'success', expired: 'secondary', failed: 'error', replaced: 'secondary', send_failed: 'error' };
+
+function flagOf(code) {
+  code = String(code || '').toUpperCase();
+  if (!/^[A-Z]{2}$/.test(code)) return '';
+  return String.fromCodePoint(code.charCodeAt(0) - 65 + 0x1F1E6, code.charCodeAt(1) - 65 + 0x1F1E6);
+}
+
+function flagBox(it) {
+  var box = h('div', { class: 'eco-flag', 'aria-hidden': 'true' });
+  if (it.flagUrl) box.appendChild(img(it.flagUrl, 'flag'));
+  else box.appendChild(h('span', { text: it.flag || flagOf(it.code) }));
+  return box;
+}
+
+function countryCell(it) {
+  return h('div', { class: 'flex items-center gap-3 min-w-0' }, flagBox(it),
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'font-medium truncate', text: i18nText(it.name) || it.code }),
+      h('div', { class: 'text-secondary-500' }, mono(it.code))));
+}
+
+function countryBody(it, patch) {
+  return Object.assign({ name: trClean(it.name || {}), dialCode: it.dialCode || '', flagUrl: it.flagUrl || '', isActive: !!it.isActive, sort: it.sort == null ? 100 : it.sort }, patch || {});
+}
+
+function countryActive(it) {
+  var box = h('div', { class: 'flex items-center gap-2', 'data-country-toggle': it.code });
+  var label = h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: it.isActive ? t('active') : t('inactive') });
+  var sw = toggle(it.isActive, null, function (on) {
+    baseApi('PUT', '/countries/' + encodeURIComponent(it.code), countryBody(it, { isActive: on })).then(function () {
+      it.isActive = on;
+      label.textContent = on ? t('active') : t('inactive');
+      toast('success', t(on ? 'ct.activated' : 'ct.deactivated', { name: i18nText(it.name) || it.code }));
+    }, function (err) {
+      sw.set(!on);
+      toast('error', errorText(err));
+    });
+  }, 'sm');
+  sw.setAttribute('aria-label', t('f.isActive') + ': ' + (i18nText(it.name) || it.code));
+  box.appendChild(sw);
+  box.appendChild(label);
+  return box;
+}
+
+function providerName(kind) {
+  return has('pv.kind.' + kind) ? t('pv.kind.' + kind) : kind;
+}
+
+function platformLabel(p) {
+  return has('platform.' + p) ? t('platform.' + p) : p;
+}
+
+function storeLabel(s) {
+  return has('store.' + s) ? t('store.' + s) : s;
+}
+
+function versionCell(v) {
+  return v ? h('span', { class: 'font-mono text-sm', dir: 'ltr', text: v }) : h('span', { class: 'text-secondary-400', text: t('none') });
+}
+
+function versionCheck(v) {
+  return v && !VERSION_RE.test(String(v).trim()) ? t('code.INVALID_VERSION') : null;
+}
+
+function versionParts(v) {
+  var s = String(v || '').trim().replace(/^v/, '');
+  var pre = '';
+  var m = /^([0-9.]+)(?:-([0-9A-Za-z.-]+))?/.exec(s);
+  if (!m) return null;
+  pre = m[2] || '';
+  return { nums: m[1].split('.').map(Number), pre: pre };
+}
+
+function compareVersions(a, b) {
+  var x = versionParts(a);
+  var y = versionParts(b);
+  if (!x || !y) return 0;
+  for (var i = 0; i < 4; i++) {
+    var p = x.nums[i] || 0;
+    var q = y.nums[i] || 0;
+    if (p !== q) return p < q ? -1 : 1;
+  }
+  if (x.pre === y.pre) return 0;
+  if (!x.pre) return 1;
+  if (!y.pre) return -1;
+  return x.pre < y.pre ? -1 : 1;
+}
+
+function storeLinksEditor(value, onchange) {
+  var rows = (value || []).map(function (r) { return { store: r.store || 'web', url: r.url || '', label: trValue(r.label) }; });
+  var listEl = h('div', { class: 'flex flex-col gap-2' });
+  var errors = [];
+  function emit() { onchange(rows.map(function (r) { return { store: r.store, url: r.url, label: Object.assign({}, r.label) }; })); }
+  var add = button({ variant: 'link', size: 'sm', icon: 'plus', label: t('av.link.add'), onclick: function () {
+    var used = rows.map(function (r) { return r.store; });
+    var next = APP_STORES.filter(function (s) { return used.indexOf(s) === -1; })[0] || 'web';
+    rows.push({ store: next, url: '', label: {} });
+    render();
+    emit();
+    var inputs = listEl.querySelectorAll('[data-link-url]');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  } });
+  function render() {
+    clear(listEl);
+    errors = [];
+    add.hidden = rows.length >= 8;
+    if (!rows.length) listEl.appendChild(h('div', { class: 'text-sm text-secondary-500 dark:text-secondary-400 border border-dashed border-secondary-300 dark:border-secondary-700 rounded-md px-3 py-4 text-center', text: t('av.link.empty') }));
+    rows.forEach(function (row, idx) {
+      var cell = function (labelKey, ctl) {
+        return h('div', { class: 'min-w-0' }, h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t(labelKey) }), ctl);
+      };
+      var storeSel = selectInput(row.store, APP_STORES.map(function (s) { return { value: s, label: storeLabel(s) }; }), function (v) { row.store = v; emit(); }, { placeholder: false, label: t('av.link.store') });
+      var url = textInput(row.url, { ltr: true, mono: true, label: t('av.link.url'), placeholder: 'https://', oninput: function (v) { row.url = v.trim(); emit(); } });
+      url.setAttribute('data-link-url', '');
+      var label = translatedInput(row.label, { label: t('av.link.label'), oninput: function (v) { row.label = v; emit(); } });
+      var err = h('p', { class: 'text-xs text-error-600 dark:text-error-400 eco-items-err', hidden: true });
+      errors.push({ row: row, el: err, label: label });
+      listEl.appendChild(h('div', { class: 'border border-secondary-200 dark:border-secondary-700 rounded-md p-3', 'data-store-row': '' },
+        h('div', { class: 'eco-actions-row' },
+          cell('av.link.store', storeSel),
+          cell('av.link.url', url),
+          h('div', { class: 'min-w-0 eco-actions-label' }, h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('av.link.label') }), label),
+          h('div', { class: 'eco-items-remove' }, button({ variant: 'danger', size: 'iconLg', icon: 'trash', title: t('remove'), onclick: function () { rows.splice(idx, 1); render(); emit(); } }))),
+        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1.5', text: t('av.link.hint') }),
+        err));
+    });
+  }
+  render();
+  var el = h('div', {}, listEl, h('div', { class: 'mt-2' }, add));
+  el.validate = function () {
+    var bad = false;
+    var seen = {};
+    errors.forEach(function (e) {
+      var r = e.row;
+      var msg = '';
+      var hit = trCheck(r.label, { max: 64 });
+      if (!r.url) msg = t('av.link.url') + ': ' + t('err.required');
+      else if (!STORE_URL_RE.test(r.url)) msg = t('code.INVALID_URL');
+      else if (seen[r.store]) msg = t('code.DUPLICATE_STORE');
+      else if (hit) msg = t('av.link.label') + ': ' + t('code.' + hit.code, { lang: langName(hit.lang) });
+      seen[r.store] = true;
+      e.el.textContent = msg;
+      e.el.hidden = !msg;
+      e.el.parentElement.classList.toggle('eco-row-invalid', !!msg);
+      e.label.markLang(hit ? hit.lang : null);
+      if (msg) bad = true;
+    });
+    return bad ? t('err.form') : null;
+  };
+  return el;
+}
+
+RESOURCES.countries = {
+  api: 'base',
+  filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
+  columns: [
+    { label: 'col.country', render: countryCell, skeleton: '60%' },
+    { label: 'col.dialCode', render: function (it) { return it.dialCode ? h('span', { class: 'font-mono text-sm tabular-nums', dir: 'ltr', text: it.dialCode }) : h('span', { class: 'text-secondary-400', text: t('none') }); }, width: 130 },
+    { label: 'col.status', render: countryActive, width: 150 },
+    { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 90 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'code', type: 'key', label: 'f.ct.code', hint: 'f.ct.code.hint', required: true, keyRe: COUNTRY_RE, keyErr: 'code.INVALID_COUNTRY_CODE', lockOnEdit: true },
+      { name: 'dialCode', type: 'text', ltr: true, label: 'f.ct.dialCode', hint: 'f.ct.dialCode.hint', optional: true, check: function (v) { return v && !/^\+?[1-9][0-9]{0,4}$/.test(String(v).trim()) ? t('code.INVALID_DIAL_CODE') : null; } }
+    ] },
+    tr('name', { label: 'f.ct.name', required: true, max: 100 }),
+    { name: 'flagUrl', type: 'image', label: 'f.ct.flag', hint: 'f.ct.flag.hint', optional: true },
+    { type: 'row', fields: [
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.ct.active.hint' },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.ct.sort.hint' }
+    ] }
+  ],
+  defaults: function () { return { code: '', name: {}, dialCode: '', flagUrl: '', isActive: true, sort: 100 }; },
+  fixPayload: function (p) {
+    p.code = String(p.code || '').trim().toUpperCase();
+    p.dialCode = String(p.dialCode || '').trim();
+    if (p.dialCode && p.dialCode[0] !== '+') p.dialCode = '+' + p.dialCode;
+    if (!p.flagUrl) p.flagUrl = '';
+    if (p.sort == null) p.sort = 100;
+    return p;
+  }
+};
+
+RESOURCES['app-versions'] = {
+  api: 'base',
+  filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
+  columns: [
+    { label: 'col.platform', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium', text: platformLabel(it.platform) }), h('div', { class: 'text-secondary-500' }, mono(it.platform))); }, skeleton: '45%' },
+    { label: 'col.latest', render: function (it) { return versionCell(it.latestVersion); }, width: 130 },
+    { label: 'col.minimum', render: function (it) { return versionCell(it.minVersion); }, width: 130 },
+    { label: 'col.stores', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, (it.storeLinks || []).map(function (l) { return tag(i18nText(l.label) || storeLabel(l.store), 'secondary'); })); }, skeleton: '40%' },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'platform', type: 'select', label: 'f.av.platform', required: true, options: function () { return APP_PLATFORMS.map(function (p) { return { value: p, label: platformLabel(p) }; }); } },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.av.active.hint' }
+    ] },
+    { type: 'row', fields: [
+      { name: 'latestVersion', type: 'text', ltr: true, label: 'f.av.latest', hint: 'f.av.latest.hint', required: true, check: versionCheck },
+      { name: 'minVersion', type: 'text', ltr: true, label: 'f.av.min', hint: 'f.av.min.hint', optional: true, check: function (v, vals) {
+        var bad = versionCheck(v);
+        if (bad) return bad;
+        if (v && vals.latestVersion && VERSION_RE.test(vals.latestVersion) && compareVersions(v, vals.latestVersion) > 0) return t('code.MIN_ABOVE_LATEST');
+        return null;
+      } }
+    ] },
+    { type: 'heading', label: 'f.av.stores' },
+    { name: 'storeLinks', type: 'links', empty: [] },
+    { type: 'heading', label: 'f.av.messages' },
+    tr('updateMessage', { label: 'f.av.updateMessage', hint: 'f.av.updateMessage.hint', multiline: true, rows: 2, max: 500, optional: true }),
+    tr('forceMessage', { label: 'f.av.forceMessage', hint: 'f.av.forceMessage.hint', multiline: true, rows: 2, max: 500, optional: true })
+  ],
+  defaults: function () { return { platform: 'android', latestVersion: '1.0.0', minVersion: '', storeLinks: [], updateMessage: {}, forceMessage: {}, isActive: true }; },
+  fixPayload: function (p) {
+    p.latestVersion = String(p.latestVersion || '').trim();
+    p.minVersion = String(p.minVersion || '').trim();
+    p.storeLinks = p.storeLinks || [];
+    return p;
+  }
+};
+
+LISTS.otp = {
+  api: 'publication',
+  noRow: true,
+  filters: [{ name: 'status', label: 'filter.status', options: function () { return ['pending', 'verified', 'expired', 'failed', 'replaced', 'send_failed'].map(function (s) { return { value: s, label: t('otp.status.' + s) }; }); } }],
+  columns: [
+    { label: 'col.phone', render: function (it) { return h('span', { class: 'font-mono text-sm tabular-nums', dir: 'ltr', text: it.phone }); }, skeleton: '40%' },
+    { label: 'col.status', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, tag(t('otp.status.' + it.status), OTP_STATUS_COLOR[it.status]), it.sandbox ? tag(t('otp.sandbox'), 'warning') : tag(providerName(it.provider), 'secondary')); }, width: 200 },
+    { label: 'col.attempts', render: function (it) { return h('span', { class: 'tabular-nums whitespace-nowrap', text: fmtNum(it.attempts || 0) + ' / ' + fmtNum(it.maxAttempts || 0) }); }, width: 110 },
+    { label: 'col.player', render: function (it) { return it.userId ? h('a', { href: '#/players/' + encodeURIComponent(it.userId), class: 'eco-link truncate', text: it.username || it.userId }) : h('span', { class: 'text-secondary-400', text: t('none') }); }, skeleton: '30%' },
+    { label: 'col.created', render: function (it) { return dateCell(it.createdAt); }, width: 180 }
+  ]
+};
+
+function apiPage(call, path, title, fields, opts) {
+  opts = opts || {};
+  var box = card(h('div', { class: 'p-4 md:p-6' }, formSkeleton({ fields: typeof fields === 'function' ? fields({}) : fields })));
+  box.setAttribute('data-settings-form', opts.id || '');
+  var body = box.firstChild;
+  var api2 = {};
+  function load() {
+    Promise.all([call('GET', path), freshLanguages()]).then(function (all) {
+      if (!box.isConnected) return;
+      paint(all[0] || {});
+    }, function (err) { clear(body).appendChild(errorBlock(err, load)); });
+  }
+  function paint(data) {
+    var values = clone(data) || {};
+    var top = h('div', {});
+    var extra = h('div', {});
+    var form = buildForm(typeof fields === 'function' ? fields(values) : fields, values, { onchange: function (v) { if (opts.onchange) opts.onchange(v, extra); } });
+    var lead = form.el.firstElementChild;
+    if (lead && lead.classList.contains('border-t')) lead.classList.add('eco-flush');
+    var saveBtn = button({ variant: 'primary', size: 'sm', label: t('save'), onclick: function () { save(); } });
+    saveBtn.setAttribute('data-settings-save', '');
+    clear(body).appendChild(h('form', { novalidate: true, onsubmit: function (e) { e.preventDefault(); save(); } },
+      title ? h('h2', { class: 'text-lg font-medium mb-1', text: t(title) }) : null,
+      opts.desc ? h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 mb-4', text: t(opts.desc) }) : null,
+      top, form.el, extra,
+      h('div', { class: 'flex justify-end pt-2' }, saveBtn),
+      h('button', { type: 'submit', hidden: true })));
+    if (opts.onchange) opts.onchange(values, extra);
+    function save() {
+      clear(top);
+      if (!form.validate()) return;
+      var payload = form.payload();
+      if (opts.fixPayload) payload = opts.fixPayload(payload);
+      setBusy(saveBtn, true, t('saving'));
+      call('PUT', path, payload).then(function (res) {
+        toast('success', t('saved'));
+        paint(res || payload);
+        if (opts.afterSave) opts.afterSave(res);
+      }, function (err) {
+        setBusy(saveBtn, false);
+        if (!form.showServerError(err)) {
+          clear(top).appendChild(h('div', { class: 'mb-5' }, notice('error', errorText(err))));
+          top.scrollIntoView({ block: 'start' });
+        }
+      });
+    }
+  }
+  api2.el = box;
+  api2.load = load;
+  return api2;
+}
+
+var RULE_FIELDS = [
+  { type: 'heading', label: 'ar.username' },
+  { type: 'row', fields: [
+    { name: 'usernameMin', type: 'number', label: 'f.ar.usernameMin', required: true, min: 1, max: 128 },
+    { name: 'usernameMax', type: 'number', label: 'f.ar.usernameMax', required: true, min: 1, max: 128, check: function (v, vals) { return v != null && vals.usernameMin != null && Number(v) < Number(vals.usernameMin) ? t('code.MAX_BELOW_MIN') : null; } }
+  ] },
+  { name: 'usernameCharset', type: 'select', label: 'f.ar.charset', hint: 'f.ar.charset.hint', required: true, options: function () { return [{ value: 'any', label: t('ar.charset.any') }, { value: 'latin', label: t('ar.charset.latin') }]; } },
+  { type: 'heading', label: 'ar.password' },
+  { name: 'passwordMin', type: 'number', label: 'f.ar.passwordMin', hint: 'f.ar.passwordMin.hint', required: true, min: 8, max: 128 },
+  { type: 'row', fields: [
+    { name: 'passwordLetter', type: 'bool', inline: true, label: 'f.ar.passwordLetter' },
+    { name: 'passwordDigit', type: 'bool', inline: true, label: 'f.ar.passwordDigit' }
+  ] },
+  { type: 'heading', label: 'ar.display' },
+  { name: 'displayNameMax', type: 'number', label: 'f.ar.displayNameMax', required: true, min: 1, max: 255 }
+];
+
+function ruleProblems(r, username, password) {
+  var out = [];
+  var n = Array.from(username || '').length;
+  if (username) {
+    if (n < r.usernameMin) out.push(t('code.USERNAME_TOO_SHORT', { n: r.usernameMin }));
+    else if (n > r.usernameMax) out.push(t('code.USERNAME_TOO_LONG', { n: r.usernameMax }));
+    else if (r.usernameCharset === 'latin' && !/^[A-Za-z0-9_.-]+$/.test(username)) out.push(t('code.USERNAME_INVALID_CHARACTERS'));
+  }
+  if (password) {
+    if (Array.from(password).length < r.passwordMin) out.push(t('code.PASSWORD_TOO_SHORT', { n: r.passwordMin }));
+    else if (r.passwordLetter && !/\p{L}/u.test(password)) out.push(t('code.PASSWORD_NEEDS_LETTER'));
+    else if (r.passwordDigit && !/\p{Nd}/u.test(password)) out.push(t('code.PASSWORD_NEEDS_DIGIT'));
+  }
+  return out;
+}
+
+function rulesTry(extra, values) {
+  if (!extra.__try) {
+    var result = h('div', { class: 'flex flex-col gap-1 text-sm', 'aria-live': 'polite', 'data-rules-result': '' });
+    var user = textInput('', { label: t('ar.try.username'), placeholder: t('ar.try.username') });
+    var pass = textInput('', { ltr: true, label: t('ar.try.password'), placeholder: t('ar.try.password') });
+    user.setAttribute('data-rules-try', 'username');
+    pass.setAttribute('data-rules-try', 'password');
+    extra.__try = { result: result, user: user, pass: pass };
+    var paintTry = function () { rulesPaint(extra); };
+    user.addEventListener('input', paintTry);
+    pass.addEventListener('input', paintTry);
+    extra.appendChild(h('div', { class: 'eco-try mt-2 mb-4 rounded-md border border-secondary-200 dark:border-secondary-700 p-4' },
+      h('div', { class: 'text-sm font-semibold text-secondary-800 dark:text-secondary-200 mb-1', text: t('ar.try') }),
+      h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: t('ar.try.hint') }),
+      h('div', { class: 'eco-form-row' }, field(t('ar.try.username'), user), field(t('ar.try.password'), pass)),
+      result));
+  }
+  extra.__rules = values;
+  rulesPaint(extra);
+}
+
+function rulesPaint(extra) {
+  var tr2 = extra.__try;
+  var v = extra.__rules || {};
+  var r = { usernameMin: Number(toLatinDigits(String(v.usernameMin == null ? 1 : v.usernameMin))) || 1, usernameMax: Number(toLatinDigits(String(v.usernameMax == null ? 128 : v.usernameMax))) || 128,
+    usernameCharset: v.usernameCharset || 'any', passwordMin: Number(toLatinDigits(String(v.passwordMin == null ? 8 : v.passwordMin))) || 8, passwordLetter: !!v.passwordLetter, passwordDigit: !!v.passwordDigit };
+  clear(tr2.result);
+  if (!tr2.user.value && !tr2.pass.value) return;
+  var problems = ruleProblems(r, tr2.user.value.trim(), tr2.pass.value);
+  if (!problems.length) tr2.result.appendChild(h('span', { class: 'eco-text-success inline-flex items-center gap-1.5', 'data-rules-ok': '' }, icon('check', 'h-4 w-4'), h('span', { text: t('ar.try.ok') })));
+  problems.forEach(function (p) { tr2.result.appendChild(h('span', { class: 'eco-text-error inline-flex items-center gap-1.5', 'data-rules-bad': '' }, icon('alert', 'h-4 w-4'), h('span', { text: p }))); });
+}
+
+function accountRulesPage(container) {
+  var frame = tabFrame(t('desc.accounts'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(baseApi, '/account-rules', null, RULE_FIELDS, { id: 'accounts', onchange: function (v, extra) { rulesTry(extra, v); } });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
+function otpModeNotice(v, providers) {
+  var list = providers || [];
+  var chosen = v.providerId ? list.filter(function (p) { return p.id === v.providerId; })[0] : list.filter(function (p) { return p.isActive; })[0];
+  if (!v.isEnabled) return notice('secondary', t('otp.mode.off'));
+  if (v.sandbox || (chosen && chosen.sandbox)) return notice('warning', t('otp.mode.sandbox'));
+  if (!chosen || !chosen.isActive) return notice('error', t('otp.mode.noProvider'), h('a', { href: hashFor('sms'), class: 'eco-link text-sm', text: t('otp.mode.setup') }));
+  return notice('success', t('otp.mode.live', { name: providerName(chosen.kind) }));
+}
+
+function otpFields(values) {
+  var providers = values.providers || [];
+  return [
+    { type: 'row', fields: [
+      { name: 'isEnabled', type: 'bool', inline: true, label: 'f.otp.enabled', hint: 'f.otp.enabled.hint' },
+      { name: 'sandbox', type: 'bool', inline: true, label: 'f.otp.sandbox', hint: 'f.otp.sandbox.hint' }
+    ] },
+    { name: 'providerId', type: 'select', label: 'f.otp.provider', hint: 'f.otp.provider.hint', options: function () {
+      return [{ value: '', label: t('otp.provider.default') }].concat(providers.map(function (p) {
+        var name = providerName(p.kind);
+        var flags = [];
+        if (!p.isActive) flags.push(t('inactive'));
+        if (p.sandbox) flags.push(t('otp.sandbox'));
+        return { value: p.id, label: name + (flags.length ? ' (' + flags.join('، ') + ')' : '') };
+      }));
+    }, noPlaceholder: true },
+    { type: 'heading', label: 'otp.code' },
+    { type: 'row', fields: [
+      { name: 'codeLength', type: 'number', label: 'f.otp.codeLength', hint: 'f.otp.codeLength.hint', required: true, min: 4, max: 8 },
+      { name: 'ttlSeconds', type: 'number', label: 'f.otp.ttl', hint: 'f.otp.ttl.hint', required: true, min: 30, max: 1800 }
+    ] },
+    { type: 'row', fields: [
+      { name: 'maxAttempts', type: 'number', label: 'f.otp.attempts', hint: 'f.otp.attempts.hint', required: true, min: 1, max: 10 },
+      { name: 'resendSeconds', type: 'number', label: 'f.otp.resend', hint: 'f.otp.resend.hint', required: true, min: 10, max: 600 }
+    ] },
+    { type: 'heading', label: 'otp.limits' },
+    { type: 'row', fields: [
+      { name: 'phoneHourly', type: 'number', label: 'f.otp.phoneHourly', required: true, min: 1, max: 100 },
+      { name: 'phoneDaily', type: 'number', label: 'f.otp.phoneDaily', required: true, min: 1, max: 500, check: function (v, vals) { return v != null && vals.phoneHourly != null && Number(v) < Number(vals.phoneHourly) ? t('code.DAILY_BELOW_HOURLY') : null; } }
+    ] },
+    { name: 'ipHourly', type: 'number', label: 'f.otp.ipHourly', hint: 'f.otp.ipHourly.hint', required: true, min: 1, max: 10000 },
+    { type: 'heading', label: 'otp.message' },
+    tr('message', { label: 'f.otp.message', hint: 'f.otp.message.hint', multiline: true, rows: 3, required: true, max: 300 })
+  ];
+}
+
+function otpPage(container, query, ctx) {
+  var list = listPage(container, 'otp', query, ctx);
+  var providers = [];
+  var head = h('div', { class: 'mb-3' });
+  var page = apiPage(pubApi, '/otp/settings', null, function (values) { providers = values.providers || []; return otpFields(values); }, {
+    id: 'otp',
+    onchange: function (v) { clear(head).appendChild(otpModeNotice(v, providers)); },
+    fixPayload: function (p) { if (!p.providerId) p.providerId = ''; return p; },
+    afterSave: function () { list.reload(); }
+  });
+  var heading = h('h2', { class: 'text-lg font-medium mt-6 mb-2', text: t('otp.recent') });
+  container.insertBefore(heading, container.firstChild);
+  container.insertBefore(page.el, heading);
+  container.insertBefore(head, page.el);
+  page.load();
+  return list;
+}
+
+function appVersionsPage(container, query, ctx) {
+  return listPage(container, 'app-versions', query, ctx);
+}
+
+function countriesPage(container, query, ctx) {
+  return listPage(container, 'countries', query, ctx);
+}
+
 var BRAND_KEY = 'nakama-brand';
 var BRAND_SHADES = { 50: 0.9, 100: 0.8, 200: 0.6, 300: 0.4, 400: 0.1, 500: 0, 600: -0.1, 700: -0.25, 800: -0.58, 900: -0.7, 950: -0.8 };
 var BRAND_DEFAULT_SHADES = { '244,244,253': 50, '233,232,252': 100, '209,205,248': 200, '181,175,245': 300, '130,117,240': 400, '107,89,238': 500, '102,84,226': 600, '93,77,206': 700, '69,58,154': 800, '59,49,130': 900, '48,40,106': 950 };
@@ -6445,6 +7183,10 @@ var PS_SECTIONS = [
   { id: 'brand', label: 'tab.brand', icon: 'image', acl: 'SETTINGS', render: function (box) { brandPage(box); } },
   { id: 'setup', label: 'tab.setup', icon: 'flask', acl: 'SETTINGS', render: function (box) { setupPage(box); } },
   { id: 'languages', label: 'tab.languages', icon: 'languages', acl: 'SETTINGS', render: function (box, route, ctx) { return languagesPage(box, route.query, ctx); } },
+  { id: 'countries', label: 'tab.countries', icon: 'flag', acl: 'SETTINGS', render: function (box, route, ctx) { return countriesPage(box, route.query, ctx); } },
+  { id: 'accounts', label: 'tab.accounts', icon: 'users', acl: 'SETTINGS', render: function (box) { accountRulesPage(box); } },
+  { id: 'otp', label: 'tab.otp', icon: 'phone', acl: 'NOTIFICATION', render: function (box, route, ctx) { return otpPage(box, route.query, ctx); } },
+  { id: 'app-versions', label: 'tab.app-versions', icon: 'versions', acl: 'SETTINGS', render: function (box, route, ctx) { return appVersionsPage(box, route.query, ctx); } },
   { id: 'categories', label: 'nav.categories', icon: 'categories', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'categories', route.query, ctx); } },
   { id: 'tags', label: 'nav.tags', icon: 'tags', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'tags', route.query, ctx); } },
   { id: 'payment-methods', label: 'tab.payment-methods', icon: 'payments', acl: 'HIRO_ECONOMY', render: function (box) { paymentMethodsPage(box); } },

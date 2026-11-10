@@ -789,7 +789,7 @@ function buildForm(fields, values, ctx) {
     } else if (t2 === 'bool') {
       control = toggle(cur, f.inline ? label : null, function (v) { change(v); });
     } else if (t2 === 'select') {
-      control = selectInput(cur, f.options(), function (v) { change(v || null); }, { label: label, placeholder: f.required ? false : t('none') });
+      control = selectInput(cur, f.options(), function (v) { change(f.noPlaceholder ? v : v || null); }, { label: label, placeholder: f.required || f.noPlaceholder ? false : t('none') });
       if (f.required && (cur == null || cur === '')) { setPath(values, f.name, f.options()[0].value); }
     } else if (t2 === 'multi') {
       var set = (cur || []).slice();
@@ -828,6 +828,8 @@ function buildForm(fields, values, ctx) {
       control = markdownInput(cur, { ltr: f.ltr, rows: f.rows, max: f.max, label: label, oninput: function (v) { change(v); } });
     } else if (t2 === 'actions') {
       control = actionsEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
+    } else if (t2 === 'links') {
+      control = storeLinksEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
     } else if (t2 === 'static') {
       control = h('div', { class: 'py-2 text-secondary-700 dark:text-secondary-200' }, f.render(values));
     }
@@ -874,7 +876,7 @@ function buildForm(fields, values, ctx) {
         if (n === null) { if (f.required) msg = t('err.required'); setPath(values, f.name, null); }
         else if (isNaN(n) || (f.min !== undefined && n < f.min) || (f.max !== undefined && n > f.max)) msg = t('err.number');
         else setPath(values, f.name, n);
-      } else if (t2 === 'items' || t2 === 'actions') {
+      } else if (t2 === 'items' || t2 === 'actions' || t2 === 'links') {
         msg = e.control.validate();
       } else if (t2 === 'i18n') {
         var hit = trCheck(v, f);
@@ -927,6 +929,7 @@ function buildForm(fields, values, ctx) {
       if (!visible) v = f.empty !== undefined ? f.empty : null;
       if (f.type === 'actions' && Array.isArray(v)) v = v.map(function (r) { return { type: r.type, value: r.value, label: trClean(r.label) }; });
       if (f.type === 'i18n') v = trClean(v);
+      if (f.type === 'links' && Array.isArray(v)) v = v.map(function (r) { return { store: r.store, url: r.url, label: trClean(r.label) }; });
       if (f.type === 'items' && Array.isArray(v)) v = v.map(function (r) { return { type: r.type, key: r.key, action: r.action, value: r.value }; });
       setPath(out, f.name, v === undefined ? null : v);
     });

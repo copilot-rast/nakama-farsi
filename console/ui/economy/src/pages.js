@@ -12,8 +12,9 @@ function sectionOf(page) {
 }
 
 function apiFor(page) {
-  var def = RESOURCES[page];
+  var def = RESOURCES[page] || LISTS[page];
   if (def && def.api === 'base') return baseApi;
+  if (def && def.api === 'publication') return pubApi;
   var sec = sectionOf(page);
   return sec === 'publication' ? pubApi : api;
 }

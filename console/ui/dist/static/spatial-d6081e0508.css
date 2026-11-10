@@ -2215,6 +2215,16 @@ html.sp .eco-notice--success {
   background-color: color-mix(in srgb, var(--pos) 8%, transparent);
 }
 
+html.sp .eco-notice--warning {
+  border-color: color-mix(in srgb, var(--warn) 35%, transparent);
+  background-color: color-mix(in srgb, var(--warn) 9%, transparent);
+}
+
+html.sp .eco-flag {
+  border-radius: var(--r-control);
+  background-color: var(--well);
+}
+
 html.sp .eco-text-success {
   color: var(--pos);
 }
