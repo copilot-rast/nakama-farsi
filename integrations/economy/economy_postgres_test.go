@@ -20,6 +20,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/heroiclabs/nakama-common/api"
 	"github.com/heroiclabs/nakama-common/runtime"
+	"github.com/heroiclabs/nakama/v3/internal/objectstore"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -149,6 +150,7 @@ func newHarness(t *testing.T) *harness {
 	}
 	s := testService()
 	s.cfg.uploadDir = t.TempDir()
+	s.store, _ = objectstore.New(objectstore.Config{Driver: objectstore.DriverLocal, LocalDir: s.cfg.uploadDir}, nil)
 	nk := &fakeNakama{db: db, storage: map[string]map[string]string{}}
 	s.db, s.nk = db, nk
 	init := &fakeInit{console: mux.NewRouter(), public: mux.NewRouter()}

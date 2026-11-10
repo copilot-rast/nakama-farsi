@@ -175,6 +175,15 @@ services:
         --runtime.env "ECONOMY_WEB_REDIRECT_URL=$$ECONOMY_WEB_REDIRECT_URL"
         --runtime.env "ECONOMY_DEEP_LINK=$$ECONOMY_DEEP_LINK"
         --runtime.env "ECONOMY_UPLOAD_DIR=/nakama/uploads"
+        --runtime.env "STORAGE_DRIVER=$$STORAGE_DRIVER"
+        --runtime.env "STORAGE_S3_ENDPOINT=$$STORAGE_S3_ENDPOINT"
+        --runtime.env "STORAGE_S3_BUCKET=$$STORAGE_S3_BUCKET"
+        --runtime.env "STORAGE_S3_REGION=$$STORAGE_S3_REGION"
+        --runtime.env "STORAGE_S3_ACCESS_KEY=$$STORAGE_S3_ACCESS_KEY"
+        --runtime.env "STORAGE_S3_SECRET_KEY=$$STORAGE_S3_SECRET_KEY"
+        --runtime.env "STORAGE_S3_PATH_STYLE=$$STORAGE_S3_PATH_STYLE"
+        --runtime.env "STORAGE_S3_PUBLIC_BASE_URL=$$STORAGE_S3_PUBLIC_BASE_URL"
+        --runtime.env "STORAGE_S3_PREFIX=$$STORAGE_S3_PREFIX"
         --runtime.env "STARGAME_SERVER_KEY=$$NAKAMA_SERVER_KEY"
         --runtime.env "STARGAME_SEED=$$STARGAME_SEED"
 
@@ -208,6 +217,17 @@ services:
       ECONOMY_DEEP_LINK: ${ECONOMY_DEEP_LINK:-nakama://payment?success={success}&paymentId={paymentId}}
       # false: the Star Catcher sample does not create its shop data on start.
       STARGAME_SEED: ${STARGAME_SEED:-true}
+      # local keeps uploads in the economy-uploads volume (one node only);
+      # s3 stores them in an S3-compatible bucket shared by every node.
+      STORAGE_DRIVER: ${STORAGE_DRIVER:-local}
+      STORAGE_S3_ENDPOINT: ${STORAGE_S3_ENDPOINT:-}
+      STORAGE_S3_BUCKET: ${STORAGE_S3_BUCKET:-}
+      STORAGE_S3_REGION: ${STORAGE_S3_REGION:-us-east-1}
+      STORAGE_S3_ACCESS_KEY: ${STORAGE_S3_ACCESS_KEY:-}
+      STORAGE_S3_SECRET_KEY: ${STORAGE_S3_SECRET_KEY:-}
+      STORAGE_S3_PATH_STYLE: ${STORAGE_S3_PATH_STYLE:-true}
+      STORAGE_S3_PUBLIC_BASE_URL: ${STORAGE_S3_PUBLIC_BASE_URL:-}
+      STORAGE_S3_PREFIX: ${STORAGE_S3_PREFIX:-}
 
     volumes:
       - economy-uploads:/nakama/uploads

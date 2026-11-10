@@ -30,7 +30,18 @@ Rules: SQL must run on PostgreSQL 16 (CockroachDB is legacy, but avoid Postgres-
 | `ECONOMY_DEEP_LINK` | Redirect after a gateway payment; `{success}` and `{paymentId}` are replaced | `nakama://payment?success={success}&paymentId={paymentId}` |
 | `ECONOMY_WEB_REDIRECT_URL` | If set, used instead of the deep link (same placeholders) | empty; compose sets `https://nakama.dastar.dev/stargame/?payment={paymentId}&success={success}` |
 | `ECONOMY_PENDING_TTL_MINUTES` | Pending payment expiry | 45 |
-| `ECONOMY_UPLOAD_DIR` | Where admin uploads are written | `<data_dir>/economy-uploads` |
+| `ECONOMY_UPLOAD_DIR` | Where admin uploads are written with the `local` driver | `<data_dir>/economy-uploads` |
+| `STORAGE_DRIVER` | `local` (files in `ECONOMY_UPLOAD_DIR`, one node only) or `s3` (S3-compatible bucket shared by all nodes; `internal/objectstore`, SigV4 with the standard library) | `local` |
+| `STORAGE_S3_ENDPOINT` | `http(s)://host[:port]` without a path, e.g. MinIO `http://minio:9000` | required for `s3` |
+| `STORAGE_S3_BUCKET`, `STORAGE_S3_ACCESS_KEY`, `STORAGE_S3_SECRET_KEY` | Bucket (must exist) and credentials | required for `s3` |
+| `STORAGE_S3_REGION` | Signing region | `us-east-1` |
+| `STORAGE_S3_PATH_STYLE` | `true`: `endpoint/bucket/key` (MinIO); `false`: `bucket.endpoint/key` | `true` |
+| `STORAGE_S3_PREFIX` | Optional folder in the bucket; economy objects are `<prefix>/economy/<name>` | empty |
+| `STORAGE_S3_PUBLIC_BASE_URL` | Empty: Nakama proxies `GET /v2/economy/files/{name}` from the bucket with the same headers as `local`. Set: that URL answers `302` to `<base>/<prefix>/economy/<name>` (the bucket or CDN must then serve safe headers for SVG itself) | empty |
+
+The module refuses to start when the storage settings are invalid. File URLs stay `<ECONOMY_PUBLIC_BASE_URL>/v2/economy/files/<name>` with every driver. Moving from `local` to `s3`: copy `ECONOMY_UPLOAD_DIR/*` to `<prefix>/economy/` in the bucket first.
+
+The payment reconciler runs on every node: each pass claims one pending payment at a time with `FOR UPDATE SKIP LOCKED` and stamps `inquired_at`, so two nodes never inquire or verify the same payment in the same minute; settlement stays guarded by the `status='pending'` transitions.
 
 ## Data model (tables prefixed `economy_`)
 

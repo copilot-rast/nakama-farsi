@@ -70,6 +70,17 @@ func TestLoadSettings(t *testing.T) {
 	if _, err := loadSettings(map[string]string{"ECONOMY_SECRET_KEY": key, "ECONOMY_PUBLIC_BASE_URL": "http://h", "ECONOMY_PENDING_TTL_MINUTES": "1"}, nil); err == nil {
 		t.Fatal("tiny TTL must fail")
 	}
+	if cfg.storage.Driver != "local" || cfg.storage.LocalDir != "/tmp/d/economy-uploads" {
+		t.Fatalf("storage = %+v", cfg.storage)
+	}
+	if _, err := loadSettings(map[string]string{"ECONOMY_SECRET_KEY": key, "ECONOMY_PUBLIC_BASE_URL": "http://h", "STORAGE_DRIVER": "s3"}, nil); err == nil {
+		t.Fatal("s3 without endpoint must fail")
+	}
+	s3cfg, err := loadSettings(map[string]string{"ECONOMY_SECRET_KEY": key, "ECONOMY_PUBLIC_BASE_URL": "http://h", "STORAGE_DRIVER": "s3",
+		"STORAGE_S3_ENDPOINT": "http://127.0.0.1:9000", "STORAGE_S3_BUCKET": "b", "STORAGE_S3_ACCESS_KEY": "a", "STORAGE_S3_SECRET_KEY": "s"}, nil)
+	if err != nil || s3cfg.storage.Prefix != "economy/" || !s3cfg.storage.PathStyle {
+		t.Fatalf("s3 storage = %+v %v", s3cfg.storage, err)
+	}
 	s := &service{cfg: cfg}
 	if got := s.redirectTarget(true, "p1"); got != "nakama://payment?success=true&paymentId=p1" {
 		t.Fatalf("deep link = %s", got)

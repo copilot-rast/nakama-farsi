@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/heroiclabs/nakama-common/runtime"
+	"github.com/heroiclabs/nakama/v3/internal/objectstore"
 	"github.com/heroiclabs/nakama/v3/internal/secretbox"
 )
 
@@ -24,6 +25,7 @@ type settings struct {
 	webRedirect string
 	pendingTTL  time.Duration
 	uploadDir   string
+	storage     objectstore.Config
 }
 
 type service struct {
@@ -32,6 +34,7 @@ type service struct {
 	logger runtime.Logger
 	cfg    settings
 	client *http.Client
+	store  objectstore.Store
 	now    func() time.Time
 }
 
@@ -44,9 +47,15 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		logger.Error("Economy module refused to start: %v", err)
 		return err
 	}
-	svc := newService(db, nk, logger, cfg)
-	if err := os.MkdirAll(cfg.uploadDir, 0o750); err != nil {
+	svc, err := newService(db, nk, logger, cfg)
+	if err != nil {
+		logger.Error("Economy module refused to start: %v", err)
 		return err
+	}
+	if cfg.storage.Driver == objectstore.DriverLocal {
+		if err := os.MkdirAll(cfg.uploadDir, 0o750); err != nil {
+			return err
+		}
 	}
 	for name, fn := range svc.clientRPCs() {
 		if err := initializer.RegisterRpc(name, svc.rpc(fn)); err != nil {
@@ -60,12 +69,16 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		return err
 	}
 	go svc.reconcileLoop(ctx)
-	logger.Info("Economy module registered")
+	logger.Info("Economy module registered (uploads: %s storage)", cfg.storage.Driver)
 	return nil
 }
 
-func newService(db *sql.DB, nk runtime.NakamaModule, logger runtime.Logger, cfg settings) *service {
-	return &service{db: db, nk: nk, logger: logger, cfg: cfg, client: &http.Client{Timeout: 20 * time.Second}, now: time.Now}
+func newService(db *sql.DB, nk runtime.NakamaModule, logger runtime.Logger, cfg settings) (*service, error) {
+	store, err := objectstore.New(cfg.storage, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &service{db: db, nk: nk, logger: logger, cfg: cfg, client: &http.Client{Timeout: 20 * time.Second}, store: store, now: time.Now}, nil
 }
 
 func loadSettings(env map[string]string, args []string) (settings, error) {
@@ -100,6 +113,9 @@ func loadSettings(env map[string]string, args []string) (settings, error) {
 	cfg.uploadDir = strings.TrimSpace(env["ECONOMY_UPLOAD_DIR"])
 	if cfg.uploadDir == "" {
 		cfg.uploadDir = filepath.Join(dataDirFromArgs(args), "economy-uploads")
+	}
+	if cfg.storage, err = objectstore.ConfigFromEnv(env, objectstore.Namespace{LocalDir: cfg.uploadDir, Prefix: "economy/"}); err != nil {
+		return cfg, err
 	}
 	return cfg, nil
 }

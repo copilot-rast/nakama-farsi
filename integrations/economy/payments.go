@@ -366,6 +366,8 @@ func firstNonEmpty(values ...string) string {
 	return ""
 }
 
+const reconcileBatchSize = 20
+
 func (s *service) reconcileLoop(ctx context.Context) {
 	ticker := time.NewTicker(60 * time.Second)
 	defer ticker.Stop()
@@ -384,28 +386,34 @@ func (s *service) reconcileLoop(ctx context.Context) {
 }
 
 func (s *service) reconcileBatch(ctx context.Context) (int, error) {
-	now := s.now()
-	rows, err := s.db.QueryContext(ctx, `SELECT id::text FROM economy_payment WHERE status='pending' AND created_at < $1 AND (inquired_at IS NULL OR inquired_at < $2)
-		ORDER BY created_at LIMIT 20`, now.Add(-3*time.Minute), now.Add(-time.Minute))
-	if err != nil {
-		return 0, err
-	}
-	var ids []string
-	for rows.Next() {
-		var id string
-		if err := rows.Scan(&id); err != nil {
-			rows.Close()
-			return 0, err
+	n := 0
+	for n < reconcileBatchSize {
+		id, err := s.claimForReconcile(ctx)
+		if err != nil {
+			return n, err
 		}
-		ids = append(ids, id)
-	}
-	rows.Close()
-	for _, id := range ids {
-		if _, err := s.reconcileOne(ctx, id); err != nil {
+		if id == "" {
+			break
+		}
+		n++
+		if _, err := s.reconcileClaimed(ctx, id); err != nil {
 			s.logger.Warn("Economy reconcile of %s failed: %v", id, err)
 		}
 	}
-	return len(ids), nil
+	return n, nil
+}
+
+func (s *service) claimForReconcile(ctx context.Context) (string, error) {
+	now := s.now()
+	var id string
+	err := s.db.QueryRowContext(ctx, `UPDATE economy_payment SET inquiry_count=inquiry_count+1, inquired_at=now()
+		WHERE id = (SELECT id FROM economy_payment WHERE status='pending' AND created_at < $1 AND (inquired_at IS NULL OR inquired_at < $2)
+			ORDER BY created_at LIMIT 1 FOR UPDATE SKIP LOCKED)
+		AND status='pending' RETURNING id::text`, now.Add(-3*time.Minute), now.Add(-time.Minute)).Scan(&id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return "", nil
+	}
+	return id, err
 }
 
 func (s *service) reconcileOne(ctx context.Context, id string) (string, error) {
@@ -416,6 +424,10 @@ func (s *service) reconcileOne(ctx context.Context, id string) (string, error) {
 	if n, _ := res.RowsAffected(); n == 0 {
 		return s.currentStatus(ctx, id), nil
 	}
+	return s.reconcileClaimed(ctx, id)
+}
+
+func (s *service) reconcileClaimed(ctx context.Context, id string) (string, error) {
 	p, err := s.loadPayment(ctx, s.db, id)
 	if err != nil {
 		return "", err
