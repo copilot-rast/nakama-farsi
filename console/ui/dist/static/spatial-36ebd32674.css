@@ -2198,6 +2198,10 @@ html.sp .eco-tag--primary {
   color: var(--accent-ink);
 }
 
+html.sp:not(.dark) .eco-tag--primary {
+  background-color: color-mix(in srgb, var(--accent) 10%, #fff);
+}
+
 html.sp .eco-notice {
   border-color: var(--line);
   border-radius: var(--r-card);

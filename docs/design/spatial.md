@@ -107,7 +107,7 @@ The brand colour (Settings → Brand, `brand.js`) must drive the accent. `brand.
 |---|---|---|---|
 | `--accent` | filled primary button, toggle on, checkbox on, rail/flyout badge, chart "today" line | first of shades 500, 600, 700, 800 with white text ≥ 4.5:1 | same rule |
 | `--accent-ink` | links, active nav text, selected chip text, focus ring | first of 600, 700, 800, 900 with ≥ 4.5:1 on `#dfe4ee` (worst light glass over the hills) | first of 300, 200, 100 with ≥ 4.5:1 on `#4a4d5f` (`capsule-hi` over dark glass, the lightest surface accent text can sit on) |
-| `--accent-soft` | active nav fill, selected row, chip on | `color-mix(in srgb, var(--accent) 11%, transparent)` | `color-mix(in srgb, var(--accent) 17%, transparent)` |
+| `--accent-soft` | active nav fill, selected row, chip on | `color-mix(in srgb, var(--accent) 11%, transparent)` | `color-mix(in srgb, var(--accent) 17%, transparent)` (light-mode `primary` tags use an opaque `color-mix(in srgb, var(--accent) 10%, #fff)` so their text keeps 4.5:1 wherever the glass sits on the sky) |
 | `--accent-line` | chip-on border, input focus border | `color-mix(… 30%, transparent)` | `color-mix(… 36%, transparent)` |
 | `--on-accent` | text on `--accent` | `#fff` | `#fff` |
 
