@@ -1,3 +1,15 @@
+html.sp.sp-railed #main > div.sticky:first-child > div.flex.w-full > div.flex-1 > nav,
+html.sp.sp-railed #main > div.sticky:first-child > button.x-button:first-child,
+html.sp.sp-railed #main > div.sticky:first-child > a.router-link-active,
+html.sp.sp-railed #main > div.sticky:first-child .l10n-switcher,
+html.sp.sp-railed #main > div.sticky:first-child .economy-theme {
+  display: none;
+}
+
+html.sp.sp-railed #main > main > .x-container > nav.lg\:hidden {
+  display: none;
+}
+
 .sp-ic {
   width: 18px;
   height: 18px;

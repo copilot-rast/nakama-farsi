@@ -79,7 +79,7 @@ test('turning spatial off leaves the page untouched', () => {
   vm.runInNewContext(js, sandbox);
   assert.deepEqual(classes, []);
   sandbox.location.search = '?spatial=1';
-  try { vm.runInNewContext(js, sandbox); } catch (e) { assert.ok(e instanceof Error); }
+  try { vm.runInNewContext(js, sandbox); } catch (e) { assert.ok(e && e.message); }
   assert.deepEqual(classes, ['sp']);
   assert.equal(store['nakama.spatial'], undefined);
 });

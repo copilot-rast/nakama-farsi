@@ -126,10 +126,22 @@ html.sp #main .border-dashed.rounded-md {
   color: var(--ink-2);
 }
 
-html.sp #main aside.bg-secondary-50,
-html.sp #main .bg-secondary-50.border-l,
-html.sp #main .bg-secondary-50.border-r {
-  background: transparent;
+html.sp #main aside.bg-secondary-50.border-l {
+  align-self: flex-start;
+  height: auto;
+  max-height: calc(100vh - var(--topbar-h) - var(--gap) * 4);
+  margin-block: 12px 24px;
+  margin-inline-start: 16px;
+  padding: 14px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-window);
+  background: var(--glass);
+  box-shadow: var(--glass-shadow);
+  overflow-y: auto;
+}
+
+html.sp #main pre.shiki {
+  background: transparent !important;
 }
 
 html.sp #main .bg-\[\#fcfcfc\] {
@@ -158,10 +170,6 @@ html.sp #main table {
 
 html.sp #main .x-table-head {
   background: transparent;
-}
-
-html.sp #main .x-table-head.sticky {
-  top: calc(var(--topbar-h) + var(--gap) * 2 - 1px);
 }
 
 html.sp #main .x-table-head th,

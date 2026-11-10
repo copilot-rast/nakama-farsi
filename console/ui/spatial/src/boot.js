@@ -8,11 +8,11 @@ function tick() {
   var auth = isAuthPage();
   if (auth !== root.classList.contains('sp-auth')) {
     root.classList.toggle('sp-auth', auth);
-    if (auth) { closeFly(true); closeSheet(); }
+    if (auth && typeof closeFly === 'function') { closeFly(true); closeSheet(); }
   }
   if (!auth) {
-    renderRail();
-    paintTopbar();
+    if (typeof renderRail === 'function') renderRail();
+    if (typeof paintTopbar === 'function') paintTopbar();
     markPage();
     labelTables();
   }
@@ -40,12 +40,14 @@ function boot() {
   }
   window.addEventListener('hashchange', schedule);
   window.addEventListener('resize', function () {
-    if (tb.start) segIndicator(tb.start.querySelector('.sp-tabs'));
-    if (tb.seg) segIndicator(tb.seg);
-    if (!mqMobile.matches) closeSheet();
+    if (typeof segIndicator === 'function') {
+      if (tb.start) segIndicator(tb.start.querySelector('.sp-tabs'));
+      if (tb.seg) segIndicator(tb.seg);
+      if (!mqMobile.matches) closeSheet();
+    }
     schedule();
   });
-  document.addEventListener('keydown', globalKeys);
+  if (typeof globalKeys === 'function') document.addEventListener('keydown', globalKeys);
   new MutationObserver(function (records) {
     for (var i = 0; i < records.length; i++) {
       var t = records[i].target;
@@ -60,11 +62,11 @@ function boot() {
       return /(^|\s)dark(\s|$)/.test(r.oldValue || '') !== root.classList.contains('dark');
     });
     if (!hit) return;
-    rail.key = '';
-    tb.key = '';
+    if (typeof rail === 'object') rail.key = '';
+    if (typeof tb === 'object') tb.key = '';
     schedule();
   }).observe(root, { attributes: true, attributeOldValue: true, attributeFilter: ['class', 'lang', 'dir'] });
-  if (mqMobile.addEventListener) mqMobile.addEventListener('change', function () { rail.key = ''; schedule(); });
+  if (mqMobile.addEventListener) mqMobile.addEventListener('change', function () { if (typeof rail === 'object') rail.key = ''; schedule(); });
   tick();
 }
 

@@ -42,7 +42,7 @@ html.sp.sp-railed #app div.flex.border-r.z-20:has(> .x-drawer) {
 
 html.sp #main {
   background: transparent;
-  padding-inline-end: var(--gap);
+  padding-inline: var(--gap);
   scroll-padding-top: calc(var(--topbar-h) + var(--gap) * 2);
 }
 
@@ -83,21 +83,9 @@ html.sp #main > div.sticky:first-child > div.flex.w-full > div.flex-1 {
   min-width: 0;
 }
 
-html.sp #main > div.sticky:first-child > div.flex.w-full > div.flex-1 > nav,
-html.sp #main > div.sticky:first-child > button.x-button:first-child,
-html.sp #main > div.sticky:first-child > a.router-link-active,
-html.sp #main > div.sticky:first-child .l10n-switcher,
-html.sp #main > div.sticky:first-child .economy-theme {
-  display: none;
-}
-
 html.sp #main > div.sticky:first-child .justify-end {
   gap: 8px;
   flex: none;
-}
-
-html.sp #main > main > .x-container > nav.lg\:hidden {
-  display: none;
 }
 
 html.sp body > .l10n-switcher:not(.l10n-switcher--docked),

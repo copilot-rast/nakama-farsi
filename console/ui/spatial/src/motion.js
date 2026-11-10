@@ -33,10 +33,12 @@ function routeEnter() {
 function onRouteChange(to, from) {
   var a = pageKey(to && to.path);
   var b = pageKey(from && from.path);
-  closeFly(true);
-  closeSheet();
-  if (tb.palette && tb.palette.close) tb.palette.close();
-  toggleStats(false);
+  if (typeof closeFly === 'function') {
+    closeFly(true);
+    closeSheet();
+    if (tb.palette && tb.palette.close) tb.palette.close();
+    toggleStats(false);
+  }
   if (a !== b && a !== 'ps' && b !== 'ps') routeEnter();
   schedule();
 }

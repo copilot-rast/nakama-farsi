@@ -159,7 +159,8 @@
         "border-secondary-300",
         "h-12",
         "w-12",
-        "rounded-full"
+        "rounded-full",
+        "shiki"
       ],
       "routes": [
         "#/players/00000000-0000-0000-0000-000000000000"

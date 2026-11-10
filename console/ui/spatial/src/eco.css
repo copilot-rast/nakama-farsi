@@ -1,1 +1,64 @@
+html.sp .eco-tag {
+  border-radius: var(--r-pill);
+  background-color: var(--well-2);
+  color: var(--ink-2);
+}
 
+html.sp .eco-tag--success {
+  background-color: color-mix(in srgb, var(--pos) 13%, transparent);
+  color: var(--pos);
+}
+
+html.sp .eco-tag--warning {
+  background-color: color-mix(in srgb, var(--warn) 14%, transparent);
+  color: var(--warn);
+}
+
+html.sp .eco-tag--error {
+  background-color: color-mix(in srgb, var(--neg) 13%, transparent);
+  color: var(--neg);
+}
+
+html.sp .eco-tag--primary {
+  background-color: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+html.sp .eco-notice {
+  border-color: var(--line);
+  border-radius: var(--r-card);
+  background-color: var(--well);
+  color: var(--ink-1);
+}
+
+html.sp .eco-notice--error {
+  border-color: color-mix(in srgb, var(--neg) 30%, transparent);
+  background-color: color-mix(in srgb, var(--neg) 8%, transparent);
+}
+
+html.sp .eco-notice--success {
+  border-color: color-mix(in srgb, var(--pos) 30%, transparent);
+  background-color: color-mix(in srgb, var(--pos) 8%, transparent);
+}
+
+html.sp .eco-text-success {
+  color: var(--pos);
+}
+
+html.sp .eco-text-warning {
+  color: var(--warn);
+}
+
+html.sp .eco-text-error {
+  color: var(--neg);
+}
+
+html.sp :is(.eco-link, .eco-selected) {
+  color: var(--accent-ink);
+}
+
+html.sp .eco-nav-badge,
+html.sp .eco-nav-dot {
+  background-color: var(--accent);
+  color: var(--on-accent);
+}
