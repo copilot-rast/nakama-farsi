@@ -88,3 +88,32 @@ Errors: runtime errors with UPPER_SNAKE codes.
 ## Console pages
 
 New sidebar section «انتشار» / "Publishing" after «اقتصاد»: سؤال‌های متداول، اخبار، کامنت‌ها (with pending badge), اعلان‌ها (list + «ارسال اعلان» form with channel, target picker with live count from preview-target, markdown body with preview). Delivery services (provider cards like payment methods, with test send) live in the console's Settings page as the «پیامک» (`#/settings/sms`) and «ایمیل» (`#/settings/email`) tabs; `#/publication/providers` redirects to the SMS tab. Same look, fa/en, dark, mobile cards, server-side search/paging, layout-matching loading states.
+
+## Phone login (phase 2)
+
+Players sign in with a mobile number and a one-time SMS code sent through the providers above. Code in `integrations/publication/otp.go`, migration `20261110040000-publication-otp.sql` (Up re-runnable, Down raises).
+
+### Data
+
+- `publication_otp_settings` (single row `id = 1`, seeded): `is_enabled` (true), `sandbox` (true), `provider_id` (null = the default active SMS provider), `code_length` 4–8 (5), `ttl_seconds` 30–1800 (120), `max_attempts` 1–10 (5), `resend_seconds` 10–600 (60), `phone_hourly` (5), `phone_daily` (10), `ip_hourly` (30), `message` (translated SMS text, ≤300 per language, every translation must contain `{code}`; `{minutes}` = lifetime rounded up, `{app}` = brand name or short name).
+- `publication_otp_code`: one row per request: `phone` (E.164), `code_hash`, `status` (`pending`, `verified`, `expired`, `failed` = too many wrong codes, `replaced` = a newer code was asked for, `send_failed`), `attempts`, `max_attempts`, `sandbox`, `provider`, `lang`, `error`, `client_ip`, `requested_by`, `user_id`, `created_at`, `expires_at`, `verified_at`. Codes are never stored: `code_hash` = HMAC-SHA256 over `id|phone|code` with a key derived from `ECONOMY_SECRET_KEY` (HKDF info `publication-otp-code`), so a database copy cannot be brute-forced offline. Rows older than 30 days are deleted every 10 minutes by one node at a time (`clusterkit` lease `publication-otp-sweep`), which also sweeps expired rate-limit counters.
+- `publication_phone_account (phone primary key, user_id unique → users on delete cascade, login_key, created_at, verified_at)`.
+
+### Client RPCs (user session; a game signs in as a device guest first)
+
+| RPC | Input | Output |
+|---|---|---|
+| `publication_otp_request` | `{phone, country?, lang?}` | `{requestId, phone, expiresIn, resendAfter, codeLength, sandbox}` |
+| `publication_otp_verify` | `{phone, country?, code, link?}` | `{token, expiresAt, loginKey, userId, username, created, linked, phone}` |
+| `publication_phone` | `{}` | `{phone, otpEnabled, codeLength}` (the caller's number, or empty) |
+
+- Number: Persian/Arabic digits, spaces, dashes and brackets are accepted. With `country` (ISO code) and no `+`/`00`, the leading zeros are dropped and the country's dialling code is put in front; Iranian forms (`09…`, `9…`, `989…`) work without it. The result must be E.164 (8–15 digits) and start with the dialling code of an active country (`base_country`), else `INVALID_PHONE` / `PHONE_COUNTRY_NOT_ALLOWED`.
+- Limits (database, `clusterkit.Allow`, the same on every node): one request per number per `resend_seconds` (`OTP_TOO_SOON`), `phone_hourly` and `phone_daily` per number, `ip_hourly` per client IP and per calling user (`OTP_RATE_LIMITED`, HTTP 429 / gRPC ResourceExhausted). A new request marks the number's pending code `replaced`.
+- Sending: the chosen provider if it is active, else the default active SMS provider. **Sandbox** when the OTP setting or that provider is in sandbox: nothing is sent and the server log gets `Publication OTP sandbox code <code> for <phone> (request <id>, <lang>)`. Live: one synchronous send (25 s timeout, idempotency key `otp-<id>`); a failure marks the row `send_failed` and returns `OTP_SEND_FAILED`. Live without any active provider → `OTP_UNAVAILABLE`; settings off → `OTP_DISABLED`. The text is the translated `message` in the player's language (requested `lang` → account `lang_tag` → default).
+- Verify, in one transaction with an advisory lock on the number: the latest code row must be `pending` (`OTP_NOT_FOUND` otherwise, `OTP_TOO_MANY_ATTEMPTS` after a `failed` one) and not expired (`OTP_EXPIRED`, row marked `expired`). A wrong code counts one try and is committed; the last allowed wrong try marks it `failed` (`OTP_INVALID_CODE` / `OTP_TOO_MANY_ATTEMPTS`). A right code marks it `verified`, so it works once.
+- Account: a number that already has an account signs into it (`ACCOUNT_DISABLED` for a banned account). Otherwise, with `link: true` the number is attached to the caller's own account (a guest keeps its progress; `ACCOUNT_HAS_PHONE` when it already has another number); without `link` a new Nakama account is created with `AuthenticateCustom`. The account metadata gets `phone` (E.164), which publication SMS notifications already use.
+- Session: `token` is a normal session token from `AuthenticateTokenGenerate` (default lifetime). `loginKey` (`ph_` + 40 hex) is the account's custom id when this module set it; a game may keep it and call `authenticateCustom(loginKey, create=false)` for a full session with a refresh token and a silent sign-in next time (treat it like a device id). It is empty for a linked account that already had its own custom id.
+
+### Console
+
+`GET/PUT /v2/console/publication/otp/settings` (full replace; the GET also lists the SMS providers for the picker; errors `INVALID_VALUE`, `PROVIDER_NOT_FOUND`, `PROVIDER_NOT_SMS`, `OTP_MESSAGE_NEEDS_CODE`, translated-text errors) and `GET /v2/console/publication/otp?q&status&page&limit` (recent requests with username, plus `phoneAccounts` and `last24h` counts; `q` matches the number with or without `+`/leading zero; the hash is never returned). ACL `NOTIFICATION` like the rest of publication. The project settings section «ورود با پیامک» is described in `docs/base/spec.md` (Accounts).

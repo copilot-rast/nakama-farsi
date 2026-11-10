@@ -9,3 +9,5 @@ select 'gifts', count(*) from economy_gift where code like 'E2E%';
 select 'faqs', count(*) from publication_faq where question::text like '%e2e%';
 select 'news', count(*) from publication_news where title::text like '%e2e%';
 select 'players', count(*) from user_device where id like 'e2e-%';
+select 'phone accounts', count(*) from publication_phone_account where phone like '+98999%';
+select 'otp codes', count(*) from publication_otp_code where phone like '+98999%';

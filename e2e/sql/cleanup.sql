@@ -11,4 +11,7 @@ DELETE FROM base_category WHERE key LIKE 'e2e%';
 DELETE FROM base_tag WHERE key LIKE 'e2e%';
 DELETE FROM base_language WHERE code LIKE 'xa-%' AND NOT is_default;
 DELETE FROM users WHERE id IN (SELECT user_id FROM user_device WHERE id LIKE 'e2e-%');
+DELETE FROM users WHERE id IN (SELECT user_id FROM publication_phone_account WHERE phone LIKE '+98999%');
+DELETE FROM publication_otp_code WHERE phone LIKE '+98999%';
+DELETE FROM cluster_rate_limit WHERE key LIKE 'otp:%';
 COMMIT;

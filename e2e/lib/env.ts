@@ -32,6 +32,7 @@ export const DB = {
   password: pick('DB_PASSWORD'),
 };
 export const FIXTURES = path.join(ROOT, 'fixtures');
+export const SERVER_LOG = pick('E2E_SERVER_LOG', path.join(ROOT, '..', 'logs', 'nakama.log'));
 export const AUTH_FILE = path.join(ROOT, '.auth', 'admin.json');
 export const STATE_DIR = path.join(ROOT, '.auth');
 export const RUN = (process.env.E2E_RUN || Date.now().toString(36).slice(-6)).toLowerCase();

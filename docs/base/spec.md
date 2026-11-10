@@ -57,10 +57,10 @@ All existing economy and publication client RPCs accept `lang` and resolve every
 
 ## Console pages
 
-- Project settings window («تنظیمات پروژه» / "Project settings", phase 1, like the asp `SettingsModal`): one large dialog (`min(1400px, 97vw)` × `86vh`, RTL, current console look) with the section list on the start side (icon + label, `role="tablist"`) and the panel on the other. Sections come from one registry, `PS_SECTIONS` in `console/ui/economy/src/settings.js` (id, label, icon, ACL resource, render); later phases add a line there. Current order: brand, setup, languages, categories, tags, payment gateways, SMS, email. Each section reuses the page it replaced (no copies).
+- Project settings window («تنظیمات پروژه» / "Project settings", phase 1, like the asp `SettingsModal`): one large dialog (`min(1400px, 97vw)` × `86vh`, RTL, current console look) with the section list on the start side (icon + label, `role="tablist"`) and the panel on the other. Sections come from one registry, `PS_SECTIONS` in `console/ui/economy/src/settings.js` (id, label, icon, ACL resource, render); later phases add a line there. Current order: brand, setup, languages, countries, account rules, SMS login, app versions, categories, tags, payment gateways, SMS, email. Each section reuses the page it replaced (no copies).
   - Route: `#/project-settings/<section>[/<id>][?query]` (a Vue route like the other overlay sections, so it survives a reload; `<id>` opens the item editor, the query keeps list filters). Opening pushes one history entry; switching sections replaces it, so browser back closes the window. Close (×, Esc, click outside) goes back to the page the window was opened from (kept in `sessionStorage` for reloads); an unknown section goes to the first allowed one.
   - Entry points: «تنظیمات پروژه» with a gear at the bottom of the sidebar (above the Hiro/Satori links, icon-only when collapsed) and a gear button in the top bar next to the account menu. Both open the first section the user may see.
-  - ACL: the overlay decodes the `acl` bitmap in the console session token (bit `resource*3 + level`, all-`0xFF` = admin; a token without the claim shows everything, the server still enforces). Brand, setup, languages need `SETTINGS` read; categories, tags, payment gateways need `HIRO_ECONOMY` read; SMS and email need `NOTIFICATION` read. Hidden sections are not listed and their deep links redirect; with no section allowed both entries disappear and a deep link shows a "no access" note.
+  - ACL: the overlay decodes the `acl` bitmap in the console session token (bit `resource*3 + level`, all-`0xFF` = admin; a token without the claim shows everything, the server still enforces). Brand, setup, languages, countries, account rules and app versions need `SETTINGS` read; categories, tags, payment gateways need `HIRO_ECONOMY` read; SMS login, SMS and email need `NOTIFICATION` read. Hidden sections are not listed and their deep links redirect; with no section allowed both entries disappear and a deep link shows a "no access" note.
   - Keyboard and a11y: focus moves to the active section, Tab is trapped in the window, arrows/Home/End move between sections, Esc closes the item editor or a picker first and the window last. At ≤767px the window is a full-screen sheet with the section list as a sideways scroller of chips.
   - Moved here: the settings tabs we used to inject into Nakama's `#/settings` (payment gateways, SMS, email, languages, brand, setup) and the «عمومی» sidebar section (categories, tags). Nakama's own settings tabs are untouched. Old hashes redirect (replace) with their id and query: `#/settings/{payment-methods|sms|email|languages|brand|setup}`, `#/base/{categories|tags}`, `#/economy/{categories|tags|payment-methods}`, `#/publication/providers` (→ SMS). Overview, coverage and compose links and the wizard copy point to the new place.
 - Languages section: list with default badge, active toggle, direction, order; form with code, native name, translated names, icon; coverage panel (how many items lack each language, linking to the page).
@@ -125,3 +125,51 @@ Brand and setup writes are audit-logged under `SETTINGS`.
 - Project settings sections «برند» (`#/project-settings/brand`) and «راه‌اندازی» (`#/project-settings/setup`: status, progress, per-step state, who opened/finished, «باز کردن راهنما», per-step edit links). The wizard opens above the settings window and refreshes the setup section when it closes.
 - Auto-open: once per page load per session token, when the signed-in shell is visible, the console calls `setup/claim`; only `claimed: true` opens the wizard. Opening it by hand on a `pending`/`skipped` setup marks it `in_progress`, so it never auto-opens afterwards.
 - Wizard: full-screen overlay (`data-economy="setup"`), clickable step bar (compact numbers on mobile), «قبلی», «رد کردن این مرحله», «ذخیره و ادامه», «تمام» on review, «بعداً» (status `skipped`, progress kept; Esc asks first). Focus is trapped in the overlay; leaving a step with unsaved changes asks first. Steps: brand; languages (toggle active, make default, quick add fa/en/ar/tr/ru/de/fr/es/ur/zh, all saved at once); currency (pick existing or new, key/type/name/starting balance/icon; other fields kept on save; Latin digits in the number input); payments («پرداخت لازم دارید؟», pick gateways, sandbox box first, new gateways default to sandbox); SMS and email («… لازم دارید؟», service, sandbox, fields with masked secrets, saved as active + default; test-send saves first and is only allowed in sandbox); review (status per step, summaries, edit links). Answering «نه» marks the step skipped.
+
+## Accounts (phase 2)
+
+Account rules, app versions and countries live in the base plugin; phone + SMS login lives in the publication plugin because it owns the SMS providers and their secrets (`docs/publication/spec.md`, «Phone login»). Migration `20261110030000-base-accounts.sql` (Up re-runnable, Down raises) creates the tables and seeds the defaults, so a deploy needs no manual step.
+
+### Account rules (`base_account_rules`, single row `id = 1`)
+
+`username_min` (1), `username_max` (128), `username_charset` (`any` | `latin` = `[A-Za-z0-9_.-]`), `password_min` (8, never below Nakama's own 8), `password_letter`, `password_digit`, `display_name_max` (255), `updated_by/at`. The defaults are Nakama's own limits, so an upgraded server refuses nothing new until an admin tightens the rules. Lengths count letters (runes), not bytes.
+
+Enforced by before-hooks registered in `integrations/base/rules.go`:
+
+| Hook | Checks |
+|---|---|
+| `AuthenticateEmail` | only when the email has no account yet (sign-up): password rules, then the username if one is sent |
+| `AuthenticateDevice/Custom/Google/Apple/Facebook/Steam/GameCenter` | the username, only if it is sent and nobody has it yet (an existing account signing in is never refused) |
+| `UpdateAccount` | a changed username; the display name length |
+| `LinkEmail` | password rules |
+
+Errors are runtime errors with codes `USERNAME_TOO_SHORT`, `USERNAME_TOO_LONG`, `USERNAME_INVALID_CHARACTERS`, `PASSWORD_TOO_SHORT`, `PASSWORD_NEEDS_LETTER`, `PASSWORD_NEEDS_DIGIT`, `DISPLAY_NAME_TOO_LONG` (gRPC InvalidArgument, HTTP 400 with the code as `message`). Nakama-generated usernames (sign-ups without a username, phone accounts) are not checked. Only one before-hook per message exists in Nakama: a game plugin that registers its own before-hook for these messages replaces this one.
+
+Console: `GET/PUT /v2/console/base/account-rules` (`SETTINGS` read/write, full replace, `INVALID_RULE` with `field`). Client RPC `base_account_rules {}` → `{usernameMin, usernameMax, usernameCharset, passwordMin, passwordLetter, passwordDigit, displayNameMax}`.
+
+### App versions (`base_app_version`, one row per platform)
+
+`id`, `platform` (`android`, `ios`, `web`, `windows`, `macos`, `linux`; unique), `latest_version`, `min_version` (optional, never newer than latest), `store_links jsonb [{store, url, label:{<lang>: text}}]` (stores `google_play`, `app_store`, `bazaar`, `myket`, `microsoft_store`, `steam`, `web`, `direct`; each once, max 8; url `http(s)://`, `market://`, `bazaar://`, `myket://` or `itms-apps://`), `update_message` and `force_message` (translated, ≤500), `is_active`.
+
+Versions are 1–4 numeric parts with an optional `-pre` or `+build` (`^v?\d+(\.\d+){0,3}([-+][0-9A-Za-z.-]+)?$`); compared part by part (missing parts are 0), a pre-release is older than its release, build metadata is ignored.
+
+Console: CRUD `/v2/console/base/app-versions` (`SETTINGS`; list `?q&page&limit&isActive`, ordered by platform) and `GET /app-versions/catalog` (platforms and stores with fa/en names). Errors `INVALID_PLATFORM`, `INVALID_VERSION`, `VERSION_REQUIRED`, `MIN_ABOVE_LATEST`, `INVALID_STORE`, `DUPLICATE_STORE`, `INVALID_URL`, `TOO_MANY_LINKS`, `ALREADY_EXISTS` (409, platform), translated-text errors.
+
+Client RPC `base_app_version {platform, version, store?, lang?}` → `{lang, platform, current, status, latest, minimum, message, storeUrl, stores:[{store, name, url}]}`. `status`: `update_required` when `version < min`, `update_available` when `version < latest`, else `ok` (also when the platform has no active row). `message` is `force_message` (falls back to `update_message`) or `update_message`, resolved by the usual language rules; `name` is the link label or the built-in store name; `storeUrl` is the link for `store`, else the first link. `INVALID_PLATFORM` / `INVALID_VERSION` on bad input.
+
+### Countries (`base_country`)
+
+`code` (ISO 3166 alpha-2, upper-case, primary key), `name jsonb` (translated), `dial_code` (`+98`), `flag_url` (optional image; otherwise the flag emoji made from the code), `is_active`, `sort` (100; Iran is seeded with 1). The migration seeds 243 countries with fa, en and ar names (from CLDR) and dialling codes (libphonenumber metadata), all active. A name key for a language that does not exist is dropped on save.
+
+Console: CRUD `/v2/console/base/countries` (`SETTINGS`; id = code; list `?q&page&limit&isActive`, `q` matches code, dialling code and every translation; items carry `flag`). Errors `INVALID_COUNTRY_CODE`, `INVALID_DIAL_CODE`, `COUNTRY_NOT_FOUND`, `ALREADY_EXISTS`.
+
+Client RPCs: `base_countries {lang?}` → `{lang, selected, items:[{code, name, dialCode, flag, flagUrl}]}` (active only, by `sort` then name; `selected` = the player's account metadata `country`); `base_set_country {code}` → `{code}` stores the choice in account metadata `country` (`COUNTRY_NOT_AVAILABLE` for an unknown or inactive country). SMS login accepts only numbers whose dialling code belongs to an active country.
+
+### Console sections
+
+Four new project settings sections (registry `PS_SECTIONS`, code in `console/ui/economy/src/accounts.js`), in this order after languages:
+
+- «کشورها» (`#/project-settings/countries[/<code>]`, `SETTINGS`): list with flag, name, code, dialling code, inline active toggle and order; active filter and search; editor with code (locked on edit), translated name, dialling code, flag image, active, order.
+- «قوانین حساب» (`#/project-settings/accounts`, `SETTINGS`): one form (username lengths and letters, password length and letter/digit, display name length) with a «امتحان کنید» box that checks a sample username and password against the numbers in the form before saving.
+- «ورود با پیامک» (`#/project-settings/otp`, `NOTIFICATION`, same as SMS): a notice with the current mode (off / sandbox / live with which service / no service), the settings form (on, sandbox, SMS service, code digits, lifetime, tries, resend wait, per-number hourly and daily limits, per-IP hourly limit, translated SMS text with `{code}`, `{minutes}`, `{app}`) and «درخواست‌های اخیر» (number, status, sandbox or service, tries, player link, time; search by number, status filter). The code itself is never shown.
+- «نسخه‌های برنامه» (`#/project-settings/app-versions[/<id>]`, `SETTINGS`): list with platform, latest, lowest allowed, store tags and status; editor with platform, versions, a store-link list (store, link, optional translated label) and the two translated messages.

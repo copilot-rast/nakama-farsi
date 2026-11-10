@@ -34,6 +34,8 @@ Status: **fixed** = changed in phase 0b; **safe** = already correct on N nodes, 
 | base | `integrations/base/brand.go:22`, languages, categories, tags | Brand/languages config | — | Read from the database on every request; the public brand endpoint only sets HTTP `Cache-Control: max-age=60` (client/CDN side, same on all nodes) | safe |
 | internal/localized | `internal/localized/localized.go:70` | Language set | — | `Load` reads `base_language` per call; no cache | safe |
 | internal/secretbox | `internal/secretbox/secretbox.go:27` | Key derivation | — | Pure functions; `ECONOMY_SECRET_KEY` must be identical on every node (config rule 5) | safe |
+| publication | `integrations/publication/otp.go` (phase 2) | OTP rate limits, code tries, sweeping | — | Limits through `clusterkit.Allow`; verify under `pg_advisory_xact_lock` on the number with the try count committed in the same transaction; old codes swept under the `publication-otp-sweep` lease | safe |
+| base | `integrations/base/rules.go`, `versions.go`, `countries.go` (phase 2) | Account rules, versions, countries | — | Read from the database on every hook/RPC; no cache | safe |
 | stargame | `samples/stargame/seed.go:173` | Seed on every node start | Concurrent starts | One transaction, every insert `ON CONFLICT DO NOTHING` in a fixed order; covered by the existing 4-way concurrent `TestSeedPostgres` | safe |
 | stargame | `samples/stargame/main.go:79`, `:96` | Rounds | — | Stored in Nakama storage with version checks (`ErrStorageRejectedVersion`) | safe |
 | stargame | `samples/stargame/web.go` | Embedded static files | — | Read-only, built into the plugin | safe |

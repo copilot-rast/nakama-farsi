@@ -23,6 +23,11 @@ const PAGES = [
   '#/project-settings/languages',
   '#/project-settings/brand',
   '#/project-settings/setup',
+  '#/project-settings/countries',
+  '#/project-settings/accounts',
+  '#/project-settings/otp',
+  '#/project-settings/app-versions',
+  '#/project-settings/app-versions/new',
 ];
 
 test.describe('console at 390px', () => {

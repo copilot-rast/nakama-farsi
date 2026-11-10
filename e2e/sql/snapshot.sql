@@ -4,3 +4,7 @@ select 'H-lang', md5(coalesce(string_agg(code||name::text||native_name||directio
 select 'H-cur', md5(coalesce(string_agg(id::text||key||name::text||type||default_value::text||icon_url||metadata::text||sort::text, '|' order by id),'')) from economy_currency;
 select 'H-brand', md5(coalesce(string_agg(name::text||short_name||logo_url||logo_dark_url||mark_url||accent||welcome::text, '|'),'')) from base_brand;
 select 'H-setup', md5(coalesce(string_agg(status||steps::text||first_opened_by||completed_by||coalesce(completed_at::text,''), '|'),'')) from base_setup;
+select 'H-rules', md5(coalesce(string_agg(username_min||'/'||username_max||username_charset||password_min||password_letter::text||password_digit::text||display_name_max, '|'),'')) from base_account_rules;
+select 'H-ver', md5(coalesce(string_agg(id::text||platform||latest_version||min_version||store_links::text||update_message::text||force_message::text||is_active::text, '|' order by platform),'')) from base_app_version;
+select 'H-ctry', md5(coalesce(string_agg(code||name::text||dial_code||flag_url||is_active::text||sort::text, '|' order by code),'')) from base_country;
+select 'H-otp', md5(coalesce(string_agg(is_enabled::text||sandbox::text||coalesce(provider_id::text,'')||code_length||'/'||ttl_seconds||'/'||max_attempts||'/'||resend_seconds||'/'||phone_hourly||'/'||phone_daily||'/'||ip_hourly||message::text, '|'),'')) from publication_otp_settings;

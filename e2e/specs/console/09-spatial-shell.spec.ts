@@ -237,10 +237,17 @@ test.describe('spatial shell: rail and top bar', () => {
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/#\/economy\/gifts/);
     await page.locator('.sp-search').click();
-    await page.locator('.sp-pal-input').fill('پیامک');
+    await page.locator('.sp-pal-input').fill('ورود با پیامک');
+    await expect(page.locator('.sp-pal-row').first()).toContainText('ورود با پیامک');
     await page.keyboard.press('Enter');
     await expect(page.locator('[data-economy="project-settings"] .ps-window')).toBeVisible();
-    await expect(page).toHaveURL(/#\/project-settings\/sms/);
+    await expect(page).toHaveURL(/#\/project-settings\/otp/);
+    await page.locator('[data-ps-close]').click();
+    await page.locator('.sp-search').click();
+    await page.locator('.sp-pal-input').fill('ایمیل');
+    await page.keyboard.press('Enter');
+    await expect(page.locator('[data-economy="project-settings"] .ps-window')).toBeVisible();
+    await expect(page).toHaveURL(/#\/project-settings\/email/);
   });
 
   test('sign-in has no rail, a centered glass window on the sky', async ({ spawn }) => {

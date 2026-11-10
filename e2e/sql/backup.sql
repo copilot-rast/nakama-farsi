@@ -1,9 +1,13 @@
 CREATE SCHEMA IF NOT EXISTS zz_e2e_backup;
-DROP TABLE IF EXISTS zz_e2e_backup.pm, zz_e2e_backup.pv, zz_e2e_backup.lang, zz_e2e_backup.cur, zz_e2e_backup.brand, zz_e2e_backup.setup;
+DROP TABLE IF EXISTS zz_e2e_backup.pm, zz_e2e_backup.pv, zz_e2e_backup.lang, zz_e2e_backup.cur, zz_e2e_backup.brand, zz_e2e_backup.setup, zz_e2e_backup.rules, zz_e2e_backup.ver, zz_e2e_backup.ctry, zz_e2e_backup.otp;
 CREATE TABLE zz_e2e_backup.pm AS SELECT * FROM economy_payment_method;
 CREATE TABLE zz_e2e_backup.pv AS SELECT * FROM publication_provider;
 CREATE TABLE zz_e2e_backup.lang AS SELECT * FROM base_language;
 CREATE TABLE zz_e2e_backup.cur AS SELECT * FROM economy_currency;
 CREATE TABLE zz_e2e_backup.brand AS SELECT * FROM base_brand;
 CREATE TABLE zz_e2e_backup.setup AS SELECT * FROM base_setup;
+CREATE TABLE zz_e2e_backup.rules AS SELECT * FROM base_account_rules;
+CREATE TABLE zz_e2e_backup.ver AS SELECT * FROM base_app_version;
+CREATE TABLE zz_e2e_backup.ctry AS SELECT * FROM base_country;
+CREATE TABLE zz_e2e_backup.otp AS SELECT * FROM publication_otp_settings;
 SELECT 'backed up', (SELECT count(*) FROM zz_e2e_backup.pm), (SELECT count(*) FROM zz_e2e_backup.pv), (SELECT count(*) FROM zz_e2e_backup.lang), (SELECT count(*) FROM zz_e2e_backup.cur);

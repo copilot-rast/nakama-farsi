@@ -16,7 +16,7 @@ test('game screens fit a 390px phone', async ({ page }) => {
   await noHorizontalScroll(page);
   const menu = await page.locator('.menu-grid').boundingBox();
   expect(menu!.width).toBeLessThanOrEqual(390);
-  for (const name of ['shop', 'gift', 'payments', 'news', 'faq']) {
+  for (const name of ['shop', 'gift', 'payments', 'news', 'faq', 'account']) {
     await page.locator(`#screen-home [data-go="${name}"]`).click();
     await screen(page, name);
     await expect(page.locator(`#screen-${name} .spinner, #screen-${name} .skel`)).toHaveCount(0);

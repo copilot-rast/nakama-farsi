@@ -27,6 +27,8 @@ test.describe('spatial motion', () => {
     expect(await page.evaluate(() => getComputedStyle(document.getElementById('main')!).transform)).toBe('none');
     await page.goto('/#/economy/products');
     await page.locator('#economy-root table').waitFor();
+    await page.waitForTimeout(800);
+    await expect(page.locator('.sp-enter')).toHaveCount(0);
     await still(page);
     await page.evaluate(() => {
       (window as any).__enter = [];
