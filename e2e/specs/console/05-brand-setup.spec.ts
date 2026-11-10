@@ -118,7 +118,7 @@ test.describe('brand and setup wizard', () => {
     await page.waitForTimeout(1500);
     await expect(page.locator(W)).toHaveCount(0);
 
-    await page.evaluate(() => { location.hash = '#/settings/setup'; });
+    await page.evaluate(() => { location.hash = '#/project-settings/setup'; });
     await expect(page.locator('[data-setup-row="email"]')).toBeVisible();
     await expect(page.locator('[data-setup-row="sms"]')).toContainText('رد شد');
     await expect(page.locator('[data-setup-row="brand"]')).toContainText('انجام شد');
@@ -142,7 +142,7 @@ test.describe('brand and setup wizard', () => {
   });
 
   test('step bar opens every step, skip marks a step, Esc asks first, focus stays inside', async ({ page }) => {
-    await open(page, '#/settings/setup');
+    await open(page, '#/project-settings/setup');
     await page.locator('[data-setup-open]').click();
     await expect(page.locator(W)).toBeVisible();
     for (const step of ['brand', 'languages', 'currency', 'payment', 'sms', 'email', 'review']) {
@@ -199,7 +199,7 @@ test.describe('brand and setup wizard', () => {
     expect(r.data).toMatchObject({ custom: true, name: 'Starpicker ' + k, accent: '#2563eb', welcome: 'Welcome to the Starpicker panel.' });
     await deleteUser(dev.id);
 
-    await open(en, '#/settings/brand');
+    await open(en, '#/project-settings/brand');
     await expect(root(en).locator('.brand-editor input').first()).toBeVisible();
     await base.put('/brand', {});
     const fresh = await spawn({ signedIn: false });
@@ -230,7 +230,7 @@ test.describe('brand and setup wizard', () => {
       await loginAs(second, qa);
       await second.waitForTimeout(1500);
       await expect(second.locator(W)).toHaveCount(0);
-      await second.evaluate(() => { location.hash = '#/settings/setup'; });
+      await second.evaluate(() => { location.hash = '#/project-settings/setup'; });
       await second.locator('[data-setup-open]').click();
       await expect(second.locator(`${W} [data-setup-step]`)).toBeVisible();
       await later(second);

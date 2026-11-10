@@ -44,11 +44,12 @@ Read from the environment first, then from `~/.config/nakama-farsi/mac-dev.env` 
 
 | File | Covers |
 |---|---|
-| `console/01-shell.spec.ts` | sign-in in fa/RTL, our three sidebar sections and active states, EN/FA switch, dark mode over reload, reload/back/forward with query, legacy hash redirects, one active settings tab |
+| `console/01-shell.spec.ts` | sign-in in fa/RTL, our two sidebar sections + the project settings entry, active states, EN/FA switch, dark mode over reload, reload/back/forward with query, every legacy hash redirects to its project settings section, Nakama's own settings tabs untouched |
 | `console/02-base.spec.ts` | add/deactivate/delete a language and its tab in forms, default locked, coverage numbers move after a translation, categories and tags CRUD with key types, list filters, `IN_USE` delete, pickers filtered by key type (+ `general`) |
 | `console/03-economy.spec.ts` | currency (Persian digits), meta, prize item rows, product with fa/en/ar names + methods + SKU + coin price, reward and discount gift codes, masked secrets on payment methods, payments list and detail |
 | `console/04-publication.spec.ts` | FAQ and news (markdown preview, cover upload, actions) shown in the game, comment moderation round trip, live in-app notification (toast, bell, inbox, seen), SMS/email sandbox to users with and without addresses, provider test-send |
 | `console/05-brand-setup.spec.ts` | wizard auto-open once, every step, step bar, skip, «بعداً» and resume, reopen from settings, brand on sign-in/sidebar/title/favicon/accent, reset, claim-once with two admins |
+| `console/08-project-settings.spec.ts` | project settings window from the top bar and the sidebar, Esc/close back to the page underneath, every section, deep link + reload + back, arrows/Home/End/Tab trap, Esc closes the editor first, ACL hiding for limited console users (created and deleted in the test), quick-create from product, prize, FAQ and news forms (empty name, duplicate names, key type), player tags kept out of content pickers, EN + dark, 390px sheet and popover |
 | `console/07-responsive.spec.ts` | every overlay page at 390px: no sideways scroll, tables as cards; drawer and wizard fit |
 | `game/06-game.spec.ts` | 50 starting coins, a steered 30 s round pays coins, replay refused, STAR100 once, coin skin purchase, `INSUFFICIENT_BALANCE`, Bazaar/Myket simulators, token reuse refused, restore, HALF50 on Zibal and ZarinPal sandbox pages, ZarinPal «پرداخت» back to the game, fa/en/ar switch, news/FAQ/inbox screens |
 | `game/07-responsive.spec.ts` | game screens at 390px |
@@ -56,7 +57,7 @@ Read from the environment first, then from `~/.config/nakama-farsi/mac-dev.env` 
 ## Adding specs for a new phase
 
 1. Put console journeys in `specs/console/NN-<phase>.spec.ts`, game journeys in `specs/game/`. Import `test`/`expect` from `lib/fixtures.ts`.
-2. Use `open(page, '#/…')`/`go()` and the helpers in `lib/console.ts` (`settlePanel`, `fillTranslated`, `pickRef`, `savePanel`, `search`, `rows`, `toasts`), `lib/game.ts` for the game and `lib/api.ts` for setup and checks through the APIs.
+2. Use `open(page, '#/…')`/`go()`/`openSettings(page, section)` and the helpers in `lib/console.ts` (`root` is the project settings body while the window is open, else `#economy-root`; `settlePanel`, `fillTranslated`, `pickRef`, `savePanel`, `search`, `rows`, `toasts`), `lib/game.ts` for the game and `lib/api.ts` for setup and checks through the APIs.
 3. Create data with `uid()` keys and delete it in `afterAll`. If the phase adds a new shared config table, add it to `sql/backup.sql`, `sql/restore.sql` and `sql/snapshot.sql`; if it adds new keyed rows, add them to `sql/leftovers.sql` and `sql/cleanup.sql`.
 4. Assert what a user sees (text, state, numbers in the page), then cross-check through the API.
 5. Run `npm test` twice in a row before reporting.

@@ -2,8 +2,6 @@ import { expect, test } from '../../lib/fixtures';
 import { ADMIN, go, loginAs, open, root, settle, watchErrors } from '../../lib/console';
 
 const PAGES: [string, string][] = [
-  ['#/base/categories', 'دسته‌بندی‌ها'],
-  ['#/base/tags', 'تگ‌ها'],
   ['#/economy/overview', 'نمای کلی'],
   ['#/economy/currencies', 'ارزها'],
   ['#/economy/metas', 'متاها'],
@@ -16,10 +14,10 @@ const PAGES: [string, string][] = [
   ['#/publication/comments', 'کامنت‌ها'],
   ['#/publication/notifications', 'اعلان‌ها'],
 ];
-const TABS = ['payment-methods', 'sms', 'email', 'languages', 'brand', 'setup'];
+const NATIVE_TABS = ['users', 'general', 'config', 'data-management', 'audit-log'];
 
 test.describe('console shell', () => {
-  test('sign in shows the Persian RTL console with our three sections', async ({ spawn }) => {
+  test('sign in shows the Persian RTL console with our two sections and the project settings entry', async ({ spawn }) => {
     const page = await spawn({ signedIn: false });
     const errors = watchErrors(page);
     await page.goto('/#/login');
@@ -27,11 +25,14 @@ test.describe('console shell', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'fa-IR');
     await loginAs(page, ADMIN);
     const drawer = page.locator('.x-drawer');
-    for (const [sec, title] of [['base', 'عمومی'], ['economy', 'اقتصاد'], ['publication', 'انتشار']]) {
+    for (const [sec, title] of [['economy', 'اقتصاد'], ['publication', 'انتشار']]) {
       await expect(drawer.locator(`[data-economy-nav="${sec}"]`).first()).toContainText(title);
     }
+    await expect(drawer.locator('[data-economy-nav="base"]')).toHaveCount(0);
     const order = await page.evaluate(() => [...document.querySelectorAll('.x-drawer [data-economy-nav]')].map((n) => n.getAttribute('data-economy-nav')));
-    expect(order.slice(0, 3)).toEqual(['base', 'economy', 'publication']);
+    expect(order.slice(0, 2)).toEqual(['economy', 'publication']);
+    await expect(drawer.locator('[data-ps-entry="sidebar"]').first()).toContainText('تنظیمات پروژه');
+    await expect(page.locator('[data-ps-entry="topbar"]')).toHaveAttribute('aria-label', 'تنظیمات پروژه');
     expect(errors).toEqual([]);
   });
 
@@ -111,43 +112,41 @@ test.describe('console shell', () => {
     await expect(root(page).locator('h1')).toHaveText('اخبار');
   });
 
-  test('legacy hashes redirect to where the pages live now', async ({ page }) => {
-    const cases: [string, RegExp, string][] = [
-      ['#/economy/categories', /#\/base\/categories$/, 'h1'],
-      ['#/economy/tags', /#\/base\/tags$/, 'h1'],
-      ['#/economy/payment-methods', /#\/settings\/payment-methods$/, 'payment-methods'],
-      ['#/publication/providers', /#\/settings\/sms$/, 'sms'],
+  test('legacy hashes redirect to the matching project settings section', async ({ page }) => {
+    const cases: [string, string, string][] = [
+      ['#/economy/categories', 'categories', ''],
+      ['#/economy/tags', 'tags', ''],
+      ['#/base/categories', 'categories', ''],
+      ['#/base/tags?keyType=general', 'tags', '?keyType=general'],
+      ['#/economy/payment-methods', 'payment-methods', ''],
+      ['#/publication/providers', 'sms', ''],
+      ['#/settings/payment-methods', 'payment-methods', ''],
+      ['#/settings/sms', 'sms', ''],
+      ['#/settings/email', 'email', ''],
+      ['#/settings/languages', 'languages', ''],
+      ['#/settings/brand', 'brand', ''],
+      ['#/settings/setup', 'setup', ''],
     ];
-    for (const [from, to, what] of cases) {
+    for (const [from, section, query] of cases) {
       await page.goto('/' + from);
-      await expect(page).toHaveURL(to);
-      await page.locator('#economy-root').waitFor();
-      if (what === 'h1') await expect(root(page).locator('h1')).toHaveText(from.includes('tags') ? 'تگ‌ها' : 'دسته‌بندی‌ها');
-      else await expect(page.locator(`a.x-tab[data-settings-tab="${what}"]`)).toHaveAttribute('aria-current', 'page');
+      await expect(page).toHaveURL(new RegExp('#/project-settings/' + section + query.replace(/[?]/g, '\\$&') + '$'));
+      await expect(page.locator(`.ps-window [role="tab"][data-ps-section="${section}"]`)).toHaveAttribute('aria-selected', 'true');
     }
     await open(page, '#/economy/overview');
     await go(page, '#/economy/categories?keyType=product');
-    await expect(page).toHaveURL(/#\/base\/categories\?keyType=product$/);
+    await expect(page).toHaveURL(/#\/project-settings\/categories\?keyType=product$/);
+    await expect(root(page).locator('.eco-filters select').first()).toHaveValue('product');
   });
 
-  test('settings tabs show exactly one active tab at a time', async ({ page }) => {
-    await open(page, '#/settings/payment-methods');
-    for (const tab of TABS) {
-      await page.locator(`a.x-tab[data-settings-tab="${tab}"]`).click();
-      await expect(page).toHaveURL(new RegExp('#/settings/' + tab + '$'));
-      await page.locator('#economy-root[data-economy="settings"]').waitFor();
-      await expect(page.locator('a.x-tab[aria-current="page"]')).toHaveCount(1);
-      await expect(page.locator('a.x-tab.eco-tab-on')).toHaveCount(1);
-      await expect(page.locator('a.x-tab[aria-current="page"]')).toHaveAttribute('data-settings-tab', tab);
-      await expect(page.locator('#economy-root')).toHaveCount(1);
-    }
+  test("Nakama's own settings keep their tabs and nothing of ours is injected", async ({ page }) => {
+    await page.goto('/#/settings/users');
+    await page.locator('.x-drawer a[href="#/players"]').first().waitFor({ state: 'attached' });
+    for (const tab of NATIVE_TABS) await expect(page.locator(`a.x-tab[href="#/settings/${tab}"]`)).toHaveCount(1);
     await page.locator('a.x-tab[href="#/settings/general"]').click();
     await expect(page).toHaveURL(/#\/settings\/general$/);
-    await expect(page.locator('#economy-root')).toHaveCount(0);
-    await expect(page.locator('a.x-tab.eco-tab-on')).toHaveCount(0);
-    await expect(page.locator('a.x-tab[data-settings-tab][aria-current="page"]')).toHaveCount(0);
-    await page.locator('a.x-tab[data-settings-tab="languages"]').click();
     await expect(page.locator('a.x-tab[aria-current="page"]')).toHaveCount(1);
-    await expect(page.locator('a.x-tab[href="#/settings/general"]')).not.toHaveAttribute('aria-current', 'page');
+    await expect(page.locator('a.x-tab[data-settings-tab], .eco-tab')).toHaveCount(0);
+    await expect(page.locator('#economy-root')).toHaveCount(0);
+    await expect(page.locator('.ps-window')).toHaveCount(0);
   });
 });

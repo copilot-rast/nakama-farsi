@@ -25,7 +25,7 @@ test.describe('base: languages', () => {
   test('add a language, see it in forms, deactivate and delete it; the default stays locked', async ({ page }) => {
     const code = 'xa-' + Date.now().toString(36).slice(-6);
     created.langs.push(code);
-    await open(page, '#/settings/languages');
+    await open(page, '#/project-settings/languages');
     await root(page).getByRole('button', { name: 'زبان جدید' }).click();
     await settlePanel(page);
     const p = panel(page);
@@ -47,26 +47,26 @@ test.describe('base: languages', () => {
     await expect(row).toContainText('فعال');
     expect((await base.get('/languages/' + code)).isActive).toBe(true);
 
-    await go(page, '#/base/categories/new');
+    await go(page, '#/project-settings/categories/new');
     await settlePanel(page);
     await expect(translated(panel(page), 'name').locator(`[role="tab"][data-lang="${code}"]`)).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(panel(page)).toHaveCount(0);
 
-    await go(page, '#/settings/languages?q=' + code);
+    await go(page, '#/project-settings/languages?q=' + code);
     const row2 = rows(page).filter({ hasText: code });
     await row2.locator('.x-toggle').click();
     await expect(toasts(page).filter({ hasText: 'غیرفعال شد' })).toBeVisible();
     await expect(row2).toContainText('غیرفعال');
     await expect.poll(async () => (await base.get('/languages/' + code)).isActive).toBe(false);
 
-    await go(page, '#/base/categories/new');
+    await go(page, '#/project-settings/categories/new');
     await settlePanel(page);
     await expect(translated(panel(page), 'name').locator('[role="tab"][data-lang="fa"]')).toBeVisible();
     await expect(translated(panel(page), 'name').locator(`[role="tab"][data-lang="${code}"]`)).toHaveCount(0);
     await page.keyboard.press('Escape');
 
-    await go(page, '#/settings/languages');
+    await go(page, '#/project-settings/languages');
     await search(page, 'fa');
     const fa = rows(page).filter({ has: page.locator('span.font-mono', { hasText: /^fa$/ }) });
     await expect(fa).toContainText('پیش‌فرض');
@@ -92,19 +92,19 @@ test.describe('base: languages', () => {
     const key = uid();
     const cat = await base.post('/categories', { key, keyType: 'news', name: { fa: 'پوشش ' + key }, description: {}, iconUrl: '', metadata: {}, sort: 0 });
     created.categories.push(cat.id);
-    await open(page, '#/settings/languages');
+    await open(page, '#/project-settings/languages');
     const cov = root(page).locator('[data-coverage]');
     await expect(cov.locator('[data-cov-lang="en"]')).toBeVisible();
     const before = Number(await cov.locator('[data-cov-lang="en"]').getAttribute('data-cov-missing'));
     expect(before).toBeGreaterThan(0);
     await expect(cov.locator('[data-cov="categories:en"]')).toContainText('ناقص');
 
-    await go(page, '#/base/categories/' + cat.id);
+    await go(page, '#/project-settings/categories/' + cat.id);
     await settlePanel(page);
     await fillTranslated(panel(page), 'name', { en: 'Coverage ' + key });
     await savePanel(page);
 
-    await go(page, '#/settings/languages');
+    await go(page, '#/project-settings/languages');
     await expect(cov.locator('[data-cov-lang="en"]')).toHaveAttribute('data-cov-missing', String(before - 1));
     const reload = page.waitForResponse((r) => r.url().includes('/languages/coverage'));
     await cov.getByRole('button', { name: 'تازه‌سازی' }).click();
@@ -117,7 +117,7 @@ test.describe('base: languages', () => {
 test.describe('base: categories and tags', () => {
   test('category CRUD with a key type, filter and an IN_USE delete', async ({ page }) => {
     const key = uid();
-    await open(page, '#/base/categories');
+    await open(page, '#/project-settings/categories');
     await root(page).getByRole('button', { name: 'دسته‌بندی جدید' }).first().click();
     await settlePanel(page);
     const p = panel(page);
@@ -180,7 +180,7 @@ test.describe('base: categories and tags', () => {
     const generalTag = await base.post('/tags', { key: k + '_gt', keyType: 'general', name: { fa: 'تگ عمومی ' + k }, description: {}, iconUrl: '', metadata: {}, sort: 0 });
     created.tags.push(productTag.id, generalTag.id);
 
-    await open(page, '#/base/tags');
+    await open(page, '#/project-settings/tags');
     await root(page).getByRole('button', { name: 'تگ جدید' }).first().click();
     await settlePanel(page);
     await expect(field(panel(page), /^نوع کلید$/).locator('select')).toHaveValue('general');
@@ -230,7 +230,7 @@ test.describe('base: categories and tags', () => {
     await page.keyboard.press('Escape');
     await page.keyboard.press('Escape');
 
-    await go(page, '#/base/tags?q=' + k + '_pt');
+    await go(page, '#/project-settings/tags?q=' + k + '_pt');
     await rows(page).first().locator('td').first().click();
     await settlePanel(page);
     await panel(page).getByRole('button', { name: 'حذف' }).click();

@@ -280,7 +280,7 @@ test.describe('publication', () => {
 
   test('provider test-send answers from the sandbox for SMS and email', async ({ page }) => {
     for (const [tab, kind, to] of [['sms', 'kavenegar', '09120000000'], ['email', 'smtp', 'e2e@example.com']]) {
-      await open(page, '#/settings/' + tab);
+      await open(page, '#/project-settings/' + tab);
       const card = root(page).locator(`[data-provider="${kind}"]`);
       await expect(card.locator('[data-sandbox-box]')).toHaveClass(/eco-sandbox-note/);
       await card.locator('details.eco-test > summary').click();

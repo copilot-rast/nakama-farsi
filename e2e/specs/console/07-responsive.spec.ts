@@ -4,8 +4,8 @@ import { noHorizontalScroll, open, root } from '../../lib/console';
 test.use({ pageOpts: { signedIn: true, mobile: true } } as any);
 
 const PAGES = [
-  '#/base/categories',
-  '#/base/tags',
+  '#/project-settings/categories',
+  '#/project-settings/tags',
   '#/economy/overview',
   '#/economy/currencies',
   '#/economy/prizes',
@@ -17,12 +17,12 @@ const PAGES = [
   '#/publication/comments',
   '#/publication/notifications',
   '#/publication/notifications/new',
-  '#/settings/payment-methods',
-  '#/settings/sms',
-  '#/settings/email',
-  '#/settings/languages',
-  '#/settings/brand',
-  '#/settings/setup',
+  '#/project-settings/payment-methods',
+  '#/project-settings/sms',
+  '#/project-settings/email',
+  '#/project-settings/languages',
+  '#/project-settings/brand',
+  '#/project-settings/setup',
 ];
 
 test.describe('console at 390px', () => {
@@ -53,7 +53,7 @@ test.describe('console at 390px', () => {
     expect(box!.width).toBeLessThanOrEqual(390);
     await noHorizontalScroll(page);
     await page.keyboard.press('Escape');
-    await open(page, '#/settings/setup');
+    await open(page, '#/project-settings/setup');
     await page.locator('[data-setup-open]').click();
     const wiz = page.locator('[data-economy="setup"]');
     await expect(wiz).toBeVisible();

@@ -19,23 +19,35 @@ export async function loginAs(page: Page, who: { user: string; pass: string }) {
 export async function open(page: Page, hash: string) {
   await page.goto(CONSOLE_URL + '/' + hash);
   await page.locator('.x-drawer a[href="#/players"]').first().waitFor({ state: 'attached', timeout: 20_000 });
-  await page.locator('#economy-root').waitFor({ timeout: 15_000 });
+  await root(page).waitFor({ timeout: 15_000 });
   await settle(page);
 }
 
 export async function go(page: Page, hash: string) {
   await page.evaluate((h) => { location.hash = h; }, hash);
-  await page.locator('#economy-root').waitFor();
+  await root(page).waitFor();
   await settle(page);
 }
 
-export async function settle(page: Page, scope: Locator | string = '#economy-root') {
+export async function settle(page: Page, scope: Locator | string = ROOT) {
   const root = typeof scope === 'string' ? page.locator(scope) : scope;
   await expect(root.locator('.animate-pulse')).toHaveCount(0, { timeout: 15_000 });
 }
 
+export const ROOT = 'html[data-ps-open] #project-settings-body, html:not([data-ps-open]) #economy-root';
+
 export function root(page: Page) {
-  return page.locator('#economy-root');
+  return page.locator(ROOT);
+}
+
+export function psWindow(page: Page) {
+  return page.locator('[data-economy="project-settings"] .ps-window');
+}
+
+export async function openSettings(page: Page, section: string) {
+  await open(page, '#/project-settings/' + section);
+  await expect(psWindow(page)).toBeVisible();
+  await expect(psWindow(page).locator(`[role="tab"][data-ps-section="${section}"]`)).toHaveAttribute('aria-selected', 'true');
 }
 
 export function panel(page: Page) {

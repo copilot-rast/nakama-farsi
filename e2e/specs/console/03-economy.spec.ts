@@ -199,7 +199,7 @@ test.describe('economy', () => {
 
   test('payment methods page masks secrets and keeps them on save', async ({ page }) => {
     try {
-      await open(page, '#/settings/payment-methods');
+      await open(page, '#/project-settings/payment-methods');
       const bazaar = root(page).locator('[data-method="bazaar"]');
       await expect(bazaar).toBeVisible();
       const secret = field(bazaar, /^کلید API$/);
