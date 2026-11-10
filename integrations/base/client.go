@@ -13,6 +13,7 @@ func (s *service) clientRPCs() map[string]clientRPC {
 		"base_set_language": s.rpcSetLanguage,
 		"base_categories":   s.rpcCategories,
 		"base_tags":         s.rpcTags,
+		"base_brand":        s.rpcBrand,
 	}
 }
 

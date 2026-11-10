@@ -211,3 +211,20 @@ func Test_IsAdmin(t *testing.T) {
 		})
 	}
 }
+
+func TestCheckACLHttpBaseBrandSetup(t *testing.T) {
+	settingsRead := NewPermission(console.AclResources_SETTINGS, PermissionRead)
+	settingsWrite := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
+	economyWrite := NewPermission(console.AclResources_HIRO_ECONOMY, PermissionWrite)
+	for _, path := range []string{"/v2/console/base/brand", "/v2/console/base/setup"} {
+		if !CheckACLHttp(http.MethodGet, path, settingsRead) || CheckACLHttp(http.MethodGet, path, economyWrite) {
+			t.Fatalf("GET %s must need settings read", path)
+		}
+		if !CheckACLHttp(http.MethodPut, path, settingsWrite) || CheckACLHttp(http.MethodPut, path, settingsRead) {
+			t.Fatalf("PUT %s must need settings write", path)
+		}
+	}
+	if !CheckACLHttp(http.MethodPost, "/v2/console/base/setup/claim", settingsWrite) || CheckACLHttp(http.MethodPost, "/v2/console/base/setup/claim", settingsRead) {
+		t.Fatal("claim must need settings write")
+	}
+}

@@ -22,6 +22,12 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/languages/{id}", http.MethodDelete, s.languageDelete},
 		{consolePrefix + "/categories/key-types", http.MethodGet, s.keyTypes(categoryKeyTypes)},
 		{consolePrefix + "/tags/key-types", http.MethodGet, s.keyTypes(tagKeyTypes)},
+		{consolePrefix + "/brand", http.MethodGet, s.brandGet},
+		{consolePrefix + "/brand", http.MethodPut, s.brandPut},
+		{consolePrefix + "/brand/public", http.MethodGet, s.brandPublic},
+		{consolePrefix + "/setup", http.MethodGet, s.setupGet},
+		{consolePrefix + "/setup", http.MethodPut, s.setupPut},
+		{consolePrefix + "/setup/claim", http.MethodPost, s.setupClaim},
 	}
 	for _, res := range []resource{categoriesResource, tagsResource} {
 		base := consolePrefix + "/" + res.name
