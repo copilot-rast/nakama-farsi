@@ -18,20 +18,24 @@ type resource struct {
 	table    string
 	keyTypes []string
 	usedSQL  string
+	json     string
 }
 
 const taxonomyJSON = `jsonb_build_object('id',t.id,'key',t.key,'keyType',t.key_type,'name',t.name,'description',t.description,'iconUrl',t.icon_url,'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
+
+const tagJSON = `jsonb_build_object('id',t.id,'key',t.key,'keyType',t.key_type,'name',t.name,'description',t.description,'iconUrl',t.icon_url,'metadata',t.metadata,'sort',t.sort,'isPublic',t.is_public,'players',(SELECT count(*) FROM base_user_tag ut WHERE ut.tag_id=t.id),'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
 const categoryUsedSQL = `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_product WHERE category_id=$1)
 	OR EXISTS (SELECT 1 FROM economy_gift WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_currency WHERE category_id=$1)
 	OR EXISTS (SELECT 1 FROM publication_faq WHERE category_id=$1) OR EXISTS (SELECT 1 FROM publication_news WHERE category_id=$1)`
 
 const tagUsedSQL = `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_product WHERE $1::text = ANY(tag_ids))
-	OR EXISTS (SELECT 1 FROM economy_gift WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_currency WHERE $1::text = ANY(tag_ids))`
+	OR EXISTS (SELECT 1 FROM economy_gift WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_currency WHERE $1::text = ANY(tag_ids))
+	OR EXISTS (SELECT 1 FROM base_user_tag WHERE tag_id::text=$1::text) OR EXISTS (SELECT 1 FROM economy_product WHERE $1::text = ANY(audience_tag_ids))`
 
-var categoriesResource = resource{name: "categories", table: "base_category", keyTypes: categoryKeyTypes, usedSQL: categoryUsedSQL}
+var categoriesResource = resource{name: "categories", table: "base_category", keyTypes: categoryKeyTypes, usedSQL: categoryUsedSQL, json: taxonomyJSON}
 
-var tagsResource = resource{name: "tags", table: "base_tag", keyTypes: tagKeyTypes, usedSQL: tagUsedSQL}
+var tagsResource = resource{name: "tags", table: "base_tag", keyTypes: tagKeyTypes, usedSQL: tagUsedSQL, json: tagJSON}
 
 func translatedSearch(col, n string) string {
 	return "EXISTS (SELECT 1 FROM jsonb_each_text(" + col + ") e WHERE e.value ILIKE " + n + ")"
@@ -86,7 +90,12 @@ func (s *service) taxonomyList(res resource) http.HandlerFunc {
 			}
 			where.add("t.key_type = ?", v)
 		}
-		out, err := s.listRaw(r, ` FROM `+res.table+` t`, taxonomyJSON, "t.created_at DESC, t.id DESC", where, p)
+		if res.name == "tags" {
+			if v := r.URL.Query().Get("isPublic"); v == "true" || v == "false" {
+				where.add("t.is_public = ?", v == "true")
+			}
+		}
+		out, err := s.listRaw(r, ` FROM `+res.table+` t`, res.json, "t.created_at DESC, t.id DESC", where, p)
 		if err != nil {
 			s.writeError(w, err)
 			return
@@ -104,7 +113,7 @@ func fetchTaxonomy(ctx context.Context, q queryer, res resource, id string) (jso
 		return nil, notFound("NOT_FOUND")
 	}
 	var raw string
-	err := q.QueryRowContext(ctx, `SELECT `+taxonomyJSON+`::text FROM `+res.table+` t WHERE t.id=$1`, id).Scan(&raw)
+	err := q.QueryRowContext(ctx, `SELECT `+res.json+`::text FROM `+res.table+` t WHERE t.id=$1`, id).Scan(&raw)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, notFound("NOT_FOUND")
 	}
@@ -133,6 +142,7 @@ type taxonomyInput struct {
 	IconURL     string          `json:"iconUrl"`
 	Metadata    json.RawMessage `json:"metadata"`
 	Sort        int             `json:"sort"`
+	IsPublic    bool            `json:"isPublic"`
 }
 
 func (s *service) saveTaxonomy(ctx context.Context, tx *sql.Tx, res resource, id string, create bool, raw []byte) error {
@@ -168,9 +178,13 @@ func (s *service) saveTaxonomy(ctx context.Context, tx *sql.Tx, res resource, id
 	if err != nil {
 		return err
 	}
+	public := res.name == "tags" && in.KeyType == "user" && in.IsPublic
 	if create {
 		_, err := tx.ExecContext(ctx, `INSERT INTO `+res.table+` (id, key, key_type, name, description, icon_url, metadata, sort) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
 			id, key, in.KeyType, name.JSON(), desc.JSON(), icon, meta, in.Sort)
+		if err == nil && public {
+			_, err = tx.ExecContext(ctx, `UPDATE base_tag SET is_public=true WHERE id=$1`, id)
+		}
 		return err
 	}
 	var oldType string
@@ -181,7 +195,7 @@ func (s *service) saveTaxonomy(ctx context.Context, tx *sql.Tx, res resource, id
 	if err != nil {
 		return err
 	}
-	if oldType != in.KeyType && in.KeyType != "general" {
+	if oldType != in.KeyType && (in.KeyType != "general" || oldType == "user") {
 		var used bool
 		if err := tx.QueryRowContext(ctx, res.usedSQL, id).Scan(&used); err != nil {
 			return err
@@ -192,6 +206,9 @@ func (s *service) saveTaxonomy(ctx context.Context, tx *sql.Tx, res resource, id
 	}
 	_, err = tx.ExecContext(ctx, `UPDATE `+res.table+` SET key=$2, key_type=$3, name=$4, description=$5, icon_url=$6, metadata=$7, sort=$8, updated_at=now() WHERE id=$1`,
 		id, key, in.KeyType, name.JSON(), desc.JSON(), icon, meta, in.Sort)
+	if err == nil && res.name == "tags" {
+		_, err = tx.ExecContext(ctx, `UPDATE base_tag SET is_public=$2 WHERE id=$1`, id, public)
+	}
 	return err
 }
 
@@ -250,6 +267,9 @@ func (s *service) taxonomyDelete(res resource) http.HandlerFunc {
 					if _, err := tx.ExecContext(r.Context(), `UPDATE `+table+` SET tag_ids = array_remove(tag_ids, $1::text), updated_at=now() WHERE $1::text = ANY(tag_ids)`, id); err != nil {
 						return err
 					}
+				}
+				if _, err := tx.ExecContext(r.Context(), `UPDATE economy_product SET audience_tag_ids = array_remove(audience_tag_ids, $1::text), updated_at=now() WHERE $1::text = ANY(audience_tag_ids)`, id); err != nil {
+					return err
 				}
 			} else {
 				var used bool

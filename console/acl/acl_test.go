@@ -247,3 +247,31 @@ func TestCheckACLHttpBaseAccounts(t *testing.T) {
 		t.Fatal("otp settings must need notification write")
 	}
 }
+
+func TestCheckACLHttpBasePlayersAndChat(t *testing.T) {
+	cases := []struct {
+		resource console.AclResources
+		paths    []string
+	}{
+		{console.AclResources_ACCOUNT, []string{"/v2/console/base/players", "/v2/console/base/players/{id}", "/v2/console/base/players/{id}/tags", "/v2/console/base/players/tags", "/v2/console/base/players/{id}/restrictions", "/v2/console/base/restrictions", "/v2/console/base/restrictions/{id}/lift"}},
+		{console.AclResources_CHANNEL_MESSAGE, []string{"/v2/console/base/chat-words", "/v2/console/base/chat-words/{id}", "/v2/console/base/chat-words/test", "/v2/console/base/report-titles", "/v2/console/base/report-titles/{id}", "/v2/console/base/reports", "/v2/console/base/reports/summary", "/v2/console/base/reports/{id}/resolve"}},
+	}
+	settingsWrite := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
+	for _, c := range cases {
+		read := NewPermission(c.resource, PermissionRead)
+		write := NewPermission(c.resource, PermissionWrite)
+		for _, path := range c.paths {
+			if !CheckACLHttp(http.MethodGet, path, read) || CheckACLHttp(http.MethodGet, path, settingsWrite) {
+				t.Fatalf("GET %s must need %v read", path, c.resource)
+			}
+			for _, method := range []string{http.MethodPut, http.MethodPost, http.MethodDelete} {
+				if !CheckACLHttp(method, path, write) || CheckACLHttp(method, path, read) {
+					t.Fatalf("%s %s must need %v write", method, path, c.resource)
+				}
+			}
+		}
+	}
+	if CheckACLHttp(http.MethodGet, "/v2/console/base/tags", NewPermission(console.AclResources_ACCOUNT, PermissionRead)) {
+		t.Fatal("tag definitions stay under economy")
+	}
+}

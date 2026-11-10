@@ -28,6 +28,10 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := svc.registerRuleHooks(initializer); err != nil {
 		return err
 	}
+	if err := svc.registerModerationHooks(initializer); err != nil {
+		return err
+	}
+	go svc.restrictionLoop(ctx)
 	logger.Info("Base module registered")
 	return nil
 }

@@ -13,6 +13,7 @@ import (
 
 	"github.com/heroiclabs/nakama-common/api"
 	"github.com/heroiclabs/nakama-common/runtime"
+	"github.com/heroiclabs/nakama/v3/internal/hookchain"
 	"google.golang.org/grpc/codes"
 )
 
@@ -247,45 +248,69 @@ func (s *service) beforeUpdateAccount(ctx context.Context, _ runtime.Logger, _ *
 	return in, nil
 }
 
+func (s *service) emailUser(ctx context.Context, in *api.AuthenticateEmailRequest) string {
+	if email := strings.ToLower(strings.TrimSpace(in.GetAccount().GetEmail())); email != "" {
+		return s.userBy(ctx, `SELECT id::text FROM users WHERE email=$1`, email)
+	}
+	return s.userBy(ctx, `SELECT id::text FROM users WHERE username=$1`, in.Username)
+}
+
 func (s *service) registerRuleHooks(initializer runtime.Initializer) error {
 	checks := []func() error{
-		func() error { return initializer.RegisterBeforeAuthenticateEmail(s.beforeAuthEmail) },
-		func() error { return initializer.RegisterBeforeLinkEmail(s.beforeLinkEmail) },
-		func() error { return initializer.RegisterBeforeUpdateAccount(s.beforeUpdateAccount) },
 		func() error {
-			return initializer.RegisterBeforeAuthenticateDevice(func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateDeviceRequest) (*api.AuthenticateDeviceRequest, error) {
-				return in, s.checkNewUsername(ctx, in.Username)
-			})
+			return initializer.RegisterBeforeAuthenticateEmail(hookchain.Before("AuthenticateEmail", func(ctx context.Context, l runtime.Logger, db *sql.DB, nk runtime.NakamaModule, in *api.AuthenticateEmailRequest) (*api.AuthenticateEmailRequest, error) {
+				if err := s.refuseSuspended(ctx, s.emailUser(ctx, in)); err != nil {
+					return nil, err
+				}
+				return s.beforeAuthEmail(ctx, l, db, nk, in)
+			}))
 		},
 		func() error {
-			return initializer.RegisterBeforeAuthenticateCustom(func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateCustomRequest) (*api.AuthenticateCustomRequest, error) {
-				return in, s.checkNewUsername(ctx, in.Username)
-			})
+			return initializer.RegisterBeforeLinkEmail(hookchain.Before("LinkEmail", s.beforeLinkEmail))
 		},
 		func() error {
-			return initializer.RegisterBeforeAuthenticateGoogle(func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateGoogleRequest) (*api.AuthenticateGoogleRequest, error) {
-				return in, s.checkNewUsername(ctx, in.Username)
-			})
+			return initializer.RegisterBeforeUpdateAccount(hookchain.Before("UpdateAccount", s.beforeUpdateAccount))
 		},
 		func() error {
-			return initializer.RegisterBeforeAuthenticateApple(func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateAppleRequest) (*api.AuthenticateAppleRequest, error) {
+			return initializer.RegisterBeforeAuthenticateDevice(hookchain.Before("AuthenticateDevice", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateDeviceRequest) (*api.AuthenticateDeviceRequest, error) {
+				if err := s.refuseSuspended(ctx, s.userBy(ctx, `SELECT user_id::text FROM user_device WHERE id=$1`, in.GetAccount().GetId())); err != nil {
+					return nil, err
+				}
 				return in, s.checkNewUsername(ctx, in.Username)
-			})
+			}))
 		},
 		func() error {
-			return initializer.RegisterBeforeAuthenticateFacebook(func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateFacebookRequest) (*api.AuthenticateFacebookRequest, error) {
+			return initializer.RegisterBeforeAuthenticateCustom(hookchain.Before("AuthenticateCustom", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateCustomRequest) (*api.AuthenticateCustomRequest, error) {
+				if err := s.refuseSuspended(ctx, s.userBy(ctx, `SELECT id::text FROM users WHERE custom_id=$1`, in.GetAccount().GetId())); err != nil {
+					return nil, err
+				}
 				return in, s.checkNewUsername(ctx, in.Username)
-			})
+			}))
 		},
 		func() error {
-			return initializer.RegisterBeforeAuthenticateSteam(func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateSteamRequest) (*api.AuthenticateSteamRequest, error) {
+			return initializer.RegisterBeforeAuthenticateGoogle(hookchain.Before("AuthenticateGoogle", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateGoogleRequest) (*api.AuthenticateGoogleRequest, error) {
 				return in, s.checkNewUsername(ctx, in.Username)
-			})
+			}))
 		},
 		func() error {
-			return initializer.RegisterBeforeAuthenticateGameCenter(func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateGameCenterRequest) (*api.AuthenticateGameCenterRequest, error) {
+			return initializer.RegisterBeforeAuthenticateApple(hookchain.Before("AuthenticateApple", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateAppleRequest) (*api.AuthenticateAppleRequest, error) {
 				return in, s.checkNewUsername(ctx, in.Username)
-			})
+			}))
+		},
+		func() error {
+			return initializer.RegisterBeforeAuthenticateFacebook(hookchain.Before("AuthenticateFacebook", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateFacebookRequest) (*api.AuthenticateFacebookRequest, error) {
+				return in, s.checkNewUsername(ctx, in.Username)
+			}))
+		},
+		func() error {
+			return initializer.RegisterBeforeAuthenticateSteam(hookchain.Before("AuthenticateSteam", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateSteamRequest) (*api.AuthenticateSteamRequest, error) {
+				return in, s.checkNewUsername(ctx, in.Username)
+			}))
+		},
+		func() error {
+			return initializer.RegisterBeforeAuthenticateGameCenter(hookchain.Before("AuthenticateGameCenter", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateGameCenterRequest) (*api.AuthenticateGameCenterRequest, error) {
+				return in, s.checkNewUsername(ctx, in.Username)
+			}))
 		},
 	}
 	for _, register := range checks {

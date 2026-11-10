@@ -113,6 +113,10 @@ func (s *service) runtimeError(err error) error {
 	if app, ok := asApp(err); ok {
 		return runtime.NewError(app.Code, int(grpcCode(app.Status)))
 	}
+	var rtErr *runtime.Error
+	if errors.As(err, &rtErr) {
+		return rtErr
+	}
 	switch {
 	case errors.Is(err, context.DeadlineExceeded):
 		return runtime.NewError("TIMEOUT", int(codes.DeadlineExceeded))

@@ -8,16 +8,56 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/gofrs/uuid/v5"
 	"github.com/gorilla/mux"
+	"github.com/heroiclabs/nakama-common/rtapi"
 	"github.com/heroiclabs/nakama-common/runtime"
 )
 
 type fakeNakama struct {
 	runtime.NakamaModule
-	db *sql.DB
+	db      *sql.DB
+	mu      sync.Mutex
+	notes   []fakeNote
+	logouts []string
+	removed []string
+}
+
+type fakeNote struct {
+	user       string
+	code       int
+	content    map[string]any
+	persistent bool
+}
+
+func (n *fakeNakama) NotificationSend(_ context.Context, userID, _ string, content map[string]any, code int, _ string, persistent bool) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+	n.notes = append(n.notes, fakeNote{user: userID, code: code, content: content, persistent: persistent})
+	return nil
+}
+
+func (n *fakeNakama) SessionLogout(userID, _, _ string) error {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+	n.logouts = append(n.logouts, userID)
+	return nil
+}
+
+func (n *fakeNakama) StreamUserList(uint8, string, string, string, bool, bool) ([]runtime.Presence, error) {
+	return nil, nil
+}
+
+func (n *fakeNakama) ChannelMessageRemove(ctx context.Context, channelID, messageID, _, _ string, _ bool) (*rtapi.ChannelMessageAck, error) {
+	n.mu.Lock()
+	n.removed = append(n.removed, channelID+"|"+messageID)
+	n.mu.Unlock()
+	_, err := n.db.ExecContext(ctx, `DELETE FROM message WHERE id=$1`, messageID)
+	return &rtapi.ChannelMessageAck{MessageId: messageID}, err
 }
 
 func (n *fakeNakama) AccountUpdateId(ctx context.Context, userID, _ string, _ map[string]any, _, _, _, langTag, _ string) error {
@@ -67,7 +107,7 @@ func newHarness(t *testing.T) *harness {
 			t.Fatal(err)
 		}
 	}
-	s := &service{db: db, nk: &fakeNakama{db: db}, logger: testLogger{}}
+	s := &service{db: db, nk: &fakeNakama{db: db}, logger: testLogger{}, now: time.Now}
 	init := &fakeInit{console: mux.NewRouter()}
 	if err := s.registerConsoleHTTP(init); err != nil {
 		t.Fatal(err)

@@ -9,15 +9,19 @@ import (
 
 func (s *service) clientRPCs() map[string]clientRPC {
 	return map[string]clientRPC{
-		"base_languages":     s.rpcLanguages,
-		"base_set_language":  s.rpcSetLanguage,
-		"base_categories":    s.rpcCategories,
-		"base_tags":          s.rpcTags,
-		"base_brand":         s.rpcBrand,
-		"base_account_rules": s.rpcAccountRules,
-		"base_app_version":   s.rpcAppVersion,
-		"base_countries":     s.rpcCountries,
-		"base_set_country":   s.rpcSetCountry,
+		"base_languages":      s.rpcLanguages,
+		"base_set_language":   s.rpcSetLanguage,
+		"base_categories":     s.rpcCategories,
+		"base_tags":           s.rpcTags,
+		"base_brand":          s.rpcBrand,
+		"base_account_rules":  s.rpcAccountRules,
+		"base_app_version":    s.rpcAppVersion,
+		"base_countries":      s.rpcCountries,
+		"base_set_country":    s.rpcSetCountry,
+		"base_my_tags":        s.rpcMyTags,
+		"base_my_status":      s.rpcMyStatus,
+		"base_report_titles":  s.rpcReportTitles,
+		"base_report_message": s.rpcReportMessage,
 	}
 }
 

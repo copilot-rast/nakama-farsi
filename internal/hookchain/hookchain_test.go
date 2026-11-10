@@ -1,0 +1,79 @@
+package hookchain
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+	"testing"
+
+	"github.com/heroiclabs/nakama-common/api"
+	"github.com/heroiclabs/nakama-common/rtapi"
+	"github.com/heroiclabs/nakama-common/runtime"
+)
+
+func TestBeforeRunsEveryRegisteredHookInOrder(t *testing.T) {
+	name := t.Name()
+	var calls []string
+	first := Before(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateDeviceRequest) (*api.AuthenticateDeviceRequest, error) {
+		calls = append(calls, "a")
+		in.Username += "a"
+		return in, nil
+	})
+	second := Before(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AuthenticateDeviceRequest) (*api.AuthenticateDeviceRequest, error) {
+		calls = append(calls, "b")
+		in.Username += "b"
+		return in, nil
+	})
+	out, err := second(context.Background(), nil, nil, nil, &api.AuthenticateDeviceRequest{})
+	if err != nil || out.Username != "ab" || len(calls) != 2 {
+		t.Fatalf("out=%v err=%v calls=%v", out, err, calls)
+	}
+	calls = nil
+	out, _ = first(context.Background(), nil, nil, nil, &api.AuthenticateDeviceRequest{})
+	if out.Username != "a" || len(calls) != 1 {
+		t.Fatalf("first dispatcher must keep its own list: %v %v", out, calls)
+	}
+}
+
+func TestBeforeStopsOnErrorAndNil(t *testing.T) {
+	name := t.Name()
+	boom := errors.New("refused")
+	ran := false
+	Before(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *rtapi.Envelope) (*rtapi.Envelope, error) {
+		return nil, boom
+	})
+	chain := Before(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *rtapi.Envelope) (*rtapi.Envelope, error) {
+		ran = true
+		return in, nil
+	})
+	if _, err := chain(context.Background(), nil, nil, nil, &rtapi.Envelope{}); !errors.Is(err, boom) || ran {
+		t.Fatalf("err=%v ran=%v", err, ran)
+	}
+	other := t.Name() + "-nil"
+	Before(other, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *rtapi.Envelope) (*rtapi.Envelope, error) {
+		return nil, nil
+	})
+	chain = Before(other, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *rtapi.Envelope) (*rtapi.Envelope, error) {
+		ran = true
+		return in, nil
+	})
+	if out, err := chain(context.Background(), nil, nil, nil, &rtapi.Envelope{}); err != nil || out != nil || ran {
+		t.Fatalf("a disabled message must stay disabled: %v %v %v", out, err, ran)
+	}
+}
+
+func TestAfterRtRunsAllAndReturnsFirstError(t *testing.T) {
+	name := t.Name()
+	n := 0
+	AfterRt(name, func(context.Context, runtime.Logger, *sql.DB, runtime.NakamaModule, *rtapi.Envelope, *rtapi.Envelope) error {
+		n++
+		return errors.New("one")
+	})
+	chain := AfterRt(name, func(context.Context, runtime.Logger, *sql.DB, runtime.NakamaModule, *rtapi.Envelope, *rtapi.Envelope) error {
+		n++
+		return nil
+	})
+	if err := chain(context.Background(), nil, nil, nil, nil, nil); err == nil || err.Error() != "one" || n != 2 {
+		t.Fatalf("err=%v n=%d", err, n)
+	}
+}
