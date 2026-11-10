@@ -163,6 +163,7 @@ func resetSeedData(t *testing.T, db *sql.DB) {
 		`DELETE FROM economy_prize WHERE key LIKE 'star\_%'`,
 		`DELETE FROM base_category WHERE key_type='product' AND key IN ('star_coin_packs','star_skins')`,
 		`DELETE FROM economy_currency WHERE key='coin'`,
+		`DELETE FROM base_tag WHERE key_type='user' AND key='star-vip'`,
 		`DELETE FROM base_language WHERE code='ar'`,
 		`DELETE FROM base_app_version WHERE platform IN ('web','android')`,
 		`UPDATE economy_payment_method SET is_active=false, config='', updated_at=now()`,
@@ -213,7 +214,7 @@ func TestSeedPostgres(t *testing.T) {
 		}
 		created += len(reports[i].created)
 	}
-	if want := 1 + 1 + 2 + 6 + 6 + 2 + 4 + 2; created != want {
+	if want := 1 + 1 + 2 + 6 + 1 + 7 + 2 + 4 + 2; created != want {
 		t.Fatalf("created %d rows across nodes, want %d: %v", created, want, reports)
 	}
 
@@ -223,7 +224,8 @@ func TestSeedPostgres(t *testing.T) {
 		`SELECT count(*) FROM economy_currency WHERE key='coin' AND default_value=50`:                                                                                                            1,
 		`SELECT count(*) FROM base_category WHERE key IN ('star_coin_packs','star_skins')`:                                                                                                       2,
 		`SELECT count(*) FROM economy_prize WHERE key LIKE 'star\_%'`:                                                                                                                            6,
-		`SELECT count(*) FROM economy_product WHERE key LIKE 'star\_%' AND is_active`:                                                                                                            6,
+		`SELECT count(*) FROM economy_product WHERE key LIKE 'star\_%' AND is_active`:                                                                                                            7,
+		`SELECT count(*) FROM economy_product p JOIN base_tag t ON t.id::text = ANY(p.audience_tag_ids) WHERE p.key='star_pack_vip' AND t.key='star-vip' AND t.is_public`:                        1,
 		`SELECT count(*) FROM economy_gift WHERE code IN ('STAR100','HALF50') AND is_active`:                                                                                                     2,
 		`SELECT count(*) FROM base_app_version WHERE platform IN ('web','android') AND latest_version='1.4.0' AND min_version='1.0.0'`:                                                           2,
 		`SELECT count(*) FROM economy_payment_method WHERE is_active`:                                                                                                                            4,
@@ -275,7 +277,7 @@ func TestSeedPostgres(t *testing.T) {
 	if err != nil || len(noSecret.skipped) != 1 || count(t, db, `SELECT count(*) FROM economy_payment_method WHERE is_active`) != 0 {
 		t.Fatalf("seed without secret = %v %v", noSecret, err)
 	}
-	if count(t, db, `SELECT count(*) FROM economy_product WHERE key LIKE 'star\_%'`) != 6 {
+	if count(t, db, `SELECT count(*) FROM economy_product WHERE key LIKE 'star\_%'`) != 7 {
 		t.Fatal("catalog must still be seeded without a secret")
 	}
 }

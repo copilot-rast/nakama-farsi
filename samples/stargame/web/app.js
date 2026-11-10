@@ -26,6 +26,10 @@ async function loadServerKey() {
   if (!SERVER_KEY) SERVER_KEY = "defaultkey";
 }
 const ROUND_SECONDS = 30;
+const CHAT_ROOM = (() => {
+  const r = new URLSearchParams(location.search).get("room") || "";
+  return /^[a-z0-9-]{1,40}$/.test(r) ? r : "lobby";
+})();
 const GAME_VERSION = "1.4.0";
 const PLATFORM = "web";
 const LS = {
@@ -207,7 +211,42 @@ const STRINGS = {
     methods: { zarinpal: "زرین‌پال", zibal: "زیبال", bazaar: "کافه‌بازار", myket: "مایکت", in_app: "پرداخت با سکه" },
     statuses: { success: "موفق", pending: "در انتظار", failed: "ناموفق", expired: "منقضی" },
     skins: { default: "سبد ساده", skin_gold: "سبد طلایی", skin_neon: "سبد نئونی", skin_galaxy: "سبد کهکشانی" },
+    chat: "گفتگو",
+    chatTitle: "گفتگوی بازیکنان",
+    chatPlaceholder: "پیامت را بنویس",
+    send: "بفرست",
+    chatRules: "کلمه‌های زشت با ستاره پنهان می‌شوند. اگر پیامی آزارت داد، گزارشش کن.",
+    chatEmpty: "هنوز پیامی نیست. اولین نفر باش!",
+    chatJoining: "در حال ورود به اتاق گفتگو…",
+    chatOffline: "به گفتگو وصل نیستیم. چند لحظه بعد دوباره امتحان کن.",
+    chatYou: "تو",
+    report: "گزارش",
+    reportMessage: (name) => `گزارش پیام ${name}`,
+    reportTitle: "چرا این پیام را گزارش می‌کنی؟",
+    reportNote: "توضیح (اختیاری)",
+    reportSend: "فرستادن گزارش",
+    reportDone: "گزارشت ثبت شد. ممنونیم!",
+    reportDuplicate: "این پیام را قبلاً گزارش کرده‌ای.",
+    reportPick: "یک دلیل انتخاب کن.",
+    mutedUntil: (d) => `تا ${d} نمی‌توانی در گفتگو پیام بفرستی.`,
+    mutedTitle: "فعلاً بی‌صدا هستی",
+    warnedTitle: "اخطار",
+    liftedMute: "حالا دوباره می‌توانی پیام بفرستی.",
+    suspendedTitle: "حسابت موقتاً بسته است",
+    suspendedUntil: (d) => `تا ${d} نمی‌توانی وارد بازی شوی.`,
+    myTags: "برچسب‌های من",
+    myTagsHint: "برچسب‌هایی که بازی به تو داده",
+    exclusive: "ویژهٔ تو",
+    messageRemoved: "این پیام پاک شد.",
     errors: {
+      CHAT_BLOCKED: "این پیام کلمهٔ ممنوع داشت و فرستاده نشد.",
+      CHAT_MUTED: "فعلاً نمی‌توانی پیام بفرستی.",
+      ACCOUNT_SUSPENDED: "حسابت موقتاً بسته است.",
+      REPORT_TITLE_NOT_FOUND: "یک دلیل انتخاب کن.",
+      CANNOT_REPORT_OWN: "پیام خودت را نمی‌توانی گزارش کنی.",
+      MESSAGE_NOT_FOUND: "این پیام دیگر وجود ندارد.",
+      TOO_MANY_REPORTS: "گزارش زیادی فرستادی؛ کمی بعد دوباره امتحان کن.",
+      TEXT_TOO_LONG: "متن خیلی بلند است.",
       OTP_DISABLED: "ورود با پیامک فعلاً خاموش است.",
       OTP_UNAVAILABLE: "سرویس پیامک آماده نیست. کمی بعد امتحان کن.",
       OTP_SEND_FAILED: "پیامک فرستاده نشد. دوباره امتحان کن.",
@@ -468,7 +507,42 @@ const STRINGS = {
     methods: { zarinpal: "Zarinpal", zibal: "Zibal", bazaar: "Cafe Bazaar", myket: "Myket", in_app: "Paid with coins" },
     statuses: { success: "Successful", pending: "Pending", failed: "Failed", expired: "Expired" },
     skins: { default: "Plain basket", skin_gold: "Golden basket", skin_neon: "Neon basket", skin_galaxy: "Galaxy basket" },
+    chat: "Chat",
+    chatTitle: "Player chat",
+    chatPlaceholder: "Write a message",
+    send: "Send",
+    chatRules: "Bad words are hidden with stars. If a message hurts you, report it.",
+    chatEmpty: "No messages yet. Say hi first!",
+    chatJoining: "Joining the chat room…",
+    chatOffline: "Chat is not connected. Try again in a moment.",
+    chatYou: "You",
+    report: "Report",
+    reportMessage: (name) => `Report ${name}'s message`,
+    reportTitle: "Why are you reporting this message?",
+    reportNote: "Comment (optional)",
+    reportSend: "Send report",
+    reportDone: "Thanks, your report was sent!",
+    reportDuplicate: "You already reported this message.",
+    reportPick: "Pick a reason.",
+    mutedUntil: (d) => `You cannot send chat messages until ${d}.`,
+    mutedTitle: "You are muted for now",
+    warnedTitle: "Warning",
+    liftedMute: "You can send messages again.",
+    suspendedTitle: "Your account is closed for now",
+    suspendedUntil: (d) => `You cannot play until ${d}.`,
+    myTags: "My tags",
+    myTagsHint: "Tags the game gave you",
+    exclusive: "Just for you",
+    messageRemoved: "This message was removed.",
     errors: {
+      CHAT_BLOCKED: "This message had a banned word and was not sent.",
+      CHAT_MUTED: "You cannot send messages right now.",
+      ACCOUNT_SUSPENDED: "Your account is closed for now.",
+      REPORT_TITLE_NOT_FOUND: "Pick a reason.",
+      CANNOT_REPORT_OWN: "You cannot report your own message.",
+      MESSAGE_NOT_FOUND: "This message no longer exists.",
+      TOO_MANY_REPORTS: "Too many reports; try again later.",
+      TEXT_TOO_LONG: "The text is too long.",
       OTP_DISABLED: "Phone sign-in is turned off for now.",
       OTP_UNAVAILABLE: "The SMS service is not ready. Try again later.",
       OTP_SEND_FAILED: "The SMS could not be sent. Try again.",
@@ -563,7 +637,7 @@ const STRINGS = {
   },
 };
 
-const SCREENS = ["home", "play", "shop", "gift", "payments", "news", "faq", "inbox", "account", "update"];
+const SCREENS = ["home", "play", "shop", "gift", "payments", "news", "faq", "inbox", "account", "update", "chat"];
 
 const SKINS = {
   default: { body: ["#c98a52", "#8a5a30"], rim: "#e4b383", glow: null },
@@ -636,14 +710,29 @@ const state = {
   country: "",
   version: null,
   rules: null,
+  suspended: null,
+  myTags: [],
+  rt: { cid: 0, pending: new Map() },
+  chat: { channelId: "", joined: false, ids: new Set(), mute: null, titles: null },
   otp: { step: "phone", phone: "", country: "", until: 0, timer: 0, codeLength: 5, sandbox: false },
 };
 
 class ApiError extends Error {
-  constructor(code, status) {
+  constructor(code, status, detail) {
     super(code);
     this.code = code;
     this.status = status;
+    this.detail = detail || null;
+  }
+}
+
+function parseNotice(message) {
+  if (typeof message !== "string" || message[0] !== "{") return null;
+  try {
+    const v = JSON.parse(message);
+    return v && typeof v.code === "string" ? v : null;
+  } catch (e) {
+    return null;
   }
 }
 
@@ -680,6 +769,8 @@ async function request(path, options) {
     body = null;
   }
   if (!res.ok) {
+    const notice = body ? parseNotice(body.message) : null;
+    if (notice) throw new ApiError(notice.code, res.status, notice);
     const code = body && typeof body.message === "string" && /^[A-Z_]+$/.test(body.message) ? body.message : res.status === 401 ? "UNAUTHENTICATED" : "INTERNAL_ERROR";
     throw new ApiError(code, res.status);
   }
@@ -735,7 +826,12 @@ async function rpc(id, payload, retry = true) {
     });
   } catch (err) {
     if (retry && err.status === 401) {
-      await login();
+      try {
+        await login();
+      } catch (e) {
+        if (e.code === "ACCOUNT_SUSPENDED") showSuspended(e.detail);
+        throw e;
+      }
       return rpc(id, payload, false);
     }
     throw err;
@@ -770,6 +866,7 @@ function el(tag, attrs = {}, children = []) {
 
 function show(name) {
   if (state.version && state.version.status === "update_required" && name !== "update") name = "update";
+  if (state.suspended && name !== "suspended") name = "suspended";
   if (name !== "play") stopGame();
   for (const s of document.querySelectorAll(".screen")) s.hidden = s.id !== "screen-" + name;
   window.scrollTo(0, 0);
@@ -786,6 +883,8 @@ function show(name) {
     loadInbox(true);
   }
   if (name === "account") renderAccount();
+  if (name === "chat") openChat();
+  if (name === "suspended") renderSuspended();
   if (name === "update") renderUpdate();
   if (name === "gift") {
     $("#gift-msg").textContent = "";
@@ -882,6 +981,7 @@ function skinPreview(key, w = 96, h = 48) {
 
 function renderHome() {
   $("#username").textContent = state.username || t("player");
+  paintTags($("#my-tags"));
   const box = $("#skins");
   box.textContent = "";
   const current = selectedSkin();
@@ -1299,8 +1399,8 @@ function productCard(p) {
       methods.append(el("button", { class: m === "in_app" ? "btn btn-primary" : "btn", type: "button", "data-method": m, text: m === "in_app" ? t("buyWithCoins") : methodLabel(m), onclick: (e) => buy(p, m, e.currentTarget) }));
     }
   }
-  return el("article", { class: "product", "data-key": p.key }, [
-    el("div", { class: "product-top" }, [art, el("div", {}, [el("h3", { text: p.name }), p.description ? el("p", { class: "muted small", text: p.description }) : null])]),
+  return el("article", { class: "product" + (p.exclusive ? " exclusive" : ""), "data-key": p.key }, [
+    el("div", { class: "product-top" }, [art, el("div", {}, [el("h3", {}, [p.name, p.exclusive ? el("span", { class: "badge-exclusive", text: t("exclusive") }) : null]), p.description ? el("p", { class: "muted small", text: p.description }) : null])]),
     priceView(p),
     methods,
   ]);
@@ -1957,9 +2057,24 @@ function connectSocket() {
     } catch (e) {
       return;
     }
+    if (msg && msg.cid && state.rt.pending.has(msg.cid)) {
+      const p = state.rt.pending.get(msg.cid);
+      state.rt.pending.delete(msg.cid);
+      if (msg.error) p.reject(msg.error);
+      else p.resolve(msg);
+      return;
+    }
+    if (msg && msg.channel_message) {
+      chatIncoming(msg.channel_message);
+      return;
+    }
     const list = msg && msg.notifications && msg.notifications.notifications;
     if (!list) return;
     for (const n of list) {
+      if (n.code >= 1102 && n.code <= 1105) {
+        moderationNotice(n);
+        continue;
+      }
       if (n.code !== 1001) continue;
       let content = {};
       try {
@@ -1972,8 +2087,12 @@ function connectSocket() {
   };
   ws.onclose = () => {
     document.body.dataset.socket = "closed";
+    for (const p of state.rt.pending.values()) p.reject({ code: 0, message: "NETWORK" });
+    state.rt.pending.clear();
+    state.chat.joined = false;
     if (state.socket !== ws) return;
     state.socket = null;
+    if (state.token && !state.suspended) rpc("base_my_status", { lang: i18n.lang }).catch(() => {});
     const wait = Math.min(30000, 1000 * 2 ** state.socketRetry++);
     setTimeout(() => { if (!state.socket) connectSocket(); }, wait);
   };
@@ -2108,6 +2227,8 @@ async function boot() {
   $("#faq-q").addEventListener("input", () => { clearTimeout(faqTimer); faqTimer = setTimeout(loadFaq, 300); });
   setupAccount();
   $("#btn-retry").addEventListener("click", connect);
+  $("#btn-suspended-retry").addEventListener("click", () => { state.suspended = null; connect(); });
+  $("#chat-form").addEventListener("submit", sendChat);
   await connect();
 }
 
@@ -2127,12 +2248,17 @@ async function connect() {
     }
     await refreshBalances();
   } catch (err) {
+    if (err.code === "ACCOUNT_SUSPENDED") {
+      showSuspended(err.detail);
+      return;
+    }
     $("#loading-text").textContent = errorText(err);
     document.querySelector("#screen-loading .spinner").hidden = true;
     retry.hidden = false;
     retry.focus();
     return;
   }
+  loadMyTags();
   loadCountries();
   loadPhone();
   refreshUnread();
@@ -2262,6 +2388,8 @@ async function loadRules() {
 }
 
 function renderAccount() {
+  paintTags($("#account-tags"));
+  $("#account-tags-panel").hidden = !state.myTags.length;
   const st = $("#account-status");
   st.textContent = "";
   st.append(
@@ -2444,3 +2572,273 @@ function setupAccount() {
 }
 
 boot();
+
+function paintTags(box) {
+  if (!box) return;
+  box.textContent = "";
+  box.hidden = !state.myTags.length;
+  for (const tg of state.myTags) box.append(el("span", { class: "my-tag", "data-tag": tg.key, text: tg.name || tg.key }));
+}
+
+async function loadMyTags() {
+  try {
+    const r = await rpc("base_my_tags", { lang: i18n.lang });
+    state.myTags = r.items || [];
+  } catch (e) {
+    state.myTags = [];
+  }
+  paintTags($("#my-tags"));
+  if (!$("#screen-account").hidden) renderAccount();
+}
+
+function showSuspended(detail) {
+  state.suspended = detail || { code: "ACCOUNT_SUSPENDED" };
+  if (state.socket) {
+    state.socket.onclose = null;
+    state.socket.close();
+    state.socket = null;
+  }
+  state.token = null;
+  show("suspended");
+}
+
+function renderSuspended() {
+  const d = state.suspended || {};
+  $("#suspended-reason").textContent = d.reason || t("suspendedTitle");
+  $("#suspended-until").textContent = d.until ? t("suspendedUntil", formatDate(d.until)) : "";
+}
+
+function rtSend(body) {
+  const ws = state.socket;
+  if (!ws || ws.readyState !== WebSocket.OPEN) return Promise.reject({ code: 0, message: "NETWORK" });
+  const cid = String(++state.rt.cid);
+  return new Promise((resolve, reject) => {
+    state.rt.pending.set(cid, { resolve, reject });
+    ws.send(JSON.stringify(Object.assign({ cid }, body)));
+    setTimeout(() => {
+      if (state.rt.pending.has(cid)) {
+        state.rt.pending.delete(cid);
+        reject({ code: 0, message: "TIMEOUT" });
+      }
+    }, 10000);
+  });
+}
+
+async function socketReady() {
+  for (let i = 0; i < 50; i++) {
+    if (state.socket && state.socket.readyState === WebSocket.OPEN) return true;
+    if (!state.socket && state.token) connectSocket();
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  return false;
+}
+
+function chatErrorText(err) {
+  const notice = parseNotice(err && err.message);
+  if (notice) return notice.code === "CHAT_MUTED" ? t("mutedUntil", formatDate(notice.until)) : errorText(new ApiError(notice.code, 0));
+  const code = err && typeof err.message === "string" && /^[A-Z_]+$/.test(err.message) ? err.message : "NETWORK";
+  return errorText(new ApiError(code, 0));
+}
+
+function paintMute() {
+  const banner = $("#chat-banner");
+  const m = state.chat.mute;
+  banner.textContent = "";
+  banner.hidden = !m;
+  $("#chat-input").disabled = !!m;
+  $("#chat-send").disabled = !!m;
+  if (!m) return;
+  banner.append(el("b", { text: t("mutedTitle") }), el("span", { text: t("mutedUntil", formatDate(m.until)) }), m.reason ? el("span", { class: "muted small", text: m.reason }) : null);
+}
+
+async function refreshMute() {
+  try {
+    const r = await rpc("base_my_status", { lang: i18n.lang });
+    state.chat.mute = r.mute || null;
+  } catch (e) {
+    state.chat.mute = null;
+  }
+  paintMute();
+}
+
+function chatText(content) {
+  let c = content;
+  if (typeof c === "string") {
+    try {
+      c = JSON.parse(c);
+    } catch (e) {
+      return c;
+    }
+  }
+  return c && typeof c.text === "string" ? c.text : "";
+}
+
+function chatLine(m) {
+  const mine = m.sender_id === decodeJwt(state.token || "").uid;
+  const node = el("div", { class: "chat-msg" + (mine ? " mine" : ""), "data-message-id": m.message_id }, [
+    el("div", { class: "chat-meta" }, [el("bdi", { class: "chat-name", text: mine ? t("chatYou") : m.username || "" }), el("span", { class: "muted small", text: formatDate(m.create_time) })]),
+    el("p", { class: "chat-text", dir: "auto", text: chatText(m.content) }),
+  ]);
+  if (!mine) {
+    node.append(el("button", { class: "chat-report", type: "button", "data-report": m.message_id, "aria-label": t("reportMessage", m.username || ""), title: t("report"), onclick: () => reportDialog(m) }, [el("span", { "aria-hidden": "true", text: "⚑" }), el("span", { class: "sr-only", text: t("report") })]));
+  }
+  return node;
+}
+
+function chatIncoming(m) {
+  if (!state.chat.channelId || m.channel_id !== state.chat.channelId) return;
+  const list = $("#chat-list");
+  if (Number(m.code) === 2) {
+    const node = list.querySelector(`[data-message-id="${CSS.escape(m.message_id)}"]`);
+    if (node) {
+      node.classList.add("removed");
+      node.querySelector(".chat-text").textContent = t("messageRemoved");
+      const btn = node.querySelector(".chat-report");
+      if (btn) btn.remove();
+    }
+    return;
+  }
+  if (Number(m.code || 0) !== 0 || state.chat.ids.has(m.message_id)) return;
+  state.chat.ids.add(m.message_id);
+  const empty = list.querySelector(".empty");
+  if (empty) empty.remove();
+  list.append(chatLine(m));
+  list.scrollTop = list.scrollHeight;
+}
+
+async function openChat() {
+  const list = $("#chat-list");
+  list.textContent = "";
+  list.append(el("div", { class: "empty", text: t("chatJoining") }));
+  state.chat.ids = new Set();
+  refreshMute();
+  if (!(await socketReady())) {
+    list.textContent = "";
+    list.append(el("div", { class: "empty", text: t("chatOffline") }));
+    return;
+  }
+  try {
+    const r = await rtSend({ channel_join: { target: CHAT_ROOM, type: 1, persistence: true, hidden: false } });
+    state.chat.channelId = r.channel.id;
+    state.chat.joined = true;
+    const hist = await request(`/v2/channel/${encodeURIComponent(r.channel.id)}?limit=30&forward=false`, { headers: { Authorization: "Bearer " + state.token } });
+    list.textContent = "";
+    const msgs = ((hist && hist.messages) || []).filter((m) => Number(m.code || 0) === 0).reverse();
+    for (const m of msgs) {
+      state.chat.ids.add(m.message_id);
+      list.append(chatLine(m));
+    }
+    if (!msgs.length) list.append(el("div", { class: "empty", text: t("chatEmpty") }));
+    list.scrollTop = list.scrollHeight;
+  } catch (err) {
+    list.textContent = "";
+    list.append(el("div", { class: "empty", text: err instanceof ApiError ? errorText(err) : chatErrorText(err) }));
+  }
+}
+
+async function sendChat(e) {
+  e.preventDefault();
+  const input = $("#chat-input");
+  const text = input.value.trim();
+  if (!text || state.chat.mute) return;
+  const btn = $("#chat-send");
+  btn.disabled = true;
+  try {
+    if (!state.chat.joined) await openChat();
+    await rtSend({ channel_message_send: { channel_id: state.chat.channelId, content: JSON.stringify({ text }) } });
+    input.value = "";
+  } catch (err) {
+    const notice = parseNotice(err && err.message);
+    if (notice && notice.code === "CHAT_MUTED") {
+      state.chat.mute = notice;
+      paintMute();
+    }
+    toast(chatErrorText(err), "bad");
+  } finally {
+    btn.disabled = !!state.chat.mute;
+    input.focus();
+  }
+}
+
+async function reportTitles() {
+  if (state.chat.titles && state.chat.titles.lang === i18n.lang) return state.chat.titles.items;
+  const r = await rpc("base_report_titles", { lang: i18n.lang });
+  state.chat.titles = { lang: i18n.lang, items: r.items || [] };
+  return state.chat.titles.items;
+}
+
+async function reportDialog(m) {
+  let titles;
+  try {
+    titles = await reportTitles();
+  } catch (err) {
+    toast(errorText(err), "bad");
+    return;
+  }
+  await openDialog((body, close) => {
+    const msg = el("p", { class: "form-msg", role: "status" });
+    const list = el("div", { class: "report-reasons", role: "radiogroup", "aria-label": t("reportTitle") });
+    for (const r of titles) {
+      list.append(el("label", { class: "report-reason" }, [el("input", { type: "radio", name: "report-title", value: r.key }), el("span", {}, [el("b", { text: r.name }), r.description ? el("span", { class: "muted small", text: r.description }) : null])]));
+    }
+    const note = el("textarea", { rows: "2", maxlength: "500", id: "report-note", "aria-label": t("reportNote"), placeholder: t("reportNote") });
+    const send = el("button", { class: "btn btn-primary", type: "button", id: "report-send", text: t("reportSend"), onclick: async () => {
+      const picked = list.querySelector("input:checked");
+      if (!picked) {
+        msg.textContent = t("reportPick");
+        return;
+      }
+      send.disabled = true;
+      try {
+        const r = await rpc("base_report_message", { messageId: m.message_id, titleKey: picked.value, note: note.value.trim() });
+        close(true);
+        toast(r.duplicate ? t("reportDuplicate") : t("reportDone"), "ok");
+      } catch (err) {
+        send.disabled = false;
+        msg.textContent = errorText(err);
+      }
+    } });
+    body.append(
+      el("h2", { text: t("reportTitle") }),
+      el("blockquote", { class: "report-quote", dir: "auto", text: chatText(m.content) }),
+      list,
+      note,
+      msg,
+      el("div", { class: "dialog-actions" }, [send, el("button", { class: "btn", type: "button", text: t("cancel"), onclick: () => close(false) })])
+    );
+  });
+}
+
+function moderationNotice(n) {
+  let content = {};
+  try {
+    content = typeof n.content === "string" ? JSON.parse(n.content) : n.content || {};
+  } catch (e) {
+    content = {};
+  }
+  if (n.code === 1102) {
+    showSuspended(content);
+    return;
+  }
+  if (n.code === 1103) {
+    state.chat.mute = content;
+    paintMute();
+    toast(t("mutedUntil", formatDate(content.until)), "bad");
+    return;
+  }
+  if (n.code === 1104) {
+    openDialog((body, close) => {
+      body.append(
+        el("h2", { text: t("warnedTitle") }),
+        el("p", { class: "warn-text", text: content.reason || n.subject || "" }),
+        el("div", { class: "dialog-actions" }, [el("button", { class: "btn btn-primary", type: "button", text: t("ok"), onclick: () => close(true) })])
+      );
+    });
+    return;
+  }
+  if (n.code === 1105 && content.kind === "mute") {
+    state.chat.mute = null;
+    paintMute();
+    toast(t("liftedMute"), "ok");
+  }
+}

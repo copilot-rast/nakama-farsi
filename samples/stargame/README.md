@@ -36,6 +36,7 @@ On every start the plugin creates what the game needs if it is missing, in one t
 - product categories `star_coin_packs`, `star_skins`; prizes `star_coins_100/500/1200`, `star_skin_gold/neon/galaxy`
 - products `star_pack_small/medium/large` (Toman, ZarinPal, Zibal, Bazaar, Myket) and `star_skin_gold/neon/galaxy` (coins, in_app)
 - gift codes `STAR100` (100 coins) and `HALF50` (50% off a bank payment)
+- public player tag `star-vip` («عضو ویژه») and product `star_pack_vip` (1200 coins at half price) that only players with that tag see
 - app versions for `web` and `android` (latest `1.4.0`, lowest `1.0.0`, store links, fa/en/ar update messages)
 - payment methods, only while a method was never saved in the console: in_app active; zarinpal and zibal active in sandbox; bazaar and myket active in sandbox with package `ir.nakama.stargame`
 
@@ -57,4 +58,12 @@ CONSOLE_URL=https://nakama-console.dastar.dev CONSOLE_USER=admin CONSOLE_PASSWOR
 - **Country picker**: «کشور من» opens a searchable list with flags (`base_countries`), saved with `base_set_country`; the phone form uses the same list for the dialling code.
 - **Username**: the account screen shows the rules from `base_account_rules` and saves with Nakama's account update, so the server-side rules apply.
 - **Version check**: on start the game calls `base_app_version` with platform `web` and its version (`GAME_VERSION` in `app.js`, shown at the bottom of the page). An optional update shows a banner with the store link («بعداً» hides it until the next version); a forced update replaces every screen with «باید بازی را به‌روز کنی» and the store buttons. `?v=1.3.0` pretends to be another version, for testing.
+
+## Chat and moderation (phase 3)
+
+- «گفتگو» on the home screen joins the room `lobby` over the WebSocket (`?room=<name>` picks another room, which the e2e suite uses) and loads the last 30 messages. Bad words come back masked from the server; a banned word is refused with a toast and the text stays in the box.
+- Every message from another player has a ⚑ button: the dialog lists the reasons from `base_report_titles` in the player's language, takes an optional note and calls `base_report_message`.
+- A muted player sees a banner with the reason and end time (from `base_my_status`, the live notice 1103 or the `CHAT_MUTED` error) and the input is disabled until the mute ends or is lifted (notice 1105).
+- A warning (notice 1104) opens a dialog. A suspension (notice 1102, or `ACCOUNT_SUSPENDED` at sign-in or after a 401) shows the «حسابت موقتاً بسته است» screen with the reason and end time; «دوباره امتحان کن» signs in again.
+- Public player tags (`base_my_tags`) show as gold chips under the greeting and in «حساب من»; products only for the player's tags carry «ویژهٔ تو».
 

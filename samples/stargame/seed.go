@@ -45,6 +45,7 @@ type seedProduct struct {
 	methods              []string
 	sku                  string
 	sort                 int
+	audience             string
 }
 
 type seedGift struct {
@@ -88,6 +89,7 @@ var (
 		skin("star_skin_gold", gold, text{"fa": "سبدی براق از طلا", "en": "A shiny basket made of gold", "ar": "سلة لامعة من الذهب"}, 80, 11),
 		skin("star_skin_neon", neon, text{"fa": "سبدی که در تاریکی می‌درخشد", "en": "A basket that glows in the dark", "ar": "سلة تتوهج في الظلام"}, 200, 12),
 		skin("star_skin_galaxy", galaxy, text{"fa": "سبدی پر از ستاره و رنگ", "en": "A basket full of stars and color", "ar": "سلة مليئة بالنجوم والألوان"}, 400, 13),
+		vipPack(),
 	}
 	seedGifts = []seedGift{
 		{"STAR100", "reward", "star_coins_100", text{"fa": "ستاره‌چین: ۱۰۰ سکه هدیه", "en": "Star Catcher: 100 free coins", "ar": "صائد النجوم: 100 عملة هدية"}, nil},
@@ -127,6 +129,15 @@ func pack(key string, name text, amount int, faAmount string, price int64, prize
 	desc := text{"fa": faAmount + " سکه", "en": fmt.Sprintf("%d coins", amount), "ar": fmt.Sprintf("%d عملة", amount)}
 	sku, _ := json.Marshal(map[string]string{"bazaar": key, "myket": key})
 	return seedProduct{key: key, category: "star_coin_packs", prize: prize, name: name, description: desc, priceToman: price, methods: []string{"zarinpal", "zibal", "bazaar", "myket"}, sku: string(sku), sort: sort}
+}
+
+const vipTagKey = "star-vip"
+
+func vipPack() seedProduct {
+	p := pack("star_pack_vip", text{"fa": "بستهٔ اعضای ویژه", "en": "VIP pack", "ar": "حزمة الأعضاء المميزين"}, 1200, "۱۲۰۰", 45000, "star_coins_1200", 4)
+	p.description = text{"fa": "۱۲۰۰ سکه به نصف قیمت، فقط برای اعضای ویژه", "en": "1200 coins at half price, only for VIP members", "ar": "1200 عملة بنصف السعر للأعضاء المميزين فقط"}
+	p.audience = vipTagKey
+	return p
 }
 
 func skin(key string, name, desc text, coins int64, sort int) seedProduct {
@@ -225,10 +236,25 @@ func seed(ctx context.Context, db *sql.DB, env map[string]string) (*seedReport, 
 		prizes[p.key] = id
 	}
 
+	ok, err = inserted(tx.ExecContext(ctx, `INSERT INTO base_tag (id, key_type, key, name, description, is_public, sort) VALUES ($1, 'user', $2, $3::jsonb, $4::jsonb, true, 1) ON CONFLICT DO NOTHING`,
+		newID(), vipTagKey, text{"fa": "عضو ویژه", "en": "VIP member", "ar": "عضو مميز"}.json(), text{"fa": "بازیکنانی که پیشنهادهای ویژه می‌گیرند", "en": "Players who get special offers", "ar": "لاعبون يحصلون على عروض خاصة"}.json()))
+	if err != nil {
+		return nil, fmt.Errorf("player tag: %w", err)
+	}
+	report.add("player tag", vipTagKey, ok)
+	var vipTag string
+	if err := tx.QueryRowContext(ctx, `SELECT id::text FROM base_tag WHERE key_type='user' AND key=$1`, vipTagKey).Scan(&vipTag); err != nil {
+		return nil, fmt.Errorf("player tag: %w", err)
+	}
+
 	for _, p := range seedProducts {
-		ok, err := inserted(tx.ExecContext(ctx, `INSERT INTO economy_product (id, key, name, description, is_active, category_id, price_toman, coin_price, payment_methods, sku, prize_id, sort)
-			VALUES ($1, $2, $3::jsonb, $4::jsonb, true, $5, $6, $7::jsonb, $8, $9::jsonb, $10, $11) ON CONFLICT DO NOTHING`,
-			newID(), p.key, p.name.json(), p.description.json(), categories[p.category], p.priceToman, p.coinPrice, p.methods, p.sku, prizes[p.prize], p.sort))
+		audience := []string{}
+		if p.audience == vipTagKey {
+			audience = append(audience, vipTag)
+		}
+		ok, err := inserted(tx.ExecContext(ctx, `INSERT INTO economy_product (id, key, name, description, is_active, category_id, price_toman, coin_price, payment_methods, sku, prize_id, sort, audience_tag_ids)
+			VALUES ($1, $2, $3::jsonb, $4::jsonb, true, $5, $6, $7::jsonb, $8, $9::jsonb, $10, $11, $12) ON CONFLICT DO NOTHING`,
+			newID(), p.key, p.name.json(), p.description.json(), categories[p.category], p.priceToman, p.coinPrice, p.methods, p.sku, prizes[p.prize], p.sort, audience))
 		if err != nil {
 			return nil, fmt.Errorf("product %s: %w", p.key, err)
 		}

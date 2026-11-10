@@ -46,6 +46,7 @@
     </div>
     <div class="hero">
       <p class="hello"><span data-i18n="hello">سلام</span> <bdi id="username">…</bdi></p>
+      <div class="my-tags" id="my-tags" hidden></div>
       <h1 data-i18n="heroTitle">ستاره‌ها را بگیر، از بمب‌ها فرار کن</h1>
       <p class="muted" data-i18n-html="heroText">هر دور ۳۰ ثانیه است. هر ستاره <b>۱ امتیاز</b> دارد و ستارهٔ طلایی <b>۵ امتیاز</b>. هر بمب <b>۳ امتیاز</b> کم می‌کند. هر ۵ امتیاز یک سکه، تا سقف ۳۰ سکه در هر دور.</p>
       <button class="btn btn-primary btn-big" type="button" id="btn-play" data-i18n="startGame">شروع بازی</button>
@@ -54,6 +55,7 @@
       <button class="menu-card" type="button" data-go="shop"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 7H6"/></svg></span><span data-i18n="shop">فروشگاه</span></button>
       <button class="menu-card" type="button" data-go="gift"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></span><span data-i18n="gift">کد هدیه</span></button>
       <button class="menu-card" type="button" data-go="news" id="menu-news"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg></span><span data-i18n="news">اخبار</span><span class="menu-dot" id="news-dot" hidden></span></button>
+      <button class="menu-card" type="button" data-go="chat" id="menu-chat"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg></span><span data-i18n="chat">گفتگو</span></button>
       <button class="menu-card" type="button" data-go="faq"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg></span><span data-i18n="faq">سؤال‌های متداول</span></button>
       <button class="menu-card" type="button" data-go="account" id="menu-account"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span data-i18n="account">حساب من</span></button>
       <button class="menu-card" type="button" data-go="payments"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span><span data-i18n="payments">پرداخت‌های من</span></button>
@@ -84,6 +86,10 @@
       <span></span>
     </div>
     <div class="panel account-status" id="account-status"></div>
+    <div class="panel" id="account-tags-panel" hidden>
+      <div class="panel-head"><h2 data-i18n="myTags">برچسب‌های من</h2><span class="muted small" data-i18n="myTagsHint">برچسب‌هایی که بازی به تو داده</span></div>
+      <div class="my-tags" id="account-tags"></div>
+    </div>
     <div class="panel">
       <div class="panel-head"><h2 data-i18n="myCountry">کشور من</h2><span class="muted small" data-i18n="myCountryHint">برای نشان دادن پرچم و پیش‌شماره</span></div>
       <button class="country-btn" type="button" id="btn-country"></button>
@@ -215,6 +221,33 @@
     </div>
     <div class="tabs" id="faq-tabs" role="tablist"></div>
     <div class="faq-list" id="faq-list"></div>
+  </section>
+
+  <section class="screen" id="screen-chat" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="chatTitle">گفتگوی بازیکنان</h1>
+      <span class="muted small" id="chat-online"></span>
+    </div>
+    <div class="chat-banner" id="chat-banner" role="status" hidden></div>
+    <div class="chat-list" id="chat-list" role="log" aria-live="polite" aria-labelledby="chat-title-sr"></div>
+    <span class="sr-only" id="chat-title-sr" data-i18n="chatTitle">گفتگوی بازیکنان</span>
+    <form class="chat-form" id="chat-form" novalidate>
+      <label for="chat-input" class="sr-only" data-i18n="chatPlaceholder">پیامت را بنویس</label>
+      <input id="chat-input" type="text" maxlength="300" autocomplete="off" data-i18n-ph="chatPlaceholder" placeholder="پیامت را بنویس">
+      <button class="btn btn-primary" type="submit" id="chat-send" data-i18n="send">بفرست</button>
+    </form>
+    <p class="muted small chat-rules" data-i18n="chatRules">کلمه‌های زشت با ستاره پنهان می‌شوند. اگر پیامی آزارت داد، گزارشش کن.</p>
+  </section>
+
+  <section class="screen" id="screen-suspended" hidden>
+    <div class="center-block suspended">
+      <div class="suspended-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg></div>
+      <h1 data-i18n="suspendedTitle">حسابت موقتاً بسته است</h1>
+      <p id="suspended-reason"></p>
+      <p class="muted" id="suspended-until"></p>
+      <button class="btn btn-primary" type="button" id="btn-suspended-retry" data-i18n="retry">دوباره امتحان کن</button>
+    </div>
   </section>
 
   <section class="screen" id="screen-inbox" hidden>
