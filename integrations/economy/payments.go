@@ -59,6 +59,7 @@ type productView struct {
 	IsActive        bool              `json:"isActive"`
 	CategoryID      *string           `json:"categoryId"`
 	TagIDs          []string          `json:"tagIds"`
+	AudienceTagIDs  []string          `json:"audienceTagIds"`
 	PriceToman      *int64            `json:"priceToman"`
 	CoinPrice       *coinPrice        `json:"coinPrice"`
 	DiscountPercent int               `json:"discountPercent"`

@@ -83,7 +83,7 @@ func resources() []resource {
 	}
 }
 
-const productJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'isActive',t.is_active,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'priceToman',t.price_toman,'coinPrice',t.coin_price,'discountPercent',t.discount_percent,'paymentMethods',to_jsonb(t.payment_methods),'sku',t.sku,'isSubscription',t.is_subscription,'prizeId',t.prize_id,'iconUrl',t.icon_url,'coverUrl',t.cover_url,'minLevel',t.min_level,'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
+const productJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'isActive',t.is_active,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'audienceTagIds',to_jsonb(t.audience_tag_ids),'priceToman',t.price_toman,'coinPrice',t.coin_price,'discountPercent',t.discount_percent,'paymentMethods',to_jsonb(t.payment_methods),'sku',t.sku,'isSubscription',t.is_subscription,'prizeId',t.prize_id,'iconUrl',t.icon_url,'coverUrl',t.cover_url,'minLevel',t.min_level,'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
 func refuseIfUsed(ctx context.Context, tx *sql.Tx, id, query string) error {
 	var used bool
@@ -369,6 +369,66 @@ func checkTags(ctx context.Context, tx *sql.Tx, ids []string, kind string) ([]st
 	return out, nil
 }
 
+func checkUserTags(ctx context.Context, tx *sql.Tx, ids []string) ([]string, error) {
+	out := []string{}
+	seen := map[string]bool{}
+	for _, raw := range ids {
+		id, err := cleanUUID("audienceTagIds", raw, true)
+		if err != nil {
+			return nil, err
+		}
+		if seen[*id] {
+			continue
+		}
+		seen[*id] = true
+		var kt string
+		err = tx.QueryRowContext(ctx, `SELECT key_type FROM base_tag WHERE id=$1`, *id).Scan(&kt)
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, badRequest("TAG_NOT_FOUND", "audienceTagIds", "tag does not exist")
+		}
+		if err != nil {
+			return nil, err
+		}
+		if kt != "user" {
+			return nil, badRequest("TAG_KIND_MISMATCH", "audienceTagIds", "audience tags must be player tags")
+		}
+		out = append(out, *id)
+	}
+	if len(out) > 20 {
+		return nil, badRequest("TOO_MANY_TAGS", "audienceTagIds", "at most 20 player tags")
+	}
+	return out, nil
+}
+
+func (s *service) userTagIDs(ctx context.Context, userID string) (map[string]bool, error) {
+	rows, err := s.db.QueryContext(ctx, `SELECT tag_id::text FROM base_user_tag WHERE user_id=$1`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[string]bool{}
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		out[id] = true
+	}
+	return out, rows.Err()
+}
+
+func (p productView) visibleTo(tags map[string]bool) bool {
+	if len(p.AudienceTagIDs) == 0 {
+		return true
+	}
+	for _, id := range p.AudienceTagIDs {
+		if tags[id] {
+			return true
+		}
+	}
+	return false
+}
+
 func saveCurrency(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
 	var in struct {
 		Key          string          `json:"key"`
@@ -573,6 +633,7 @@ type productInput struct {
 	IsActive        bool              `json:"isActive"`
 	CategoryID      string            `json:"categoryId"`
 	TagIDs          []string          `json:"tagIds"`
+	AudienceTagIDs  []string          `json:"audienceTagIds"`
 	PriceToman      *int64            `json:"priceToman"`
 	CoinPrice       *coinPrice        `json:"coinPrice"`
 	DiscountPercent int               `json:"discountPercent"`
@@ -693,6 +754,10 @@ func saveProduct(s *service, ctx context.Context, tx *sql.Tx, id string, create 
 	if err != nil {
 		return err
 	}
+	audience, err := checkUserTags(ctx, tx, in.AudienceTagIDs)
+	if err != nil {
+		return err
+	}
 	prize, err := cleanUUID("prizeId", in.PrizeID, true)
 	if err != nil {
 		return err
@@ -729,8 +794,8 @@ func saveProduct(s *service, ctx context.Context, tx *sql.Tx, id string, create 
 	}
 	skuJSON, _ := json.Marshal(in.SKU)
 	return execSave(ctx, tx, "economy_product", id, create,
-		[]string{"key", "name", "description", "is_active", "category_id", "tag_ids", "price_toman", "coin_price", "discount_percent", "payment_methods", "sku", "is_subscription", "prize_id", "icon_url", "cover_url", "min_level", "metadata", "sort"},
-		[]any{key, i18nJSON(name), i18nJSON(desc), in.IsActive, category, tags, in.PriceToman, coin, in.DiscountPercent, in.PaymentMethods, string(skuJSON), in.IsSubscription, *prize, icon, cover, in.MinLevel, meta, in.Sort})
+		[]string{"key", "name", "description", "is_active", "category_id", "tag_ids", "audience_tag_ids", "price_toman", "coin_price", "discount_percent", "payment_methods", "sku", "is_subscription", "prize_id", "icon_url", "cover_url", "min_level", "metadata", "sort"},
+		[]any{key, i18nJSON(name), i18nJSON(desc), in.IsActive, category, tags, audience, in.PriceToman, coin, in.DiscountPercent, in.PaymentMethods, string(skuJSON), in.IsSubscription, *prize, icon, cover, in.MinLevel, meta, in.Sort})
 }
 
 func saveGift(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {

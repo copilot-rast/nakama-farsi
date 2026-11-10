@@ -19,6 +19,7 @@ import (
 	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/internal/clusterkit"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
+	"github.com/heroiclabs/nakama/v3/internal/restrict"
 )
 
 const (
@@ -591,6 +592,9 @@ func (s *service) rpcOTPVerify(ctx context.Context, userID, payload string) (any
 	}
 	if verdict != nil {
 		return nil, verdict.err
+	}
+	if err := restrict.RefuseSuspended(ctx, s.db, login.UserID, ""); err != nil {
+		return nil, err
 	}
 	var username string
 	if err := s.db.QueryRowContext(ctx, `SELECT username FROM users WHERE id=$1`, login.UserID).Scan(&username); err != nil {

@@ -95,6 +95,10 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 	}
 	rows.Close()
 
+	userTags, err := s.userTagIDs(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
 	products := []map[string]any{}
 	rows, err = s.db.QueryContext(ctx, `SELECT `+productJSON+`::text FROM economy_product t WHERE t.is_active ORDER BY t.sort, t.created_at`)
 	if err != nil {
@@ -109,6 +113,9 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 		var p productView
 		if err := json.Unmarshal([]byte(raw), &p); err != nil {
 			return nil, err
+		}
+		if !p.visibleTo(userTags) {
+			continue
 		}
 		categoryKey := ""
 		if p.CategoryID != nil {
@@ -144,7 +151,7 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 			"id": p.ID, "key": p.Key, "name": langs.Resolve(p.Name, lang), "description": langs.Resolve(p.Description, lang),
 			"iconUrl": p.IconURL, "coverUrl": p.CoverURL, "priceToman": p.PriceToman, "finalToman": final, "coinPrice": p.CoinPrice,
 			"discountPercent": p.DiscountPercent, "paymentMethods": available, "sku": sku, "isSubscription": p.IsSubscription,
-			"categoryKey": categoryKey, "tags": tags, "minLevel": p.MinLevel,
+			"categoryKey": categoryKey, "tags": tags, "minLevel": p.MinLevel, "exclusive": len(p.AudienceTagIDs) > 0,
 		})
 	}
 	return map[string]any{"lang": lang, "currencies": currencies, "categories": categories, "products": products}, rows.Err()
@@ -380,6 +387,15 @@ func (s *service) rpcPurchaseStart(ctx context.Context, userID, payload string) 
 	}
 	if !product.IsActive {
 		return nil, notFound("PRODUCT_NOT_FOUND")
+	}
+	if len(product.AudienceTagIDs) > 0 {
+		tags, err := s.userTagIDs(ctx, userID)
+		if err != nil {
+			return nil, err
+		}
+		if !product.visibleTo(tags) {
+			return nil, notFound("PRODUCT_NOT_FOUND")
+		}
 	}
 	if !validMethod(in.Method) || !product.allows(in.Method) {
 		return nil, badRequest("METHOD_NOT_ALLOWED", "method", "this product cannot be bought with this method")

@@ -22,6 +22,7 @@ type target struct {
 	Mode    string   `json:"mode"`
 	UserIDs []string `json:"userIds,omitempty"`
 	GroupID string   `json:"groupId,omitempty"`
+	TagIDs  []string `json:"tagIds,omitempty"`
 }
 
 func (s *service) cleanTarget(ctx context.Context, q queryer, t target) (target, error) {
@@ -69,8 +70,33 @@ func (s *service) cleanTarget(ctx context.Context, q queryer, t target) (target,
 			return out, badRequest("GROUP_NOT_FOUND", "target.groupId", "group does not exist")
 		}
 		out.GroupID = *id
+	case "tags":
+		seen := map[string]bool{}
+		for _, raw := range t.TagIDs {
+			id, err := cleanUUID("target.tagIds", raw, true)
+			if err != nil {
+				return out, err
+			}
+			if !seen[*id] {
+				seen[*id] = true
+				out.TagIDs = append(out.TagIDs, *id)
+			}
+		}
+		if len(out.TagIDs) == 0 {
+			return out, badRequest("TARGET_TAGS_REQUIRED", "target.tagIds", "pick at least one player tag")
+		}
+		if len(out.TagIDs) > 50 {
+			return out, badRequest("TOO_MANY_TAGS", "target.tagIds", "at most 50 tags")
+		}
+		var found int
+		if err := q.QueryRowContext(ctx, `SELECT count(*) FROM base_tag WHERE id = ANY($1::uuid[]) AND key_type='user'`, uuidArray(out.TagIDs)).Scan(&found); err != nil {
+			return out, err
+		}
+		if found != len(out.TagIDs) {
+			return out, badRequest("TAG_NOT_FOUND", "target.tagIds", "every tag must be a player tag")
+		}
 	default:
-		return out, badRequest("INVALID_TARGET", "target.mode", "mode must be all, users or group")
+		return out, badRequest("INVALID_TARGET", "target.mode", "mode must be all, users, group or tags")
 	}
 	return out, nil
 }
@@ -123,6 +149,9 @@ func (s *service) eachTargetBatch(ctx context.Context, q interface {
 	case "group":
 		base = `FROM users u JOIN group_edge ge ON ge.destination_id=u.id WHERE ge.source_id=$1 AND ge.state <= 2 AND u.disable_time = '1970-01-01 00:00:00+00'`
 		args = append(args, t.GroupID)
+	case "tags":
+		base = `FROM users u WHERE u.id IN (SELECT ut.user_id FROM base_user_tag ut WHERE ut.tag_id = ANY($1::uuid[])) AND u.disable_time = '1970-01-01 00:00:00+00'`
+		args = append(args, uuidArray(t.TagIDs))
 	}
 	last := systemUserID
 	n := len(args)
@@ -447,6 +476,11 @@ func (s *service) consolePreviewTarget(w http.ResponseWriter, r *http.Request) {
 	for _, part := range strings.Split(q.Get("userIds"), ",") {
 		if part = strings.TrimSpace(part); part != "" {
 			t.UserIDs = append(t.UserIDs, part)
+		}
+	}
+	for _, part := range strings.Split(q.Get("tagIds"), ",") {
+		if part = strings.TrimSpace(part); part != "" {
+			t.TagIDs = append(t.TagIDs, part)
 		}
 	}
 	clean, err := s.cleanTarget(r.Context(), s.db, t)

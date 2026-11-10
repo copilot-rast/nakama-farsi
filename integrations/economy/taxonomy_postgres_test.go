@@ -76,3 +76,49 @@ func TestGiftAndCurrencyTaxonomy(t *testing.T) {
 		t.Fatalf("clearing category and tags = %v", again)
 	}
 }
+
+func TestProductAudienceByPlayerTag(t *testing.T) {
+	h := newHarness(t)
+	vip := h.taxonomy("base_tag", "user", "vip", map[string]string{"fa": "ویژه"})
+	general := h.taxonomy("base_tag", "general", "hot", map[string]string{"fa": "داغ"})
+	h.mustAPI(200, http.MethodPut, "/payment-methods/in_app", map[string]any{"isActive": true})
+	h.mustAPI(201, http.MethodPost, "/currencies", map[string]any{"key": "audcoin", "name": map[string]string{"fa": "سکه"}, "type": "soft"})
+	prize := h.mustAPI(201, http.MethodPost, "/prizes", map[string]any{"key": "aud-prize", "isRepeatable": true, "name": map[string]string{"fa": "جایزه"}, "items": []map[string]any{{"type": "currency", "key": "audcoin", "action": "add", "value": 1}}})
+	body := map[string]any{"key": "vip-pack", "isActive": true, "name": map[string]string{"fa": "ویژه"}, "prizeId": prize["id"], "paymentMethods": []string{"in_app"}, "coinPrice": map[string]any{"currencyKey": "audcoin", "amount": 1}}
+	body["audienceTagIds"] = []any{general["id"]}
+	if code, out := h.api(http.MethodPost, "/products", body); code != 400 || out["error"] != "TAG_KIND_MISMATCH" || out["field"] != "audienceTagIds" {
+		t.Fatalf("audience with a general tag = %d %v", code, out)
+	}
+	body["audienceTagIds"] = []any{vip["id"], vip["id"]}
+	product := h.mustAPI(201, http.MethodPost, "/products", body)
+	if got := product["audienceTagIds"].([]any); len(got) != 1 || got[0] != vip["id"] {
+		t.Fatalf("audience = %v", got)
+	}
+	tagged, plain := h.user(), h.user()
+	if _, err := h.s.db.Exec(`INSERT INTO base_user_tag (user_id, tag_id) VALUES ($1, $2)`, tagged, vip["id"]); err != nil {
+		t.Fatal(err)
+	}
+	find := func(user string) map[string]any {
+		for _, p := range h.mustRPC(user, "economy_catalog", map[string]any{})["products"].([]any) {
+			if p.(map[string]any)["key"] == "vip-pack" {
+				return p.(map[string]any)
+			}
+		}
+		return nil
+	}
+	if p := find(tagged); p == nil || p["exclusive"] != true {
+		t.Fatalf("tagged player sees the exclusive product: %v", p)
+	}
+	if p := find(plain); p != nil {
+		t.Fatalf("other players do not: %v", p)
+	}
+	if c := h.rpcCode(plain, "economy_purchase_start", map[string]any{"productId": product["id"], "method": "in_app"}); c != "PRODUCT_NOT_FOUND" {
+		t.Fatalf("purchase by an untagged player = %s", c)
+	}
+	if _, err := h.s.db.Exec(`UPDATE economy_product SET audience_tag_ids = array_remove(audience_tag_ids, $1::text) WHERE id=$2`, vip["id"], product["id"]); err != nil {
+		t.Fatal(err)
+	}
+	if p := find(plain); p == nil || p["exclusive"] != false {
+		t.Fatalf("an empty audience is everyone: %v", p)
+	}
+}

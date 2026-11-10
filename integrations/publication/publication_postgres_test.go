@@ -445,6 +445,26 @@ func TestNotificationTargetsAndAddresses(t *testing.T) {
 	if num(preview["count"]) != 2 {
 		t.Fatalf("preview group must skip join requests = %v", preview)
 	}
+	tag := uuid.Must(uuid.NewV4()).String()
+	if _, err := h.s.db.Exec(`INSERT INTO base_tag (id, key_type, key, name) VALUES ($1, 'user', $2, '{"fa":"ویژه"}')`, tag, "vip-"+tag[:8]); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { h.s.db.Exec(`DELETE FROM base_tag WHERE id=$1`, tag) })
+	for _, u := range []string{withPhone, noPhone, disabled} {
+		if _, err := h.s.db.Exec(`INSERT INTO base_user_tag (user_id, tag_id) VALUES ($1, $2)`, u, tag); err != nil {
+			t.Fatal(err)
+		}
+	}
+	preview = h.mustAPI(http.StatusOK, http.MethodGet, "/notifications/preview-target?mode=tags&tagIds="+tag, nil)
+	if num(preview["count"]) != 2 || num(preview["withPhone"]) != 1 || num(preview["withEmail"]) != 1 {
+		t.Fatalf("preview tags must skip banned players = %v", preview)
+	}
+	if code, out := h.api(http.MethodGet, "/notifications/preview-target?mode=tags&tagIds="+uuid.Must(uuid.NewV4()).String(), nil); code != 400 || out["error"] != "TAG_NOT_FOUND" {
+		t.Fatalf("unknown tag = %d %v", code, out)
+	}
+	if code, out := h.api(http.MethodGet, "/notifications/preview-target?mode=tags", nil); code != 400 || out["error"] != "TARGET_TAGS_REQUIRED" {
+		t.Fatalf("no tag = %d %v", code, out)
+	}
 	preview = h.mustAPI(http.StatusOK, http.MethodGet, "/notifications/preview-target?mode=users&userIds="+withPhone+","+noPhone, nil)
 	if num(preview["count"]) != 2 || num(preview["withPhone"]) != 1 {
 		t.Fatalf("preview users = %v", preview)
