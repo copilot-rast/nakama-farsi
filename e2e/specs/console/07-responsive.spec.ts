@@ -104,7 +104,7 @@ test.describe('native console at 390px with spatial', () => {
     });
   }
 
-  test('the menu button opens the rail as a sheet from the start side, a group opens its pages, Escape closes', async ({ page }) => {
+  test('the menu button opens the rail as a sheet from the start side, a group expands its pages inside the sheet, Escape closes', async ({ page }) => {
     await page.goto('/#/players');
     await page.locator('.sp-menu').click();
     const sheet = page.locator('.sp-rail-full');
@@ -112,13 +112,21 @@ test.describe('native console at 390px with spatial', () => {
     await expect(sheet).toBeVisible();
     const box = await sheet.boundingBox();
     expect(box!.x + box!.width).toBeGreaterThan(380);
-    await sheet.locator('button[data-sp-group="economy"]').click();
-    const fly = page.locator('.sp-flyout.open');
-    await expect(fly).toBeVisible();
-    const fb = await fly.boundingBox();
-    expect(fb!.x).toBeGreaterThanOrEqual(0);
-    expect(fb!.x + fb!.width).toBeLessThanOrEqual(390);
-    await fly.locator('a[href^="#/economy/gifts"]').click();
+    const group = sheet.locator('button[data-sp-group="economy"]');
+    await group.click();
+    await expect(page.locator('.sp-flyout.open')).toHaveCount(0);
+    await expect(group).toHaveAttribute('aria-expanded', 'true');
+    const sub = sheet.locator('.sp-sub[data-group="economy"]');
+    await expect(sub).toBeVisible();
+    const fb = await sub.boundingBox();
+    const sb = await sheet.boundingBox();
+    expect(fb!.x).toBeGreaterThanOrEqual(sb!.x);
+    expect(fb!.x + fb!.width).toBeLessThanOrEqual(sb!.x + sb!.width + 1);
+    await group.click();
+    await expect(sub).toHaveCount(0);
+    await group.click();
+    await expect(sub).toBeVisible();
+    await sub.locator('a[href^="#/economy/gifts"]').click();
     await expect(page).toHaveURL(/#\/economy\/gifts/);
     await expect(page.locator('html')).not.toHaveClass(/sp-sheet-open/);
     await page.locator('.sp-menu').click();

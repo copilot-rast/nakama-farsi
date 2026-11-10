@@ -124,7 +124,7 @@ test.describe('economy', () => {
     expect(prize.message).toEqual({ fa: 'تبریک!' });
     await go(page, '#/economy/prizes?q=' + k + 'p');
     await expect(rows(page)).toHaveCount(1);
-    await expect(rows(page).first()).toContainText('+۱۰ ' + k + 'c');
+    await expect(rows(page).first()).toContainText('+۱۰ الماس ' + k);
     await expect(rows(page).first()).toContainText('e2e_badge');
     await expect(rows(page).first()).toContainText('یک‌باره');
   });

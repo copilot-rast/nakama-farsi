@@ -170,9 +170,9 @@ test.describe('stargame: version check', () => {
     await waitHome(page);
     const banner = page.locator('#update-banner');
     await expect(banner).toBeVisible();
-    await expect(banner).toContainText('نسخه‌ی تازه‌ی ستاره‌چین آمده');
+    await expect(banner).toContainText(/نسخه(‌ی|ٔ) تازه(‌ی|ٔ) ستاره‌چین آمده/);
     await expect(page.locator('#update-banner-go')).toHaveAttribute('href', /\/stargame\/$/);
-    await expect(page.locator('#game-version')).toHaveText('نسخه‌ی 1.3.0');
+    await expect(page.locator('#game-version')).toHaveText('نسخهٔ 1.3.0');
     await page.locator('#update-banner-later').click();
     await expect(banner).toBeHidden();
     await page.reload();
@@ -206,6 +206,6 @@ test.describe('stargame: version check', () => {
     const f = await openGame(fresh, `e2e-acc-v4-${k}`);
     players.push(f.id);
     await expect(fresh.locator('#update-banner')).toBeHidden();
-    await expect(fresh.locator('#game-version')).toHaveText('نسخه‌ی 1.4.0');
+    await expect(fresh.locator('#game-version')).toHaveText('نسخهٔ 1.4.0');
   });
 });

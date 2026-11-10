@@ -86,7 +86,7 @@ test.describe('spatial shell: look', () => {
 
 const MAIN: [string, string][] = [
   ['#/', 'داشبورد'], ['#/players', 'بازیکنان'], ['#/groups', 'گروه‌ها'], ['#/storage', 'ذخیره‌سازی'], ['#/storage-indexes', 'نمایه‌های ذخیره‌سازی'],
-  ['#/matches', 'مسابقه‌ها'], ['#/leaderboards', 'جدول‌های امتیازات'], ['#/notifications', 'اعلان‌ها'], ['#/payments', 'پرداخت‌ها'], ['#/chat', 'پیام‌های گفتگو'],
+  ['#/matches', 'مسابقه‌ها'], ['#/leaderboards', 'جدول‌های امتیازات'], ['#/notifications', 'اعلان‌ها'], ['#/payments', 'خریدها'], ['#/chat', 'گفتگو'],
 ];
 const GROUPS: [string, string[]][] = [
   ['economy', ['#/economy/overview', '#/economy/currencies', '#/economy/metas', '#/economy/prizes', '#/economy/products', '#/economy/gifts', '#/economy/payments']],

@@ -173,15 +173,15 @@ The architecture of §5 was built as described: `console/ui/spatial` (sources `s
 
 `npm run check` in `console/ui/spatial` fails when (a) a class listed in `selectors.json` disappears from the console bundle (CSS, or a component name `av('Name')`/`` `XName` `` in the JS for `x-*` markers), or (b) spatial CSS uses a native class that is not listed. `e2e/specs/console/10-spatial-visual.spec.ts` checks every manifest selector on its routes.
 
-### Could not be restyled (documented exceptions)
+### Native parts reached after the UI audit (2026-11-11)
 
-| What | Why | Screenshot |
-|---|---|---|
-| Native chart time axis runs left to right in fa | ECharts options are not reachable (instance not exposed); colours, grid and text are themed by CSS on the SVG renderer, the draw-in on first load is ECharts' own | `.local/shots-spatial/d3/dashboard-fa-light.jpg` |
-| Monaco keeps its light theme in dark mode (storage object, player metadata, API explorer) | Monaco paints its own theme; the editor sits on an opaque rounded surface as the spec asks | `.local/shots-spatial/d3/storage-panel-fa-light.jpg` (dark: `.local/spatial-inventory/proof/motion-editor-open-dark.jpg`) |
-| Server stats in English read `NaN` in the native top bar (and `–` in the spatial status popover) | pre-existing: the l10n `Intl` patch and `number-flow` disagree in `en`; Persian shows digits | `.local/shots-spatial/d2/groups-en-light.jpg` |
-| Some native dialogs keep English strings (`Confirm Deletion`) | missing in the l10n catalog, not a spatial issue | — |
-| Native tab indicator | the native 2px underline animates `left/width`; it is hidden and spatial draws its own capsule moved by `transform` (`.sp-tabind`) | — |
+| What | How |
+|---|---|
+| Native chart time axis runs right to left in fa | `economy/src/native.js` finds the vue-echarts instances through the Vue vnode tree (`#app._vnode`), patches `setOption` on their prototype once and rewrites every option: `xAxis.inverse` and `yAxis.position: 'right'` in RTL, title on the right, tooltip `direction: rtl`, Persian digits and «هزار/میلیون» on the value axis, second-level labels when the data spans under 15 minutes, brand accent on the default purple series |
+| Monaco followed the light theme in dark mode | `economy.css` overrides the `--vscode-*` colours under `html.dark`; `native.js` reads Monaco's `style.monaco-colors` and writes lighter `.mtkN` token colours for dark mode; minimap and overview ruler canvases are inverted. Persian in JSON uses Vazirmatn instead of Courier New's monospaced Arabic |
+| Server stats in English read `NaN` / `–` | the l10n `Intl` patch now runs for English too, so number-flow parses Latin digits when the browser default is fa-IR |
+| Native dialogs kept English strings (`Confirm Deletion`) | the strings live in the confirm composable as `.value=` assignments and `||` fallbacks; `scripts/audit.mjs` now extracts both and the catalog has the `upstream` and `auditMessages` namespaces |
+| Native tab indicator | the native 2px underline animates `left/width`; it is hidden and spatial draws its own capsule moved by `transform` (`.sp-tabind`) |
 
 ### Deviations from `spatial.md`, decided while building
 

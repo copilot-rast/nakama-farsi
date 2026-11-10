@@ -122,7 +122,7 @@ test.describe('stargame', () => {
     await neon.locator('button[data-method="in_app"]').click();
     await dlg.getByRole('button', { name: 'بخر' }).click();
     await expect(toast(page)).toHaveClass(/bad/);
-    await expect(toast(page)).toHaveText('سکه‌ات کافی نیست. چند دور بازی کن یا بسته‌ی سکه بخر.');
+    await expect(toast(page)).toHaveText('سکه‌ات کافی نیست. چند دور بازی کن یا بستهٔ سکه بخر.');
     await expect(page.locator('#balance')).toHaveText('۷۰');
     await expect(neon.locator('button[data-method="in_app"]')).toBeVisible();
 

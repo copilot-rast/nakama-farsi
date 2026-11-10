@@ -1,7 +1,8 @@
 import { expect, test } from '../../lib/fixtures';
 import { deleteUser, uid } from '../../lib/api';
 import { noHorizontalScroll } from '../../lib/console';
-import { openGame, screen } from '../../lib/game';
+import { openGame, player, screen } from '../../lib/game';
+import { GAME_URL } from '../../lib/env';
 
 test.use({ pageOpts: { signedIn: false, mobile: true } } as any);
 
@@ -39,4 +40,20 @@ test('game screens fit a 390px phone', async ({ page }) => {
   expect(tap).toBeGreaterThan(300);
   await page.locator('#btn-quit').click();
   await screen(page, 'home');
+});
+
+test('a failed sign-in shows a retry button that signs in again', async ({ page }) => {
+  let fail = true;
+  await page.route(/\/v2\/account\/authenticate\/device/, (r) => (fail ? r.fulfill({ status: 500, contentType: 'application/json', body: '{"code":13,"message":"boom"}' }) : r.fallback()));
+  const dev = 'e2e-g-retry-' + uid();
+  await page.addInitScript((d) => { if (!sessionStorage.getItem('e2e-game')) { localStorage.setItem('stargame.device', d); sessionStorage.setItem('e2e-game', '1'); } }, dev);
+  await page.goto(GAME_URL);
+  const retry = page.locator('#btn-retry');
+  await expect(retry).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator('#loading-text')).not.toHaveText('در حال ورود…');
+  fail = false;
+  await retry.click();
+  await expect(page.locator('#screen-home')).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator('#balance')).not.toHaveText('…');
+  players.push((await player(page)).id);
 });

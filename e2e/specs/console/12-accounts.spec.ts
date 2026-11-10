@@ -200,7 +200,7 @@ test.describe('accounts: app versions', () => {
   test('create a platform row with store links and messages; the client RPC answers ok, update or forced update', async ({ page }) => {
     await open(page, '#/project-settings/app-versions');
     await expect(rows(page).filter({ hasText: 'android' })).toContainText('کافه‌بازار');
-    await root(page).getByRole('button', { name: 'نسخه‌ی تازه' }).click();
+    await root(page).getByRole('button', { name: 'نسخهٔ تازه' }).click();
     await settlePanel(page);
     const p = panel(page);
     await field(p, /^پلتفرم$/).locator('select').selectOption('ios');
