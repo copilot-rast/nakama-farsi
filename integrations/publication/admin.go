@@ -33,6 +33,9 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/providers/{id}", http.MethodDelete, s.consoleProviderDelete},
 		{consolePrefix + "/providers/{id}/test", http.MethodPost, s.consoleProviderTest},
 		{consolePrefix + "/users/search", http.MethodGet, s.consoleUsersSearch},
+		{consolePrefix + "/otp/settings", http.MethodGet, s.consoleOTPSettingsGet},
+		{consolePrefix + "/otp/settings", http.MethodPut, s.consoleOTPSettingsPut},
+		{consolePrefix + "/otp", http.MethodGet, s.consoleOTPRequests},
 	}
 	for _, res := range resources() {
 		base := consolePrefix + "/" + res.name

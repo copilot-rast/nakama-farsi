@@ -13,6 +13,7 @@ import (
 
 type settings struct {
 	sealKey      []byte
+	otpKey       []byte
 	workerEvery  time.Duration
 	workerBatch  int
 	maxAttempts  int
@@ -56,6 +57,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		return err
 	}
 	go svc.workerLoop(ctx)
+	go svc.otpSweepLoop(ctx)
 	logger.Info("Publication module registered")
 	return nil
 }
@@ -75,6 +77,9 @@ func loadSettings(env map[string]string) (settings, error) {
 		return cfg, err
 	}
 	if cfg.sealKey, err = deriveKey(secret, secretbox.PublicationKeyInfo); err != nil {
+		return cfg, err
+	}
+	if cfg.otpKey, err = deriveKey(secret, "publication-otp-code"); err != nil {
 		return cfg, err
 	}
 	return cfg, nil

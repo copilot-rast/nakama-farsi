@@ -26,6 +26,9 @@ func (s *service) clientRPCs() map[string]clientRPC {
 		"publication_news_comment":  s.rpcNewsComment,
 		"publication_inbox":         s.rpcInbox,
 		"publication_inbox_seen":    s.rpcInboxSeen,
+		"publication_otp_request":   s.rpcOTPRequest,
+		"publication_otp_verify":    s.rpcOTPVerify,
+		"publication_phone":         s.rpcPhone,
 	}
 }
 
