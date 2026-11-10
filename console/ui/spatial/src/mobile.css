@@ -1,1 +1,117 @@
+@media (max-width: 767px) {
+  html.sp {
+    --gap: 12px;
+    --topbar-h: 56px;
+  }
 
+  html.sp.sp-railed #main,
+  html.sp.sp-railed.sp-pinned #main {
+    padding-inline: var(--gap);
+  }
+
+  html.sp .sp-rail {
+    display: none;
+  }
+
+  html.sp .sp-rail-full {
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: min(300px, 86vw);
+    border-radius: 0;
+    border-start-end-radius: var(--r-panel);
+    border-end-end-radius: var(--r-panel);
+    background: var(--thick);
+    box-shadow: var(--thick-shadow);
+    z-index: var(--z-rail);
+    transform: translateX(calc(var(--dir) * -100%));
+    transition: transform var(--d2) var(--ease-exit), opacity var(--d2) var(--ease-exit), visibility 0s linear var(--d2);
+  }
+
+  html.sp.sp-pinned:not(.sp-sheet-open) .sp-rail-full {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(calc(var(--dir) * -100%));
+  }
+
+  html.sp.sp-sheet-open .sp-rail-full {
+    transform: none;
+    transition: transform var(--d3) var(--ease), opacity var(--d3) var(--ease), visibility 0s;
+  }
+
+  html.sp .sp-rail-full .sp-collapse {
+    display: none;
+  }
+
+  html.sp .sp-row {
+    min-height: 44px;
+  }
+
+  html.sp .sp-flyout,
+  html.sp .sp-flyout.sp-fly-pinned {
+    inset-inline-start: auto;
+    inset-inline-end: 8px;
+    width: min(280px, calc(100vw - 16px));
+    z-index: calc(var(--z-rail) + 6);
+  }
+
+  html.sp .sp-flyout a {
+    min-height: 44px;
+  }
+
+  html.sp .sp-round.sp-menu {
+    display: inline-grid;
+  }
+
+  html.sp #main > div.sticky:first-child {
+    padding-inline: 8px;
+    min-height: var(--topbar-h);
+    gap: 6px;
+  }
+
+  html.sp .sp-tb-start {
+    gap: 8px;
+  }
+
+  html.sp .sp-tabs,
+  html.sp .sp-status,
+  html.sp .sp-seg-lang,
+  html.sp .sp-crumbs .sp-crumb-link,
+  html.sp .sp-crumbs .sp-crumb-sep {
+    display: none;
+  }
+
+  html.sp .sp-crumb-current {
+    font-size: 15px;
+  }
+
+  html.sp .sp-search {
+    width: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  html.sp .sp-search-ph,
+  html.sp .sp-keys {
+    display: none;
+  }
+
+  html.sp #main > div.sticky:first-child .justify-end,
+  html.sp .sp-tb-end {
+    gap: 4px;
+  }
+
+  html.sp .sp-round,
+  html.sp #main > div.sticky:first-child .economy-ps,
+  html.sp #main > div.sticky:first-child .justify-end > .x-popover > button.x-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  html.sp .sp-pal-holder {
+    padding: 8px;
+  }
+
+  html.sp .sp-pal {
+    max-height: 80vh;
+  }
+}

@@ -110,3 +110,69 @@ html.sp kbd,
 html.sp pre {
   font-family: var(--mono);
 }
+
+html.sp.sp-auth #app > div.relative.flex.min-h-screen > div.relative.flex-1.overflow-hidden {
+  display: none;
+}
+
+html.sp.sp-auth #app > div.relative.flex.min-h-screen > div.flex-1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--gap);
+}
+
+html.sp.sp-auth #app > div.relative.flex.min-h-screen > div.flex-1 > div.lg\:absolute {
+  position: fixed;
+  top: 24px;
+  inset-inline-start: 28px;
+  margin: 0;
+}
+
+html.sp.sp-auth #app > div.relative.flex.min-h-screen > div.flex-1 > div.w-full.flex.justify-center > div {
+  margin: 0;
+  padding: 0;
+}
+
+html.sp.sp-auth #app .sm\:w-\[512px\] {
+  width: min(480px, calc(100vw - var(--gap) * 2));
+  padding: 36px 36px 32px;
+  gap: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-editor);
+  background: var(--thick);
+  box-shadow: var(--thick-shadow);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  animation: sp-win-in var(--d3) var(--ease) both;
+}
+
+html.sp.sp-auth #app .sm\:w-\[512px\] h1 {
+  font-size: 24px;
+  line-height: 1.35;
+  font-weight: 600;
+  color: var(--ink-1);
+}
+
+html.sp.sp-auth #app .sm\:w-\[512px\] :is(input.appearance-none, input) {
+  min-height: 44px;
+  border-radius: var(--r-field);
+  background-color: var(--well);
+  border-color: var(--line);
+  color: var(--ink-1);
+}
+
+html.sp.sp-auth #app .sm\:w-\[512px\] input:focus {
+  background-color: var(--capsule-hi);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+html.sp.sp-auth #app .sm\:w-\[512px\] .x-button {
+  min-height: 44px;
+}
+
+html.sp.sp-auth #app .sm\:w-\[512px\] :is(label, .x-label) {
+  color: var(--ink-2);
+}

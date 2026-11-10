@@ -1,9 +1,9 @@
 {
   "note": "Files generated in console/ui/dist by scripts/build.mjs.",
   "files": [
-    "static/spatial-532fa50a91.js",
-    "static/spatial-532fa50a91.js.gz",
-    "static/spatial-bd9516fba6.css",
-    "static/spatial-bd9516fba6.css.gz"
+    "static/spatial-b6dfeb410a.css",
+    "static/spatial-b6dfeb410a.css.gz",
+    "static/spatial-ed830e4fcd.js",
+    "static/spatial-ed830e4fcd.js.gz"
   ]
 }

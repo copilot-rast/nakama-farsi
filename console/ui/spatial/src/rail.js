@@ -1,5 +1,5 @@
 var DIRECT = ['/', '/players', '/groups', '/storage', '/storage-indexes', '/matches', '/leaderboards', '/notifications', '/payments', '/chat'];
-var SETTINGS_PAGES = [['users', 'settings.users'], ['general', 'settings.general'], ['config', 'settings.config'], ['data-management', 'settings.data'], ['audit-log', 'settings.audit']];
+var SETTINGS_PAGES = [['users', 'settings.users', 'users'], ['general', 'settings.general', 'toggle'], ['config', 'settings.config', 'fileCode'], ['data-management', 'settings.data', 'database'], ['audit-log', 'settings.audit', 'list']];
 var GROUP_ICON = { economy: 'coins', publication: 'megaphone', developer: 'code', help: 'help', settings: 'gear' };
 
 function linkInfo(a) {
@@ -54,7 +54,7 @@ function railModel() {
   var settingsLinks = [];
   if (consoleSettings) {
     SETTINGS_PAGES.forEach(function (sp) {
-      settingsLinks.push({ href: '#/settings/' + sp[0], label: st(sp[1]), svg: '', badge: 0 });
+      settingsLinks.push({ href: '#/settings/' + sp[0], label: st(sp[1]), svg: spIcon(sp[2]), badge: 0 });
     });
   }
   var psApi = nc() && nc().projectSettings;
@@ -112,7 +112,7 @@ function railItem(l, cls) {
   a.innerHTML = l.svg || spIcon('page');
   if (cls === 'sp-row') a.appendChild(el('span', { class: 'sp-row-label', text: l.label }));
   if (l.badge) a.appendChild(el('span', { class: cls === 'sp-row' ? 'sp-chip sp-chip-accent' : 'sp-count', text: spNum(l.badge) }));
-  if (l.ps) a.addEventListener('click', psClick);
+  if (l.ps) { a.addEventListener('click', psClick); a.setAttribute('data-ps-entry', 'rail'); }
   return a;
 }
 
@@ -198,7 +198,7 @@ function paintFly(g) {
     a.innerHTML = l.svg || spIcon(l.external ? 'external' : 'page');
     a.appendChild(el('span', { class: 'sp-fly-label', text: l.label }));
     if (l.badge) a.appendChild(el('em', { class: 'sp-fly-count', text: spNum(l.badge) }));
-    if (l.ps) a.addEventListener('click', psClick);
+    if (l.ps) { a.addEventListener('click', psClick); a.setAttribute('data-ps-entry', 'rail'); }
     else a.addEventListener('click', function () { closeFly(true); closeSheet(); });
     f.appendChild(a);
   });
@@ -273,7 +273,8 @@ function hideTip() {
 }
 
 function railKey(model) {
-  return [spLang(), currentHash(), railPinned(), root.classList.contains('dark'), JSON.stringify([model.direct, model.groups, model.settings, model.help].map(function (x) {
+  var b = nc() && nc().brand ? nc().brand() : null;
+  return [spLang(), currentHash(), railPinned(), root.classList.contains('dark'), JSON.stringify(b), JSON.stringify([model.direct, model.groups, model.settings, model.help].map(function (x) {
     return x ? JSON.stringify(x.links || x, function (k, v) { return k === 'svg' ? undefined : v; }) : '';
   }))].join('|');
 }
@@ -297,12 +298,14 @@ function buildFull(model) {
   p.innerHTML = '';
   var info = nc() && nc().brand ? nc().brand() : null;
   var name = (info && (info.name || info.shortName)) || 'Nakama';
-  var head = el('div', { class: 'sp-full-head' }, brandTile(), el('div', { class: 'sp-full-name' }, el('b', { text: name }), el('span', { text: st('rail.label') })),
+  var logo = info && (root.classList.contains('dark') ? info.logoDarkUrl || info.logoUrl : info.logoUrl);
+  var title = logo ? el('img', { class: 'sp-full-logo', src: logo, alt: name }) : el('b', { text: name });
+  var head = el('div', { class: 'sp-full-head' }, brandTile(), el('div', { class: 'sp-full-name' }, title, el('span', { text: st('rail.console') })),
     el('button', { type: 'button', class: 'sp-collapse', 'aria-label': st('rail.unpin'), title: st('rail.unpin'), html: spIcon('panel'), onclick: function () { setPinned(false); } }));
   p.appendChild(head);
   var scroll = el('div', { class: 'sp-full-scroll' });
   model.direct.forEach(function (l) { scroll.appendChild(railItem(l, 'sp-row')); });
-  if (model.groups.length) scroll.appendChild(el('div', { class: 'sp-full-label', text: st('top.sections') }));
+  if (model.groups.length) scroll.appendChild(el('div', { class: 'sp-full-label', text: st('rail.sections') }));
   model.groups.forEach(function (g) { scroll.appendChild(groupButton(g, 'sp-row sp-row-group')); });
   p.appendChild(scroll);
   var foot = el('div', { class: 'sp-full-foot' });
@@ -334,8 +337,18 @@ function renderRail(force) {
   }
   rail.el.setAttribute('aria-label', st('rail.label'));
   rail.full.setAttribute('aria-label', st('rail.label'));
+  var act = document.activeElement;
+  var keep = null;
+  if (act && (rail.el.contains(act) || rail.full.contains(act))) {
+    keep = { full: rail.full.contains(act), href: act.getAttribute('data-sp-href'), group: act.getAttribute('data-sp-group'), cls: act.className };
+  }
   buildCollapsed(model);
   buildFull(model);
+  if (keep) {
+    var box = keep.full ? rail.full : rail.el;
+    var back = keep.href ? box.querySelector('[data-sp-href="' + keep.href.replace(/"/g, '') + '"]') : keep.group ? box.querySelector('[data-sp-group="' + keep.group + '"]') : box.querySelector('.' + String(keep.cls).split(' ')[0]);
+    if (back) { back.__spNoFocusOpen = true; back.focus({ preventScroll: true }); }
+  }
   rail.el.setAttribute('aria-hidden', railPinned() ? 'true' : 'false');
   rail.el.toggleAttribute('inert', railPinned());
   rail.full.setAttribute('aria-hidden', railPinned() ? 'false' : 'true');
@@ -366,7 +379,7 @@ function railKeys(e) {
 }
 
 function allPages() {
-  var m = rail.model || railModel();
+  var m = railModel() || rail.model;
   if (!m) return [];
   var out = [];
   m.direct.forEach(function (l) { out.push({ label: l.label, href: l.href, svg: l.svg, group: '' }); });

@@ -64,14 +64,18 @@ test.describe('project settings window', () => {
     await expect(psWindow(page).locator('#ps-title')).toHaveText('تنظیمات پروژه');
     await expect(tab(page, 'brand')).toBeFocused();
     await expect(page.locator('.x-drawer [data-ps-entry="sidebar"]').first()).toHaveAttribute('aria-current', 'page');
+    await expect(page.locator('.sp-rail button[data-sp-group="settings"]')).toHaveAttribute('aria-current', 'true');
     await page.keyboard.press('Escape');
     await expect(psWindow(page)).toHaveCount(0);
     await expect(page).toHaveURL(/#\/economy\/products$/);
     await expect(root(page).locator('h1')).toHaveText('فروشگاه');
 
-    await page.locator('.x-drawer a[data-economy-page="news"]').first().click();
+    await page.locator('.sp-tabs').waitFor();
+    await page.locator('.sp-rail button[data-sp-group="publication"]').click();
+    await page.locator('.sp-flyout.open a[href^="#/publication/news"]').click();
     await expect(root(page).locator('h1')).toHaveText('اخبار');
-    await page.locator('.x-drawer [data-ps-entry="sidebar"]').first().click();
+    await page.locator('.sp-rail button[data-sp-group="settings"]').click();
+    await page.locator('.sp-flyout.open [data-ps-entry="rail"]').click();
     await expect(psWindow(page)).toBeVisible();
     await tab(page, 'sms').click();
     await expect(page).toHaveURL(/#\/project-settings\/sms$/);

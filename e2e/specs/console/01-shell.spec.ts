@@ -33,50 +33,62 @@ test.describe('console shell', () => {
     expect(order.slice(0, 2)).toEqual(['economy', 'publication']);
     await expect(drawer.locator('[data-ps-entry="sidebar"]').first()).toContainText('تنظیمات پروژه');
     await expect(page.locator('[data-ps-entry="topbar"]')).toHaveAttribute('aria-label', 'تنظیمات پروژه');
+    await expect(page.locator('.sp-rail button[data-sp-group="economy"]')).toHaveAttribute('aria-label', 'اقتصاد');
+    await expect(page.locator('.sp-rail button[data-sp-group="publication"]')).toHaveAttribute('aria-label', 'انتشار');
+    await page.locator('.sp-rail button[data-sp-group="settings"]').click();
+    await expect(page.locator('.sp-flyout.open [data-ps-entry="rail"]')).toContainText('تنظیمات پروژه');
     expect(errors).toEqual([]);
   });
 
-  test('every sidebar page opens with its heading and is the only active link', async ({ page }) => {
+  test('every section page opens from the rail with its heading and is the only active link', async ({ page }) => {
     await open(page, '#/economy/overview');
     for (const [hash, title] of PAGES) {
-      await page.locator(`.x-drawer a[data-economy-page][href^="${hash}"]`).first().click();
+      const group = hash.startsWith('#/economy') ? 'economy' : 'publication';
+      await page.locator(`.sp-rail button[data-sp-group="${group}"]`).click();
+      await page.locator(`.sp-flyout.open a[href^="${hash}"]`).click();
       await expect(page).toHaveURL(new RegExp(hash.replace(/[/#?]/g, '\\$&')));
       await expect(root(page).locator('h1').first()).toHaveText(title);
       await settle(page);
-      const active = page.locator('.x-drawer [data-economy-nav] a[aria-current="page"]');
+      const active = page.locator('.sp-tabs a[aria-current="page"]');
       await expect(active).toHaveCount(1);
       await expect(active).toHaveAttribute('href', new RegExp('^' + hash.replace(/[/#?]/g, '\\$&')));
-      await expect(page.locator('.x-drawer a[href="#/"][aria-current="page"]:not([data-economy-dimmed])')).toHaveCount(0);
+      await expect(page.locator('.sp-rail [aria-current]')).toHaveCount(1);
+      await expect(page.locator(`.sp-rail button[data-sp-group="${group}"]`)).toHaveAttribute('aria-current', 'true');
+      await expect(page.locator('.x-drawer [data-economy-nav] a[aria-current="page"]')).toHaveCount(1);
     }
-    await page.locator('.x-drawer a[href="#/players"]').first().click();
+    await page.locator('.sp-rail a.sp-ri[href="#/players"]').click();
     await expect(page).toHaveURL(/#\/players/);
     await expect(page.locator('#economy-root')).toHaveCount(0);
-    await expect(page.locator('.x-drawer [data-economy-nav] a[aria-current="page"]')).toHaveCount(0);
+    await expect(page.locator('.sp-rail [aria-current]')).toHaveCount(1);
+    await expect(page.locator('.sp-rail a.sp-ri[href="#/players"]')).toHaveAttribute('aria-current', 'page');
   });
 
   test('EN/FA switch re-renders our sections and pages in the other language', async ({ page }) => {
     await open(page, '#/economy/currencies');
     await expect(root(page).locator('h1')).toHaveText('ارزها');
-    await page.locator('.l10n-switcher:not(.economy-theme)').click();
+    await page.locator('.sp-seg-lang [data-locale="en"]').click();
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     await expect(root(page).locator('h1')).toHaveText('Currencies');
     await expect(page.locator('.x-drawer [data-economy-nav="economy"]').first()).toContainText('Economy');
     await expect(page.locator('.x-drawer [data-economy-nav="publication"]').first()).toContainText('Publishing');
     await expect(page.locator('.x-drawer a[data-economy-page="news"]').first()).toContainText('News');
+    await expect(page.locator('.sp-rail button[data-sp-group="economy"]')).toHaveAttribute('aria-label', 'Economy');
+    await expect(page.locator('.sp-tabs a[aria-current="page"]')).toHaveText('Currencies');
     await go(page, '#/publication/news');
     await expect(root(page).locator('h1')).toHaveText('News');
-    await page.locator('.l10n-switcher:not(.economy-theme)').click();
+    await page.locator('.sp-seg-lang [data-locale="fa-IR"]').click();
     await expect(page.locator('html')).toHaveAttribute('lang', 'fa-IR');
     await expect(root(page).locator('h1')).toHaveText('اخبار');
     await expect(page.locator('.x-drawer a[data-economy-page="news"]').first()).toContainText('اخبار');
+    await expect(page.locator('.sp-tabs a[aria-current="page"]')).toHaveText('اخبار');
   });
 
   test('dark mode toggle persists over a reload and back', async ({ page }) => {
     await open(page, '#/economy/products');
     const html = page.locator('html');
     await expect(html).not.toHaveClass(/\bdark\b/);
-    const toggle = page.locator('button.economy-theme');
+    const toggle = page.locator('button.sp-theme');
     await expect(toggle).toHaveAttribute('aria-pressed', 'false');
     await toggle.click();
     await expect(html).toHaveClass(/\bdark\b/);
@@ -84,10 +96,11 @@ test.describe('console shell', () => {
     await page.reload();
     await page.locator('#economy-root').waitFor();
     await expect(html).toHaveClass(/\bdark\b/);
-    await expect(page.locator('button.economy-theme')).toHaveAttribute('aria-pressed', 'true');
-    const bg = await page.locator('#economy-root table').first().evaluate((el) => getComputedStyle(el.closest('.bg-white') as Element).backgroundColor);
-    expect(bg).not.toBe('rgb(255, 255, 255)');
-    await page.locator('button.economy-theme').click();
+    await expect(page.locator('button.sp-theme')).toHaveAttribute('aria-pressed', 'true');
+    const ink = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--ink-1').trim());
+    expect(ink).toBe('#f1f2f6');
+    await expect(page.locator('.sp-sky')).toHaveAttribute('data-theme', 'dark');
+    await page.locator('button.sp-theme').click();
     await expect(html).not.toHaveClass(/\bdark\b/);
     await page.reload();
     await page.locator('#economy-root').waitFor();

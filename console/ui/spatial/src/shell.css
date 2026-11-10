@@ -1,6 +1,6 @@
 html.sp.sp-railed #main > div.sticky:first-child > div.flex.w-full > div.flex-1 > nav,
 html.sp.sp-railed #main > div.sticky:first-child > button.x-button:first-child,
-html.sp.sp-railed #main > div.sticky:first-child > a.router-link-active,
+html.sp.sp-railed #main > div.sticky:first-child > a.lg\:hidden,
 html.sp.sp-railed #main > div.sticky:first-child .l10n-switcher,
 html.sp.sp-railed #main > div.sticky:first-child .economy-theme {
   display: none;
@@ -220,6 +220,14 @@ html.sp.sp-pinned:not(.sp-sheet-open) .sp-rail {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.sp-full-logo {
+  display: block;
+  max-width: 100%;
+  max-height: 26px;
+  object-fit: contain;
+  object-position: inline-start;
 }
 
 .sp-full-name span {
@@ -498,7 +506,7 @@ html.sp.sp-pinned .sp-tip {
   flex: 1;
 }
 
-.sp-menu {
+.sp-round.sp-menu {
   display: none;
 }
 
@@ -694,9 +702,11 @@ html[dir="rtl"] .sp-seg-ind {
   color: var(--ink-2);
 }
 
-html.sp[data-sp-route^="economy-"] .sp-search,
-html.sp[data-sp-route^="publication-"] .sp-search {
-  width: 200px;
+@media (min-width: 1101px) {
+  html.sp[data-sp-route^="economy-"] .sp-search,
+  html.sp[data-sp-route^="publication-"] .sp-search {
+    width: 200px;
+  }
 }
 
 .sp-status {
@@ -761,42 +771,71 @@ html.sp[data-sp-route^="publication-"] .sp-search {
   transform: scale(.96);
 }
 
-html.sp #main > div.sticky:first-child .hidden.md\:flex.text-xs {
-  position: fixed;
-  z-index: var(--z-flyout);
-  top: calc(var(--gap) + var(--topbar-h) + 8px);
-  inset-inline-end: calc(var(--gap) + 120px);
+html.sp.sp-railed #main > div.sticky:first-child .hidden.md\:flex.text-xs {
   display: none;
-  gap: 12px;
-  margin: 0;
-  padding: 12px 16px;
+}
+
+.sp-tb-end {
+  position: relative;
+}
+
+.sp-stats {
+  position: absolute;
+  z-index: var(--z-flyout);
+  top: calc(100% + 18px);
+  inset-inline-start: 0;
+  display: none;
+  width: max-content;
+  max-width: calc(100vw - var(--gap) * 4);
+  padding: 12px 14px 14px;
   border: 1px solid var(--line);
   border-radius: var(--r-card);
   background: var(--thick);
   box-shadow: var(--thick-shadow);
-  -webkit-backdrop-filter: var(--blur);
-  backdrop-filter: var(--blur);
-  font-size: 13px;
   color: var(--ink-1);
+  transform-origin: top center;
 }
 
-html.sp.sp-stats-open #main > div.sticky:first-child .hidden.md\:flex.text-xs {
-  display: flex;
+html.sp.sp-stats-open .sp-stats {
+  display: block;
   animation: sp-pop-in var(--d2) var(--ease) both;
 }
 
-html.sp #main > div.sticky:first-child .hidden.md\:flex.text-xs .text-secondary-400 {
-  color: var(--ink-3);
+.sp-stats-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.sp-stats-head b {
+  font-weight: 600;
+}
+
+.sp-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(64px, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.sp-stat {
+  padding: 8px 10px;
+  border-radius: var(--r-control);
+  background: var(--well);
+}
+
+.sp-stat dt {
   font-size: 12px;
+  color: var(--ink-3);
 }
 
-html.sp #main > div.sticky:first-child .hidden.md\:flex.text-xs .font-semibold {
-  font-size: 16px;
+.sp-stat dd {
+  margin: 2px 0 0;
+  font-size: 18px;
+  font-weight: 500;
   color: var(--ink-1);
-}
-
-html.sp #main > div.sticky:first-child .x-divider > div {
-  background: var(--line-2);
 }
 
 html.sp #main > div.sticky:first-child .economy-ps,

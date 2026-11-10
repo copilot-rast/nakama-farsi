@@ -274,6 +274,23 @@
         "#/"
       ],
       "min": 0
+    },
+    {
+      "id": "auth",
+      "what": "login, password reset and MFA reset layout (form column, logo, release feed)",
+      "selector": "#app > div.relative.flex.min-h-screen .sm\\:w-\\[512px\\]",
+      "classes": [
+        "min-h-screen",
+        "justify-center",
+        "lg:absolute",
+        "sm:w-[512px]",
+        "flex-1",
+        "overflow-hidden"
+      ],
+      "routes": [
+        "#/login"
+      ],
+      "min": 1
     }
   ]
 }

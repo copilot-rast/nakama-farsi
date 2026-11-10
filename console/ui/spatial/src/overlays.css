@@ -2,7 +2,6 @@ html.sp body > div > div.fixed.inset-0.bg-secondary-900,
 html.sp div.fixed.inset-0.bg-secondary-900.opacity-60 {
   background: var(--scrim) !important;
   opacity: 1 !important;
-  z-index: var(--z-scrim);
 }
 
 html.sp div.fixed.inset-0.flex.justify-end:has(> .x-form) {

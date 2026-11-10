@@ -20,6 +20,7 @@ function nativeCrumbs(bar) {
 function crumbsFor(bar) {
   var info = pageInfo();
   var nat = nativeCrumbs(bar);
+  if (nat.length >= 2 && !nat[0].href && info) nat[0].href = info.link.href;
   var out = [];
   if (info && info.group && info.group.id !== 'settings') out.push({ label: info.group.label, href: null });
   if (nat.length >= 2) return out.concat(nat);
@@ -127,11 +128,59 @@ function paintTheme() {
   tb.theme.setAttribute('aria-pressed', dark ? 'true' : 'false');
 }
 
+function flowValue(n) {
+  var sr = n && n.shadowRoot;
+  if (!sr) return (n && n.textContent || '').trim();
+  var out = '';
+  Array.prototype.forEach.call(sr.querySelectorAll('[part~="number"] [part~="digit"], [part~="number"] [part~="symbol"]'), function (d) {
+    var cur = parseInt(d.style.getPropertyValue('--current'), 10);
+    if (d.classList.contains('digit')) out += isNaN(cur) ? '?' : String(cur);
+    else out += d.textContent;
+  });
+  out = out.replace(/\s+/g, '');
+  return !out || out.indexOf('?') !== -1 ? '–' : out;
+}
+
+function nativeStats() {
+  var box = document.querySelector('#main > div.sticky:first-child .hidden.md\\:flex.text-xs');
+  if (!box) return [];
+  var out = [];
+  Array.prototype.forEach.call(box.children, function (c) {
+    if (c.classList.contains('x-divider')) return;
+    var label = c.querySelector('.text-secondary-400');
+    var flow = c.querySelector('number-flow-vue');
+    if (label) out.push({ label: label.textContent.trim(), value: flow ? flowValue(flow) : '' });
+  });
+  return out;
+}
+
+var statsTimer = 0;
+function paintStats() {
+  var pop = tb.stats;
+  if (!pop) return;
+  var rows = nativeStats();
+  var key = JSON.stringify(rows) + spLang();
+  if (pop.getAttribute('data-key') === key) return;
+  pop.setAttribute('data-key', key);
+  pop.innerHTML = '';
+  pop.appendChild(el('div', { class: 'sp-stats-head' }, el('span', { class: 'sp-dot', 'aria-hidden': 'true' }), el('b', { text: st('top.status') })));
+  var grid = el('dl', { class: 'sp-stats-grid' });
+  rows.forEach(function (r) {
+    grid.appendChild(el('div', { class: 'sp-stat' }, el('dt', { text: r.label }), el('dd', { text: spNum(r.value) })));
+  });
+  pop.appendChild(grid);
+}
+
 function toggleStats(force) {
   var on = force === undefined ? !root.classList.contains('sp-stats-open') : force;
   root.classList.toggle('sp-stats-open', on);
   var b = tb.end && tb.end.querySelector('.sp-status');
   if (b) b.setAttribute('aria-expanded', on ? 'true' : 'false');
+  clearInterval(statsTimer);
+  if (on) {
+    paintStats();
+    statsTimer = setInterval(paintStats, 1000);
+  }
 }
 
 function buildEnd() {
@@ -143,11 +192,14 @@ function buildEnd() {
   var status = el('button', { type: 'button', class: 'sp-status', 'aria-expanded': 'false', 'aria-label': st('top.status'), title: st('top.status'), onclick: function (e) { e.stopPropagation(); toggleStats(); } });
   status.appendChild(el('span', { class: 'sp-dot', 'aria-hidden': 'true' }));
   status.appendChild(el('span', { class: 'sp-status-label', text: st('top.live') }));
+  status.setAttribute('aria-controls', 'sp-stats');
+  tb.stats = el('div', { class: 'sp-stats', id: 'sp-stats', role: 'region', 'aria-label': st('top.status'), 'data-l10n-skip': '' });
   tb.seg = buildLangSeg();
   tb.theme = el('button', { type: 'button', class: 'sp-round sp-theme', onclick: themeClick });
   paintTheme();
   box.appendChild(search);
   box.appendChild(status);
+  box.appendChild(tb.stats);
   box.appendChild(tb.seg);
   box.appendChild(tb.theme);
   return box;
@@ -193,7 +245,7 @@ function paletteItems(q) {
 function openPalette() {
   if (tb.palette) { tb.palette.querySelector('input').focus(); return; }
   var prev = document.activeElement;
-  var input = el('input', { type: 'search', class: 'sp-pal-input', 'aria-label': st('top.searchPages'), placeholder: st('top.searchPages'), autocomplete: 'off', role: 'combobox', 'aria-expanded': 'true', 'aria-controls': 'sp-pal-list' });
+  var input = el('input', { type: 'text', class: 'sp-pal-input', 'aria-label': st('top.searchPages'), placeholder: st('top.searchPages'), autocomplete: 'off', role: 'combobox', 'aria-expanded': 'true', 'aria-controls': 'sp-pal-list' });
   var list = el('div', { class: 'sp-pal-list', id: 'sp-pal-list', role: 'listbox', 'aria-label': st('palette.group.pages') });
   var win = el('div', { class: 'sp-pal', role: 'dialog', 'aria-modal': 'true', 'aria-label': st('top.searchPages') },
     el('div', { class: 'sp-pal-head', html: spIcon('search') }, input, el('kbd', { class: 'sp-esc', text: 'Esc' })),
@@ -268,6 +320,6 @@ function globalKeys(e) {
 
 document.addEventListener('click', function (e) {
   if (!root.classList.contains('sp-stats-open')) return;
-  if (e.target.closest && e.target.closest('.sp-status')) return;
+  if (e.target.closest && e.target.closest('.sp-status, .sp-stats')) return;
   toggleStats(false);
 }, true);

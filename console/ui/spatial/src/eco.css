@@ -62,3 +62,153 @@ html.sp .eco-nav-dot {
   background-color: var(--accent);
   color: var(--on-accent);
 }
+
+html.sp .ps-shade {
+  background: var(--scrim);
+  opacity: 1;
+  animation: sp-fade-in var(--d2) var(--ease) both;
+}
+
+html.sp .ps-holder {
+  padding: var(--gap);
+}
+
+html.sp .ps-window {
+  width: min(1040px, 100%);
+  height: min(760px, calc(100vh - var(--gap) * 2));
+  border: 1px solid var(--line);
+  border-radius: var(--r-editor);
+  background: var(--thick);
+  box-shadow: var(--thick-shadow);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  color: var(--ink-1);
+  animation: sp-win-in var(--d3) var(--ease) both;
+}
+
+html.sp .ps-side {
+  width: 236px;
+  padding: 8px 0 12px;
+  background: transparent;
+  border-inline-end: 1px solid var(--line);
+}
+
+html.sp .ps-side-head {
+  padding: 16px 18px 12px;
+}
+
+html.sp .ps-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-control);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+html.sp .ps-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+html.sp .ps-list {
+  padding: 4px 10px 12px;
+  gap: 2px;
+}
+
+html.sp .ps-item {
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: var(--r-control);
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 400;
+  transition: background-color var(--d1) var(--ease), color var(--d1) var(--ease), transform var(--d1) var(--ease);
+}
+
+html.sp .ps-item:hover {
+  background: var(--capsule-hi);
+  color: var(--ink-1);
+}
+
+html.sp .ps-item[aria-selected="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-weight: 500;
+  box-shadow: none;
+}
+
+html.sp .ps-item:active {
+  transform: scale(.98);
+}
+
+html.sp .ps-item:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: -2px;
+}
+
+html.sp .ps-head {
+  min-height: 68px;
+  padding: 20px 28px 14px;
+  padding-inline-end: 72px;
+  border-color: var(--line);
+}
+
+html.sp .ps-head-icon {
+  color: var(--ink-3);
+}
+
+html.sp .ps-head-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+html.sp .ps-body {
+  padding: 16px 28px 28px;
+}
+
+html.sp .ps-body > div > div.mb-4.relative,
+html.sp .ps-body :is(.rounded-md.shadow.bg-white, .bg-white.shadow.rounded-md) {
+  box-shadow: none;
+}
+
+html.sp .ps-body :is(.rounded-md.shadow.bg-white, .bg-white.shadow.rounded-md) {
+  border-radius: var(--r-card);
+  background: var(--capsule);
+  border: 1px solid var(--line);
+}
+
+html.sp .ps-close {
+  inset-block-start: 14px;
+  inset-inline-end: 14px;
+}
+
+html.sp .economy-ps {
+  border-radius: 50%;
+}
+
+@media (max-width: 767px) {
+  html.sp .ps-holder {
+    padding: 0;
+  }
+  html.sp .ps-window {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 0;
+  }
+  html.sp .ps-side {
+    width: auto;
+    padding: 0;
+    border-inline-end: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  html.sp .ps-item {
+    min-height: 36px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    background: var(--well);
+  }
+  html.sp .ps-body {
+    padding: 14px 14px 24px;
+  }
+}

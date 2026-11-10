@@ -20,7 +20,7 @@ html.sp {
   --z-flyout: 45;
   --z-scrim: 50;
   --z-window: 60;
-  --z-settings: 65;
+  --z-settings: 55;
   --z-wizard: 70;
   --z-toast: 80;
   --blur: blur(32px) saturate(165%);
@@ -33,17 +33,6 @@ html.sp {
   --d-exit: 160ms;
   --dir: -1;
 
-  --primary-color-50: 233 238 251;
-  --primary-color-100: 211 221 247;
-  --primary-color-200: 167 188 239;
-  --primary-color-300: 124 154 230;
-  --primary-color-400: 58 104 218;
-  --primary-color-500: 36 87 214;
-  --primary-color-600: 32 78 193;
-  --primary-color-700: 27 65 161;
-  --primary-color-800: 15 37 90;
-  --primary-color-900: 11 26 64;
-  --primary-color-950: 7 17 43;
 
   color-scheme: light;
   --base: #e7ebf1;
@@ -73,8 +62,8 @@ html.sp {
   --scrim: rgb(30 36 50 / .10);
   --shimmer: rgb(255 255 255 / .35);
 
-  --accent: var(--sp-accent, rgb(36 87 214));
-  --accent-ink: var(--sp-accent-ink, rgb(32 78 193));
+  --accent: var(--sp-accent, rgb(107 89 238));
+  --accent-ink: var(--sp-accent-ink, rgb(96 80 214));
   --accent-soft: color-mix(in srgb, var(--accent) 11%, transparent);
   --accent-line: color-mix(in srgb, var(--accent) 30%, transparent);
   --on-accent: #fff;
@@ -119,7 +108,7 @@ html.sp.dark {
   --star-edge: #b98500;
   --scrim: rgb(0 0 0 / .34);
   --shimmer: rgb(255 255 255 / .06);
-  --accent-ink: var(--sp-accent-ink-dark, rgb(211 221 247));
+  --accent-ink: var(--sp-accent-ink-dark, rgb(196 189 248));
   --accent-soft: color-mix(in srgb, var(--accent) 17%, transparent);
   --accent-line: color-mix(in srgb, var(--accent) 36%, transparent);
 }

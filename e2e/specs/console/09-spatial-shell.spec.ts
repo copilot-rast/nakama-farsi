@@ -83,3 +83,174 @@ test.describe('spatial shell: look', () => {
     }
   });
 });
+
+const MAIN: [string, string][] = [
+  ['#/', 'داشبورد'], ['#/players', 'بازیکنان'], ['#/groups', 'گروه‌ها'], ['#/storage', 'ذخیره‌سازی'], ['#/storage-indexes', 'نمایه‌های ذخیره‌سازی'],
+  ['#/matches', 'مسابقه‌ها'], ['#/leaderboards', 'جدول‌های امتیازات'], ['#/notifications', 'اعلان‌ها'], ['#/payments', 'پرداخت‌ها'], ['#/chat', 'پیام‌های گفتگو'],
+];
+const GROUPS: [string, string[]][] = [
+  ['economy', ['#/economy/overview', '#/economy/currencies', '#/economy/metas', '#/economy/prizes', '#/economy/products', '#/economy/gifts', '#/economy/payments']],
+  ['publication', ['#/publication/faqs', '#/publication/news', '#/publication/comments', '#/publication/notifications']],
+  ['developer', ['#/api-explorer', '#/runtime']],
+  ['settings', ['#/settings/users', '#/settings/general', '#/settings/config', '#/settings/data-management', '#/settings/audit-log']],
+];
+
+const pathOf = (h: string) => h.split('?')[0].replace(/^#/, '');
+
+test.describe('spatial shell: rail and top bar', () => {
+  test('every main page is one click away on the rail and marked current, with its title in the top bar', async ({ page }) => {
+    await visit(page, '#/');
+    await expect(page.locator('.sp-rail')).toBeVisible();
+    await expect(page.locator('div.flex.border-r.z-20:has(> .x-drawer)')).toBeHidden();
+    for (const [hash, title] of MAIN) {
+      await page.locator(`.sp-rail a.sp-ri[href="${hash}"]`).click();
+      await expect.poll(() => page.evaluate(() => location.hash || '#/')).toMatch(new RegExp('^' + hash.replace(/[/#?]/g, '\\$&') + '(\\?|$)'));
+      await expect(page.locator(`.sp-rail a.sp-ri[href="${hash}"]`)).toHaveAttribute('aria-current', 'page');
+      await expect(page.locator('.sp-rail [aria-current]')).toHaveCount(1);
+      await expect(page.locator('.sp-crumbs .sp-crumb-current')).toHaveText(title);
+    }
+  });
+
+  test('every group page is two clicks away through its flyout; the group is marked and the flyout closes', async ({ page }) => {
+    await visit(page, '#/');
+    for (const [group, hashes] of GROUPS) {
+      for (const hash of hashes) {
+        const btn = page.locator(`.sp-rail button[data-sp-group="${group}"]`);
+        await btn.click();
+        const fly = page.locator('.sp-flyout.open');
+        await expect(fly).toBeVisible();
+        await expect(btn).toHaveAttribute('aria-expanded', 'true');
+        await fly.locator(`a[href^="${hash}"]`).click();
+        await expect.poll(() => page.evaluate(() => (location.hash || '#/').split('?')[0])).toContain(pathOf(hash));
+        await expect(page.locator('.sp-flyout.open')).toHaveCount(0);
+        await expect(btn).toHaveAttribute('aria-current', 'true');
+      }
+    }
+  });
+
+  test('flyout opens on hover and closes when the pointer leaves, on Escape and with the keyboard only', async ({ page }) => {
+    await visit(page, '#/players');
+    const btn = page.locator('.sp-rail button[data-sp-group="publication"]');
+    await btn.hover();
+    await expect(page.locator('.sp-flyout.open')).toBeVisible();
+    await expect(page.locator('.sp-flyout.open .sp-fly-head b')).toHaveText('انتشار');
+    await page.mouse.move(700, 450);
+    await expect(page.locator('.sp-flyout.open')).toHaveCount(0);
+    await page.locator('.sp-rail a.sp-ri[href="#/chat"]').focus();
+    await page.keyboard.press('ArrowDown');
+    await expect(page.locator('.sp-rail button[data-sp-group="economy"]')).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.sp-flyout.open')).toBeVisible();
+    await expect(page.locator('.sp-flyout.open a[role="menuitem"]').first()).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await expect(page.locator('.sp-flyout.open a[role="menuitem"]').nth(1)).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.sp-flyout.open')).toHaveCount(0);
+    await expect(page.locator('.sp-rail button[data-sp-group="economy"]')).toBeFocused();
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/#\/economy\/currencies/);
+    await expect(page.locator('.sp-rail button[data-sp-group="economy"]')).toHaveAttribute('aria-current', 'true');
+  });
+
+  test('the pinned rail survives a reload, lists the sections and collapses back', async ({ page }) => {
+    await visit(page, '#/groups');
+    await page.locator('.sp-rail .sp-pin').click();
+    await expect(page.locator('html')).toHaveClass(/sp-pinned/);
+    await expect(page.locator('.sp-rail-full')).toBeVisible();
+    const pad = await page.evaluate(() => getComputedStyle(document.getElementById('main')!).paddingInlineStart);
+    expect(pad).toBe('264px');
+    await page.reload();
+    await page.locator('.sp-rail-full a.sp-row[href="#/groups"]').waitFor();
+    await expect(page.locator('.sp-rail-full a.sp-row[href="#/groups"]')).toHaveAttribute('aria-current', 'page');
+    await page.locator('.sp-rail-full button[data-sp-group="economy"]').click();
+    await expect(page.locator('.sp-flyout.open')).toBeVisible();
+    await page.locator('.sp-flyout.open a[href^="#/economy/gifts"]').click();
+    await expect(page).toHaveURL(/#\/economy\/gifts/);
+    await page.locator('.sp-rail-full .sp-collapse').click();
+    await expect(page.locator('html')).not.toHaveClass(/sp-pinned/);
+    expect(await page.evaluate(() => localStorage.getItem('nakama.spatial.rail'))).toBeNull();
+  });
+
+  test('breadcrumbs follow the route; section tabs slide between economy pages; badges match the old sidebar', async ({ page }) => {
+    await visit(page, '#/players');
+    await page.locator('#main table tbody tr').first().click();
+    await expect(page).toHaveURL(/#\/players\/[0-9a-f-]+/);
+    await expect(page.locator('.sp-crumbs a.sp-crumb-link')).toHaveText('بازیکنان');
+    await expect(page.locator('.sp-crumbs .sp-crumb-current')).toHaveText(/[0-9a-f-]{36}/);
+    await page.goto('/#/economy/products');
+    await page.locator('.sp-tabs a').first().waitFor();
+    await expect(page.locator('.sp-crumbs')).toContainText('اقتصاد');
+    await expect(page.locator('.sp-crumbs .sp-crumb-current')).toHaveText('فروشگاه');
+    await expect(page.locator('.sp-tabs a')).toHaveCount(7);
+    await expect(page.locator('.sp-tabs a[aria-current="page"]')).toHaveText('فروشگاه');
+    const x1 = await page.locator('.sp-tabs .sp-seg-ind').evaluate((e) => getComputedStyle(e).transform);
+    await page.locator('.sp-tabs a', { hasText: 'ارزها' }).click();
+    await expect(page.locator('.sp-tabs a[aria-current="page"]')).toHaveText('ارزها');
+    await expect.poll(() => page.locator('.sp-tabs .sp-seg-ind').evaluate((e) => getComputedStyle(e).transform)).not.toBe(x1);
+    const old = await page.locator('.x-drawer a[data-economy-page="comments"] .eco-nav-badge').count();
+    if (old) {
+      const n = await page.locator('.x-drawer a[data-economy-page="comments"] .eco-nav-badge').textContent();
+      await expect(page.locator('.sp-rail button[data-sp-group="publication"] .sp-count')).toHaveText(n!.trim());
+    }
+  });
+
+  test('EN/FA and theme from the top bar; LTR puts the rail on the left', async ({ page }) => {
+    await visit(page, '#/players');
+    const dark = await page.evaluate(() => document.documentElement.classList.contains('dark'));
+    await page.locator('.sp-theme').click();
+    await expect.poll(() => page.evaluate(() => document.documentElement.classList.contains('dark'))).toBe(!dark);
+    await page.locator('.sp-theme').click();
+    await page.locator('.sp-seg-lang [data-locale="en"]').click();
+    await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+    await page.locator('.sp-rail').waitFor();
+    const box = await page.locator('.sp-rail').boundingBox();
+    expect(box!.x).toBeLessThan(40);
+    await expect(page.locator('.sp-crumbs .sp-crumb-current')).toHaveText('Players');
+    await page.locator('.sp-seg-lang [data-locale="fa-IR"]').click();
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  });
+
+  test('project settings opens from the rail and the top bar gear, and closes back to the page', async ({ page }) => {
+    await visit(page, '#/groups');
+    await page.locator('.sp-rail button[data-sp-group="settings"]').click();
+    await page.locator('.sp-flyout.open [data-ps-entry="rail"]').click();
+    await expect(page.locator('[data-economy="project-settings"] .ps-window')).toBeVisible();
+    await expect(page.locator('.sp-rail button[data-sp-group="settings"]')).toHaveAttribute('aria-current', 'true');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[data-economy="project-settings"]')).toHaveCount(0);
+    await expect(page).toHaveURL(/#\/groups$/);
+    await page.locator('[data-ps-entry="topbar"]').click();
+    await expect(page.locator('[data-economy="project-settings"] .ps-window')).toBeVisible();
+    await page.locator('[data-ps-close]').click();
+    await expect(page).toHaveURL(/#\/groups$/);
+  });
+
+  test('search jumps to any page, including project settings sections', async ({ page }) => {
+    await visit(page, '#/');
+    await page.keyboard.press('Control+k');
+    const input = page.locator('.sp-pal-input');
+    await expect(input).toBeFocused();
+    await input.fill('هدیه');
+    await expect(page.locator('.sp-pal-row').first()).toContainText('هدیه‌ها');
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/#\/economy\/gifts/);
+    await page.locator('.sp-search').click();
+    await page.locator('.sp-pal-input').fill('پیامک');
+    await page.keyboard.press('Enter');
+    await expect(page.locator('[data-economy="project-settings"] .ps-window')).toBeVisible();
+    await expect(page).toHaveURL(/#\/project-settings\/sms/);
+  });
+
+  test('sign-in has no rail, a centered glass window on the sky', async ({ spawn }) => {
+    const page = await spawn({ signedIn: false });
+    await page.goto('/#/login');
+    await page.locator('input[name="username"]').waitFor();
+    await expect(page.locator('html')).toHaveClass(/sp-auth/);
+    await expect(page.locator('.sp-rail')).toHaveCount(0);
+    await expect(page.locator('.sp-sky')).toHaveCount(1);
+    const box = await page.locator('form.x-form').boundingBox();
+    expect(Math.abs(box!.x + box!.width / 2 - 720)).toBeLessThan(40);
+  });
+});

@@ -44,9 +44,14 @@ export function psWindow(page: Page) {
   return page.locator('[data-economy="project-settings"] .ps-window');
 }
 
+export async function still(page: Page) {
+  await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity));
+}
+
 export async function openSettings(page: Page, section: string) {
   await open(page, '#/project-settings/' + section);
   await expect(psWindow(page)).toBeVisible();
+  await still(page);
   await expect(psWindow(page).locator(`[role="tab"][data-ps-section="${section}"]`)).toHaveAttribute('aria-selected', 'true');
 }
 
@@ -57,6 +62,7 @@ export function panel(page: Page) {
 export async function settlePanel(page: Page) {
   await expect(panel(page).locator('form')).toBeVisible();
   await expect(panel(page).locator('.animate-pulse')).toHaveCount(0);
+  await still(page);
 }
 
 export function field(scope: Locator, label: string | RegExp) {

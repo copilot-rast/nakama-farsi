@@ -12,8 +12,8 @@ const MANIFEST = path.join(ROOT, 'dist-manifest.json');
 export const SELECTORS = path.join(ROOT, 'selectors.json');
 export const START = '<!-- nakama-spatial:start -->';
 export const END = '<!-- nakama-spatial:end -->';
-export const JS_SOURCES = ['i18n.js', 'core.js', 'sky.js', 'pages.js', 'motion.js', 'boot.js'];
-export const CSS_SOURCES = ['tokens.css', 'base.css', 'skin.css', 'overlays.css', 'eco.css', 'motion.css'];
+export const JS_SOURCES = ['i18n.js', 'core.js', 'sky.js', 'rail.js', 'topbar.js', 'pages.js', 'motion.js', 'boot.js'];
+export const CSS_SOURCES = ['tokens.css', 'base.css', 'shell.css', 'skin.css', 'overlays.css', 'eco.css', 'mobile.css', 'motion.css'];
 
 function hash(content) {
   return crypto.createHash('sha256').update(content).digest('hex').slice(0, 10);

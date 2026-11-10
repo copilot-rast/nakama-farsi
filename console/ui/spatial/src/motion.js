@@ -33,10 +33,10 @@ function routeEnter() {
 function onRouteChange(to, from) {
   var a = pageKey(to && to.path);
   var b = pageKey(from && from.path);
-  if (typeof closeFly === 'function') {
+  var moved = (to && to.fullPath) !== (from && from.fullPath);
+  if (moved && typeof closeFly === 'function') {
     closeFly(true);
     closeSheet();
-    if (tb.palette && tb.palette.close) tb.palette.close();
     toggleStats(false);
   }
   if (a !== b && a !== 'ps' && b !== 'ps') routeEnter();

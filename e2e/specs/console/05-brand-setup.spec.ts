@@ -111,7 +111,8 @@ test.describe('brand and setup wizard', () => {
     await expect.poll(async () => (await base.get('/setup')).status).toBe('skipped');
     st = await base.get('/setup');
     expect(st.nextStep).toBe('email');
-    await expect(page.locator('.x-drawer [data-brand-logo]').first()).toBeVisible();
+    await expect(page.locator('.x-drawer [data-brand-logo]').first()).toBeAttached();
+    await expect(page.locator('.sp-rail .sp-brand img')).toBeVisible();
 
     await page.reload();
     await page.locator('.x-drawer a[href="#/players"]').first().waitFor({ state: 'attached' });
