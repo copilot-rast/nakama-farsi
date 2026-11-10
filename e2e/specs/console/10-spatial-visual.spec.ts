@@ -182,7 +182,8 @@ test.describe('spatial visual: native pages', () => {
 const OURS: Record<string, string[]> = {
   economy: ['#/economy/overview', '#/economy/currencies', '#/economy/metas', '#/economy/prizes', '#/economy/products', '#/economy/gifts', '#/economy/payments', '#/economy/products/new'],
   publication: ['#/publication/faqs', '#/publication/news', '#/publication/comments', '#/publication/notifications', '#/publication/notifications/new'],
-  settings: ['#/project-settings/brand', '#/project-settings/setup', '#/project-settings/languages', '#/project-settings/countries', '#/project-settings/accounts', '#/project-settings/otp', '#/project-settings/app-versions', '#/project-settings/categories', '#/project-settings/tags', '#/project-settings/payment-methods', '#/project-settings/sms', '#/project-settings/email'],
+  moderation: ['#/moderation/players', '#/moderation/reports', '#/moderation/restrictions', '#/moderation/chat-words', '#/moderation/chat-words/new'],
+  settings: ['#/project-settings/brand', '#/project-settings/setup', '#/project-settings/languages', '#/project-settings/countries', '#/project-settings/accounts', '#/project-settings/otp', '#/project-settings/app-versions', '#/project-settings/categories', '#/project-settings/tags', '#/project-settings/report-titles', '#/project-settings/payment-methods', '#/project-settings/sms', '#/project-settings/email'],
 };
 
 test.describe('spatial visual: our pages', () => {

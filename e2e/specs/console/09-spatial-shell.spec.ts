@@ -91,6 +91,7 @@ const MAIN: [string, string][] = [
 const GROUPS: [string, string[]][] = [
   ['economy', ['#/economy/overview', '#/economy/currencies', '#/economy/metas', '#/economy/prizes', '#/economy/products', '#/economy/gifts', '#/economy/payments']],
   ['publication', ['#/publication/faqs', '#/publication/news', '#/publication/comments', '#/publication/notifications']],
+  ['moderation', ['#/moderation/players', '#/moderation/reports', '#/moderation/restrictions', '#/moderation/chat-words']],
   ['developer', ['#/api-explorer', '#/runtime']],
   ['settings', ['#/settings/users', '#/settings/general', '#/settings/config', '#/settings/data-management', '#/settings/audit-log']],
 ];

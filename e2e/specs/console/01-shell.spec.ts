@@ -13,11 +13,15 @@ const PAGES: [string, string][] = [
   ['#/publication/news', 'اخبار'],
   ['#/publication/comments', 'کامنت‌ها'],
   ['#/publication/notifications', 'اعلان‌ها'],
+  ['#/moderation/players', 'مدیریت بازیکنان'],
+  ['#/moderation/reports', 'گزارش‌ها'],
+  ['#/moderation/restrictions', 'تعلیق و سکوت'],
+  ['#/moderation/chat-words', 'فیلتر کلمات'],
 ];
 const NATIVE_TABS = ['users', 'general', 'config', 'data-management', 'audit-log'];
 
 test.describe('console shell', () => {
-  test('sign in shows the Persian RTL console with our two sections and the project settings entry', async ({ spawn }) => {
+  test('sign in shows the Persian RTL console with our three sections and the project settings entry', async ({ spawn }) => {
     const page = await spawn({ signedIn: false });
     const errors = watchErrors(page);
     await page.goto('/#/login');
@@ -25,12 +29,12 @@ test.describe('console shell', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'fa-IR');
     await loginAs(page, ADMIN);
     const drawer = page.locator('.x-drawer');
-    for (const [sec, title] of [['economy', 'اقتصاد'], ['publication', 'انتشار']]) {
+    for (const [sec, title] of [['economy', 'اقتصاد'], ['publication', 'انتشار'], ['moderation', 'بازیکنان و گفتگو']]) {
       await expect(drawer.locator(`[data-economy-nav="${sec}"]`).first()).toContainText(title);
     }
     await expect(drawer.locator('[data-economy-nav="base"]')).toHaveCount(0);
     const order = await page.evaluate(() => [...document.querySelectorAll('.x-drawer [data-economy-nav]')].map((n) => n.getAttribute('data-economy-nav')));
-    expect(order.slice(0, 2)).toEqual(['economy', 'publication']);
+    expect(order.slice(0, 3)).toEqual(['economy', 'publication', 'moderation']);
     await expect(drawer.locator('[data-ps-entry="sidebar"]').first()).toContainText('تنظیمات پروژه');
     await expect(page.locator('[data-ps-entry="topbar"]')).toHaveAttribute('aria-label', 'تنظیمات پروژه');
     await expect(page.locator('.sp-rail button[data-sp-group="economy"]')).toHaveAttribute('aria-label', 'اقتصاد');
@@ -43,7 +47,7 @@ test.describe('console shell', () => {
   test('every section page opens from the rail with its heading and is the only active link', async ({ page }) => {
     await open(page, '#/economy/overview');
     for (const [hash, title] of PAGES) {
-      const group = hash.startsWith('#/economy') ? 'economy' : 'publication';
+      const group = hash.split('/')[1];
       await page.locator(`.sp-rail button[data-sp-group="${group}"]`).click();
       await page.locator(`.sp-flyout.open a[href^="${hash}"]`).click();
       await expect(page).toHaveURL(new RegExp(hash.replace(/[/#?]/g, '\\$&')));

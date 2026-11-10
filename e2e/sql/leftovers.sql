@@ -11,3 +11,7 @@ select 'news', count(*) from publication_news where title::text like '%e2e%';
 select 'players', count(*) from user_device where id like 'e2e-%';
 select 'phone accounts', count(*) from publication_phone_account where phone like '+98999%';
 select 'otp codes', count(*) from publication_otp_code where phone like '+98999%';
+select 'chat words', count(*) from base_chat_word where word like 'e2e%';
+select 'report titles', count(*) from base_report_title where key like 'e2e%';
+select 'chat reports', count(*) from base_chat_report where channel_label like 'e2e%';
+select 'chat messages', count(*) from message where stream_label like 'e2e%';

@@ -26,4 +26,10 @@ UPDATE base_country c SET name=b.name, dial_code=b.dial_code, flag_url=b.flag_ur
 INSERT INTO base_country SELECT * FROM zz_e2e_backup.ctry b WHERE b.code NOT IN (SELECT code FROM base_country);
 DELETE FROM publication_otp_settings;
 INSERT INTO publication_otp_settings SELECT * FROM zz_e2e_backup.otp;
+DELETE FROM base_chat_word;
+INSERT INTO base_chat_word SELECT * FROM zz_e2e_backup.words;
+UPDATE base_chat_report SET title_id=NULL WHERE title_id IS NOT NULL AND title_id NOT IN (SELECT id FROM zz_e2e_backup.rtitles);
+DELETE FROM base_report_title WHERE id NOT IN (SELECT id FROM zz_e2e_backup.rtitles);
+UPDATE base_report_title t SET key=b.key, name=b.name, description=b.description, is_active=b.is_active, sort=b.sort, updated_at=b.updated_at FROM zz_e2e_backup.rtitles b WHERE t.id=b.id;
+INSERT INTO base_report_title SELECT * FROM zz_e2e_backup.rtitles b WHERE b.id NOT IN (SELECT id FROM base_report_title);
 COMMIT;

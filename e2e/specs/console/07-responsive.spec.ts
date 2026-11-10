@@ -28,6 +28,11 @@ const PAGES = [
   '#/project-settings/otp',
   '#/project-settings/app-versions',
   '#/project-settings/app-versions/new',
+  '#/project-settings/report-titles',
+  '#/moderation/players',
+  '#/moderation/reports',
+  '#/moderation/restrictions',
+  '#/moderation/chat-words',
 ];
 
 test.describe('console at 390px', () => {

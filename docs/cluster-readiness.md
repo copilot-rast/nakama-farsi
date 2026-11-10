@@ -36,6 +36,9 @@ Status: **fixed** = changed in phase 0b; **safe** = already correct on N nodes, 
 | internal/secretbox | `internal/secretbox/secretbox.go:27` | Key derivation | — | Pure functions; `ECONOMY_SECRET_KEY` must be identical on every node (config rule 5) | safe |
 | publication | `integrations/publication/otp.go` (phase 2) | OTP rate limits, code tries, sweeping | — | Limits through `clusterkit.Allow`; verify under `pg_advisory_xact_lock` on the number with the try count committed in the same transaction; old codes swept under the `publication-otp-sweep` lease | safe |
 | base | `integrations/base/rules.go`, `versions.go`, `countries.go` (phase 2) | Account rules, versions, countries | — | Read from the database on every hook/RPC; no cache | safe |
+| base | `integrations/base/players.go` (phase 3) restrictions | Suspension/mute end times, auto-lift, live kick | — | Enforced by `ends_at > now()` on every check (no timer); `expired` status set by one `UPDATE` under the `base-restriction-expire` lease; every node's `restrictionLoop` logs out and disconnects its own sockets of players suspended in the last two minutes, so the kick reaches every node without shared state | safe |
+| base | `integrations/base/chathooks.go` (phase 3) chat filter and reports | Word list, mute check, report rate limit | — | Word list and mute read from the database for every message (no cache); one report per player and message by a partial unique index; report rate limit through `clusterkit.Allow`; report resolution locks the report row | safe |
+| internal/hookchain | `internal/hookchain/hookchain.go` (phase 3) | Package-level registry of hook chains | — | Written only while plugins initialise, read-only afterwards; identical on every node because every node loads the same plugins | safe |
 | stargame | `samples/stargame/seed.go:173` | Seed on every node start | Concurrent starts | One transaction, every insert `ON CONFLICT DO NOTHING` in a fixed order; covered by the existing 4-way concurrent `TestSeedPostgres` | safe |
 | stargame | `samples/stargame/main.go:79`, `:96` | Rounds | — | Stored in Nakama storage with version checks (`ErrStorageRejectedVersion`) | safe |
 | stargame | `samples/stargame/web.go` | Embedded static files | — | Read-only, built into the plugin | safe |
@@ -54,7 +57,7 @@ These are inside Nakama OSS, not in our plugins. When porting the nakama-plus cl
 
 - Tracker/presence and streams across nodes: `StreamUserList`, `StreamSend`, `StreamUserKick`, `StreamUserJoin` (jazebe group chat).
 - Message routing to sessions on other nodes: live part of `NotificationsSend` (publication in-app, any future notification), `SessionDisconnect`.
-- Session cache invalidation broadcast: `SessionLogout`, bans, suspension (OSS `LocalSessionCache` keeps invalidations per node, so a token logged out on node A stays valid on node B).
+- Session cache invalidation broadcast: `SessionLogout`, bans, suspension (OSS `LocalSessionCache` keeps invalidations per node, so a token logged out on node A stays valid on node B). Phase 3 temporary suspensions already repeat the logout on every node for two minutes (`restrictionLoop`), and sign-in, refresh and chat are refused from the database, so a cluster broadcast only shortens that window.
 - Matches, matchmaker, parties, status, leaderboard rank cache (not used by our plugins today; Star Catcher rounds are RPC + storage).
 
 ## Shared helpers added

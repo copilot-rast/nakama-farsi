@@ -22,6 +22,7 @@ const SECTIONS: [string, string, string][] = [
   ['app-versions', 'نسخه‌های برنامه', 'table.eco-table'],
   ['categories', 'دسته‌بندی‌ها', 'table.eco-table'],
   ['tags', 'تگ‌ها', 'table.eco-table'],
+  ['report-titles', 'عنوان‌های گزارش', 'table.eco-table'],
   ['payment-methods', 'درگاه‌های پرداخت', '[data-method]'],
   ['sms', 'پیامک', '[data-channel="sms"]'],
   ['email', 'ایمیل', '[data-channel="email"]'],

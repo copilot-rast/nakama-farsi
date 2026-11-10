@@ -8,3 +8,5 @@ select 'H-rules', md5(coalesce(string_agg(username_min||'/'||username_max||usern
 select 'H-ver', md5(coalesce(string_agg(id::text||platform||latest_version||min_version||store_links::text||update_message::text||force_message::text||is_active::text, '|' order by platform),'')) from base_app_version;
 select 'H-ctry', md5(coalesce(string_agg(code||name::text||dial_code||flag_url||is_active::text||sort::text, '|' order by code),'')) from base_country;
 select 'H-otp', md5(coalesce(string_agg(is_enabled::text||sandbox::text||coalesce(provider_id::text,'')||code_length||'/'||ttl_seconds||'/'||max_attempts||'/'||resend_seconds||'/'||phone_hourly||'/'||phone_daily||'/'||ip_hourly||message::text, '|'),'')) from publication_otp_settings;
+select 'H-words', md5(coalesce(string_agg(id::text||word||action||match||is_active::text||note, '|' order by id),'')) from base_chat_word;
+select 'H-rtitles', md5(coalesce(string_agg(id::text||key||name::text||description::text||is_active::text||sort::text, '|' order by id),'')) from base_report_title;

@@ -143,7 +143,7 @@ Enforced by before-hooks registered in `integrations/base/rules.go`:
 | `UpdateAccount` | a changed username; the display name length |
 | `LinkEmail` | password rules |
 
-Errors are runtime errors with codes `USERNAME_TOO_SHORT`, `USERNAME_TOO_LONG`, `USERNAME_INVALID_CHARACTERS`, `PASSWORD_TOO_SHORT`, `PASSWORD_NEEDS_LETTER`, `PASSWORD_NEEDS_DIGIT`, `DISPLAY_NAME_TOO_LONG` (gRPC InvalidArgument, HTTP 400 with the code as `message`). Nakama-generated usernames (sign-ups without a username, phone accounts) are not checked. Only one before-hook per message exists in Nakama: a game plugin that registers its own before-hook for these messages replaces this one.
+Errors are runtime errors with codes `USERNAME_TOO_SHORT`, `USERNAME_TOO_LONG`, `USERNAME_INVALID_CHARACTERS`, `PASSWORD_TOO_SHORT`, `PASSWORD_NEEDS_LETTER`, `PASSWORD_NEEDS_DIGIT`, `DISPLAY_NAME_TOO_LONG` (gRPC InvalidArgument, HTTP 400 with the code as `message`). Nakama-generated usernames (sign-ups without a username, phone accounts) are not checked. Only one before-hook per message exists in Nakama, so since phase 3 these hooks are registered through `internal/hookchain` (see «Players and chat»); a game plugin that registers its own hook through `hookchain.Before` runs after these checks instead of replacing them.
 
 Console: `GET/PUT /v2/console/base/account-rules` (`SETTINGS` read/write, full replace, `INVALID_RULE` with `field`). Client RPC `base_account_rules {}` → `{usernameMin, usernameMax, usernameCharset, passwordMin, passwordLetter, passwordDigit, displayNameMax}`.
 
@@ -173,3 +173,79 @@ Four new project settings sections (registry `PS_SECTIONS`, code in `console/ui/
 - «قوانین حساب» (`#/project-settings/accounts`, `SETTINGS`): one form (username lengths and letters, password length and letter/digit, display name length) with a «امتحان کنید» box that checks a sample username and password against the numbers in the form before saving.
 - «ورود با پیامک» (`#/project-settings/otp`, `NOTIFICATION`, same as SMS): a notice with the current mode (off / sandbox / live with which service / no service), the settings form (on, sandbox, SMS service, code digits, lifetime, tries, resend wait, per-number hourly and daily limits, per-IP hourly limit, translated SMS text with `{code}`, `{minutes}`, `{app}`) and «درخواست‌های اخیر» (number, status, sandbox or service, tries, player link, time; search by number, status filter). The code itself is never shown.
 - «نسخه‌های برنامه» (`#/project-settings/app-versions[/<id>]`, `SETTINGS`): list with platform, latest, lowest allowed, store tags and status; editor with platform, versions, a store-link list (store, link, optional translated label) and the two translated messages.
+
+## Players and chat (phase 3)
+
+Player tags, temporary suspensions and mutes, warnings and chat moderation live in the base plugin. Migration `20261111000000-base-players-chat.sql` (Up re-runnable, Down raises) adds the tables and seeds six report reasons and ten filter words, so a deploy needs no manual step; `20261111000001-economy-product-audience.sql` adds `economy_product.audience_tag_ids`.
+
+### Data
+
+| Table | What |
+|---|---|
+| `base_tag.is_public` | new column; only meaningful for key type `user`. A public player tag can be read by the player it is given to. |
+| `base_user_tag(user_id, tag_id, created_by, created_at)` | tags given to players; both foreign keys cascade on delete |
+| `base_restriction` | one row per suspension, mute or warning: `kind` (`suspend`, `mute`, `warn`), `status` (`active`, `lifted`, `expired`), `starts_at`, `ends_at`, `reason` (translated, shown to the player), `note` (internal), `report_id`, `created_by`, `lifted_by/at`, `lift_note`, `ended_at`. At most one active suspension and one active mute per player (partial unique index); a new one lifts the old one (`lift_note = 'replaced'`). A warning is stored as `expired` with `ends_at = starts_at`. |
+| `base_chat_word` | filter words: `word` (1–64 letters), `action` (`mask`, `block`, `flag`), `match` (`word`, `contains`), `is_active`, `note` |
+| `base_report_title` | report reasons: `key`, translated `name` and `description`, `is_active`, `sort`. Seeded: abuse, harassment, spam, cheating, personal-info, other (fa, en, ar). |
+| `base_chat_report` | one row per report: `source` (`player` or `filter`), `status` (`open`, `dismissed`, `resolved`), the message id, channel id and room label, a snapshot of the sender, the message text and up to five messages before and after it (`context`), the reporter, the reason (id and a snapshot of its name), the player's note, matched filter words, and the decision (`action`, `restriction_id`, `message_deleted`, `resolved_by/at`, `resolution_note`). A player reports a message once; the filter flags a message once. |
+
+Restrictions are enforced by `status = 'active' AND ends_at > now()`, so a restriction ends exactly on time on every node even before any worker runs. Every node runs `restrictionLoop` (5 s): it closes the live sessions of players suspended in the last two minutes (`SessionLogout` plus `SessionDisconnect` of the presences on that node, so every node cleans up its own sockets without shared memory), and every 30 s the node that holds the `base-restriction-expire` lease (`internal/clusterkit`) marks ended rows `expired`. Nakama's own permanent ban (`disable_time`) is untouched and shown as «مسدود دائمی».
+
+### Enforcement
+
+- Sign-in: before-hooks for `AuthenticateDevice` (by device id), `AuthenticateCustom` (by custom id), `AuthenticateEmail` (by email or username) and `SessionRefresh` (user id read from the refresh token) refuse a suspended player. Phone login (`publication_otp_verify`) refuses too. Google, Apple, Facebook, Steam and Game Center sign-ins cannot be checked before Nakama verifies the token, so their after-hooks log the new session out at once (the client then gets 401 without the message; next device or custom sign-in shows it).
+- The refusal is a runtime error with gRPC code 7 (HTTP 403) whose message is JSON: `{"code":"ACCOUNT_SUSPENDED","kind":"suspend","until":"<RFC 3339>","reason":"<in the player's language>","lang":"fa"}`.
+- Chat: a before-hook on `ChannelMessageSend` and `ChannelMessageUpdate` refuses muted (and suspended) players with the same JSON shape and code `CHAT_MUTED`, then runs the word filter over every string in the message content (JSON object). `block` refuses the message with the plain message `CHAT_BLOCKED`; `mask` replaces the matched letters with `*`; `flag` lets the message through and the after-hook stores a `filter` report with the matched words. The word list is read from the database for each message (no cache).
+- Hooks are composed through `internal/hookchain`: every plugin that registers a hook through it adds to one chain per message instead of replacing the previous hook (Nakama keeps one hook per message). Base registers its account-rule, suspension and chat hooks this way; a game plugin that wants its own `ChannelMessageSend` or `AuthenticateDevice` hook should call `hookchain.Before` too.
+- Live notices (code, content): 1102 suspended (`{code, kind, until, reason, lang, restrictionId}`, not persisted, sent just before the sockets are closed), 1103 muted (not persisted), 1104 warning (persisted, `code: "WARNED"`), 1105 lifted (`{code: "LIFTED", kind}`).
+
+### Word filter (`internal/chatfilter`)
+
+Before matching, both the words and the text are normalised: NFKD with combining marks removed (Arabic diacritics, madda and hamza above, Latin accents, presentation forms such as `ﺍﺣﻤﻖ`, full-width Latin), ZWNJ/ZWJ/bidi marks/soft hyphen/tatweel removed, `ي ى` → `ی`, `ك` → `ک`, `ة ە ھ` → `ه`, Persian and Arabic digits → Latin, lower case, a few Cyrillic and Greek look-alikes → Latin, leet before a Latin letter (`0→o 1→i 3→e 4→a 5→s 7→t @→a $→s !→i`), repeated letters collapsed (a word letter repeated n times matches n or more in the text). Text is split two ways (by spaces and punctuation, and by spaces only with punctuation and digits dropped), and runs of single letters are joined (`ا ح م ق`, `i.d.i.o.t`).
+
+- `word` match: the whole token (or two adjacent tokens, for `بي شعور` or `id iot`), optionally followed by a common suffix (Persian `ی ای ها های ان ت ش م مان تان شان تر ترین ه`, English `s es ed er ers ing y ish`). Multi-word entries (`خفه شو`) match consecutive tokens.
+- `contains` match: anywhere in the text with separators removed (`حرام‌زاده‌ای`, `ح ر ا م ز ا د ه`).
+- Masking keeps spaces and punctuation and drops invisible marks inside the match, so `تو اح‌ـمق هستی` becomes `تو **** هستی`.
+
+### Console API (`/v2/console/base/`)
+
+ACL: `players`, `restrictions` → `ACCOUNT` read/write; `chat-words`, `report-titles`, `reports` → `CHANNEL_MESSAGE` read/write (resolving a report with mute or suspend needs only `CHANNEL_MESSAGE` write). Audit-logged under those resources (`/lift`, `/resolve` and `/chat-words/test` as invoke).
+
+| Route | Notes |
+|---|---|
+| `GET /players?q&tagId&status&page&limit` | `q` matches username, display name or id; `status` = `suspended`, `muted`, `banned`, `tagged`. Items `{id, username, displayName, avatarUrl, createTime, banned, tags:[{id,key,name,isPublic}], suspension:{id,endsAt,reason}|null, mute:…}` |
+| `GET /players/{id}` | the same plus `history` (last 50 restrictions) and `reports {against, by, open}` |
+| `PUT /players/{id}/tags` | `{tagIds}` full replace; only key type `user` (`TAG_KIND_MISMATCH`), at most 50 |
+| `POST /players/tags` | bulk `{userIds (≤1000), tagIds, op: add|remove}` → `{changed, players}`; `USERS_NOT_FOUND`, `TAGS_REQUIRED`, `INVALID_OP` |
+| `POST /players/{id}/restrictions` | `{kind, minutes | endsAt (RFC 3339), reason (translated, required, ≤500), note}`; `END_REQUIRED`, `END_IN_PAST`, `END_TOO_FAR` (10 years; use the ban for longer), `INVALID_RESTRICTION_KIND`, `USER_NOT_FOUND`. Sends the live notice and, for a suspension, closes the player's sessions. |
+| `GET /restrictions?q&kind&status&userId` | `status` = `active`, `expired` (also active rows past their end), `lifted`; `activeTotal` |
+| `GET /restrictions/{id}`, `POST /restrictions/{id}/lift` | `{note}`; `NOT_ACTIVE` (409) once ended |
+| `chat-words` CRUD | `{word, action, match, isActive, note}`; items carry `normalized`; duplicates by normalised form → `ALREADY_EXISTS` (409, field `word`); `INVALID_WORD`, `INVALID_MOD_ACTION`, `INVALID_MATCH` |
+| `POST /chat-words/test` | `{text}` → `{text (as others see it), normalized, changed, blocked, flagged, hits:[{id, word, action}]}` |
+| `report-titles` CRUD | `{key, name, description, isActive, sort}`; items carry `used` |
+| `GET /reports?q&status&source&titleId&senderId`, `GET /reports/summary` | list with `openTotal`; summary `{open, player, filter}` |
+| `GET /reports/{id}` | report plus `context`, `others` (other reports on the same message), `sender` (player view plus `counts`) |
+| `POST /reports/{id}/resolve` | `{action: dismiss|delete|warn|mute|suspend, deleteMessage, minutes|endsAt, reason, note}`; closes every open report on that message; `delete` (or `deleteMessage`) removes the message with `ChannelMessageRemove`; `REPORT_CLOSED` (409) when already handled |
+
+Tag definitions stay under `/tags` (`HIRO_ECONOMY`); a tag of key type `user` accepts `isPublic` and its list items carry `players`. A user tag that players have cannot change its key type (`IN_USE`); deleting a tag removes it from players and from product audiences.
+
+### Client RPCs
+
+| RPC | Input | Output |
+|---|---|---|
+| `base_my_tags` | `{lang?}` | `{lang, items:[{key, name, description, iconUrl, …}]}` public player tags of the caller only |
+| `base_my_status` | `{lang?}` | `{lang, suspension: notice|null, mute: notice|null, warnings:[{id, reason, createdAt}]}` (warnings of the last 7 days, at most 5) |
+| `base_report_titles` | `{lang?}` | `{lang, items:[{key, name, description}]}` active reasons |
+| `base_report_message` | `{messageId, titleKey, note? (≤500)}` | `{reportId, duplicate}`; `REPORT_TITLE_NOT_FOUND`, `MESSAGE_NOT_FOUND` (also when the caller cannot see the channel), `CANNOT_REPORT_OWN`, `TOO_MANY_REPORTS` (20 per hour per player, `clusterkit.Allow`) |
+
+### Console pages
+
+- New sidebar section «بازیکنان و گفتگو» / "Players & chat" (rail group with a shield icon, top-bar tabs, Ctrl K page search), pages hidden by ACL:
+  - «مدیریت بازیکنان» (`#/moderation/players`, `ACCOUNT`): search, tag filter, status filter, a checkbox per row and a bulk bar (select this page, add or remove tags); a row opens the native player page.
+  - «گزارش‌ها» (`#/moderation/reports[/<id>]`, `CHANNEL_MESSAGE`, open-count badge): status, source, reason and player filters; the review page shows the conversation around the message with the reported line marked, the report (reason, reporter, note, matched words, other reports), the sender (tags, status, counts, links to history and reports) and the decision: dismiss, delete message, warn, mute or suspend with duration chips (1 h, 1 d, 3 d, 7 d, 30 d or a date), a translated message for the player prefilled per action, «پیام هم پاک شود» and an internal note.
+  - «تعلیق و سکوت» (`#/moderation/restrictions`, `ACCOUNT`): kind, status and player filters, reason, who and when, «برداشتن» with a note.
+  - «فیلتر کلمات» (`#/moderation/chat-words[/<id>]`, `CHANNEL_MESSAGE`): «امتحان فیلتر» box (what others see, the normalised form, the hits) above the word list; editor with word, action, match, active and note.
+- Project settings section «عنوان‌های گزارش» (`#/project-settings/report-titles`, `CHANNEL_MESSAGE`).
+- Native player page (`#/players/<id>`, account tab): a «برچسب‌ها و محدودیت‌ها» card above the account card with the tags («ویرایش برچسب‌ها» dialog), the current status, «تعلیق موقت», «بی‌صدا کردن», «اخطار» or «برداشتن …» buttons (ACCOUNT write) and links to the history and reports.
+- Tag editor: «بازیکن این برچسب را ببیند» for player tags; the tag list shows «دیدنی برای بازیکن» and a player count linking to the filtered player list.
+- Sidebar placement no longer depends on the native «بازیکنان» link, so a console user without `ACCOUNT` access (for example a chat moderator) still gets our sections.
