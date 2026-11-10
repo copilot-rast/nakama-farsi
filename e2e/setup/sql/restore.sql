@@ -1,0 +1,14 @@
+BEGIN;
+DELETE FROM economy_payment_method;
+INSERT INTO economy_payment_method SELECT * FROM zz_setup_backup.pm;
+DELETE FROM publication_provider WHERE id NOT IN (SELECT id FROM zz_setup_backup.pv);
+UPDATE publication_provider p SET is_active=b.is_active, is_default=false, sandbox=b.sandbox, config=b.config, updated_at=b.updated_at FROM zz_setup_backup.pv b WHERE p.id=b.id;
+UPDATE publication_provider p SET is_default=b.is_default FROM zz_setup_backup.pv b WHERE p.id=b.id AND b.is_default;
+UPDATE base_language SET is_default=false;
+DELETE FROM base_language WHERE code NOT IN (SELECT code FROM zz_setup_backup.lang);
+INSERT INTO base_language SELECT * FROM zz_setup_backup.lang b WHERE b.code NOT IN (SELECT code FROM base_language);
+UPDATE base_language l SET name=b.name, native_name=b.native_name, direction=b.direction, icon_url=b.icon_url, is_active=b.is_active, sort=b.sort, updated_at=b.updated_at FROM zz_setup_backup.lang b WHERE l.code=b.code;
+UPDATE base_language l SET is_default=true FROM zz_setup_backup.lang b WHERE l.code=b.code AND b.is_default;
+DELETE FROM economy_currency WHERE id NOT IN (SELECT id FROM zz_setup_backup.cur);
+UPDATE economy_currency c SET key=b.key, name=b.name, type=b.type, default_value=b.default_value, icon_url=b.icon_url, metadata=b.metadata, sort=b.sort, updated_at=b.updated_at FROM zz_setup_backup.cur b WHERE c.id=b.id;
+COMMIT;
