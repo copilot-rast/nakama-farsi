@@ -295,7 +295,7 @@ func seedAppVersions(ctx context.Context, tx *sql.Tx, env map[string]string, rep
 	if !strings.HasPrefix(base, "http://") && !strings.HasPrefix(base, "https://") {
 		base = "https://nakama.dastar.dev"
 	}
-	update := text{"fa": "نسخه‌ی تازه‌ی ستاره‌چین آمده. با به‌روزرسانی، ستاره‌های بیشتری می‌گیری!", "en": "A new Star Catcher is out. Update to catch more stars!", "ar": "إصدار جديد من صائد النجوم متاح. حدّث اللعبة!"}
+	update := text{"fa": "نسخهٔ تازهٔ ستاره‌چین آمده. با به‌روزرسانی، ستاره‌های بیشتری می‌گیری!", "en": "A new Star Catcher is out. Update to catch more stars!", "ar": "إصدار جديد من صائد النجوم متاح. حدّث اللعبة!"}
 	force := text{"fa": "این نسخه دیگر کار نمی‌کند. برای ادامه، بازی را به‌روز کن.", "en": "This version no longer works. Please update to keep playing.", "ar": "هذا الإصدار لم يعد يعمل. يرجى التحديث للمتابعة."}
 	rows := []struct {
 		platform string

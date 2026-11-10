@@ -52,16 +52,17 @@ const STRINGS = {
     coinUnit: "سکه",
     language: "زبان",
     loggingIn: "در حال ورود…",
+    retry: "دوباره امتحان کن",
     hello: "سلام",
     heroTitle: "ستاره‌ها را بگیر، از بمب‌ها فرار کن",
-    heroText: () => `هر دور ${num(30)} ثانیه است. هر ستاره <b>${num(1)} امتیاز</b> دارد و ستاره‌ی طلایی <b>${num(5)} امتیاز</b>. هر بمب <b>${num(3)} امتیاز</b> کم می‌کند. هر ${num(5)} امتیاز یک سکه، تا سقف ${num(30)} سکه در هر دور.`,
+    heroText: () => `هر دور ${num(30)} ثانیه است. هر ستاره <b>${num(1)} امتیاز</b> دارد و ستارهٔ طلایی <b>${num(5)} امتیاز</b>. هر بمب <b>${num(3)} امتیاز</b> کم می‌کند. هر ${num(5)} امتیاز یک سکه، تا سقف ${num(30)} سکه در هر دور.`,
     startGame: "شروع بازی",
     mySkins: "سبدهای من",
     mySkinsHint: "سبدی را که می‌خواهی در بازی داشته باشی انتخاب کن",
     score: "امتیاز",
     time: "زمان",
     quit: "خروج",
-    canvasLabel: "صفحه‌ی بازی",
+    canvasLabel: "صفحهٔ بازی",
     playHint: "با موس، لمس یا کلیدهای جهت‌نما سبد را حرکت بده.",
     back: "بازگشت",
     restore: "بازیابی خرید",
@@ -70,7 +71,7 @@ const STRINGS = {
     giftSubmit: "دریافت هدیه",
     more: "بیشتر",
     olderNews: "خبرهای قدیمی‌تر",
-    allNews: "همه‌ی خبرها",
+    allNews: "همهٔ خبرها",
     comments: "نظرها",
     commentLabel: "نظرت را بنویس",
     commentPlaceholder: "نظرت را بنویس…",
@@ -109,7 +110,7 @@ const STRINGS = {
     simPay: "پرداخت موفق",
     confirmingPurchase: "در حال تأیید خرید…",
     simBadge: "شبیه‌ساز فروشگاه (حالت تست)",
-    simNote: "روی وب برنامه‌ی فروشگاه نداریم؛ این پنجره جای آن را می‌گیرد.",
+    simNote: "روی وب برنامهٔ فروشگاه نداریم؛ این پنجره جای آن را می‌گیرد.",
     product: "محصول",
     amount: "مبلغ",
     payment: "پرداخت",
@@ -131,7 +132,7 @@ const STRINGS = {
     payPending: "پرداخت هنوز در انتظار است",
     payFailed: "پرداخت انجام نشد",
     payOkText: (b) => `سکه‌ها به حسابت اضافه شد. موجودی: ${num(b)} سکه`,
-    payPendingText: "چند دقیقه‌ی دیگر در «پرداخت‌های من» نگاه کن.",
+    payPendingText: "چند دقیقهٔ دیگر در «پرداخت‌های من» نگاه کن.",
     payFailedText: "پولی کم نشده باشد، برمی‌گردد.",
     ok: "باشه",
     sectionNotFound: "این بخش در بازی پیدا نشد.",
@@ -158,12 +159,12 @@ const STRINGS = {
     openLink: "باز کردن پیوند ↗",
     goTo: (s) => `رفتن به ${s}`,
     inboxEmpty: "صندوقت خالی است.",
-    allRead: "همه‌ی پیام‌ها خوانده شد.",
+    allRead: "همهٔ پیام‌ها خوانده شد.",
     newMessage: "پیام تازه",
     account: "حساب من",
     guest: "مهمان",
     guestHint: "پیشرفتت فقط روی همین دستگاه است. با شماره موبایل وارد شو تا روی هر دستگاهی داشته باشی‌اش.",
-    signedInAs: (p) => `با شماره‌ی ${p} وارد شده‌ای`,
+    signedInAs: (p) => `با شمارهٔ ${p} وارد شده‌ای`,
     signedInHint: "با همین شماره روی هر دستگاهی وارد شو.",
     myCountry: "کشور من",
     myCountryHint: "برای نشان دادن پرچم و پیش‌شماره",
@@ -185,23 +186,23 @@ const STRINGS = {
     verifying: "در حال بررسی…",
     resendIn: (n) => `ارسال دوباره تا ${num(n)} ثانیه`,
     resend: "ارسال دوباره",
-    changeNumber: "شماره‌ی دیگر",
+    changeNumber: "شمارهٔ دیگر",
     welcomeBack: (p) => `خوش آمدی! با ${p} وارد شدی.`,
     newAccount: (p) => `حساب تازه با ${p} ساخته شد.`,
-    linked: (p) => `شماره‌ی ${p} به همین حساب وصل شد.`,
+    linked: (p) => `شمارهٔ ${p} به همین حساب وصل شد.`,
     signOut: "خروج از حساب موبایل",
     signedOut: "از حساب موبایل خارج شدی. حالا مهمانی.",
     username: "نام کاربری",
     saveName: "ذخیره",
     nameSaved: "نام کاربری ذخیره شد.",
     nameRule: (min, max, latin) => `بین ${num(min)} تا ${num(max)} حرف${latin ? "، فقط حرف لاتین، رقم و _ . -" : ""}.`,
-    updateAvailable: "نسخه‌ی تازه آمده",
+    updateAvailable: "نسخهٔ تازه آمده",
     updateRequired: "باید بازی را به‌روز کنی",
     updateNow: "به‌روزرسانی",
     later: "بعداً",
     updateDefault: "برای ادامه، بازی را به‌روز کن.",
-    versions: (cur, min) => `نسخه‌ی تو: ${cur} — کمترین نسخه‌ی مجاز: ${min}`,
-    versionLabel: (v) => `نسخه‌ی ${v}`,
+    versions: (cur, min) => `نسخهٔ تو: ${cur} — کمترین نسخهٔ مجاز: ${min}`,
+    versionLabel: (v) => `نسخهٔ ${v}`,
     errorCode: (code) => `خطا: ${code}`,
     methods: { zarinpal: "زرین‌پال", zibal: "زیبال", bazaar: "کافه‌بازار", myket: "مایکت", in_app: "پرداخت با سکه" },
     statuses: { success: "موفق", pending: "در انتظار", failed: "ناموفق", expired: "منقضی" },
@@ -216,10 +217,10 @@ const STRINGS = {
       OTP_EXPIRED: "کد منقضی شد. کد تازه بخواه.",
       OTP_INVALID_CODE: "کد درست نیست.",
       OTP_TOO_MANY_ATTEMPTS: "چند بار کد اشتباه زدی. کد تازه بخواه.",
-      INVALID_PHONE: "شماره‌ی موبایل درست نیست.",
+      INVALID_PHONE: "شمارهٔ موبایل درست نیست.",
       PHONE_COUNTRY_NOT_ALLOWED: "شماره‌های این کشور پذیرفته نمی‌شوند.",
       ACCOUNT_DISABLED: "این حساب بسته شده است.",
-      ACCOUNT_HAS_PHONE: "این حساب شماره‌ی دیگری دارد.",
+      ACCOUNT_HAS_PHONE: "این حساب شمارهٔ دیگری دارد.",
       COUNTRY_NOT_AVAILABLE: "این کشور در دسترس نیست.",
       USERNAME_TOO_SHORT: "نام کاربری کوتاه است.",
       USERNAME_TOO_LONG: "نام کاربری بلند است.",
@@ -242,7 +243,7 @@ const STRINGS = {
       TIMEOUT: "پاسخ سرور طول کشید. دوباره امتحان کن.",
       CANCELED: "درخواست لغو شد.",
       PRODUCT_NOT_FOUND: "این محصول پیدا نشد یا دیگر فروخته نمی‌شود.",
-      PRIZE_NOT_FOUND: "جایزه‌ی این مورد پیدا نشد.",
+      PRIZE_NOT_FOUND: "جایزهٔ این مورد پیدا نشد.",
       PAYMENT_NOT_FOUND: "این پرداخت پیدا نشد.",
       METHOD_NOT_ALLOWED: "این محصول با این روش خریدنی نیست.",
       METHOD_UNAVAILABLE: "این روش پرداخت الان در دسترس نیست.",
@@ -258,7 +259,7 @@ const STRINGS = {
       GIFT_EXHAUSTED: "ظرفیت این کد تمام شده.",
       GIFT_NOT_REDEEMABLE: "این کد تخفیف است؛ موقع خرید با درگاه واردش کن.",
       PRICE_TOO_LOW: "با این تخفیف، مبلغ نهایی کمتر از حد مجاز می‌شود.",
-      INSUFFICIENT_BALANCE: "سکه‌ات کافی نیست. چند دور بازی کن یا بسته‌ی سکه بخر.",
+      INSUFFICIENT_BALANCE: "سکه‌ات کافی نیست. چند دور بازی کن یا بستهٔ سکه بخر.",
       SKU_REQUIRED: "این محصول در این فروشگاه کد ندارد.",
       GATEWAY_REQUEST_FAILED: "درگاه پرداخت جواب نداد. دوباره امتحان کن.",
       GATEWAY_UNAVAILABLE: "درگاه پرداخت در دسترس نیست.",
@@ -312,6 +313,7 @@ const STRINGS = {
     coinUnit: "coins",
     language: "Language",
     loggingIn: "Signing in…",
+    retry: "Try again",
     hello: "Hi",
     heroTitle: "Catch the stars, dodge the bombs",
     heroText: () => `Each round lasts ${num(30)} seconds. A star is worth <b>${num(1)} point</b> and a golden star <b>${num(5)} points</b>. A bomb takes away <b>${num(3)} points</b>. Every ${num(5)} points is one coin, up to ${num(30)} coins per round.`,
@@ -2105,6 +2107,15 @@ async function boot() {
   $("#note-toast").addEventListener("click", () => { $("#note-toast").hidden = true; show("inbox"); });
   $("#faq-q").addEventListener("input", () => { clearTimeout(faqTimer); faqTimer = setTimeout(loadFaq, 300); });
   setupAccount();
+  $("#btn-retry").addEventListener("click", connect);
+  await connect();
+}
+
+async function connect() {
+  const retry = $("#btn-retry");
+  retry.hidden = true;
+  document.querySelector("#screen-loading .spinner").hidden = false;
+  $("#loading-text").textContent = t("loggingIn");
   try {
     await loadServerKey();
     await login();
@@ -2118,6 +2129,8 @@ async function boot() {
   } catch (err) {
     $("#loading-text").textContent = errorText(err);
     document.querySelector("#screen-loading .spinner").hidden = true;
+    retry.hidden = false;
+    retry.focus();
     return;
   }
   loadCountries();

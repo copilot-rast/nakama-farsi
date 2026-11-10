@@ -31,12 +31,13 @@
     <div class="center-block">
       <div class="spinner" aria-hidden="true"></div>
       <p id="loading-text" data-i18n="loggingIn">در حال ورود…</p>
+      <button class="btn btn-primary" type="button" id="btn-retry" data-i18n="retry" hidden>دوباره امتحان کن</button>
     </div>
   </section>
 
   <section class="screen" id="screen-home" hidden>
     <div class="update-banner" id="update-banner" role="status" hidden>
-      <div class="update-text"><b data-i18n="updateAvailable">نسخه‌ی تازه آمده</b><span class="muted small" id="update-banner-text"></span></div>
+      <div class="update-text"><b data-i18n="updateAvailable">نسخهٔ تازه آمده</b><span class="muted small" id="update-banner-text"></span></div>
       <div class="update-actions"><a class="btn btn-primary" id="update-banner-go" target="_blank" rel="noopener" data-i18n="updateNow">به‌روزرسانی</a><button class="btn btn-ghost" type="button" id="update-banner-later" data-i18n="later">بعداً</button></div>
     </div>
     <div class="lang-picker" id="lang-picker" role="group" aria-labelledby="lang-label" hidden>
@@ -46,7 +47,7 @@
     <div class="hero">
       <p class="hello"><span data-i18n="hello">سلام</span> <bdi id="username">…</bdi></p>
       <h1 data-i18n="heroTitle">ستاره‌ها را بگیر، از بمب‌ها فرار کن</h1>
-      <p class="muted" data-i18n-html="heroText">هر دور ۳۰ ثانیه است. هر ستاره <b>۱ امتیاز</b> دارد و ستاره‌ی طلایی <b>۵ امتیاز</b>. هر بمب <b>۳ امتیاز</b> کم می‌کند. هر ۵ امتیاز یک سکه، تا سقف ۳۰ سکه در هر دور.</p>
+      <p class="muted" data-i18n-html="heroText">هر دور ۳۰ ثانیه است. هر ستاره <b>۱ امتیاز</b> دارد و ستارهٔ طلایی <b>۵ امتیاز</b>. هر بمب <b>۳ امتیاز</b> کم می‌کند. هر ۵ امتیاز یک سکه، تا سقف ۳۰ سکه در هر دور.</p>
       <button class="btn btn-primary btn-big" type="button" id="btn-play" data-i18n="startGame">شروع بازی</button>
     </div>
     <div class="menu-grid">
@@ -106,7 +107,7 @@
         <div class="otp-row">
           <button class="btn btn-primary" type="submit" id="otp-verify" data-i18n="verify">ورود</button>
           <button class="btn btn-ghost" type="button" id="otp-resend"></button>
-          <button class="btn btn-ghost" type="button" id="otp-change" data-i18n="changeNumber">شماره‌ی دیگر</button>
+          <button class="btn btn-ghost" type="button" id="otp-change" data-i18n="changeNumber">شمارهٔ دیگر</button>
         </div>
       </div>
       <p class="form-msg" id="otp-msg" role="status"></p>
@@ -129,7 +130,7 @@
       <button class="btn btn-ghost" type="button" id="btn-quit" data-i18n="quit">خروج</button>
     </div>
     <div class="stage" id="stage">
-      <canvas id="canvas" aria-label="صفحه‌ی بازی" data-i18n-aria="canvasLabel"></canvas>
+      <canvas id="canvas" aria-label="صفحهٔ بازی" data-i18n-aria="canvasLabel"></canvas>
       <div class="stage-overlay" id="stage-overlay" hidden></div>
     </div>
     <p class="muted small center hint" data-i18n="playHint">با موس، لمس یا کلیدهای جهت‌نما سبد را حرکت بده.</p>
@@ -185,7 +186,7 @@
 
   <section class="screen" id="screen-article" hidden>
     <div class="screen-head">
-      <button class="btn btn-ghost" type="button" data-go="news" data-i18n="allNews">همه‌ی خبرها</button>
+      <button class="btn btn-ghost" type="button" data-go="news" data-i18n="allNews">همهٔ خبرها</button>
       <span></span>
       <span></span>
     </div>
