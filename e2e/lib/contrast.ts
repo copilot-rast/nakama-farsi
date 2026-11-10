@@ -25,6 +25,14 @@ export async function measureContrast(page: Page, min = 4.5): Promise<{ count: n
       for (const b of Array.from(r.getClientRects())) {
         if (b.width < 3 || b.height < 6 || b.bottom <= 0 || b.top >= H || b.right <= 0 || b.left >= W) continue;
         const cx = Math.min(W - 1, Math.max(0, b.left + b.width / 2)), cy = Math.min(H - 1, Math.max(0, b.top + b.height / 2));
+        let clipped = false;
+        for (let a: Element | null = el; a && a !== document.documentElement; a = a.parentElement) {
+          const st = getComputedStyle(a);
+          if (st.overflowX === 'visible' && st.overflowY === 'visible') continue;
+          const cr = a.getBoundingClientRect();
+          if (cy < cr.top || cy > cr.bottom || cx < cr.left || cx > cr.right) { clipped = true; break; }
+        }
+        if (clipped) continue;
         const hit = document.elementFromPoint(cx, cy);
         if (!hit || !(hit === el || el.contains(hit) || hit.contains(el))) continue;
         out.push({ text: n.textContent.trim().slice(0, 40), color: col, size: parseFloat(cs.fontSize), rect: [b.left, b.top, b.width, b.height] });

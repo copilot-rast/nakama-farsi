@@ -3078,7 +3078,7 @@ function buildForm(fields, values, ctx) {
       if (f.required && (cur == null || cur === '')) { setPath(values, f.name, f.options()[0].value); }
     } else if (t2 === 'multi') {
       var set = (cur || []).slice();
-      control = h('div', { class: 'flex flex-wrap gap-4' });
+      control = h('div', { class: 'flex flex-wrap gap-4 eco-choices' });
       f.options().forEach(function (o) {
         control.appendChild(checkbox(set.indexOf(o.value) !== -1, o.label, function (on) {
           set = set.filter(function (x) { return x !== o.value; });
@@ -5460,12 +5460,13 @@ function brandPreview(state) {
         if (state.markUrl) head.appendChild(h('img', { src: state.markUrl, alt: '', class: 'brand-preview-mark' }));
         head.appendChild(h('span', { class: 'brand-preview-name', text: name }));
       }
-      var accent = 'rgb(' + p[dark ? 600 : 500].join(',') + ')';
-      var link = 'rgb(' + p[dark ? 300 : 700].join(',') + ')';
+      var sp = spatialAccent(hex);
+      var accent = 'rgb(' + sp.accent.join(',') + ')';
+      var link = 'rgb(' + (dark ? sp.inkDark : sp.ink).join(',') + ')';
       box.appendChild(h('div', { class: 'brand-preview-pane brand-preview-' + mode },
         h('div', { class: 'brand-preview-mode', text: t(dark ? 'brand.preview.dark' : 'brand.preview.light') }),
         head,
-        h('div', { class: 'brand-preview-nav', style: 'border-inline-start-color:' + link + ';color:' + link + ';background-color:' + (dark ? 'rgb(30,41,59)' : 'rgb(248,250,252)') }, t('brand.preview.nav')),
+        h('div', { class: 'brand-preview-nav', style: 'border-inline-start-color:' + link + ';color:' + link + ';background-color:rgba(' + sp.accent.join(',') + ',' + (dark ? '.17' : '.11') + ')' }, t('brand.preview.nav')),
         h('div', { class: 'brand-preview-row' },
           h('span', { class: 'brand-preview-btn', style: 'background-color:' + accent, text: t('save') }),
           h('span', { class: 'brand-preview-link', style: 'color:' + link, text: t('brand.preview.link') }))));

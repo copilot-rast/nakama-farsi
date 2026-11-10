@@ -127,7 +127,7 @@ html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > fieldset.con
 html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > .flex.gap-4.p-4.justify-end {
   padding: 14px 28px 16px;
   border-top: 1px solid var(--line);
-  background: transparent;
+  background: var(--thick-bot);
 }
 
 html.sp :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form :is(.border-b, .border-t, .border) {
@@ -193,4 +193,9 @@ html.sp .x-form .even\:bg-secondary-50:nth-child(even),
 html.sp :is(#main, [data-economy]) .even\:bg-secondary-50:nth-child(even) {
   background-color: var(--well);
   border-radius: var(--r-control);
+}
+
+html.sp div.fixed.inset-0.flex.justify-end > .x-form > :is(.overflow-y-auto, .x-scroll),
+html.sp div.fixed.inset-0.flex.justify-end > .x-form > fieldset.contents > :is(.overflow-y-auto, .x-scroll) {
+  min-height: 0;
 }

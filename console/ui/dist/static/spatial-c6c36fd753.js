@@ -1049,7 +1049,7 @@ function markPage() {
   var name = routeName();
   if (root.getAttribute('data-sp-route') !== name) root.setAttribute('data-sp-route', name);
   var main = contentRoot();
-  if (!main || main.id === 'economy-root') return;
+  if (!main) return;
   var box = main.querySelector('div.max-w-\\[1600px\\]');
   if (!box) return;
   var cards = box.querySelectorAll(CARD_SEL + ', .bg-white.shadow.rounded-md');

@@ -131,7 +131,9 @@
         "text-sm",
         "font-medium",
         "font-semibold",
-        "placeholder-secondary-400"
+        "placeholder-secondary-400",
+        "text-3xl",
+        "inline-block"
       ],
       "routes": [
         "#/players"
@@ -180,7 +182,9 @@
         "x-label",
         "x-alert",
         "x-upload",
-        "bg-primary-500"
+        "bg-primary-500",
+        "x-checkbox",
+        "bg-[color:var(--x-toggle-bg)]"
       ],
       "routes": [
         "#/players"
@@ -240,7 +244,9 @@
         "!absolute",
         "shadow-lg",
         "z-10",
-        "transform"
+        "transform",
+        "overflow-y-auto",
+        "x-scroll"
       ],
       "routes": [],
       "min": 0

@@ -793,7 +793,7 @@ function buildForm(fields, values, ctx) {
       if (f.required && (cur == null || cur === '')) { setPath(values, f.name, f.options()[0].value); }
     } else if (t2 === 'multi') {
       var set = (cur || []).slice();
-      control = h('div', { class: 'flex flex-wrap gap-4' });
+      control = h('div', { class: 'flex flex-wrap gap-4 eco-choices' });
       f.options().forEach(function (o) {
         control.appendChild(checkbox(set.indexOf(o.value) !== -1, o.label, function (on) {
           set = set.filter(function (x) { return x !== o.value; });

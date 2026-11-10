@@ -5,6 +5,7 @@ import { expect, test } from '../../lib/fixtures';
 import { measureContrast } from '../../lib/contrast';
 import { noHorizontalScroll, still } from '../../lib/console';
 import { ROOT } from '../../lib/env';
+import { restoreConfig } from '../../lib/db';
 
 const SELECTORS = JSON.parse(fs.readFileSync(path.join(ROOT, '..', 'console', 'ui', 'spatial', 'selectors.json'), 'utf8'));
 const ZERO = '00000000-0000-0000-0000-000000000000';
@@ -175,5 +176,75 @@ test.describe('spatial visual: native pages', () => {
     await page.keyboard.type(' ');
     await expect.poll(() => editor.locator('.view-lines').innerText()).not.toBe(before);
     await page.keyboard.press('Escape');
+  });
+});
+
+const OURS: Record<string, string[]> = {
+  economy: ['#/economy/overview', '#/economy/currencies', '#/economy/metas', '#/economy/prizes', '#/economy/products', '#/economy/gifts', '#/economy/payments', '#/economy/products/new'],
+  publication: ['#/publication/faqs', '#/publication/news', '#/publication/comments', '#/publication/notifications', '#/publication/notifications/new'],
+  settings: ['#/project-settings/brand', '#/project-settings/setup', '#/project-settings/languages', '#/project-settings/categories', '#/project-settings/tags', '#/project-settings/payment-methods', '#/project-settings/sms', '#/project-settings/email'],
+};
+
+test.describe('spatial visual: our pages', () => {
+  for (const [group, hashes] of Object.entries(OURS)) {
+    for (const mode of ['light', 'dark'] as const) {
+      test(`${group} in fa ${mode}: glass windows and readable text`, async ({ spawn }, testInfo) => {
+        const page = await spawn({ signedIn: true, mode });
+        for (const hash of hashes) {
+          await show(page, hash, hash.includes('project-settings') ? '#project-settings-body' : '#economy-root');
+          await check(page, testInfo, hash.replace(/[#/]+/g, '-').slice(1), mode);
+        }
+      });
+    }
+  }
+
+  test('list pages put their header inside one window; overview is two KPI strips', async ({ page }) => {
+    await show(page, '#/economy/products', '#economy-root table');
+    const win = page.locator('#economy-root div.max-w-\\[1600px\\][data-sp-list]');
+    await expect(win).toHaveCount(1);
+    await expect(win.locator('h1')).toHaveText('فروشگاه');
+    expect(await win.evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('28px');
+    await show(page, '#/economy/overview', '#economy-root .eco-stat-grid');
+    const strips = page.locator('#economy-root .eco-stat-grid');
+    await expect(strips).toHaveCount(2);
+    expect(await strips.first().evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('28px');
+  });
+
+  test('product editor: language tabs as a full-width segment, payment methods as chips, glass window', async ({ page }) => {
+    await show(page, '#/economy/products/new', '[data-economy="panel"] form');
+    const form = page.locator('[data-economy="panel"] .x-form');
+    await still(page);
+    const w = await form.evaluate((e) => ({ width: e.getBoundingClientRect().width, radius: getComputedStyle(e).borderTopLeftRadius }));
+    expect(w.width).toBeLessThanOrEqual(682);
+    expect(w.radius).toBe('30px');
+    const tabs = form.locator('[data-translated="name"] .eco-tr-tabs');
+    const tb = await tabs.boundingBox();
+    const inner = await form.locator('[data-translated="name"]').boundingBox();
+    expect(Math.abs(tb!.width - inner!.width)).toBeLessThan(2);
+    await tabs.locator('[data-lang="en"]').click();
+    await expect(tabs.locator('[data-lang="en"]')).toHaveAttribute('aria-selected', 'true');
+    expect(await tabs.locator('[data-lang="en"]').evaluate((e) => getComputedStyle(e).boxShadow)).not.toBe('none');
+    const chip = form.locator('.eco-choices .x-checkbox').nth(1);
+    const before = await chip.getAttribute('aria-checked');
+    await chip.click();
+    await expect(chip).toHaveAttribute('aria-checked', before === 'true' ? 'false' : 'true');
+    expect(await chip.evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('999px');
+  });
+
+  test('setup wizard sits on the sky with one centered window and a segmented step bar', async ({ page }, testInfo) => {
+    await show(page, '#/project-settings/setup', '#project-settings-body');
+    try {
+      await page.locator('#project-settings-body button', { hasText: 'باز کردن راهنما' }).click();
+      const inner = page.locator('.setup-overlay .setup-inner');
+      await expect(inner).toBeVisible();
+      await still(page);
+      const r = await inner.evaluate((e) => ({ radius: getComputedStyle(e).borderTopLeftRadius, w: e.getBoundingClientRect().width }));
+      expect(r.radius).toBe('30px');
+      expect(r.w).toBeLessThanOrEqual(762);
+      await expect(page.locator('.setup-step--on')).toHaveCount(1);
+      await check(page, testInfo, 'wizard', 'light');
+    } finally {
+      restoreConfig();
+    }
   });
 });
