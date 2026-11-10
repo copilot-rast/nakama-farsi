@@ -40,7 +40,7 @@ Text fields that users see are `jsonb` maps keyed by any existing language code 
 
 - `all`: every non-disabled Nakama user; `users`: explicit ids (max 1000); `group`: members of a Nakama group (state ≤ member, not join requests).
 - Phone: account metadata `phone` (accept `09xxxxxxxxx`, `+989…`, `989…`; normalize to `+98…` for Twilio, `09…` for Kavenegar/sms.ir). Email: account `email`, else metadata `email`. Users without an address are `skipped`.
-- Recipients are materialized when the notification is created, in batches; delivery runs in a background worker started in `InitModule` (every 5 s, batch 50, up to 3 attempts with backoff, then `failed`). The notification row tracks counts and moves to `done`.
+- Recipients are materialized when the notification is created, in batches; delivery runs in a background worker started in `InitModule` (every 5 s, batch 50, up to 3 attempts with backoff, then `failed`). The notification row tracks counts and moves to `done`. Every node runs the worker: recipients are claimed with `FOR UPDATE SKIP LOCKED` (the claim bumps `attempts` and sets a 2-minute lease in `next_attempt_at`), and each external SMS/email send first renews its own claim (`attempts` unchanged); if another node took the row after the lease ran out, the send is skipped, so a slow batch never sends twice. In-app sends go through `NotificationsSend`: the inbox row is always stored, but the live socket push reaches only users connected to the sending node until the cluster phase routes it.
 
 ## Channels
 

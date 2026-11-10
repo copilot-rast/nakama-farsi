@@ -162,6 +162,16 @@ func (s *service) userLangs(ctx context.Context, langs *localized.Set, ids []str
 	return out, rows.Err()
 }
 
+func (s *service) renewClaim(ctx context.Context, c claimed) (bool, error) {
+	res, err := s.db.ExecContext(ctx, `UPDATE publication_notification_recipient SET next_attempt_at = now() + make_interval(secs => $4)
+		WHERE notification_id=$1 AND user_id=$2 AND status='pending' AND attempts=$3`, c.NotificationID, c.UserID, c.Attempts, s.cfg.claimLease.Seconds())
+	if err != nil {
+		return false, err
+	}
+	n, err := res.RowsAffected()
+	return n == 1, err
+}
+
 func (s *service) markSent(ctx context.Context, c claimed, note, lang, message string) error {
 	var errText, msgText *string
 	if note != "" {
@@ -249,7 +259,15 @@ func (s *service) processNotification(ctx context.Context, id string, batch []cl
 			}
 			continue
 		}
-		sendCtx, cancel := context.WithTimeout(ctx, 45*time.Second)
+		mine, err := s.renewClaim(ctx, c)
+		if err != nil {
+			return err
+		}
+		if !mine {
+			s.logger.Info("Publication %s to %s skipped: its claim expired and another worker took it (notification %s)", n.Channel, maskAddress(c.Address), n.ID)
+			continue
+		}
+		sendCtx, cancel := context.WithTimeout(ctx, s.cfg.sendTimeout)
 		reply, err := s.deliver(sendCtx, p, msg)
 		cancel()
 		if err != nil {

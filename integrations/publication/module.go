@@ -18,6 +18,7 @@ type settings struct {
 	maxAttempts  int
 	retryBackoff time.Duration
 	claimLease   time.Duration
+	sendTimeout  time.Duration
 }
 
 type service struct {
@@ -68,7 +69,7 @@ func newService(db *sql.DB, nk runtime.NakamaModule, logger runtime.Logger, cfg 
 }
 
 func loadSettings(env map[string]string) (settings, error) {
-	cfg := settings{workerEvery: 5 * time.Second, workerBatch: 50, maxAttempts: 3, retryBackoff: 30 * time.Second, claimLease: 2 * time.Minute}
+	cfg := settings{workerEvery: 5 * time.Second, workerBatch: 50, maxAttempts: 3, retryBackoff: 30 * time.Second, claimLease: 2 * time.Minute, sendTimeout: 45 * time.Second}
 	secret, err := secretbox.Secret(env)
 	if err != nil {
 		return cfg, err
