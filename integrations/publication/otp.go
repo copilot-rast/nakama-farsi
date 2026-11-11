@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"github.com/heroiclabs/nakama/v3/internal/activity"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -608,6 +609,7 @@ func (s *service) rpcOTPVerify(ctx context.Context, userID, payload string) (any
 	if _, err := playerevents.Record(ctx, playerevents.Event{UserID: login.UserID, Key: "login", Value: 1, Metadata: map[string]any{"method": "phone", "created": login.Created}}); err != nil && !errors.Is(err, playerevents.ErrUnavailable) {
 		s.logger.Warn("Publication phone login event not recorded: %v", err)
 	}
+	activity.Safe(ctx, s.db, s.logger, activity.FromContext(ctx, activity.Entry{UserID: login.UserID, Kind: activity.KindSignIn, Action: "phone", Actor: "player", Data: map[string]any{"created": login.Created, "linked": login.Linked}}))
 	return map[string]any{"token": token, "expiresAt": exp, "loginKey": login.LoginKey, "userId": login.UserID, "username": username,
 		"created": login.Created, "linked": login.Linked, "phone": phone}, nil
 }

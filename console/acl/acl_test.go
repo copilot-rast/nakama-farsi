@@ -275,3 +275,36 @@ func TestCheckACLHttpBasePlayersAndChat(t *testing.T) {
 		t.Fatal("tag definitions stay under economy")
 	}
 }
+
+func TestCheckACLHttpSupportAndGrowth(t *testing.T) {
+	cases := []struct {
+		resource console.AclResources
+		paths    []string
+	}{
+		{console.AclResources_ACCOUNT_NOTES, []string{"/v2/console/base/support/tickets", "/v2/console/base/support/tickets/{id}/messages", "/v2/console/base/support/chats/{id}/take", "/v2/console/base/support/departments", "/v2/console/base/support/canned/{id}", "/v2/console/base/support/settings", "/v2/console/base/support/heartbeat"}},
+		{console.AclResources_SETTINGS, []string{"/v2/console/base/remote-config", "/v2/console/base/remote-config/{id}/rollback", "/v2/console/base/remote-config/preview"}},
+		{console.AclResources_ACCOUNT, []string{"/v2/console/base/activity", "/v2/console/base/activity/summary"}},
+		{console.AclResources_HIRO_ECONOMY, []string{"/v2/console/economy/referrals", "/v2/console/economy/referral-settings"}},
+	}
+	other := NewPermission(console.AclResources_LEADERBOARD, PermissionWrite)
+	for _, c := range cases {
+		read := NewPermission(c.resource, PermissionRead)
+		write := NewPermission(c.resource, PermissionWrite)
+		for _, path := range c.paths {
+			if !CheckACLHttp(http.MethodGet, path, read) || CheckACLHttp(http.MethodGet, path, other) {
+				t.Fatalf("GET %s must need %v read", path, c.resource)
+			}
+			for _, method := range []string{http.MethodPut, http.MethodPost, http.MethodDelete} {
+				if !CheckACLHttp(method, path, write) || CheckACLHttp(method, path, read) {
+					t.Fatalf("%s %s must need %v write", method, path, c.resource)
+				}
+			}
+		}
+	}
+	notes := NewPermission(console.AclResources_ACCOUNT_NOTES, PermissionWrite)
+	for _, path := range []string{"/v2/console/economy/products", "/v2/console/base/players", "/v2/console/base/remote-config"} {
+		if CheckACLHttp(http.MethodGet, path, notes) {
+			t.Fatalf("a support agent must not read %s", path)
+		}
+	}
+}

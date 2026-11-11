@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"github.com/heroiclabs/nakama/v3/internal/activity"
 	"net/http"
 	"strconv"
 	"strings"
@@ -384,6 +385,9 @@ func (s *service) announceRestriction(ctx context.Context, userID, id string) {
 		s.logger.Warn("Base restriction notice skipped: %v", err)
 		return
 	}
+	var by string
+	_ = s.db.QueryRowContext(ctx, `SELECT created_by FROM base_restriction WHERE id=$1`, id).Scan(&by)
+	s.record(ctx, activity.Entry{UserID: userID, Kind: activity.KindRestriction, Action: kind, RefID: id, Actor: "console:" + by, Data: map[string]any{"endsAt": ends.UTC().Format(time.RFC3339)}})
 	r := &restrict.Restriction{ID: id, UserID: userID, Kind: kind, EndsAt: ends, Reason: localized.Parse(reason)}
 	notice := r.Notice(ctx, s.db, "")
 	code, persistent := restrict.NotifyMuted, false
@@ -558,6 +562,7 @@ func (s *service) restrictionLift(w http.ResponseWriter, r *http.Request) {
 		s.writeError(w, err)
 		return
 	}
+	s.record(r.Context(), activity.Entry{UserID: userID, Kind: activity.KindRestriction, Action: "lifted", RefID: id, Actor: "console:" + consoleUser(r), Data: map[string]any{"kind": kind}})
 	if err := s.nk.NotificationSend(r.Context(), userID, kind, map[string]any{"code": "LIFTED", "kind": kind, "restrictionId": id}, restrict.NotifyLifted, "", false); err != nil {
 		s.logger.Warn("Base lift notice failed: %v", err)
 	}

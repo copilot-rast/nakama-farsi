@@ -199,6 +199,10 @@ func CheckACLHttp(method, path string, userPermissions Permission) bool {
 		requiredPermissions = NewPermission(console.AclResources_SETTINGS, PermissionRead)
 	case method != "" && baseSettingsPath(path):
 		requiredPermissions = NewPermission(console.AclResources_SETTINGS, PermissionWrite)
+	case method == http.MethodGet && strings.HasPrefix(path, "/v2/console/base/support/"):
+		requiredPermissions = NewPermission(console.AclResources_ACCOUNT_NOTES, PermissionRead)
+	case method != "" && strings.HasPrefix(path, "/v2/console/base/support/"):
+		requiredPermissions = NewPermission(console.AclResources_ACCOUNT_NOTES, PermissionWrite)
 	case method == http.MethodGet && basePlayersPath(path):
 		requiredPermissions = NewPermission(console.AclResources_ACCOUNT, PermissionRead)
 	case method != "" && basePlayersPath(path):
@@ -219,7 +223,7 @@ func CheckACLHttp(method, path string, userPermissions Permission) bool {
 }
 
 func basePlayersPath(path string) bool {
-	return strings.HasPrefix(path, "/v2/console/base/players") || strings.HasPrefix(path, "/v2/console/base/restrictions")
+	return strings.HasPrefix(path, "/v2/console/base/players") || strings.HasPrefix(path, "/v2/console/base/restrictions") || strings.HasPrefix(path, "/v2/console/base/activity")
 }
 
 func baseChatPath(path string) bool {
@@ -232,7 +236,7 @@ func baseChatPath(path string) bool {
 }
 
 func baseSettingsPath(path string) bool {
-	for _, prefix := range []string{"/v2/console/base/brand", "/v2/console/base/setup", "/v2/console/base/account-rules", "/v2/console/base/app-versions", "/v2/console/base/countries"} {
+	for _, prefix := range []string{"/v2/console/base/brand", "/v2/console/base/setup", "/v2/console/base/account-rules", "/v2/console/base/app-versions", "/v2/console/base/countries", "/v2/console/base/remote-config"} {
 		if strings.HasPrefix(path, prefix) {
 			return true
 		}

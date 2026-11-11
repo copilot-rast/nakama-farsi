@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"github.com/heroiclabs/nakama/v3/internal/activity"
 	"strings"
 	"time"
 
@@ -404,6 +405,12 @@ func (s *service) rpcReportMessage(ctx context.Context, userID, payload string) 
 	id, dup, err := s.insertReport(ctx, "player", in.MessageID, userID, username, titleID, localized.Parse(titleName), note, nil, 5)
 	if err != nil {
 		return nil, err
+	}
+	if !dup {
+		s.record(ctx, activity.Entry{UserID: userID, Kind: activity.KindReport, Action: "filed", RefID: id, Actor: "player", Data: map[string]any{"reason": in.TitleKey}})
+		if sender, ok := msg["senderId"].(string); ok && sender != "" {
+			s.record(ctx, activity.Entry{UserID: sender, Kind: activity.KindReport, Action: "received", RefID: id, Actor: "player", Data: map[string]any{"reason": in.TitleKey}})
+		}
 	}
 	return map[string]any{"reportId": id, "duplicate": dup}, nil
 }

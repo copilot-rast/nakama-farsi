@@ -22,6 +22,25 @@ func (s *service) clientRPCs() map[string]clientRPC {
 		"base_my_status":      s.rpcMyStatus,
 		"base_report_titles":  s.rpcReportTitles,
 		"base_report_message": s.rpcReportMessage,
+
+		"base_support_info":           s.rpcSupportInfo,
+		"base_support_tickets":        s.rpcTicketList,
+		"base_support_ticket_create":  s.rpcTicketCreate,
+		"base_support_ticket_get":     s.rpcTicketGet,
+		"base_support_ticket_reply":   s.rpcTicketReply,
+		"base_support_ticket_resolve": s.rpcTicketResolve,
+		"base_support_ticket_rate":    s.rpcTicketRate,
+		"base_support_upload_begin":   s.rpcUploadBegin,
+		"base_support_upload_part":    s.rpcUploadPart,
+		"base_support_upload_finish":  s.rpcUploadFinish,
+		"base_support_chat_open":      s.rpcChatOpen,
+		"base_support_chat_get":       s.rpcChatGet,
+		"base_support_chat_send":      s.rpcChatSend,
+		"base_support_chat_typing":    s.rpcChatTyping,
+		"base_support_chat_close":     s.rpcChatClose,
+		"base_support_chat_rate":      s.rpcChatRate,
+		"base_remote_config":          s.rpcRemoteConfig,
+		"base_my_activity":            s.rpcMyActivity,
 	}
 }
 

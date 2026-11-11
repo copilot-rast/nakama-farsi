@@ -89,12 +89,16 @@ func isForeignKeyViolation(err error) bool {
 type clientRPC func(ctx context.Context, userID string, payload string) (any, error)
 
 func (s *service) rpc(fn clientRPC) func(context.Context, runtime.Logger, *sql.DB, runtime.NakamaModule, string) (string, error) {
+	return s.rpcSized(fn, 16384)
+}
+
+func (s *service) rpcSized(fn clientRPC, limit int) func(context.Context, runtime.Logger, *sql.DB, runtime.NakamaModule, string) (string, error) {
 	return func(ctx context.Context, logger runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, payload string) (string, error) {
 		userID, _ := ctx.Value(runtime.RUNTIME_CTX_USER_ID).(string)
 		if _, err := uuid.FromString(userID); err != nil {
 			return "", runtime.NewError("UNAUTHENTICATED", int(codes.Unauthenticated))
 		}
-		if len(payload) > 16384 {
+		if len(payload) > limit {
 			return "", runtime.NewError("REQUEST_TOO_LARGE", int(codes.InvalidArgument))
 		}
 		out, err := fn(ctx, userID, payload)

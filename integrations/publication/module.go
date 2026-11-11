@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"database/sql"
+	"github.com/heroiclabs/nakama/v3/internal/inapp"
 	"net/http"
 	"time"
 
@@ -56,6 +57,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := svc.registerConsoleHTTP(initializer); err != nil {
 		return err
 	}
+	inapp.SetSender(svc.inappSender())
 	go svc.workerLoop(ctx)
 	go svc.otpSweepLoop(ctx)
 	logger.Info("Publication module registered")

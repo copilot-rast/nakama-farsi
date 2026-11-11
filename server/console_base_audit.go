@@ -30,6 +30,14 @@ var baseChatAudit = consoleModuleAudit{
 	invokes:  []string{"/resolve", "/chat-words/test"},
 }
 
+var baseSupportAudit = consoleModuleAudit{
+	prefix:   "/v2/console/base/",
+	label:    "base",
+	resource: console.AclResources_ACCOUNT_NOTES,
+	invokes:  []string{"/heartbeat", "/take", "/typing", "/read", "/transfer", "/close", "/status", "/assign"},
+	skipBody: func(pattern string) bool { return strings.HasSuffix(pattern, "/uploads") },
+}
+
 var baseTaxonomyAudit = consoleModuleAudit{
 	prefix:   "/v2/console/base/",
 	label:    "base",
@@ -38,18 +46,24 @@ var baseTaxonomyAudit = consoleModuleAudit{
 
 func consoleBaseAuditLog(ctx context.Context, logger *zap.Logger, db *sql.DB, method, pattern, urlPath string, body []byte) {
 	mod := baseTaxonomyAudit
-	for _, prefix := range []string{"/v2/console/base/languages", "/v2/console/base/brand", "/v2/console/base/setup", "/v2/console/base/account-rules", "/v2/console/base/app-versions", "/v2/console/base/countries"} {
+	for _, prefix := range []string{"/v2/console/base/languages", "/v2/console/base/brand", "/v2/console/base/setup", "/v2/console/base/account-rules", "/v2/console/base/app-versions", "/v2/console/base/countries", "/v2/console/base/remote-config"} {
 		if strings.HasPrefix(pattern, prefix) {
 			mod = baseLanguagesAudit
 		}
 	}
-	if strings.HasPrefix(pattern, "/v2/console/base/players") || strings.HasPrefix(pattern, "/v2/console/base/restrictions") {
+	if strings.HasPrefix(pattern, "/v2/console/base/players") || strings.HasPrefix(pattern, "/v2/console/base/restrictions") || strings.HasPrefix(pattern, "/v2/console/base/activity") {
 		mod = basePlayersAudit
 	}
 	for _, prefix := range []string{"/v2/console/base/chat-words", "/v2/console/base/report-titles", "/v2/console/base/reports"} {
 		if strings.HasPrefix(pattern, prefix) {
 			mod = baseChatAudit
 		}
+	}
+	if strings.HasPrefix(pattern, "/v2/console/base/support/") {
+		if strings.HasSuffix(pattern, "/heartbeat") || strings.HasSuffix(pattern, "/typing") || strings.HasSuffix(pattern, "/read") {
+			return
+		}
+		mod = baseSupportAudit
 	}
 	consoleModuleAuditLog(ctx, logger, db, mod, method, pattern, urlPath, body)
 }
