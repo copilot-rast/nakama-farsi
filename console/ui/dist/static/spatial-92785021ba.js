@@ -808,7 +808,7 @@ function segIndicator(seg) {
   var sr = seg.getBoundingClientRect();
   var r = on.getBoundingClientRect();
   if (!sr.width || !r.width) return;
-  var x = isRtl() ? r.right - sr.right + 4 : r.left - sr.left - 4;
+  var x = (isRtl() ? r.right - sr.right + 4 : r.left - sr.left - 4) + seg.scrollLeft;
   ind.style.width = '100px';
   ind.style.transform = 'translateX(' + x.toFixed(1) + 'px) scaleX(' + (r.width / 100).toFixed(4) + ')';
   ind.style.opacity = '1';
@@ -833,6 +833,12 @@ function paintTabs(box, info) {
   });
   box.classList.toggle('sp-seg-still', first);
   requestAnimationFrame(function () {
+    var on = box.querySelector('[aria-current="page"]');
+    if (on && box.scrollWidth > box.clientWidth) {
+      var br = box.getBoundingClientRect();
+      var or = on.getBoundingClientRect();
+      if (or.left < br.left || or.right > br.right) box.scrollLeft += (or.left + or.width / 2) - (br.left + br.width / 2);
+    }
     segIndicator(box);
     if (first) requestAnimationFrame(function () { box.classList.remove('sp-seg-still'); });
   });

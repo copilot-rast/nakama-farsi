@@ -1179,7 +1179,264 @@ var MESSAGES = {
     'col.word': 'کلمه',
     'col.action': 'کار',
     'col.match': 'جست‌وجو',
-    'col.used': 'استفاده'
+    'col.used': 'استفاده',
+    'nav.event-types': 'رویدادها',
+    'nav.event-rules': 'جایزهٔ رویدادها',
+    'nav.meta-rules': 'قانون‌های متا',
+    'nav.level-tables': 'جدول سطح‌ها',
+    'nav.streaks': 'روزهای پیاپی',
+    'nav.event-log': 'گزارش رویدادها',
+    'desc.event-types': 'کارهایی که برای هر بازیکن ثبت می‌شود، مثل ورود به بازی، پایان یک دور یا خرید. رویدادی که اینجا تعریف نشده باشد پذیرفته نمی‌شود.',
+    'desc.event-rules': 'وقتی بازیکن در یک رویداد به عدد مشخصی برسد جایزه می‌گیرد؛ خودکار یا با دکمهٔ «دریافت» در بازی.',
+    'desc.meta-rules': 'هر رویداد چه مقداری به متاهای بازیکن، مثل امتیاز تجربه، اضافه کند.',
+    'desc.level-tables': 'با رسیدن یک متا به هر آستانه، سطح بازیکن بالا می‌رود و جایزهٔ همان سطح آماده می‌شود.',
+    'desc.streaks': 'جایزه برای چند روز پشت‌سرهم آمدن یا انجام یک کار. این بخش به Hiro وابسته نیست.',
+    'desc.event-log': 'رویدادهای اخیر بازیکنان. رویدادهای قدیمی‌تر از مدت نگه‌داری پاک می‌شوند، ولی جمع‌ها می‌مانند.',
+    'desc.events': 'منطقهٔ زمانی و شروع هفته برای شمارش روزانه و هفتگی، مدت نگه‌داری گزارش رویدادها و سقف رویدادهای هر بازیکن.',
+    'tab.events': 'رویدادها',
+    'new.event-types': 'رویداد جدید',
+    'edit.event-types': 'ویرایش رویداد',
+    'new.event-rules': 'جایزهٔ رویداد جدید',
+    'edit.event-rules': 'ویرایش جایزهٔ رویداد',
+    'new.meta-rules': 'قانون متای جدید',
+    'edit.meta-rules': 'ویرایش قانون متا',
+    'new.level-tables': 'جدول سطح جدید',
+    'edit.level-tables': 'ویرایش جدول سطح',
+    'new.streaks': 'روزهای پیاپی جدید',
+    'edit.streaks': 'ویرایش روزهای پیاپی',
+    'empty.hint.event-types': 'اولین رویداد را بسازید، مثلاً پایان یک دور.',
+    'empty.hint.event-rules': 'مثلاً: هر روز سه دور بازی کن و ۲۰ سکه بگیر.',
+    'empty.hint.meta-rules': 'مثلاً: امتیاز هر دور به امتیاز تجربه اضافه شود.',
+    'empty.hint.level-tables': 'یک جدول بسازید تا امتیاز تجربه به سطح تبدیل شود.',
+    'empty.hint.streaks': 'مثلاً یک جایزهٔ هفت‌روزه برای ورود روزانه بسازید.',
+    'empty.hint.event-log': 'هنوز رویدادی ثبت نشده است.',
+    'search.event-log': 'جستجو در نام کاربری یا کلید رویداد',
+    'rs.when.count': '«{event}» {period} {n} بار',
+    'rs.when.sum': 'جمع «{event}» {period} به {n} برسد',
+    'rs.when.max': 'بیشترین مقدار «{event}» {period} به {n} برسد',
+    'rs.period.total': 'در کل',
+    'rs.period.day': 'در یک روز',
+    'rs.period.week': 'در یک هفته',
+    'rs.repeat.once': 'فقط یک بار',
+    'rs.repeat.period.day': 'هر روز یک بار',
+    'rs.repeat.period.week': 'هر هفته یک بار',
+    'rs.repeat.period.total': 'یک بار',
+    'rs.repeat.every': 'به ازای هر {n}',
+    'rs.max': 'حداکثر {n} بار',
+    'grant.auto': 'خودکار',
+    'grant.claim': 'با دکمهٔ دریافت',
+    'ev.window.always': 'همیشه',
+    'ev.window.from': 'از {date}',
+    'ev.window.to': 'تا {date}',
+    'rows.empty': 'هنوز ردیفی اضافه نشده.',
+    'code.DUPLICATE_LEVEL': 'هر سطح فقط یک بار می‌آید.',
+    'code.DUPLICATE_DAY': 'هر روز فقط یک بار می‌آید.',
+    'code.THRESHOLDS_NOT_ORDERED': 'سطح بالاتر باید آستانهٔ برابر یا بیشتر داشته باشد.',
+    'code.SAME_META': 'سطح باید در متای دیگری نوشته شود.',
+    'code.INVALID_RANGE': 'بیشترین مقدار نباید از کمترین کوچک‌تر باشد.',
+    'code.REPEAT_NEEDS_PERIOD': '«یک بار در هر بازه» فقط با بازهٔ روزانه یا هفتگی کار می‌کند.',
+    'code.EVERY_NEEDS_TOTAL': '«به ازای هر هدف» با تعداد یا جمع کار می‌کند، نه با بیشترین مقدار.',
+    'code.INVALID_EVENT_KEY': 'از ۲ تا ۴۸ حرف کوچک لاتین، رقم، _ یا نقطه استفاده کنید و با حرف شروع کنید.',
+    'code.EVENT_TYPE_NOT_FOUND': 'این رویداد تعریف نشده یا غیرفعال است.',
+    'code.EVENT_NOT_ALLOWED': 'این رویداد را فقط سرور ثبت می‌کند.',
+    'code.VALUE_OUT_OF_RANGE': 'مقدار بیرون از بازهٔ مجاز این رویداد است.',
+    'code.METADATA_TOO_LARGE': 'اطلاعات همراه رویداد بیش از اندازه بزرگ است.',
+    'code.TOO_MANY_EVENTS': 'رویدادها بیش از حد زیاد شد؛ یک دقیقهٔ دیگر دوباره امتحان کنید.',
+    'code.SYSTEM_EVENT': 'رویدادهای داخلی حذف نمی‌شوند؛ می‌توانید غیرفعالشان کنید.',
+    'code.SYSTEM_EVENT_SERVER_ONLY': 'رویدادهای داخلی را فقط سرور ثبت می‌کند.',
+    'code.INVALID_RATE_LIMIT': 'سقف باید بین ۱ تا ۱۰۰٬۰۰۰ در دقیقه باشد.',
+    'code.INVALID_THRESHOLD': 'هدف معتبر نیست.',
+    'code.INVALID_MAX_CLAIMS': 'دست‌کم ۱، یا خالی برای بی‌سقف.',
+    'code.INVALID_GRANT_MODE': 'روش دادن جایزه معتبر نیست.',
+    'code.INVALID_MEASURE': 'نوع شمارش معتبر نیست.',
+    'code.INVALID_PERIOD': 'بازه معتبر نیست.',
+    'code.INVALID_REPEAT': 'تکرار معتبر نیست.',
+    'code.INVALID_META_ACTION': 'تغییر متا معتبر نیست.',
+    'code.INVALID_VALUE_SOURCE': 'منبع مقدار معتبر نیست.',
+    'code.STEPS_REQUIRED': 'دست‌کم یک سطح اضافه کنید.',
+    'code.TOO_MANY_STEPS': 'حداکثر ۲۰۰ سطح.',
+    'code.INVALID_LEVEL': 'سطح‌ها از ۱ شروع می‌شوند.',
+    'code.INVALID_PERIOD_DAYS': 'بین ۱ تا ۳۰ روز.',
+    'code.INVALID_GRACE': 'بین ۰ تا ۳۰.',
+    'code.INVALID_MISS_ACTION': 'رفتار بعد از غیبت معتبر نیست.',
+    'code.INVALID_CYCLE': 'بین ۱ تا ۳۶۵ روز، یا خالی.',
+    'code.TOO_MANY_REWARDS': 'حداکثر ۳۶۵ روز جایزه.',
+    'code.INVALID_DAY': 'روزها از ۱ شروع می‌شوند.',
+    'code.DAY_OUTSIDE_CYCLE': 'این روز بعد از پایان دوره است.',
+    'code.INVALID_TIMEZONE': 'منطقهٔ زمانی معتبر نیست.',
+    'code.INVALID_WEEK_START': 'روز شروع هفته معتبر نیست.',
+    'code.INVALID_RETENTION': 'بین ۱ تا ۳۶۵۰ روز.',
+    'code.CLAIM_NOT_FOUND': 'این جایزه پیدا نشد.',
+    'code.ALREADY_CLAIMED': 'این جایزه قبلاً داده شده است.',
+    'code.STREAK_NOT_FOUND': 'این بازیکن هنوز در این روزهای پیاپی نیست.',
+    'filter.ev.source': 'ثبت‌کننده',
+    'ev.source.client': 'بازی هم',
+    'ev.source.server': 'فقط سرور',
+    'ev.system': 'داخلی',
+    'col.ev.source': 'ثبت‌کننده',
+    'col.ev.range': 'بازهٔ مقدار',
+    'ev.range.any': 'هر مقدار',
+    'col.ev.rate': 'سقف',
+    'ev.perMinute': '{n} در دقیقه',
+    'ev.usedBy': '{n} قانون',
+    'ev.system.notice': 'این رویداد داخلی است و خود سرور آن را ثبت می‌کند. نام، توضیح و روشن یا خاموش بودنش را می‌توانید عوض کنید.',
+    'f.ev.key.hint': 'همان کلیدی که بازی می‌فرستد، مثل round_finished. بعداً عوض نمی‌شود.',
+    'f.ev.client': 'بازی هم بتواند ثبتش کند',
+    'f.ev.client.hint': 'روشن یعنی خود بازی این رویداد را می‌فرستد. برای کارهای مهم مثل خرید یا بُرد خاموش بگذارید تا فقط سرور ثبت کند.',
+    'f.ev.valueMin': 'کمترین مقدار',
+    'f.ev.valueMax': 'بیشترین مقدار',
+    'f.ev.rate': 'سقف برای هر بازیکن در دقیقه',
+    'f.ev.rate.hint': 'بیشتر از این، رویدادِ بازی پذیرفته نمی‌شود. رویدادهای سرور سقف ندارند.',
+    'f.ev.active.hint': 'رویداد غیرفعال پذیرفته نمی‌شود و قانون‌هایش اجرا نمی‌شوند.',
+    'filter.ev.event': 'رویداد',
+    'col.ev.when': 'شرط',
+    'col.ev.prize': 'جایزه',
+    'col.ev.claims': 'جایزه‌ها',
+    'ev.ended': 'تمام‌شده',
+    'f.ev.rule.name': 'نام برای بازیکن',
+    'f.ev.rule.name.hint': 'در بازی کنار نوار پیشرفت دیده می‌شود.',
+    'f.ev.rule.description': 'توضیح برای بازیکن',
+    'ev.h.when': 'چه وقت',
+    'f.ev.event': 'رویداد',
+    'f.ev.measure': 'شمارش',
+    'f.ev.measure.hint': 'تعداد دفعه‌ها، جمع مقدارها یا بیشترین مقدار در یک بار.',
+    'measure.count': 'تعداد دفعه‌ها',
+    'measure.sum': 'جمع مقدارها',
+    'measure.max': 'بیشترین مقدار',
+    'f.ev.period': 'بازه',
+    'period.total': 'از اول',
+    'period.day': 'هر روز',
+    'period.week': 'هر هفته',
+    'f.ev.threshold': 'هدف',
+    'f.ev.repeat': 'تکرار',
+    'repeat.once': 'فقط یک بار',
+    'repeat.period': 'یک بار در هر بازه',
+    'repeat.every': 'به ازای هر هدف',
+    'f.ev.maxClaims': 'سقف جایزه برای هر بازیکن',
+    'f.ev.maxClaims.hint': 'خالی یعنی بی‌سقف.',
+    'ev.h.prize': 'جایزه',
+    'f.ev.grantMode': 'روش دادن',
+    'f.ev.grantMode.hint': 'خودکار یعنی همان لحظه به حساب بازیکن می‌رود؛ با دکمهٔ دریافت یعنی بازیکن خودش آن را برمی‌دارد.',
+    'ev.h.who': 'چه کسی و چه زمانی',
+    'f.ev.audience': 'فقط برای این بازیکنان',
+    'f.ev.audience.hint': 'خالی یعنی همهٔ بازیکنان. با برچسب، فقط بازیکنانی که دست‌کم یکی از برچسب‌ها را دارند.',
+    'f.ev.startsAt': 'شروع',
+    'f.ev.endsAt': 'پایان',
+    'filter.ev.meta': 'متا',
+    'col.ev.event': 'رویداد',
+    'col.ev.change': 'تغییر',
+    'mr.change.add.fixed': '+ {n}',
+    'mr.change.add.event': '+ مقدار × {n}',
+    'mr.change.set.fixed': '= {n}',
+    'mr.change.set.event': '= مقدار × {n}',
+    'mr.change.max.fixed': 'دست‌کم {n}',
+    'mr.change.max.event': 'بیشترینِ مقدار × {n}',
+    'f.mr.sort.hint': 'قانون‌ها به این ترتیب اجرا می‌شوند.',
+    'f.mr.name': 'نام',
+    'f.mr.name.hint': 'برای پیدا کردن قانون در کنسول.',
+    'f.mr.meta': 'متا',
+    'f.mr.action': 'تغییر',
+    'mr.action.add': 'اضافه کن',
+    'mr.action.set': 'برابر کن',
+    'mr.action.max': 'بیشترین را نگه دار',
+    'f.mr.source': 'مقدار از',
+    'f.mr.source.hint': 'عدد ثابت، یا مقدار خود رویداد ضرب در عدد پایین.',
+    'mr.source.fixed': 'عدد ثابت',
+    'mr.source.event': 'مقدار رویداد',
+    'f.mr.amount': 'عدد',
+    'f.mr.amount.hint': 'برای «مقدار رویداد» ضریب است؛ مثلاً ۱ یعنی همان امتیاز دور.',
+    'col.lv.meta': 'متا',
+    'col.lv.steps': 'سطح‌ها',
+    'lv.levelsN': '{n} سطح',
+    'lv.top': 'سطح {level} با {n}',
+    'col.ev.players': 'بازیکن',
+    'f.lv.meta': 'متای امتیاز',
+    'f.lv.meta.hint': 'مثلاً امتیاز تجربه. هر بار که این متا تغییر کند سطح دوباره حساب می‌شود.',
+    'f.lv.levelMeta': 'سطح در این متا نوشته شود',
+    'f.lv.levelMeta.hint': 'مثلاً متای «سطح»، تا بازی و محصولات با حداقل سطح از آن استفاده کنند.',
+    'lv.h.steps': 'سطح‌ها و جایزه‌ها',
+    'lv.add': 'افزودن سطح',
+    'lv.empty': 'دست‌کم یک سطح اضافه کنید.',
+    'f.lv.level': 'سطح',
+    'f.lv.threshold': 'آستانه',
+    'f.lv.title': 'عنوان سطح',
+    'col.sk.rule': 'قاعده',
+    'sk.everyDay': 'هر روز',
+    'sk.everyDays': 'هر {n} روز',
+    'sk.graceN': '{n} روز فرصت جبران',
+    'sk.noGrace': 'بدون فرصت جبران',
+    'sk.miss.reset': 'شروع دوباره از روز اول',
+    'sk.miss.step_back': 'یک روز عقب برای هر غیبت',
+    'col.sk.rewards': 'جایزه‌ها',
+    'sk.rewardsN': '{n} روز جایزه',
+    'sk.cycleN': 'دورهٔ {n} روزه',
+    'sk.hiro.notice': 'این بخش مال خود این سرور است و به Hiro نیازی ندارد. صفحهٔ «زنجیره‌ها»ی Hiro جدا و دست‌نخورده می‌ماند.',
+    'f.sk.event': 'رویداد شمارنده',
+    'f.sk.event.hint': 'مثلاً «ورود به بازی». هر بازه فقط یک بار شمرده می‌شود.',
+    'f.sk.periodDays': 'طول هر بازه (روز)',
+    'f.sk.periodDays.hint': 'معمولاً ۱ روز.',
+    'f.sk.cycle': 'طول دوره',
+    'f.sk.cycle.hint': 'بعد از این تعداد روز، جایزه‌ها از روز اول تکرار می‌شوند. خالی یعنی بدون تکرار.',
+    'f.sk.grace': 'روزهای فرصت جبران',
+    'f.sk.grace.hint': 'چند روز غیبت بخشیده شود تا شمارش از دست نرود.',
+    'f.sk.miss': 'اگر بیشتر غیبت کند',
+    'sk.h.rewards': 'جایزهٔ هر روز',
+    'sk.add': 'افزودن روز',
+    'sk.empty': 'هنوز جایزه‌ای تعیین نشده.',
+    'f.sk.day': 'روز',
+    'filter.ev.from': 'از طرف',
+    'ev.from.client': 'بازی',
+    'ev.from.server': 'سرور',
+    'ev.from.admin': 'کنسول',
+    'col.ev.value': 'مقدار',
+    'col.ev.from': 'از طرف',
+    'col.ev.metadata': 'اطلاعات همراه',
+    'f.es.timezone': 'منطقهٔ زمانی',
+    'f.es.timezone.hint': 'روز و هفته با ساعت این منطقه شروع می‌شوند.',
+    'f.es.weekStart': 'شروع هفته',
+    'f.es.weekStart.hint': 'برای جایزه‌های هفتگی.',
+    'es.now': 'اکنون در این منطقه: {time}',
+    'f.es.retention': 'نگه‌داری گزارش (روز)',
+    'f.es.retention.hint': 'رویدادهای قدیمی‌تر پاک می‌شوند. جمع هر بازیکن و پیشرفت جایزه‌ها می‌ماند.',
+    'f.es.rate': 'سقف رویدادهای بازی برای هر بازیکن در دقیقه',
+    'f.es.rate.hint': 'جمع همهٔ رویدادهایی که بازی می‌فرستد.',
+    'claim.status.granted': 'داده شد',
+    'claim.status.failed': 'خطا',
+    'claim.status.waiting': 'منتظر دریافت',
+    'claim.status.ready': 'در صف',
+    'f.ev.value': 'مقدار',
+    'f.ev.value.hint': 'برای شمارش ساده ۱ بگذارید.',
+    'pp.record': 'ثبت رویداد',
+    'pp.record.text': 'رویداد برای این بازیکن ثبت می‌شود و قانون‌های جایزه، متا و روزهای پیاپی مثل یک رویداد واقعی اجرا می‌شوند.',
+    'pp.record.ok': 'ثبت',
+    'pp.title': 'پیشرفت بازیکن',
+    'pp.recorded': 'رویداد ثبت شد.',
+    'pp.log': 'گزارش رویدادها',
+    'pp.level': 'سطح {level}',
+    'pp.meta': '{n} {name}',
+    'pp.toNext': 'تا سطح {level}: {n} مانده',
+    'pp.broken': 'قطع شده',
+    'pp.today': 'امروز شمرده شد',
+    'pp.streak': 'روز {n} · بهترین: {best}',
+    'pp.reset': 'صفر کردن',
+    'pp.reset.title': 'روزهای پیاپی صفر شود؟',
+    'pp.reset.text': 'شمارش «{name}» برای این بازیکن از اول شروع می‌شود. جایزه‌های گرفته‌شده می‌مانند.',
+    'pp.reset.done': 'صفر شد.',
+    'pp.times': '{n} بار',
+    'pp.noEvents': 'هنوز رویدادی ندارد.',
+    'pp.levels': 'سطح',
+    'pp.streaks': 'روزهای پیاپی',
+    'pp.events': 'رویدادها',
+    'pp.claims': 'جایزه‌های اخیر',
+    'pp.readyN': '{n} منتظر',
+    'claim.kind.event': 'رویداد',
+    'claim.kind.level': 'سطح',
+    'claim.kind.streak': 'روز پیاپی',
+    'pp.noClaims': 'هنوز جایزه‌ای نگرفته.',
+    'ov.events': 'رویدادها و جایزه‌ها',
+    'ov.eventsToday': 'رویدادهای ۲۴ ساعت اخیر',
+    'ov.claimsReady': 'جایزه‌های منتظر',
+    'ov.claimsFailed': 'جایزه‌های ناموفق'
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -2359,7 +2616,264 @@ var MESSAGES = {
     'col.word': 'Word',
     'col.action': 'Action',
     'col.match': 'Match',
-    'col.used': 'Used'
+    'col.used': 'Used',
+    'nav.event-types': 'Events',
+    'nav.event-rules': 'Event prizes',
+    'nav.meta-rules': 'Meta rules',
+    'nav.level-tables': 'Level tables',
+    'nav.streaks': 'Daily streaks',
+    'nav.event-log': 'Event log',
+    'desc.event-types': 'Things recorded for each player, such as signing in, finishing a round or buying. Events not defined here are refused.',
+    'desc.event-rules': 'When a player reaches a number in an event, they get a prize, either automatically or with a "Collect" button in the game.',
+    'desc.meta-rules': 'How much each event adds to a player\'s metas, such as experience.',
+    'desc.level-tables': 'When a meta reaches each threshold, the player levels up and that level\'s prize becomes ready.',
+    'desc.streaks': 'Rewards for coming back or doing something several days in a row. It does not depend on Hiro.',
+    'desc.event-log': 'Recent player events. Events older than the keep time are removed, but totals stay.',
+    'desc.events': 'Time zone and first day of the week for daily and weekly counts, how long the event log is kept, and the event limit per player.',
+    'tab.events': 'Events',
+    'new.event-types': 'New event',
+    'edit.event-types': 'Edit event',
+    'new.event-rules': 'New event prize',
+    'edit.event-rules': 'Edit event prize',
+    'new.meta-rules': 'New meta rule',
+    'edit.meta-rules': 'Edit meta rule',
+    'new.level-tables': 'New level table',
+    'edit.level-tables': 'Edit level table',
+    'new.streaks': 'New daily streak',
+    'edit.streaks': 'Edit daily streak',
+    'empty.hint.event-types': 'Create your first event, such as finishing a round.',
+    'empty.hint.event-rules': 'For example: play three rounds a day and get 20 coins.',
+    'empty.hint.meta-rules': 'For example: add every round score to experience.',
+    'empty.hint.level-tables': 'Create a table to turn experience into levels.',
+    'empty.hint.streaks': 'For example, create a seven-day reward for signing in every day.',
+    'empty.hint.event-log': 'No events have been recorded yet.',
+    'search.event-log': 'Search by username or event key',
+    'rs.when.count': '"{event}" {n} times {period}',
+    'rs.when.sum': '"{event}" adds up to {n} {period}',
+    'rs.when.max': 'Highest "{event}" reaches {n} {period}',
+    'rs.period.total': 'in total',
+    'rs.period.day': 'in one day',
+    'rs.period.week': 'in one week',
+    'rs.repeat.once': 'only once',
+    'rs.repeat.period.day': 'once a day',
+    'rs.repeat.period.week': 'once a week',
+    'rs.repeat.period.total': 'once',
+    'rs.repeat.every': 'for every {n}',
+    'rs.max': 'at most {n} times',
+    'grant.auto': 'Automatic',
+    'grant.claim': 'Player collects',
+    'ev.window.always': 'Always',
+    'ev.window.from': 'From {date}',
+    'ev.window.to': 'Until {date}',
+    'rows.empty': 'No rows yet.',
+    'code.DUPLICATE_LEVEL': 'Each level can appear only once.',
+    'code.DUPLICATE_DAY': 'Each day can appear only once.',
+    'code.THRESHOLDS_NOT_ORDERED': 'A higher level needs the same or a larger threshold.',
+    'code.SAME_META': 'Write the level to a different meta.',
+    'code.INVALID_RANGE': 'The largest value cannot be smaller than the smallest.',
+    'code.REPEAT_NEEDS_PERIOD': '"Once per window" needs a daily or weekly window.',
+    'code.EVERY_NEEDS_TOTAL': '"For every target" works with a count or a sum, not with the highest value.',
+    'code.INVALID_EVENT_KEY': 'Use 2 to 48 lower-case letters, digits, _ or dots, starting with a letter.',
+    'code.EVENT_TYPE_NOT_FOUND': 'This event is not defined or is turned off.',
+    'code.EVENT_NOT_ALLOWED': 'Only the server records this event.',
+    'code.VALUE_OUT_OF_RANGE': 'The value is outside the range allowed for this event.',
+    'code.METADATA_TOO_LARGE': 'The event details are too large.',
+    'code.TOO_MANY_EVENTS': 'Too many events; try again in a minute.',
+    'code.SYSTEM_EVENT': 'Built-in events cannot be deleted; you can turn them off.',
+    'code.SYSTEM_EVENT_SERVER_ONLY': 'Built-in events are recorded only by the server.',
+    'code.INVALID_RATE_LIMIT': 'The limit must be between 1 and 100,000 per minute.',
+    'code.INVALID_THRESHOLD': 'The target is not valid.',
+    'code.INVALID_MAX_CLAIMS': 'At least 1, or empty for no limit.',
+    'code.INVALID_GRANT_MODE': 'This way of giving the prize is not valid.',
+    'code.INVALID_MEASURE': 'This way of counting is not valid.',
+    'code.INVALID_PERIOD': 'This window is not valid.',
+    'code.INVALID_REPEAT': 'This repeat is not valid.',
+    'code.INVALID_META_ACTION': 'This meta change is not valid.',
+    'code.INVALID_VALUE_SOURCE': 'This amount source is not valid.',
+    'code.STEPS_REQUIRED': 'Add at least one level.',
+    'code.TOO_MANY_STEPS': 'At most 200 levels.',
+    'code.INVALID_LEVEL': 'Levels start at 1.',
+    'code.INVALID_PERIOD_DAYS': 'Between 1 and 30 days.',
+    'code.INVALID_GRACE': 'Between 0 and 30.',
+    'code.INVALID_MISS_ACTION': 'This missed-day rule is not valid.',
+    'code.INVALID_CYCLE': 'Between 1 and 365 days, or empty.',
+    'code.TOO_MANY_REWARDS': 'At most 365 reward days.',
+    'code.INVALID_DAY': 'Days start at 1.',
+    'code.DAY_OUTSIDE_CYCLE': 'This day is after the end of the cycle.',
+    'code.INVALID_TIMEZONE': 'This time zone is not valid.',
+    'code.INVALID_WEEK_START': 'This first day of the week is not valid.',
+    'code.INVALID_RETENTION': 'Between 1 and 3650 days.',
+    'code.CLAIM_NOT_FOUND': 'This reward was not found.',
+    'code.ALREADY_CLAIMED': 'This reward was already given.',
+    'code.STREAK_NOT_FOUND': 'This player has not started this streak.',
+    'filter.ev.source': 'Recorded by',
+    'ev.source.client': 'Game too',
+    'ev.source.server': 'Server only',
+    'ev.system': 'Built-in',
+    'col.ev.source': 'Recorded by',
+    'col.ev.range': 'Value range',
+    'ev.range.any': 'Any',
+    'col.ev.rate': 'Limit',
+    'ev.perMinute': '{n} per minute',
+    'ev.usedBy': '{n} rules',
+    'ev.system.notice': 'This is a built-in event recorded by the server. You can change its name, description and whether it is on.',
+    'f.ev.key.hint': 'The key the game sends, such as round_finished. It cannot change later.',
+    'f.ev.client': 'The game may record it',
+    'f.ev.client.hint': 'On means the game client sends this event. Keep it off for important things like purchases or wins, so only the server records them.',
+    'f.ev.valueMin': 'Smallest value',
+    'f.ev.valueMax': 'Largest value',
+    'f.ev.rate': 'Limit per player per minute',
+    'f.ev.rate.hint': 'Above this, events from the game are refused. Server events have no limit.',
+    'f.ev.active.hint': 'An inactive event is refused and its rules do not run.',
+    'filter.ev.event': 'Event',
+    'col.ev.when': 'Condition',
+    'col.ev.prize': 'Prize',
+    'col.ev.claims': 'Rewards',
+    'ev.ended': 'Ended',
+    'f.ev.rule.name': 'Name shown to players',
+    'f.ev.rule.name.hint': 'Shown in the game next to the progress bar.',
+    'f.ev.rule.description': 'Description for players',
+    'ev.h.when': 'When',
+    'f.ev.event': 'Event',
+    'f.ev.measure': 'Count by',
+    'f.ev.measure.hint': 'Number of times, sum of values or the highest single value.',
+    'measure.count': 'Number of times',
+    'measure.sum': 'Sum of values',
+    'measure.max': 'Highest value',
+    'f.ev.period': 'Window',
+    'period.total': 'All time',
+    'period.day': 'Each day',
+    'period.week': 'Each week',
+    'f.ev.threshold': 'Target',
+    'f.ev.repeat': 'Repeat',
+    'repeat.once': 'Only once',
+    'repeat.period': 'Once per window',
+    'repeat.every': 'For every target',
+    'f.ev.maxClaims': 'Most rewards per player',
+    'f.ev.maxClaims.hint': 'Empty means no limit.',
+    'ev.h.prize': 'Prize',
+    'f.ev.grantMode': 'How it is given',
+    'f.ev.grantMode.hint': 'Automatic adds it right away; player collects means the player takes it with a button.',
+    'ev.h.who': 'Who and when',
+    'f.ev.audience': 'Only for these players',
+    'f.ev.audience.hint': 'Empty means everyone. With tags, only players who have at least one of them.',
+    'f.ev.startsAt': 'Starts',
+    'f.ev.endsAt': 'Ends',
+    'filter.ev.meta': 'Meta',
+    'col.ev.event': 'Event',
+    'col.ev.change': 'Change',
+    'mr.change.add.fixed': '+ {n}',
+    'mr.change.add.event': '+ value × {n}',
+    'mr.change.set.fixed': '= {n}',
+    'mr.change.set.event': '= value × {n}',
+    'mr.change.max.fixed': 'at least {n}',
+    'mr.change.max.event': 'highest value × {n}',
+    'f.mr.sort.hint': 'Rules run in this order.',
+    'f.mr.name': 'Name',
+    'f.mr.name.hint': 'Helps you find the rule in the console.',
+    'f.mr.meta': 'Meta',
+    'f.mr.action': 'Change',
+    'mr.action.add': 'Add',
+    'mr.action.set': 'Set',
+    'mr.action.max': 'Keep the highest',
+    'f.mr.source': 'Amount from',
+    'f.mr.source.hint': 'A fixed number, or the event value times the number below.',
+    'mr.source.fixed': 'Fixed number',
+    'mr.source.event': 'Event value',
+    'f.mr.amount': 'Number',
+    'f.mr.amount.hint': 'With "Event value" it is a multiplier; 1 means the round score as it is.',
+    'col.lv.meta': 'Meta',
+    'col.lv.steps': 'Levels',
+    'lv.levelsN': '{n} levels',
+    'lv.top': 'level {level} at {n}',
+    'col.ev.players': 'Players',
+    'f.lv.meta': 'Points meta',
+    'f.lv.meta.hint': 'For example experience. The level is checked each time this meta changes.',
+    'f.lv.levelMeta': 'Write the level to this meta',
+    'f.lv.levelMeta.hint': 'For example a "level" meta, so the game and products with a minimum level can use it.',
+    'lv.h.steps': 'Levels and prizes',
+    'lv.add': 'Add level',
+    'lv.empty': 'Add at least one level.',
+    'f.lv.level': 'Level',
+    'f.lv.threshold': 'Points needed',
+    'f.lv.title': 'Level title',
+    'col.sk.rule': 'Rule',
+    'sk.everyDay': 'Every day',
+    'sk.everyDays': 'Every {n} days',
+    'sk.graceN': '{n} grace days',
+    'sk.noGrace': 'No grace days',
+    'sk.miss.reset': 'Start again from day one',
+    'sk.miss.step_back': 'One day back per missed day',
+    'col.sk.rewards': 'Rewards',
+    'sk.rewardsN': '{n} reward days',
+    'sk.cycleN': '{n}-day cycle',
+    'sk.hiro.notice': 'This is built into this server and does not need Hiro. The Hiro Streaks page stays separate and untouched.',
+    'f.sk.event': 'Counting event',
+    'f.sk.event.hint': 'For example "Sign-in". Counted at most once per period.',
+    'f.sk.periodDays': 'Period length (days)',
+    'f.sk.periodDays.hint': 'Usually 1 day.',
+    'f.sk.cycle': 'Cycle length',
+    'f.sk.cycle.hint': 'After this many days the rewards repeat from day one. Empty means no repeat.',
+    'f.sk.grace': 'Grace days',
+    'f.sk.grace.hint': 'How many missed days are forgiven before the count is lost.',
+    'f.sk.miss': 'If more days are missed',
+    'sk.h.rewards': 'Reward for each day',
+    'sk.add': 'Add day',
+    'sk.empty': 'No rewards yet.',
+    'f.sk.day': 'Day',
+    'filter.ev.from': 'Source',
+    'ev.from.client': 'Game',
+    'ev.from.server': 'Server',
+    'ev.from.admin': 'Console',
+    'col.ev.value': 'Value',
+    'col.ev.from': 'Source',
+    'col.ev.metadata': 'Details',
+    'f.es.timezone': 'Time zone',
+    'f.es.timezone.hint': 'Days and weeks start by the clock of this zone.',
+    'f.es.weekStart': 'Week starts on',
+    'f.es.weekStart.hint': 'Used by weekly prizes.',
+    'es.now': 'Now in this zone: {time}',
+    'f.es.retention': 'Keep the log (days)',
+    'f.es.retention.hint': 'Older events are removed. Player totals and prize progress are kept.',
+    'f.es.rate': 'Game events per player per minute',
+    'f.es.rate.hint': 'All events sent by the game together.',
+    'claim.status.granted': 'Given',
+    'claim.status.failed': 'Failed',
+    'claim.status.waiting': 'Waiting for player',
+    'claim.status.ready': 'Queued',
+    'f.ev.value': 'Value',
+    'f.ev.value.hint': 'Use 1 for a simple count.',
+    'pp.record': 'Record event',
+    'pp.record.text': 'The event is recorded for this player, and prize, meta and streak rules run as for a real one.',
+    'pp.record.ok': 'Record',
+    'pp.title': 'Player progress',
+    'pp.recorded': 'Event recorded.',
+    'pp.log': 'Event log',
+    'pp.level': 'Level {level}',
+    'pp.meta': '{n} {name}',
+    'pp.toNext': '{n} to level {level}',
+    'pp.broken': 'Broken',
+    'pp.today': 'Counted today',
+    'pp.streak': 'Day {n} · best {best}',
+    'pp.reset': 'Reset',
+    'pp.reset.title': 'Reset this streak?',
+    'pp.reset.text': '"{name}" starts again from day one for this player. Rewards already given stay.',
+    'pp.reset.done': 'Reset done.',
+    'pp.times': '{n} times',
+    'pp.noEvents': 'No events yet.',
+    'pp.levels': 'Level',
+    'pp.streaks': 'Daily streaks',
+    'pp.events': 'Events',
+    'pp.claims': 'Recent rewards',
+    'pp.readyN': '{n} waiting',
+    'claim.kind.event': 'Event',
+    'claim.kind.level': 'Level',
+    'claim.kind.streak': 'Streak',
+    'pp.noClaims': 'No rewards yet.',
+    'ov.events': 'Events and rewards',
+    'ov.eventsToday': 'Events in the last 24 hours',
+    'ov.claimsReady': 'Rewards waiting',
+    'ov.claimsFailed': 'Failed rewards'
   }
 };
 
@@ -3908,6 +4422,8 @@ function buildForm(fields, values, ctx) {
       control = markdownInput(cur, { ltr: f.ltr, rows: f.rows, max: f.max, label: label, oninput: function (v) { change(v); } });
     } else if (t2 === 'actions') {
       control = actionsEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
+    } else if (t2 === 'rows') {
+      control = rowsEditor(cur, f, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
     } else if (t2 === 'links') {
       control = storeLinksEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
     } else if (t2 === 'static') {
@@ -3930,6 +4446,7 @@ function buildForm(fields, values, ctx) {
 
   function refresh() {
     entries.forEach(function (e) {
+      if (e.def.live && e.control) append(clear(e.control), e.def.render(values));
       var visible = !e.def.when || e.def.when(values);
       var el = e.row ? e.el : e.wrap;
       el.hidden = !visible;
@@ -3956,7 +4473,7 @@ function buildForm(fields, values, ctx) {
         if (n === null) { if (f.required) msg = t('err.required'); setPath(values, f.name, null); }
         else if (isNaN(n) || (f.min !== undefined && n < f.min) || (f.max !== undefined && n > f.max)) msg = t('err.number');
         else setPath(values, f.name, n);
-      } else if (t2 === 'items' || t2 === 'actions' || t2 === 'links') {
+      } else if (t2 === 'items' || t2 === 'actions' || t2 === 'links' || t2 === 'rows') {
         msg = e.control.validate();
       } else if (t2 === 'i18n') {
         var hit = trCheck(v, f);
@@ -3986,7 +4503,7 @@ function buildForm(fields, values, ctx) {
       if (name === e.def.name || name.indexOf(e.def.name + '.') === 0 || e.def.name.indexOf(name + '.') === 0) { if (!best) best = e; }
     });
     if (!best) return false;
-    if (best.def.type === 'actions' && best.control.showServerError) return best.control.showServerError(err);
+    if ((best.def.type === 'actions' || best.def.type === 'rows') && best.control.showServerError) return best.control.showServerError(err);
     if (best.def.type === 'i18n') {
       var code = trServerLang(err, getPath(values, best.def.name), best.def);
       best.control.markLang(code);
@@ -4554,7 +5071,7 @@ var RESOURCES = {
 };
 
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments'],
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'event-log', 'payments'],
   publication: ['faqs', 'news', 'comments', 'notifications'],
   moderation: ['players', 'reports', 'restrictions', 'chat-words']
 };
@@ -5151,6 +5668,14 @@ function overviewPage(container) {
       catalog.appendChild(statCard(t('nav.' + name), c[name], active !== undefined ? t('active') + ': ' + fmtNum(active) : null, hashFor(name)));
     });
     body.appendChild(h('div', {}, h('h2', { class: 'text-lg font-medium mb-3', text: t('ov.catalog') }), catalog));
+
+    if (c.eventsToday !== undefined) {
+      var events = h('div', { class: 'eco-stat-grid', 'data-ov-events': '' });
+      events.appendChild(statCard(t('ov.eventsToday'), c.eventsToday, null, hashFor('event-log')));
+      events.appendChild(statCard(t('ov.claimsReady'), c.claimsReady, null, null));
+      if (c.claimsFailed) events.appendChild(statCard(t('ov.claimsFailed'), c.claimsFailed, null, null, { alert: true }));
+      body.appendChild(h('div', {}, h('h2', { class: 'text-lg font-medium mb-3', text: t('ov.events') }), events));
+    }
 
     var payments = h('div', { class: 'eco-stat-grid' });
     payments.appendChild(statCard(t('ov.revenue30'), c.revenueToman30, t('toman', { n: '' }).trim(), null));
@@ -7187,6 +7712,679 @@ function liftButton(rid, kind, p, after) {
   return b;
 }
 
+ICONS['event-types'] = '<path d="M13 2 3 14h9l-1 8 10-12h-9z"/>';
+ICONS['event-rules'] = '<circle cx="12" cy="8" r="6"/><path d="M8.2 13.2 7 22l5-3 5 3-1.2-8.8"/>';
+ICONS['meta-rules'] = '<path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/>';
+ICONS['level-tables'] = '<path d="M4 20h4v-6H4zM10 20h4V9h-4zM16 20h4V4h-4z"/>';
+ICONS.streaks = '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3.4A2.5 2.5 0 0 0 8.5 14.5z"/>';
+ICONS['event-log'] = '<path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/>';
+
+var EVENT_KEY_RE = /^[a-z][a-z0-9_.]{1,47}$/;
+var REF_NAMES = {};
+
+function refName(resource, id, call) {
+  var key = resource + ':' + id;
+  if (!REF_NAMES[key]) {
+    REF_NAMES[key] = { item: undefined };
+    REF_NAMES[key].p = (call || api)('GET', '/' + resource + '/' + encodeURIComponent(id)).then(function (it) {
+      REF_NAMES[key].item = it;
+      refCache[resource + ':id:' + id] = it;
+      return it;
+    }, function () { REF_NAMES[key].item = null; return null; });
+  }
+  return REF_NAMES[key];
+}
+
+function refNameCell(resource, id, opts) {
+  opts = opts || {};
+  var box = h('span', { class: 'min-w-0 truncate inline-flex items-center gap-1.5', 'data-ref-name': resource });
+  if (!id) { box.appendChild(h('span', { class: 'text-secondary-400', text: t('none') })); return box; }
+  var ref = refName(resource, id, opts.api);
+  function paint(it) {
+    clear(box);
+    var name = it ? (i18nText(it.name) || it.key) : String(id).slice(0, 8);
+    box.appendChild(h('span', { class: 'truncate', text: name }));
+    if (opts.withKey && it && it.key) box.appendChild(h('span', { class: 'font-mono text-xs text-secondary-500', dir: 'ltr', text: it.key }));
+  }
+  if (ref.item !== undefined) paint(ref.item);
+  else {
+    box.appendChild(bar('5rem'));
+    ref.p.then(paint);
+  }
+  return box;
+}
+
+function forgetRefs(resource) {
+  Object.keys(REF_NAMES).forEach(function (k) { if (k.indexOf(resource + ':') === 0) delete REF_NAMES[k]; });
+}
+
+function numLocal(v) {
+  return v === null || v === undefined || v === '' ? '' : fmtNum(v);
+}
+
+function ruleSentence(it, eventName) {
+  var parts = [t('rs.when.' + it.measure, { event: eventName, n: numLocal(it.threshold), period: t('rs.period.' + it.period) })];
+  parts.push(it.repeat === 'every' ? t('rs.repeat.every', { n: numLocal(it.threshold) }) : t('rs.repeat.' + it.repeat + (it.repeat === 'period' ? '.' + it.period : '')));
+  if (it.maxClaims) parts.push(t('rs.max', { n: it.maxClaims }));
+  return parts.join(' · ');
+}
+
+function ruleSentenceCell(it) {
+  var box = h('div', { class: 'text-sm text-secondary-700 dark:text-secondary-200 eco-clamp', 'data-rule-sentence': '' });
+  if (!it.eventTypeId) return box;
+  var ref = refName('event-types', it.eventTypeId);
+  function paint(et) { clear(box).appendChild(document.createTextNode(ruleSentence(it, et ? i18nText(et.name) || et.key : '…'))); }
+  if (ref.item !== undefined) paint(ref.item);
+  else { box.appendChild(bar('70%')); ref.p.then(paint); }
+  return box;
+}
+
+function grantTag(mode) {
+  return tag(t('grant.' + mode), mode === 'auto' ? 'success' : 'primary');
+}
+
+function windowCell(it) {
+  if (!it.startsAt && !it.endsAt) return h('span', { class: 'text-secondary-400', text: t('ev.window.always') });
+  return h('div', { class: 'flex flex-col text-xs text-secondary-600 dark:text-secondary-300 whitespace-nowrap' },
+    it.startsAt ? h('span', { text: t('ev.window.from', { date: fmtDate(it.startsAt) }) }) : null,
+    it.endsAt ? h('span', { text: t('ev.window.to', { date: fmtDate(it.endsAt) }) }) : null);
+}
+
+function rowsEditor(value, f, onchange) {
+  var rows = (value || []).map(function (r) { return Object.assign({}, r); });
+  var listEl = h('div', { class: 'flex flex-col gap-2' });
+  var errors = [];
+  var narrow = f.columns.filter(function (c) { return !c.wide; }).length;
+  function clean(r) {
+    var o = {};
+    f.columns.forEach(function (c) {
+      var v = r[c.name];
+      if (c.type === 'i18n') v = trClean(v);
+      o[c.name] = v === undefined || v === '' ? null : v;
+    });
+    if (r.id) o.id = r.id;
+    return o;
+  }
+  function emit() { onchange(rows.map(clean)); }
+  var add = button({ variant: 'link', size: 'sm', icon: 'plus', label: t(f.addLabel || 'add.row'), onclick: function () {
+    rows.push(f.newRow ? f.newRow(rows) : {});
+    render();
+    emit();
+    var last = listEl.lastElementChild;
+    var first = last && last.querySelector('input,select,button');
+    if (first) first.focus();
+  } });
+  add.setAttribute('data-rows-add', f.name);
+  function control(c, row) {
+    var label = t(c.label);
+    if (c.type === 'number') return numberInput(row[c.name], { int: c.int !== false, label: label, oninput: function (v) { row[c.name] = v === '' ? null : parseNumber(v, c.int !== false); emit(); } });
+    if (c.type === 'ref') return refPicker({ resource: c.resource, api: c.api, filter: c.filter, value: row[c.name], required: c.required, label: label, onchange: function (v) { row[c.name] = v; emit(); } });
+    if (c.type === 'select') {
+      if (row[c.name] == null) row[c.name] = c.options()[0].value;
+      return selectInput(row[c.name], c.options(), function (v) { row[c.name] = v; emit(); }, { placeholder: false, label: label });
+    }
+    var ti = translatedInput(row[c.name], { label: label, max: c.max, oninput: function (v) { row[c.name] = v; emit(); } });
+    row._tr = ti;
+    return ti;
+  }
+  function render() {
+    clear(listEl);
+    errors = [];
+    add.hidden = !!(f.max && rows.length >= f.max);
+    if (!rows.length) listEl.appendChild(h('div', { class: 'text-sm text-secondary-500 dark:text-secondary-400 border border-dashed border-secondary-300 dark:border-secondary-700 rounded-md px-3 py-4 text-center', text: t(f.emptyText || 'rows.empty') }));
+    rows.forEach(function (row, idx) {
+      var cells = f.columns.map(function (c) {
+        return h('div', { class: 'min-w-0' + (c.wide ? ' eco-rows-wide' : ''), 'data-col': c.name },
+          h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t(c.label) + (c.optional ? ' (' + t('optional') + ')' : '') }),
+          control(c, row));
+      });
+      var err = h('p', { class: 'text-xs text-error-600 dark:text-error-400 eco-items-err', hidden: true });
+      errors.push({ row: row, el: err });
+      listEl.appendChild(h('div', { class: 'border border-secondary-200 dark:border-secondary-700 rounded-md p-3', 'data-row': String(idx) },
+        h('div', { class: 'eco-rows-row', style: '--eco-rows-cols:' + narrow },
+          cells,
+          h('div', { class: 'eco-items-remove' }, button({ variant: 'danger', size: 'iconLg', icon: 'trash', title: t('remove'), onclick: function () { rows.splice(idx, 1); render(); emit(); } }))),
+        err));
+    });
+  }
+  render();
+  var el = h('div', { 'data-rows': f.name }, listEl, h('div', { class: 'mt-2' }, add));
+  function show(i, msg) {
+    var e = errors[i];
+    if (!e) return;
+    e.el.textContent = msg || '';
+    e.el.hidden = !msg;
+    e.el.parentElement.classList.toggle('eco-row-invalid', !!msg);
+  }
+  el.validate = function () {
+    var bad = false;
+    errors.forEach(function (e, i) {
+      var msg = '';
+      f.columns.forEach(function (c) {
+        if (msg) return;
+        var v = e.row[c.name];
+        if (c.type === 'i18n') {
+          var hit = trCheck(v, { max: c.max });
+          if (hit) msg = t(c.label) + ': ' + t('code.' + hit.code, { lang: langName(hit.lang) });
+          return;
+        }
+        if (v === null || v === undefined || v === '') { if (c.required) msg = t(c.label) + ': ' + t('err.required'); return; }
+        if (c.type === 'number' && (isNaN(v) || (c.min !== undefined && v < c.min) || (c.max !== undefined && v > c.max))) msg = t(c.label) + ': ' + t('err.number');
+      });
+      show(i, msg);
+      if (msg) bad = true;
+    });
+    if (!bad && f.check) {
+      var hit2 = f.check(rows);
+      if (hit2) { show(hit2.index, hit2.message); bad = true; }
+    }
+    if (!bad && f.min && rows.length < f.min) return t(f.emptyText || 'rows.empty');
+    return bad ? t('err.form') : null;
+  };
+  el.showServerError = function (err) {
+    var m = /\[(\d+)\]/.exec(String(err && err.field || ''));
+    if (!m) return false;
+    show(Number(m[1]), errorText(err));
+    var e = errors[Number(m[1])];
+    if (e) e.el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    return !!e;
+  };
+  return el;
+}
+
+function duplicateCheck(name, code) {
+  return function (rows) {
+    var seen = {};
+    for (var i = 0; i < rows.length; i++) {
+      var v = rows[i][name];
+      if (v === null || v === undefined) continue;
+      if (seen[v]) return { index: i, message: t('code.' + code) };
+      seen[v] = 1;
+    }
+    return null;
+  };
+}
+
+function grantOptions() {
+  return opts('grant.', ['claim', 'auto'])();
+}
+
+function activeFilter() {
+  return { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } };
+}
+
+function playerTagsField() {
+  return { name: 'audienceTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.ev.audience', hint: 'f.ev.audience.hint', optional: true, empty: [] };
+}
+
+function windowRow() {
+  return { type: 'row', fields: [
+    { name: 'startsAt', type: 'datetime', label: 'f.ev.startsAt', optional: true },
+    { name: 'endsAt', type: 'datetime', label: 'f.ev.endsAt', optional: true, check: function (v, vals) { return v && vals.startsAt && new Date(v) <= new Date(vals.startsAt) ? t('code.INVALID_WINDOW') : null; } }
+  ] };
+}
+
+function afterEventSave(resource) {
+  return function () { forgetRefs(resource); };
+}
+
+RESOURCES['event-types'] = {
+  filters: [activeFilter(), { name: 'clientAllowed', label: 'filter.ev.source', options: function () { return [{ value: 'true', label: t('ev.source.client') }, { value: 'false', label: t('ev.source.server') }]; } }],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '55%' },
+    { label: 'col.ev.source', render: function (it) {
+      return h('div', { class: 'flex flex-wrap gap-1' }, tag(t(it.clientAllowed ? 'ev.source.client' : 'ev.source.server'), it.clientAllowed ? 'warning' : 'secondary'), it.isSystem ? tag(t('ev.system'), 'primary') : null);
+    }, width: 170 },
+    { label: 'col.ev.range', render: function (it) {
+      if (it.valueMin == null && it.valueMax == null) return h('span', { class: 'text-secondary-400', text: t('ev.range.any') });
+      return h('span', { class: 'tabular-nums whitespace-nowrap', text: (it.valueMin == null ? '…' : fmtNum(it.valueMin)) + ' – ' + (it.valueMax == null ? '…' : fmtNum(it.valueMax)) });
+    }, width: 120 },
+    { label: 'col.ev.rate', render: function (it) { return h('span', { class: 'tabular-nums whitespace-nowrap', text: t('ev.perMinute', { n: it.rateLimit }) }); }, width: 130 },
+    { label: 'col.used', render: function (it) { return it.usedBy ? h('span', { class: 'tabular-nums', text: t('ev.usedBy', { n: it.usedBy }) }) : h('span', { class: 'text-secondary-400', text: t('none') }); }, width: 120 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
+  ],
+  fields: [
+    { name: 'isSystem', type: 'static', readonly: true, when: function (v) { return !!v.isSystem; }, render: function () { return notice('primary', t('ev.system.notice')); } },
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.ev.key.hint', required: true, keyRe: EVENT_KEY_RE, keyErr: 'code.INVALID_EVENT_KEY', lockOnEdit: true },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+    ] },
+    tr('name', { required: true, max: 128 }),
+    tr('description', { multiline: true, max: 1000, optional: true }),
+    { name: 'clientAllowed', type: 'bool', inline: true, label: 'f.ev.client', hint: 'f.ev.client.hint', empty: false, when: function (v) { return !v.isSystem; } },
+    { type: 'row', fields: [
+      { name: 'valueMin', type: 'number', int: false, label: 'f.ev.valueMin', optional: true },
+      { name: 'valueMax', type: 'number', int: false, label: 'f.ev.valueMax', optional: true, check: function (v, vals) { return v != null && vals.valueMin != null && Number(v) < Number(vals.valueMin) ? t('code.INVALID_RANGE') : null; } }
+    ] },
+    { name: 'rateLimit', type: 'number', label: 'f.ev.rate', hint: 'f.ev.rate.hint', required: true, min: 1, max: 100000 },
+    { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.ev.active.hint' }
+  ],
+  defaults: function () { return { key: '', name: {}, description: {}, clientAllowed: false, valueMin: null, valueMax: null, rateLimit: 30, isActive: true, sort: 0 }; },
+  fixPayload: function (p) { if (p.sort == null) p.sort = 0; return p; },
+  afterSave: afterEventSave('event-types')
+};
+
+RESOURCES['event-rules'] = {
+  filters: [
+    { name: 'eventTypeId', label: 'filter.ev.event', type: 'ref', resource: 'event-types' },
+    activeFilter()
+  ],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '40%' },
+    { label: 'col.ev.when', render: ruleSentenceCell, skeleton: '60%' },
+    { label: 'col.ev.prize', render: function (it) { return h('div', { class: 'flex flex-col gap-1 min-w-0' }, refNameCell('prizes', it.prizeId), h('div', {}, grantTag(it.grantMode))); }, width: 170 },
+    { label: 'col.ev.claims', render: function (it) { return h('span', { class: 'tabular-nums', text: fmtNum(it.claims || 0) }); }, width: 100 },
+    { label: 'col.status', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, activeTag(it.isActive), (it.audienceTagIds || []).length ? tag(t('audience.only'), 'primary') : null, it.endsAt && new Date(it.endsAt) < new Date() ? tag(t('ev.ended'), 'secondary') : null); }, width: 130 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, lockOnEdit: true },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+    ] },
+    tr('name', { label: 'f.ev.rule.name', hint: 'f.ev.rule.name.hint', required: true, max: 128 }),
+    tr('description', { label: 'f.ev.rule.description', multiline: true, max: 1000, optional: true }),
+    { type: 'heading', label: 'ev.h.when' },
+    { name: 'eventTypeId', type: 'ref', resource: 'event-types', label: 'f.ev.event', required: true },
+    { type: 'row', fields: [
+      { name: 'measure', type: 'select', label: 'f.ev.measure', hint: 'f.ev.measure.hint', required: true, options: opts('measure.', ['count', 'sum', 'max']) },
+      { name: 'period', type: 'select', label: 'f.ev.period', required: true, options: opts('period.', ['total', 'day', 'week']) }
+    ] },
+    { type: 'row', fields: [
+      { name: 'threshold', type: 'number', int: false, label: 'f.ev.threshold', required: true, min: 0.0001 },
+      { name: 'repeat', type: 'select', label: 'f.ev.repeat', required: true, options: opts('repeat.', ['once', 'period', 'every']),
+        check: function (v, vals) { return v === 'period' && vals.period === 'total' ? t('code.REPEAT_NEEDS_PERIOD') : v === 'every' && vals.measure === 'max' ? t('code.EVERY_NEEDS_TOTAL') : null; } }
+    ] },
+    { name: 'maxClaims', type: 'number', label: 'f.ev.maxClaims', hint: 'f.ev.maxClaims.hint', optional: true, min: 1, when: function (v) { return v.repeat !== 'once'; } },
+    { name: 'preview', type: 'static', readonly: true, live: true, render: function (v) {
+      if (!v.eventTypeId || !v.measure || !v.period || !v.repeat || v.threshold == null || v.threshold === '') return h('span', {});
+      var item = { measure: v.measure, period: v.period, repeat: v.repeat, threshold: parseNumber(v.threshold, false), maxClaims: v.repeat === 'once' ? null : v.maxClaims };
+      return h('div', { class: 'eco-rule-preview text-sm rounded-md px-3 py-2', 'data-rule-preview': '' }, ruleSentenceCell(Object.assign({ eventTypeId: v.eventTypeId }, item)));
+    } },
+    { type: 'heading', label: 'ev.h.prize' },
+    { type: 'row', fields: [
+      { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', required: true },
+      { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', hint: 'f.ev.grantMode.hint', required: true, options: grantOptions }
+    ] },
+    { type: 'heading', label: 'ev.h.who' },
+    playerTagsField(),
+    windowRow(),
+    { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
+  ],
+  defaults: function (query) { return { key: '', name: {}, description: {}, eventTypeId: (query && query.eventTypeId) || null, measure: 'count', period: 'day', threshold: 1, repeat: 'period', maxClaims: null, grantMode: 'claim', audienceTagIds: [], startsAt: null, endsAt: null, isActive: true, sort: 0 }; },
+  fixPayload: function (p) { if (p.sort == null) p.sort = 0; if (p.repeat === 'once') p.maxClaims = null; return p; }
+};
+
+RESOURCES['meta-rules'] = {
+  filters: [
+    { name: 'eventTypeId', label: 'filter.ev.event', type: 'ref', resource: 'event-types' },
+    { name: 'metaId', label: 'filter.ev.meta', type: 'ref', resource: 'metas' },
+    activeFilter()
+  ],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '40%' },
+    { label: 'col.ev.event', render: function (it) { return refNameCell('event-types', it.eventTypeId); }, width: 170 },
+    { label: 'col.ev.change', render: function (it) {
+      return h('div', { class: 'flex items-center gap-1.5 text-sm min-w-0', 'data-meta-change': '' }, refNameCell('metas', it.metaId),
+        h('span', { class: 'tabular-nums whitespace-nowrap text-secondary-600 dark:text-secondary-300', text: t('mr.change.' + it.action + '.' + it.valueSource, { n: numLocal(it.amount) }) }));
+    }, skeleton: '45%' },
+    { label: 'col.status', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, activeTag(it.isActive), (it.audienceTagIds || []).length ? tag(t('audience.only'), 'primary') : null); }, width: 130 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.mr.sort.hint' }
+    ] },
+    tr('name', { label: 'f.mr.name', hint: 'f.mr.name.hint', required: true, max: 128 }),
+    { type: 'row', fields: [
+      { name: 'eventTypeId', type: 'ref', resource: 'event-types', label: 'f.ev.event', required: true },
+      { name: 'metaId', type: 'ref', resource: 'metas', label: 'f.mr.meta', required: true }
+    ] },
+    { type: 'row', fields: [
+      { name: 'action', type: 'select', label: 'f.mr.action', required: true, options: opts('mr.action.', ['add', 'set', 'max']) },
+      { name: 'valueSource', type: 'select', label: 'f.mr.source', hint: 'f.mr.source.hint', required: true, options: opts('mr.source.', ['fixed', 'event']) }
+    ] },
+    { name: 'amount', type: 'number', int: false, label: 'f.mr.amount', hint: 'f.mr.amount.hint', required: true },
+    playerTagsField(),
+    windowRow(),
+    { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
+  ],
+  defaults: function () { return { key: '', name: {}, eventTypeId: null, metaId: null, action: 'add', valueSource: 'event', amount: 1, audienceTagIds: [], startsAt: null, endsAt: null, isActive: true, sort: 0 }; },
+  fixPayload: function (p) { if (p.sort == null) p.sort = 0; return p; }
+};
+
+RESOURCES['level-tables'] = {
+  filters: [{ name: 'metaId', label: 'filter.ev.meta', type: 'ref', resource: 'metas' }, activeFilter()],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '40%' },
+    { label: 'col.lv.meta', render: function (it) {
+      return h('div', { class: 'flex items-center gap-1.5 text-sm min-w-0' }, refNameCell('metas', it.metaId), it.levelMetaId ? h('span', { class: 'text-secondary-400', text: '←' }) : null, it.levelMetaId ? refNameCell('metas', it.levelMetaId) : null);
+    }, skeleton: '35%' },
+    { label: 'col.lv.steps', render: function (it) {
+      var steps = it.steps || [];
+      var top = steps[steps.length - 1];
+      return h('div', { class: 'flex flex-col text-sm' }, h('span', { class: 'tabular-nums', text: t('lv.levelsN', { n: steps.length }) }),
+        top ? h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: t('lv.top', { level: top.level, n: numLocal(top.threshold) }) }) : null);
+    }, width: 160 },
+    { label: 'col.ev.players', render: function (it) { return h('span', { class: 'tabular-nums', text: fmtNum(it.players || 0) }); }, width: 100 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, lockOnEdit: true },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+    ] },
+    tr('name', { required: true, max: 128 }),
+    tr('description', { multiline: true, max: 1000, optional: true }),
+    { type: 'row', fields: [
+      { name: 'metaId', type: 'ref', resource: 'metas', label: 'f.lv.meta', hint: 'f.lv.meta.hint', required: true },
+      { name: 'levelMetaId', type: 'ref', resource: 'metas', label: 'f.lv.levelMeta', hint: 'f.lv.levelMeta.hint', optional: true,
+        check: function (v, vals) { return v && v === vals.metaId ? t('code.SAME_META') : null; } }
+    ] },
+    { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' },
+    { type: 'heading', label: 'lv.h.steps' },
+    { name: 'steps', type: 'rows', addLabel: 'lv.add', emptyText: 'lv.empty', min: 1, max: 200,
+      newRow: function (rows) {
+        var last = rows[rows.length - 1];
+        return { level: last ? Number(last.level || 0) + 1 : 1, threshold: last ? Number(last.threshold || 0) * 2 || 100 : 0, name: {}, prizeId: null, grantMode: 'claim' };
+      },
+      check: function (rows) {
+        var dup = duplicateCheck('level', 'DUPLICATE_LEVEL')(rows);
+        if (dup) return dup;
+        var sorted = rows.map(function (r, i) { return { r: r, i: i }; }).sort(function (a, b) { return a.r.level - b.r.level; });
+        for (var i = 1; i < sorted.length; i++) if (Number(sorted[i].r.threshold) < Number(sorted[i - 1].r.threshold)) return { index: sorted[i].i, message: t('code.THRESHOLDS_NOT_ORDERED') };
+        return null;
+      },
+      columns: [
+        { name: 'level', type: 'number', label: 'f.lv.level', required: true, min: 1 },
+        { name: 'threshold', type: 'number', int: false, label: 'f.lv.threshold', required: true, min: 0 },
+        { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', optional: true },
+        { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', options: grantOptions },
+        { name: 'name', type: 'i18n', label: 'f.lv.title', max: 64, wide: true }
+      ] }
+  ],
+  defaults: function () { return { key: '', name: {}, description: {}, metaId: null, levelMetaId: null, isActive: true, sort: 0, steps: [{ level: 1, threshold: 0, name: {}, prizeId: null, grantMode: 'claim' }, { level: 2, threshold: 100, name: {}, prizeId: null, grantMode: 'claim' }] }; },
+  fixPayload: function (p) { if (p.sort == null) p.sort = 0; return p; }
+};
+
+RESOURCES.streaks = {
+  filters: [{ name: 'eventTypeId', label: 'filter.ev.event', type: 'ref', resource: 'event-types' }, activeFilter()],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '40%' },
+    { label: 'col.ev.event', render: function (it) { return refNameCell('event-types', it.eventTypeId); }, width: 170 },
+    { label: 'col.sk.rule', render: function (it) {
+      return h('div', { class: 'flex flex-col text-sm gap-0.5' },
+        h('span', { text: it.periodDays === 1 ? t('sk.everyDay') : t('sk.everyDays', { n: it.periodDays }) }),
+        h('span', { class: 'text-xs text-secondary-500', text: (it.gracePeriods ? t('sk.graceN', { n: it.gracePeriods }) : t('sk.noGrace')) + ' · ' + t('sk.miss.' + it.missAction) }));
+    }, skeleton: '40%' },
+    { label: 'col.sk.rewards', render: function (it) {
+      var n = (it.rewards || []).length;
+      return h('div', { class: 'flex flex-col text-sm' }, h('span', { class: 'tabular-nums', text: t('sk.rewardsN', { n: n }) }),
+        it.cycleLength ? h('span', { class: 'text-xs text-secondary-500', text: t('sk.cycleN', { n: it.cycleLength }) }) : null);
+    }, width: 150 },
+    { label: 'col.ev.players', render: function (it) { return h('span', { class: 'tabular-nums', text: fmtNum(it.players || 0) }); }, width: 100 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
+  ],
+  fields: [
+    { name: 'hiro', type: 'static', readonly: true, render: function () { return notice('secondary', t('sk.hiro.notice')); } },
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, lockOnEdit: true },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+    ] },
+    tr('name', { required: true, max: 128 }),
+    tr('description', { multiline: true, max: 1000, optional: true }),
+    { name: 'eventTypeId', type: 'ref', resource: 'event-types', label: 'f.sk.event', hint: 'f.sk.event.hint', required: true },
+    { type: 'row', fields: [
+      { name: 'periodDays', type: 'number', label: 'f.sk.periodDays', hint: 'f.sk.periodDays.hint', required: true, min: 1, max: 30 },
+      { name: 'cycleLength', type: 'number', label: 'f.sk.cycle', hint: 'f.sk.cycle.hint', optional: true, min: 1, max: 365 }
+    ] },
+    { type: 'row', fields: [
+      { name: 'gracePeriods', type: 'number', label: 'f.sk.grace', hint: 'f.sk.grace.hint', required: true, min: 0, max: 30 },
+      { name: 'missAction', type: 'select', label: 'f.sk.miss', required: true, options: opts('sk.miss.', ['reset', 'step_back']) }
+    ] },
+    { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' },
+    { type: 'heading', label: 'sk.h.rewards' },
+    { name: 'rewards', type: 'rows', addLabel: 'sk.add', emptyText: 'sk.empty', max: 365,
+      newRow: function (rows) {
+        var last = rows[rows.length - 1];
+        return { day: last ? Number(last.day || 0) + 1 : 1, prizeId: last ? last.prizeId : null, grantMode: last ? last.grantMode : 'claim' };
+      },
+      check: function (rows) { return duplicateCheck('day', 'DUPLICATE_DAY')(rows); },
+      columns: [
+        { name: 'day', type: 'number', label: 'f.sk.day', required: true, min: 1 },
+        { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', required: true },
+        { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', options: grantOptions }
+      ] }
+  ],
+  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', isActive: true, sort: 0, rewards: [] }; },
+  fixPayload: function (p) {
+    if (p.sort == null) p.sort = 0;
+    return p;
+  }
+};
+
+LISTS['event-log'] = {
+  noRow: true,
+  filters: [
+    { name: 'typeId', label: 'filter.ev.event', type: 'ref', resource: 'event-types' },
+    { name: 'source', label: 'filter.ev.from', options: opts('ev.from.', ['client', 'server', 'admin']) },
+    { name: 'userId', label: 'filter.user', type: 'text' }
+  ],
+  columns: [
+    { label: 'col.created', render: function (it) { return dateCell(it.createdAt); }, width: 170 },
+    { label: 'col.player', render: function (it) {
+      return h('div', { class: 'min-w-0' }, h('a', { href: '#/players/' + encodeURIComponent(it.userId), class: 'eco-link font-medium truncate block', text: it.displayName || it.username || String(it.userId).slice(0, 8) }),
+        it.username && it.displayName ? h('div', { class: 'text-xs text-secondary-500 truncate', dir: 'ltr', text: it.username }) : null);
+    }, skeleton: '40%' },
+    { label: 'col.ev.event', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'truncate', text: i18nText(it.name) || it.key }), h('div', { class: 'text-secondary-500' }, mono(it.key))); }, skeleton: '40%' },
+    { label: 'col.ev.value', render: function (it) { return numCell(it.value); }, width: 100 },
+    { label: 'col.ev.from', render: function (it) { return tag(t('ev.from.' + it.source), it.source === 'client' ? 'warning' : it.source === 'admin' ? 'primary' : 'secondary'); }, width: 110 },
+    { label: 'col.ev.metadata', render: function (it) {
+      var keys = it.metadata ? Object.keys(it.metadata) : [];
+      if (!keys.length) return h('span', { class: 'text-secondary-400', text: t('none') });
+      return h('span', { class: 'font-mono text-xs text-secondary-600 dark:text-secondary-300 eco-clamp', dir: 'ltr', text: JSON.stringify(it.metadata) });
+    }, skeleton: '30%' }
+  ]
+};
+
+OVERVIEW_CATALOG.push('event-types', 'event-rules', 'level-tables', 'streaks');
+
+var TIMEZONES = ['Asia/Tehran', 'UTC', 'Asia/Dubai', 'Asia/Baghdad', 'Asia/Kabul', 'Asia/Baku', 'Asia/Yerevan', 'Europe/Istanbul', 'Europe/London', 'Europe/Berlin', 'Europe/Moscow', 'America/New_York', 'America/Los_Angeles', 'America/Toronto', 'Australia/Sydney', 'Asia/Tokyo', 'Asia/Kolkata', 'Asia/Riyadh'];
+
+function weekdayName(i) {
+  var d = new Date(Date.UTC(2026, 10, 8 + i));
+  return new Intl.DateTimeFormat(locale(), { weekday: 'long', timeZone: 'UTC' }).format(d);
+}
+
+function zoneNow(zone) {
+  try {
+    return new Intl.DateTimeFormat(locale(), { weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: zone }).format(new Date());
+  } catch (e) {
+    return '';
+  }
+}
+
+var EVENT_SETTINGS_FIELDS = [
+  { type: 'row', fields: [
+    { name: 'timezone', type: 'select', label: 'f.es.timezone', hint: 'f.es.timezone.hint', required: true, options: function () {
+      return TIMEZONES.map(function (z) { return { value: z, label: z === 'UTC' ? 'UTC' : z.replace('_', ' ') }; });
+    } },
+    { name: 'weekStart', type: 'select', label: 'f.es.weekStart', hint: 'f.es.weekStart.hint', required: true, noPlaceholder: true, options: function () {
+      return [6, 0, 1, 2, 3, 4, 5].map(function (i) { return { value: String(i), label: weekdayName(i) }; });
+    } }
+  ] },
+  { name: 'clock', type: 'static', readonly: true, live: true, render: function (v) {
+    var now = zoneNow(v.timezone || 'UTC');
+    return now ? h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300 -mt-2 mb-4', 'data-zone-now': '' }, t('es.now', { time: now })) : h('span', {});
+  } },
+  { type: 'row', fields: [
+    { name: 'retentionDays', type: 'number', label: 'f.es.retention', hint: 'f.es.retention.hint', required: true, min: 1, max: 3650 },
+    { name: 'playerRateLimit', type: 'number', label: 'f.es.rate', hint: 'f.es.rate.hint', required: true, min: 1, max: 100000 }
+  ] }
+];
+
+function eventSettingsPage(container) {
+  var frame = tabFrame(t('desc.events'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(api, '/event-settings', null, EVENT_SETTINGS_FIELDS, { id: 'events', fixPayload: function (p) {
+    p.weekStart = Number(p.weekStart);
+    return p;
+  } });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
+var PROGRESS_CARD = { id: null, data: null, loading: false, at: 0, err: null };
+
+function loadProgressCard(id) {
+  PROGRESS_CARD.loading = true;
+  return api('GET', '/users/' + encodeURIComponent(id) + '/progress' + qs({ lang: lang() })).then(function (res) {
+    PROGRESS_CARD.loading = false;
+    PROGRESS_CARD.at = Date.now();
+    PROGRESS_CARD.data = res;
+    PROGRESS_CARD.err = null;
+    var old = document.querySelector('[data-player-progress]');
+    if (old) old.removeAttribute('data-key');
+    schedule();
+  }, function (err) {
+    PROGRESS_CARD.loading = false;
+    PROGRESS_CARD.at = Date.now();
+    PROGRESS_CARD.err = err;
+    schedule();
+  });
+}
+
+function claimStatusTag(c) {
+  var color = c.status === 'granted' ? 'success' : c.status === 'failed' ? 'error' : 'warning';
+  return tag(t('claim.status.' + (c.status === 'ready' ? (c.grantMode === 'claim' ? 'waiting' : 'ready') : c.status)), color);
+}
+
+function recordEventDialog(userId) {
+  var values = { key: '', value: 1 };
+  var picker = refPicker({ resource: 'event-types', valueKey: 'key', value: '', required: true, label: t('f.ev.event'), filter: { isActive: 'true' }, onchange: function (v) { values.key = v || ''; } });
+  var val = numberInput(1, { int: false, label: t('f.ev.value'), oninput: function (v) { values.value = v === '' ? null : parseNumber(v, false); } });
+  var keyWrap = field(t('f.ev.event'), picker, null);
+  var valWrap = field(t('f.ev.value'), val, t('f.ev.value.hint'));
+  return formDialog({
+    id: 'record-event',
+    title: t('pp.record'),
+    text: t('pp.record.text'),
+    icon: 'event-types',
+    ok: t('pp.record.ok'),
+    body: h('div', {}, keyWrap, valWrap),
+    validate: function () {
+      keyWrap.setError(values.key ? '' : t('err.required'));
+      valWrap.setError(values.value === null || isNaN(values.value) ? t('err.number') : '');
+      return !!values.key && values.value !== null && !isNaN(values.value);
+    },
+    submit: function () { return api('POST', '/users/' + encodeURIComponent(userId) + '/events', { key: values.key, value: values.value }); }
+  });
+}
+
+function progressSection(titleKey, body, extra) {
+  return h('div', { class: 'min-w-0' }, h('div', { class: 'flex items-center justify-between gap-2 text-xs text-secondary-500 dark:text-secondary-400 mb-1' }, h('span', { text: t(titleKey) }), extra || null), body);
+}
+
+function playerProgressCard() {
+  var id = playerCardRoute();
+  var existing = document.querySelector('[data-player-progress]');
+  if (!id || !token() || !aclCan('HIRO_ECONOMY', 0)) { if (existing) existing.remove(); return; }
+  var main = null;
+  var mains = document.querySelectorAll('#main > main');
+  for (var i = 0; i < mains.length; i++) if (mains[i].style.display !== 'none') main = mains[i];
+  var grid = main && main.querySelector('div.flex.flex-col.flex-1.min-w-0 > div.grid.grid-cols-1.gap-4');
+  if (!grid) return;
+  if (PROGRESS_CARD.id !== id) { PROGRESS_CARD.id = id; PROGRESS_CARD.data = null; PROGRESS_CARD.err = null; PROGRESS_CARD.at = 0; }
+  if (!PROGRESS_CARD.loading && Date.now() - PROGRESS_CARD.at > 20000) loadProgressCard(id);
+  var p = PROGRESS_CARD.data;
+  var anchor = grid.querySelector('[data-player-mod]');
+  var key = lang() + '|' + id + '|' + (p ? JSON.stringify([p.totals, p.streaks, p.levels, p.claims, p.readyClaims]) : PROGRESS_CARD.err ? 'err' : 'loading');
+  var placed = existing && existing.parentNode === grid && (anchor ? existing.previousElementSibling === anchor : grid.firstChild === existing);
+  if (existing && existing.getAttribute('data-key') === key && placed) return;
+  if (existing) existing.remove();
+  var body = h('div', { class: 'px-4 py-3' });
+  var cardEl = h('section', { class: 'flex flex-col dark:bg-secondary-800 rounded-md shadow bg-white', 'data-player-progress': '', 'data-key': key, 'data-economy': 'player-progress', 'data-l10n-skip': '', 'aria-labelledby': 'player-progress-title', dir: document.documentElement.getAttribute('dir') || 'ltr' }, body);
+  var title = h('h2', { id: 'player-progress-title', class: 'font-medium', text: t('pp.title') });
+  var place = function () { if (anchor) anchor.after(cardEl); else grid.insertBefore(cardEl, grid.firstChild); };
+  if (!p) {
+    body.appendChild(h('div', { class: 'flex items-center justify-between gap-2 mb-3' }, title));
+    body.appendChild(PROGRESS_CARD.err ? notice('error', errorText(PROGRESS_CARD.err), button({ variant: 'link', size: 'sm', label: t('try.again'), onclick: function () { PROGRESS_CARD.at = 0; loadProgressCard(id); } })) : h('div', { class: 'flex flex-col gap-2' }, bar('40%'), bar('60%')));
+    place();
+    return;
+  }
+  var write = aclCan('HIRO_ECONOMY', 1);
+  var reload = function (res) { if (res) { PROGRESS_CARD.at = 0; loadProgressCard(id); } };
+  var actions = h('div', { class: 'flex flex-wrap items-center gap-2' });
+  if (write) {
+    var rec = button({ variant: 'ghost', size: 'sm', icon: 'event-types', label: t('pp.record'), onclick: function () { recordEventDialog(id).then(function (res) { if (res) toast('success', t('pp.recorded')); reload(res); }); } });
+    rec.setAttribute('data-record-event', '');
+    actions.appendChild(rec);
+  }
+  actions.appendChild(h('a', { href: hashFor('event-log', null, { userId: id }), class: 'eco-link text-sm', text: t('pp.log') }));
+  body.appendChild(h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-3' }, title, actions));
+
+  var levels = h('div', { class: 'flex flex-col gap-2' });
+  (p.levels || []).forEach(function (lv) {
+    var next = lv.next;
+    levels.appendChild(h('div', { class: 'min-w-0', 'data-pp-level': lv.key },
+      h('div', { class: 'font-medium truncate', text: lv.name }),
+      h('div', { class: 'text-sm', text: t('pp.level', { level: lv.level }) + (lv.title ? ' · ' + lv.title : '') }),
+      h('div', { class: 'text-xs text-secondary-500 tabular-nums', text: t('pp.meta', { n: numLocal(lv.value), name: lv.metaName }) + (next ? ' · ' + t('pp.toNext', { level: next.level, n: numLocal(Math.max(0, next.threshold - lv.value)) }) : '') })));
+  });
+  if (!(p.levels || []).length) levels.appendChild(h('span', { class: 'text-sm text-secondary-400', text: t('none') }));
+
+  var streaks = h('div', { class: 'flex flex-col gap-2' });
+  (p.streaks || []).forEach(function (sk) {
+    var row = h('div', { class: 'min-w-0', 'data-pp-streak': sk.key },
+      h('div', { class: 'flex items-center gap-2 min-w-0' }, h('span', { class: 'font-medium truncate', text: sk.name }), sk.broken ? tag(t('pp.broken'), 'secondary') : sk.countedThisPeriod ? tag(t('pp.today'), 'success') : null),
+      h('div', { class: 'text-sm tabular-nums', text: t('pp.streak', { n: sk.count, best: sk.best }) }));
+    if (write && (sk.count > 0 || sk.countedThisPeriod)) {
+      var reset = button({ variant: 'link', size: 'sm', label: t('pp.reset'), onclick: function () {
+        confirmModal({ title: t('pp.reset.title'), text: t('pp.reset.text', { name: sk.name }), ok: t('pp.reset'), danger: true }).then(function (yes) {
+          if (!yes) return;
+          api('POST', '/users/' + encodeURIComponent(id) + '/streaks/' + encodeURIComponent(sk.id) + '/reset', {}).then(function () { toast('success', t('pp.reset.done')); reload(true); }, function (err) { toast('error', errorText(err)); });
+        });
+      } });
+      reset.setAttribute('data-streak-reset', sk.key);
+      row.appendChild(reset);
+    }
+    streaks.appendChild(row);
+  });
+  if (!(p.streaks || []).length) streaks.appendChild(h('span', { class: 'text-sm text-secondary-400', text: t('none') }));
+
+  var totals = h('div', { class: 'flex flex-col gap-1' });
+  (p.totals || []).slice(0, 6).forEach(function (e) {
+    totals.appendChild(h('div', { class: 'flex items-center justify-between gap-2 text-sm', 'data-pp-total': e.key },
+      h('span', { class: 'truncate', text: i18nText(e.name) || e.key }),
+      h('span', { class: 'tabular-nums text-secondary-600 dark:text-secondary-300 whitespace-nowrap', text: t('pp.times', { n: e.count }) })));
+  });
+  if (!(p.totals || []).length) totals.appendChild(h('span', { class: 'text-sm text-secondary-400', text: t('pp.noEvents') }));
+
+  body.appendChild(h('div', { class: 'eco-pc-grid' }, progressSection('pp.levels', levels), progressSection('pp.streaks', streaks), progressSection('pp.events', totals)));
+
+  var claims = h('div', { class: 'flex flex-col mt-3 border-t border-secondary-200 dark:border-secondary-700 pt-4', 'data-pp-claims': '' });
+  claims.appendChild(h('div', { class: 'flex items-center justify-between gap-2 text-xs text-secondary-500 dark:text-secondary-400 mb-1' }, h('span', { text: t('pp.claims') }), p.readyClaims ? tag(t('pp.readyN', { n: p.readyClaims }), 'warning') : null));
+  (p.claims || []).slice(0, 8).forEach(function (c) {
+    var line = h('div', { class: 'flex flex-wrap items-center gap-2 py-1 text-sm', 'data-pp-claim': c.claimId },
+      tag(t('claim.kind.' + c.kind), 'secondary'),
+      h('span', { class: 'truncate', text: c.sourceName || c.source }),
+      c.level ? h('span', { class: 'text-xs text-secondary-500', text: t('pp.level', { level: c.level }) }) : null,
+      h('span', { class: 'text-secondary-400', text: '←' }),
+      h('span', { class: 'font-medium truncate', text: c.prize && c.prize.name }),
+      claimStatusTag(c),
+      h('span', { class: 'flex-1' }),
+      h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: fmtDate(c.grantedAt || c.createdAt) }));
+    if (write && c.status === 'failed') {
+      line.appendChild(button({ variant: 'link', size: 'sm', icon: 'refresh', label: t('pay.retry'), onclick: function () {
+        api('POST', '/event-claims/' + encodeURIComponent(c.claimId) + '/retry', {}).then(function () { toast('success', t('pay.retry.done')); reload(true); }, function (err) { toast('error', errorText(err)); });
+      } }));
+    }
+    claims.appendChild(line);
+  });
+  if (!(p.claims || []).length) claims.appendChild(h('span', { class: 'text-sm text-secondary-400', text: t('pp.noClaims') }));
+  body.appendChild(claims);
+  place();
+}
+
 var BRAND_KEY = 'nakama-brand';
 var BRAND_SHADES = { 50: 0.9, 100: 0.8, 200: 0.6, 300: 0.4, 400: 0.1, 500: 0, 600: -0.1, 700: -0.25, 800: -0.58, 900: -0.7, 950: -0.8 };
 var BRAND_DEFAULT_SHADES = { '244,244,253': 50, '233,232,252': 100, '209,205,248': 200, '181,175,245': 300, '130,117,240': 400, '107,89,238': 500, '102,84,226': 600, '93,77,206': 700, '69,58,154': 800, '59,49,130': 900, '48,40,106': 950 };
@@ -8541,6 +9739,7 @@ var PS_SECTIONS = [
   { id: 'categories', label: 'nav.categories', icon: 'categories', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'categories', route.query, ctx); } },
   { id: 'tags', label: 'nav.tags', icon: 'tags', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'tags', route.query, ctx); } },
   { id: 'report-titles', label: 'tab.report-titles', icon: 'report-titles', acl: 'CHANNEL_MESSAGE', render: function (box, route, ctx) { return listPage(box, 'report-titles', route.query, ctx); } },
+  { id: 'events', label: 'tab.events', icon: 'event-types', acl: 'HIRO_ECONOMY', render: function (box) { eventSettingsPage(box); } },
   { id: 'payment-methods', label: 'tab.payment-methods', icon: 'payments', acl: 'HIRO_ECONOMY', render: function (box) { paymentMethodsPage(box); } },
   { id: 'sms', label: 'tab.sms', icon: 'comments', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'sms'); } },
   { id: 'email', label: 'tab.email', icon: 'mail', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'email'); } }
@@ -9231,6 +10430,7 @@ function nativeTweaks() {
   auditLogSources();
   satoriRoutes();
   playerModCard();
+  playerProgressCard();
 }
 
 var ROOT_ID = 'economy-root';

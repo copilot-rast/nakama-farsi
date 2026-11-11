@@ -830,6 +830,8 @@ function buildForm(fields, values, ctx) {
       control = markdownInput(cur, { ltr: f.ltr, rows: f.rows, max: f.max, label: label, oninput: function (v) { change(v); } });
     } else if (t2 === 'actions') {
       control = actionsEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
+    } else if (t2 === 'rows') {
+      control = rowsEditor(cur, f, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
     } else if (t2 === 'links') {
       control = storeLinksEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
     } else if (t2 === 'static') {
@@ -852,6 +854,7 @@ function buildForm(fields, values, ctx) {
 
   function refresh() {
     entries.forEach(function (e) {
+      if (e.def.live && e.control) append(clear(e.control), e.def.render(values));
       var visible = !e.def.when || e.def.when(values);
       var el = e.row ? e.el : e.wrap;
       el.hidden = !visible;
@@ -878,7 +881,7 @@ function buildForm(fields, values, ctx) {
         if (n === null) { if (f.required) msg = t('err.required'); setPath(values, f.name, null); }
         else if (isNaN(n) || (f.min !== undefined && n < f.min) || (f.max !== undefined && n > f.max)) msg = t('err.number');
         else setPath(values, f.name, n);
-      } else if (t2 === 'items' || t2 === 'actions' || t2 === 'links') {
+      } else if (t2 === 'items' || t2 === 'actions' || t2 === 'links' || t2 === 'rows') {
         msg = e.control.validate();
       } else if (t2 === 'i18n') {
         var hit = trCheck(v, f);
@@ -908,7 +911,7 @@ function buildForm(fields, values, ctx) {
       if (name === e.def.name || name.indexOf(e.def.name + '.') === 0 || e.def.name.indexOf(name + '.') === 0) { if (!best) best = e; }
     });
     if (!best) return false;
-    if (best.def.type === 'actions' && best.control.showServerError) return best.control.showServerError(err);
+    if ((best.def.type === 'actions' || best.def.type === 'rows') && best.control.showServerError) return best.control.showServerError(err);
     if (best.def.type === 'i18n') {
       var code = trServerLang(err, getPath(values, best.def.name), best.def);
       best.control.markLang(code);

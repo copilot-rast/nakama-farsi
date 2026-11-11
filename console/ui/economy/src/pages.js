@@ -1,5 +1,5 @@
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'payments'],
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'event-log', 'payments'],
   publication: ['faqs', 'news', 'comments', 'notifications'],
   moderation: ['players', 'reports', 'restrictions', 'chat-words']
 };
@@ -596,6 +596,14 @@ function overviewPage(container) {
       catalog.appendChild(statCard(t('nav.' + name), c[name], active !== undefined ? t('active') + ': ' + fmtNum(active) : null, hashFor(name)));
     });
     body.appendChild(h('div', {}, h('h2', { class: 'text-lg font-medium mb-3', text: t('ov.catalog') }), catalog));
+
+    if (c.eventsToday !== undefined) {
+      var events = h('div', { class: 'eco-stat-grid', 'data-ov-events': '' });
+      events.appendChild(statCard(t('ov.eventsToday'), c.eventsToday, null, hashFor('event-log')));
+      events.appendChild(statCard(t('ov.claimsReady'), c.claimsReady, null, null));
+      if (c.claimsFailed) events.appendChild(statCard(t('ov.claimsFailed'), c.claimsFailed, null, null, { alert: true }));
+      body.appendChild(h('div', {}, h('h2', { class: 'text-lg font-medium mb-3', text: t('ov.events') }), events));
+    }
 
     var payments = h('div', { class: 'eco-stat-grid' });
     payments.appendChild(statCard(t('ov.revenue30'), c.revenueToman30, t('toman', { n: '' }).trim(), null));

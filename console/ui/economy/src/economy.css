@@ -51,6 +51,11 @@
 .eco-items-remove{display:flex;justify-content:flex-end}
 @media (min-width:768px){.eco-items-row{grid-template-columns:9rem minmax(0,1fr) 7rem 9rem auto}}
 .eco-items-err{margin-top:.5rem}
+.eco-rows-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;align-items:end}
+.eco-rows-wide{grid-column:1/-1}
+@media (min-width:768px){.eco-rows-row{grid-template-columns:repeat(var(--eco-rows-cols,3),minmax(0,1fr)) auto}.eco-rows-row > .eco-items-remove{grid-row:1;grid-column:-2/-1}}
+.eco-rule-preview{background:rgb(var(--primary-color-50,239 246 255));color:rgb(var(--primary-color-900,30 58 138))}
+.dark .eco-rule-preview{background:rgba(255,255,255,.06);color:inherit}
 
 .eco-dl{display:grid;grid-template-columns:minmax(7rem,max-content) minmax(0,1fr);gap:.6rem 1rem;align-items:center;font-size:.875rem}
 .eco-detail-grid{display:grid;grid-template-columns:1fr;gap:1rem}
@@ -421,3 +426,4 @@ html.dark .monaco-editor :is(.minimap canvas,canvas.decorationsOverviewRuler){fi
 .dark .eco-try-out{background-color:rgb(var(--secondary-color-900));border-color:rgb(var(--secondary-color-700))}
 .eco-pc-grid{display:grid;grid-template-columns:1fr;gap:1rem}
 @media (min-width:1024px){.eco-pc-grid{grid-template-columns:1.4fr 1fr 1fr}}
+.eco-rows-row .eco-ref .font-mono{display:none}
