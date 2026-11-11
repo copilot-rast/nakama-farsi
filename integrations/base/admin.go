@@ -67,6 +67,7 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/support/summary", http.MethodGet, s.supportSummary},
 		{consolePrefix + "/support/heartbeat", http.MethodPost, s.supportHeartbeat},
 		{consolePrefix + "/support/agents", http.MethodGet, s.supportAgents},
+		{consolePrefix + "/support/players", http.MethodGet, s.supportPlayers},
 		{consolePrefix + "/support/settings", http.MethodGet, s.supportSettingsGet},
 		{consolePrefix + "/support/settings", http.MethodPut, s.supportSettingsPut},
 		{consolePrefix + "/support/departments", http.MethodGet, s.departmentList},

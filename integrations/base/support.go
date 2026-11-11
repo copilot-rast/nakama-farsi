@@ -563,3 +563,24 @@ func (s *service) supportHeartbeat(w http.ResponseWriter, r *http.Request) {
 	}
 	s.supportSummary(w, r)
 }
+
+func (s *service) supportPlayers(w http.ResponseWriter, r *http.Request) {
+	q := strings.TrimSpace(r.URL.Query().Get("q"))
+	args := []any{}
+	where := ` WHERE u.id <> '00000000-0000-0000-0000-000000000000'`
+	if q != "" {
+		args = append(args, likePattern(q))
+		where += ` AND (u.username ILIKE $1 OR u.display_name ILIKE $1 OR u.id::text ILIKE $1)`
+	}
+	rows, err := s.db.QueryContext(r.Context(), `SELECT jsonb_build_object('id',u.id,'username',u.username,'displayName',u.display_name,'name',COALESCE(NULLIF(u.display_name,''),u.username))::text FROM users u`+where+` ORDER BY u.create_time DESC LIMIT 20`, args...)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	items, err := rawRows(rows)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"items": items, "total": len(items)})
+}

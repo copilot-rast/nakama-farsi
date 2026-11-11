@@ -175,11 +175,11 @@ func (s *service) storeFile(ctx context.Context, userID *string, by, name string
 		return attachment{}, fail(http.StatusServiceUnavailable, "ATTACHMENTS_UNAVAILABLE", "", "attachments need ECONOMY_SECRET_KEY")
 	}
 	if len(data) == 0 || len(data) > maxKB*1024 {
-		return attachment{}, badRequest("FILE_TOO_LARGE", "file", "file is too large")
+		return attachment{}, badRequest("ATTACHMENT_TOO_LARGE", "file", "file is too large")
 	}
 	ext, ok := sniffSupportFile(data)
 	if !ok {
-		return attachment{}, badRequest("UNSUPPORTED_FILE_TYPE", "file", "only png, jpg, webp and pdf are allowed")
+		return attachment{}, badRequest("ATTACHMENT_TYPE", "file", "only png, jpg, webp and pdf are allowed")
 	}
 	raw := make([]byte, 16)
 	if _, err := rand.Read(raw); err != nil {
@@ -214,7 +214,7 @@ func (s *service) rpcUploadBegin(ctx context.Context, userID, payload string) (a
 		return nil, fail(http.StatusServiceUnavailable, "ATTACHMENTS_UNAVAILABLE", "", "attachments are turned off")
 	}
 	if in.Size <= 0 || in.Size > st.MaxAttachmentKB*1024 {
-		return nil, badRequest("FILE_TOO_LARGE", "size", "file is too large")
+		return nil, badRequest("ATTACHMENT_TOO_LARGE", "size", "file is too large")
 	}
 	if err := s.allow(ctx, "sup-up:"+userID, 30, time.Hour, "TOO_MANY_UPLOADS"); err != nil {
 		return nil, err
@@ -325,7 +325,7 @@ func (s *service) consoleSupportUpload(w http.ResponseWriter, r *http.Request) {
 	limit := int64(st.MaxAttachmentKB) * 1024
 	r.Body = http.MaxBytesReader(w, r.Body, limit+64*1024)
 	if err := r.ParseMultipartForm(limit + 64*1024); err != nil {
-		s.writeError(w, badRequest("FILE_TOO_LARGE", "file", "file is too large"))
+		s.writeError(w, badRequest("ATTACHMENT_TOO_LARGE", "file", "file is too large"))
 		return
 	}
 	file, header, err := r.FormFile("file")

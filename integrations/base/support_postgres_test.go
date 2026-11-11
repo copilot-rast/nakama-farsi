@@ -86,7 +86,7 @@ func TestSupportTicketFlow(t *testing.T) {
 	if code := h.rpcCode(player, "base_support_ticket_create", map[string]any{"subject": "x", "body": "x", "departmentKey": "nope"}); code != "DEPARTMENT_NOT_FOUND" {
 		t.Fatal(code)
 	}
-	if code := h.rpcCode(player, "base_support_upload_begin", map[string]any{"name": "a.png", "size": 3 * 1024 * 1024}); code != "FILE_TOO_LARGE" {
+	if code := h.rpcCode(player, "base_support_upload_begin", map[string]any{"name": "a.png", "size": 3 * 1024 * 1024}); code != "ATTACHMENT_TOO_LARGE" {
 		t.Fatal(code)
 	}
 	att := h.upload(player, pngBytes(t))
@@ -95,7 +95,7 @@ func TestSupportTicketFlow(t *testing.T) {
 	}
 	bad := h.mustRPC(player, "base_support_upload_begin", map[string]any{"name": "x.exe", "size": 10})
 	h.mustRPC(player, "base_support_upload_part", map[string]any{"uploadId": bad["uploadId"], "index": 0, "data": base64.StdEncoding.EncodeToString([]byte("MZ12345678"))})
-	if code := h.rpcCode(player, "base_support_upload_finish", map[string]any{"uploadId": bad["uploadId"]}); code != "UNSUPPORTED_FILE_TYPE" {
+	if code := h.rpcCode(player, "base_support_upload_finish", map[string]any{"uploadId": bad["uploadId"]}); code != "ATTACHMENT_TYPE" {
 		t.Fatal(code)
 	}
 	if code := h.rpcCode(other, "base_support_ticket_create", map[string]any{"subject": "steal", "body": "x", "attachments": []string{att["key"].(string)}}); code != "ATTACHMENT_NOT_FOUND" {
