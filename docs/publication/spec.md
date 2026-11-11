@@ -118,3 +118,7 @@ Players sign in with a mobile number and a one-time SMS code sent through the pr
 ### Console
 
 `GET/PUT /v2/console/publication/otp/settings` (full replace; the GET also lists the SMS providers for the picker; errors `INVALID_VALUE`, `PROVIDER_NOT_FOUND`, `PROVIDER_NOT_SMS`, `OTP_MESSAGE_NEEDS_CODE`, translated-text errors) and `GET /v2/console/publication/otp?q&status&page&limit` (recent requests with username, plus `phoneAccounts` and `last24h` counts; `q` matches the number with or without `+`/leading zero; the hash is never returned). ACL `NOTIFICATION` like the rest of publication. The project settings section «ورود با پیامک» is described in `docs/base/spec.md` (Accounts).
+
+## In-app notifications from other plugins (phase 5)
+
+`internal/inapp` holds one sender that the publication plugin registers at start (`inapp.SetSender`). Base calls `inapp.Send` for support replies: the message becomes a normal `in_app` notification to the listed users (translated title and body, optional action), created by `support:<agent>`, delivered by the worker and shown in the inbox like any other. When the publication plugin is not loaded the support code only sends its live notice.

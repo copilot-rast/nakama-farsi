@@ -28,4 +28,11 @@ DELETE FROM users WHERE id IN (SELECT user_id FROM user_device WHERE id LIKE 'e2
 DELETE FROM users WHERE id IN (SELECT user_id FROM publication_phone_account WHERE phone LIKE '+98999%');
 DELETE FROM publication_otp_code WHERE phone LIKE '+98999%';
 DELETE FROM cluster_rate_limit WHERE key LIKE 'otp:%';
+DELETE FROM base_support_canned WHERE key LIKE 'e2e%';
+UPDATE base_support_ticket SET department_id=NULL WHERE department_id IN (SELECT id FROM base_support_department WHERE key LIKE 'e2e%');
+DELETE FROM base_support_department WHERE key LIKE 'e2e%';
+DELETE FROM base_config_key WHERE key LIKE 'e2e%';
+DELETE FROM base_config_history WHERE key LIKE 'e2e%';
+DELETE FROM base_support_agent WHERE username LIKE 'e2e%';
+DELETE FROM cluster_rate_limit WHERE key LIKE 'sup-%' OR key LIKE 'ref:%';
 COMMIT;

@@ -182,7 +182,7 @@ test.describe('project settings window', () => {
       await p.locator('[data-ps-entry="topbar"]').click();
       await expect(psWindow(p)).toBeVisible();
       const ids = await psWindow(p).locator('.ps-list [role="tab"]').evaluateAll((els) => els.map((e) => e.getAttribute('data-ps-section')));
-      expect(ids).toEqual(['categories', 'tags', 'events', 'payment-methods']);
+      expect(ids).toEqual(['categories', 'tags', 'events', 'referral-rules', 'payment-methods']);
       await settle(p);
       await expect(root(p).locator('table.eco-table').first()).toBeVisible();
       await p.goto(CONSOLE_URL + '/#/project-settings/sms');

@@ -20,3 +20,6 @@ select 'event rules', count(*) from economy_event_rule where key like 'e2e%';
 select 'meta rules', count(*) from economy_meta_rule where key like 'e2e%';
 select 'level tables', count(*) from economy_level_table where key like 'e2e%';
 select 'streaks', count(*) from economy_streak where key like 'e2e%';
+select 'support departments', count(*) from base_support_department where key like 'e2e%';
+select 'canned replies', count(*) from base_support_canned where key like 'e2e%';
+select 'config keys', count(*) from base_config_key where key like 'e2e%';

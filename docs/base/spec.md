@@ -249,3 +249,83 @@ Tag definitions stay under `/tags` (`HIRO_ECONOMY`); a tag of key type `user` ac
 - Native player page (`#/players/<id>`, account tab): a «برچسب‌ها و محدودیت‌ها» card above the account card with the tags («ویرایش برچسب‌ها» dialog), the current status, «تعلیق موقت», «بی‌صدا کردن», «اخطار» or «برداشتن …» buttons (ACCOUNT write) and links to the history and reports.
 - Tag editor: «بازیکن این برچسب را ببیند» for player tags; the tag list shows «دیدنی برای بازیکن» and a player count linking to the filtered player list.
 - Sidebar placement no longer depends on the native «بازیکنان» link, so a console user without `ACCOUNT` access (for example a chat moderator) still gets our sections.
+
+## Support, remote config and player activity (phase 5)
+
+Ported from asp `Modules/Base/Support` (tickets, departments, canned replies, live chat) with the same statuses, priorities, SLA timestamps and access rules; asp has no remote config and only an HTTP audit log, so those two are new here. Migrations `20261112000000-base-support.sql` and `20261112000001-base-remote-config-activity.sql` (Up re-runnable, Down raises) seed two departments (`general`, `payments`), three canned replies and the support settings row, so a deploy needs no manual step. Star Catcher seeds two config keys.
+
+### Tickets
+
+| Table | What |
+|---|---|
+| `base_support_settings` (row 1) | open tickets per player (10), new tickets per hour (6), player messages per hour (40), attachments per message (5) and size (2048 KB), auto-close days (7), live chat on/off, greeting and offline text (translated), idle close minutes (30), chat messages per minute (12), activity retention days (180) |
+| `base_support_department` | `key`, translated `name`/`description`, `first_response_hours` (SLA, 24), `agents` (console usernames; a new ticket goes to the least busy one), `is_active`, `sort` |
+| `base_support_canned` | `key`, translated `title`/`body`, optional `department_id` (null = every department), `is_active`, `sort` |
+| `base_support_ticket` | `number` (`T-` + 6 letters/digits), player, subject, department, `priority` (`low`, `normal`, `high`, `urgent`), `status` (`open`, `awaiting_staff`, `awaiting_player`, `resolved`, `closed`), `assignee`, `source` (`player`, `chat`, `staff`), counters and last message, `last_player_message_at`, `last_staff_message_at`, `player_seen_at`, `due_at`, `first_response_at`, `resolved_at`, `closed_at`, `rating` 1–5, `rating_comment`, `rated_at` |
+| `base_support_message` | `kind` (`message`, `note` = internal, `event` = audit line), `author_type` (`player`, `staff`, `system`), body (≤5000), `attachments` `[{key, name, type, size}]`, `event` (`status_changed`, `assigned`, `department_changed`, `priority_changed`, `rated`, `created_from_chat`) |
+| `base_support_upload`, `base_support_upload_part`, `base_support_file` | chunked player uploads (rows in the database until finished), then the file in `internal/objectstore` (`support/` prefix; local default `<data_dir>/support-uploads`) |
+
+Rules (from asp): a player reply keeps `open` or moves to `awaiting_staff` (reopens a solved ticket); a staff reply moves to `awaiting_player` by default, or `resolved`/`closed`, assigns the replier when nobody owns the ticket and sets `first_response_at`; a note changes nothing the player sees. Staff moves: `resolved`/`closed` from anything but closed, `awaiting_staff` (reopen) only from solved or closed, `awaiting_player` only from open or waiting for staff (`INVALID_TRANSITION`). `due_at` = last player message (or creation) + department hours while the ticket waits for staff; overdue when past. A rating is allowed once, after the ticket is solved or closed. Every node runs `supportLoop` (30 s); the node that holds the `base-support-autoclose` lease closes idle chats, and every 10 minutes closes tickets waiting for the player or solved for `auto_close_days`, removes unfinished uploads and files never attached after a day, and sweeps old activity.
+
+Attachments: png, jpg, webp and pdf found by content (`ATTACHMENT_TYPE`), at most `max_attachment_kb` (`ATTACHMENT_TOO_LARGE`) and `max_attachments` per message (`TOO_MANY_ATTACHMENTS`). Players upload in 96 KB chunks through RPCs (the RPC body limit is 256 KB); agents upload with multipart `POST /support/uploads`. Files are private: every response carries a URL `/v2/support/files/<key>?e=<unix>&s=<hmac>` signed with a key derived from `ECONOMY_SECRET_KEY` (HKDF info `support-file-url`), valid for an hour and served with `nosniff` and a sandbox CSP; a player can attach only their own files. Without `ECONOMY_SECRET_KEY` attachments are off (`ATTACHMENTS_UNAVAILABLE`).
+
+Player notification: a staff reply, solve or close sends a live notice (code 1210, `{type:"ticket", ticketId, number, event}`, not persisted) and, through `internal/inapp`, an in-app notification in the publication inbox (translated title and body, action `goto` `support/ticket/<id>`, created by `support:<agent>`).
+
+### Live support chat
+
+`base_live_chat` (one open chat per player by a partial unique index: `waiting` → `active` → `closed`) and `base_live_chat_message` (`seq` per chat; `player`, `agent` or `system` with an event: `greeting`, `accepted`, `transferred`, `closed`). `base_support_agent` keeps each console user's last heartbeat and away flag; an agent counts as online for 75 s after a heartbeat.
+
+- Take: one `UPDATE … WHERE status='waiting'`; the losers get `ALREADY_TAKEN` (409, `field` = the winner). Messages, typing and transfer need the chat to be active and owned (`NOT_YOUR_CHAT`). Transfer goes to another known agent or back to the queue, under the chat row lock, so two transfers cannot both win.
+- Close by the agent, the player or the idle sweep; «تبدیل به تیکت» makes a `chat` ticket whose first message is the transcript, assigned to the agent. The player can rate a closed chat once if an agent took it.
+- Realtime: every state lives in the database. The player gets live notices (code 1211, `{type:"chat", chatId, event: message|typing|status, seq}`) through Nakama notifications and also polls `base_support_chat_get` every 3 s while the chat screen is open. Console agents long-poll `GET /support/chats/{id}?after=<seq>&wait=15&stamp=<stamp>`: the handler re-reads the row every 600 ms and answers as soon as the stamp (last seq, status, owner, typing, online, read seq) changes, so it works on any node. Typing shows for 5 s after the last keystroke; a player counts as online for 30 s after the last chat call.
+
+### Client RPCs
+
+| RPC | Input | Output / errors |
+|---|---|---|
+| `base_support_info` | `{lang?}` | departments (translated), attachment limits and types, `chatEnabled`, `agentsOnline`, greeting and offline text, `unread` (tickets with a staff reply not seen), `openTickets`, `chatId` |
+| `base_support_tickets` | `{lang?}` | the caller's last 50 tickets, open first, with `unread` and `canRate` |
+| `base_support_ticket_create` | `{subject, departmentKey?, body, attachments?, lang?}` | the ticket with messages; `INVALID_SUBJECT`, `BODY_REQUIRED`, `DEPARTMENT_NOT_FOUND`, `TOO_MANY_OPEN_TICKETS`, `TOO_MANY_TICKETS` |
+| `base_support_ticket_get` | `{id, lang?}` | ticket and messages (no notes, no assignment events); marks it seen; `TICKET_NOT_FOUND` for someone else's ticket |
+| `base_support_ticket_reply`, `_resolve`, `_rate` | `{id, body, attachments}`, `{id}`, `{id, rating, comment}` | `TICKET_CLOSED`, `TOO_MANY_MESSAGES`, `TICKET_NOT_FINISHED`, `ALREADY_RATED`, `INVALID_RATING` |
+| `base_support_upload_begin`, `_part`, `_finish` | `{name, size}`, `{uploadId, index, data (base64 ≤96 KB)}`, `{uploadId}` | `{uploadId, chunkBytes, parts}`, `{index}`, the attachment `{key, name, type, size, url}`; `UPLOAD_NOT_FOUND`, `UPLOAD_INCOMPLETE`, `TOO_MANY_UPLOADS` (30 an hour) |
+| `base_support_chat_open`, `_get`, `_send`, `_typing`, `_close`, `_rate` | `{topic?, body?, departmentKey?}`, `{chatId?, after?}`, `{chatId, body}`, `{chatId}`, `{chatId, toTicket?}`, `{chatId, rating, comment?}` | `{chat: {id, status, agent, agentTyping, lastSeq, messages, ticketId, ticketNumber, canRate, rating}, agentsOnline}`; `CHAT_DISABLED`, `CHAT_CLOSED`, `TOO_MANY_CHATS`, `CANNOT_RATE` |
+| `base_remote_config` | `{platform?, version?, keys?, lang?}` | `{lang, values, variants, hash}` |
+| `base_my_activity` | `{limit?, kind?, before?}` | the caller's own timeline (sign-ins, purchases, prizes, events, tickets, chats, referrals, restrictions) |
+
+### Remote config
+
+`base_config_key`: `key` (`^[a-z][a-z0-9_.]{1,63}$`), `type` (`string`, `number`, `bool`, `json`, `text` = translated), `description`, default `value`, ordered `rules` `[{name, value, platforms, minVersion, maxVersion, tagIds (player tags), countries, percent}]`, `is_active`, `version`. The first rule whose conditions all fit gives its value (variant = rule name), otherwise the default (variant `default`). Country is the account's `country` (phase 2), else a `CF-IPCountry`-style header. Percent rollout uses `fnv64a(key + ":" + userId) % 10000 < percent × 100`, so a player stays in the same bucket, raising the percent only adds players, and different keys bucket independently. Every create, edit, delete and rollback writes a full snapshot to `base_config_history`; rollback restores a version as a new version (a deleted key comes back with its id). The type cannot change (`TYPE_LOCKED`). When a player's resolved values change between two full fetches, a `config/changed` activity row lists the changed `key:variant` pairs (the first fetch is not a change).
+
+### Player activity
+
+`base_activity` (one row per thing a player did or that happened to them: `kind`, `action`, `ref_id`, `data`, `actor` (`player`, `system`, `console:<name>`), `ip`, `country`, `platform`, time). Written through `internal/activity` by every plugin: sign-ins (after-hooks for device, custom, email, Google, Apple, Facebook, Steam, Game Center, and phone login in publication; platform from `X-Client-Platform` or the user agent, country from a CDN header or the account), purchases, prizes from events, levels, streaks, referrals and gift codes, level ups, restrictions and lifts, reports filed and received, tickets, live chats, referrals and config changes. Rows older than `activity_retention_days` are deleted in batches of 5000 under the `base-support-autoclose` lease.
+
+### Console API (`/v2/console/base/`)
+
+ACL: `support/*` → `ACCOUNT_NOTES` read/write (so a support agent needs no economy or player management access; the native console has no support resource, and account notes are the closest one); `remote-config*` → `SETTINGS`; `activity*` → `ACCOUNT`. Audit-logged under those resources (`take`, `transfer`, `close`, `status`, `assign` as invoke; heartbeats, typing and read marks are not logged).
+
+| Route | Notes |
+|---|---|
+| `GET /support/summary`, `POST /support/heartbeat {away?}` | badge counts (`awaitingStaff`, `waitingChats`, `overdue`, `unassigned`, `mine`, `myChats`, `agentsOnline`, `avgFirstResponseMinutes` (30 days), `avgRating`, `rated`); the heartbeat also returns them |
+| `GET /support/agents`, `GET /support/players?q` | console users with online state and open work; player search for a new ticket |
+| `support/departments`, `support/canned` CRUD, `GET/PUT /support/settings` | department delete refuses while it has open tickets (`IN_USE`) |
+| `GET /support/tickets?q&status(waiting|active|…)&priority&departmentId&assignee(me|none|name)&userId&overdue&sort(due|priority)` | list |
+| `POST /support/tickets`, `GET /support/tickets/{id}` | staff ticket for a player (`awaiting_player`, first response set); detail with notes, events and player counts |
+| `POST /support/tickets/{id}/messages {body, internal, status, attachments}`, `/status {status}`, `/assign {assignee, departmentId, priority}` | |
+| `POST /support/uploads` | multipart `file` |
+| `GET /support/chats?view(queue|mine|active|closed)&userId`, `GET /support/chats/{id}?after&wait&stamp` | queue ordered by waiting time; long poll |
+| `POST /support/chats/{id}/take`, `/messages`, `/typing`, `/read {seq}`, `/transfer {to}`, `/close {toTicket}` | |
+| `remote-config` CRUD, `GET /remote-config/history`, `GET /remote-config/{id}/history`, `POST /remote-config/{id}/rollback {version}`, `POST /remote-config/preview {userId?, platform, version, country, tagIds, lang}` | preview returns values, variants and the player's bucket per key |
+| `GET /activity?userId&kind(comma list)&action&country&platform&from&to&q`, `GET /activity/summary` | |
+
+### Console pages
+
+- New sidebar section «پشتیبانی» / "Support" (rail group with a headset icon, top-bar tabs, Ctrl K page search; badges: tickets waiting for staff, chats in the queue):
+  - «تیکت‌ها» (`#/support/tickets[/<id>]`): stat strip (waiting, overdue, unassigned, mine, average first answer, average rating), filters, «تیکت تازه» dialog with a player search. The ticket page shows the thread (player and staff bubbles, yellow internal notes, event lines, attachments with previews), the composer (canned reply picker in the ticket language, attachment, «یادداشت داخلی», status after the reply), and a side card (player links, status moves, owner, «خودم برمی‌دارم», department, priority, SLA times, rating, the chat it came from).
+  - «گفتگوی زنده» (`#/support/live-chat[/<id>]`): «آمادهٔ جواب دادن» switch (heartbeat with away), views queue / mine / all / closed refreshed every 4 s with waiting time, unread counts and «برداشتن»; the conversation with online dot, typing dots, composer with canned replies, «سپردن به همکار» (agent list or back to the queue) and «بستن گفتگو» with «گفتگو به تیکت تبدیل شود».
+- «فعالیت بازیکنان» (`#/moderation/activity`, `ACCOUNT`): kind, player, platform, country and date filters, search, one row per activity with a translated sentence, where (country, platform, IP) and who.
+- «پیکربندی بازی» (`#/publication/remote-config[/<id>]`, `SETTINGS`): key list with value preview, rule count and version, recent changes; the editor has the typed value input, the rule list (name, share of players, platforms, version range, player tags, countries, value; reorder), history with «برگشت به این نسخه» and «امتحان برای یک بازیکن».
+- Project settings: «بخش‌های پشتیبانی», «پاسخ‌های آماده», «تنظیمات پشتیبانی» (`ACCOUNT_NOTES`).
+- Native player page: «فعالیت اخیر» card (last eight items, kind chips, links to the full log and the player's tickets).
+- Economy and publication pages now need `HIRO_ECONOMY` / `NOTIFICATION` read to show in the sidebar (they were shown to everyone and answered 403), so a support agent sees only «پشتیبانی».

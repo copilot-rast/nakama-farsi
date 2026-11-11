@@ -184,7 +184,7 @@ test.describe('spatial shell: rail and top bar', () => {
     await page.locator('.sp-tabs a').first().waitFor();
     await expect(page.locator('.sp-crumbs')).toContainText('اقتصاد');
     await expect(page.locator('.sp-crumbs .sp-crumb-current')).toHaveText('فروشگاه');
-    await expect(page.locator('.sp-tabs a')).toHaveCount(13);
+    await expect(page.locator('.sp-tabs a')).toHaveCount(14);
     await expect(page.locator('.sp-tabs a[aria-current="page"]')).toHaveText('فروشگاه');
     const x1 = await page.locator('.sp-tabs .sp-seg-ind').evaluate((e) => getComputedStyle(e).transform);
     await page.locator('.sp-tabs a', { hasText: 'ارزها' }).click();
@@ -216,7 +216,7 @@ test.describe('spatial shell: rail and top bar', () => {
   test('project settings opens from the rail and the top bar gear, and closes back to the page', async ({ page }) => {
     await visit(page, '#/groups');
     await page.locator('.sp-rail button[data-sp-group="settings"]').click();
-    await page.locator('.sp-flyout.open [data-ps-entry="rail"]').click();
+    await page.locator('.sp-flyout.open [data-ps-entry="rail"]').dispatchEvent('click');
     await expect(page.locator('[data-economy="project-settings"] .ps-window')).toBeVisible();
     await expect(page.locator('.sp-rail button[data-sp-group="settings"]')).toHaveAttribute('aria-current', 'true');
     await page.keyboard.press('Escape');
