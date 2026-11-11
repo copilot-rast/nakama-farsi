@@ -86,7 +86,7 @@ function replaceHash(hash) {
 }
 
 function parseRoute(hash) {
-  var m = /^#\/(economy|publication|moderation|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(economy|publication|moderation|support|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
   var page;
@@ -108,12 +108,12 @@ function parseRoute(hash) {
 
 function keyOf(r) {
   if (!r) return '';
-  var detail = (r.page === 'payments' || r.page === 'notifications' || r.page === 'reports') && r.id ? '/' + r.id : '';
+  var detail = (r.page === 'payments' || r.page === 'notifications' || r.page === 'reports' || r.page === 'tickets' || r.page === 'live-chat' || r.page === 'remote-config' || r.page === 'referrals') && r.id ? '/' + r.id : '';
   return lang() + '|' + r.page + detail + '|' + JSON.stringify(r.query);
 }
 
 function navPages(section) {
-  return SECTIONS[section].filter(function (p) { return !PAGE_ACL[p] || aclCan(PAGE_ACL[p], 0); });
+  return SECTIONS[section].filter(function (p) { var need = PAGE_ACL[p] || SECTION_ACL[section]; return !need || aclCan(need, 0); });
 }
 
 function buildNav(section, collapsed, active) {
@@ -169,7 +169,7 @@ function syncSidebar(route, psOn) {
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
     var collapsed = isCollapsed(a);
-    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + pendingReports + '|' + JSON.stringify(lastQuery) + '|' + token();
+    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + pendingReports + '|' + supportBadgeKey() + '|' + JSON.stringify(lastQuery) + '|' + token();
     var prev = group;
     for (var si = 0; si < SECTION_ORDER.length; si++) {
       if (!navPages(SECTION_ORDER[si]).length) continue;
@@ -180,6 +180,7 @@ function syncSidebar(route, psOn) {
     if (psNav) keep.push(psNav);
     refreshBadge(false);
     refreshReportBadge(false);
+    refreshSupportBadge(false);
     var vueActive = group.parentElement.querySelectorAll('a[aria-current="page"]:not([data-economy-page])');
     for (var j = 0; j < vueActive.length && (active || psOn); j++) {
       if (vueActive[j].getAttribute('href') === '#/') vueActive[j].setAttribute('data-economy-dimmed', '');
@@ -212,7 +213,15 @@ function mountPage(root, route, ctl) {
   if (ps2) { ctl.list = ps2.render(root, route, ctx) || null; return; }
   if (route.page === 'comments') refreshBadge(true);
   if (route.page === 'reports') refreshReportBadge(true);
+  if (route.page === 'tickets' || route.page === 'live-chat') { refreshSupportBadge(true); supportBeat(); }
   if (route.page === 'overview') overviewPage(root);
+  else if (route.page === 'tickets' && route.id) ticketDetail(root, route.id);
+  else if (route.page === 'tickets') ctl.list = ticketsPage(root, route.query, ctx);
+  else if (route.page === 'live-chat') liveChatPage(root, route.id, route.query);
+  else if (route.page === 'activity') ctl.list = activityPage(root, route.query, ctx);
+  else if (route.page === 'referrals') ctl.list = referralsPage(root, route.query, ctx);
+  else if (route.page === 'remote-config' && route.id) configEditor(root, route.id, route.query);
+  else if (route.page === 'remote-config') ctl.list = configPage(root, route.query, ctx);
   else if (route.page === 'reports' && route.id) reportDetail(root, route.id);
   else if (route.page === 'players') ctl.list = playersPage(root, route.query, ctx);
   else if (route.page === 'restrictions') ctl.list = restrictionsPage(root, route.query, ctx);
@@ -401,7 +410,7 @@ function consoleSections() {
     return {
       id: sec,
       label: t(SECTION_LABEL[sec]),
-      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : 0 }; })
+      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : supportBadge(p) }; })
     };
   });
 }
@@ -412,7 +421,7 @@ window.NakamaConsole = {
   lang: function () { return lang(); },
   t: function (key, vars) { return t(key, vars); },
   sections: consoleSections,
-  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0 }; },
+  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0, tickets: supportBadge('tickets'), chats: supportBadge('live-chat') }; },
   onRoute: function (fn) {
     if (typeof fn !== 'function') return function () {};
     routeHooks.push(fn);
@@ -434,7 +443,7 @@ window.NakamaConsole = {
   isDark: function () { return isDarkTheme(); }
 };
 
-if (legacyHash(location.hash) || /^#\/(economy|publication|moderation|project-settings)(\/|\?|$)/.test(location.hash)) {
+if (legacyHash(location.hash) || /^#\/(economy|publication|moderation|support|project-settings)(\/|\?|$)/.test(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }

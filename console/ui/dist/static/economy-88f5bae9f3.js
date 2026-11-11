@@ -1436,7 +1436,489 @@ var MESSAGES = {
     'ov.events': 'رویدادها و جایزه‌ها',
     'ov.eventsToday': 'رویدادهای ۲۴ ساعت اخیر',
     'ov.claimsReady': 'جایزه‌های منتظر',
-    'ov.claimsFailed': 'جایزه‌های ناموفق'
+    'ov.claimsFailed': 'جایزه‌های ناموفق',
+    'section.sup': "پشتیبانی",
+    'section.sup.short': "پشتیبانی",
+    'nav.tickets': "تیکت‌ها",
+    'nav.live-chat': "گفتگوی زنده",
+    'nav.activity': "فعالیت بازیکنان",
+    'nav.referrals': "کدهای معرف",
+    'nav.remote-config': "پیکربندی بازی",
+    'desc.tickets': "درخواست‌های پشتیبانی بازیکنان؛ تیکت‌های منتظر پاسخ اول نشان داده می‌شوند.",
+    'desc.live-chat': "صف گفتگوها و گفتگوهای شما. یک گفتگو را بردارید تا به بازیکن جواب بدهید.",
+    'desc.activity': "سابقهٔ کارهای هر بازیکن: ورود، خرید، جایزه، تیکت، محدودیت و بقیه.",
+    'desc.referrals': "چه کسی چه کسی را دعوت کرده، وضعیت جایزه‌ها و موردهای مشکوک.",
+    'desc.remote-config': "مقدارهایی که بازی هنگام اجرا می‌خواند؛ برای هر پلتفرم، نسخه، برچسب یا درصدی از بازیکنان جدا تنظیم می‌شوند.",
+    'desc.remote-config.edit': "مقدار پیش‌فرض و قانون‌ها را تنظیم کنید. اولین قانونی که به بازیکن بخورد برنده است.",
+    'desc.support-departments': "بخش‌هایی که بازیکن هنگام ساختن تیکت انتخاب می‌کند.",
+    'desc.support-canned': "متن‌های آماده که پشتیبان با یک کلیک در پاسخ می‌گذارد.",
+    'desc.support-settings': "محدودیت‌های تیکت، گفتگوی زنده و مدت نگه‌داشتن سابقهٔ فعالیت.",
+    'desc.referral-rules': "جایزهٔ دعوت‌کننده و دعوت‌شده، شرط گرفتن جایزه و قانون‌های جلوگیری از سوءاستفاده.",
+    'tab.support-departments': "بخش‌های پشتیبانی",
+    'tab.support-canned': "پاسخ‌های آماده",
+    'tab.support-settings': "تنظیمات پشتیبانی",
+    'tab.referral-rules': "قوانین معرف",
+    'new.support-departments': "بخش تازه",
+    'edit.support-departments': "ویرایش بخش",
+    'new.support-canned': "پاسخ آمادهٔ تازه",
+    'edit.support-canned': "ویرایش پاسخ آماده",
+    'empty.hint.support-departments': "یک بخش بسازید تا بازیکنان تیکت بفرستند.",
+    'empty.hint.support-canned': "یک پاسخ آماده بسازید تا سریع‌تر جواب بدهید.",
+    'empty.hint.tickets': "تیکتی با این وضعیت نیست.",
+    'empty.hint.activity': "هنوز فعالیتی ثبت نشده است.",
+    'empty.hint.referrals': "هنوز کسی کد معرف وارد نکرده است.",
+    'empty.hint.remote-config': "یک کلید بسازید تا بازی آن را بخواند.",
+    'search.tickets': "جست‌وجوی شماره، موضوع یا نام بازیکن",
+    'search.activity': "جست‌وجو در شماره، آی‌پی یا جزئیات",
+    'search.referrals': "جست‌وجوی نام بازیکن یا کد",
+    'search.remote-config': "جست‌وجوی کلید یا توضیح",
+    'tk.waitingN': "{n} تیکت منتظر پاسخ",
+    'lc.waitingN': "{n} گفتگو در صف",
+    'tk.status.open': "تازه",
+    'tk.status.awaiting_staff': "منتظر پشتیبانی",
+    'tk.status.awaiting_player': "منتظر بازیکن",
+    'tk.status.resolved': "حل شده",
+    'tk.status.closed': "بسته",
+    'tk.priority': "اولویت",
+    'tk.priority.low': "کم",
+    'tk.priority.normal': "معمولی",
+    'tk.priority.high': "زیاد",
+    'tk.priority.urgent': "فوری",
+    'tk.filter.waiting': "منتظر پاسخ ما",
+    'tk.filter.active': "همهٔ باز‌ها",
+    'tk.mine': "مال من",
+    'tk.unassigned': "بی‌مسئول",
+    'tk.overdue': "دیر شده",
+    'tk.overdueOnly': "فقط دیرشده‌ها",
+    'tk.by.player': "آخرین پیام از بازیکن",
+    'tk.by.staff': "آخرین پیام از پشتیبانی",
+    'tk.stat.waiting': "منتظر پاسخ",
+    'tk.stat.overdue': "دیر شده",
+    'tk.stat.unassigned': "بی‌مسئول",
+    'tk.stat.mine': "مال من",
+    'tk.stat.firstResponse': "میانگین اولین پاسخ",
+    'tk.stat.30days': "در ۳۰ روز گذشته",
+    'tk.stat.rating': "میانگین رضایت",
+    'tk.stat.rated': "{n} امتیاز",
+    'tk.new': "تیکت تازه",
+    'tk.new.text': "برای بازیکنی که از راه دیگری تماس گرفته، تیکت بسازید. پیام شما اولین پیام تیکت است.",
+    'tk.new.ok': "ساختن و فرستادن",
+    'tk.new.hint': "بازیکن این پیام را می‌بیند و اعلان می‌گیرد.",
+    'tk.pickPlayer': "بازیکن را پیدا کنید",
+    'tk.subject': "موضوع",
+    'tk.message': "پیام",
+    'tk.detail': "تیکت",
+    'tk.player': "بازیکن",
+    'tk.staff': "پشتیبانی",
+    'tk.system': "سیستم",
+    'tk.note': "یادداشت داخلی",
+    'tk.note.by': "یادداشت {name}",
+    'tk.reply': "پاسخ",
+    'tk.reply.ph': "پاسخ را بنویسید… (Ctrl+Enter برای فرستادن)",
+    'tk.note.ph': "یادداشتی برای همکاران بنویسید…",
+    'tk.canned': "پاسخ آماده",
+    'tk.canned.pick': "گذاشتن پاسخ آماده…",
+    'tk.canned.none': "پاسخ آماده‌ای نیست",
+    'tk.attach': "پیوست",
+    'tk.uploading': "در حال بارگذاری…",
+    'tk.internal': "یادداشت داخلی (بازیکن نمی‌بیند)",
+    'tk.send': "فرستادن",
+    'tk.saveNote': "ذخیرهٔ یادداشت",
+    'tk.after': "بعد از پاسخ",
+    'tk.after.awaiting_player': "منتظر بازیکن",
+    'tk.after.resolved': "حل شد",
+    'tk.after.closed': "بستن",
+    'tk.sent': "پاسخ فرستاده شد و بازیکن اعلان گرفت.",
+    'tk.noteSaved': "یادداشت ذخیره شد.",
+    'tk.closedNote': "این تیکت بسته است. بازیکن دیگر نمی‌تواند پاسخ بدهد؛ شما می‌توانید یادداشت بگذارید یا آن را دوباره باز کنید.",
+    'tk.move.resolved': "حل شد",
+    'tk.move.closed': "بستن تیکت",
+    'tk.move.awaiting_staff': "باز کردن دوباره",
+    'tk.moved': "وضعیت تیکت عوض شد.",
+    'tk.assigned': "مسئول تیکت عوض شد.",
+    'tk.takeIt': "خودم برمی‌دارم",
+    'tk.playerCounts': "{tickets} تیکت · {chats} گفتگو",
+    'tk.playerTickets': "تیکت‌های این بازیکن",
+    'tk.times': "زمان‌ها",
+    'tk.created': "ساخته شده",
+    'tk.due': "مهلت پاسخ",
+    'tk.firstResponse': "اولین پاسخ",
+    'tk.notYet': "هنوز نه",
+    'tk.resolvedAt': "حل شده در",
+    'tk.closedAt': "بسته شده در",
+    'tk.rating': "رضایت بازیکن",
+    'tk.ratingN': "{n} از ۵",
+    'tk.fromChat': "از گفتگوی زنده",
+    'tk.openChat': "دیدن گفتگو",
+    'tk.source.chat': "از گفتگوی زنده",
+    'tk.source.staff': "ساختهٔ پشتیبانی",
+    'tk.ev.status_changed': "{who}: {from} ← {to}",
+    'tk.ev.status_changed.auto': "بستن خودکار پس از چند روز بی‌پاسخی",
+    'tk.ev.assigned': "{who} تیکت را به {to} داد",
+    'tk.ev.assigned.auto': "تیکت خودکار به {to} رسید",
+    'tk.ev.assigned.none': "{who} مسئول تیکت را برداشت",
+    'tk.ev.department_changed': "{who} بخش تیکت را عوض کرد",
+    'tk.ev.priority_changed': "{who} اولویت را {to} کرد",
+    'tk.ev.rated': "بازیکن {n} از ۵ امتیاز داد",
+    'tk.ev.created_from_chat': "این تیکت از یک گفتگوی زنده ساخته شد",
+    'col.subject': "موضوع",
+    'col.assignee': "مسئول",
+    'col.department': "بخش",
+    'col.lastMessage': "آخرین پیام",
+    'col.firstResponse': "مهلت اولین پاسخ",
+    'col.agents': "پشتیبان‌ها",
+    'col.open': "باز",
+    'col.what': "چه شد",
+    'col.where': "کجا",
+    'col.referral': "دعوت‌کننده ← دعوت‌شده",
+    'col.goal': "شرط جایزه",
+    'col.value': "مقدار",
+    'col.rules': "قانون‌ها",
+    'col.version': "نسخه",
+    'filter.priority': "اولویت",
+    'filter.assignee': "مسئول",
+    'filter.department': "بخش",
+    'filter.overdue': "مهلت",
+    'filter.platform': "پلتفرم",
+    'filter.country': "کد کشور",
+    'filter.from': "از تاریخ (۲۰۲۶-۱۱-۰۱)",
+    'filter.to': "تا تاریخ",
+    'filter.flagged': "مشکوک",
+    'filter.referrerId': "شناسهٔ دعوت‌کننده",
+    'filter.type': "نوع",
+    'dur.minutes': "{n} دقیقه",
+    'size.b': "{n} بایت",
+    'size.kb': "{n} کیلوبایت",
+    'size.mb': "{n} مگابایت",
+    'lc.queue': "صف انتظار",
+    'lc.mine': "گفتگوهای من",
+    'lc.all': "همه",
+    'lc.closed': "بسته‌شده‌ها",
+    'lc.views': "نمایش گفتگوها",
+    'lc.available': "آمادهٔ جواب دادن",
+    'lc.nowOnline': "شما آنلاین هستید و بازیکنان را می‌بینید.",
+    'lc.nowAway': "شما دور از دسترس هستید.",
+    'lc.empty.queue': "کسی در صف نیست",
+    'lc.empty.queue.hint': "گفتگوهای تازه اینجا می‌آیند.",
+    'lc.empty.mine': "گفتگوی بازی ندارید",
+    'lc.empty.all': "گفتگوی بازی نیست",
+    'lc.empty.closed': "گفتگوی بسته‌ای نیست",
+    'lc.take': "برداشتن",
+    'lc.taken': "گفتگو مال شما شد.",
+    'lc.pick': "یک گفتگو را انتخاب کنید",
+    'lc.pick.hint': "از صف یکی را بردارید تا شروع کنید.",
+    'lc.waitSec': "{n} ثانیه در صف",
+    'lc.waitMin': "{n} دقیقه در صف",
+    'lc.typing': "در حال نوشتن…",
+    'lc.playerTypingNow': "بازیکن دارد می‌نویسد…",
+    'lc.playerOnline': "بازیکن آنلاین است",
+    'lc.playerOffline': "بازیکن آنلاین نیست",
+    'lc.online': "آنلاین",
+    'lc.offline': "آفلاین",
+    'lc.activeN': "{n} گفتگوی باز",
+    'lc.status.waiting': "در صف",
+    'lc.status.active': "در جریان",
+    'lc.status.closed': "بسته",
+    'lc.withAgent': "با {name}",
+    'lc.ticketN': "تیکت {n}",
+    'lc.reply.ph': "پیام را بنویسید… (Ctrl+Enter برای فرستادن)",
+    'lc.someoneElse': "این گفتگو دست {name} است.",
+    'lc.closedNote': "این گفتگو بسته شده است.",
+    'lc.closedRated': "گفتگو بسته شد. بازیکن {n} از ۵ امتیاز داد.",
+    'lc.transfer': "سپردن به همکار",
+    'lc.transfer.text': "گفتگو را به یک همکار بدهید یا به صف برگردانید.",
+    'lc.transfer.ok': "سپردن",
+    'lc.transferTo': "به چه کسی",
+    'lc.backToQueue': "برگرداندن به صف",
+    'lc.transferred': "گفتگو سپرده شد.",
+    'lc.close': "بستن گفتگو",
+    'lc.close.title': "این گفتگو بسته شود؟",
+    'lc.close.text': "بازیکن پیامی می‌بیند که گفتگو بسته شد و می‌تواند امتیاز بدهد.",
+    'lc.toTicket': "گفتگو به تیکت تبدیل شود",
+    'lc.toTicket.hint': "متن گفتگو در یک تیکت تازه می‌ماند تا بعداً پیگیری شود.",
+    'lc.closedDone': "گفتگو بسته شد.",
+    'lc.closedTicket': "گفتگو بسته شد و تیکت {n} ساخته شد.",
+    'lc.ev.accepted': "{agent} گفتگو را برداشت",
+    'lc.ev.transferred': "گفتگو از {from} به {to} رسید",
+    'lc.ev.closed': "گفتگو بسته شد ({by})",
+    'lc.ev.note': "پیام سیستم",
+    'code.ALREADY_TAKEN': "این گفتگو را {name} زودتر برداشت.",
+    'code.NOT_YOUR_CHAT': "این گفتگو دست همکار دیگری است.",
+    'code.CHAT_CLOSED': "این گفتگو بسته شده است.",
+    'code.CHAT_EMPTY': "گفتگو هنوز پیامی ندارد که تیکت شود.",
+    'code.CHAT_NOT_FOUND': "گفتگو پیدا نشد.",
+    'code.TICKET_NOT_FOUND': "تیکت پیدا نشد.",
+    'code.TICKET_CLOSED': "این تیکت بسته است.",
+    'code.INVALID_TRANSITION': "این تغییر وضعیت ممکن نیست.",
+    'code.INVALID_PRIORITY': "اولویت معتبر نیست.",
+    'code.INVALID_SUBJECT': "موضوع ۱ تا ۱۵۰ حرف است.",
+    'code.BODY_REQUIRED': "پیام را بنویسید.",
+    'code.BODY_TOO_LONG': "پیام خیلی بلند است.",
+    'code.ATTACHMENT_NOT_FOUND': "پیوست پیدا نشد.",
+    'code.TOO_MANY_ATTACHMENTS': "پیوست‌ها از حد مجاز بیشتر است.",
+    'code.ATTACHMENT_TOO_LARGE': "فایل بزرگ‌تر از حد مجاز است.",
+    'code.ATTACHMENT_TYPE': "فقط عکس png، jpg، webp و فایل pdf مجاز است.",
+    'code.ATTACHMENTS_UNAVAILABLE': "پیوست فعلاً در دسترس نیست.",
+    'code.DEPARTMENT_NOT_FOUND': "این بخش پیدا نشد.",
+    'code.INVALID_AGENT': "این همکار پیدا نشد.",
+    'code.TOO_MANY_AGENTS': "حداکثر ۵۰ پشتیبان در هر بخش.",
+    'code.INVALID_JSON': "متن JSON درست نیست.",
+    'code.INVALID_PERCENT': "درصد بین ۰ تا ۱۰۰ است.",
+    'code.VALUE_REQUIRED': "مقدار لازم است.",
+    'code.VALUE_TOO_LONG': "مقدار خیلی بلند است.",
+    'code.TOO_MANY_RULES': "حداکثر ۲۰ قانون.",
+    'code.INVALID_RULE_NAME': "نام قانون کوتاه، با حروف کوچک انگلیسی و غیر از default باشد.",
+    'code.DUPLICATE_RULE_NAME': "نام قانون‌ها باید فرق کند.",
+    'code.MIN_ABOVE_MAX': "کمترین نسخه از بیشترین نسخه بالاتر است.",
+    'code.TYPE_LOCKED': "نوع کلید عوض نمی‌شود؛ یک کلید تازه بسازید.",
+    'code.VERSION_NOT_FOUND': "این نسخه در تاریخچه نیست.",
+    'code.DESCRIPTION_TOO_LONG': "توضیح حداکثر ۵۰۰ حرف است.",
+    'code.REFERRAL_NOT_FOUND': "این دعوت پیدا نشد.",
+    'code.REFERRAL_DECIDED': "دربارهٔ این دعوت قبلاً تصمیم گرفته شده است.",
+    'code.NOT_HELD': "فقط دعوت‌های نگه‌داشته‌شده تأیید می‌خواهند.",
+    'dp.everyone': "همه",
+    'cn.allDepts': "همهٔ بخش‌ها",
+    'f.dp.key.hint': "شناسهٔ ثابت بخش، مثل payments.",
+    'f.dp.name': "نام بخش",
+    'f.dp.name.hint': "بازیکن این نام را در فرم تیکت می‌بیند.",
+    'f.dp.description': "توضیح",
+    'f.dp.description.hint': "یک جمله که بگوید چه سؤال‌هایی به این بخش می‌آید.",
+    'f.dp.hours': "مهلت اولین پاسخ (ساعت)",
+    'f.dp.hours.hint': "تیکت بعد از این مدت بی‌پاسخ «دیر شده» می‌شود.",
+    'f.dp.agents': "پشتیبان‌های این بخش",
+    'f.dp.agents.hint': "تیکت تازه خودکار به کم‌کارترین نفر از این فهرست می‌رسد. خالی یعنی بدون تقسیم خودکار.",
+    'f.dp.active.hint': "بخش خاموش در فرم بازیکن نشان داده نمی‌شود.",
+    'f.cn.key.hint': "شناسهٔ ثابت، مثل greeting.",
+    'f.cn.title': "عنوان",
+    'f.cn.title.hint': "فقط پشتیبان‌ها این عنوان را می‌بینند.",
+    'f.cn.body': "متن پاسخ",
+    'f.cn.body.hint': "به زبان تیکت در پاسخ گذاشته می‌شود؛ قبل از فرستادن می‌توانید آن را عوض کنید.",
+    'f.cn.department': "فقط برای بخش",
+    'f.cn.department.hint': "خالی یعنی برای همهٔ بخش‌ها.",
+    'f.cn.active.hint': "پاسخ خاموش در فهرست پاسخ‌ها نمی‌آید.",
+    'ss.tickets': "تیکت‌ها",
+    'ss.chat': "گفتگوی زنده",
+    'ss.activity': "سابقهٔ فعالیت",
+    'f.ss.maxOpen': "حداکثر تیکت باز هر بازیکن",
+    'f.ss.maxOpen.hint': "بعد از این تعداد، بازیکن باید یکی را ببندد.",
+    'f.ss.perHour': "تیکت تازه در هر ساعت",
+    'f.ss.perHour.hint': "جلوی فرستادن پشت‌سرهم را می‌گیرد.",
+    'f.ss.messages': "پیام در هر ساعت",
+    'f.ss.messages.hint': "برای پاسخ‌های بازیکن در همهٔ تیکت‌ها.",
+    'f.ss.autoClose': "بستن خودکار پس از (روز)",
+    'f.ss.autoClose.hint': "تیکت منتظر بازیکن یا حل‌شده بعد از این مدت بسته می‌شود.",
+    'f.ss.attachments': "حداکثر پیوست هر پیام",
+    'f.ss.attachments.hint': "۰ یعنی بدون پیوست.",
+    'f.ss.attachmentKb': "حجم هر پیوست (کیلوبایت)",
+    'f.ss.attachmentKb.hint': "فقط png، jpg، webp و pdf.",
+    'f.ss.chatEnabled': "گفتگوی زنده روشن باشد",
+    'f.ss.chatEnabled.hint': "خاموش باشد، بازیکن فقط تیکت می‌فرستد.",
+    'f.ss.greeting': "پیام خوش‌آمد",
+    'f.ss.greeting.hint': "اول هر گفتگو برای بازیکن نوشته می‌شود.",
+    'f.ss.offline': "پیام وقتی کسی آنلاین نیست",
+    'f.ss.offline.hint': "وقتی هیچ پشتیبانی آنلاین نیست، به بازیکن نشان داده می‌شود.",
+    'f.ss.idle': "بستن گفتگوی بی‌حرکت پس از (دقیقه)",
+    'f.ss.idle.hint': "وقتی نه پیامی آمده و نه بازیکن در صفحه است.",
+    'f.ss.chatRate': "پیام بازیکن در هر دقیقه",
+    'f.ss.chatRate.hint': "جلوی پیام‌های پشت‌سرهم را می‌گیرد.",
+    'f.ss.retention': "نگه‌داشتن سابقهٔ فعالیت (روز)",
+    'f.ss.retention.hint': "فعالیت‌های قدیمی‌تر هر چند دقیقه یک بار پاک می‌شوند.",
+    'act.signin': "ورود",
+    'act.purchase': "خرید",
+    'act.prize': "جایزه",
+    'act.event': "رویداد",
+    'act.restriction': "محدودیت",
+    'act.report': "گزارش",
+    'act.ticket': "تیکت",
+    'act.chat': "گفتگوی پشتیبانی",
+    'act.referral': "معرف",
+    'act.config': "پیکربندی",
+    'act.method.device': "دستگاه",
+    'act.method.custom': "شناسهٔ اختصاصی",
+    'act.method.email': "ایمیل",
+    'act.method.phone': "شمارهٔ موبایل",
+    'act.method.google': "گوگل",
+    'act.method.apple': "اپل",
+    'act.method.facebook': "فیس‌بوک",
+    'act.method.steam': "استیم",
+    'act.method.gamecenter': "گیم‌سنتر",
+    'act.signin.device': "با {method} وارد شد",
+    'act.signin.custom': "با {method} وارد شد",
+    'act.signin.email': "با {method} وارد شد",
+    'act.signin.phone': "با {method} وارد شد",
+    'act.signin.google': "با {method} وارد شد",
+    'act.signin.apple': "با {method} وارد شد",
+    'act.signin.facebook': "با {method} وارد شد",
+    'act.signin.steam': "با {method} وارد شد",
+    'act.signin.gamecenter': "با {method} وارد شد",
+    'act.purchase.completed': "خرید {productKey} با {method}",
+    'act.prize.granted': "جایزهٔ {prize} را گرفت",
+    'act.prize.gift_redeemed': "کد هدیهٔ {code} را وارد کرد",
+    'act.event.level_up': "به سطح {to} رسید",
+    'act.restriction.suspend': "تعلیق شد تا {endsAt}",
+    'act.restriction.mute': "بی‌صدا شد تا {endsAt}",
+    'act.restriction.warn': "اخطار گرفت",
+    'act.restriction.lifted': "{kind} برداشته شد",
+    'act.report.filed': "یک پیام را گزارش کرد",
+    'act.report.received': "پیامش گزارش شد",
+    'act.ticket.created': "تیکت {number} را ساخت: {subject}",
+    'act.ticket.created_by_staff': "پشتیبانی تیکت {number} را برایش ساخت",
+    'act.ticket.staff_reply': "پشتیبانی به تیکت {number} پاسخ داد",
+    'act.ticket.resolved': "تیکت {number} حل شد",
+    'act.ticket.closed': "تیکت {number} بسته شد",
+    'act.ticket.resolved_by_player': "خودش تیکت {number} را حل‌شده زد",
+    'act.ticket.rated': "به تیکت {number} امتیاز {rating} داد",
+    'act.chat.opened': "گفتگوی زنده باز کرد",
+    'act.chat.taken': "{agent} گفتگو را برداشت",
+    'act.chat.transferred': "گفتگو از {from} به {to} رسید",
+    'act.chat.closed': "گفتگوی زنده بسته شد",
+    'act.referral.entered': "کد معرف {referrer} را وارد کرد",
+    'act.referral.joined': "{referee} با کد او آمد",
+    'act.referral.completed': "شرط معرف کامل شد",
+    'act.referral.approved': "دعوت تأیید شد",
+    'act.referral.rejected': "دعوت رد شد",
+    'act.config.changed': "پیکربندی بازی برایش عوض شد: {variants}",
+    'act.actor.player': "خود بازیکن",
+    'act.actor.system': "سیستم",
+    'act.actor.console': "کنسول ({name})",
+    'act.open': "باز کردن",
+    'act.all': "همهٔ فعالیت‌ها",
+    'act.card': "فعالیت اخیر",
+    'act.empty': "فعالیتی نیست.",
+    'act.playerLink': "فعالیت‌های این بازیکن",
+    'act.retention': "سابقه {n} روز نگه داشته می‌شود.",
+    'pf.android': "اندروید",
+    'pf.ios': "iOS",
+    'pf.web': "وب",
+    'pf.windows': "ویندوز",
+    'pf.macos': "مک",
+    'pf.linux': "لینوکس",
+    'rf.status.pending': "منتظر شرط",
+    'rf.status.held': "نگه‌داشته",
+    'rf.status.completed': "کامل",
+    'rf.status.rejected': "رد شده",
+    'rf.flag.burst': "دعوت زیاد در یک روز",
+    'rf.flag.same_ip': "آی‌پی مشترک با دعوت‌کننده",
+    'rf.flag.ip_burst': "چند دعوت از یک آی‌پی",
+    'rf.flag.shared_device': "دستگاه تکراری",
+    'rf.flag.shared_phone': "شمارهٔ تکراری",
+    'rf.flaggedOnly': "فقط مشکوک‌ها",
+    'rf.noGoal': "بدون شرط",
+    'rf.progress': "{n} از {total}",
+    'rf.tree': "درخت دعوت",
+    'rf.tree.title': "درخت دعوت",
+    'rf.tree.up': "دعوت‌کننده‌ها",
+    'rf.tree.down': "{n} نفر را دعوت کرده",
+    'rf.tree.more': "{n} دعوت",
+    'rf.tree.none': "هنوز کسی را دعوت نکرده است.",
+    'rf.approve': "تأیید",
+    'rf.reject': "رد",
+    'rf.approve.title': "این دعوت تأیید شود؟",
+    'rf.approve.text': "دعوت {from} از {to}. بعد از تأیید، اگر شرط کامل باشد، جایزه‌ها داده می‌شوند.",
+    'rf.approve.done': "دعوت تأیید شد.",
+    'rf.reject.title': "این دعوت رد شود؟",
+    'rf.reject.text': "دعوت {from} از {to} رد می‌شود و جایزه‌ای داده نمی‌شود.",
+    'rf.reject.done': "دعوت رد شد.",
+    'rf.stat.total': "همهٔ دعوت‌ها",
+    'rf.stat.today': "{n} در ۲۴ ساعت گذشته",
+    'rf.stat.flagged': "{n} مشکوک",
+    'rf.top': "بیشترین دعوت‌ها",
+    'rf.top.line': "{n} دعوت · {done} کامل",
+    'rf.top.flagged': "{n} مشکوک",
+    'claim.kind.referral': "معرف",
+    'rr.rewards': "جایزه‌ها",
+    'rr.rules': "قانون‌ها",
+    'rr.measure.count': "تعداد بار",
+    'rr.measure.sum': "جمع مقدار",
+    'rr.measure.max': "بیشترین مقدار",
+    'f.rr.enabled': "کد معرف روشن باشد",
+    'f.rr.enabled.hint': "خاموش باشد، بازیکن نمی‌تواند کد وارد کند.",
+    'f.rr.referrerPrize': "جایزهٔ دعوت‌کننده",
+    'f.rr.referrerPrize.hint': "وقتی دوستش شرط را کامل کند.",
+    'f.rr.refereePrize': "جایزهٔ دعوت‌شده",
+    'f.rr.refereePrize.hint': "برای بازیکنی که کد را وارد کرده است.",
+    'f.rr.goal': "رویداد شرط",
+    'f.rr.goal.hint': "جایزه‌ها بعد از این رویداد داده می‌شوند. خالی یعنی همان لحظهٔ وارد کردن کد.",
+    'f.rr.measure': "سنجه",
+    'f.rr.goalValue': "مقدار لازم",
+    'f.rr.goalValue.hint': "مثلاً ۳ یعنی سه بار انجام رویداد.",
+    'f.rr.days': "فقط حساب‌های تازه (روز)",
+    'f.rr.days.hint': "بازیکن تا این چند روز بعد از ساختن حساب می‌تواند کد وارد کند. ۰ یعنی بدون محدودیت.",
+    'f.rr.max': "حداکثر دعوت هر بازیکن",
+    'f.rr.max.hint': "بعد از این تعداد، کد او دیگر پذیرفته نمی‌شود.",
+    'f.rr.daily': "دعوت عادی در روز",
+    'f.rr.daily.hint': "بیشتر از این، دعوت مشکوک علامت می‌خورد.",
+    'f.rr.device': "یک دعوت برای هر دستگاه",
+    'f.rr.device.hint': "دستگاهی که قبلاً با کدی آمده، دوباره پذیرفته نمی‌شود.",
+    'f.rr.phone': "یک دعوت برای هر شماره",
+    'f.rr.phone.hint': "شماره‌ای که قبلاً با کدی آمده، دوباره پذیرفته نمی‌شود.",
+    'f.rr.hold': "دعوت مشکوک نگه داشته شود",
+    'f.rr.hold.hint': "جایزهٔ دعوت‌های مشکوک تا تأیید شما داده نمی‌شود.",
+    'cf.new': "کلید تازه",
+    'cf.edit': "ویرایش کلید",
+    'cf.key': "کلید",
+    'cf.key.hint': "نامی که بازی می‌خواند، مثل stargame.banner.",
+    'cf.type': "نوع",
+    'cf.type.hint': "بعد از ساختن عوض نمی‌شود.",
+    'cf.type.locked': "نوع کلید ثابت است.",
+    'cf.type.string': "متن ساده",
+    'cf.type.number': "عدد",
+    'cf.type.bool': "روشن/خاموش",
+    'cf.type.json': "JSON",
+    'cf.type.text': "متن ترجمه‌شده",
+    'cf.description': "توضیح",
+    'cf.description.hint': "برای همکاران؛ بازی آن را نمی‌بیند.",
+    'cf.default': "مقدار پیش‌فرض",
+    'cf.default.hint': "وقتی هیچ قانونی به بازیکن نخورد.",
+    'cf.value': "مقدار",
+    'cf.valueOn': "روشن",
+    'cf.active': "کلید روشن است",
+    'cf.on': "روشن",
+    'cf.off': "خاموش",
+    'cf.everyone': "برای همه",
+    'cf.rulesN': "{n} قانون",
+    'cf.v': "نسخهٔ {n}",
+    'cf.rules': "قانون‌ها",
+    'cf.rules.hint': "به ترتیب بررسی می‌شوند؛ اولین قانونی که همهٔ شرط‌هایش بخورد مقدارش را می‌دهد.",
+    'cf.rule': "قانون",
+    'cf.rule.add': "قانون تازه",
+    'cf.rule.none': "قانونی نیست؛ همه مقدار پیش‌فرض را می‌گیرند.",
+    'cf.rule.name': "نام قانون",
+    'cf.rule.name.hint': "کوتاه و انگلیسی، مثل vip یا android-new.",
+    'cf.rule.percent': "درصد بازیکنان",
+    'cf.rule.percent.hint': "خالی یعنی همه. هر بازیکن همیشه در همان گروه می‌ماند.",
+    'cf.rule.platforms': "پلتفرم",
+    'cf.rule.platforms.hint': "هیچ‌کدام یعنی همهٔ پلتفرم‌ها.",
+    'cf.rule.min': "از نسخهٔ",
+    'cf.rule.max': "تا نسخهٔ",
+    'cf.rule.tags': "برچسب بازیکن",
+    'cf.rule.countries': "کشورها",
+    'cf.rule.countries.hint': "کد دوحرفی، با ویرگول جدا.",
+    'cf.rule.value': "مقدار این قانون",
+    'cf.rule.value.hint': "بازیکنانی که شرط‌ها را دارند این را می‌گیرند.",
+    'cf.rule.up': "بالاتر",
+    'cf.rule.down': "پایین‌تر",
+    'cf.delete.title': "این کلید حذف شود؟",
+    'cf.delete.text': "«{key}» دیگر به بازی داده نمی‌شود. از تاریخچه می‌توانید برش گردانید.",
+    'cf.history': "تاریخچه",
+    'cf.recent': "تغییرهای اخیر",
+    'cf.action.create': "ساخت",
+    'cf.action.update': "ویرایش",
+    'cf.action.delete': "حذف",
+    'cf.action.rollback': "برگشت",
+    'cf.rollback': "برگشت به این نسخه",
+    'cf.rollback.title': "برگشت به نسخهٔ {n}؟",
+    'cf.rollback.text': "مقدار و قانون‌های آن نسخه به صورت نسخهٔ تازه ذخیره می‌شوند.",
+    'cf.rolledBack': "به نسخهٔ {n} برگشت.",
+    'cf.preview': "امتحان برای یک بازیکن",
+    'cf.preview.hint': "ببینید بازی برای این بازیکن و دستگاه چه مقدارهایی می‌گیرد.",
+    'cf.preview.player': "شناسهٔ بازیکن",
+    'cf.preview.player.ph': "خالی برای بازیکن ناشناس",
+    'cf.preview.version': "نسخهٔ برنامه",
+    'cf.preview.country': "کد کشور",
+    'cf.preview.run': "امتحان کن",
+    'cf.variant.default': "پیش‌فرض",
+    'cf.bucket': "جایگاه {n}٪"
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -2873,7 +3355,489 @@ var MESSAGES = {
     'ov.events': 'Events and rewards',
     'ov.eventsToday': 'Events in the last 24 hours',
     'ov.claimsReady': 'Rewards waiting',
-    'ov.claimsFailed': 'Failed rewards'
+    'ov.claimsFailed': 'Failed rewards',
+    'section.sup': "Support",
+    'section.sup.short': "Support",
+    'nav.tickets': "Tickets",
+    'nav.live-chat': "Live chat",
+    'nav.activity': "Player activity",
+    'nav.referrals': "Referral codes",
+    'nav.remote-config': "Game config",
+    'desc.tickets': "Player support requests; tickets waiting for our answer come first.",
+    'desc.live-chat': "The waiting queue and your chats. Take a chat to answer the player.",
+    'desc.activity': "What each player did: sign-ins, purchases, prizes, tickets, restrictions and more.",
+    'desc.referrals': "Who invited whom, reward status and suspicious cases.",
+    'desc.remote-config': "Values the game reads at run time, set apart per platform, app version, player tag or a share of players.",
+    'desc.remote-config.edit': "Set the default value and rules. The first rule that fits the player wins.",
+    'desc.support-departments': "Departments a player picks when opening a ticket.",
+    'desc.support-canned': "Ready texts an agent drops into a reply with one click.",
+    'desc.support-settings': "Ticket limits, live chat and how long player activity is kept.",
+    'desc.referral-rules': "Rewards for both sides, when they are paid and the rules against abuse.",
+    'tab.support-departments': "Support departments",
+    'tab.support-canned': "Canned replies",
+    'tab.support-settings': "Support settings",
+    'tab.referral-rules': "Referral rules",
+    'new.support-departments': "New department",
+    'edit.support-departments': "Edit department",
+    'new.support-canned': "New canned reply",
+    'edit.support-canned': "Edit canned reply",
+    'empty.hint.support-departments': "Create a department so players can open tickets.",
+    'empty.hint.support-canned': "Create a canned reply to answer faster.",
+    'empty.hint.tickets': "No tickets with this status.",
+    'empty.hint.activity': "No activity recorded yet.",
+    'empty.hint.referrals': "Nobody has entered a referral code yet.",
+    'empty.hint.remote-config': "Create a key for the game to read.",
+    'search.tickets': "Search number, subject or player",
+    'search.activity': "Search number, IP or details",
+    'search.referrals': "Search player name or code",
+    'search.remote-config': "Search key or description",
+    'tk.waitingN': "{n} tickets waiting",
+    'lc.waitingN': "{n} chats in the queue",
+    'tk.status.open': "New",
+    'tk.status.awaiting_staff': "Waiting for support",
+    'tk.status.awaiting_player': "Waiting for player",
+    'tk.status.resolved': "Solved",
+    'tk.status.closed': "Closed",
+    'tk.priority': "Priority",
+    'tk.priority.low': "Low",
+    'tk.priority.normal': "Normal",
+    'tk.priority.high': "High",
+    'tk.priority.urgent': "Urgent",
+    'tk.filter.waiting': "Waiting for us",
+    'tk.filter.active': "All open",
+    'tk.mine': "Mine",
+    'tk.unassigned': "Unassigned",
+    'tk.overdue': "Overdue",
+    'tk.overdueOnly': "Overdue only",
+    'tk.by.player': "Last message from the player",
+    'tk.by.staff': "Last message from support",
+    'tk.stat.waiting': "Waiting for answer",
+    'tk.stat.overdue': "Overdue",
+    'tk.stat.unassigned': "Unassigned",
+    'tk.stat.mine': "Mine",
+    'tk.stat.firstResponse': "Average first answer",
+    'tk.stat.30days': "In the last 30 days",
+    'tk.stat.rating': "Average rating",
+    'tk.stat.rated': "{n} ratings",
+    'tk.new': "New ticket",
+    'tk.new.text': "Open a ticket for a player who reached you another way. Your message is the first message of the ticket.",
+    'tk.new.ok': "Create and send",
+    'tk.new.hint': "The player sees this message and gets a notification.",
+    'tk.pickPlayer': "Find the player",
+    'tk.subject': "Subject",
+    'tk.message': "Message",
+    'tk.detail': "Ticket",
+    'tk.player': "Player",
+    'tk.staff': "Support",
+    'tk.system': "System",
+    'tk.note': "Internal note",
+    'tk.note.by': "Note by {name}",
+    'tk.reply': "Reply",
+    'tk.reply.ph': "Write your reply… (Ctrl+Enter sends)",
+    'tk.note.ph': "Write a note for your team…",
+    'tk.canned': "Canned reply",
+    'tk.canned.pick': "Insert a canned reply…",
+    'tk.canned.none': "No canned replies",
+    'tk.attach': "Attach",
+    'tk.uploading': "Uploading…",
+    'tk.internal': "Internal note (the player does not see it)",
+    'tk.send': "Send",
+    'tk.saveNote': "Save note",
+    'tk.after': "After the reply",
+    'tk.after.awaiting_player': "Wait for player",
+    'tk.after.resolved': "Solved",
+    'tk.after.closed': "Close",
+    'tk.sent': "Reply sent and the player was notified.",
+    'tk.noteSaved': "Note saved.",
+    'tk.closedNote': "This ticket is closed. The player cannot reply any more; you can add a note or reopen it.",
+    'tk.move.resolved': "Solved",
+    'tk.move.closed': "Close ticket",
+    'tk.move.awaiting_staff': "Reopen",
+    'tk.moved': "Ticket status changed.",
+    'tk.assigned': "Ticket owner changed.",
+    'tk.takeIt': "Take it myself",
+    'tk.playerCounts': "{tickets} tickets · {chats} chats",
+    'tk.playerTickets': "Tickets of this player",
+    'tk.times': "Times",
+    'tk.created': "Created",
+    'tk.due': "Answer due",
+    'tk.firstResponse': "First answer",
+    'tk.notYet': "Not yet",
+    'tk.resolvedAt': "Solved at",
+    'tk.closedAt': "Closed at",
+    'tk.rating': "Player rating",
+    'tk.ratingN': "{n} of 5",
+    'tk.fromChat': "From live chat",
+    'tk.openChat': "Open chat",
+    'tk.source.chat': "From live chat",
+    'tk.source.staff': "Opened by support",
+    'tk.ev.status_changed': "{who}: {from} → {to}",
+    'tk.ev.status_changed.auto': "Closed automatically after days without an answer",
+    'tk.ev.assigned': "{who} gave the ticket to {to}",
+    'tk.ev.assigned.auto': "Ticket went to {to} automatically",
+    'tk.ev.assigned.none': "{who} removed the owner",
+    'tk.ev.department_changed': "{who} changed the department",
+    'tk.ev.priority_changed': "{who} set the priority to {to}",
+    'tk.ev.rated': "The player rated {n} of 5",
+    'tk.ev.created_from_chat': "This ticket was made from a live chat",
+    'col.subject': "Subject",
+    'col.assignee': "Owner",
+    'col.department': "Department",
+    'col.lastMessage': "Last message",
+    'col.firstResponse': "First answer within",
+    'col.agents': "Agents",
+    'col.open': "Open",
+    'col.what': "What happened",
+    'col.where': "Where",
+    'col.referral': "Inviter → invited",
+    'col.goal': "Reward goal",
+    'col.value': "Value",
+    'col.rules': "Rules",
+    'col.version': "Version",
+    'filter.priority': "Priority",
+    'filter.assignee': "Owner",
+    'filter.department': "Department",
+    'filter.overdue': "Due",
+    'filter.platform': "Platform",
+    'filter.country': "Country code",
+    'filter.from': "From date (2026-11-01)",
+    'filter.to': "To date",
+    'filter.flagged': "Suspicious",
+    'filter.referrerId': "Inviter id",
+    'filter.type': "Type",
+    'dur.minutes': "{n} min",
+    'size.b': "{n} B",
+    'size.kb': "{n} KB",
+    'size.mb': "{n} MB",
+    'lc.queue': "Queue",
+    'lc.mine': "My chats",
+    'lc.all': "All",
+    'lc.closed': "Closed",
+    'lc.views': "Chat views",
+    'lc.available': "Available",
+    'lc.nowOnline': "You are online and players can see you.",
+    'lc.nowAway': "You are away.",
+    'lc.empty.queue': "Nobody is waiting",
+    'lc.empty.queue.hint': "New chats show up here.",
+    'lc.empty.mine': "You have no open chats",
+    'lc.empty.all': "No open chats",
+    'lc.empty.closed': "No closed chats",
+    'lc.take': "Take",
+    'lc.taken': "The chat is yours.",
+    'lc.pick': "Pick a chat",
+    'lc.pick.hint': "Take one from the queue to start.",
+    'lc.waitSec': "{n} s in queue",
+    'lc.waitMin': "{n} min in queue",
+    'lc.typing': "Typing…",
+    'lc.playerTypingNow': "The player is typing…",
+    'lc.playerOnline': "Player is online",
+    'lc.playerOffline': "Player is offline",
+    'lc.online': "Online",
+    'lc.offline': "Offline",
+    'lc.activeN': "{n} open chats",
+    'lc.status.waiting': "Waiting",
+    'lc.status.active': "Active",
+    'lc.status.closed': "Closed",
+    'lc.withAgent': "with {name}",
+    'lc.ticketN': "Ticket {n}",
+    'lc.reply.ph': "Write a message… (Ctrl+Enter sends)",
+    'lc.someoneElse': "{name} is handling this chat.",
+    'lc.closedNote': "This chat is closed.",
+    'lc.closedRated': "Chat closed. The player rated {n} of 5.",
+    'lc.transfer': "Transfer",
+    'lc.transfer.text': "Give the chat to a teammate or put it back in the queue.",
+    'lc.transfer.ok': "Transfer",
+    'lc.transferTo': "To whom",
+    'lc.backToQueue': "Back to the queue",
+    'lc.transferred': "Chat transferred.",
+    'lc.close': "Close chat",
+    'lc.close.title': "Close this chat?",
+    'lc.close.text': "The player sees that the chat ended and can rate it.",
+    'lc.toTicket': "Turn the chat into a ticket",
+    'lc.toTicket.hint': "The conversation is kept in a new ticket for follow-up.",
+    'lc.closedDone': "Chat closed.",
+    'lc.closedTicket': "Chat closed and ticket {n} was created.",
+    'lc.ev.accepted': "{agent} took the chat",
+    'lc.ev.transferred': "Chat moved from {from} to {to}",
+    'lc.ev.closed': "Chat closed ({by})",
+    'lc.ev.note': "System message",
+    'code.ALREADY_TAKEN': "{name} already took this chat.",
+    'code.NOT_YOUR_CHAT': "A teammate is handling this chat.",
+    'code.CHAT_CLOSED': "This chat is closed.",
+    'code.CHAT_EMPTY': "The chat has no messages to turn into a ticket.",
+    'code.CHAT_NOT_FOUND': "Chat not found.",
+    'code.TICKET_NOT_FOUND': "Ticket not found.",
+    'code.TICKET_CLOSED': "This ticket is closed.",
+    'code.INVALID_TRANSITION': "This status change is not possible.",
+    'code.INVALID_PRIORITY': "Priority is not valid.",
+    'code.INVALID_SUBJECT': "The subject is 1 to 150 letters.",
+    'code.BODY_REQUIRED': "Write a message.",
+    'code.BODY_TOO_LONG': "The message is too long.",
+    'code.ATTACHMENT_NOT_FOUND': "Attachment not found.",
+    'code.TOO_MANY_ATTACHMENTS': "Too many attachments.",
+    'code.ATTACHMENT_TOO_LARGE': "The file is too large.",
+    'code.ATTACHMENT_TYPE': "Only png, jpg, webp images and pdf files are allowed.",
+    'code.ATTACHMENTS_UNAVAILABLE': "Attachments are not available right now.",
+    'code.DEPARTMENT_NOT_FOUND': "Department not found.",
+    'code.INVALID_AGENT': "This teammate was not found.",
+    'code.TOO_MANY_AGENTS': "At most 50 agents per department.",
+    'code.INVALID_JSON': "The JSON is not valid.",
+    'code.INVALID_PERCENT': "Percent is 0 to 100.",
+    'code.VALUE_REQUIRED': "A value is required.",
+    'code.VALUE_TOO_LONG': "The value is too long.",
+    'code.TOO_MANY_RULES': "At most 20 rules.",
+    'code.INVALID_RULE_NAME': "Rule names are short lower-case keys and not \"default\".",
+    'code.DUPLICATE_RULE_NAME': "Rule names must be different.",
+    'code.MIN_ABOVE_MAX': "The lowest version is above the highest.",
+    'code.TYPE_LOCKED': "The key type cannot change; create a new key.",
+    'code.VERSION_NOT_FOUND': "That version is not in the history.",
+    'code.DESCRIPTION_TOO_LONG': "The description is at most 500 letters.",
+    'code.REFERRAL_NOT_FOUND': "Referral not found.",
+    'code.REFERRAL_DECIDED': "This referral was already decided.",
+    'code.NOT_HELD': "Only held referrals need approval.",
+    'dp.everyone': "Everyone",
+    'cn.allDepts': "All departments",
+    'f.dp.key.hint': "A fixed id, like payments.",
+    'f.dp.name': "Department name",
+    'f.dp.name.hint': "Players see this name in the ticket form.",
+    'f.dp.description': "Description",
+    'f.dp.description.hint': "One sentence about what this department handles.",
+    'f.dp.hours': "First answer within (hours)",
+    'f.dp.hours.hint': "A ticket with no answer after this time is overdue.",
+    'f.dp.agents': "Agents of this department",
+    'f.dp.agents.hint': "New tickets go to the least busy agent in this list. Empty means no automatic sharing.",
+    'f.dp.active.hint': "An inactive department is hidden from players.",
+    'f.cn.key.hint': "A fixed id, like greeting.",
+    'f.cn.title': "Title",
+    'f.cn.title.hint': "Only agents see this title.",
+    'f.cn.body': "Reply text",
+    'f.cn.body.hint': "Inserted in the ticket language; you can edit it before sending.",
+    'f.cn.department': "Only for department",
+    'f.cn.department.hint': "Empty means every department.",
+    'f.cn.active.hint': "An inactive reply is not offered.",
+    'ss.tickets': "Tickets",
+    'ss.chat': "Live chat",
+    'ss.activity': "Activity log",
+    'f.ss.maxOpen': "Most open tickets per player",
+    'f.ss.maxOpen.hint': "After this the player has to close one first.",
+    'f.ss.perHour': "New tickets per hour",
+    'f.ss.perHour.hint': "Stops a flood of tickets.",
+    'f.ss.messages': "Messages per hour",
+    'f.ss.messages.hint': "For player replies across all tickets.",
+    'f.ss.autoClose': "Close automatically after (days)",
+    'f.ss.autoClose.hint': "Tickets waiting for the player or solved are closed after this time.",
+    'f.ss.attachments': "Most attachments per message",
+    'f.ss.attachments.hint': "0 turns attachments off.",
+    'f.ss.attachmentKb': "Size of each attachment (KB)",
+    'f.ss.attachmentKb.hint': "png, jpg, webp and pdf only.",
+    'f.ss.chatEnabled': "Live chat is on",
+    'f.ss.chatEnabled.hint': "When off, players can only open tickets.",
+    'f.ss.greeting': "Greeting",
+    'f.ss.greeting.hint': "Written to the player at the start of every chat.",
+    'f.ss.offline': "Message when nobody is online",
+    'f.ss.offline.hint': "Shown to the player when no agent is online.",
+    'f.ss.idle': "Close idle chats after (minutes)",
+    'f.ss.idle.hint': "When there are no messages and the player has left.",
+    'f.ss.chatRate': "Player messages per minute",
+    'f.ss.chatRate.hint': "Stops message floods.",
+    'f.ss.retention': "Keep player activity (days)",
+    'f.ss.retention.hint': "Older activity is removed every few minutes.",
+    'act.signin': "Sign-in",
+    'act.purchase': "Purchase",
+    'act.prize': "Prize",
+    'act.event': "Event",
+    'act.restriction': "Restriction",
+    'act.report': "Report",
+    'act.ticket': "Ticket",
+    'act.chat': "Support chat",
+    'act.referral': "Referral",
+    'act.config': "Config",
+    'act.method.device': "device",
+    'act.method.custom': "custom id",
+    'act.method.email': "email",
+    'act.method.phone': "mobile number",
+    'act.method.google': "Google",
+    'act.method.apple': "Apple",
+    'act.method.facebook': "Facebook",
+    'act.method.steam': "Steam",
+    'act.method.gamecenter': "Game Center",
+    'act.signin.device': "Signed in with {method}",
+    'act.signin.custom': "Signed in with {method}",
+    'act.signin.email': "Signed in with {method}",
+    'act.signin.phone': "Signed in with {method}",
+    'act.signin.google': "Signed in with {method}",
+    'act.signin.apple': "Signed in with {method}",
+    'act.signin.facebook': "Signed in with {method}",
+    'act.signin.steam': "Signed in with {method}",
+    'act.signin.gamecenter': "Signed in with {method}",
+    'act.purchase.completed': "Bought {productKey} with {method}",
+    'act.prize.granted': "Got the prize {prize}",
+    'act.prize.gift_redeemed': "Redeemed gift code {code}",
+    'act.event.level_up': "Reached level {to}",
+    'act.restriction.suspend': "Suspended until {endsAt}",
+    'act.restriction.mute': "Muted until {endsAt}",
+    'act.restriction.warn': "Got a warning",
+    'act.restriction.lifted': "{kind} lifted",
+    'act.report.filed': "Reported a message",
+    'act.report.received': "A message of theirs was reported",
+    'act.ticket.created': "Opened ticket {number}: {subject}",
+    'act.ticket.created_by_staff': "Support opened ticket {number} for them",
+    'act.ticket.staff_reply': "Support answered ticket {number}",
+    'act.ticket.resolved': "Ticket {number} solved",
+    'act.ticket.closed': "Ticket {number} closed",
+    'act.ticket.resolved_by_player': "Marked ticket {number} as solved",
+    'act.ticket.rated': "Rated ticket {number} with {rating}",
+    'act.chat.opened': "Opened a live chat",
+    'act.chat.taken': "{agent} took the chat",
+    'act.chat.transferred': "Chat moved from {from} to {to}",
+    'act.chat.closed': "Live chat closed",
+    'act.referral.entered': "Entered the referral code of {referrer}",
+    'act.referral.joined': "{referee} joined with their code",
+    'act.referral.completed': "Referral goal reached",
+    'act.referral.approved': "Referral approved",
+    'act.referral.rejected': "Referral rejected",
+    'act.config.changed': "Game config changed for them: {variants}",
+    'act.actor.player': "The player",
+    'act.actor.system': "System",
+    'act.actor.console': "Console ({name})",
+    'act.open': "Open",
+    'act.all': "All activity",
+    'act.card': "Recent activity",
+    'act.empty': "No activity.",
+    'act.playerLink': "Activity of this player",
+    'act.retention': "Activity is kept for {n} days.",
+    'pf.android': "Android",
+    'pf.ios': "iOS",
+    'pf.web': "Web",
+    'pf.windows': "Windows",
+    'pf.macos': "macOS",
+    'pf.linux': "Linux",
+    'rf.status.pending': "Waiting for goal",
+    'rf.status.held': "Held",
+    'rf.status.completed': "Completed",
+    'rf.status.rejected': "Rejected",
+    'rf.flag.burst': "Many invites in one day",
+    'rf.flag.same_ip': "Same IP as the inviter",
+    'rf.flag.ip_burst': "Several invites from one IP",
+    'rf.flag.shared_device': "Repeated device",
+    'rf.flag.shared_phone': "Repeated number",
+    'rf.flaggedOnly': "Suspicious only",
+    'rf.noGoal': "No goal",
+    'rf.progress': "{n} of {total}",
+    'rf.tree': "Referral tree",
+    'rf.tree.title': "Referral tree",
+    'rf.tree.up': "Invited by",
+    'rf.tree.down': "Invited {n} players",
+    'rf.tree.more': "{n} invites",
+    'rf.tree.none': "Has not invited anyone yet.",
+    'rf.approve': "Approve",
+    'rf.reject': "Reject",
+    'rf.approve.title': "Approve this referral?",
+    'rf.approve.text': "{from} invited {to}. Once approved, the rewards are paid when the goal is met.",
+    'rf.approve.done': "Referral approved.",
+    'rf.reject.title': "Reject this referral?",
+    'rf.reject.text': "{from} invited {to}; no reward will be paid.",
+    'rf.reject.done': "Referral rejected.",
+    'rf.stat.total': "All referrals",
+    'rf.stat.today': "{n} in the last 24 hours",
+    'rf.stat.flagged': "{n} suspicious",
+    'rf.top': "Top inviters",
+    'rf.top.line': "{n} invites · {done} completed",
+    'rf.top.flagged': "{n} suspicious",
+    'claim.kind.referral': "Referral",
+    'rr.rewards': "Rewards",
+    'rr.rules': "Rules",
+    'rr.measure.count': "Times",
+    'rr.measure.sum': "Total value",
+    'rr.measure.max': "Highest value",
+    'f.rr.enabled': "Referral codes are on",
+    'f.rr.enabled.hint': "When off, players cannot enter a code.",
+    'f.rr.referrerPrize': "Inviter reward",
+    'f.rr.referrerPrize.hint': "When their friend meets the goal.",
+    'f.rr.refereePrize': "Invited player reward",
+    'f.rr.refereePrize.hint': "For the player who entered the code.",
+    'f.rr.goal': "Goal event",
+    'f.rr.goal.hint': "Rewards are paid after this event. Empty pays them when the code is entered.",
+    'f.rr.measure': "Measure",
+    'f.rr.goalValue': "Needed value",
+    'f.rr.goalValue.hint': "For example 3 means doing the event three times.",
+    'f.rr.days': "New accounts only (days)",
+    'f.rr.days.hint': "A player can enter a code this many days after creating the account. 0 means no limit.",
+    'f.rr.max': "Most invites per player",
+    'f.rr.max.hint': "After this their code is not accepted.",
+    'f.rr.daily': "Normal invites per day",
+    'f.rr.daily.hint': "Above this an invite is marked suspicious.",
+    'f.rr.device': "One referral per device",
+    'f.rr.device.hint': "A device that already came with a code is refused.",
+    'f.rr.phone': "One referral per number",
+    'f.rr.phone.hint': "A number that already came with a code is refused.",
+    'f.rr.hold': "Hold suspicious referrals",
+    'f.rr.hold.hint': "Rewards of suspicious referrals wait for your approval.",
+    'cf.new': "New key",
+    'cf.edit': "Edit key",
+    'cf.key': "Key",
+    'cf.key.hint': "The name the game reads, like stargame.banner.",
+    'cf.type': "Type",
+    'cf.type.hint': "Cannot change after creating.",
+    'cf.type.locked': "The key type is fixed.",
+    'cf.type.string': "Plain text",
+    'cf.type.number': "Number",
+    'cf.type.bool': "On/off",
+    'cf.type.json': "JSON",
+    'cf.type.text': "Translated text",
+    'cf.description': "Description",
+    'cf.description.hint': "For your team; the game does not see it.",
+    'cf.default': "Default value",
+    'cf.default.hint': "When no rule fits the player.",
+    'cf.value': "Value",
+    'cf.valueOn': "On",
+    'cf.active': "The key is on",
+    'cf.on': "On",
+    'cf.off': "Off",
+    'cf.everyone': "Everyone",
+    'cf.rulesN': "{n} rules",
+    'cf.v': "v{n}",
+    'cf.rules': "Rules",
+    'cf.rules.hint': "Checked in order; the first rule whose conditions all fit gives its value.",
+    'cf.rule': "Rule",
+    'cf.rule.add': "New rule",
+    'cf.rule.none': "No rules; everyone gets the default.",
+    'cf.rule.name': "Rule name",
+    'cf.rule.name.hint': "Short and in English, like vip or android-new.",
+    'cf.rule.percent': "Share of players",
+    'cf.rule.percent.hint': "Empty means everyone. Each player always stays in the same group.",
+    'cf.rule.platforms': "Platform",
+    'cf.rule.platforms.hint': "None means every platform.",
+    'cf.rule.min': "From version",
+    'cf.rule.max': "To version",
+    'cf.rule.tags': "Player tag",
+    'cf.rule.countries': "Countries",
+    'cf.rule.countries.hint': "Two-letter codes, separated by commas.",
+    'cf.rule.value': "Value of this rule",
+    'cf.rule.value.hint': "Players who meet the conditions get this.",
+    'cf.rule.up': "Move up",
+    'cf.rule.down': "Move down",
+    'cf.delete.title': "Delete this key?",
+    'cf.delete.text': "\"{key}\" will no longer be sent to the game. You can bring it back from the history.",
+    'cf.history': "History",
+    'cf.recent': "Recent changes",
+    'cf.action.create': "Created",
+    'cf.action.update': "Edited",
+    'cf.action.delete': "Deleted",
+    'cf.action.rollback': "Rolled back",
+    'cf.rollback': "Roll back to this",
+    'cf.rollback.title': "Roll back to v{n}?",
+    'cf.rollback.text': "The value and rules of that version are saved as a new version.",
+    'cf.rolledBack': "Rolled back to v{n}.",
+    'cf.preview': "Try for a player",
+    'cf.preview.hint': "See what values the game gets for this player and device.",
+    'cf.preview.player': "Player id",
+    'cf.preview.player.ph': "Empty for an unknown player",
+    'cf.preview.version': "App version",
+    'cf.preview.country': "Country code",
+    'cf.preview.run': "Try it",
+    'cf.variant.default': "Default",
+    'cf.bucket': "bucket {n}%"
   }
 };
 
@@ -3201,7 +4165,19 @@ var ICONS = {
   reports: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/><path d="M12 8v4M12 16h.01"/>',
   restrictions: '<path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
   'chat-words': '<path d="M22 3H2l8 9.5V19l4 2v-8.5z"/>',
-  'report-titles': '<path d="M3 5h.01M3 12h.01M3 19h.01M8 5h13M8 12h13M8 19h13"/>'
+  'report-titles': '<path d="M3 5h.01M3 12h.01M3 19h.01M8 5h13M8 12h13M8 19h13"/>',
+  tickets: '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/>',
+  'live-chat': '<path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/>',
+  activity: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+  referrals: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>',
+  'remote-config': '<rect x="2" y="6" width="20" height="12" rx="6"/><circle cx="16" cy="12" r="2"/>',
+  'support-departments': '<path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M14 9h1M9 13h1M14 13h1M9 17h6"/>',
+  'support-canned': '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+  'support-settings': '<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>',
+  'referral-rules': '<path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>',
+  clip: '<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
+  star: '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',
+  history: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>'
 };
 var MIRROR = { first: 1, prev: 1, next: 1, back: 1, reply: 1 };
 
@@ -5071,18 +6047,21 @@ var RESOURCES = {
 };
 
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'event-log', 'payments'],
-  publication: ['faqs', 'news', 'comments', 'notifications'],
-  moderation: ['players', 'reports', 'restrictions', 'chat-words']
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'event-log', 'referrals', 'payments'],
+  publication: ['faqs', 'news', 'comments', 'notifications', 'remote-config'],
+  moderation: ['players', 'reports', 'restrictions', 'chat-words', 'activity'],
+  support: ['tickets', 'live-chat']
 };
-var SECTION_ORDER = ['economy', 'publication', 'moderation'];
-var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod' };
-var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE' };
+var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support'];
+var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup' };
+var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
+var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION' };
 var LIMIT = 20;
-var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' } };
+var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' }, tickets: { status: 'waiting' } };
 
 function sectionOf(page) {
   if (psSection(page)) return PS_ROUTE;
+  if (SECTIONS.support.indexOf(page) !== -1) return 'support';
   if (SECTIONS.moderation.indexOf(page) !== -1) return 'moderation';
   return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
 }
@@ -5144,6 +6123,7 @@ function listPage(container, name, query, ctx) {
     }
     return filterSelect(t(f.label), state.filters[f.name], opts2, function (v) { state.filters[f.name] = v; state.page = 1; sync(); load(); });
   });
+  if (def.top) frame.content.appendChild(def.top());
   frame.content.appendChild(h('div', {},
     h('div', { class: 'flex flex-col items-start pb-2 gap-2' },
       h('div', { class: 'flex flex-col lg:flex-row lg:items-center gap-2 w-full' },
@@ -5185,7 +6165,7 @@ function listPage(container, name, query, ctx) {
     }
     paintPager();
     var params = Object.assign({ q: state.q, page: state.page, limit: state.limit }, state.filters);
-    return call('GET', '/' + name + qs(params)).then(function (res) {
+    return call('GET', '/' + (def.path || name) + qs(params)).then(function (res) {
       if (my !== seq) return;
       state.loading = false;
       state.loaded = true;
@@ -5266,8 +6246,8 @@ function openEditor(name, id, query, onSaved) {
   body.appendChild(formSkeleton(def));
 
   var call = apiFor(name);
-  var item = isNew ? Promise.resolve(def.defaults(query)) : call('GET', '/' + name + '/' + encodeURIComponent(id));
-  Promise.all([item, freshLanguages(), loadKeyTypes()]).then(function (all) { return all[0]; }).then(function (data) {
+  var item = isNew ? Promise.resolve(def.defaults(query)) : call('GET', '/' + (def.path || name) + '/' + encodeURIComponent(id));
+  Promise.all([item, freshLanguages(), loadKeyTypes(), def.prepare ? def.prepare() : null]).then(function (all) { return all[0]; }).then(function (data) {
     if (!panelState || panelState.el !== el) return;
     var values = clone(data) || {};
     var form = buildForm(def.fields, values);
@@ -5285,7 +6265,7 @@ function openEditor(name, id, query, onSaved) {
       };
       var resetDelete = function () { clear(del).appendChild(button({ variant: 'danger', size: 'footer', icon: 'trash', label: t('delete'), onclick: askDelete })); };
       var doDelete = function () {
-        call('DELETE', '/' + name + '/' + encodeURIComponent(id)).then(function () {
+        call('DELETE', '/' + (def.path || name) + '/' + encodeURIComponent(id)).then(function () {
           toast('success', t('deleted'));
           if (def.afterSave) def.afterSave();
           back();
@@ -5308,7 +6288,7 @@ function openEditor(name, id, query, onSaved) {
       var payload = form.payload();
       if (def.fixPayload) payload = def.fixPayload(payload);
       setBusy(saveBtn, true, t('saving'));
-      call(isNew ? 'POST' : 'PUT', '/' + name + (isNew ? '' : '/' + encodeURIComponent(id)), payload).then(function () {
+      call(isNew ? 'POST' : 'PUT', '/' + (def.path || name) + (isNew ? '' : '/' + encodeURIComponent(id)), payload).then(function () {
         toast('success', t('saved'));
         if (def.afterSave) def.afterSave();
         back();
@@ -5744,9 +6724,9 @@ function refreshBadge(force) {
 }
 
 function navBadge(page, collapsed) {
-  var n = page === 'comments' ? pendingComments : page === 'reports' ? pendingReports : 0;
+  var n = page === 'comments' ? pendingComments : page === 'reports' ? pendingReports : supportBadge(page);
   if (!n) return null;
-  var label = t(page === 'comments' ? 'cm.pendingN' : 'rp.openN', { n: n });
+  var label = t(page === 'comments' ? 'cm.pendingN' : page === 'reports' ? 'rp.openN' : page === 'tickets' ? 'tk.waitingN' : 'lc.waitingN', { n: n });
   if (collapsed) return h('span', { class: 'eco-nav-dot', 'aria-label': label });
   return h('span', { class: 'eco-nav-badge tabular-nums', 'aria-label': label, text: fmtNum(n) });
 }
@@ -8385,6 +9365,1349 @@ function playerProgressCard() {
   place();
 }
 
+var TICKET_STATUSES = ['open', 'awaiting_staff', 'awaiting_player', 'resolved', 'closed'];
+var TICKET_STATUS_COLOR = { open: 'warning', awaiting_staff: 'warning', awaiting_player: 'primary', resolved: 'success', closed: 'secondary' };
+var TICKET_PRIORITIES = ['low', 'normal', 'high', 'urgent'];
+var PRIORITY_COLOR = { low: 'secondary', normal: 'secondary', high: 'warning', urgent: 'error' };
+var SUPPORT = { summary: null, at: 0, loading: false, agents: null, agentsAt: 0, beat: null, away: false };
+try { SUPPORT.away = localStorage.getItem('economy.support.away') === '1'; } catch (e) { SUPPORT.away = false; }
+
+function supportBadge(page) {
+  var s = SUPPORT.summary;
+  if (!s) return 0;
+  if (page === 'tickets') return s.awaitingStaff || 0;
+  if (page === 'live-chat') return s.waitingChats || 0;
+  return 0;
+}
+
+function supportBadgeKey() {
+  return supportBadge('tickets') + ':' + supportBadge('live-chat');
+}
+
+function setSummary(res) {
+  if (!res || typeof res.awaitingStaff !== 'number') return;
+  var before = supportBadgeKey();
+  SUPPORT.summary = res;
+  if (supportBadgeKey() !== before) schedule();
+}
+
+function refreshSupportBadge(force) {
+  var now = Date.now();
+  if (SUPPORT.loading || (!force && now - SUPPORT.at < 30000)) return;
+  if (!token() || !aclCan('ACCOUNT_NOTES', 0)) return;
+  SUPPORT.at = now;
+  SUPPORT.loading = true;
+  quietBase('GET', '/support/summary').then(function (res) { SUPPORT.loading = false; setSummary(res); }, function () { SUPPORT.loading = false; });
+}
+
+function onSupportPage() {
+  return /^#\/support\//.test(location.hash || '');
+}
+
+function sendBeat() {
+  if (!token() || !aclCan('ACCOUNT_NOTES', 1)) return Promise.resolve(null);
+  return quietBase('POST', '/support/heartbeat', { away: SUPPORT.away }).then(function (res) { setSummary(res); return res; });
+}
+
+function supportBeat() {
+  if (SUPPORT.beat) return;
+  sendBeat();
+  SUPPORT.beat = setInterval(function () {
+    if (!onSupportPage() || !token()) { clearInterval(SUPPORT.beat); SUPPORT.beat = null; return; }
+    sendBeat();
+  }, 20000);
+}
+
+function loadAgents(force) {
+  if (!force && SUPPORT.agents && Date.now() - SUPPORT.agentsAt < 15000) return Promise.resolve(SUPPORT.agents);
+  return baseApi('GET', '/support/agents').then(function (res) {
+    SUPPORT.agents = (res && res.items) || [];
+    SUPPORT.me = res && res.me;
+    SUPPORT.agentsAt = Date.now();
+    return SUPPORT.agents;
+  }, function () { return SUPPORT.agents || []; });
+}
+
+function ticketStatusTag(status) {
+  var el = tag(t('tk.status.' + status), TICKET_STATUS_COLOR[status]);
+  el.setAttribute('data-ticket-status', status);
+  return el;
+}
+
+function priorityTag(p) {
+  var el = tag(t('tk.priority.' + p), PRIORITY_COLOR[p]);
+  el.setAttribute('data-priority', p);
+  return el;
+}
+
+function deptName(d) {
+  return d ? (i18nText(d.name) || d.key) : t('none');
+}
+
+function agentLabel(name) {
+  return name ? name : t('tk.unassigned');
+}
+
+function minutesText(n) {
+  if (n == null) return '—';
+  if (n < 60) return t('dur.minutes', { n: localDigits(n) });
+  if (n < 1440) return t('dur.hours', { n: localDigits(Math.round(n / 60)) });
+  return t('dur.days', { n: localDigits(Math.round(n / 1440)) });
+}
+
+function ticketSubjectCell(it) {
+  return h('div', { class: 'min-w-0' },
+    h('div', { class: 'flex items-center gap-2 min-w-0' },
+      h('span', { class: 'font-medium truncate', dir: 'auto', text: it.subject }),
+      it.overdue ? tag(t('tk.overdue'), 'error') : null),
+    h('div', { class: 'text-xs text-secondary-500 flex items-center gap-2 min-w-0' }, mono(it.number), h('span', { class: 'truncate', dir: 'auto', text: it.lastPreview || '' })));
+}
+
+LISTS.tickets = {
+  api: 'base',
+  path: 'support/tickets',
+  top: function () { return ticketsTop(); },
+  create: function () { return ticketsCreate(); },
+  filters: [
+    { name: 'status', label: 'filter.status', options: function () { return [{ value: 'waiting', label: t('tk.filter.waiting') }, { value: 'active', label: t('tk.filter.active') }].concat(TICKET_STATUSES.map(function (s) { return { value: s, label: t('tk.status.' + s) }; })); } },
+    { name: 'priority', label: 'filter.priority', options: function () { return TICKET_PRIORITIES.map(function (p) { return { value: p, label: t('tk.priority.' + p) }; }); } },
+    { name: 'assignee', label: 'filter.assignee', options: function () { return [{ value: 'me', label: t('tk.mine') }, { value: 'none', label: t('tk.unassigned') }].concat((SUPPORT.agents || []).map(function (a) { return { value: a.username, label: a.username }; })); } },
+    { name: 'departmentId', label: 'filter.department', type: 'ref', resource: 'support/departments', api: baseApi },
+    { name: 'overdue', label: 'filter.overdue', options: function () { return [{ value: 'true', label: t('tk.overdueOnly') }]; } }
+  ],
+  columns: [
+    { label: 'col.subject', render: ticketSubjectCell, skeleton: '60%' },
+    { label: 'col.player', render: function (it) { return playerLink(it.userId, it.displayName || it.username); }, width: 150 },
+    { label: 'col.status', render: function (it) { return h('div', { class: 'flex flex-col items-start gap-1' }, ticketStatusTag(it.status), it.priority !== 'normal' ? priorityTag(it.priority) : null); }, width: 150 },
+    { label: 'col.assignee', render: function (it) { return h('span', { class: it.assignee ? '' : 'text-secondary-400', text: agentLabel(it.assignee) }); }, width: 130 },
+    { label: 'col.department', render: function (it) { return h('span', { class: 'truncate', text: deptName(it.department) }); }, width: 150 },
+    { label: 'col.lastMessage', render: function (it) { return h('div', { class: 'flex flex-col' }, dateCell(it.lastMessageAt), h('span', { class: 'text-xs text-secondary-500', text: t('tk.by.' + it.lastMessageBy) })); }, width: 170 }
+  ]
+};
+
+function supportStats(s) {
+  var grid = h('div', { class: 'eco-stat-grid mb-4', 'data-support-stats': '' });
+  grid.appendChild(statCard(t('tk.stat.waiting'), s.awaitingStaff, null, hashFor('tickets', null, { status: 'waiting' })));
+  grid.appendChild(statCard(t('tk.stat.overdue'), s.overdue, null, hashFor('tickets', null, { status: 'waiting', overdue: 'true' }), { alert: s.overdue > 0 }));
+  grid.appendChild(statCard(t('tk.stat.unassigned'), s.unassigned, null, hashFor('tickets', null, { status: 'active', assignee: 'none' })));
+  grid.appendChild(statCard(t('tk.stat.mine'), s.mine, null, hashFor('tickets', null, { status: 'waiting', assignee: 'me' })));
+  grid.appendChild(card(h('div', { class: 'p-4 flex flex-col gap-1 h-full' },
+    h('div', { class: 'font-medium text-secondary-700 dark:text-secondary-200', text: t('tk.stat.firstResponse') }),
+    h('div', { class: 'text-2xl font-semibold tabular-nums', text: minutesText(s.avgFirstResponseMinutes) }),
+    h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('tk.stat.30days') }))));
+  grid.appendChild(card(h('div', { class: 'p-4 flex flex-col gap-1 h-full' },
+    h('div', { class: 'font-medium text-secondary-700 dark:text-secondary-200', text: t('tk.stat.rating') }),
+    h('div', { class: 'text-2xl font-semibold tabular-nums', text: s.avgRating ? localDigits(s.avgRating) + ' / ' + localDigits(5) : '—' }),
+    h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('tk.stat.rated', { n: s.rated || 0 }) }))));
+  return grid;
+}
+
+function ticketsPage(container, query, ctx) {
+  loadAgents();
+  return listPage(container, 'tickets', query, ctx);
+}
+
+function ticketsTop() {
+  var holder = h('div', { 'data-support-top': '' }, h('div', { class: 'eco-stat-grid mb-4' }, [1, 2, 3, 4].map(function () { return card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('6rem'), bar('3rem', 'h-7'))); })));
+  baseApi('GET', '/support/summary').then(function (s) { setSummary(s); clear(holder).appendChild(supportStats(s)); }, function () { clear(holder); });
+  return holder;
+}
+
+function ticketsCreate() {
+  if (!aclCan('ACCOUNT_NOTES', 1)) return null;
+  var btn = button({ variant: 'primary', size: 'page', icon: 'plus', label: t('tk.new'), onclick: function () { newTicketDialog().then(function (res) { if (res && res.id) go('tickets', res.id); }); } });
+  btn.setAttribute('data-ticket-new', '');
+  return btn;
+}
+
+function playerPicker(onchange) {
+  return refPicker({ resource: 'support/players', api: baseApi, required: true, label: t('col.player'), placeholder: t('tk.pickPlayer'), onchange: onchange });
+}
+
+function departmentPicker(value, onchange) {
+  return refPicker({ resource: 'support/departments', api: baseApi, value: value || '', label: t('col.department'), filter: { isActive: 'true' }, onchange: onchange });
+}
+
+function newTicketDialog() {
+  var v = { userId: '', subject: '', departmentId: '', priority: 'normal', body: '' };
+  var fields = {};
+  fields.player = field(t('col.player'), playerPicker(function (x) { v.userId = x || ''; fields.player.setError(''); }));
+  fields.subject = field(t('tk.subject'), textInput('', { label: t('tk.subject'), oninput: function (x) { v.subject = x; fields.subject.setError(''); } }));
+  fields.dept = field(t('col.department'), departmentPicker('', function (x) { v.departmentId = x || ''; }), null, { optional: true });
+  fields.priority = field(t('tk.priority'), segmented(TICKET_PRIORITIES.map(function (p) { return { value: p, label: t('tk.priority.' + p) }; }), 'normal', function (x) { v.priority = x; }, t('tk.priority')));
+  fields.body = field(t('tk.message'), textInput('', { multiline: true, rows: 4, label: t('tk.message'), oninput: function (x) { v.body = x; fields.body.setError(''); } }), t('tk.new.hint'));
+  return formDialog({
+    id: 'ticket-new', title: t('tk.new'), text: t('tk.new.text'), icon: 'tickets', ok: t('tk.new.ok'),
+    body: h('div', {}, fields.player, fields.subject, fields.dept, fields.priority, fields.body),
+    validate: function () {
+      var ok = true;
+      if (!v.userId) { fields.player.setError(t('err.required')); ok = false; }
+      if (!v.subject.trim()) { fields.subject.setError(t('err.required')); ok = false; }
+      if (!v.body.trim()) { fields.body.setError(t('err.required')); ok = false; }
+      return ok;
+    },
+    submit: function () { return baseApi('POST', '/support/tickets', v); }
+  });
+}
+
+function fileSize(n) {
+  if (n < 1024) return t('size.b', { n: localDigits(n) });
+  if (n < 1048576) return t('size.kb', { n: localDigits(Math.round(n / 1024)) });
+  return t('size.mb', { n: localDigits((n / 1048576).toFixed(1)) });
+}
+
+function attachmentList(list) {
+  if (!list || !list.length) return null;
+  return h('div', { class: 'flex flex-wrap gap-2 mt-2', 'data-attachments': '' }, list.map(function (a) {
+    var isImg = /^image\//.test(a.type || '');
+    return h('a', { href: a.url || '#', target: '_blank', rel: 'noopener noreferrer', class: 'eco-att', 'data-attachment': a.key, title: a.name },
+      isImg && a.url ? h('img', { src: a.url, alt: a.name, class: 'eco-att-img', loading: 'lazy' }) : icon('clip', 'h-4 w-4'),
+      h('span', { class: 'eco-att-name truncate', dir: 'auto', text: a.name }),
+      h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: fileSize(a.size || 0) }));
+  }));
+}
+
+function eventLine(m) {
+  var d = m.eventData || {};
+  var vars = {
+    from: d.from ? (has('tk.status.' + d.from) ? t('tk.status.' + d.from) : has('tk.priority.' + d.from) ? t('tk.priority.' + d.from) : d.from) : '',
+    to: d.to ? (has('tk.status.' + d.to) ? t('tk.status.' + d.to) : has('tk.priority.' + d.to) ? t('tk.priority.' + d.to) : d.to) : '',
+    who: m.authorType === 'system' ? t('tk.system') : m.authorType === 'player' ? t('tk.player') : (m.author || ''),
+    n: d.rating || 0
+  };
+  if (m.event === 'department_changed') vars.to = '';
+  var key = 'tk.ev.' + m.event + (m.event === 'assigned' && !d.to ? '.none' : '') + (d.auto ? '.auto' : '');
+  if (!has(key)) key = 'tk.ev.' + m.event;
+  return h('li', { class: 'eco-msg-event', 'data-event': m.event }, h('span', { text: t(key, vars) }), h('span', { class: 'text-secondary-400 whitespace-nowrap', text: fmtDate(m.createdAt, true) }));
+}
+
+function messageBubble(m, opts) {
+  opts = opts || {};
+  if (m.kind === 'event') return eventLine(m);
+  var staff = m.authorType === 'staff' || m.sender === 'agent';
+  var note = m.kind === 'note';
+  var cls = 'eco-msg' + (staff ? ' eco-msg--staff' : ' eco-msg--player') + (note ? ' eco-msg--note' : '') + (m.sender === 'system' ? ' eco-msg--system' : '');
+  var who = note ? t('tk.note.by', { name: m.author || '' }) : staff ? (m.author || t('tk.staff')) : (opts.playerName || t('tk.player'));
+  return h('li', { class: cls, 'data-msg-kind': m.kind || m.sender || '', 'data-seq': m.seq != null ? String(m.seq) : null },
+    h('div', { class: 'eco-msg-head' }, h('span', { class: 'font-medium', text: who }), note ? tag(t('tk.note'), 'warning') : null, h('span', { class: 'text-secondary-500 whitespace-nowrap', text: fmtDate(m.createdAt, true) })),
+    m.body ? h('div', { class: 'eco-msg-body', dir: 'auto', text: m.body }) : null,
+    attachmentList(m.attachments));
+}
+
+function cannedPicker(getLang, departmentId, onpick) {
+  var sel = h('select', { class: SELECT_SM + ' eco-canned', 'aria-label': t('tk.canned') }, h('option', { value: '', text: t('tk.canned.pick') }));
+  var items = [];
+  baseApi('GET', '/support/canned' + qs({ isActive: 'true', limit: 100, departmentId: departmentId || '' })).then(function (res) {
+    items = (res && res.items) || [];
+    items.forEach(function (c, i) { sel.appendChild(h('option', { value: String(i), text: i18nText(c.title) || c.key })); });
+    if (!items.length) sel.appendChild(h('option', { value: '', disabled: true, text: t('tk.canned.none') }));
+  }, function () { return null; });
+  sel.addEventListener('change', function () {
+    var c = items[Number(sel.value)];
+    sel.value = '';
+    if (!c) return;
+    var l = getLang();
+    var body = (c.body && (c.body[l] || c.body[LANGS.def])) || i18nText(c.body) || '';
+    onpick(body);
+  });
+  return sel;
+}
+
+function insertAtCursor(el, text) {
+  var start = el.selectionStart == null ? el.value.length : el.selectionStart;
+  var end = el.selectionEnd == null ? el.value.length : el.selectionEnd;
+  var before = el.value.slice(0, start);
+  var glue = before && !/\s$/.test(before) ? '\n' : '';
+  el.value = before + glue + text + el.value.slice(end);
+  var pos = (before + glue + text).length;
+  el.focus();
+  try { el.setSelectionRange(pos, pos); } catch (e) { pos = 0; }
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function uploadButton(onfile) {
+  var input = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp,application/pdf', class: 'sr-only', 'data-attach-input': '' });
+  var btn = button({ variant: 'ghost', size: 'sm', icon: 'clip', label: t('tk.attach'), onclick: function () { input.click(); } });
+  input.addEventListener('change', function () {
+    var f = input.files && input.files[0];
+    input.value = '';
+    if (!f) return;
+    var fd = new FormData();
+    fd.append('file', f);
+    setBusy(btn, true, t('tk.uploading'));
+    baseApi('POST', '/support/uploads', fd, true).then(function (a) { setBusy(btn, false); onfile(a); }, function (err) { setBusy(btn, false); toast('error', errorText(err)); });
+  });
+  return h('span', {}, input, btn);
+}
+
+function composer(opts) {
+  var state = { body: '', internal: false, status: 'awaiting_player', files: [] };
+  var area = textInput('', { multiline: true, rows: 4, label: t('tk.reply'), placeholder: t(opts.placeholder || 'tk.reply.ph'), oninput: function (v) { state.body = v; if (opts.oninput) opts.oninput(v); } });
+  area.setAttribute('data-composer', '');
+  var files = h('div', { class: 'flex flex-wrap gap-2' });
+  function paintFiles() {
+    clear(files);
+    state.files.forEach(function (a, i) {
+      files.appendChild(h('span', { class: 'eco-att', 'data-pending-attachment': a.key }, icon('clip', 'h-4 w-4'), h('span', { class: 'eco-att-name truncate', text: a.name }),
+        button({ variant: 'muted', size: 'icon', icon: 'close', iconClass: 'h-3 w-3', title: t('remove'), onclick: function () { state.files.splice(i, 1); paintFiles(); } })));
+    });
+  }
+  var tools = h('div', { class: 'flex flex-wrap items-center gap-2' }, cannedPicker(opts.lang, opts.departmentId, function (txt) { insertAtCursor(area, txt); }));
+  if (opts.attachments) tools.appendChild(uploadButton(function (a) { state.files.push(a); paintFiles(); }));
+  var after = null;
+  if (opts.statusAfter) {
+    after = segmented([{ value: 'awaiting_player', label: t('tk.after.awaiting_player') }, { value: 'resolved', label: t('tk.after.resolved') }, { value: 'closed', label: t('tk.after.closed') }], 'awaiting_player', function (v) { state.status = v; }, t('tk.after'));
+    after.setAttribute('data-reply-status', '');
+  }
+  var noteToggle = opts.notes ? toggle(false, t('tk.internal'), function (v) { state.internal = v; box.classList.toggle('eco-composer--note', v); if (after) after.hidden = v; send.querySelector('span').textContent = v ? t('tk.saveNote') : t(opts.sendLabel || 'tk.send'); }, 'sm') : null;
+  if (noteToggle) noteToggle.setAttribute('data-internal-toggle', '');
+  var send = button({ variant: 'primary', size: 'sm', icon: 'send', label: t(opts.sendLabel || 'tk.send'), onclick: function () { submit(); } });
+  send.setAttribute('data-send', '');
+  var err = h('div', {});
+  function submit() {
+    clear(err);
+    if (!state.body.trim() && !state.files.length) { err.appendChild(h('p', { class: 'text-sm text-error-600 dark:text-error-400 mb-2', text: t('err.required') })); area.focus(); return; }
+    setBusy(send, true, t('saving'));
+    opts.onsend({ body: state.body, internal: state.internal, status: state.status, attachments: state.files.map(function (f) { return f.key; }) }).then(function () {
+      setBusy(send, false);
+      state.body = '';
+      area.value = '';
+      state.files = [];
+      paintFiles();
+    }, function (e) {
+      setBusy(send, false);
+      err.appendChild(h('div', { class: 'mb-2' }, notice('error', errorText(e))));
+    });
+  }
+  area.addEventListener('keydown', function (e) { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); submit(); } });
+  var box = h('div', { class: 'eco-composer', 'data-composer-box': '' }, err, area, files,
+    h('div', { class: 'flex flex-wrap items-center gap-3 justify-between' }, tools, h('div', { class: 'flex flex-wrap items-center gap-3' }, noteToggle, after, send)));
+  box.focus = function () { area.focus(); };
+  return box;
+}
+
+function infoRow(label, value) {
+  return h('div', { class: 'eco-info-row' }, h('dt', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: label }), h('dd', { class: 'text-sm' }, value));
+}
+
+function ticketDetail(container, id) {
+  loadAgents();
+  var backBtn = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('back'), onclick: function () { go('tickets', null, lastQuery.tickets || {}); } });
+  var frame = pageFrame(t('tk.detail'), '', backBtn);
+  clear(container).appendChild(frame.el);
+  var grid = h('div', { class: 'eco-ticket', 'data-ticket': id });
+  frame.content.appendChild(grid);
+  var write = aclCan('ACCOUNT_NOTES', 1);
+
+  function skeleton() {
+    clear(grid).appendChild(h('div', { class: 'eco-ticket-main' }, card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('50%', 'h-5'), bar('90%', 'h-16'), bar('80%', 'h-16'), bar('100%', 'h-24')))));
+    grid.appendChild(h('div', { class: 'eco-ticket-side' }, card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('40%'), bar('70%'), bar('60%'), bar('50%')))));
+  }
+
+  function act(path, body) {
+    return baseApi('POST', '/support/tickets/' + encodeURIComponent(id) + path, body).then(function (res) { render(res); refreshSupportBadge(true); return res; });
+  }
+
+  function render(tk) {
+    var h1 = frame.el.querySelector('h1 span');
+    if (h1) h1.textContent = tk.subject;
+    clear(grid);
+    var thread = h('ol', { class: 'eco-thread', 'data-thread': '' });
+    (tk.messages || []).forEach(function (m) { thread.appendChild(messageBubble(m, { playerName: tk.displayName || tk.username })); });
+    var main = h('div', { class: 'eco-ticket-main flex flex-col gap-4' },
+      card(h('div', { class: 'p-4' },
+        h('div', { class: 'flex flex-wrap items-center gap-2 mb-3' }, mono(tk.number), ticketStatusTag(tk.status), priorityTag(tk.priority), tk.overdue ? tag(t('tk.overdue'), 'error') : null, tk.source !== 'player' ? tag(t('tk.source.' + tk.source), 'secondary') : null),
+        thread)));
+    if (write && tk.status !== 'closed') {
+      main.appendChild(card(h('div', { class: 'p-4' }, composer({ notes: true, statusAfter: true, attachments: true, departmentId: tk.departmentId, lang: function () { return tk.lang || LANGS.def; },
+        onsend: function (v) { return act('/messages', v).then(function () { toast('success', v.internal ? t('tk.noteSaved') : t('tk.sent')); }); } }))));
+    } else if (write) {
+      main.appendChild(notice('secondary', t('tk.closedNote')));
+      var noteOnly = composer({ notes: false, statusAfter: false, attachments: false, departmentId: tk.departmentId, lang: function () { return tk.lang || LANGS.def; }, sendLabel: 'tk.saveNote', placeholder: 'tk.note.ph',
+        onsend: function (v) { return act('/messages', { body: v.body, internal: true }); } });
+      main.appendChild(card(h('div', { class: 'p-4' }, noteOnly)));
+    }
+    grid.appendChild(main);
+
+    var side = h('dl', { class: 'flex flex-col gap-3' });
+    side.appendChild(infoRow(t('col.player'), h('div', { class: 'flex flex-col' }, playerLink(tk.userId, tk.displayName || tk.username), h('span', { class: 'text-xs text-secondary-500', text: t('tk.playerCounts', { tickets: (tk.player || {}).tickets || 0, chats: (tk.player || {}).chats || 0 }) }),
+      h('a', { href: hashFor('tickets', null, { userId: tk.userId }), class: 'eco-link text-xs', text: t('tk.playerTickets') }),
+      aclCan('ACCOUNT', 0) ? h('a', { href: hashFor('activity', null, { userId: tk.userId }), class: 'eco-link text-xs', text: t('act.playerLink') }) : null)));
+    if (write) {
+      var statusBtns = h('div', { class: 'flex flex-wrap gap-2', 'data-status-actions': '' });
+      var moves = tk.status === 'closed' ? [] : tk.status === 'resolved' ? ['closed', 'awaiting_staff'] : ['resolved', 'closed'];
+      if (tk.status === 'closed') moves = ['awaiting_staff'];
+      moves.forEach(function (s) {
+        var b = button({ variant: s === 'resolved' ? 'primary' : 'ghost', size: 'sm', label: t('tk.move.' + s), onclick: function () { setBusy(b, true); act('/status', { status: s }).then(function () { toast('success', t('tk.moved')); }, function (e) { setBusy(b, false); toast('error', errorText(e)); }); } });
+        b.setAttribute('data-move', s);
+        statusBtns.appendChild(b);
+      });
+      side.appendChild(infoRow(t('col.status'), h('div', { class: 'flex flex-col gap-2 items-start' }, ticketStatusTag(tk.status), statusBtns)));
+      var agentSel = selectInput(tk.assignee || '', [{ value: '', label: t('tk.unassigned') }].concat((SUPPORT.agents || []).map(function (a) { return { value: a.username, label: a.username + (a.online ? ' • ' + t('lc.online') : '') }; })).concat(tk.assignee && !(SUPPORT.agents || []).some(function (a) { return a.username === tk.assignee; }) ? [{ value: tk.assignee, label: tk.assignee }] : []), function (v) {
+        act('/assign', { assignee: v }).then(function () { toast('success', t('tk.assigned')); }, function (e) { toast('error', errorText(e)); });
+      }, { label: t('col.assignee'), placeholder: false });
+      agentSel.setAttribute('data-assignee', '');
+      var mine = !tk.assignee || tk.assignee !== SUPPORT.me ? button({ variant: 'link', size: 'sm', label: t('tk.takeIt'), onclick: function () { act('/assign', { assignee: 'me' }).then(function () { toast('success', t('tk.assigned')); }); } }) : null;
+      side.appendChild(infoRow(t('col.assignee'), h('div', { class: 'flex flex-col gap-1 items-start' }, agentSel, mine)));
+      side.appendChild(infoRow(t('col.department'), departmentPicker(tk.departmentId, function (v) { if (v) act('/assign', { departmentId: v }).then(function () { toast('success', t('saved')); }, function (e) { toast('error', errorText(e)); }); })));
+      var prio = segmented(TICKET_PRIORITIES.map(function (p) { return { value: p, label: t('tk.priority.' + p) }; }), tk.priority, function (v) { act('/assign', { priority: v }).then(function () { toast('success', t('saved')); }, function (e) { toast('error', errorText(e)); }); }, t('tk.priority'));
+      prio.setAttribute('data-priority-pick', '');
+      side.appendChild(infoRow(t('tk.priority'), prio));
+    } else {
+      side.appendChild(infoRow(t('col.status'), ticketStatusTag(tk.status)));
+      side.appendChild(infoRow(t('col.assignee'), h('span', { text: agentLabel(tk.assignee) })));
+      side.appendChild(infoRow(t('col.department'), h('span', { text: deptName(tk.department) })));
+    }
+    var times = h('div', { class: 'flex flex-col gap-1 text-sm', 'data-sla': '' },
+      h('div', {}, t('tk.created') + ': ', h('span', { class: 'tabular-nums', text: fmtDate(tk.createdAt, true) })),
+      tk.dueAt ? h('div', { class: tk.overdue ? 'text-error-600 dark:text-error-400' : '' }, t('tk.due') + ': ', h('span', { class: 'tabular-nums', text: fmtDate(tk.dueAt, true) })) : null,
+      h('div', {}, t('tk.firstResponse') + ': ', h('span', { class: 'tabular-nums', text: tk.firstResponseAt ? fmtDate(tk.firstResponseAt, true) : t('tk.notYet') })),
+      tk.resolvedAt ? h('div', {}, t('tk.resolvedAt') + ': ', h('span', { class: 'tabular-nums', text: fmtDate(tk.resolvedAt, true) })) : null,
+      tk.closedAt ? h('div', {}, t('tk.closedAt') + ': ', h('span', { class: 'tabular-nums', text: fmtDate(tk.closedAt, true) })) : null);
+    side.appendChild(infoRow(t('tk.times'), times));
+    if (tk.rating) {
+      side.appendChild(infoRow(t('tk.rating'), h('div', { 'data-rating': String(tk.rating) }, h('div', { class: 'eco-stars', 'aria-label': t('tk.ratingN', { n: tk.rating }) }, [1, 2, 3, 4, 5].map(function (i) { return h('span', { class: i <= tk.rating ? 'eco-star-on' : 'eco-star-off' }, icon('star', 'h-4 w-4')); })),
+        tk.ratingComment ? h('p', { class: 'text-sm mt-1', dir: 'auto', text: tk.ratingComment }) : null)));
+    }
+    if (tk.chatId) side.appendChild(infoRow(t('tk.fromChat'), h('a', { href: hashFor('live-chat', tk.chatId), class: 'eco-link text-sm', text: t('tk.openChat') })));
+    grid.appendChild(h('div', { class: 'eco-ticket-side' }, card(h('div', { class: 'p-4' }, side))));
+  }
+
+  function load() {
+    skeleton();
+    baseApi('GET', '/support/tickets/' + encodeURIComponent(id)).then(render, function (err) { clear(grid).appendChild(errorBlock(err, load)); });
+  }
+  load();
+}
+
+function waitText(sec) {
+  if (sec < 60) return t('lc.waitSec', { n: localDigits(Math.max(1, sec)) });
+  return t('lc.waitMin', { n: localDigits(Math.floor(sec / 60)) });
+}
+
+function liveChatPage(container, id, query) {
+  loadAgents();
+  supportBeat();
+  var view = query.view || (id ? 'mine' : 'queue');
+  var me = { id: id, seq: 0, stamp: '', poll: 0, chat: null, typingAt: 0 };
+  var awayToggle = toggle(!SUPPORT.away, t('lc.available'), function (v) {
+    SUPPORT.away = !v;
+    try { localStorage.setItem('economy.support.away', SUPPORT.away ? '1' : '0'); } catch (e) { SUPPORT.away = !v; }
+    sendBeat().then(function () { toast('success', t(v ? 'lc.nowOnline' : 'lc.nowAway')); });
+  }, 'sm');
+  awayToggle.setAttribute('data-available', '');
+  var frame = pageFrame(t('nav.live-chat'), t('desc.live-chat'), awayToggle);
+  clear(container).appendChild(frame.el);
+  var listBox = h('div', { class: 'eco-lc-list', 'data-lc-list': '' });
+  var tabs = segmented([{ value: 'queue', label: t('lc.queue') }, { value: 'mine', label: t('lc.mine') }, { value: 'all', label: t('lc.all') }, { value: 'closed', label: t('lc.closed') }], view, function (v) {
+    view = v;
+    replaceHash(hashFor('live-chat', me.id, v === 'queue' && !me.id ? {} : { view: v }));
+    loadList();
+  }, t('lc.views'));
+  tabs.setAttribute('data-lc-tabs', '');
+  var pane = h('div', { class: 'eco-lc-pane', 'data-lc-pane': '' });
+  frame.content.appendChild(h('div', { class: 'eco-lc' }, h('div', { class: 'eco-lc-side' }, card(h('div', { class: 'p-3 flex flex-col gap-3' }, tabs, listBox))), pane));
+
+  function alive() { return container.isConnected && frame.el.isConnected; }
+
+  function chatItem(c) {
+    var on = c.id === me.id;
+    var row = h('div', { class: 'eco-lc-item' + (on ? ' eco-lc-item--on' : ''), 'data-chat': c.id, 'data-chat-status': c.status, role: 'button', tabindex: '0',
+      onclick: function (e) { if (!e.target.closest('button')) openChat(c.id); },
+      onkeydown: function (e) { if (e.key === 'Enter') openChat(c.id); } },
+      h('div', { class: 'flex items-center gap-2 min-w-0' },
+        h('span', { class: 'eco-dot' + (c.playerOnline ? ' eco-dot--on' : ''), title: c.playerOnline ? t('lc.playerOnline') : t('lc.playerOffline') }),
+        h('span', { class: 'font-medium truncate', text: c.displayName || c.username }),
+        c.unread && c.agent === SUPPORT.me ? h('span', { class: 'eco-nav-badge tabular-nums', text: fmtNum(c.unread) }) : null,
+        h('span', { class: 'flex-1' }),
+        c.status === 'waiting' ? h('span', { class: 'text-xs text-warning-700 eco-wait whitespace-nowrap tabular-nums', text: waitText(c.waitingSeconds || 0) }) : c.agent ? h('span', { class: 'text-xs text-secondary-500 truncate', text: c.agent }) : null),
+      h('div', { class: 'text-xs text-secondary-500 truncate', dir: 'auto', text: c.playerTyping ? t('lc.typing') : (c.topic ? c.topic + ' · ' : '') + (c.lastPreview || '') }));
+    if (c.status === 'waiting' && aclCan('ACCOUNT_NOTES', 1)) {
+      var take = button({ variant: 'primary', size: 'sm', label: t('lc.take'), onclick: function () { takeChat(c.id, take); } });
+      take.setAttribute('data-take', c.id);
+      row.appendChild(h('div', { class: 'mt-2' }, take));
+    }
+    return row;
+  }
+
+  var listSeq = 0;
+  function loadList() {
+    var my = ++listSeq;
+    var params = { view: view === 'all' ? '' : view, limit: 50 };
+    baseApi('GET', '/support/chats' + qs(params)).then(function (res) {
+      if (my !== listSeq || !alive()) return;
+      var items = (res && res.items) || [];
+      clear(listBox);
+      if (!items.length) listBox.appendChild(emptyBlock(t('lc.empty.' + view), view === 'queue' ? t('lc.empty.queue.hint') : null));
+      items.forEach(function (c) { listBox.appendChild(chatItem(c)); });
+    }, function (err) { if (my === listSeq) clear(listBox).appendChild(errorBlock(err, loadList)); });
+  }
+
+  function takeChat(cid, btn) {
+    if (btn) setBusy(btn, true);
+    baseApi('POST', '/support/chats/' + encodeURIComponent(cid) + '/take', {}).then(function () {
+      toast('success', t('lc.taken'));
+      view = 'mine';
+      tabs.set('mine');
+      refreshSupportBadge(true);
+      openChat(cid);
+      loadList();
+    }, function (err) {
+      if (btn) setBusy(btn, false);
+      toast('error', err.code === 'ALREADY_TAKEN' ? t('code.ALREADY_TAKEN', { name: err.field === 'agent' ? err.message : err.message }) : errorText(err));
+      loadList();
+    });
+  }
+
+  function openChat(cid) {
+    me.id = cid;
+    me.seq = 0;
+    me.stamp = '';
+    me.chat = null;
+    me.poll++;
+    replaceHash(hashFor('live-chat', cid, view === 'queue' ? {} : { view: view }));
+    Array.prototype.forEach.call(listBox.querySelectorAll('[data-chat]'), function (el) { el.classList.toggle('eco-lc-item--on', el.getAttribute('data-chat') === cid); });
+    paneSkeleton();
+    poll(me.poll, 0);
+  }
+
+  function paneSkeleton() {
+    clear(pane).appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('40%', 'h-5'), bar('70%', 'h-10'), bar('60%', 'h-10'), bar('100%', 'h-20'))));
+  }
+
+  var thread = null;
+  var header = null;
+  var typingEl = null;
+  function renderChat(c, fresh) {
+    if (fresh || !thread) {
+      clear(pane);
+      header = h('div', { class: 'eco-lc-head' });
+      thread = h('ol', { class: 'eco-thread eco-lc-thread', 'data-thread': '', 'aria-live': 'polite' });
+      typingEl = h('div', { class: 'eco-typing', 'data-typing': '', hidden: true }, h('span', { class: 'eco-typing-dots', 'aria-hidden': 'true' }, h('i', {}), h('i', {}), h('i', {})), h('span', { text: t('lc.playerTypingNow') }));
+      var foot = h('div', { 'data-lc-foot': '' });
+      pane.appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' }, header, thread, typingEl, foot)));
+      pane.__foot = foot;
+    }
+    paintHeader(c);
+    (c.messages || []).forEach(function (m) {
+      if (thread.querySelector('[data-seq="' + m.seq + '"]')) return;
+      thread.appendChild(chatLine(m, c));
+    });
+    if ((c.messages || []).length) thread.scrollTop = thread.scrollHeight;
+    typingEl.hidden = !c.playerTyping;
+    paintFoot(c);
+  }
+
+  function chatLine(m, c) {
+    if (m.sender === 'system') {
+      var d = m.eventData || {};
+      var key = 'lc.ev.' + (m.event || 'note');
+      return h('li', { class: 'eco-msg-event', 'data-seq': String(m.seq), 'data-event': m.event || '' }, h('span', { dir: 'auto', text: m.event === 'greeting' ? m.body : t(key, { agent: d.agent || d.to || '', from: d.from || '', to: d.to || t('lc.queue'), by: d.by === 'player' ? t('tk.player') : d.by === 'system' ? t('tk.system') : (d.by || '') }) }), h('span', { class: 'text-secondary-400 whitespace-nowrap', text: fmtDate(m.createdAt, true) }));
+    }
+    return messageBubble({ kind: 'message', sender: m.sender, authorType: m.sender === 'agent' ? 'staff' : 'player', author: m.author, body: m.body, createdAt: m.createdAt, seq: m.seq }, { playerName: c.displayName || c.username });
+  }
+
+  function paintHeader(c) {
+    clear(header);
+    header.appendChild(h('div', { class: 'flex flex-wrap items-center gap-2' },
+      h('span', { class: 'eco-dot' + (c.playerOnline ? ' eco-dot--on' : ''), 'data-player-online': c.playerOnline ? 'true' : 'false' }),
+      playerLink(c.userId, c.displayName || c.username, 'font-medium'),
+      h('span', { class: 'text-xs text-secondary-500', text: c.playerOnline ? t('lc.playerOnline') : t('lc.playerOffline') }),
+      tag(t('lc.status.' + c.status), c.status === 'waiting' ? 'warning' : c.status === 'active' ? 'success' : 'secondary'),
+      c.agent ? h('span', { class: 'text-xs text-secondary-500', text: t('lc.withAgent', { name: c.agent }) }) : null,
+      c.topic ? h('span', { class: 'text-sm text-secondary-600 dark:text-secondary-300', dir: 'auto', text: '· ' + c.topic }) : null,
+      h('span', { class: 'flex-1' }),
+      c.ticketId ? h('a', { href: hashFor('tickets', c.ticketId), class: 'eco-link text-sm', 'data-chat-ticket': '', text: t('lc.ticketN', { n: c.ticketNumber || '' }) }) : null));
+  }
+
+  function paintFoot(c) {
+    var foot = pane.__foot;
+    var key = c.status + '|' + c.agent + '|' + (SUPPORT.me || '');
+    if (foot.__key === key) return;
+    foot.__key = key;
+    clear(foot);
+    var write = aclCan('ACCOUNT_NOTES', 1);
+    if (!write) return;
+    if (c.status === 'waiting') {
+      var take = button({ variant: 'primary', size: 'sm', label: t('lc.take'), onclick: function () { takeChat(c.id, take); } });
+      take.setAttribute('data-take', c.id);
+      foot.appendChild(h('div', { class: 'flex flex-wrap items-center gap-2' }, take, button({ variant: 'ghost', size: 'sm', label: t('lc.close'), onclick: function () { closeDialog(c); } })));
+      return;
+    }
+    if (c.status === 'closed') {
+      foot.appendChild(notice('secondary', c.rating ? t('lc.closedRated', { n: c.rating }) : t('lc.closedNote')));
+      return;
+    }
+    if (c.agent !== SUPPORT.me) {
+      foot.appendChild(notice('secondary', t('lc.someoneElse', { name: c.agent })));
+      return;
+    }
+    var comp = composer({ notes: false, statusAfter: false, attachments: false, lang: function () { return c.lang || LANGS.def; }, departmentId: c.departmentId, placeholder: 'lc.reply.ph',
+      oninput: function () {
+        var now = Date.now();
+        if (now - me.typingAt < 2500) return;
+        me.typingAt = now;
+        baseApi('POST', '/support/chats/' + encodeURIComponent(c.id) + '/typing', {}).then(null, function () { return null; });
+      },
+      onsend: function (v) { return baseApi('POST', '/support/chats/' + encodeURIComponent(c.id) + '/messages', { body: v.body }).then(function (res) { merge(res); }); } });
+    var transfer = button({ variant: 'ghost', size: 'sm', icon: 'users', label: t('lc.transfer'), onclick: function () { transferDialog(c); } });
+    transfer.setAttribute('data-transfer', '');
+    var close = button({ variant: 'danger', size: 'sm', label: t('lc.close'), onclick: function () { closeDialog(c); } });
+    close.setAttribute('data-close-chat', '');
+    foot.appendChild(comp);
+    foot.appendChild(h('div', { class: 'flex flex-wrap items-center gap-2 mt-2' }, transfer, close));
+  }
+
+  function merge(res) {
+    if (!res || res.id !== me.id) return;
+    var fresh = !me.chat;
+    me.chat = res;
+    me.stamp = res.stamp || me.stamp;
+    var msgs = res.messages || [];
+    if (msgs.length) me.seq = Math.max(me.seq, msgs[msgs.length - 1].seq);
+    renderChat(res, fresh);
+    if (msgs.length && res.agent === SUPPORT.me && res.status === 'active') baseApi('POST', '/support/chats/' + encodeURIComponent(res.id) + '/read', { seq: me.seq }).then(null, function () { return null; });
+  }
+
+  function poll(token2, wait) {
+    if (token2 !== me.poll || !alive() || !me.id) return;
+    baseApi('GET', '/support/chats/' + encodeURIComponent(me.id) + qs({ after: me.seq, wait: wait, stamp: me.stamp })).then(function (res) {
+      if (token2 !== me.poll || !alive()) return;
+      merge(res);
+      setTimeout(function () { poll(token2, 15); }, 150);
+    }, function (err) {
+      if (token2 !== me.poll || !alive()) return;
+      if (!me.chat) { clear(pane).appendChild(errorBlock(err, function () { openChat(me.id); })); return; }
+      setTimeout(function () { poll(token2, 15); }, 3000);
+    });
+  }
+
+  function transferDialog(c) {
+    var to = '';
+    return loadAgents(true).then(function (agents) {
+      var options = [{ value: '', label: t('lc.backToQueue') }].concat(agents.filter(function (a) { return a.username !== SUPPORT.me; }).map(function (a) { return { value: a.username, label: a.username + ' · ' + (a.online ? t('lc.online') : t('lc.offline')) + ' · ' + t('lc.activeN', { n: a.activeChats || 0 }) }; }));
+      var sel = selectInput('', options, function (v) { to = v; }, { label: t('lc.transferTo'), placeholder: false });
+      sel.setAttribute('data-transfer-to', '');
+      return formDialog({ id: 'chat-transfer', title: t('lc.transfer'), text: t('lc.transfer.text'), icon: 'users', ok: t('lc.transfer.ok'), body: field(t('lc.transferTo'), sel),
+        submit: function () { return baseApi('POST', '/support/chats/' + encodeURIComponent(c.id) + '/transfer', { to: to }); } });
+    }).then(function (res) {
+      if (!res) return;
+      toast('success', t('lc.transferred'));
+      me.stamp = '';
+      if (pane.__foot) pane.__foot.__key = '';
+      loadList();
+    });
+  }
+
+  function closeDialog(c) {
+    var toTicket = false;
+    var box = checkbox(false, t('lc.toTicket'), function (on) { toTicket = on; });
+    box.setAttribute('data-to-ticket', '');
+    return formDialog({ id: 'chat-close', title: t('lc.close.title'), text: t('lc.close.text'), icon: 'live-chat', ok: t('lc.close'), danger: true, body: h('div', {}, box, h('p', { class: 'text-xs text-secondary-500 mt-1', text: t('lc.toTicket.hint') })),
+      submit: function () { return baseApi('POST', '/support/chats/' + encodeURIComponent(c.id) + '/close', { toTicket: toTicket }); } }).then(function (res) {
+      if (!res) return;
+      toast('success', res.ticketId ? t('lc.closedTicket', { n: res.ticketNumber || '' }) : t('lc.closedDone'));
+      if (pane.__foot) pane.__foot.__key = '';
+      merge(res);
+      loadList();
+      refreshSupportBadge(true);
+    });
+  }
+
+  loadList();
+  var listTimer = setInterval(function () { if (!alive()) { clearInterval(listTimer); return; } loadList(); }, 4000);
+  if (id) openChat(id);
+  else clear(pane).appendChild(card(emptyBlock(t('lc.pick'), t('lc.pick.hint'))));
+}
+
+RESOURCES['support-departments'] = {
+  api: 'base',
+  path: 'support/departments',
+  settings: true,
+  filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it, false); }, skeleton: '50%' },
+    { label: 'col.firstResponse', render: function (it) { return h('span', { class: 'tabular-nums', text: t('dur.hours', { n: localDigits(it.firstResponseHours) }) }); }, width: 130 },
+    { label: 'col.agents', render: function (it) { return (it.agents || []).length ? h('div', { class: 'flex flex-wrap gap-1' }, it.agents.slice(0, 4).map(function (a) { return tag(a, 'secondary'); })) : h('span', { class: 'text-secondary-400', text: t('dp.everyone') }); }, width: 200 },
+    { label: 'col.open', render: function (it) { return it.open ? h('a', { href: hashFor('tickets', null, { departmentId: it.id, status: 'active' }), class: 'eco-link tabular-nums', text: fmtNum(it.open) }) : h('span', { class: 'text-secondary-400', text: t('none') }); }, width: 100 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.dp.key.hint', required: true },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+    ] },
+    tr('name', { label: 'f.dp.name', hint: 'f.dp.name.hint', required: true, max: 100 }),
+    tr('description', { label: 'f.dp.description', hint: 'f.dp.description.hint', multiline: true, max: 300, optional: true }),
+    { name: 'firstResponseHours', type: 'number', label: 'f.dp.hours', hint: 'f.dp.hours.hint', required: true, min: 1, max: 720 },
+    { name: 'agents', type: 'multi', label: 'f.dp.agents', hint: 'f.dp.agents.hint', options: function () {
+      var names = (SUPPORT.agents || []).map(function (a) { return a.username; });
+      return names.map(function (n) { return { value: n, label: n }; });
+    } },
+    { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.dp.active.hint' }
+  ],
+  prepare: function () { return loadAgents(); },
+  defaults: function () { return { key: '', name: {}, description: {}, firstResponseHours: 24, agents: [], isActive: true, sort: 100 }; },
+  fixPayload: function (p) { if (p.sort == null) p.sort = 100; if (!p.agents) p.agents = []; return p; }
+};
+
+RESOURCES['support-canned'] = {
+  api: 'base',
+  path: 'support/canned',
+  settings: true,
+  filters: [
+    { name: 'departmentId', label: 'filter.department', type: 'ref', resource: 'support/departments', api: baseApi },
+    { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }
+  ],
+  columns: [
+    { label: 'col.title', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.title) || it.key }), h('div', { class: 'text-xs text-secondary-500 eco-clamp', dir: 'auto', text: i18nText(it.body) })); }, skeleton: '60%' },
+    { label: 'col.department', render: function (it) { return h('span', { class: it.department ? '' : 'text-secondary-400', text: it.department ? deptName(it.department) : t('cn.allDepts') }); }, width: 170 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.cn.key.hint', required: true },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+    ] },
+    tr('title', { label: 'f.cn.title', hint: 'f.cn.title.hint', required: true, max: 100 }),
+    tr('body', { label: 'f.cn.body', hint: 'f.cn.body.hint', required: true, multiline: true, rows: 5, max: 3000 }),
+    { name: 'departmentId', type: 'ref', resource: 'support/departments', api: baseApi, label: 'f.cn.department', hint: 'f.cn.department.hint', optional: true },
+    { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.cn.active.hint' }
+  ],
+  defaults: function () { return { key: '', title: {}, body: {}, departmentId: '', isActive: true, sort: 100 }; },
+  fixPayload: function (p) { if (p.sort == null) p.sort = 100; if (!p.departmentId) p.departmentId = ''; return p; }
+};
+
+var SUPPORT_SETTINGS_FIELDS = [
+  { type: 'heading', label: 'ss.tickets' },
+  { type: 'row', fields: [
+    { name: 'maxOpenTickets', type: 'number', label: 'f.ss.maxOpen', hint: 'f.ss.maxOpen.hint', required: true, min: 1, max: 100 },
+    { name: 'ticketsPerHour', type: 'number', label: 'f.ss.perHour', hint: 'f.ss.perHour.hint', required: true, min: 1, max: 1000 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'messagesPerHour', type: 'number', label: 'f.ss.messages', hint: 'f.ss.messages.hint', required: true, min: 1, max: 10000 },
+    { name: 'autoCloseDays', type: 'number', label: 'f.ss.autoClose', hint: 'f.ss.autoClose.hint', required: true, min: 1, max: 365 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'maxAttachments', type: 'number', label: 'f.ss.attachments', hint: 'f.ss.attachments.hint', required: true, min: 0, max: 10 },
+    { name: 'maxAttachmentKb', type: 'number', label: 'f.ss.attachmentKb', hint: 'f.ss.attachmentKb.hint', required: true, min: 16, max: 10240 }
+  ] },
+  { type: 'heading', label: 'ss.chat' },
+  { name: 'chatEnabled', type: 'bool', inline: true, label: 'f.ss.chatEnabled', hint: 'f.ss.chatEnabled.hint' },
+  tr('chatGreeting', { label: 'f.ss.greeting', hint: 'f.ss.greeting.hint', multiline: true, rows: 2, max: 500, optional: true }),
+  tr('chatOffline', { label: 'f.ss.offline', hint: 'f.ss.offline.hint', multiline: true, rows: 2, max: 500, optional: true }),
+  { type: 'row', fields: [
+    { name: 'chatIdleMinutes', type: 'number', label: 'f.ss.idle', hint: 'f.ss.idle.hint', required: true, min: 5, max: 1440 },
+    { name: 'chatMessagesPerMinute', type: 'number', label: 'f.ss.chatRate', hint: 'f.ss.chatRate.hint', required: true, min: 1, max: 600 }
+  ] },
+  { type: 'heading', label: 'ss.activity' },
+  { name: 'activityRetentionDays', type: 'number', label: 'f.ss.retention', hint: 'f.ss.retention.hint', required: true, min: 7, max: 3650 }
+];
+
+function supportSettingsPage(container) {
+  var frame = tabFrame(t('desc.support-settings'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(baseApi, '/support/settings', null, SUPPORT_SETTINGS_FIELDS, { id: 'support-settings' });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
+var ACTIVITY_KINDS = ['signin', 'purchase', 'prize', 'event', 'restriction', 'report', 'ticket', 'chat', 'referral', 'config'];
+var ACTIVITY_COLOR = { signin: 'secondary', purchase: 'success', prize: 'success', event: 'primary', restriction: 'error', report: 'warning', ticket: 'primary', chat: 'primary', referral: 'success', config: 'secondary' };
+var ACTIVITY_ICON = { signin: 'users', purchase: 'payments', prize: 'prizes', event: 'event-types', restriction: 'ban', report: 'reports', ticket: 'tickets', chat: 'live-chat', referral: 'referrals', config: 'remote-config' };
+var CONFIG_TYPES = ['string', 'number', 'bool', 'json', 'text'];
+var PLATFORMS = ['android', 'ios', 'web', 'windows', 'macos', 'linux'];
+var REFERRAL_STATUS_COLOR = { pending: 'warning', held: 'error', completed: 'success', rejected: 'secondary' };
+
+function activityText(it) {
+  var d = it.data || {};
+  var vars = {};
+  Object.keys(d).forEach(function (k) {
+    var v = d[k];
+    vars[k] = typeof v === 'number' ? fmtNum(v) : Array.isArray(v) ? v.join('، ') : v == null ? '' : String(v);
+  });
+  if (d.method && has('method.' + d.method)) vars.method = t('method.' + d.method);
+  if (d.status && has('tk.status.' + d.status)) vars.status = t('tk.status.' + d.status);
+  if (d.kind && has('rs.kind.' + d.kind)) vars.kind = t('rs.kind.' + d.kind);
+  if (it.kind === 'referral' && d.status && has('rf.status.' + d.status)) vars.status = t('rf.status.' + d.status);
+  if (it.kind === 'config' && Array.isArray(d.variants)) vars.variants = d.variants.join('، ');
+  if (it.kind === 'signin' && has('act.method.' + it.action)) vars.method = t('act.method.' + it.action);
+  var key = 'act.' + it.kind + '.' + it.action;
+  return has(key) ? t(key, vars) : t('act.' + it.kind) + ' · ' + it.action;
+}
+
+function activityWhat(it) {
+  return h('div', { class: 'flex items-start gap-2 min-w-0', 'data-activity': it.kind + ':' + it.action },
+    h('span', { class: 'eco-act-icon eco-act-icon--' + it.kind }, icon(ACTIVITY_ICON[it.kind] || 'activity', 'h-4 w-4')),
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'flex items-center gap-2 flex-wrap' }, tag(t('act.' + it.kind), ACTIVITY_COLOR[it.kind]), activityLink(it)),
+      h('div', { class: 'text-sm', dir: 'auto', text: activityText(it) })));
+}
+
+function activityLink(it) {
+  if (it.kind === 'ticket' && it.refId && aclCan('ACCOUNT_NOTES', 0)) return h('a', { href: hashFor('tickets', it.refId), class: 'eco-link text-xs', text: t('act.open') });
+  if (it.kind === 'chat' && it.refId && aclCan('ACCOUNT_NOTES', 0)) return h('a', { href: hashFor('live-chat', it.refId, { view: 'all' }), class: 'eco-link text-xs', text: t('act.open') });
+  if (it.kind === 'purchase' && it.refId) return h('a', { href: hashFor('payments', it.refId), class: 'eco-link text-xs', text: t('act.open') });
+  if (it.kind === 'report' && it.refId && aclCan('CHANNEL_MESSAGE', 0)) return h('a', { href: hashFor('reports', it.refId), class: 'eco-link text-xs', text: t('act.open') });
+  if (it.kind === 'referral' && it.refId) return h('a', { href: hashFor('referrals', null, { q: it.username || '' }), class: 'eco-link text-xs', text: t('act.open') });
+  return null;
+}
+
+function activityWhere(it) {
+  var parts = [];
+  if (it.country) parts.push(h('span', { class: 'font-mono text-xs', dir: 'ltr', text: it.country }));
+  if (it.platform) parts.push(tag(has('pf.' + it.platform) ? t('pf.' + it.platform) : it.platform, 'secondary'));
+  if (it.ip) parts.push(mono(it.ip));
+  if (!parts.length) return h('span', { class: 'text-secondary-400', text: '—' });
+  return h('div', { class: 'flex flex-wrap items-center gap-1' }, parts);
+}
+
+function actorText(a) {
+  if (!a) return t('act.actor.system');
+  if (a === 'player') return t('act.actor.player');
+  if (a === 'system') return t('act.actor.system');
+  if (a.indexOf('console:') === 0) return t('act.actor.console', { name: a.slice(8) || 'admin' });
+  return a;
+}
+
+LISTS.activity = {
+  api: 'base',
+  path: 'activity',
+  noRow: true,
+  top: function () { return activityTop(); },
+  filters: [
+    { name: 'kind', label: 'filter.kind', options: function () { return ACTIVITY_KINDS.map(function (k) { return { value: k, label: t('act.' + k) }; }); } },
+    { name: 'userId', label: 'filter.playerId', type: 'text' },
+    { name: 'platform', label: 'filter.platform', options: function () { return PLATFORMS.map(function (p) { return { value: p, label: has('pf.' + p) ? t('pf.' + p) : p }; }); } },
+    { name: 'country', label: 'filter.country', type: 'text' },
+    { name: 'from', label: 'filter.from', type: 'text' },
+    { name: 'to', label: 'filter.to', type: 'text' }
+  ],
+  columns: [
+    { label: 'col.created', render: function (it) { return dateCell(it.createdAt); }, width: 160 },
+    { label: 'col.player', render: function (it) { return playerLink(it.userId, it.displayName || it.username); }, width: 150 },
+    { label: 'col.what', render: activityWhat, skeleton: '70%' },
+    { label: 'col.where', render: activityWhere, width: 200 },
+    { label: 'col.by', render: function (it) { return h('span', { class: 'text-sm text-secondary-600 dark:text-secondary-300', text: actorText(it.actor) }); }, width: 140 }
+  ]
+};
+
+function activityTop() {
+  var box = h('div', { class: 'mb-3', 'data-activity-top': '' });
+  baseApi('GET', '/activity/summary').then(function (s) {
+    if (!s) return;
+    box.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('act.retention', { n: localDigits(s.retentionDays) }) }));
+  }, function () { return null; });
+  return box;
+}
+
+function activityPage(container, query, ctx) {
+  return listPage(container, 'activity', query, ctx);
+}
+
+var ACTIVITY_CARD = { id: null, data: null, loading: false, at: 0, err: null, kind: '' };
+
+function loadActivityCard(id) {
+  ACTIVITY_CARD.loading = true;
+  return baseApi('GET', '/activity' + qs({ userId: id, limit: 8, kind: ACTIVITY_CARD.kind })).then(function (res) {
+    ACTIVITY_CARD.loading = false;
+    ACTIVITY_CARD.at = Date.now();
+    ACTIVITY_CARD.data = res;
+    ACTIVITY_CARD.err = null;
+    var old = document.querySelector('[data-player-activity]');
+    if (old) old.removeAttribute('data-key');
+    schedule();
+  }, function (err) {
+    ACTIVITY_CARD.loading = false;
+    ACTIVITY_CARD.at = Date.now();
+    ACTIVITY_CARD.err = err;
+    schedule();
+  });
+}
+
+function playerActivityCard() {
+  var id = playerCardRoute();
+  var existing = document.querySelector('[data-player-activity]');
+  if (!id || !token() || !aclCan('ACCOUNT', 0)) { if (existing) existing.remove(); return; }
+  var main = null;
+  var mains = document.querySelectorAll('#main > main');
+  for (var i = 0; i < mains.length; i++) if (mains[i].style.display !== 'none') main = mains[i];
+  var grid = main && main.querySelector('div.flex.flex-col.flex-1.min-w-0 > div.grid.grid-cols-1.gap-4');
+  if (!grid) return;
+  if (ACTIVITY_CARD.id !== id) { ACTIVITY_CARD.id = id; ACTIVITY_CARD.data = null; ACTIVITY_CARD.err = null; ACTIVITY_CARD.at = 0; ACTIVITY_CARD.kind = ''; }
+  if (!ACTIVITY_CARD.loading && Date.now() - ACTIVITY_CARD.at > 20000) loadActivityCard(id);
+  var p = ACTIVITY_CARD.data;
+  var anchor = grid.querySelector('[data-player-progress]') || grid.querySelector('[data-player-mod]');
+  var key = lang() + '|' + id + '|' + ACTIVITY_CARD.kind + '|' + (p ? JSON.stringify((p.items || []).map(function (x) { return x.id; })) : ACTIVITY_CARD.err ? 'err' : 'loading');
+  var placed = existing && existing.parentNode === grid && (anchor ? existing.previousElementSibling === anchor : grid.firstChild === existing);
+  if (existing && existing.getAttribute('data-key') === key && placed) return;
+  if (existing) existing.remove();
+  var body = h('div', { class: 'px-4 py-3' });
+  var cardEl = h('section', { class: 'flex flex-col dark:bg-secondary-800 rounded-md shadow bg-white', 'data-player-activity': '', 'data-key': key, 'data-economy': 'player-activity', 'data-l10n-skip': '', 'aria-labelledby': 'player-activity-title', dir: document.documentElement.getAttribute('dir') || 'ltr' }, body);
+  var place = function () { if (anchor) anchor.after(cardEl); else grid.insertBefore(cardEl, grid.firstChild); };
+  var title = h('h2', { id: 'player-activity-title', class: 'font-medium', text: t('act.card') });
+  var chips = segmented([{ value: '', label: t('all') }].concat(['signin', 'purchase', 'prize', 'ticket', 'restriction'].map(function (k) { return { value: k, label: t('act.' + k) }; })), ACTIVITY_CARD.kind, function (v) {
+    ACTIVITY_CARD.kind = v;
+    ACTIVITY_CARD.at = 0;
+    loadActivityCard(id);
+  }, t('filter.kind'));
+  chips.setAttribute('data-activity-chips', '');
+  body.appendChild(h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-3' }, title,
+    h('div', { class: 'flex flex-wrap items-center gap-3' }, chips,
+      h('a', { href: hashFor('activity', null, { userId: id }), class: 'eco-link text-sm', 'data-activity-all': '', text: t('act.all') }),
+      aclCan('ACCOUNT_NOTES', 0) ? h('a', { href: hashFor('tickets', null, { userId: id, status: '' }), class: 'eco-link text-sm', text: t('tk.playerTickets') }) : null)));
+  if (!p) {
+    body.appendChild(ACTIVITY_CARD.err ? notice('error', errorText(ACTIVITY_CARD.err)) : h('div', { class: 'flex flex-col gap-2' }, bar('50%'), bar('70%'), bar('40%')));
+    place();
+    return;
+  }
+  var list = h('ol', { class: 'eco-timeline', 'data-timeline': '' });
+  (p.items || []).forEach(function (it) {
+    list.appendChild(h('li', { class: 'eco-timeline-item', 'data-activity-item': it.kind },
+      h('span', { class: 'eco-act-icon eco-act-icon--' + it.kind }, icon(ACTIVITY_ICON[it.kind] || 'activity', 'h-4 w-4')),
+      h('div', { class: 'min-w-0 flex-1' },
+        h('div', { class: 'text-sm', dir: 'auto', text: activityText(it) }),
+        h('div', { class: 'text-xs text-secondary-500 flex flex-wrap gap-2' }, h('span', { text: fmtDate(it.createdAt, true) }), it.country ? h('span', { dir: 'ltr', text: it.country }) : null, it.platform ? h('span', { text: has('pf.' + it.platform) ? t('pf.' + it.platform) : it.platform }) : null)),
+      activityLink(it)));
+  });
+  if (!(p.items || []).length) list.appendChild(h('li', { class: 'text-sm text-secondary-400', text: t('act.empty') }));
+  body.appendChild(list);
+  place();
+}
+
+function referralStatusTag(it) {
+  var el = tag(t('rf.status.' + it.status), REFERRAL_STATUS_COLOR[it.status]);
+  el.setAttribute('data-referral-status', it.status);
+  return el;
+}
+
+function referralFlags(flags) {
+  if (!flags || !flags.length) return null;
+  return h('div', { class: 'flex flex-wrap gap-1 mt-1' }, flags.map(function (f) { var el = tag(has('rf.flag.' + f) ? t('rf.flag.' + f) : f, 'warning'); el.setAttribute('data-flag', f); return el; }));
+}
+
+function referralGoal(it) {
+  if (!it.goalEventKey) return h('span', { class: 'text-secondary-400', text: t('rf.noGoal') });
+  var done = Number(it.goalProgress || 0);
+  var need = Number(it.goalValue || 0);
+  return h('div', { class: 'text-sm' }, h('span', { class: 'font-mono text-xs', dir: 'ltr', text: it.goalEventKey }), h('div', { class: 'tabular-nums text-xs text-secondary-500', text: t('rf.progress', { n: fmtNum(Math.min(done, need)), total: fmtNum(need) }) }));
+}
+
+function referralActions(it, reload) {
+  var box = h('div', { class: 'flex flex-wrap gap-1' });
+  var tree = button({ variant: 'link', size: 'sm', label: t('rf.tree'), onclick: function () { referralTree(it.referrerId); } });
+  tree.setAttribute('data-tree', it.referrerId);
+  box.appendChild(tree);
+  if (!aclCan('HIRO_ECONOMY', 1)) return box;
+  if (it.status === 'held') {
+    var ok = button({ variant: 'primary', size: 'sm', label: t('rf.approve'), onclick: function () { decide(it, 'approve', reload); } });
+    ok.setAttribute('data-approve', it.id);
+    box.appendChild(ok);
+  }
+  if (it.status === 'held' || it.status === 'pending') {
+    var no = button({ variant: 'danger', size: 'sm', label: t('rf.reject'), onclick: function () { decide(it, 'reject', reload); } });
+    no.setAttribute('data-reject', it.id);
+    box.appendChild(no);
+  }
+  return box;
+}
+
+function decide(it, what, reload) {
+  var note = textInput('', { multiline: true, rows: 2, label: t('rs.note'), placeholder: t('rs.note.ph') });
+  var v = { note: '' };
+  note.addEventListener('input', function () { v.note = note.value; });
+  return formDialog({ id: 'referral-' + what, title: t('rf.' + what + '.title'), text: t('rf.' + what + '.text', { from: it.referrerName, to: it.refereeName }), icon: what === 'approve' ? 'check' : 'ban', danger: what === 'reject', ok: t('rf.' + what),
+    body: field(t('rs.note'), note, null, { optional: true }),
+    submit: function () { return api('POST', '/referrals/' + encodeURIComponent(it.id) + '/' + what, v); } }).then(function (res) {
+    if (res) { toast('success', t('rf.' + what + '.done')); if (reload) reload(); }
+  });
+}
+
+function referralTree(userId) {
+  var body = h('div', { class: 'flex flex-col gap-3', 'data-referral-tree': userId }, bar('60%'), bar('80%'));
+  confirmModal({ title: t('rf.tree.title'), icon: 'referrals', body: body, ok: t('close'), cancel: t('back') });
+  api('GET', '/referrals/tree/' + encodeURIComponent(userId)).then(function (tr2) {
+    clear(body);
+    var up = (tr2.referredBy || []).slice().reverse();
+    var chain = h('div', { class: 'flex flex-wrap items-center gap-1 text-sm' });
+    up.forEach(function (u) { chain.appendChild(playerLink(u.userId, u.username)); chain.appendChild(h('span', { class: 'text-secondary-400', text: '←' })); });
+    chain.appendChild(h('span', { class: 'font-semibold', text: tr2.user.username }));
+    chain.appendChild(mono(tr2.user.code || ''));
+    body.appendChild(h('div', {}, h('div', { class: 'text-xs text-secondary-500 mb-1', text: t('rf.tree.up') }), chain));
+    var list = h('ul', { class: 'flex flex-col gap-1 eco-tree-list' });
+    (tr2.children || []).forEach(function (c) {
+      list.appendChild(h('li', { class: 'flex flex-wrap items-center gap-2 text-sm', 'data-tree-child': c.userId }, playerLink(c.userId, c.username), referralStatusTag(c),
+        c.referrals ? button({ variant: 'link', size: 'sm', label: t('rf.tree.more', { n: c.referrals }), onclick: function () { referralTree(c.userId); } }) : null,
+        referralFlags(c.flags), h('span', { class: 'text-xs text-secondary-500', text: fmtDate(c.createdAt) })));
+    });
+    if (!(tr2.children || []).length) list.appendChild(h('li', { class: 'text-sm text-secondary-400', text: t('rf.tree.none') }));
+    body.appendChild(h('div', {}, h('div', { class: 'text-xs text-secondary-500 mb-1', text: t('rf.tree.down', { n: (tr2.children || []).length }) }), list));
+  }, function (err) { clear(body).appendChild(notice('error', errorText(err))); });
+}
+
+var referralReload = null;
+
+LISTS.referrals = {
+  path: 'referrals',
+  noRow: true,
+  top: function () { return referralTop(); },
+  filters: [
+    { name: 'status', label: 'filter.status', options: function () { return ['pending', 'held', 'completed', 'rejected'].map(function (s) { return { value: s, label: t('rf.status.' + s) }; }); } },
+    { name: 'flagged', label: 'filter.flagged', options: function () { return [{ value: 'true', label: t('rf.flaggedOnly') }]; } },
+    { name: 'referrerId', label: 'filter.referrerId', type: 'text' }
+  ],
+  columns: [
+    { label: 'col.referral', render: function (it) { return h('div', { class: 'flex flex-wrap items-center gap-1 min-w-0' }, playerLink(it.referrerId, it.referrerName), h('span', { class: 'text-secondary-400', text: '←' }), playerLink(it.refereeId, it.refereeName)); }, skeleton: '60%' },
+    { label: 'col.code', render: function (it) { return mono(it.code); }, width: 110 },
+    { label: 'col.status', render: function (it) { return h('div', {}, referralStatusTag(it), referralFlags(it.flags)); }, width: 170 },
+    { label: 'col.goal', render: referralGoal, width: 150 },
+    { label: 'col.created', render: function (it) { return dateCell(it.createdAt); }, width: 150 },
+    { label: 'col.actions', render: function (it) { return referralActions(it, function () { if (referralReload) referralReload(); }); }, width: 200 }
+  ]
+};
+
+function referralTop() {
+  var box = h('div', { 'data-referral-top': '' }, h('div', { class: 'eco-stat-grid mb-4' }, [1, 2, 3, 4].map(function () { return card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('6rem'), bar('3rem', 'h-7'))); })));
+  api('GET', '/referrals/summary').then(function (s) {
+    clear(box);
+    var grid = h('div', { class: 'eco-stat-grid mb-4' });
+    grid.appendChild(statCard(t('rf.stat.total'), s.total, t('rf.stat.today', { n: fmtNum(s.today) }), null));
+    grid.appendChild(statCard(t('rf.status.completed'), s.completed, null, hashFor('referrals', null, { status: 'completed' })));
+    grid.appendChild(statCard(t('rf.status.pending'), s.pending, null, hashFor('referrals', null, { status: 'pending' })));
+    grid.appendChild(statCard(t('rf.status.held'), s.held, t('rf.stat.flagged', { n: fmtNum(s.flagged) }), hashFor('referrals', null, { status: 'held' }), { alert: s.held > 0 }));
+    box.appendChild(grid);
+    if ((s.topReferrers || []).length) {
+      var top = h('ol', { class: 'flex flex-col', 'data-top-referrers': '' });
+      s.topReferrers.forEach(function (r, i) {
+        top.appendChild(h('li', { class: 'flex flex-wrap items-center gap-2 px-4 py-2 border-b border-secondary-200 dark:border-secondary-700 text-sm' },
+          h('span', { class: 'tabular-nums text-secondary-500 w-6', text: localDigits(i + 1) }), playerLink(r.userId, r.username, 'font-medium'),
+          h('span', { class: 'tabular-nums', text: t('rf.top.line', { n: fmtNum(r.total), done: fmtNum(r.completed) }) }),
+          r.flagged ? tag(t('rf.top.flagged', { n: fmtNum(r.flagged) }), 'warning') : null,
+          h('span', { class: 'flex-1' }),
+          button({ variant: 'link', size: 'sm', label: t('rf.tree'), onclick: function () { referralTree(r.userId); } })));
+      });
+      box.appendChild(h('div', { class: 'mb-4' }, h('h2', { class: 'text-lg font-medium mb-2', text: t('rf.top') }), card(top)));
+    }
+  }, function () { clear(box); });
+  return box;
+}
+
+function referralsPage(container, query, ctx) {
+  var list = listPage(container, 'referrals', query, ctx);
+  referralReload = list.reload;
+  return list;
+}
+
+var REFERRAL_FIELDS = [
+  { name: 'isEnabled', type: 'bool', inline: true, label: 'f.rr.enabled', hint: 'f.rr.enabled.hint' },
+  { type: 'heading', label: 'rr.rewards' },
+  { type: 'row', fields: [
+    { name: 'referrerPrizeId', type: 'ref', resource: 'prizes', label: 'f.rr.referrerPrize', hint: 'f.rr.referrerPrize.hint', optional: true },
+    { name: 'refereePrizeId', type: 'ref', resource: 'prizes', label: 'f.rr.refereePrize', hint: 'f.rr.refereePrize.hint', optional: true }
+  ] },
+  { name: 'goalEventTypeId', type: 'ref', resource: 'event-types', label: 'f.rr.goal', hint: 'f.rr.goal.hint', optional: true },
+  { type: 'row', fields: [
+    { name: 'goalMeasure', type: 'select', label: 'f.rr.measure', required: true, noPlaceholder: true, options: function () { return ['count', 'sum', 'max'].map(function (m) { return { value: m, label: t('rr.measure.' + m) }; }); } },
+    { name: 'goalValue', type: 'number', int: false, label: 'f.rr.goalValue', hint: 'f.rr.goalValue.hint', required: true }
+  ] },
+  { type: 'heading', label: 'rr.rules' },
+  { type: 'row', fields: [
+    { name: 'newAccountDays', type: 'number', label: 'f.rr.days', hint: 'f.rr.days.hint', required: true, min: 0, max: 3650 },
+    { name: 'maxPerReferrer', type: 'number', label: 'f.rr.max', hint: 'f.rr.max.hint', required: true, min: 1, max: 100000 }
+  ] },
+  { name: 'dailyPerReferrer', type: 'number', label: 'f.rr.daily', hint: 'f.rr.daily.hint', required: true, min: 1, max: 100000 },
+  { name: 'onePerDevice', type: 'bool', inline: true, label: 'f.rr.device', hint: 'f.rr.device.hint' },
+  { name: 'onePerPhone', type: 'bool', inline: true, label: 'f.rr.phone', hint: 'f.rr.phone.hint' },
+  { name: 'holdFlagged', type: 'bool', inline: true, label: 'f.rr.hold', hint: 'f.rr.hold.hint' }
+];
+
+function referralRulesPage(container) {
+  var frame = tabFrame(t('desc.referral-rules'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(api, '/referral-settings', null, REFERRAL_FIELDS, { id: 'referral-rules', fixPayload: function (p) {
+    ['referrerPrizeId', 'refereePrizeId', 'goalEventTypeId'].forEach(function (k) { if (!p[k]) p[k] = ''; });
+    p.goalValue = Number(p.goalValue) || 1;
+    return p;
+  } });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
+function configValuePreview(it) {
+  var v = it.value;
+  if (it.type === 'bool') return tag(v ? t('cf.on') : t('cf.off'), v ? 'success' : 'secondary');
+  if (it.type === 'text') return h('span', { class: 'truncate', dir: 'auto', text: i18nText(v) || '' });
+  if (it.type === 'json') return h('span', { class: 'font-mono text-xs truncate', dir: 'ltr', text: JSON.stringify(v).slice(0, 60) });
+  if (it.type === 'number') return h('span', { class: 'tabular-nums', text: fmtNum(v) });
+  return h('span', { class: 'truncate', dir: 'auto', text: String(v == null ? '' : v) });
+}
+
+LISTS['remote-config'] = {
+  api: 'base',
+  path: 'remote-config',
+  rowHref: function (it) { return hashFor('remote-config', it.id); },
+  create: function () {
+    if (!aclCan('SETTINGS', 1)) return null;
+    var b = button({ variant: 'primary', size: 'page', icon: 'plus', label: t('cf.new'), onclick: function () { go('remote-config', 'new'); } });
+    b.setAttribute('data-config-new', '');
+    return b;
+  },
+  filters: [
+    { name: 'type', label: 'filter.type', options: function () { return CONFIG_TYPES.map(function (k) { return { value: k, label: t('cf.type.' + k) }; }); } },
+    { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }
+  ],
+  columns: [
+    { label: 'col.key', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'font-mono text-sm', dir: 'ltr', text: it.key }), it.description ? h('div', { class: 'text-xs text-secondary-500 truncate', dir: 'auto', text: it.description }) : null); }, skeleton: '50%' },
+    { label: 'col.type', render: function (it) { return tag(t('cf.type.' + it.type), 'secondary'); }, width: 110 },
+    { label: 'col.value', render: configValuePreview, width: 240 },
+    { label: 'col.rules', render: function (it) { return it.ruleCount ? h('span', { class: 'tabular-nums', text: t('cf.rulesN', { n: it.ruleCount }) }) : h('span', { class: 'text-secondary-400', text: t('cf.everyone') }); }, width: 120 },
+    { label: 'col.version', render: function (it) { return h('span', { class: 'tabular-nums', text: t('cf.v', { n: it.version }) }); }, width: 90 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
+  ]
+};
+
+function configPage(container, query, ctx) {
+  var list = listPage(container, 'remote-config', query, ctx);
+  var recent = h('div', { class: 'mt-6', 'data-config-recent': '' });
+  container.appendChild(h('div', { class: 'px-4 md:px-6 max-w-[1600px] mx-auto w-full' }, recent));
+  baseApi('GET', '/remote-config/history?limit=8').then(function (res) {
+    var items = (res && res.items) || [];
+    if (!items.length) return;
+    var ol = h('ol', { class: 'flex flex-col' });
+    items.forEach(function (x) {
+      ol.appendChild(h('li', { class: 'flex flex-wrap items-center gap-2 px-4 py-2 border-b border-secondary-200 dark:border-secondary-700 text-sm' },
+        tag(t('cf.action.' + x.action), x.action === 'delete' ? 'error' : x.action === 'rollback' ? 'warning' : 'secondary'),
+        x.exists ? h('a', { href: hashFor('remote-config', x.keyId), class: 'eco-link font-mono', dir: 'ltr', text: x.key }) : h('span', { class: 'font-mono', dir: 'ltr', text: x.key }),
+        h('span', { class: 'tabular-nums text-secondary-500', text: t('cf.v', { n: x.version }) }),
+        h('span', { class: 'text-secondary-500', text: x.changedBy }),
+        h('span', { class: 'flex-1' }),
+        h('span', { class: 'text-xs text-secondary-500', text: fmtDate(x.createdAt, true) })));
+    });
+    recent.appendChild(h('h2', { class: 'text-lg font-medium mb-2', text: t('cf.recent') }));
+    recent.appendChild(card(ol));
+  }, function () { return null; });
+  return list;
+}
+
+function configValueInput(type, value, onchange) {
+  if (type === 'bool') return toggle(!!value, t('cf.valueOn'), function (v) { onchange(v); }, 'sm');
+  if (type === 'number') return numberInput(value, { int: false, label: t('cf.value'), oninput: function (raw) { onchange(raw === '' ? null : parseNumber(raw, false)); } });
+  if (type === 'text') {
+    var tri = translatedInput(value || {}, { label: t('cf.value'), multiline: true, rows: 2, max: 2000, oninput: function (v) { onchange(v); } });
+    return tri;
+  }
+  if (type === 'json') {
+    var ta = textInput(value == null ? '' : JSON.stringify(value, null, 2), { ltr: true, mono: true, multiline: true, rows: 5, label: t('cf.value'), oninput: function (raw) {
+      try { onchange(JSON.parse(raw)); ta.classList.remove('eco-bad'); } catch (e) { onchange({ __invalid: raw }); ta.classList.add('eco-bad'); }
+    } });
+    return ta;
+  }
+  return textInput(value == null ? '' : value, { label: t('cf.value'), oninput: function (v) { onchange(v); } });
+}
+
+function configValueValid(type, v) {
+  if (v && typeof v === 'object' && v.__invalid !== undefined) return t('code.INVALID_JSON');
+  if (type === 'number' && (v === null || isNaN(v))) return t('err.number');
+  if (type === 'text') { var hit = trCheck(v, { required: true, max: 2000 }); if (hit) return t('code.' + hit.code, { lang: langName(hit.lang) }); }
+  if (type === 'string' && (v == null)) return t('err.required');
+  return null;
+}
+
+function ruleEditor(type, rule, onremove, onmove) {
+  var errBox = h('p', { class: 'text-xs text-error-600 dark:text-error-400', hidden: true });
+  var name = textInput(rule.name || '', { ltr: true, mono: true, label: t('cf.rule.name'), oninput: function (v) { rule.name = v.trim(); } });
+  var plats = h('div', { class: 'flex flex-wrap gap-3 eco-choices' }, PLATFORMS.map(function (p) {
+    return checkbox((rule.platforms || []).indexOf(p) !== -1, has('pf.' + p) ? t('pf.' + p) : p, function (on) {
+      rule.platforms = (rule.platforms || []).filter(function (x) { return x !== p; });
+      if (on) rule.platforms.push(p);
+    });
+  }));
+  var minV = textInput(rule.minVersion || '', { ltr: true, mono: true, label: t('cf.rule.min'), placeholder: '1.0.0', oninput: function (v) { rule.minVersion = v.trim(); } });
+  var maxV = textInput(rule.maxVersion || '', { ltr: true, mono: true, label: t('cf.rule.max'), placeholder: '2.0.0', oninput: function (v) { rule.maxVersion = v.trim(); } });
+  var tags = refMulti({ resource: 'tags', api: baseApi, filter: { keyType: 'user' }, value: rule.tagIds || [], label: t('cf.rule.tags'), onchange: function (v) { rule.tagIds = v; } });
+  var countries = textInput((rule.countries || []).join(', '), { ltr: true, mono: true, label: t('cf.rule.countries'), placeholder: 'IR, DE', oninput: function (v) { rule.countries = v.split(/[\s,،]+/).map(function (c) { return c.trim().toUpperCase(); }).filter(Boolean); } });
+  var pct = numberInput(rule.percent == null ? '' : rule.percent, { int: false, label: t('cf.rule.percent'), placeholder: '100', oninput: function (raw) { rule.percent = raw === '' ? null : parseNumber(raw, false); } });
+  var valueBox = configValueInput(type, rule.value, function (v) { rule.value = v; });
+  var row = h('div', { class: 'eco-rule', 'data-rule': '' },
+    h('div', { class: 'flex flex-wrap items-center gap-2 mb-3' },
+      h('span', { class: 'font-medium text-sm', text: t('cf.rule') }),
+      h('span', { class: 'flex-1' }),
+      button({ variant: 'muted', size: 'icon', icon: 'prev', iconClass: 'h-3 w-3 eco-rot90', title: t('cf.rule.up'), onclick: function () { onmove(-1); } }),
+      button({ variant: 'muted', size: 'icon', icon: 'next', iconClass: 'h-3 w-3 eco-rot90', title: t('cf.rule.down'), onclick: function () { onmove(1); } }),
+      button({ variant: 'danger', size: 'icon', icon: 'trash', iconClass: 'h-3 w-3', title: t('remove'), onclick: onremove })),
+    h('div', { class: 'eco-form-row' }, field(t('cf.rule.name'), name, t('cf.rule.name.hint')), field(t('cf.rule.percent'), pct, t('cf.rule.percent.hint'), { optional: true })),
+    field(t('cf.rule.platforms'), plats, t('cf.rule.platforms.hint'), { optional: true }),
+    h('div', { class: 'eco-form-row' }, field(t('cf.rule.min'), minV, null, { optional: true }), field(t('cf.rule.max'), maxV, null, { optional: true })),
+    h('div', { class: 'eco-form-row' }, field(t('cf.rule.tags'), tags, null, { optional: true }), field(t('cf.rule.countries'), countries, t('cf.rule.countries.hint'), { optional: true })),
+    field(t('cf.rule.value'), valueBox, t('cf.rule.value.hint')),
+    errBox);
+  row.setError = function (msg) { errBox.textContent = msg || ''; errBox.hidden = !msg; };
+  return row;
+}
+
+function configEditor(container, id, query) {
+  var isNew = id === 'new';
+  var backBtn = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('back'), onclick: function () { go('remote-config', null, lastQuery['remote-config'] || {}); } });
+  var frame = pageFrame(t(isNew ? 'cf.new' : 'cf.edit'), t('desc.remote-config.edit'), backBtn);
+  clear(container).appendChild(frame.el);
+  var grid = h('div', { class: 'eco-config', 'data-config-editor': id });
+  frame.content.appendChild(grid);
+  var write = aclCan('SETTINGS', 1);
+
+  function skeleton() {
+    clear(grid).appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('40%', 'h-5'), bar('100%', 'h-10'), bar('100%', 'h-20'), bar('60%', 'h-10'))));
+  }
+
+  function render(item) {
+    var v = clone(item);
+    v.rules = v.rules || [];
+    clear(grid);
+    var top = h('div', {});
+    var f = {};
+    var key = textInput(v.key || '', { ltr: true, mono: true, label: t('cf.key'), oninput: function (x) { v.key = x.trim(); f.key.setError(''); } });
+    key.setAttribute('data-config-key', '');
+    f.key = field(t('cf.key'), key, t('cf.key.hint'));
+    var typeSel = selectInput(v.type || 'string', CONFIG_TYPES.map(function (k) { return { value: k, label: t('cf.type.' + k) }; }), function (x) { v.type = x; v.value = x === 'bool' ? false : x === 'text' ? {} : x === 'json' ? {} : x === 'number' ? 0 : ''; v.rules = []; paintValue(); paintRules(); }, { label: t('cf.type'), placeholder: false });
+    typeSel.setAttribute('data-config-type', '');
+    if (!isNew) { typeSel.disabled = true; typeSel.classList.add('eco-readonly'); }
+    f.type = field(t('cf.type'), typeSel, isNew ? t('cf.type.hint') : t('cf.type.locked'));
+    var desc = textInput(v.description || '', { label: t('cf.description'), oninput: function (x) { v.description = x; } });
+    f.desc = field(t('cf.description'), desc, t('cf.description.hint'), { optional: true });
+    var valueHolder = h('div', {});
+    f.value = field(t('cf.default'), valueHolder, t('cf.default.hint'));
+    var active = toggle(v.isActive !== false, t('cf.active'), function (x) { v.isActive = x; }, 'sm');
+    var rulesBox = h('div', { class: 'flex flex-col gap-3', 'data-rules': '' });
+    var addRule = button({ variant: 'ghost', size: 'sm', icon: 'plus', label: t('cf.rule.add'), onclick: function () { v.rules.push({ name: 'rule-' + (v.rules.length + 1), value: v.type === 'bool' ? true : clone(v.value), platforms: [], countries: [], tagIds: [], percent: null }); paintRules(); } });
+    addRule.setAttribute('data-rule-add', '');
+    var rows = [];
+    function paintValue() { clear(valueHolder).appendChild(configValueInput(v.type, v.value, function (x) { v.value = x; f.value.setError(''); })); }
+    function paintRules() {
+      clear(rulesBox);
+      rows = v.rules.map(function (r, i) {
+        var row = ruleEditor(v.type, r, function () { v.rules.splice(i, 1); paintRules(); }, function (dir) {
+          var j = i + dir;
+          if (j < 0 || j >= v.rules.length) return;
+          var tmp = v.rules[i]; v.rules[i] = v.rules[j]; v.rules[j] = tmp;
+          paintRules();
+        });
+        rulesBox.appendChild(row);
+        return row;
+      });
+      if (!v.rules.length) rulesBox.appendChild(h('p', { class: 'text-sm text-secondary-500', text: t('cf.rule.none') }));
+    }
+    paintValue();
+    paintRules();
+    var save = button({ variant: 'primary', size: 'sm', label: isNew ? t('create') : t('save'), onclick: function () { doSave(); } });
+    save.setAttribute('data-config-save', '');
+    function doSave() {
+      clear(top);
+      var ok = true;
+      if (!/^[a-z][a-z0-9_.]{1,63}$/.test(v.key || '')) { f.key.setError(t('code.INVALID_KEY')); ok = false; }
+      var bad = configValueValid(v.type, v.value);
+      if (bad) { f.value.setError(bad); ok = false; }
+      v.rules.forEach(function (r, i) {
+        var e = configValueValid(v.type, r.value);
+        if (!e && r.percent != null && (isNaN(r.percent) || r.percent < 0 || r.percent > 100)) e = t('code.INVALID_PERCENT');
+        rows[i].setError(e || '');
+        if (e) ok = false;
+      });
+      if (!ok) return;
+      var payload = { key: v.key, type: v.type, description: v.description || '', value: v.type === 'text' ? trClean(v.value) : v.value, isActive: v.isActive !== false,
+        rules: v.rules.map(function (r) { return { name: r.name, value: v.type === 'text' ? trClean(r.value) : r.value, platforms: r.platforms || [], minVersion: r.minVersion || '', maxVersion: r.maxVersion || '', tagIds: r.tagIds || [], countries: r.countries || [], percent: r.percent == null ? null : r.percent }; }) };
+      setBusy(save, true, t('saving'));
+      baseApi(isNew ? 'POST' : 'PUT', '/remote-config' + (isNew ? '' : '/' + encodeURIComponent(id)), payload).then(function (res) {
+        toast('success', t('saved'));
+        if (isNew) go('remote-config', res.id);
+        else render(res);
+      }, function (err) {
+        setBusy(save, false);
+        if (err.field === 'key') f.key.setError(errorText(err));
+        else top.appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err))));
+      });
+    }
+    var del = !isNew && write ? button({ variant: 'danger', size: 'sm', icon: 'trash', label: t('delete'), onclick: function () {
+      confirmModal({ title: t('cf.delete.title'), text: t('cf.delete.text', { key: v.key }), ok: t('delete'), danger: true }).then(function (yes) {
+        if (!yes) return;
+        baseApi('DELETE', '/remote-config/' + encodeURIComponent(id)).then(function () { toast('success', t('deleted')); go('remote-config'); }, function (err) { toast('error', errorText(err)); });
+      });
+    } }) : null;
+    var formCard = card(h('div', { class: 'p-4 md:p-6' }, top, h('div', { class: 'eco-form-row' }, f.key, f.type), f.desc, f.value, h('div', { class: 'mb-5' }, active),
+      h('div', { class: 'border-t border-secondary-200 dark:border-secondary-700 pt-4 mt-1' },
+        h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-1' }, h('h2', { class: 'font-medium', text: t('cf.rules') }), addRule),
+        h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 mb-3', text: t('cf.rules.hint') }), rulesBox),
+      write ? h('div', { class: 'flex justify-between gap-2 pt-4' }, del || h('span', {}), save) : null));
+    var side = h('div', { class: 'eco-config-side flex flex-col gap-4' });
+    if (!isNew) {
+      side.appendChild(previewCard());
+      side.appendChild(historyCard(item, function (res) { render(res); }));
+    }
+    grid.appendChild(h('div', { class: 'eco-config-main' }, formCard));
+    grid.appendChild(side);
+  }
+
+  function load() {
+    skeleton();
+    if (isNew) { freshLanguages().then(function () { render({ key: query.key || '', type: 'string', description: '', value: '', rules: [], isActive: true }); }); return; }
+    Promise.all([baseApi('GET', '/remote-config/' + encodeURIComponent(id)), freshLanguages()]).then(function (all) { render(all[0]); }, function (err) { clear(grid).appendChild(errorBlock(err, load)); });
+  }
+  load();
+}
+
+function previewCard() {
+  var v = { userId: '', platform: 'web', version: '', country: '' };
+  var out = h('div', { class: 'flex flex-col gap-1 mt-2', 'data-preview-out': '' });
+  var uid = textInput('', { ltr: true, mono: true, label: t('cf.preview.player'), placeholder: t('cf.preview.player.ph'), oninput: function (x) { v.userId = x.trim(); } });
+  var plat = selectInput('web', PLATFORMS.map(function (p) { return { value: p, label: has('pf.' + p) ? t('pf.' + p) : p }; }), function (x) { v.platform = x; }, { label: t('cf.rule.platforms'), placeholder: false });
+  var ver = textInput('', { ltr: true, mono: true, label: t('cf.preview.version'), placeholder: '1.4.0', oninput: function (x) { v.version = x.trim(); } });
+  var ctry = textInput('', { ltr: true, mono: true, label: t('cf.preview.country'), placeholder: 'IR', oninput: function (x) { v.country = x.trim().toUpperCase(); } });
+  var run = button({ variant: 'primary', size: 'sm', label: t('cf.preview.run'), onclick: function () {
+    setBusy(run, true);
+    baseApi('POST', '/remote-config/preview', Object.assign({ lang: lang() }, v)).then(function (res) {
+      setBusy(run, false);
+      clear(out);
+      Object.keys(res.values || {}).sort().forEach(function (k) {
+        var val = res.values[k];
+        out.appendChild(h('div', { class: 'flex flex-wrap items-center gap-2 text-sm', 'data-preview-key': k },
+          h('span', { class: 'font-mono text-xs', dir: 'ltr', text: k }), h('span', { class: 'text-secondary-400', text: '=' }),
+          h('span', { class: 'font-medium', dir: 'auto', text: typeof val === 'object' ? JSON.stringify(val) : String(val) }),
+          tag(res.variants[k] === 'default' ? t('cf.variant.default') : res.variants[k], res.variants[k] === 'default' ? 'secondary' : 'primary'),
+          res.buckets && res.buckets[k] != null ? h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: t('cf.bucket', { n: localDigits((res.buckets[k] / 100).toFixed(2)) }) }) : null));
+      });
+    }, function (err) { setBusy(run, false); clear(out).appendChild(notice('error', errorText(err))); });
+  } });
+  run.setAttribute('data-preview-run', '');
+  return card(h('div', { class: 'p-4', 'data-config-preview': '' }, h('h2', { class: 'font-medium mb-1', text: t('cf.preview') }), h('p', { class: 'text-xs text-secondary-500 mb-3', text: t('cf.preview.hint') }),
+    field(t('cf.preview.player'), uid, null, { optional: true }), h('div', { class: 'eco-form-row' }, field(t('cf.rule.platforms'), plat), field(t('cf.preview.version'), ver, null, { optional: true })), field(t('cf.preview.country'), ctry, null, { optional: true }), run, out));
+}
+
+function historyCard(item, onrestored) {
+  var list = h('ol', { class: 'flex flex-col', 'data-config-history': '' }, h('li', { class: 'p-3' }, bar('70%')));
+  baseApi('GET', '/remote-config/' + encodeURIComponent(item.id) + '/history?limit=20').then(function (res) {
+    clear(list);
+    ((res && res.items) || []).forEach(function (x) {
+      var snap = x.snapshot || {};
+      var li = h('li', { class: 'flex flex-wrap items-center gap-2 px-3 py-2 border-b border-secondary-200 dark:border-secondary-700 text-sm', 'data-history-version': String(x.version) },
+        h('span', { class: 'tabular-nums font-medium', text: t('cf.v', { n: x.version }) }),
+        tag(t('cf.action.' + x.action), 'secondary'),
+        h('span', { class: 'text-xs text-secondary-500', text: (x.changedBy || '') + ' · ' + fmtDate(x.createdAt, true) }),
+        h('span', { class: 'flex-1' }),
+        h('span', { class: 'text-xs truncate eco-hist-val', dir: 'auto', text: configValuePreview({ type: item.type, value: snap.value }).textContent }));
+      if (x.version !== item.version && x.action !== 'delete' && aclCan('SETTINGS', 1)) {
+        var rb = button({ variant: 'link', size: 'sm', icon: 'history', label: t('cf.rollback'), onclick: function () {
+          confirmModal({ title: t('cf.rollback.title', { n: x.version }), text: t('cf.rollback.text'), ok: t('cf.rollback') }).then(function (yes) {
+            if (!yes) return;
+            baseApi('POST', '/remote-config/' + encodeURIComponent(item.id) + '/rollback', { version: x.version }).then(function (r2) { toast('success', t('cf.rolledBack', { n: x.version })); onrestored(r2); }, function (err) { toast('error', errorText(err)); });
+          });
+        } });
+        rb.setAttribute('data-rollback', String(x.version));
+        li.appendChild(rb);
+      }
+      list.appendChild(li);
+    });
+  }, function (err) { clear(list).appendChild(h('li', { class: 'p-3' }, notice('error', errorText(err)))); });
+  return card(h('div', {}, h('h2', { class: 'font-medium px-4 pt-4 pb-2', text: t('cf.history') }), list));
+}
+
 var BRAND_KEY = 'nakama-brand';
 var BRAND_SHADES = { 50: 0.9, 100: 0.8, 200: 0.6, 300: 0.4, 400: 0.1, 500: 0, 600: -0.1, 700: -0.25, 800: -0.58, 900: -0.7, 950: -0.8 };
 var BRAND_DEFAULT_SHADES = { '244,244,253': 50, '233,232,252': 100, '209,205,248': 200, '181,175,245': 300, '130,117,240': 400, '107,89,238': 500, '102,84,226': 600, '93,77,206': 700, '69,58,154': 800, '59,49,130': 900, '48,40,106': 950 };
@@ -9740,6 +12063,10 @@ var PS_SECTIONS = [
   { id: 'tags', label: 'nav.tags', icon: 'tags', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'tags', route.query, ctx); } },
   { id: 'report-titles', label: 'tab.report-titles', icon: 'report-titles', acl: 'CHANNEL_MESSAGE', render: function (box, route, ctx) { return listPage(box, 'report-titles', route.query, ctx); } },
   { id: 'events', label: 'tab.events', icon: 'event-types', acl: 'HIRO_ECONOMY', render: function (box) { eventSettingsPage(box); } },
+  { id: 'referral-rules', label: 'tab.referral-rules', icon: 'referral-rules', acl: 'HIRO_ECONOMY', render: function (box) { referralRulesPage(box); } },
+  { id: 'support-departments', label: 'tab.support-departments', icon: 'support-departments', acl: 'ACCOUNT_NOTES', render: function (box, route, ctx) { loadAgents(); return listPage(box, 'support-departments', route.query, ctx); } },
+  { id: 'support-canned', label: 'tab.support-canned', icon: 'support-canned', acl: 'ACCOUNT_NOTES', render: function (box, route, ctx) { return listPage(box, 'support-canned', route.query, ctx); } },
+  { id: 'support-settings', label: 'tab.support-settings', icon: 'support-settings', acl: 'ACCOUNT_NOTES', render: function (box) { supportSettingsPage(box); } },
   { id: 'payment-methods', label: 'tab.payment-methods', icon: 'payments', acl: 'HIRO_ECONOMY', render: function (box) { paymentMethodsPage(box); } },
   { id: 'sms', label: 'tab.sms', icon: 'comments', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'sms'); } },
   { id: 'email', label: 'tab.email', icon: 'mail', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'email'); } }
@@ -9758,7 +12085,7 @@ var PS_LEGACY = {
   'economy/payment-methods': 'payment-methods',
   'publication/providers': 'sms'
 };
-var ACL_RESOURCES = { ACCOUNT: 0, CHANNEL_MESSAGE: 13, NOTIFICATION: 20, SETTINGS: 22, HIRO_ECONOMY: 27 };
+var ACL_RESOURCES = { ACCOUNT: 0, ACCOUNT_NOTES: 5, CHANNEL_MESSAGE: 13, NOTIFICATION: 20, SETTINGS: 22, HIRO_ECONOMY: 27 };
 var PS_RETURN_KEY = 'economy.ps.return';
 var aclCache = { tk: null, bits: null };
 var ps = null;
@@ -10431,6 +12758,7 @@ function nativeTweaks() {
   satoriRoutes();
   playerModCard();
   playerProgressCard();
+  playerActivityCard();
 }
 
 var ROOT_ID = 'economy-root';
@@ -10521,7 +12849,7 @@ function replaceHash(hash) {
 }
 
 function parseRoute(hash) {
-  var m = /^#\/(economy|publication|moderation|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(economy|publication|moderation|support|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
   var page;
@@ -10543,12 +12871,12 @@ function parseRoute(hash) {
 
 function keyOf(r) {
   if (!r) return '';
-  var detail = (r.page === 'payments' || r.page === 'notifications' || r.page === 'reports') && r.id ? '/' + r.id : '';
+  var detail = (r.page === 'payments' || r.page === 'notifications' || r.page === 'reports' || r.page === 'tickets' || r.page === 'live-chat' || r.page === 'remote-config' || r.page === 'referrals') && r.id ? '/' + r.id : '';
   return lang() + '|' + r.page + detail + '|' + JSON.stringify(r.query);
 }
 
 function navPages(section) {
-  return SECTIONS[section].filter(function (p) { return !PAGE_ACL[p] || aclCan(PAGE_ACL[p], 0); });
+  return SECTIONS[section].filter(function (p) { var need = PAGE_ACL[p] || SECTION_ACL[section]; return !need || aclCan(need, 0); });
 }
 
 function buildNav(section, collapsed, active) {
@@ -10604,7 +12932,7 @@ function syncSidebar(route, psOn) {
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
     var collapsed = isCollapsed(a);
-    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + pendingReports + '|' + JSON.stringify(lastQuery) + '|' + token();
+    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + pendingReports + '|' + supportBadgeKey() + '|' + JSON.stringify(lastQuery) + '|' + token();
     var prev = group;
     for (var si = 0; si < SECTION_ORDER.length; si++) {
       if (!navPages(SECTION_ORDER[si]).length) continue;
@@ -10615,6 +12943,7 @@ function syncSidebar(route, psOn) {
     if (psNav) keep.push(psNav);
     refreshBadge(false);
     refreshReportBadge(false);
+    refreshSupportBadge(false);
     var vueActive = group.parentElement.querySelectorAll('a[aria-current="page"]:not([data-economy-page])');
     for (var j = 0; j < vueActive.length && (active || psOn); j++) {
       if (vueActive[j].getAttribute('href') === '#/') vueActive[j].setAttribute('data-economy-dimmed', '');
@@ -10647,7 +12976,15 @@ function mountPage(root, route, ctl) {
   if (ps2) { ctl.list = ps2.render(root, route, ctx) || null; return; }
   if (route.page === 'comments') refreshBadge(true);
   if (route.page === 'reports') refreshReportBadge(true);
+  if (route.page === 'tickets' || route.page === 'live-chat') { refreshSupportBadge(true); supportBeat(); }
   if (route.page === 'overview') overviewPage(root);
+  else if (route.page === 'tickets' && route.id) ticketDetail(root, route.id);
+  else if (route.page === 'tickets') ctl.list = ticketsPage(root, route.query, ctx);
+  else if (route.page === 'live-chat') liveChatPage(root, route.id, route.query);
+  else if (route.page === 'activity') ctl.list = activityPage(root, route.query, ctx);
+  else if (route.page === 'referrals') ctl.list = referralsPage(root, route.query, ctx);
+  else if (route.page === 'remote-config' && route.id) configEditor(root, route.id, route.query);
+  else if (route.page === 'remote-config') ctl.list = configPage(root, route.query, ctx);
   else if (route.page === 'reports' && route.id) reportDetail(root, route.id);
   else if (route.page === 'players') ctl.list = playersPage(root, route.query, ctx);
   else if (route.page === 'restrictions') ctl.list = restrictionsPage(root, route.query, ctx);
@@ -10836,7 +13173,7 @@ function consoleSections() {
     return {
       id: sec,
       label: t(SECTION_LABEL[sec]),
-      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : 0 }; })
+      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : supportBadge(p) }; })
     };
   });
 }
@@ -10847,7 +13184,7 @@ window.NakamaConsole = {
   lang: function () { return lang(); },
   t: function (key, vars) { return t(key, vars); },
   sections: consoleSections,
-  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0 }; },
+  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0, tickets: supportBadge('tickets'), chats: supportBadge('live-chat') }; },
   onRoute: function (fn) {
     if (typeof fn !== 'function') return function () {};
     routeHooks.push(fn);
@@ -10869,7 +13206,7 @@ window.NakamaConsole = {
   isDark: function () { return isDarkTheme(); }
 };
 
-if (legacyHash(location.hash) || /^#\/(economy|publication|moderation|project-settings)(\/|\?|$)/.test(location.hash)) {
+if (legacyHash(location.hash) || /^#\/(economy|publication|moderation|support|project-settings)(\/|\?|$)/.test(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }

@@ -727,3 +727,64 @@ html.sp:not(.dark) .eco-tag--warning {
 html.sp:not(.dark) .eco-tag--success {
   background-color: color-mix(in srgb, var(--pos) 10%, #fff);
 }
+
+html.sp .eco-msg {
+  border-color: var(--line);
+  background: var(--well);
+  color: var(--ink-1);
+  border-radius: var(--r-card);
+}
+
+html.sp .eco-msg--staff {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+}
+
+html.sp .eco-msg--note {
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+  border-color: color-mix(in srgb, var(--warn) 55%, transparent);
+}
+
+html.sp .eco-msg-event {
+  background: var(--well-2);
+  color: var(--ink-2);
+}
+
+html.sp :is(.eco-att, .eco-rule, .eco-info-row, .eco-lc-head) {
+  border-color: var(--line);
+}
+
+html.sp .eco-lc-item:hover {
+  background: var(--well);
+}
+
+html.sp .eco-lc-item--on {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+}
+
+html.sp .eco-act-icon {
+  background: var(--well-2);
+  color: var(--ink-2);
+  border-radius: var(--r-control);
+}
+
+html.sp .eco-msg-event,
+html.sp .eco-typing {
+  color: var(--ink-2);
+}
+
+html.sp .eco-msg,
+html.sp .eco-lc-item {
+  transition: background-color var(--d1) var(--ease), border-color var(--d1) var(--ease);
+}
+
+html.sp .eco-thread > li {
+  animation: sp-fade-in var(--d2) var(--ease) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.sp .eco-thread > li {
+    animation: none;
+  }
+}

@@ -35,9 +35,9 @@ function refreshBadge(force) {
 }
 
 function navBadge(page, collapsed) {
-  var n = page === 'comments' ? pendingComments : page === 'reports' ? pendingReports : 0;
+  var n = page === 'comments' ? pendingComments : page === 'reports' ? pendingReports : supportBadge(page);
   if (!n) return null;
-  var label = t(page === 'comments' ? 'cm.pendingN' : 'rp.openN', { n: n });
+  var label = t(page === 'comments' ? 'cm.pendingN' : page === 'reports' ? 'rp.openN' : page === 'tickets' ? 'tk.waitingN' : 'lc.waitingN', { n: n });
   if (collapsed) return h('span', { class: 'eco-nav-dot', 'aria-label': label });
   return h('span', { class: 'eco-nav-badge tabular-nums', 'aria-label': label, text: fmtNum(n) });
 }

@@ -55,7 +55,7 @@ function segIndicator(seg) {
 }
 
 function paintTabs(box, info) {
-  var g = info && info.group && (info.group.id === 'economy' || info.group.id === 'publication' || info.group.id === 'moderation') ? info.group : null;
+  var g = info && info.group && (info.group.id === 'economy' || info.group.id === 'publication' || info.group.id === 'moderation' || info.group.id === 'support') ? info.group : null;
   var key = g ? g.id + '|' + JSON.stringify(g.links.map(function (l) { return [l.href, l.label, l.badge]; })) + '|' + info.link.href : '';
   if (box.getAttribute('data-key') === key) { if (g) segIndicator(box); return; }
   var first = !box.getAttribute('data-key') || box.getAttribute('data-group') !== (g && g.id);

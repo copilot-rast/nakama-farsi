@@ -13,6 +13,7 @@ var SP_MESSAGES = {
     'group.economy': 'اقتصاد',
     'group.publication': 'انتشار',
     'group.moderation': 'بازیکنان و گفتگو',
+    'group.support': 'پشتیبانی',
     'group.developer': 'توسعه',
     'group.help': 'راهنما',
     'group.settings': 'تنظیمات',
@@ -53,6 +54,7 @@ var SP_MESSAGES = {
     'group.economy': 'Economy',
     'group.publication': 'Publishing',
     'group.moderation': 'Players & chat',
+    'group.support': 'Support',
     'group.developer': 'Developer',
     'group.help': 'Help',
     'group.settings': 'Settings',
@@ -157,6 +159,7 @@ function el(tag, props) {
 var SP_ICON_PATHS = {
   star: '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" fill="currentColor" stroke="none"/>',
   coins: '<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/>',
+  headset: '<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>',
   shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
   megaphone: '<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
   code: '<path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/>',
@@ -261,7 +264,7 @@ function paintSky() {
 var DIRECT = ['/', '/players', '/groups', '/storage', '/storage-indexes', '/matches', '/leaderboards', '/notifications', '/payments', '/chat'];
 var SETTINGS_PAGES = [['users', 'settings.users', 'users'], ['general', 'settings.general', 'toggle'], ['config', 'settings.config', 'fileCode'], ['data-management', 'settings.data', 'database'], ['audit-log', 'settings.audit', 'list']];
 var NATIVE_LABEL = { '/payments': 'nav.purchases', '/chat': 'nav.chat' };
-var GROUP_ICON = { economy: 'coins', publication: 'megaphone', moderation: 'shield', developer: 'code', help: 'help', settings: 'gear' };
+var GROUP_ICON = { economy: 'coins', publication: 'megaphone', moderation: 'shield', support: 'headset', developer: 'code', help: 'help', settings: 'gear' };
 
 function linkInfo(a) {
   var badgeEl = a.querySelector('.eco-nav-badge, .eco-nav-dot');
@@ -815,7 +818,7 @@ function segIndicator(seg) {
 }
 
 function paintTabs(box, info) {
-  var g = info && info.group && (info.group.id === 'economy' || info.group.id === 'publication' || info.group.id === 'moderation') ? info.group : null;
+  var g = info && info.group && (info.group.id === 'economy' || info.group.id === 'publication' || info.group.id === 'moderation' || info.group.id === 'support') ? info.group : null;
   var key = g ? g.id + '|' + JSON.stringify(g.links.map(function (l) { return [l.href, l.label, l.badge]; })) + '|' + info.link.href : '';
   if (box.getAttribute('data-key') === key) { if (g) segIndicator(box); return; }
   var first = !box.getAttribute('data-key') || box.getAttribute('data-group') !== (g && g.id);
@@ -1130,7 +1133,7 @@ function contentRoot() {
 function routeName() {
   var p = routePath().split('/').filter(Boolean);
   if (!p.length) return 'dashboard';
-  if (p[0] === 'economy' || p[0] === 'publication' || p[0] === 'moderation' || p[0] === 'settings') return p[0] + '-' + (p[1] || 'index');
+  if (p[0] === 'economy' || p[0] === 'publication' || p[0] === 'moderation' || p[0] === 'support' || p[0] === 'settings') return p[0] + '-' + (p[1] || 'index');
   if (p[0] === 'players' || p[0] === 'groups' || p[0] === 'leaderboards' || p[0] === 'storage-indexes') return p.length > 1 ? p[0] + '-detail' : p[0];
   return p[0];
 }

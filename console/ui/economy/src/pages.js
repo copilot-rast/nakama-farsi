@@ -1,16 +1,19 @@
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'event-log', 'payments'],
-  publication: ['faqs', 'news', 'comments', 'notifications'],
-  moderation: ['players', 'reports', 'restrictions', 'chat-words']
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'event-log', 'referrals', 'payments'],
+  publication: ['faqs', 'news', 'comments', 'notifications', 'remote-config'],
+  moderation: ['players', 'reports', 'restrictions', 'chat-words', 'activity'],
+  support: ['tickets', 'live-chat']
 };
-var SECTION_ORDER = ['economy', 'publication', 'moderation'];
-var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod' };
-var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE' };
+var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support'];
+var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup' };
+var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
+var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION' };
 var LIMIT = 20;
-var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' } };
+var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' }, tickets: { status: 'waiting' } };
 
 function sectionOf(page) {
   if (psSection(page)) return PS_ROUTE;
+  if (SECTIONS.support.indexOf(page) !== -1) return 'support';
   if (SECTIONS.moderation.indexOf(page) !== -1) return 'moderation';
   return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
 }
@@ -72,6 +75,7 @@ function listPage(container, name, query, ctx) {
     }
     return filterSelect(t(f.label), state.filters[f.name], opts2, function (v) { state.filters[f.name] = v; state.page = 1; sync(); load(); });
   });
+  if (def.top) frame.content.appendChild(def.top());
   frame.content.appendChild(h('div', {},
     h('div', { class: 'flex flex-col items-start pb-2 gap-2' },
       h('div', { class: 'flex flex-col lg:flex-row lg:items-center gap-2 w-full' },
@@ -113,7 +117,7 @@ function listPage(container, name, query, ctx) {
     }
     paintPager();
     var params = Object.assign({ q: state.q, page: state.page, limit: state.limit }, state.filters);
-    return call('GET', '/' + name + qs(params)).then(function (res) {
+    return call('GET', '/' + (def.path || name) + qs(params)).then(function (res) {
       if (my !== seq) return;
       state.loading = false;
       state.loaded = true;
@@ -194,8 +198,8 @@ function openEditor(name, id, query, onSaved) {
   body.appendChild(formSkeleton(def));
 
   var call = apiFor(name);
-  var item = isNew ? Promise.resolve(def.defaults(query)) : call('GET', '/' + name + '/' + encodeURIComponent(id));
-  Promise.all([item, freshLanguages(), loadKeyTypes()]).then(function (all) { return all[0]; }).then(function (data) {
+  var item = isNew ? Promise.resolve(def.defaults(query)) : call('GET', '/' + (def.path || name) + '/' + encodeURIComponent(id));
+  Promise.all([item, freshLanguages(), loadKeyTypes(), def.prepare ? def.prepare() : null]).then(function (all) { return all[0]; }).then(function (data) {
     if (!panelState || panelState.el !== el) return;
     var values = clone(data) || {};
     var form = buildForm(def.fields, values);
@@ -213,7 +217,7 @@ function openEditor(name, id, query, onSaved) {
       };
       var resetDelete = function () { clear(del).appendChild(button({ variant: 'danger', size: 'footer', icon: 'trash', label: t('delete'), onclick: askDelete })); };
       var doDelete = function () {
-        call('DELETE', '/' + name + '/' + encodeURIComponent(id)).then(function () {
+        call('DELETE', '/' + (def.path || name) + '/' + encodeURIComponent(id)).then(function () {
           toast('success', t('deleted'));
           if (def.afterSave) def.afterSave();
           back();
@@ -236,7 +240,7 @@ function openEditor(name, id, query, onSaved) {
       var payload = form.payload();
       if (def.fixPayload) payload = def.fixPayload(payload);
       setBusy(saveBtn, true, t('saving'));
-      call(isNew ? 'POST' : 'PUT', '/' + name + (isNew ? '' : '/' + encodeURIComponent(id)), payload).then(function () {
+      call(isNew ? 'POST' : 'PUT', '/' + (def.path || name) + (isNew ? '' : '/' + encodeURIComponent(id)), payload).then(function () {
         toast('success', t('saved'));
         if (def.afterSave) def.afterSave();
         back();

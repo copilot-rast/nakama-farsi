@@ -1,7 +1,7 @@
 var DIRECT = ['/', '/players', '/groups', '/storage', '/storage-indexes', '/matches', '/leaderboards', '/notifications', '/payments', '/chat'];
 var SETTINGS_PAGES = [['users', 'settings.users', 'users'], ['general', 'settings.general', 'toggle'], ['config', 'settings.config', 'fileCode'], ['data-management', 'settings.data', 'database'], ['audit-log', 'settings.audit', 'list']];
 var NATIVE_LABEL = { '/payments': 'nav.purchases', '/chat': 'nav.chat' };
-var GROUP_ICON = { economy: 'coins', publication: 'megaphone', moderation: 'shield', developer: 'code', help: 'help', settings: 'gear' };
+var GROUP_ICON = { economy: 'coins', publication: 'megaphone', moderation: 'shield', support: 'headset', developer: 'code', help: 'help', settings: 'gear' };
 
 function linkInfo(a) {
   var badgeEl = a.querySelector('.eco-nav-badge, .eco-nav-dot');

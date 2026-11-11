@@ -11,6 +11,10 @@ var PS_SECTIONS = [
   { id: 'tags', label: 'nav.tags', icon: 'tags', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'tags', route.query, ctx); } },
   { id: 'report-titles', label: 'tab.report-titles', icon: 'report-titles', acl: 'CHANNEL_MESSAGE', render: function (box, route, ctx) { return listPage(box, 'report-titles', route.query, ctx); } },
   { id: 'events', label: 'tab.events', icon: 'event-types', acl: 'HIRO_ECONOMY', render: function (box) { eventSettingsPage(box); } },
+  { id: 'referral-rules', label: 'tab.referral-rules', icon: 'referral-rules', acl: 'HIRO_ECONOMY', render: function (box) { referralRulesPage(box); } },
+  { id: 'support-departments', label: 'tab.support-departments', icon: 'support-departments', acl: 'ACCOUNT_NOTES', render: function (box, route, ctx) { loadAgents(); return listPage(box, 'support-departments', route.query, ctx); } },
+  { id: 'support-canned', label: 'tab.support-canned', icon: 'support-canned', acl: 'ACCOUNT_NOTES', render: function (box, route, ctx) { return listPage(box, 'support-canned', route.query, ctx); } },
+  { id: 'support-settings', label: 'tab.support-settings', icon: 'support-settings', acl: 'ACCOUNT_NOTES', render: function (box) { supportSettingsPage(box); } },
   { id: 'payment-methods', label: 'tab.payment-methods', icon: 'payments', acl: 'HIRO_ECONOMY', render: function (box) { paymentMethodsPage(box); } },
   { id: 'sms', label: 'tab.sms', icon: 'comments', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'sms'); } },
   { id: 'email', label: 'tab.email', icon: 'mail', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'email'); } }
@@ -29,7 +33,7 @@ var PS_LEGACY = {
   'economy/payment-methods': 'payment-methods',
   'publication/providers': 'sms'
 };
-var ACL_RESOURCES = { ACCOUNT: 0, CHANNEL_MESSAGE: 13, NOTIFICATION: 20, SETTINGS: 22, HIRO_ECONOMY: 27 };
+var ACL_RESOURCES = { ACCOUNT: 0, ACCOUNT_NOTES: 5, CHANNEL_MESSAGE: 13, NOTIFICATION: 20, SETTINGS: 22, HIRO_ECONOMY: 27 };
 var PS_RETURN_KEY = 'economy.ps.return';
 var aclCache = { tk: null, bits: null };
 var ps = null;
