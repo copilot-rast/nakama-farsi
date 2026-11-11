@@ -7,8 +7,7 @@ export default async function setup() {
   for (const n of NODES) {
     try { nodes('stop', n); } catch {}
   }
-  const keys = redis('--scan', '--pattern', `${PREFIX}:*`).split('\n').filter(Boolean);
-  for (let i = 0; i < keys.length; i += 500) redis('del', ...keys.slice(i, i + 500));
+  redis('eval', "local cur='0' local n=0 repeat local r=redis.call('SCAN',cur,'MATCH',ARGV[1],'COUNT',1000) cur=r[1] for _,k in ipairs(r[2]) do redis.call('DEL',k) n=n+1 end until cur=='0' return n", '0', `${PREFIX}:*`);
   const mods = path.join(RUN_DIR, 'modules');
   fs.rmSync(mods, { recursive: true, force: true });
   fs.mkdirSync(mods, { recursive: true });

@@ -96,7 +96,7 @@ if c <= 0 then redis.call('HDEL', KEYS[2], ARGV[3]) end
 local nodes = redis.call('HKEYS', KEYS[2])
 if redis.call('HLEN', KEYS[1]) == 0 then
   redis.call('DEL', KEYS[1])
-  redis.call('PEXPIRE', KEYS[2], 600000)
+  redis.call('PEXPIRE', KEYS[2], 60000)
 else
   redis.call('PERSIST', KEYS[2])
 end

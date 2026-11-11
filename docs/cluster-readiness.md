@@ -13,7 +13,8 @@ Every phase follows these rules; review new code against them.
 3. Rate limits live in the database. New limits use `clusterkit.Allow` (fixed-window counter, one atomic upsert on `cluster_rate_limit`); phase 2 OTP limits use it. Existing limits are already database-backed (see the table).
 4. Uploaded files go through `internal/objectstore` (`STORAGE_DRIVER=local|s3`). Never write user content to the node's disk directly.
 5. Config comes only from env (`--runtime.env` or the process environment) and is identical on every node.
-6. Do not rely on node-local Nakama APIs for correctness: presence/stream lists, `StreamSend`, `SessionDisconnect`, `SessionLogout`, the live part of `NotificationsSend`, match listing and `MatchSignal` only see the local node in OSS Nakama. Persist first, push second, and treat the push as best effort until phase 6.
+6. Persist first, push second. Since phase 6 (`docs/cluster-design.md`, clustering on) presence/stream lists, `StreamSend`, `StreamUserJoin/Kick`, `SessionDisconnect`, `SessionLogout`, bans, the live part of `NotificationsSend`, match listing, `MatchSignal`, parties and the matchmaker work across nodes; the push is still a push (a player who is offline gets it from the database).
+7. A plugin that needs to wake waiters on other nodes uses `internal/cluster` `Signal(topic)` / `WaitSignal(ctx, topic, max)` (Redis pub/sub with clustering on, a plain sleep of `max` with it off), never its own in-memory channel.
 
 ## Findings
 
@@ -57,7 +58,22 @@ Status: **fixed** = changed in phase 0b; **safe** = already correct on N nodes, 
 
 No plugin uses match listing, `MatchSignal`, the matchmaker, parties or `sync.Once`; there are no timers besides the worker tickers listed above and no in-memory caches, counters or maps that hold shared state.
 
-## What phase 6 must deliver at the server layer
+## Phase 6 result (2026-11-11)
+
+Every row marked **phase 6** above is now handled by the cluster layer when `cluster.enabled` is on; the plugin code needed no change except the live support chat signal:
+
+| Item | Delivered by |
+|---|---|
+| Tracker/presence and streams across nodes (`StreamUserList/Send/Kick/Join`, jazebe group chat) | Redis stream hashes + per-node views (`server/cluster_tracker.go`), remote stream joins through the session's node (`ClusterStreamManager`) |
+| Live `NotificationsSend` (publication in-app, support 1210/1211) and `SessionDisconnect` | `ClusterRouter` routes by the node in each presence ID; disconnects go to the node found from the session ID |
+| `SessionLogout`, bans, phase 3 suspension and jazebe suspension | invalidation log `nk:inv` replayed and tailed by every node; ban disconnects routed (`server/cluster_session.go`) |
+| Matches, matchmaker, parties, status | host routing (`cluster_match.go`, `cluster_party.go`), sharded exactly-once matchmaker (`cluster_matchmaker.go`), status followers in Redis (`cluster_status.go`) |
+| Live support chat "chat changed" | `integrations/base/livechat.go` publishes `chat:<id>` after every message, typing, take, transfer, close and player view; the console long-poll waits up to 5 s on it (600 ms sleep when clustering is off, as before) |
+| Leaderboard/tournament schedulers | each callback claimed once with `clusterkit.AcquireLease` (`cluster_scheduler.go`) |
+
+Multi-node checks: `e2e/cluster/` (four nodes) and `go test ./internal/cluster ./server -run Cluster` with `CLUSTER_TEST_REDIS`. Agent presence for support could still move from the `base_support_agent` heartbeat row to a Redis TTL key; it is correct as it is and was left in the database.
+
+## What phase 6 had to deliver at the server layer
 
 These are inside Nakama OSS, not in our plugins. When porting the nakama-plus cluster layer, check each one with a multi-node e2e:
 

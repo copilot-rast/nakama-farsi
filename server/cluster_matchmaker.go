@@ -12,6 +12,7 @@ import (
 	"github.com/heroiclabs/nakama-common/api"
 	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/internal/cluster"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/atomic"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -44,6 +45,7 @@ type ClusterMatchmaker struct {
 	owners     []string
 	freeRounds []int
 	firstSeen  map[string]time.Time
+	lastSweep  time.Time
 	origin     map[string]int
 	bySession  map[string]map[string]struct{}
 	byParty    map[string]map[string]struct{}
@@ -183,6 +185,73 @@ func (m *ClusterMatchmaker) tick() {
 		}
 	}
 	m.refreshStats()
+	if now.Sub(m.lastSweep) >= 30*time.Second {
+		m.lastSweep = now
+		go m.sweepOrphans()
+	}
+}
+
+func (m *ClusterMatchmaker) sweepOrphans() {
+	m.mu.Lock()
+	owned := make([]*ownedShard, 0, len(m.owned))
+	for _, o := range m.owned {
+		owned = append(owned, o)
+	}
+	m.mu.Unlock()
+	cutoff := time.Now().Add(-20 * time.Second).UnixNano()
+	for _, o := range owned {
+		type check struct {
+			ticket string
+			ref    cluster.StreamRef
+			field  string
+		}
+		var checks []check
+		o.mm.Lock()
+		for ticket, index := range o.mm.indexes {
+			if index.PartyId != "" || index.CreatedAt > cutoff {
+				continue
+			}
+			for _, e := range index.Entries {
+				uid := uuid.FromStringOrNil(e.Presence.UserId)
+				sid := uuid.FromStringOrNil(e.Presence.SessionId)
+				checks = append(checks, check{ticket: ticket, ref: streamRef(PresenceStream{Mode: StreamModeNotifications, Subject: uid}), field: presenceField(e.Presence.Node, sid, uid)})
+			}
+		}
+		o.mm.Unlock()
+		if len(checks) == 0 {
+			continue
+		}
+		ctx, cancel := context.WithTimeout(m.c.ctx, 10*time.Second)
+		pipe := m.c.rdb.Pipeline()
+		cmds := make([]*redis.BoolCmd, len(checks))
+		store := cluster.NewPresenceStore(m.c.rdb, m.c.keys)
+		for i, ch := range checks {
+			cmds[i] = pipe.HExists(ctx, store.P(ch.ref), ch.field)
+		}
+		_, err := pipe.Exec(ctx)
+		cancel()
+		if err != nil && err != redis.Nil {
+			continue
+		}
+		gone := make(map[string]struct{})
+		for i, cmd := range cmds {
+			if ok, err := cmd.Result(); err == nil && !ok {
+				gone[checks[i].ticket] = struct{}{}
+			}
+		}
+		if len(gone) == 0 {
+			continue
+		}
+		list := make([]string, 0, len(gone))
+		for t := range gone {
+			list = append(list, t)
+		}
+		o.mm.Remove(list)
+		dctx, dcancel := context.WithTimeout(m.c.ctx, 5*time.Second)
+		_ = m.shards.DeleteTickets(dctx, o.idx, list...)
+		dcancel()
+		m.logger.Warn("Matchmaker tickets of closed sessions removed", zap.Int("shard", o.idx), zap.Int("tickets", len(list)))
+	}
 }
 
 func (m *ClusterMatchmaker) acquire(ctx context.Context, i int) {
@@ -430,6 +499,9 @@ func (m *ClusterMatchmaker) Add(ctx context.Context, presences []*MatchmakerPres
 	payload, _ := json.Marshal(req)
 	var resp *mmAddResponse
 	err := runtime.ErrMatchmakerNotAvailable
+	callCtx, cancelCall := context.WithTimeout(context.WithoutCancel(ctx), m.shards.TTL()+5*time.Second)
+	defer cancelCall()
+	ctx = callCtx
 	deadline := time.Now().Add(m.shards.TTL() + 2*time.Second)
 	for attempt := 0; ; attempt++ {
 		owner := m.ownerOf(shard)
@@ -465,6 +537,12 @@ func (m *ClusterMatchmaker) Add(ctx context.Context, presences []*MatchmakerPres
 		addTicketRef(m.byParty, partyId, resp.Ticket)
 	}
 	m.mu.Unlock()
+	if sessionID != "" && m.c.sessionRegistry != nil {
+		if sid, perr := uuid.FromString(sessionID); perr == nil && m.c.sessionRegistry.Get(sid) == nil {
+			_ = m.RemoveSessionAll(sessionID)
+			return "", 0, runtime.ErrMatchmakerNotAvailable
+		}
+	}
 	return resp.Ticket, resp.CreatedAt, nil
 }
 

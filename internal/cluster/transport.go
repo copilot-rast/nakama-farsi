@@ -103,6 +103,7 @@ type peer struct {
 	name   string
 	addr   string
 	conn   *grpc.ClientConn
+	calls  *grpc.ClientConn
 	q      chan []byte
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -253,6 +254,7 @@ func (t *Transport) Stop() {
 	for _, p := range peers {
 		p.cancel()
 		_ = p.conn.Close()
+		_ = p.calls.Close()
 	}
 	if t.server != nil {
 		t.server.Stop()
@@ -289,19 +291,29 @@ func (t *Transport) AddPeer(name, addr string) error {
 		delete(t.peers, name)
 		existing.cancel()
 		_ = existing.conn.Close()
+		_ = existing.calls.Close()
 	}
-	conn, err := grpc.NewClient(addr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithDefaultCallOptions(grpc.ForceCodec(rawCodec{}), grpc.MaxCallRecvMsgSize(64<<20), grpc.MaxCallSendMsgSize(64<<20)),
-		grpc.WithKeepaliveParams(keepalive.ClientParameters{Time: 10 * time.Second, Timeout: 5 * time.Second, PermitWithoutStream: true}),
-	)
+	dial := func() (*grpc.ClientConn, error) {
+		return grpc.NewClient(addr,
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithDefaultCallOptions(grpc.ForceCodec(rawCodec{}), grpc.MaxCallRecvMsgSize(64<<20), grpc.MaxCallSendMsgSize(64<<20)),
+			grpc.WithKeepaliveParams(keepalive.ClientParameters{Time: 10 * time.Second, Timeout: 5 * time.Second, PermitWithoutStream: true}),
+		)
+	}
+	conn, err := dial()
 	if err != nil {
+		t.mu.Unlock()
+		return err
+	}
+	calls, err := dial()
+	if err != nil {
+		_ = conn.Close()
 		t.mu.Unlock()
 		return err
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	ctx = metadata.AppendToOutgoingContext(ctx, mdSecret, t.secret, mdFrom, t.name)
-	p := &peer{name: name, addr: addr, conn: conn, q: make(chan []byte, t.queueSize), ctx: ctx, cancel: cancel, resync: atomic.NewBool(false), done: make(chan struct{})}
+	p := &peer{name: name, addr: addr, conn: conn, calls: calls, q: make(chan []byte, t.queueSize), ctx: ctx, cancel: cancel, resync: atomic.NewBool(false), done: make(chan struct{})}
 	t.peers[name] = p
 	t.mu.Unlock()
 	go t.writeLoop(p)
@@ -318,6 +330,7 @@ func (t *Transport) RemovePeer(name string) {
 	if ok {
 		p.cancel()
 		_ = p.conn.Close()
+		_ = p.calls.Close()
 	}
 }
 
@@ -465,7 +478,7 @@ func (t *Transport) Call(ctx context.Context, node string, kind byte, payload []
 	req = append(req, kind)
 	req = append(req, payload...)
 	var resp []byte
-	if err := p.conn.Invoke(ctx, methodCall, &req, &resp); err != nil {
+	if err := p.calls.Invoke(ctx, methodCall, &req, &resp); err != nil {
 		t.callErrors.Inc()
 		return nil, err
 	}

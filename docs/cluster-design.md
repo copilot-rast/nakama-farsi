@@ -49,7 +49,7 @@ Owner's decision (2026-11-11, after `docs/cluster-spike.md`): do not port nakama
 ## Transport
 
 - Each node listens on `cluster.port` (default 7353) with its own gRPC server (service `nakama.cluster.Peer`, raw-bytes codec). Peers authenticate with `cluster.secret` (default: `session.encryption_key`) in metadata, compared in constant time; the advertised address is `cluster.advertise_address:cluster.port`.
-- Per peer: one `grpc.ClientConn` (one TCP connection). One-way frames go over one client stream `Pipe`; a writer goroutine drains the peer queue and packs up to 256 frames / 256 KB into one gRPC message (batching under load, no delay when idle). Request/response goes over unary `Call` on the same connection.
+- Per peer: two `grpc.ClientConn` (two TCP connections): one carries the one-way frames, the other the unary calls, so a burst of frames cannot stall a request/response behind HTTP/2 connection flow control (seen in the 10k load run as matchmaker adds timing out). One-way frames go over one client stream `Pipe`; a writer goroutine drains the peer queue and packs up to 256 frames / 256 KB into one gRPC message (batching under load, no delay when idle). Request/response goes over unary `Call` on the same connection.
 - Frame: `kind (1 byte) | len (uvarint) | payload`. Hot frames (envelopes, presence ops, match data) use a compact binary encoding; calls use JSON.
 - Queue full (default 65,536 frames) → frame dropped, counted, and the peer is asked to resync its views after the queue drains. Stream broken → reconnect with backoff; both sides resync their views that contain the other node (frames in flight may be lost).
 - Ordering: frames from A to B arrive in send order. Unary calls are independent.
@@ -66,7 +66,9 @@ A stream is `(mode, subject, subcontext, label)`. Its key `sk` is `mode|subject|
 | `nk:np:<name>/<inc>` | set | `sk` + session + user of every presence of that incarnation (for reaping and reconcile) |
 | `nk:nf:<name>/<inc>` | set | users followed by that incarnation |
 
-No TTLs: entries are removed by the owning node on leave and by the reaper on death; every key disappears when empty.
+No TTLs on live data: entries are removed by the owning node on leave and by the reaper on death. When a stream empties its `p` hash is deleted and its `n` hash (only the version left) expires after 60 s, so a late frame from before cannot win against a new view.
+
+Writes go through 16 ordered workers per node (one per session hash, so one session's changes keep their order), each packing up to 512 operations into one Redis pipeline. A join or status update waits for its own write and for its presence frames to be queued before `Track` returns, so a match created on one node can be joined from another node in the next instant (the nakama-plus spike failed exactly here); leaves do not wait.
 
 **Join / update** (one Lua script, plus `SADD` on the node index in the same pipeline): `HSET p field meta`; if the field is new, `HINCRBY n node 1`; `HINCRBY n _v 1`; return `{new, version, nodes, followers?, snapshot?}`. `snapshot` (the whole `p` hash) is returned only when the caller has no view of the stream yet. **Leave**: `HDEL`, decrement, drop the node field at 0, bump the version, return the removed meta and the nodes. Reads: `HGETALL p` (list), `HLEN p` (count), `EXISTS p`, `HKEYS n`.
 
@@ -82,7 +84,7 @@ No TTLs: entries are removed by the owning node on leave and by the reaper on de
 
 ### Status, followers, online
 
-- `Follow`: the local status registry calls a hook when a user gets its first local follower (`HSET f node 1`, `SADD nf`) or loses its last (`HDEL`, `SREM`).
+- `Follow`: the local status registry calls a hook when a user gets its first local follower (`HSET f node 1`, `SADD nf`) or loses its last (`HDEL`, `SREM`). The hook queues the change under the registry lock (so first-follow and last-unfollow keep their order) and `Follow` waits until its batch is written, so a status change right after a follow is not missed.
 - A status presence change is sent to the stream's nodes and to the follower nodes; each delivers it to its local followers through the unchanged `LocalStatusRegistry`.
 - `IsOnline` / `FillOnline…` (REST `online` flags for users, friends, group members, accounts): one pipelined `EXISTS nk:{u:<user>}:p1` per user (status stream not empty), so the flag is cluster-wide and exact.
 
@@ -103,7 +105,7 @@ The envelope is marshalled to protobuf once per target node; the receiver re-enc
 
 - `SessionRegistry.Disconnect(session)`: local if the session is here, else one disconnect frame to the node found from the session ID hash (with the ban notice when `ban`).
 - `SingleSession`: local plus one frame to every node that hosts the user's notification stream.
-- `SessionCache` (`Remove`, `RemoveAll`, `Ban`, `Unban`): applied locally, then appended to the Redis stream `nk:inv` (`XADD … MINID ~ now-maxTokenLifetime`). Every node tails it with a blocking `XREAD` on its own connection and applies each record to its local cache; at start a node replays the records newer than the longest token lifetime. So a logout or ban on one node invalidates the token on every node within milliseconds, and a node started later still knows it. The console session cache uses its own stream `nk:invc`.
+- `SessionCache` (`Remove`, `RemoveAll`, `Ban`, `Unban`): applied locally, then appended to the Redis stream `nk:inv` (`XADD … MINID ~ now-maxTokenLifetime`). Every node tails it with a blocking `XREAD` on its own connection and applies each record to its local cache; at start a node replays the records newer than the longest token lifetime before it serves requests. A replayed "log out everywhere" or ban uses the time of the record (the stream ID), not the time of the replay, so tokens issued after the logout stay valid. So a logout or ban on one node invalidates the token on every node within milliseconds, and a node started later still knows it. The console session cache uses its own stream `nk:invc`.
 - Our plugins need no change: phase 3 suspension (`SessionLogout` + `StreamUserList(0, user)` + `SessionDisconnect`) and jazebe's suspension now reach every node through the three rows above. The phase 3 `restrictionLoop` stays as a database-side safety net.
 - Live notifications (publication in-app, support 1210/1211, any `NotificationsSend`) are routed to the node that holds the player's socket.
 
@@ -115,8 +117,11 @@ The envelope is marshalled to protobuf once per target node; the receiver re-enc
 - Tickets are stored in `nk:mm:{<i>}:t` (hash ticket → JSON `MatchmakerExtract`). `Add` on any node is forwarded (unary call) to the shard owner, which runs `LocalMatchmaker.Add` and writes the ticket with a fenced `HSET` (fails if it lost the lease). The origin node remembers ticket → shard for its sessions and parties to route removals.
 - **Commit point**: after `Process` forms matches and before any `MatchmakerMatched` is sent, a fenced script checks that the owner token is still ours and that every ticket of the match is still in the hash, then deletes them. Only committed matches are delivered. Lost lease → nothing delivered (the new owner still has the tickets). A ticket removed meanwhile → that match is not delivered, its other tickets are put back. So every ticket is matched at most once and never after its removal, even across failover.
 - Removals (`RemoveSession`, `RemoveSessionAll` on disconnect, `RemoveParty*`) delete the ticket from Redis directly (any node may) and forward to the current owner. Unknown ticket → all shards.
+- `Add` retries for up to one lease lifetime while a shard has no owner or its owner answers "not available" (failover or handover), reading the owner map from Redis again on every try, so a handover is invisible to clients.
+- `Add` is not cancelled when the client goes away mid-call (the owner may already have stored the ticket); if the session closed meanwhile, the origin removes the ticket again. Every 30 s an owner also checks its tickets older than 20 s against the players' notification presences in Redis and drops tickets of sessions that no longer exist (this cleans tickets orphaned by a timeout).
 - New owner (failover or handover): loads the shard hash with `Insert`, dropping tickets whose presences or party host are on dead nodes. Node death: every owner removes that node's tickets from its shards.
-- Not available: no owner yet (failover window ≤ 6 s) → `Add` returns `ErrMatchmakerNotAvailable`, as upstream does when the matchmaker is stopped.
+- Not available: still no owner after the retries (Redis down, every node stopping) → `Add` returns `ErrMatchmakerNotAvailable`, as upstream does when the matchmaker is stopped.
+- Choose `matchmaker_shards` ≥ the number of pods (for example 64 for 30 pods) so every pod owns some pools; preference is a rendezvous hash (FNV-64a, mixed with splitmix64) over the alive node names.
 - Stats: `GetStats` sums the node's own shards.
 
 ## Matches
@@ -191,7 +196,17 @@ Every node must use the same `session.encryption_key`, `session.refresh_encrypti
 ## Deployment
 
 - **Docker Compose**: `docker-compose.yml` has an optional `redis` service under the `cluster` profile and passes `NAKAMA_CLUSTER_*` from `.env` into the flags; with the defaults in `.env.example` clustering stays off and Redis does not start. Scale with `docker compose --profile cluster up --scale nakama=3` behind a load balancer for HTTP/WebSocket.
-- **Kubernetes**: a `Deployment` (or `StatefulSet`) with `POD_NAME` and `POD_IP` from the downward API; args `--name=$(POD_NAME) --cluster.enabled=true --cluster.redis_address=redis:6379 --cluster.advertise_address=$(POD_IP) --cluster.port=7353`; container port 7353 open between pods (NetworkPolicy: only from pods with the same label); `terminationGracePeriodSeconds` ≥ `shutdown_grace_sec` + 5 so the node can release shards and say goodbye; a normal ClusterIP/LoadBalancer service for 7350 (HTTP + WebSocket, no sticky sessions needed) and 7351 (console). No headless service is needed for membership; one can be added for debugging (`dig` the pods). Redis: a managed Redis or a Sentinel set; no persistence required.
+- **Kubernetes**: a `StatefulSet` (pod names `nakama-0` … `nakama-29` fit Nakama's 16-character node name limit; a `Deployment` works too with a shorter name passed in, e.g. the last 16 characters of the pod name) with `POD_NAME` and `POD_IP` from the downward API; args `--name=$(POD_NAME) --cluster.enabled=true --cluster.redis_address=redis:6379 --cluster.advertise_address=$(POD_IP) --cluster.port=7353`; container port 7353 open between pods (NetworkPolicy: only from pods with the same label); `terminationGracePeriodSeconds` ≥ `shutdown_grace_sec` + 5 so the node can release shards and say goodbye; a normal ClusterIP/LoadBalancer service for 7350 (HTTP + WebSocket, no sticky sessions needed) and 7351 (console). No headless service is needed for membership; one can be added for debugging (`dig` the pods). Redis: a managed Redis or a Sentinel set; no persistence required.
+
+## Choices changed while building
+
+| Plan | Built | Why |
+|---|---|---|
+| Presence writes synchronous in every `Track`/`Untrack` | Ordered per-session workers with pipelining; joins and updates wait, leaves do not | Pipelining keeps Redis round trips per connect at one; ordering per session prevents a quick join+leave from being applied in the wrong order |
+| Node-set cache per stream | Full view (other nodes' presences) per stream with a local presence, versioned with Redis `TIME` | `ListByStream`, relayed match data and channel joins need presence IDs; a node-set cache needs the same versioning anyway, and memory stays bounded by local streams |
+| Versions from `HINCRBY` | Versions from Redis `TIME` (microseconds), monotonic per stream | A stream key that empties is deleted, a counter would restart and let a late frame from before the reset win |
+| Membership by memberlist or Kubernetes endpoints | Redis heartbeat keys | See above; one dependency instead of two, deterministic, same in Compose and Kubernetes |
+| One plain FNV-64a rendezvous | FNV-64a + splitmix64 | Plain FNV on similar names (`node2`, `node3`) gave one node no shard at all in the 3-node test |
 
 ## Not cluster-aware (and why)
 
