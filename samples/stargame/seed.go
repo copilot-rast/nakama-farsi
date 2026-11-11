@@ -222,7 +222,7 @@ func seed(ctx context.Context, db *sql.DB, env map[string]string) (*seedReport, 
 	}
 
 	prizes := map[string]string{}
-	for _, p := range append(append([]seedPrize{}, seedPrizes...), eventCoinPrizes()...) {
+	for _, p := range append(append(append([]seedPrize{}, seedPrizes...), eventCoinPrizes()...), growthPrizes()...) {
 		ok, err := inserted(tx.ExecContext(ctx, `INSERT INTO economy_prize (id, key, name, message, is_repeatable, items) VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6::jsonb) ON CONFLICT DO NOTHING`,
 			newID(), p.key, p.name.json(), p.message.json(), p.repeatable, p.items))
 		if err != nil {
@@ -279,6 +279,9 @@ func seed(ctx context.Context, db *sql.DB, env map[string]string) (*seedReport, 
 	}
 
 	if err := seedEvents(ctx, tx, prizes, report); err != nil {
+		return nil, err
+	}
+	if err := seedGrowth(ctx, tx, prizes, vipTag, report); err != nil {
 		return nil, err
 	}
 	if err := seedPaymentMethods(ctx, tx, env, report); err != nil {

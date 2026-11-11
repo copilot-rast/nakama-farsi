@@ -168,6 +168,10 @@ func resetSeedData(t *testing.T, db *sql.DB) {
 		`DELETE FROM economy_meta WHERE key IN ('xp','level')`,
 		`DELETE FROM economy_user_prize`,
 		`DELETE FROM economy_prize WHERE key LIKE 'star\_%'`,
+		`UPDATE economy_referral_settings SET referrer_prize_id=NULL, referee_prize_id=NULL, goal_event_type_id=NULL`,
+		`DELETE FROM economy_prize WHERE key IN ('referral_inviter','referral_invited')`,
+		`DELETE FROM base_config_key WHERE key LIKE 'stargame.%'`,
+		`DELETE FROM base_config_history WHERE key LIKE 'stargame.%'`,
 		`DELETE FROM base_category WHERE key_type='product' AND key IN ('star_coin_packs','star_skins')`,
 		`DELETE FROM economy_currency WHERE key='coin'`,
 		`DELETE FROM base_tag WHERE key_type='user' AND key='star-vip'`,
@@ -221,32 +225,34 @@ func TestSeedPostgres(t *testing.T) {
 		}
 		created += len(reports[i].created)
 	}
-	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2; created != want {
+	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2; created != want {
 		t.Fatalf("created %d rows across nodes, want %d: %v", created, want, reports)
 	}
 
 	for q, want := range map[string]int{
-		`SELECT count(*) FROM base_language WHERE code IN ('fa','en','ar')`:                                                                                                                      3,
-		`SELECT count(*) FROM base_language WHERE is_default`:                                                                                                                                    1,
-		`SELECT count(*) FROM economy_currency WHERE key='coin' AND default_value=50`:                                                                                                            1,
-		`SELECT count(*) FROM base_category WHERE key IN ('star_coin_packs','star_skins')`:                                                                                                       2,
-		`SELECT count(*) FROM economy_prize WHERE key LIKE 'star\_%'`:                                                                                                                            14,
-		`SELECT count(*) FROM economy_event_type WHERE key IN ('round_finished','golden_star','login')`:                                                                                          3,
-		`SELECT count(*) FROM economy_event_rule WHERE key LIKE 'star\_%' AND is_active`:                                                                                                         4,
-		`SELECT count(*) FROM economy_meta_rule r JOIN economy_meta m ON m.id=r.meta_id WHERE r.key LIKE 'star\_%' AND m.key='xp'`:                                                               2,
-		`SELECT count(*) FROM economy_level_step s JOIN economy_level_table t ON t.id=s.table_id WHERE t.key='star_levels'`:                                                                      6,
-		`SELECT count(*) FROM economy_streak_reward r JOIN economy_streak s ON s.id=r.streak_id WHERE s.key='daily_login' AND s.cycle_length=7`:                                                  7,
-		`SELECT count(*) FROM economy_product WHERE key LIKE 'star\_%' AND is_active`:                                                                                                            7,
-		`SELECT count(*) FROM economy_product p JOIN base_tag t ON t.id::text = ANY(p.audience_tag_ids) WHERE p.key='star_pack_vip' AND t.key='star-vip' AND t.is_public`:                        1,
-		`SELECT count(*) FROM economy_gift WHERE code IN ('STAR100','HALF50') AND is_active`:                                                                                                     2,
-		`SELECT count(*) FROM base_app_version WHERE platform IN ('web','android') AND latest_version='1.4.0' AND min_version='1.0.0'`:                                                           2,
-		`SELECT count(*) FROM economy_payment_method WHERE is_active`:                                                                                                                            4,
-		`SELECT count(*) FROM economy_product WHERE key='star_skin_gold' AND coin_price @> '{"currencyKey":"coin","amount":80}' AND payment_methods = ARRAY['in_app']`:                           1,
-		`SELECT count(*) FROM economy_product WHERE key='star_pack_small' AND price_toman=10000 AND sku @> '{"bazaar":"star_pack_small","myket":"star_pack_small"}'`:                             1,
-		`SELECT count(*) FROM economy_gift WHERE code='STAR100' AND prize_id=(SELECT id FROM economy_prize WHERE key='star_coins_100') AND name->>'en'='Star Catcher: 100 free coins'`:           1,
-		`SELECT count(*) FROM economy_gift WHERE code='HALF50' AND type='discount' AND discount_percent=50 AND prize_id IS NULL`:                                                                 1,
-		`SELECT count(*) FROM economy_prize WHERE key='star_coins_500' AND items @> '[{"type":"currency","key":"coin","action":"add","value":500}]' AND is_repeatable`:                           1,
-		`SELECT count(*) FROM economy_prize WHERE key='star_skin_neon' AND items @> '[{"type":"storage","key":"skin_neon","action":"give","value":{"skin":"skin_neon"}}]' AND NOT is_repeatable`: 1,
+		`SELECT count(*) FROM base_language WHERE code IN ('fa','en','ar')`:                                                                                                                                                        3,
+		`SELECT count(*) FROM base_language WHERE is_default`:                                                                                                                                                                      1,
+		`SELECT count(*) FROM economy_currency WHERE key='coin' AND default_value=50`:                                                                                                                                              1,
+		`SELECT count(*) FROM base_category WHERE key IN ('star_coin_packs','star_skins')`:                                                                                                                                         2,
+		`SELECT count(*) FROM economy_prize WHERE key LIKE 'star\_%'`:                                                                                                                                                              14,
+		`SELECT count(*) FROM economy_event_type WHERE key IN ('round_finished','golden_star','login')`:                                                                                                                            3,
+		`SELECT count(*) FROM economy_event_rule WHERE key LIKE 'star\_%' AND is_active`:                                                                                                                                           4,
+		`SELECT count(*) FROM economy_meta_rule r JOIN economy_meta m ON m.id=r.meta_id WHERE r.key LIKE 'star\_%' AND m.key='xp'`:                                                                                                 2,
+		`SELECT count(*) FROM economy_level_step s JOIN economy_level_table t ON t.id=s.table_id WHERE t.key='star_levels'`:                                                                                                        6,
+		`SELECT count(*) FROM economy_streak_reward r JOIN economy_streak s ON s.id=r.streak_id WHERE s.key='daily_login' AND s.cycle_length=7`:                                                                                    7,
+		`SELECT count(*) FROM economy_product WHERE key LIKE 'star\_%' AND is_active`:                                                                                                                                              7,
+		`SELECT count(*) FROM economy_product p JOIN base_tag t ON t.id::text = ANY(p.audience_tag_ids) WHERE p.key='star_pack_vip' AND t.key='star-vip' AND t.is_public`:                                                          1,
+		`SELECT count(*) FROM economy_gift WHERE code IN ('STAR100','HALF50') AND is_active`:                                                                                                                                       2,
+		`SELECT count(*) FROM base_app_version WHERE platform IN ('web','android') AND latest_version='1.4.0' AND min_version='1.0.0'`:                                                                                             2,
+		`SELECT count(*) FROM economy_referral_settings WHERE referrer_prize_id=(SELECT id FROM economy_prize WHERE key='referral_inviter') AND goal_event_type_id=(SELECT id FROM economy_event_type WHERE key='round_finished')`: 1,
+		`SELECT count(*) FROM base_config_key k JOIN base_config_history h ON h.key_id=k.id WHERE k.key IN ('stargame.banner','stargame.golden_rush') AND h.version=1`:                                                             2,
+		`SELECT count(*) FROM economy_payment_method WHERE is_active`:                                                                                                                                                              4,
+		`SELECT count(*) FROM economy_product WHERE key='star_skin_gold' AND coin_price @> '{"currencyKey":"coin","amount":80}' AND payment_methods = ARRAY['in_app']`:                                                             1,
+		`SELECT count(*) FROM economy_product WHERE key='star_pack_small' AND price_toman=10000 AND sku @> '{"bazaar":"star_pack_small","myket":"star_pack_small"}'`:                                                               1,
+		`SELECT count(*) FROM economy_gift WHERE code='STAR100' AND prize_id=(SELECT id FROM economy_prize WHERE key='star_coins_100') AND name->>'en'='Star Catcher: 100 free coins'`:                                             1,
+		`SELECT count(*) FROM economy_gift WHERE code='HALF50' AND type='discount' AND discount_percent=50 AND prize_id IS NULL`:                                                                                                   1,
+		`SELECT count(*) FROM economy_prize WHERE key='star_coins_500' AND items @> '[{"type":"currency","key":"coin","action":"add","value":500}]' AND is_repeatable`:                                                             1,
+		`SELECT count(*) FROM economy_prize WHERE key='star_skin_neon' AND items @> '[{"type":"storage","key":"skin_neon","action":"give","value":{"skin":"skin_neon"}}]' AND NOT is_repeatable`:                                   1,
 	} {
 		if got := count(t, db, q); got != want {
 			t.Errorf("%s = %d, want %d", q, got, want)

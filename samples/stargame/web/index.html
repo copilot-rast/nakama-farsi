@@ -44,7 +44,9 @@
       <span class="lang-label" id="lang-label"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span data-i18n="language">زبان</span></span>
       <div class="lang-options" id="lang-options"></div>
     </div>
+    <div class="config-banner" id="config-banner" role="status" hidden></div>
     <div class="hero">
+      <span class="rush-badge" id="rush-badge" hidden data-i18n="goldenRush">طوفان طلایی</span>
       <p class="hello"><span data-i18n="hello">سلام</span> <bdi id="username">…</bdi></p>
       <div class="my-tags" id="my-tags" hidden></div>
       <h1 data-i18n="heroTitle">ستاره‌ها را بگیر، از بمب‌ها فرار کن</h1>
@@ -64,6 +66,9 @@
       <button class="menu-card" type="button" data-go="account" id="menu-account"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span data-i18n="account">حساب من</span></button>
       <button class="menu-card" type="button" data-go="rewards" id="menu-rewards"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.2 7 22l5-3 5 3-1.2-8.8"/></svg></span><span data-i18n="rewards">جایزه‌ها</span><span class="menu-dot" id="rewards-dot" hidden></span></button>
       <button class="menu-card" type="button" data-go="payments"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span><span data-i18n="payments">پرداخت‌های من</span></button>
+      <button class="menu-card" type="button" data-go="support" id="menu-support"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg></span><span data-i18n="support">پشتیبانی</span><span class="menu-dot" id="support-dot" hidden></span></button>
+      <button class="menu-card" type="button" data-go="referral" id="menu-referral"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span><span data-i18n="referral">کد معرف</span></button>
+      <button class="menu-card" type="button" data-go="activity" id="menu-activity"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span><span data-i18n="activity">فعالیت من</span></button>
     </div>
     <div class="panel">
       <div class="panel-head">
@@ -274,6 +279,114 @@
     <div class="inbox-list" id="inbox-list"></div>
     <button class="btn btn-ghost wide" type="button" id="btn-inbox-more" hidden data-i18n="olderMessages">پیام‌های قدیمی‌تر</button>
   </section>
+
+  <section class="screen" id="screen-support" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="support">پشتیبانی</h1>
+      <span></span>
+    </div>
+    <div class="panel live-card" id="live-card">
+      <div class="live-text"><b data-i18n="liveChat">گفتگوی زنده</b><span class="muted small" id="live-state"></span></div>
+      <button class="btn btn-primary" type="button" id="btn-livechat" data-i18n="liveChatOpen">گفتگو با پشتیبانی</button>
+    </div>
+    <form class="panel form" id="ticket-form" novalidate>
+      <h2 data-i18n="newTicket">تیکت تازه</h2>
+      <label for="ticket-dept" data-i18n="department">بخش</label>
+      <select id="ticket-dept"></select>
+      <p class="muted small" id="ticket-dept-hint"></p>
+      <label for="ticket-subject" data-i18n="subject">موضوع</label>
+      <input id="ticket-subject" type="text" maxlength="150" autocomplete="off">
+      <label for="ticket-body" data-i18n="ticketBody">چه شده؟</label>
+      <textarea id="ticket-body" rows="4" maxlength="5000"></textarea>
+      <div class="attach-row">
+        <label class="btn btn-ghost attach-btn"><input type="file" id="ticket-file" accept="image/png,image/jpeg,image/webp,application/pdf" hidden><span data-i18n="attach">پیوست</span></label>
+        <span class="muted small" id="ticket-attach-hint"></span>
+      </div>
+      <div class="files" id="ticket-files"></div>
+      <p class="form-msg" id="ticket-msg" role="status"></p>
+      <button class="btn btn-primary" type="submit" id="ticket-send" data-i18n="ticketSend">فرستادن تیکت</button>
+    </form>
+    <div class="panel">
+      <div class="panel-head"><h2 data-i18n="myTickets">تیکت‌های من</h2></div>
+      <div class="ticket-list" id="ticket-list"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-ticket" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="support" data-i18n="back">بازگشت</button>
+      <h1 id="ticket-title"></h1>
+      <span class="muted small mono" id="ticket-number"></span>
+    </div>
+    <div class="ticket-meta" id="ticket-meta"></div>
+    <div class="chat-list ticket-thread" id="ticket-thread" role="log" aria-live="polite"></div>
+    <form class="panel form" id="ticket-reply" novalidate>
+      <label for="ticket-reply-body" data-i18n="yourReply">پاسخ تو</label>
+      <textarea id="ticket-reply-body" rows="3" maxlength="5000"></textarea>
+      <div class="attach-row">
+        <label class="btn btn-ghost attach-btn"><input type="file" id="ticket-reply-file" accept="image/png,image/jpeg,image/webp,application/pdf" hidden><span data-i18n="attach">پیوست</span></label>
+        <div class="files" id="ticket-reply-files"></div>
+      </div>
+      <div class="otp-row">
+        <button class="btn btn-primary" type="submit" id="ticket-reply-send" data-i18n="send">بفرست</button>
+        <button class="btn btn-ghost" type="button" id="ticket-resolve" data-i18n="ticketSolved">مشکلم حل شد</button>
+      </div>
+    </form>
+    <div class="panel rate-panel" id="ticket-rate" hidden></div>
+  </section>
+
+  <section class="screen" id="screen-livechat" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="support" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="liveChat">گفتگوی زنده</h1>
+      <span class="muted small" id="lc-state"></span>
+    </div>
+    <div class="chat-banner" id="lc-banner" role="status" hidden></div>
+    <div class="chat-list" id="lc-thread" role="log" aria-live="polite"></div>
+    <p class="muted small lc-typing" id="lc-typing" hidden data-i18n="agentTyping">پشتیبان دارد می‌نویسد…</p>
+    <form class="chat-form" id="lc-form" novalidate>
+      <label for="lc-input" class="sr-only" data-i18n="chatPlaceholder">پیامت را بنویس</label>
+      <input id="lc-input" type="text" maxlength="2000" autocomplete="off" data-i18n-ph="chatPlaceholder" placeholder="پیامت را بنویس">
+      <button class="btn btn-primary" type="submit" id="lc-send" data-i18n="send">بفرست</button>
+    </form>
+    <div class="lc-actions" id="lc-actions"></div>
+  </section>
+
+  <section class="screen" id="screen-referral" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="referral">کد معرف</h1>
+      <span></span>
+    </div>
+    <div class="panel ref-card">
+      <p class="muted small" data-i18n="myCodeHint">این کد را به دوستت بده تا موقع شروع بازی واردش کند.</p>
+      <div class="ref-code-row"><b class="ref-code mono" id="ref-code" dir="ltr">…</b><button class="btn btn-ghost" type="button" id="ref-copy" data-i18n="copy">کپی</button></div>
+      <p id="ref-rewards"></p>
+      <p class="muted small" id="ref-goal"></p>
+      <p class="small" id="ref-counts"></p>
+      <ul class="ref-recent" id="ref-recent"></ul>
+    </div>
+    <form class="panel form" id="ref-form" novalidate>
+      <h2 data-i18n="enterCode">کد دوستت را وارد کن</h2>
+      <p class="muted small" id="ref-enter-hint"></p>
+      <input id="ref-input" type="text" maxlength="16" autocomplete="off" dir="ltr" class="mono">
+      <p class="form-msg" id="ref-msg" role="status"></p>
+      <button class="btn btn-primary" type="submit" id="ref-send" data-i18n="enterCodeOk">ثبت کد</button>
+    </form>
+    <div class="panel" id="ref-by" hidden></div>
+  </section>
+
+  <section class="screen" id="screen-activity" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="activity">فعالیت من</h1>
+      <span></span>
+    </div>
+    <div class="tabs" id="act-kinds" role="group"></div>
+    <ol class="act-list" id="act-list"></ol>
+    <button class="btn btn-ghost wide" type="button" id="act-more" hidden data-i18n="olderMessages">قدیمی‌ترها</button>
+  </section>
   <p class="game-version muted small center" id="game-version"></p>
 </main>
 
@@ -285,5 +398,6 @@
 <button class="note-toast" type="button" id="note-toast" hidden></button>
 
 <script src="app.js"></script>
+<script src="growth.js"></script>
 </body>
 </html>

@@ -697,7 +697,7 @@ const STRINGS = {
   },
 };
 
-const SCREENS = ["home", "play", "shop", "gift", "payments", "news", "faq", "inbox", "account", "update", "chat", "rewards"];
+const SCREENS = ["home", "play", "shop", "gift", "payments", "news", "faq", "inbox", "account", "update", "chat", "rewards", "support", "ticket", "livechat", "referral", "activity"];
 
 const SKINS = {
   default: { body: ["#c98a52", "#8a5a30"], rim: "#e4b383", glow: null },
@@ -951,6 +951,7 @@ function show(name) {
     $("#gift-msg").textContent = "";
     $("#gift-code").focus();
   }
+  if (typeof growthShow === "function") growthShow(name);
 }
 
 async function refreshBalances() {
@@ -1340,7 +1341,8 @@ function stopGame() {
 
 function spawn() {
   const r = Math.random();
-  const kind = r < 0.1 ? "gold" : r < 0.3 ? "bomb" : "star";
+  const gold = typeof goldenRush === "function" && goldenRush() ? 0.2 : 0.1;
+  const kind = r < gold ? "gold" : r < gold + 0.2 ? "bomb" : "star";
   const size = kind === "gold" ? 17 : kind === "bomb" ? 15 : 13;
   const elapsed = ROUND_SECONDS - game.time;
   const speed = (game.h * (0.38 + Math.random() * 0.22)) * (1 + elapsed / 45);
@@ -1887,6 +1889,7 @@ async function handleReturn() {
 function navigate(target) {
   const name = String(target || "").trim();
   if (name === "play") return startGame();
+  if (name.startsWith("support/ticket/")) return openTicket(name.slice("support/ticket/".length));
   if (SCREENS.includes(name)) return show(name);
   toast(t("sectionNotFound"), "bad");
 }
@@ -2299,6 +2302,10 @@ function connectSocket() {
         moderationNotice(n);
         continue;
       }
+      if (n.code === 1210 || n.code === 1211) {
+        if (typeof supportNotice === "function") supportNotice(n);
+        continue;
+      }
       if (n.code !== 1001) continue;
       let content = {};
       try {
@@ -2342,6 +2349,7 @@ function applyStatic() {
   renderUpdateBanner();
   if (!$("#screen-account").hidden) renderAccount();
   if (!$("#screen-update").hidden) renderUpdate();
+  if (typeof paintConfig === "function") paintConfig();
 }
 
 function renderLangPicker() {
@@ -2424,10 +2432,11 @@ async function changeLanguage(code) {
   const screen = currentScreen();
   if (screen === "article" && state.article) openArticle(state.article.id);
   else if (screen === "home") refreshBalances().then(renderHome).catch(() => renderHome());
-  else if (["shop", "payments", "news", "faq", "inbox"].includes(screen)) show(screen);
+  else if (["shop", "payments", "news", "faq", "inbox", "support", "referral", "activity", "livechat"].includes(screen)) show(screen);
   else refreshBalances().catch(() => {});
   checkVersion().then(() => { if (state.version && state.version.status === "update_required") show("update"); }).catch(() => {});
   loadCountries();
+  if (typeof loadConfig === "function") loadConfig().then(() => { if (currentScreen() === "home") renderHome(); });
 }
 
 async function boot() {
@@ -2487,6 +2496,8 @@ async function connect() {
   loadPhone();
   refreshUnread();
   refreshNewsDot();
+  if (typeof loadConfig === "function") await loadConfig();
+  if (typeof refreshSupportDot === "function") refreshSupportDot();
   if (!(await handleReturn())) show("home");
 }
 
