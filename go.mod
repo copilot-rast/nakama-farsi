@@ -66,6 +66,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_model v0.6.3 // indirect
 	github.com/prometheus/procfs v0.23.0 // indirect
+	github.com/redis/go-redis/v9 v9.23.0 // indirect
 	github.com/twmb/murmur3 v1.2.2 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
