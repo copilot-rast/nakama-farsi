@@ -32,4 +32,6 @@ UPDATE base_chat_report SET title_id=NULL WHERE title_id IS NOT NULL AND title_i
 DELETE FROM base_report_title WHERE id NOT IN (SELECT id FROM zz_e2e_backup.rtitles);
 UPDATE base_report_title t SET key=b.key, name=b.name, description=b.description, is_active=b.is_active, sort=b.sort, updated_at=b.updated_at FROM zz_e2e_backup.rtitles b WHERE t.id=b.id;
 INSERT INTO base_report_title SELECT * FROM zz_e2e_backup.rtitles b WHERE b.id NOT IN (SELECT id FROM base_report_title);
+DELETE FROM economy_event_settings;
+INSERT INTO economy_event_settings SELECT * FROM zz_e2e_backup.evset;
 COMMIT;

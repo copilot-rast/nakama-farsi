@@ -10,3 +10,4 @@ select 'H-ctry', md5(coalesce(string_agg(code||name::text||dial_code||flag_url||
 select 'H-otp', md5(coalesce(string_agg(is_enabled::text||sandbox::text||coalesce(provider_id::text,'')||code_length||'/'||ttl_seconds||'/'||max_attempts||'/'||resend_seconds||'/'||phone_hourly||'/'||phone_daily||'/'||ip_hourly||message::text, '|'),'')) from publication_otp_settings;
 select 'H-words', md5(coalesce(string_agg(id::text||word||action||match||is_active::text||note, '|' order by id),'')) from base_chat_word;
 select 'H-rtitles', md5(coalesce(string_agg(id::text||key||name::text||description::text||is_active::text||sort::text, '|' order by id),'')) from base_report_title;
+select 'H-evset', md5(coalesce(string_agg(timezone||week_start||'/'||retention_days||'/'||player_rate_limit, '|'),'')) from economy_event_settings;

@@ -89,7 +89,7 @@ const MAIN: [string, string][] = [
   ['#/matches', 'مسابقه‌ها'], ['#/leaderboards', 'جدول‌های امتیازات'], ['#/notifications', 'اعلان‌ها'], ['#/payments', 'خریدها'], ['#/chat', 'گفتگو'],
 ];
 const GROUPS: [string, string[]][] = [
-  ['economy', ['#/economy/overview', '#/economy/currencies', '#/economy/metas', '#/economy/prizes', '#/economy/products', '#/economy/gifts', '#/economy/payments']],
+  ['economy', ['#/economy/overview', '#/economy/currencies', '#/economy/metas', '#/economy/prizes', '#/economy/products', '#/economy/gifts', '#/economy/event-types', '#/economy/event-rules', '#/economy/meta-rules', '#/economy/level-tables', '#/economy/streaks', '#/economy/event-log', '#/economy/payments']],
   ['publication', ['#/publication/faqs', '#/publication/news', '#/publication/comments', '#/publication/notifications']],
   ['moderation', ['#/moderation/players', '#/moderation/reports', '#/moderation/restrictions', '#/moderation/chat-words']],
   ['developer', ['#/api-explorer', '#/runtime']],
@@ -184,7 +184,7 @@ test.describe('spatial shell: rail and top bar', () => {
     await page.locator('.sp-tabs a').first().waitFor();
     await expect(page.locator('.sp-crumbs')).toContainText('اقتصاد');
     await expect(page.locator('.sp-crumbs .sp-crumb-current')).toHaveText('فروشگاه');
-    await expect(page.locator('.sp-tabs a')).toHaveCount(7);
+    await expect(page.locator('.sp-tabs a')).toHaveCount(13);
     await expect(page.locator('.sp-tabs a[aria-current="page"]')).toHaveText('فروشگاه');
     const x1 = await page.locator('.sp-tabs .sp-seg-ind').evaluate((e) => getComputedStyle(e).transform);
     await page.locator('.sp-tabs a', { hasText: 'ارزها' }).click();

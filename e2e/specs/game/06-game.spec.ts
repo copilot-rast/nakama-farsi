@@ -1,6 +1,6 @@
 import { expect, test } from '../../lib/fixtures';
 import type { Page } from '@playwright/test';
-import { deleteUser, pub, rpc, uid } from '../../lib/api';
+import { deleteUser, eco, pub, rpc, uid } from '../../lib/api';
 import { API_URL, GAME_URL } from '../../lib/env';
 import { gameRpc, openGame, persian, screen, toast, type GamePlayer } from '../../lib/game';
 
@@ -82,6 +82,9 @@ test.describe('stargame', () => {
     expect(again).toMatchObject({ ok: false, code: 'ROUND_ALREADY_FINISHED' });
     const after = await rpc(me, 'economy_balances', {});
     expect(after.data.wallet.coin).toBe(50 + coins);
+    expect(after.data.metas.xp, 'the round score and golden stars become experience').toBeGreaterThanOrEqual(score);
+    const log = await eco.get('/event-log?userId=' + me.id + '&limit=100');
+    expect(log.items.some((e: any) => e.key === 'round_finished' && e.source === 'server' && e.value === score)).toBe(true);
     await overlay.getByRole('button', { name: 'خانه' }).click();
     await screen(page, 'home');
   });

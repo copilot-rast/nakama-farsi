@@ -68,6 +68,7 @@ test.describe('audit fixes', () => {
     const scrim = await page.evaluate(() => getComputedStyle(document.querySelector('.x-modal > div.fixed.inset-0')!).backgroundColor);
     const alpha = Number((/rgba?\([^)]*?,\s*([\d.]+)\)$/.exec(scrim) || [0, 1])[1]);
     expect(alpha).toBeGreaterThanOrEqual(0.25);
+    await expect.poll(() => form.evaluate((f) => f.contains(document.activeElement))).toBe(true);
     await page.keyboard.press('Escape');
     await expect(form).toHaveCount(0);
   });

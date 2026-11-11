@@ -180,10 +180,10 @@ test.describe('spatial visual: native pages', () => {
 });
 
 const OURS: Record<string, string[]> = {
-  economy: ['#/economy/overview', '#/economy/currencies', '#/economy/metas', '#/economy/prizes', '#/economy/products', '#/economy/gifts', '#/economy/payments', '#/economy/products/new'],
+  economy: ['#/economy/overview', '#/economy/currencies', '#/economy/metas', '#/economy/prizes', '#/economy/products', '#/economy/gifts', '#/economy/event-types', '#/economy/event-rules', '#/economy/meta-rules', '#/economy/level-tables', '#/economy/streaks', '#/economy/event-log', '#/economy/payments', '#/economy/products/new', '#/economy/level-tables/new', '#/economy/streaks/new'],
   publication: ['#/publication/faqs', '#/publication/news', '#/publication/comments', '#/publication/notifications', '#/publication/notifications/new'],
   moderation: ['#/moderation/players', '#/moderation/reports', '#/moderation/restrictions', '#/moderation/chat-words', '#/moderation/chat-words/new'],
-  settings: ['#/project-settings/brand', '#/project-settings/setup', '#/project-settings/languages', '#/project-settings/countries', '#/project-settings/accounts', '#/project-settings/otp', '#/project-settings/app-versions', '#/project-settings/categories', '#/project-settings/tags', '#/project-settings/report-titles', '#/project-settings/payment-methods', '#/project-settings/sms', '#/project-settings/email'],
+  settings: ['#/project-settings/brand', '#/project-settings/setup', '#/project-settings/languages', '#/project-settings/countries', '#/project-settings/accounts', '#/project-settings/otp', '#/project-settings/app-versions', '#/project-settings/categories', '#/project-settings/tags', '#/project-settings/report-titles', '#/project-settings/events', '#/project-settings/payment-methods', '#/project-settings/sms', '#/project-settings/email'],
 };
 
 test.describe('spatial visual: our pages', () => {
@@ -199,7 +199,7 @@ test.describe('spatial visual: our pages', () => {
     }
   }
 
-  test('list pages put their header inside one window; overview is two KPI strips', async ({ page }) => {
+  test('list pages put their header inside one window; overview is three KPI strips', async ({ page }) => {
     await show(page, '#/economy/products', '#economy-root table');
     const win = page.locator('#economy-root div.max-w-\\[1600px\\][data-sp-list]');
     await expect(win).toHaveCount(1);
@@ -207,7 +207,7 @@ test.describe('spatial visual: our pages', () => {
     expect(await win.evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('28px');
     await show(page, '#/economy/overview', '#economy-root .eco-stat-grid');
     const strips = page.locator('#economy-root .eco-stat-grid');
-    await expect(strips).toHaveCount(2);
+    await expect(strips).toHaveCount(3);
     expect(await strips.first().evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('28px');
   });
 

@@ -1,7 +1,17 @@
 BEGIN;
+DELETE FROM users WHERE id IN (SELECT user_id FROM user_device WHERE id LIKE 'e2e-%');
+DELETE FROM economy_reward_claim WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%') OR owner_id IN (SELECT id FROM economy_event_rule WHERE key LIKE 'e2e%' UNION SELECT id FROM economy_level_table WHERE key LIKE 'e2e%' UNION SELECT id FROM economy_streak WHERE key LIKE 'e2e%');
+DELETE FROM economy_event_rule WHERE key LIKE 'e2e%' OR prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%');
+DELETE FROM economy_meta_rule WHERE key LIKE 'e2e%' OR meta_id IN (SELECT id FROM economy_meta WHERE key LIKE 'e2e%');
+DELETE FROM economy_level_table WHERE key LIKE 'e2e%' OR meta_id IN (SELECT id FROM economy_meta WHERE key LIKE 'e2e%') OR level_meta_id IN (SELECT id FROM economy_meta WHERE key LIKE 'e2e%');
+DELETE FROM economy_level_step WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%');
+DELETE FROM economy_streak WHERE key LIKE 'e2e%';
+DELETE FROM economy_streak_reward WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%');
+DELETE FROM economy_event_type WHERE key LIKE 'e2e%';
 DELETE FROM economy_gift WHERE code LIKE 'E2E%' OR name::text LIKE '%e2e\_%';
 DELETE FROM economy_product WHERE key LIKE 'e2e%';
 DELETE FROM economy_gift WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%');
+DELETE FROM economy_user_prize WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%');
 DELETE FROM economy_prize WHERE key LIKE 'e2e%';
 DELETE FROM economy_meta WHERE key LIKE 'e2e%';
 DELETE FROM economy_currency WHERE key LIKE 'e2e%';
