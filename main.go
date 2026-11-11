@@ -179,32 +179,33 @@ func main() {
 
 	// Start up server components.
 	metrics := server.NewLocalMetrics(logger, startupLogger, db, config)
-	sessionRegistry := server.NewLocalSessionRegistry(metrics)
+	clusterNode := server.NewCluster(logger, startupLogger, config, jsonpbMarshaler, jsonpbUnmarshaler)
+	sessionRegistry := clusterNode.SessionRegistry(server.NewLocalSessionRegistry(metrics))
 	sessionCache := server.NewLocalSessionCache(config.GetSession().TokenExpirySec, config.GetSession().RefreshTokenExpirySec)
 	consoleSessionCache := server.NewLocalSessionCache(config.GetConsole().TokenExpirySec, 0)
 	loginAttemptCache := server.NewLocalLoginAttemptCache()
-	statusRegistry := server.NewLocalStatusRegistry(logger, config, sessionRegistry, jsonpbMarshaler)
-	tracker := server.StartLocalTracker(logger, config, sessionRegistry, statusRegistry, metrics, jsonpbMarshaler)
-	router := server.NewLocalMessageRouter(sessionRegistry, tracker, jsonpbMarshaler)
+	statusRegistry := clusterNode.StatusRegistry(server.NewLocalStatusRegistry(logger, config, sessionRegistry, jsonpbMarshaler))
+	tracker := clusterNode.Tracker(server.StartLocalTracker(logger, config, sessionRegistry, statusRegistry, metrics, jsonpbMarshaler))
+	router := clusterNode.Router(server.NewLocalMessageRouter(sessionRegistry, tracker, jsonpbMarshaler))
 	leaderboardCache := server.NewLocalLeaderboardCache(ctx, logger, startupLogger, db)
 	leaderboardRankCache := server.NewLocalLeaderboardRankCache(ctx, startupLogger, db, config.GetLeaderboard(), leaderboardCache)
 	leaderboardScheduler := server.NewLocalLeaderboardScheduler(logger, db, config, leaderboardCache, leaderboardRankCache)
 	matchRegistry := server.NewLocalMatchRegistry(logger, startupLogger, config, sessionRegistry, tracker, router, metrics, config.GetName())
 	tracker.SetMatchJoinListener(matchRegistry.Join)
 	tracker.SetMatchLeaveListener(matchRegistry.Leave)
-	streamManager := server.NewLocalStreamManager(config, sessionRegistry, tracker)
+	streamManager := clusterNode.StreamManager(server.NewLocalStreamManager(config, sessionRegistry, tracker))
 	fmCallbackHandler := server.NewLocalFmCallbackHandler(config)
 
 	storageIndex, err := server.NewLocalStorageIndex(logger, db, config.GetStorage(), metrics)
 	if err != nil {
 		logger.Fatal("Failed to initialize storage index", zap.Error(err))
 	}
-	partyRegistry := server.NewLocalPartyRegistry(ctx, logger, startupLogger, config, config.GetName(), metrics)
+	partyRegistry := clusterNode.PartyRegistry(server.NewLocalPartyRegistry(ctx, logger, startupLogger, config, config.GetName(), metrics))
 	runtime, runtimeInfo, err := server.NewRuntime(ctx, logger, startupLogger, db, jsonpbMarshaler, jsonpbUnmarshaler, config, version, socialClient, leaderboardCache, leaderboardRankCache, leaderboardScheduler, sessionRegistry, sessionCache, statusRegistry, matchRegistry, partyRegistry, tracker, metrics, streamManager, router, storageIndex, fmCallbackHandler)
 	if err != nil {
 		startupLogger.Fatal("Failed initializing runtime modules", zap.Error(err))
 	}
-	matchmaker := server.NewLocalMatchmaker(logger, startupLogger, config, router, metrics, runtime)
+	matchmaker := server.NewClusterAwareMatchmaker(clusterNode, logger, startupLogger, config, router, metrics, runtime)
 	partyRegistry.Init(matchmaker, tracker, streamManager, router)
 	tracker.SetPartyJoinListener(partyRegistry.Join)
 	tracker.SetPartyLeaveListener(partyRegistry.Leave)
@@ -219,7 +220,8 @@ func main() {
 	leaderboardScheduler.Start(runtime)
 
 	pipeline := server.NewPipeline(logger, config, db, jsonpbMarshaler, jsonpbUnmarshaler, sessionRegistry, statusRegistry, matchRegistry, partyRegistry, matchmaker, tracker, router, runtime, metrics)
-	statusHandler := server.NewLocalStatusHandler(logger, sessionRegistry, matchRegistry, partyRegistry, tracker, metrics, config.GetName(), createTime)
+	statusHandler := clusterNode.StatusHandler(server.NewLocalStatusHandler(logger, sessionRegistry, matchRegistry, partyRegistry, tracker, metrics, config.GetName(), createTime))
+	clusterNode.Start()
 
 	telemetryEnabled := os.Getenv("NAKAMA_TELEMETRY") != "0"
 	console.UIFS.Nt = !telemetryEnabled
@@ -252,6 +254,7 @@ func main() {
 
 	// Gracefully stop remaining server components.
 	apiServer.Stop()
+	clusterNode.Stop()
 	consoleServer.Stop()
 	matchmaker.Stop()
 	leaderboardScheduler.Stop()

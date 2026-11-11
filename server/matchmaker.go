@@ -271,6 +271,8 @@ type LocalMatchmaker struct {
 	// Reverse lookup cache for mutual matching.
 	revCache       *MapOf[string, map[string]bool]
 	revThresholdFn func() *time.Timer
+
+	commitHook func([][]*MatchmakerEntry) [][]*MatchmakerEntry
 }
 
 func NewLocalMatchmaker(logger, startupLogger *zap.Logger, config Config, router MessageRouter, metrics Metrics, runtime *Runtime) Matchmaker {
@@ -472,6 +474,10 @@ func (m *LocalMatchmaker) Process() {
 	}
 
 	m.Unlock()
+
+	if m.commitHook != nil && len(matchedEntries) > 0 {
+		matchedEntries = m.commitHook(matchedEntries)
+	}
 
 	if matchedEntriesCount := len(matchedEntries); matchedEntriesCount > 0 {
 		wg := &sync.WaitGroup{}

@@ -57,6 +57,7 @@ type Config interface {
 	GetStorage() *StorageConfig
 	GetMFA() *MFAConfig
 	GetParty() *PartyConfig
+	GetCluster() *ClusterConfig
 	GetLimit() int
 
 	Clone() (Config, error)
@@ -139,6 +140,20 @@ func ValidateConfig(logger *zap.Logger, c Config) map[string]string {
 	ValidateConfigDatabase(logger, c)
 	if l := len(c.GetName()); l < 1 || l > 16 {
 		logger.Fatal("Name must be 1-16 characters", zap.String("param", "name"))
+	}
+	if cc := c.GetCluster(); cc != nil && cc.Enabled {
+		if cc.HeartbeatMs < 50 || cc.NodeTTLMs < 2*cc.HeartbeatMs {
+			logger.Fatal("Cluster heartbeat must be >= 50 ms and node TTL at least twice the heartbeat", zap.Int("cluster.heartbeat_ms", cc.HeartbeatMs), zap.Int("cluster.node_ttl_ms", cc.NodeTTLMs))
+		}
+		if cc.MatchmakerShards < 1 || cc.MatchmakerShards > 1024 {
+			logger.Fatal("Cluster matchmaker shards must be 1-1024", zap.Int("cluster.matchmaker_shards", cc.MatchmakerShards))
+		}
+		if cc.Port < 1 || cc.Port > 65535 {
+			logger.Fatal("Cluster port must be 1-65535", zap.Int("cluster.port", cc.Port))
+		}
+		if cc.Prefix == "" {
+			logger.Fatal("Cluster key prefix must not be empty", zap.String("param", "cluster.prefix"))
+		}
 	}
 	if c.GetShutdownGraceSec() < 0 {
 		logger.Fatal("Shutdown grace period must be >= 0", zap.Int("shutdown_grace_sec", c.GetShutdownGraceSec()))
@@ -486,6 +501,7 @@ type config struct {
 	Storage          *StorageConfig     `yaml:"storage" json:"storage" usage:"Storage settings."`
 	MFA              *MFAConfig         `yaml:"mfa" json:"mfa" usage:"MFA settings."`
 	Party            *PartyConfig       `yaml:"party" json:"party" usage:"Party settings."`
+	Cluster          *ClusterConfig     `yaml:"cluster" json:"cluster" usage:"Cluster settings."`
 	Limit            int                `json:"-"` // Only used for migrate command.
 }
 
@@ -517,6 +533,7 @@ func NewConfig(logger *zap.Logger) *config {
 		Storage:          NewStorageConfig(),
 		Party:            NewPartyConfig(),
 		MFA:              NewMFAConfig(),
+		Cluster:          NewClusterConfig(),
 
 		Limit: -1,
 	}
@@ -549,6 +566,7 @@ func (c *config) Clone() (Config, error) {
 		GoogleAuth:       c.GoogleAuth.Clone(),
 		Storage:          c.Storage.Clone(),
 		MFA:              c.MFA.Clone(),
+		Cluster:          c.Cluster.Clone(),
 		Limit:            c.Limit,
 	}
 
@@ -633,6 +651,10 @@ func (c *config) GetStorage() *StorageConfig {
 
 func (c *config) GetParty() *PartyConfig {
 	return c.Party
+}
+
+func (c *config) GetCluster() *ClusterConfig {
+	return c.Cluster
 }
 
 func (c *config) GetMFA() *MFAConfig {
@@ -1678,5 +1700,47 @@ func NewPartyConfig() *PartyConfig {
 	return &PartyConfig{
 		LabelUpdateIntervalMs: 1_000,
 		IdleCheckIntervalMs:   30_000,
+	}
+}
+
+type ClusterConfig struct {
+	Enabled                 bool   `yaml:"enabled" json:"enabled" usage:"Run this node as part of a cluster that shares state through Redis. Default false."`
+	RedisAddress            string `yaml:"redis_address" json:"redis_address" usage:"Comma-separated Redis host:port list. One address is a single Redis, several are a Redis Cluster, with redis_master_name a Sentinel set. Default 127.0.0.1:6379."`
+	RedisUsername           string `yaml:"redis_username" json:"redis_username" usage:"Redis ACL user name."`
+	RedisPassword           string `yaml:"redis_password" json:"redis_password" usage:"Redis password."`
+	RedisDB                 int    `yaml:"redis_db" json:"redis_db" usage:"Redis database number. Default 0."`
+	RedisMasterName         string `yaml:"redis_master_name" json:"redis_master_name" usage:"Sentinel master name."`
+	RedisTLS                bool   `yaml:"redis_tls" json:"redis_tls" usage:"Connect to Redis with TLS. Default false."`
+	Prefix                  string `yaml:"prefix" json:"prefix" usage:"Prefix of every Redis key. Default nk."`
+	Address                 string `yaml:"address" json:"address" usage:"Listen address of the inter-node port. Default all interfaces."`
+	Port                    int    `yaml:"port" json:"port" usage:"Inter-node gRPC port. Default 7353."`
+	AdvertiseAddress        string `yaml:"advertise_address" json:"advertise_address" usage:"Address other nodes use to reach this node. Default the first non-loopback IPv4 address."`
+	Secret                  string `yaml:"secret" json:"secret" usage:"Shared secret between nodes. Default session.encryption_key."`
+	HeartbeatMs             int    `yaml:"heartbeat_ms" json:"heartbeat_ms" usage:"Heartbeat and membership check period in milliseconds. Default 1000."`
+	NodeTTLMs               int    `yaml:"node_ttl_ms" json:"node_ttl_ms" usage:"Heartbeat lifetime in milliseconds, i.e. how long until a silent node is dead. Default 5000."`
+	CallTimeoutMs           int    `yaml:"call_timeout_ms" json:"call_timeout_ms" usage:"Timeout of calls to other nodes in milliseconds. Default 5000."`
+	SendQueueSize           int    `yaml:"send_queue_size" json:"send_queue_size" usage:"Frames queued per peer node before frames are dropped. Default 65536."`
+	MatchmakerShards        int    `yaml:"matchmaker_shards" json:"matchmaker_shards" usage:"Number of matchmaker shards. Default 16."`
+	MatchmakerShardProperty string `yaml:"matchmaker_shard_property" json:"matchmaker_shard_property" usage:"String property of a ticket that selects its matchmaker shard. Empty puts every ticket in one shard."`
+}
+
+func (cfg *ClusterConfig) Clone() *ClusterConfig {
+	if cfg == nil {
+		return nil
+	}
+	cfgCopy := *cfg
+	return &cfgCopy
+}
+
+func NewClusterConfig() *ClusterConfig {
+	return &ClusterConfig{
+		RedisAddress:     "127.0.0.1:6379",
+		Prefix:           "nk",
+		Port:             7353,
+		HeartbeatMs:      1000,
+		NodeTTLMs:        5000,
+		CallTimeoutMs:    5000,
+		SendQueueSize:    65536,
+		MatchmakerShards: 16,
 	}
 }
