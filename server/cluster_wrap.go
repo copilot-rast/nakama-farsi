@@ -66,3 +66,14 @@ func (c *Cluster) PartyRegistry(local PartyRegistry) PartyRegistry {
 	}
 	return local
 }
+
+func (c *Cluster) MatchRegistry(local MatchRegistry) MatchRegistry {
+	if c == nil {
+		return local
+	}
+	if lm, ok := local.(*LocalMatchRegistry); ok {
+		c.matchRegistry = &ClusterMatchRegistry{c: c, local: lm}
+		return c.matchRegistry
+	}
+	return local
+}

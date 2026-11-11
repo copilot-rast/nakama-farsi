@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -369,6 +368,24 @@ func (m *ClusterMatchmaker) shardFor(stringProperties map[string]string) int {
 	return m.shards.ShardOf(key)
 }
 
+func (m *ClusterMatchmaker) lookupOwner(ctx context.Context, i int) string {
+	cctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	defer cancel()
+	owners, err := m.shards.Owners(cctx)
+	if err != nil {
+		return m.ownerOf(i)
+	}
+	m.mu.Lock()
+	for j := range owners {
+		if _, mine := m.owned[j]; mine {
+			owners[j] = m.c.name
+		}
+	}
+	m.owners = owners
+	m.mu.Unlock()
+	return owners[i]
+}
+
 func (m *ClusterMatchmaker) ownerOf(i int) string {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -409,25 +426,32 @@ func (m *ClusterMatchmaker) Add(ctx context.Context, presences []*MatchmakerPres
 		return "", 0, runtime.ErrMatchmakerNotAvailable
 	}
 	shard := m.shardFor(stringProperties)
-	owner := m.ownerOf(shard)
-	if owner == "" {
-		return "", 0, runtime.ErrMatchmakerNotAvailable
-	}
 	req := &mmAddRequest{Shard: shard, Presences: presences, SessionID: sessionID, PartyID: partyId, Query: query, MinCount: minCount, MaxCount: maxCount, CountMultiple: countMultiple, StringProperties: stringProperties, NumericProperties: numericProperties}
+	payload, _ := json.Marshal(req)
 	var resp *mmAddResponse
-	var err error
-	if owner == m.c.name {
-		resp, err = m.addLocal(ctx, req)
-	} else {
-		payload, _ := json.Marshal(req)
-		var out []byte
-		out, err = m.c.call(ctx, owner, callMatchmakerAdd, payload)
-		if err == nil {
-			resp = &mmAddResponse{}
-			err = json.Unmarshal(out, resp)
-		} else if !isKnownMatchmakerError(err) {
-			err = runtime.ErrMatchmakerNotAvailable
+	err := runtime.ErrMatchmakerNotAvailable
+	deadline := time.Now().Add(m.shards.TTL() + 2*time.Second)
+	for attempt := 0; ; attempt++ {
+		owner := m.ownerOf(shard)
+		if owner == "" || attempt > 0 {
+			owner = m.lookupOwner(ctx, shard)
 		}
+		if owner == m.c.name {
+			resp, err = m.addLocal(ctx, req)
+		} else if owner != "" {
+			var out []byte
+			out, err = m.c.call(ctx, owner, callMatchmakerAdd, payload)
+			if err == nil {
+				resp = &mmAddResponse{}
+				err = json.Unmarshal(out, resp)
+			} else if !isKnownMatchmakerError(err) {
+				err = runtime.ErrMatchmakerNotAvailable
+			}
+		}
+		if err == nil || !errors.Is(err, runtime.ErrMatchmakerNotAvailable) || time.Now().After(deadline) || ctx.Err() != nil || m.stopped.Load() {
+			break
+		}
+		time.Sleep(200 * time.Millisecond)
 	}
 	if err != nil {
 		return "", 0, err
@@ -809,8 +833,4 @@ func (m *ClusterMatchmaker) ownedShards() []int {
 		out = append(out, i)
 	}
 	return out
-}
-
-func shardLabel(i int) string {
-	return "shard " + strconv.Itoa(i)
 }

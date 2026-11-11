@@ -66,6 +66,7 @@ type Cluster struct {
 	tracker         *ClusterTracker
 	statusRegistry  *ClusterStatusRegistry
 	partyRegistry   *ClusterPartyRegistry
+	matchRegistry   *ClusterMatchRegistry
 	matchmaker      *ClusterMatchmaker
 	streamManager   *ClusterStreamManager
 	localRouter     MessageRouter
@@ -367,6 +368,10 @@ func (c *Cluster) HandleFrame(from string, kind byte, payload []byte) {
 		}
 	case frameHostLost:
 		c.hostLost(string(payload))
+	case frameMatchData:
+		if c.matchRegistry != nil {
+			c.matchRegistry.handleData(payload)
+		}
 	case frameEnvelopeSessions:
 		c.router.handleSessions(payload)
 	case frameEnvelopeStream:
@@ -389,6 +394,11 @@ func (c *Cluster) HandleCall(ctx context.Context, from string, kind byte, payloa
 			return nil, ErrSessionNotFound
 		}
 		return c.streamManager.handleCall(payload)
+	case callMatchGet, callMatchJoinAttempt, callMatchSignal, callMatchState, callMatchList:
+		if c.matchRegistry == nil {
+			return nil, runtime.ErrMatchNotFound
+		}
+		return c.matchRegistry.handleCall(ctx, kind, payload)
 	case callParty, callPartyList:
 		if c.partyRegistry == nil {
 			return nil, ErrPartyNotFound
