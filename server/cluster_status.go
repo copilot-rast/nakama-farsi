@@ -190,11 +190,6 @@ func (s *ClusterStatusRegistry) online(ids []uuid.UUID) []bool {
 		}
 		return out
 	}
-	for i, id := range ids {
-		if !out[i] && s.local.IsOnline(id) {
-			out[i] = true
-		}
-	}
 	return out
 }
 
