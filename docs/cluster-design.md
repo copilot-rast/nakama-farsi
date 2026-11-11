@@ -34,12 +34,12 @@ Owner's decision (2026-11-11, after `docs/cluster-spike.md`): do not port nakama
 
 | Key | Type | Value | TTL |
 |---|---|---|---|
-| `nk:nodes` | hash | field `<name>/<inc>` → JSON `{addr, hash, started}` | none, removed after reap |
-| `nk:hb:<name>` | string | `<inc>` | `node_ttl_ms` (default 5000), refreshed every `heartbeat_ms` (1000) |
-| `nk:epoch` | string | random id set once with `SET NX` | none |
-| `nk:reap:<name>/<inc>` | string | reaper holder | 30 s, renewed while reaping |
+| `nk:{reg}:nodes` | hash | field `<name>/<inc>` → JSON `{addr, hash, started}` | none, removed after reap |
+| `nk:{reg}:hb:<name>` | string | `<inc>` | `node_ttl_ms` (default 5000), refreshed every `heartbeat_ms` (1000) |
+| `nk:{reg}:epoch` | string | random id set once with `SET NX` | none |
+| `nk:{reg}:reap:<name>/<inc>` | string | reaper holder | 30 s, renewed while reaping |
 
-- A node is **alive** when `GET nk:hb:<name>` equals its incarnation. Every node runs a watcher every `heartbeat_ms`: `HGETALL nk:nodes` + `MGET` of the heartbeat keys (30 pods = 2 commands). Alive entries it did not know → peer up (dial). Entries no longer alive → peer down.
+- A node is **alive** when `GET nk:{reg}:hb:<name>` equals its incarnation. Every node runs a watcher every `heartbeat_ms`: `HGETALL nk:{reg}:nodes` + `MGET` of the heartbeat keys (30 pods = 2 commands). All registry keys share the hash tag `{reg}` so the heartbeat and reap scripts run on Redis Cluster too; a tombstone `nk:{reg}:dead:<name>/<inc>` (10 min) tells a paused node that it was reaped. Alive entries it did not know → peer up (dial). Entries no longer alive → peer down.
 - **Death detection** = heartbeat key expired or replaced by a new incarnation: about `node_ttl_ms` (5 s) after a crash, at once after a restart with the same name, at once after a graceful stop (the node deletes its own keys).
 - **Redis outage safety**: a node judges others only after its own heartbeat writes have succeeded continuously for one full `node_ttl_ms`. After a Redis outage every node refreshes first, so no live node is declared dead.
 - **Epoch**: on every heartbeat a node also reads `nk:epoch`. If it is missing or changed (Redis restarted empty), the node writes a new one if missing and republishes all its local presences, follows and owned matchmaker tickets. Redis therefore needs no persistence.
@@ -56,7 +56,7 @@ Owner's decision (2026-11-11, after `docs/cluster-spike.md`): do not port nakama
 
 ## Presence and streams in Redis
 
-A stream is `(mode, subject, subcontext, label)`. Its key `sk` is `mode|subject|subcontext|label`. Per-user streams (notifications mode 0, status mode 1) use the hash tag `{u:<user>}` so the status stream and the user's follower set share a slot; every other stream uses `{s:<sk>}`. So every script touches one slot and works on Redis Cluster too.
+A stream is `(mode, subject, subcontext, label)`. Its key `sk` is `mode|subject|subcontext|label`. Per-user streams (notifications mode 0, status mode 1) use the hash tag `{u:<user>}` so the status stream and the user's follower set share a slot; every other stream uses `{s:<sk>}`; matchmaker shard `i` uses `{mm<i>}` for its lease and its tickets. So every script touches one slot and multi-key reads are pipelines, never cross-slot `MGET`: the design runs on Redis Cluster. All measurements here used one Redis; Redis Cluster itself was not tested on this Mac.
 
 | Key | Type | Content |
 |---|---|---|

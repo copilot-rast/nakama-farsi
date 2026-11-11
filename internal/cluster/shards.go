@@ -138,18 +138,18 @@ func (s *Shards) Release(ctx context.Context, i int, token string) error {
 }
 
 func (s *Shards) Owners(ctx context.Context) ([]string, error) {
-	keys := make([]string, s.n)
-	for i := range keys {
-		keys[i] = s.OwnerKey(i)
+	pipe := s.rdb.Pipeline()
+	cmds := make([]*redis.StringCmd, s.n)
+	for i := range cmds {
+		cmds[i] = pipe.Get(ctx, s.OwnerKey(i))
 	}
-	vals, err := s.rdb.MGet(ctx, keys...).Result()
-	if err != nil {
+	if _, err := pipe.Exec(ctx); err != nil && err != redis.Nil {
 		return nil, err
 	}
 	out := make([]string, s.n)
-	for i, v := range vals {
-		if str, ok := v.(string); ok {
-			out[i] = OwnerName(str)
+	for i, c := range cmds {
+		if v, err := c.Result(); err == nil {
+			out[i] = OwnerName(v)
 		}
 	}
 	return out, nil

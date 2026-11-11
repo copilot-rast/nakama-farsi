@@ -51,11 +51,11 @@ type Keys struct {
 	Prefix string
 }
 
-func (k Keys) Nodes() string                { return k.Prefix + ":nodes" }
-func (k Keys) Heartbeat(name string) string { return k.Prefix + ":hb:" + name }
-func (k Keys) Epoch() string                { return k.Prefix + ":epoch" }
-func (k Keys) Reap(field string) string     { return k.Prefix + ":reap:" + field }
-func (k Keys) Dead(field string) string     { return k.Prefix + ":dead:" + field }
+func (k Keys) Nodes() string                { return k.Prefix + ":{reg}:nodes" }
+func (k Keys) Heartbeat(name string) string { return k.Prefix + ":{reg}:hb:" + name }
+func (k Keys) Epoch() string                { return k.Prefix + ":{reg}:epoch" }
+func (k Keys) Reap(field string) string     { return k.Prefix + ":{reg}:reap:" + field }
+func (k Keys) Dead(field string) string     { return k.Prefix + ":{reg}:dead:" + field }
 func (k Keys) NodePresences(field string) string {
 	return k.Prefix + ":np:" + field
 }
