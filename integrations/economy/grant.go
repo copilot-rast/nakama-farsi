@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"github.com/heroiclabs/nakama/v3/internal/activity"
 	"net/http"
 
 	"github.com/gofrs/uuid/v5"
@@ -92,6 +93,7 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 	}
 
 	var rewards []prizeItem
+	granted := false
 	err = s.inTx(ctx, func(tx *sql.Tx) error {
 		var owner string
 		if err := tx.QueryRowContext(ctx, `SELECT user_id::text, claimed, rewards::text FROM economy_user_prize WHERE id=$1 FOR UPDATE`, rowID).Scan(&owner, &claimed, &stored); err != nil {
@@ -160,6 +162,7 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 			}
 		}
 		rewards = prize.Items
+		granted = true
 		return nil
 	})
 	if err != nil {
@@ -172,6 +175,9 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 	}
 	if rewards == nil {
 		rewards = []prizeItem{}
+	}
+	if granted && req.SourceType != "payment" {
+		activity.Safe(ctx, s.db, s.logger, activity.Entry{UserID: req.UserID, Kind: activity.KindPrize, Action: "granted", RefID: rowID, Actor: "system", Data: map[string]any{"prize": prize.Key, "source": req.SourceType, "reason": req.Reason}})
 	}
 	return rewards, nil
 }

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"github.com/heroiclabs/nakama/v3/internal/activity"
 	"net/http"
 	"strings"
 	"time"
@@ -213,6 +214,7 @@ func (s *service) grantPayment(ctx context.Context, id string) ([]prizeItem, err
 	}
 	if first {
 		s.recordServerEvent(ctx, p.UserID, "purchase_completed", float64(p.FinalToman), map[string]any{"paymentId": p.ID, "method": p.Method, "productKey": product.Key})
+		activity.Safe(ctx, s.db, s.logger, activity.Entry{UserID: p.UserID, Kind: activity.KindPurchase, Action: "completed", RefID: p.ID, Actor: "player", Data: map[string]any{"method": p.Method, "productKey": product.Key, "toman": p.FinalToman}})
 	}
 	return rewards, nil
 }

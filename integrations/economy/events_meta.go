@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"github.com/heroiclabs/nakama/v3/internal/activity"
 	"strconv"
 	"time"
 )
@@ -202,6 +203,7 @@ func (s *service) evaluateLevels(ctx context.Context, userID string, metaIDs []s
 		}
 		if change.From > 0 || threshold > 0 {
 			v := levelValue
+			activity.Safe(ctx, s.db, s.logger, activity.Entry{UserID: userID, Kind: activity.KindEvent, Action: "level_up", RefID: t.key, Actor: "system", Data: map[string]any{"table": t.key, "from": change.From, "to": levelValue}})
 			extra, err := s.recordEvent(ctx, eventInput{UserID: userID, Key: "level_up", Value: &v, Metadata: map[string]any{"table": t.key, "from": change.From}, Source: "server", depth: depth + 1})
 			if err == nil {
 				out.merge(extra)

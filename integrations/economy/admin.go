@@ -32,6 +32,7 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/uploads", http.MethodPost, s.consoleUpload},
 	}
 	routes = append(routes, s.eventConsoleRoutes()...)
+	routes = append(routes, s.referralConsoleRoutes()...)
 	for _, res := range append(resources(), eventResources()...) {
 		base := consolePrefix + "/" + res.name
 		routes = append(routes,
