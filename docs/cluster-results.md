@@ -37,7 +37,7 @@ Reading: one node of this fork serves about **10k players of this workload** wit
 | | `TestClusterMatchmakerMatchesEachTicketOnceAcrossNodesAndFailover` | 24 players on 3 nodes, 4 shards by `mode`: three rounds, every player matched exactly once per round; the shard owner is killed with tickets waiting: the survivors take the shards and every player is matched exactly once more; a removed ticket is never matched |
 | | `TestClusterLogoutBanDisconnectAndStreamJoinAcrossNodes` | logout and ban on one node invalidate on another; a node started later replays them; a remote stream join/leave through the session's node; a ban disconnect reaches the session on the other node |
 
-The single-node server tests (`go test ./server/`) need upstream's test database and are reported at the end of this document.
+Upstream's own server tests: `go test ./server/` (194 test functions, plus the cluster ones) passed against a disposable database `nakama_srvtest` (created, migrated, dropped) with `TEST_DB_URL`.
 
 ## Multi-node e2e (`e2e/cluster`, 4 nodes + Redis)
 
@@ -67,10 +67,10 @@ Same k6 workload as step 0 and the spike, sessions spread evenly over nodes 1–
 | CPU per node, average in hold (max) | 1–4 % (13 %) | 4–18 % (30 %) | 10–51 % (72 %) | 27–79 % (132 %) |
 | Goroutines per node | 650–710 | 2,650–2,710 | 5,150–5,230 | 7,680–7,730 |
 | Presences per node | 747–759 (own sessions × 3) | 3,744–3,759 | 7,497–7,509 | 11,250–11,256 |
-| Redis memory / ops per second in hold | 3.4 MB / 254 | 11.2 MB / 860 | 17–20 MB / 1,605–1,644 | 26.6 MB / 4,071 |
+| Redis memory / ops per second in hold | 3.4 MB / 254 | 11.2 MB / 860 | 17–20 MB / 1,605–1,644 | 26.6–28.5 MB / 4,071–10,582 |
 | Inter-node TCP connections | 24 (2 per node pair, fixed) | 24 | 24 | 24 |
 | Online flag of 300 connected players, each node | — | — | 300/300 on all 4 nodes | 300/300 on all 4 nodes |
-| Online flag 20 s after everyone left | — | — | 0/300 on all 4 nodes | see below |
+| Online flag 20 s after everyone left | — | — | 0/300 on all 4 nodes | first run 38 and 19 of 300 on two nodes (fixed, see below); final build 0/300 on all 4 nodes |
 | Presences / tickets left in Redis after everyone left | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
 | Cross-node probe p50 / p95 / lost | 0.36 / 0.83 ms / 0 | 0.26 / 0.44 ms / 0 | 0.23–0.74 / 0.57–7.5 ms / 0 | 0.29 / 1.37 ms / 0 |
 | Same-node probe p50 / p95 | 0.38 / 0.84 ms | 0.28 / 0.51 ms | 0.26–0.64 / 1.8–5.0 ms | 0.31 / 2.37 ms |
@@ -78,9 +78,9 @@ Same k6 workload as step 0 and the spike, sessions spread evenly over nodes 1–
 | Room messages delivered | 8,830 | 323,500 | 1,507,643–1,508,241 | 3,393,349 |
 | Matchmaker matched events | 3,120 | 22,160 | 48,608–48,648 | 73,044 |
 | k6 errors | 0 | 0 | 0 | 0 |
-| Server errors | 0 | 0 | first run: 10 × matchmaker add timed out at the end of the run (fixed, see below); second run: 0 | 4 × `Presence event dispatch queue is full` when 15k sockets closed at once, 1 add refused for a closed session |
+| Server errors | 0 | 0 | first run: 10 × matchmaker add timed out at the end of the run (fixed, see below); second run: 0 | 4–16 × `Presence event dispatch queue is full` when 15k sockets closed at once (upstream queue of 1,024; raise `tracker.event_queue_size` on big nodes), 1 add refused for a closed session |
 
-The 10k row shows two runs (before and after the fixes below); the machine was busier during the second.
+The 10k and 15k rows show two runs each (before and after the fixes below); the final-build 15k run: RSS 491–541 MB, chat p95 6 ms, probe cross-node p50 0.36 ms, 0 presences and 0 tickets left.
 
 ### Compared with one node and with the nakama-plus spike
 
@@ -109,8 +109,12 @@ Assumptions: about 33k players per pod, the same per-player activity as this wor
 | Memory per pod | about 120 KB per player + about 90 MB | **about 4.1 GB** | Only own sessions and views of own streams; adding pods does not add memory to the others (the spike's design needed 3–15 GB per pod just for copies) |
 | CPU per pod | about 42 % of one core per 3,750 players (rooms of 150) | **about 3.7 cores** | Scales with message fan-out, not with cluster size; plan 6–8 vCPU pods or more, smaller pods |
 | Redis memory | about 1.8 KB per player | **about 2 GB** | Presences, follower sets, node indexes, tickets |
-| Redis operations | 0.16–0.27 per player per second | **about 160k–270k ops/s** | Mostly connects, status, matchmaker adds and commits; no Redis work per chat or match message. Above what one Redis primary does comfortably with Lua scripts: use Redis Cluster with 4–8 primaries (all keys are hash-tagged for it) or a managed Redis of that size |
+| Redis operations | 0.16–0.7 per player per second | **about 160k–700k ops/s** | Mostly connects, status, matchmaker adds and commits; no Redis work per chat or match message. Above what one Redis primary does comfortably with Lua scripts: use Redis Cluster with 8 or more primaries (all keys are hash-tagged for it) or a managed Redis of that size |
 | Inter-node connections | 2 per node pair | 58 per pod, 870 in total | Long-lived; no connection per message |
 | Death detection / cleanup | 4.5–5.6 s to every client on 4 nodes | about 5 s + reap | A dead pod's 100k presences are removed with pipelined scripts, 500 per round trip (about 200 round trips) |
 
 Where it bends first: the per-pod event fan-out of very large rooms (every member's node gets every join, leave and message, as on one node), then Redis operations per second (move to Redis Cluster before about 300k players), then per-pod CPU. Not measured here: more than 4 nodes, nodes on separate machines, Redis Cluster, a soak longer than a few minutes, and a pod dying under full load.
+
+## Single-node regression
+
+With clustering off the full Playwright suite (201 tests) passed after every step; on the final build two consecutive runs passed 201/201 (one earlier run on the same build failed only the external ZarinPal sandbox page, which passes on rerun and needs no server change).
