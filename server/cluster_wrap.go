@@ -1,11 +1,14 @@
 package server
 
+import "time"
+
 func (c *Cluster) SessionRegistry(local SessionRegistry) SessionRegistry {
 	if c == nil {
 		return local
 	}
 	c.sessionRegistry = local
-	return local
+	c.sessions = &ClusterSessionRegistry{c: c, local: local}
+	return c.sessions
 }
 
 func (c *Cluster) Tracker(local Tracker) Tracker {
@@ -65,6 +68,19 @@ func (c *Cluster) PartyRegistry(local PartyRegistry) PartyRegistry {
 		return c.partyRegistry
 	}
 	return local
+}
+
+func (c *Cluster) SessionCache(local SessionCache, console bool) SessionCache {
+	if c == nil {
+		return local
+	}
+	keep := time.Duration(max(c.config.GetSession().TokenExpirySec, c.config.GetSession().RefreshTokenExpirySec)+60) * time.Second
+	if console {
+		keep = time.Duration(c.config.GetConsole().TokenExpirySec+60) * time.Second
+	}
+	sc := newClusterSessionCache(c, local, console, keep)
+	c.sessionCaches = append(c.sessionCaches, sc)
+	return sc
 }
 
 func (c *Cluster) MatchRegistry(local MatchRegistry) MatchRegistry {

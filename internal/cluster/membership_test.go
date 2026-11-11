@@ -139,9 +139,10 @@ func TestMembershipRestartSameNameReplacesIncarnation(t *testing.T) {
 	}
 	defer fresh.Stop(ctx)
 	eventually(t, 2*time.Second, func() bool { return watch.get(watch.dead, oldInfo.Field()) > 0 }, "old incarnation not reported dead")
-	if info, ok := w.Info("x"); !ok || info.Inc != fresh.Self().Inc {
-		t.Fatalf("new incarnation not alive: %+v %v", info, ok)
-	}
+	eventually(t, 2*time.Second, func() bool {
+		info, ok := w.Info("x")
+		return ok && info.Inc == fresh.Self().Inc
+	}, "new incarnation not alive")
 	if watch.get(watch.downs, "x") != 1 || watch.get(watch.ups, "x") != 2 {
 		t.Fatalf("expected one down and two ups, got %d/%d", watch.get(watch.downs, "x"), watch.get(watch.ups, "x"))
 	}

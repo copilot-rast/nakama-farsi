@@ -67,6 +67,8 @@ type Cluster struct {
 	statusRegistry  *ClusterStatusRegistry
 	partyRegistry   *ClusterPartyRegistry
 	matchRegistry   *ClusterMatchRegistry
+	sessions        *ClusterSessionRegistry
+	sessionCaches   []*ClusterSessionCache
 	matchmaker      *ClusterMatchmaker
 	streamManager   *ClusterStreamManager
 	localRouter     MessageRouter
@@ -191,6 +193,10 @@ func (c *Cluster) Start() {
 	if c.matchmaker != nil {
 		c.matchmaker.start()
 	}
+	for _, sc := range c.sessionCaches {
+		sc.start()
+	}
+	cluster.SetSignals(cluster.NewRedisSignals(c.ctx, c.logger, c.rdb, c.keys))
 	c.started = true
 	c.logger.Info("Cluster started", zap.Strings("nodes", c.members.AliveNames()))
 }
@@ -372,6 +378,8 @@ func (c *Cluster) HandleFrame(from string, kind byte, payload []byte) {
 		if c.matchRegistry != nil {
 			c.matchRegistry.handleData(payload)
 		}
+	case frameDisconnect, frameSingleSession:
+		c.handleSessionFrame(kind, payload)
 	case frameEnvelopeSessions:
 		c.router.handleSessions(payload)
 	case frameEnvelopeStream:

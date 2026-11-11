@@ -106,6 +106,8 @@ type clusterTestNode struct {
 	config   *config
 	cluster  *Cluster
 	sessions SessionRegistry
+	cache    SessionCache
+	streams  StreamManager
 	status   StatusRegistry
 	tracker  Tracker
 	router   MessageRouter
@@ -142,6 +144,8 @@ func newClusterTestNode(t *testing.T, name, prefix string) *clusterTestNode {
 	n.status = cl.StatusRegistry(NewLocalStatusRegistry(log, c, n.sessions, protojsonMarshaler))
 	n.tracker = cl.Tracker(StartLocalTracker(log, c, n.sessions, n.status, metrics, protojsonMarshaler))
 	n.router = cl.Router(NewLocalMessageRouter(n.sessions, n.tracker, protojsonMarshaler))
+	n.cache = cl.SessionCache(NewLocalSessionCache(3600, 7200), false)
+	n.streams = cl.StreamManager(NewLocalStreamManager(c, n.sessions, n.tracker))
 	n.handler = cl.StatusHandler(&fixedStatusHandler{name: name, sessions: n.sessions})
 	n.tracker.SetMatchJoinListener(func(uuid.UUID, []*MatchPresence) {})
 	n.tracker.SetMatchLeaveListener(func(uuid.UUID, []*MatchPresence) {})

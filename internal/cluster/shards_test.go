@@ -101,10 +101,11 @@ func TestShardExactlyOnceWithFailovers(t *testing.T) {
 						time.Sleep(80 * time.Millisecond)
 					}
 					if r.Intn(8) == 0 {
-						_ = s.DeleteTickets(ctx, 0, group[0])
-						mu.Lock()
-						removed[group[0]] = true
-						mu.Unlock()
+						if n, _ := rdb.HDel(ctx, s.TicketsKey(0), group[0]).Result(); n == 1 {
+							mu.Lock()
+							removed[group[0]] = true
+							mu.Unlock()
+						}
 					}
 					res, _, err := s.Commit(ctx, 0, token, group)
 					if err != nil || res == CommitLost {
