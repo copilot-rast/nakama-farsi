@@ -10,6 +10,7 @@ import (
 
 	"github.com/gofrs/uuid/v5"
 	"github.com/heroiclabs/nakama-common/runtime"
+	"github.com/heroiclabs/nakama/v3/internal/playerevents"
 )
 
 const (
@@ -172,6 +173,12 @@ func rpcFinish(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtim
 		_ = json.Unmarshal([]byte(account.Wallet), &wallet)
 		balance = wallet[currencyKey]
 	}
-	out, _ := json.Marshal(map[string]any{"coins": coins, "balance": balance, "score": in.Score})
+	result := map[string]any{"coins": coins, "balance": balance, "score": in.Score}
+	if events, err := playerevents.Record(ctx, playerevents.Event{UserID: uid, Key: "round_finished", Value: float64(in.Score), Metadata: map[string]any{"roundId": in.RoundID, "coins": coins}}); err == nil {
+		result["events"] = events
+	} else if !errors.Is(err, playerevents.ErrUnavailable) {
+		logger.Warn("stargame_finish event not recorded: %v", err)
+	}
+	out, _ := json.Marshal(result)
 	return string(out), nil
 }

@@ -92,6 +92,33 @@ const STRINGS = {
     inShop: "در فروشگاه",
     preparingRound: "آماده‌سازی دور…",
     startFailed: "شروع نشد",
+    rewards: "جایزه‌ها",
+    rewardsHint: "هدف‌های روزانه و رکوردها؛ با هر کدام جایزه بگیر.",
+    rewardsEmpty: "فعلاً جایزه‌ای تعریف نشده.",
+    levelTitle: (n, title) => `سطح ${num(n)}` + (title ? ` · ${title}` : ""),
+    levelXp: (v, next, name) => `${num(v)} از ${num(next)} ${name}`,
+    levelMax: (v, name) => `${num(v)} ${name} · بالاترین سطح`,
+    claimLevel: (n, prize) => `جایزهٔ سطح ${num(n)} را بگیر: ${prize}`,
+    streakDay: (n) => `روز ${num(n)}`,
+    streakInfo: (count, best) => `${num(count)} روز پشت‌سرهم · بهترین: ${num(best)}`,
+    streakToday: "امروز شمرده شد؛ فردا برگرد تا روز بعد را بگیری.",
+    streakStart: "امروز وارد شدی؛ جایزهٔ امروزت آماده است.",
+    streakBroken: "چند روز نیامدی؛ از روز اول شروع کن.",
+    streakGrace: (n) => `اگر ${num(n)} روز جا بماند، روزهایت از دست نمی‌رود.`,
+    claim: "بگیر",
+    claimed: "گرفتی",
+    locked: "بعداً",
+    todayLabel: "امروز",
+    pendingLabel: "در راه",
+    rewardClaimed: (text) => `جایزه گرفتی: ${text}`,
+    rewardDone: "انجام شد",
+    rewardAuto: "خودکار می‌رسد",
+    periodDay: "امروز",
+    periodWeek: "این هفته",
+    progressOf: (c, target) => `${num(c)} از ${num(target)}`,
+    levelUp: (n) => `سطحت بالا رفت: سطح ${num(n)}!`,
+    newRewards: (n) => `${num(n)} جایزهٔ تازه منتظر توست.`,
+    autoRewards: (n) => `${num(n)} جایزه خودکار به حسابت آمد.`,
     playAgain: "دوباره بازی",
     savingScore: "در حال ثبت امتیاز…",
     roundCoins: (c, b) => `${num(c)} سکه گرفتی. موجودی: ${num(b)} سکه`,
@@ -239,6 +266,9 @@ const STRINGS = {
     exclusive: "ویژهٔ تو",
     messageRemoved: "این پیام پاک شد.",
     errors: {
+      CLAIM_NOT_FOUND: "این جایزه پیدا نشد.",
+      ALREADY_CLAIMED: "این جایزه را قبلاً گرفته‌ای.",
+      TOO_MANY_EVENTS: "کمی آرام‌تر؛ یک دقیقهٔ دیگر دوباره امتحان کن.",
       CHAT_BLOCKED: "این پیام کلمهٔ ممنوع داشت و فرستاده نشد.",
       CHAT_MUTED: "فعلاً نمی‌توانی پیام بفرستی.",
       ACCOUNT_SUSPENDED: "حسابت موقتاً بسته است.",
@@ -388,6 +418,33 @@ const STRINGS = {
     inShop: "In the shop",
     preparingRound: "Getting the round ready…",
     startFailed: "Could not start",
+    rewards: "Rewards",
+    rewardsHint: "Daily goals and records. Each one has a prize.",
+    rewardsEmpty: "No rewards right now.",
+    levelTitle: (n, title) => `Level ${num(n)}` + (title ? ` · ${title}` : ""),
+    levelXp: (v, next, name) => `${num(v)} of ${num(next)} ${name}`,
+    levelMax: (v, name) => `${num(v)} ${name} · top level`,
+    claimLevel: (n, prize) => `Collect the level ${num(n)} prize: ${prize}`,
+    streakDay: (n) => `Day ${num(n)}`,
+    streakInfo: (count, best) => `${num(count)} days in a row · best: ${num(best)}`,
+    streakToday: "Counted today. Come back tomorrow for the next day.",
+    streakStart: "You signed in today; today's prize is ready.",
+    streakBroken: "You missed some days; start again from day one.",
+    streakGrace: (n) => `Missing ${num(n)} ${n === 1 ? "day" : "days"} will not break it.`,
+    claim: "Collect",
+    claimed: "Collected",
+    locked: "Later",
+    todayLabel: "Today",
+    pendingLabel: "On the way",
+    rewardClaimed: (text) => `You got ${text}`,
+    rewardDone: "Done",
+    rewardAuto: "Comes automatically",
+    periodDay: "Today",
+    periodWeek: "This week",
+    progressOf: (c, target) => `${num(c)} of ${num(target)}`,
+    levelUp: (n) => `Level up: level ${num(n)}!`,
+    newRewards: (n) => `${num(n)} new ${n === 1 ? "reward is" : "rewards are"} waiting.`,
+    autoRewards: (n) => `${num(n)} ${n === 1 ? "reward was" : "rewards were"} added for you.`,
     playAgain: "Play again",
     savingScore: "Saving your score…",
     roundCoins: (c, b) => `You got ${num(c)} ${c === 1 ? "coin" : "coins"}. Balance: ${num(b)} ${b === 1 ? "coin" : "coins"}`,
@@ -535,6 +592,9 @@ const STRINGS = {
     exclusive: "Just for you",
     messageRemoved: "This message was removed.",
     errors: {
+      CLAIM_NOT_FOUND: "This reward was not found.",
+      ALREADY_CLAIMED: "You already collected this reward.",
+      TOO_MANY_EVENTS: "Slow down a little and try again in a minute.",
       CHAT_BLOCKED: "This message had a banned word and was not sent.",
       CHAT_MUTED: "You cannot send messages right now.",
       ACCOUNT_SUSPENDED: "Your account is closed for now.",
@@ -637,7 +697,7 @@ const STRINGS = {
   },
 };
 
-const SCREENS = ["home", "play", "shop", "gift", "payments", "news", "faq", "inbox", "account", "update", "chat"];
+const SCREENS = ["home", "play", "shop", "gift", "payments", "news", "faq", "inbox", "account", "update", "chat", "rewards"];
 
 const SKINS = {
   default: { body: ["#c98a52", "#8a5a30"], rim: "#e4b383", glow: null },
@@ -875,6 +935,7 @@ function show(name) {
     if (state.token) refreshNewsDot();
   }
   if (name === "shop") loadShop();
+  if (name === "rewards") loadRewards();
   if (name === "payments") loadPayments(true);
   if (name === "news") loadNews(true);
   if (name === "faq") loadFaq();
@@ -981,6 +1042,7 @@ function skinPreview(key, w = 96, h = 48) {
 
 function renderHome() {
   $("#username").textContent = state.username || t("player");
+  refreshProgress();
   paintTags($("#my-tags"));
   const box = $("#skins");
   box.textContent = "";
@@ -1010,6 +1072,162 @@ function renderHome() {
         el("span", { class: "tag", text: t("inShop") }),
       ])
     );
+  }
+}
+
+function roundNotes(ev) {
+  if (!ev) return null;
+  const lines = [];
+  for (const l of ev.levels || []) if (l.to > Math.max(l.from, 1)) lines.push(t("levelUp", l.to));
+  const claims = ev.claims || [];
+  const waiting = claims.filter((c) => c.grantMode === "claim" && c.status !== "granted").length;
+  const auto = claims.filter((c) => c.grantMode === "auto" && c.status === "granted").length;
+  if (auto) lines.push(t("autoRewards", auto));
+  if (waiting) lines.push(t("newRewards", waiting));
+  if (!lines.length) return null;
+  return el("div", { class: "round-notes", "data-round-notes": "" }, lines.map((x) => el("p", { text: x })));
+}
+
+let goldenQueue = Promise.resolve();
+function recordGolden() {
+  if (!state.token) return;
+  goldenQueue = goldenQueue.then(() => rpc("economy_event_record", { key: "golden_star", value: 1 }, false)).catch(() => {});
+}
+
+let progressSeq = 0;
+async function refreshProgress() {
+  if (!state.token) return;
+  const my = ++progressSeq;
+  try {
+    const [lv, sk] = await Promise.all([rpc("economy_levels", { lang: i18n.lang }), rpc("economy_streaks", { lang: i18n.lang })]);
+    if (my !== progressSeq) return;
+    state.levels = lv.items || [];
+    state.streaks = sk.items || [];
+    renderLevelCard();
+    renderStreakCard();
+    refreshRewardsDot();
+  } catch (e) {
+    if (my === progressSeq) {
+      $("#level-card").hidden = true;
+      $("#streak-card").hidden = true;
+    }
+  }
+}
+
+async function refreshRewardsDot() {
+  try {
+    const res = await rpc("economy_rewards_mine", { status: "ready", limit: 50, lang: i18n.lang });
+    const n = (res.items || []).filter((c) => c.grantMode === "claim").length;
+    const dot = $("#rewards-dot");
+    dot.hidden = !n;
+    dot.textContent = n ? num(n) : "";
+  } catch (e) {}
+}
+
+async function claimReward(id, btn) {
+  if (btn) btn.disabled = true;
+  try {
+    const r = await rpc("economy_reward_claim", { claimId: id, lang: i18n.lang });
+    toast(t("rewardClaimed", rewardText(r.rewards) || (r.prize && r.prize.name) || ""), "ok");
+    await refreshBalances().catch(() => {});
+    await refreshProgress();
+    if (currentScreen() === "rewards") loadRewards();
+  } catch (err) {
+    toast(errorText(err), "bad");
+    if (btn) btn.disabled = false;
+  }
+}
+
+function renderLevelCard() {
+  const box = $("#level-card");
+  const lv = (state.levels || [])[0];
+  box.textContent = "";
+  if (!lv) { box.hidden = true; return; }
+  box.hidden = false;
+  box.dataset.level = String(lv.level);
+  const next = lv.next;
+  const from = Number(lv.levelThreshold) || 0;
+  const pct = next ? Math.max(0, Math.min(100, ((lv.value - from) / Math.max(1, next.threshold - from)) * 100)) : 100;
+  box.append(
+    el("div", { class: "level-top" }, [
+      el("span", { class: "level-badge", "aria-hidden": "true", text: num(lv.level) }),
+      el("div", { class: "level-name" }, [
+        el("b", { id: "level-title", text: t("levelTitle", lv.level, lv.title) }),
+        el("span", { class: "muted small", id: "level-xp", text: next ? t("levelXp", lv.value, next.threshold, lv.metaName) : t("levelMax", lv.value, lv.metaName) }),
+      ]),
+    ]),
+    el("div", { class: "bar", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(Math.round(pct)), "aria-label": lv.name }, [el("i", { style: `width:${pct.toFixed(1)}%` })])
+  );
+  for (const st of lv.steps || []) {
+    if (st.status !== "claimable" || !st.claimId) continue;
+    const b = el("button", { class: "btn btn-primary level-claim", type: "button", "data-claim": st.claimId, "data-level": String(st.level), text: t("claimLevel", st.level, st.prize ? st.prize.name : "") });
+    b.addEventListener("click", () => claimReward(st.claimId, b));
+    box.append(b);
+  }
+}
+
+function renderStreakCard() {
+  const box = $("#streak-card");
+  const sk = (state.streaks || [])[0];
+  box.textContent = "";
+  if (!sk) { box.hidden = true; return; }
+  box.hidden = false;
+  box.dataset.streak = sk.key;
+  box.dataset.count = String(sk.count);
+  box.append(el("div", { class: "panel-head" }, [
+    el("h2", { id: "streak-title", text: sk.name }),
+    el("span", { class: "muted small", id: "streak-info", text: t("streakInfo", sk.count, sk.best) }),
+  ]));
+  const days = el("div", { class: "streak-days" });
+  for (const d of sk.days || []) {
+    const label = { claimed: t("claimed"), claimable: t("claim"), done: t("claimed"), today: t("todayLabel"), pending: t("pendingLabel") }[d.status] || t("locked");
+    const tile = el(d.status === "claimable" ? "button" : "div", { class: "streak-day " + d.status, "data-day": String(d.day), "data-status": d.status, type: d.status === "claimable" ? "button" : null }, [
+      el("span", { class: "day-n", text: t("streakDay", d.day) }),
+      el("span", { class: "day-prize", text: d.prize ? d.prize.name : "" }),
+      el("span", { class: "day-state", text: label }),
+    ]);
+    if (d.status === "claimable" && d.claimId) tile.addEventListener("click", () => claimReward(d.claimId, tile));
+    days.append(tile);
+  }
+  box.append(days);
+  const note = sk.broken ? t("streakBroken") : sk.countedThisPeriod ? (sk.claimable && sk.claimable.length ? t("streakStart") : t("streakToday")) : sk.gracePeriods ? t("streakGrace", sk.gracePeriods) : "";
+  if (note) box.append(el("p", { class: "muted small streak-note", text: note }));
+}
+
+async function loadRewards() {
+  const box = $("#rewards-list");
+  box.textContent = "";
+  box.append(el("div", { class: "center-block" }, [el("div", { class: "spinner" })]));
+  try {
+    const res = await rpc("economy_events_progress", { lang: i18n.lang });
+    box.textContent = "";
+    const items = res.items || [];
+    if (!items.length) { box.append(el("p", { class: "muted center", text: t("rewardsEmpty") })); return; }
+    for (const it of items) {
+      const ready = (it.claimable || []).length > 0;
+      const target = Number(it.target) || Number(it.threshold) || 1;
+      const current = Number(it.current) || 0;
+      const pct = it.done ? 100 : Math.max(0, Math.min(100, (current / target) * 100));
+      const period = it.period === "day" ? t("periodDay") : it.period === "week" ? t("periodWeek") : "";
+      const foot = el("div", { class: "reward-foot" }, [el("span", { class: "reward-prize", text: it.prize ? it.prize.name : "" })]);
+      if (ready) {
+        for (const id of it.claimable) {
+          const b = el("button", { class: "btn btn-primary", type: "button", "data-claim": id, text: t("claim") });
+          b.addEventListener("click", () => claimReward(id, b));
+          foot.append(b);
+        }
+      } else if (it.done) foot.append(el("span", { class: "chip", text: t("rewardDone") }));
+      else if (it.grantMode === "auto") foot.append(el("span", { class: "muted small", text: t("rewardAuto") }));
+      box.append(el("article", { class: "reward" + (ready ? " ready" : it.done ? " done" : ""), "data-rule": it.key }, [
+        el("div", { class: "reward-head" }, [el("b", { text: it.name }), el("span", { class: "muted small", "data-progress": "", text: (period ? period + " · " : "") + t("progressOf", Math.min(current, target), target) })]),
+        it.description ? el("p", { class: "muted small", text: it.description }) : null,
+        el("div", { class: "bar", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(Math.round(pct)), "aria-label": it.name }, [el("i", { style: `width:${pct.toFixed(1)}%` })]),
+        foot,
+      ]));
+    }
+  } catch (err) {
+    box.textContent = "";
+    box.append(el("p", { class: "muted center", text: errorText(err) }));
   }
 }
 
@@ -1175,6 +1393,7 @@ function update(dt) {
     if (!o.done && o.y + o.r >= by - b.h / 2 && o.y - o.r <= by + b.h / 2 && Math.abs(o.x - b.x) <= b.w / 2 + o.r * 0.4) {
       o.done = true;
       const delta = o.kind === "gold" ? 5 : o.kind === "bomb" ? -3 : 1;
+      if (o.kind === "gold") recordGolden();
       game.score += delta;
       game.floats.push({ x: o.x, y: by - 30, text: (delta > 0 ? "+" : "−") + num(Math.abs(delta)), color: delta > 0 ? (delta > 1 ? "#ffc93c" : "#fff3b0") : "#ff6b6b", life: 0.9 });
     }
@@ -1291,7 +1510,12 @@ async function finishGame() {
     $("#balance").textContent = num(r.balance);
     game.phase = "done";
     const text = r.coins > 0 ? t("roundCoins", r.coins, r.balance) : t("roundNoCoins", r.balance);
-    setOverlay(resultView(t("roundOver"), text, el("div", { class: "big", text: num(score) })));
+    const notes = roundNotes(r.events);
+    setOverlay(resultView(t("roundOver"), text, el("div", {}, [el("div", { class: "big", text: num(score) }), notes])));
+    if (r.events) {
+      refreshBalances().catch(() => {});
+      refreshProgress();
+    }
     $("#stage-overlay").dataset.coins = String(r.coins);
   } catch (err) {
     game.phase = "done";

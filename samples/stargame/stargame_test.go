@@ -159,6 +159,13 @@ func resetSeedData(t *testing.T, db *sql.DB) {
 		`DELETE FROM economy_payment_log`,
 		`DELETE FROM economy_payment`,
 		`DELETE FROM economy_product WHERE key LIKE 'star\_%'`,
+		`DELETE FROM economy_reward_claim`,
+		`DELETE FROM economy_streak WHERE key='daily_login'`,
+		`DELETE FROM economy_level_table WHERE key='star_levels'`,
+		`DELETE FROM economy_meta_rule WHERE key LIKE 'star\_%'`,
+		`DELETE FROM economy_event_rule WHERE key LIKE 'star\_%'`,
+		`DELETE FROM economy_event_type WHERE key IN ('round_finished','golden_star')`,
+		`DELETE FROM economy_meta WHERE key IN ('xp','level')`,
 		`DELETE FROM economy_user_prize`,
 		`DELETE FROM economy_prize WHERE key LIKE 'star\_%'`,
 		`DELETE FROM base_category WHERE key_type='product' AND key IN ('star_coin_packs','star_skins')`,
@@ -214,7 +221,7 @@ func TestSeedPostgres(t *testing.T) {
 		}
 		created += len(reports[i].created)
 	}
-	if want := 1 + 1 + 2 + 6 + 1 + 7 + 2 + 4 + 2; created != want {
+	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2; created != want {
 		t.Fatalf("created %d rows across nodes, want %d: %v", created, want, reports)
 	}
 
@@ -223,7 +230,12 @@ func TestSeedPostgres(t *testing.T) {
 		`SELECT count(*) FROM base_language WHERE is_default`:                                                                                                                                    1,
 		`SELECT count(*) FROM economy_currency WHERE key='coin' AND default_value=50`:                                                                                                            1,
 		`SELECT count(*) FROM base_category WHERE key IN ('star_coin_packs','star_skins')`:                                                                                                       2,
-		`SELECT count(*) FROM economy_prize WHERE key LIKE 'star\_%'`:                                                                                                                            6,
+		`SELECT count(*) FROM economy_prize WHERE key LIKE 'star\_%'`:                                                                                                                            14,
+		`SELECT count(*) FROM economy_event_type WHERE key IN ('round_finished','golden_star','login')`:                                                                                          3,
+		`SELECT count(*) FROM economy_event_rule WHERE key LIKE 'star\_%' AND is_active`:                                                                                                         4,
+		`SELECT count(*) FROM economy_meta_rule r JOIN economy_meta m ON m.id=r.meta_id WHERE r.key LIKE 'star\_%' AND m.key='xp'`:                                                               2,
+		`SELECT count(*) FROM economy_level_step s JOIN economy_level_table t ON t.id=s.table_id WHERE t.key='star_levels'`:                                                                      6,
+		`SELECT count(*) FROM economy_streak_reward r JOIN economy_streak s ON s.id=r.streak_id WHERE s.key='daily_login' AND s.cycle_length=7`:                                                  7,
 		`SELECT count(*) FROM economy_product WHERE key LIKE 'star\_%' AND is_active`:                                                                                                            7,
 		`SELECT count(*) FROM economy_product p JOIN base_tag t ON t.id::text = ANY(p.audience_tag_ids) WHERE p.key='star_pack_vip' AND t.key='star-vip' AND t.is_public`:                        1,
 		`SELECT count(*) FROM economy_gift WHERE code IN ('STAR100','HALF50') AND is_active`:                                                                                                     2,

@@ -67,3 +67,9 @@ CONSOLE_URL=https://nakama-console.dastar.dev CONSOLE_USER=admin CONSOLE_PASSWOR
 - A warning (notice 1104) opens a dialog. A suspension (notice 1102, or `ACCOUNT_SUSPENDED` at sign-in or after a 401) shows the «حسابت موقتاً بسته است» screen with the reason and end time; «دوباره امتحان کن» signs in again.
 - Public player tags (`base_my_tags`) show as gold chips under the greeting and in «حساب من»; products only for the player's tags carry «ویژهٔ تو».
 
+
+## Events, levels and the daily reward (phase 4)
+
+- The seed also adds the metas `xp` and `level`, the event types `round_finished` (server only, value = score, 0–400) and `golden_star` (sent by the game, value 1, 20 a minute), eight coin prizes (10 … 200), four event prizes (three rounds a day → 20 coins automatically; ten golden stars a day → 15 coins to collect; a 100-point round → 50 coins once; every 1000 points in total → 100 coins automatically, at most 20 times), two meta rules (round score → `xp`, golden star → 2 `xp`), the level table `star_levels` (`xp` → `level`, six levels from «تازه‌کار» to «افسانهٔ کهکشان», a prize to collect from level 2) and the streak `daily_login` (sign-in, 7-day cycle, one grace day, 10/15/20/25/30/40/100 coins to collect).
+- `stargame_finish` records `round_finished` through `internal/playerevents` and returns the result as `events`; the round result then shows a level-up line and new or automatic rewards. Each golden star caught sends `economy_event_record` from the game.
+- Home shows the level card (badge, title, experience bar, «جایزهٔ سطح … را بگیر») and the daily sign-in panel (seven days, collect today's prize, notes for today, the grace day and a broken run). «جایزه‌ها» lists every goal with its progress for today, this week or all time, and a collect button; the menu shows a dot with the number of rewards waiting.

@@ -108,7 +108,7 @@ func coinPrize(key string, amount int, faAmount string) seedPrize {
 	return seedPrize{
 		key:        key,
 		name:       text{"fa": faAmount + " سکه", "en": fmt.Sprintf("%d coins", amount), "ar": fmt.Sprintf("%d عملة", amount)},
-		message:    text{"fa": fmt.Sprintf("%d سکه به کیف پولت اضافه شد", amount), "en": fmt.Sprintf("%d coins were added to your wallet", amount), "ar": fmt.Sprintf("تمت إضافة %d عملة إلى محفظتك", amount)},
+		message:    text{"fa": faAmount + " سکه به کیف پولت اضافه شد", "en": fmt.Sprintf("%d coins were added to your wallet", amount), "ar": fmt.Sprintf("تمت إضافة %d عملة إلى محفظتك", amount)},
 		repeatable: true,
 		items:      fmt.Sprintf(`[{"type":"currency","key":"coin","action":"add","value":%d}]`, amount),
 	}
@@ -222,13 +222,16 @@ func seed(ctx context.Context, db *sql.DB, env map[string]string) (*seedReport, 
 	}
 
 	prizes := map[string]string{}
-	for _, p := range seedPrizes {
+	for _, p := range append(append([]seedPrize{}, seedPrizes...), eventCoinPrizes()...) {
 		ok, err := inserted(tx.ExecContext(ctx, `INSERT INTO economy_prize (id, key, name, message, is_repeatable, items) VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6::jsonb) ON CONFLICT DO NOTHING`,
 			newID(), p.key, p.name.json(), p.message.json(), p.repeatable, p.items))
 		if err != nil {
 			return nil, fmt.Errorf("prize %s: %w", p.key, err)
 		}
 		report.add("prize", p.key, ok)
+		if _, err := tx.ExecContext(ctx, `UPDATE economy_prize SET message = jsonb_set(message, '{fa}', to_jsonb($2::text)), updated_at = now() WHERE key = $1 AND message->>'fa' <> $2 AND translate(message->>'fa', '0123456789', '۰۱۲۳۴۵۶۷۸۹') = $2`, p.key, p.message["fa"]); err != nil {
+			return nil, fmt.Errorf("prize %s: %w", p.key, err)
+		}
 		var id string
 		if err := tx.QueryRowContext(ctx, `SELECT id::text FROM economy_prize WHERE key=$1`, p.key).Scan(&id); err != nil {
 			return nil, fmt.Errorf("prize %s: %w", p.key, err)
@@ -275,6 +278,9 @@ func seed(ctx context.Context, db *sql.DB, env map[string]string) (*seedReport, 
 		report.add("gift", g.code, ok)
 	}
 
+	if err := seedEvents(ctx, tx, prizes, report); err != nil {
+		return nil, err
+	}
 	if err := seedPaymentMethods(ctx, tx, env, report); err != nil {
 		return nil, err
 	}
