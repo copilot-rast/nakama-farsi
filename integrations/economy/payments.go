@@ -190,11 +190,17 @@ func (s *service) grantPayment(ctx context.Context, id string) ([]prizeItem, err
 	if err != nil {
 		return nil, err
 	}
+	first := false
 	rewards, err := s.grant(ctx, grantRequest{
 		UserID: p.UserID, PrizeID: product.PrizeID, SourceType: "payment", SourceID: p.ID, Reason: "purchase",
 		After: func(ctx context.Context, tx *sql.Tx) error {
-			_, err := tx.ExecContext(ctx, `UPDATE economy_payment SET reward_granted=true, reward_error=NULL, updated_at=now() WHERE id=$1`, p.ID)
-			return err
+			res, err := tx.ExecContext(ctx, `UPDATE economy_payment SET reward_granted=true, reward_error=NULL, updated_at=now() WHERE id=$1 AND NOT reward_granted`, p.ID)
+			if err != nil {
+				return err
+			}
+			n, _ := res.RowsAffected()
+			first = n > 0
+			return nil
 		},
 	})
 	if err != nil {
@@ -204,6 +210,9 @@ func (s *service) grantPayment(ctx context.Context, id string) ([]prizeItem, err
 		}
 		_, _ = s.db.ExecContext(ctx, `UPDATE economy_payment SET reward_error=$2, updated_at=now() WHERE id=$1 AND reward_granted=false`, p.ID, truncate(code, 500))
 		return nil, err
+	}
+	if first {
+		s.recordServerEvent(ctx, p.UserID, "purchase_completed", float64(p.FinalToman), map[string]any{"paymentId": p.ID, "method": p.Method, "productKey": product.Key})
 	}
 	return rewards, nil
 }

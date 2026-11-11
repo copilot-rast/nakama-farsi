@@ -19,6 +19,7 @@ import (
 	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/internal/clusterkit"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
+	"github.com/heroiclabs/nakama/v3/internal/playerevents"
 	"github.com/heroiclabs/nakama/v3/internal/restrict"
 )
 
@@ -603,6 +604,9 @@ func (s *service) rpcOTPVerify(ctx context.Context, userID, payload string) (any
 	token, exp, err := s.nk.AuthenticateTokenGenerate(login.UserID, username, 0, nil)
 	if err != nil {
 		return nil, err
+	}
+	if _, err := playerevents.Record(ctx, playerevents.Event{UserID: login.UserID, Key: "login", Value: 1, Metadata: map[string]any{"method": "phone", "created": login.Created}}); err != nil && !errors.Is(err, playerevents.ErrUnavailable) {
+		s.logger.Warn("Publication phone login event not recorded: %v", err)
 	}
 	return map[string]any{"token": token, "expiresAt": exp, "loginKey": login.LoginKey, "userId": login.UserID, "username": username,
 		"created": login.Created, "linked": login.Linked, "phone": phone}, nil

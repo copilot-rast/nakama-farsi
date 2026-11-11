@@ -233,34 +233,34 @@ func (s *service) registerModerationHooks(initializer runtime.Initializer) error
 			}))
 		},
 		func() error {
-			return initializer.RegisterAfterAuthenticateGoogle(func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, _ *api.AuthenticateGoogleRequest) error {
+			return initializer.RegisterAfterAuthenticateGoogle(hookchain.After("AuthenticateGoogle", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, _ *api.AuthenticateGoogleRequest) error {
 				s.revokeIfSuspended(ctx, out)
 				return nil
-			})
+			}))
 		},
 		func() error {
-			return initializer.RegisterAfterAuthenticateApple(func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, _ *api.AuthenticateAppleRequest) error {
+			return initializer.RegisterAfterAuthenticateApple(hookchain.After("AuthenticateApple", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, _ *api.AuthenticateAppleRequest) error {
 				s.revokeIfSuspended(ctx, out)
 				return nil
-			})
+			}))
 		},
 		func() error {
-			return initializer.RegisterAfterAuthenticateFacebook(func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, _ *api.AuthenticateFacebookRequest) error {
+			return initializer.RegisterAfterAuthenticateFacebook(hookchain.After("AuthenticateFacebook", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, _ *api.AuthenticateFacebookRequest) error {
 				s.revokeIfSuspended(ctx, out)
 				return nil
-			})
+			}))
 		},
 		func() error {
-			return initializer.RegisterAfterAuthenticateSteam(func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, _ *api.AuthenticateSteamRequest) error {
+			return initializer.RegisterAfterAuthenticateSteam(hookchain.After("AuthenticateSteam", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, _ *api.AuthenticateSteamRequest) error {
 				s.revokeIfSuspended(ctx, out)
 				return nil
-			})
+			}))
 		},
 		func() error {
-			return initializer.RegisterAfterAuthenticateGameCenter(func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, _ *api.AuthenticateGameCenterRequest) error {
+			return initializer.RegisterAfterAuthenticateGameCenter(hookchain.After("AuthenticateGameCenter", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, _ *api.AuthenticateGameCenterRequest) error {
 				s.revokeIfSuspended(ctx, out)
 				return nil
-			})
+			}))
 		},
 	}
 	for _, step := range steps {

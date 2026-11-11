@@ -13,6 +13,7 @@ import (
 
 	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/internal/objectstore"
+	"github.com/heroiclabs/nakama/v3/internal/playerevents"
 	"github.com/heroiclabs/nakama/v3/internal/secretbox"
 )
 
@@ -57,7 +58,11 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 			return err
 		}
 	}
-	for name, fn := range svc.clientRPCs() {
+	rpcs := svc.clientRPCs()
+	for name, fn := range svc.eventRPCs() {
+		rpcs[name] = fn
+	}
+	for name, fn := range rpcs {
 		if err := initializer.RegisterRpc(name, svc.rpc(fn)); err != nil {
 			return err
 		}
@@ -68,7 +73,12 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := svc.registerConsoleHTTP(initializer); err != nil {
 		return err
 	}
+	if err := svc.registerEventHooks(initializer); err != nil {
+		return err
+	}
+	playerevents.SetRecorder(svc.playerEventRecorder())
 	go svc.reconcileLoop(ctx)
+	go svc.eventLoop(ctx)
 	logger.Info("Economy module registered (uploads: %s storage)", cfg.storage.Driver)
 	return nil
 }

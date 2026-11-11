@@ -12,6 +12,8 @@ import (
 
 type BeforeFn[T any] func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, in T) (T, error)
 
+type AfterFn[O, I any] func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, out O, in I) error
+
 type AfterRtFn func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, out, in *rtapi.Envelope) error
 
 var (
@@ -59,6 +61,23 @@ func AfterRt(name string, fn AfterRtFn) AfterRtFn {
 	list = append(append([]AfterRtFn{}, list...), fn)
 	chains["after-rt:"+name] = list
 	return func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, out, in *rtapi.Envelope) error {
+		var first error
+		for _, f := range list {
+			if err := f(ctx, logger, db, nk, out, in); err != nil && first == nil {
+				first = err
+			}
+		}
+		return first
+	}
+}
+
+func After[O, I any](name string, fn AfterFn[O, I]) AfterFn[O, I] {
+	mu.Lock()
+	defer mu.Unlock()
+	list, _ := chains["after:"+name].([]AfterFn[O, I])
+	list = append(append([]AfterFn[O, I]{}, list...), fn)
+	chains["after:"+name] = list
+	return func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, out O, in I) error {
 		var first error
 		for _, f := range list {
 			if err := f(ctx, logger, db, nk, out, in); err != nil && first == nil {

@@ -28,7 +28,7 @@ var economyAudit = consoleModuleAudit{
 	prefix:   "/v2/console/economy/",
 	label:    "economy",
 	resource: console.AclResources_HIRO_ECONOMY,
-	invokes:  []string{"/inquire", "/retry-grant", "/grant"},
+	invokes:  []string{"/inquire", "/retry-grant", "/grant", "/retry", "/events", "/reset"},
 	skipBody: func(pattern string) bool { return strings.HasSuffix(pattern, "/uploads") },
 	mask: func(pattern string, body any) any {
 		if strings.HasPrefix(pattern, "/v2/console/economy/payment-methods/") {

@@ -328,6 +328,7 @@ func (s *service) rpcGiftRedeem(ctx context.Context, userID, payload string) (an
 		})
 		return nil, err
 	}
+	s.recordServerEvent(ctx, userID, "gift_redeemed", 1, map[string]any{"code": strings.ToUpper(strings.TrimSpace(in.Code))})
 	out := map[string]any{"rewards": rewards}
 	langs, lang, err := localized.ForUser(ctx, s.db, userID, "")
 	if err != nil {
@@ -472,6 +473,7 @@ func (s *service) startInApp(ctx context.Context, userID string, product product
 		}
 		return nil, err
 	}
+	s.recordServerEvent(ctx, userID, "purchase_completed", float64(product.CoinPrice.Amount), map[string]any{"paymentId": id, "method": "in_app", "productKey": product.Key, "currency": product.CoinPrice.CurrencyKey})
 	return map[string]any{"paymentId": id, "status": "success", "rewards": rewards}, nil
 }
 

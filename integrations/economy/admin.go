@@ -12,11 +12,13 @@ import (
 
 const consolePrefix = "/v2/console/economy"
 
+type consoleRoute struct {
+	path, method string
+	handler      http.HandlerFunc
+}
+
 func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
-	type route struct {
-		path, method string
-		handler      http.HandlerFunc
-	}
+	type route = consoleRoute
 	routes := []route{
 		{consolePrefix + "/summary", http.MethodGet, s.consoleSummary},
 		{consolePrefix + "/payment-methods", http.MethodGet, s.consoleMethodsList},
@@ -29,7 +31,8 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/users/{userId}/grant", http.MethodPost, s.consoleUserGrant},
 		{consolePrefix + "/uploads", http.MethodPost, s.consoleUpload},
 	}
-	for _, res := range resources() {
+	routes = append(routes, s.eventConsoleRoutes()...)
+	for _, res := range append(resources(), eventResources()...) {
 		base := consolePrefix + "/" + res.name
 		routes = append(routes,
 			route{base, http.MethodGet, s.resourceList(res)},
@@ -311,6 +314,13 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 		"tags":           `SELECT count(*) FROM base_tag WHERE key_type IN ('product','prize','general')`,
 		"grantErrors":    `SELECT count(*) FROM economy_payment WHERE status='success' AND NOT reward_granted`,
 		"paymentsToday":  `SELECT count(*) FROM economy_payment WHERE created_at >= now() - interval '24 hours'`,
+		"event-types":    `SELECT count(*) FROM economy_event_type`,
+		"event-rules":    `SELECT count(*) FROM economy_event_rule`,
+		"level-tables":   `SELECT count(*) FROM economy_level_table`,
+		"streaks":        `SELECT count(*) FROM economy_streak`,
+		"eventsToday":    `SELECT count(*) FROM economy_player_event WHERE created_at >= now() - interval '24 hours'`,
+		"claimsReady":    `SELECT count(*) FROM economy_reward_claim WHERE status='ready'`,
+		"claimsFailed":   `SELECT count(*) FROM economy_reward_claim WHERE status='failed'`,
 		"revenueToman30": `SELECT COALESCE(sum(final_toman),0) FROM economy_payment WHERE status='success' AND NOT sandbox AND method IN ('zarinpal','zibal','bazaar','myket') AND created_at >= now() - interval '30 days'`,
 	} {
 		var n int64

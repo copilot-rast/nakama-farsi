@@ -77,3 +77,21 @@ func TestAfterRtRunsAllAndReturnsFirstError(t *testing.T) {
 		t.Fatalf("err=%v n=%d", err, n)
 	}
 }
+
+func TestAfterRunsEveryPluginHookAndFitsTheNakamaSignature(t *testing.T) {
+	name := t.Name()
+	var calls []string
+	After(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, in *api.AuthenticateGoogleRequest) error {
+		calls = append(calls, "base:"+out.Token)
+		return nil
+	})
+	chain := After(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, in *api.AuthenticateGoogleRequest) error {
+		calls = append(calls, "economy:"+in.Account.Token)
+		return errors.New("late")
+	})
+	var register func(context.Context, runtime.Logger, *sql.DB, runtime.NakamaModule, *api.Session, *api.AuthenticateGoogleRequest) error = chain
+	err := register(context.Background(), nil, nil, nil, &api.Session{Token: "t"}, &api.AuthenticateGoogleRequest{Account: &api.AccountGoogle{Token: "g"}})
+	if err == nil || err.Error() != "late" || len(calls) != 2 || calls[0] != "base:t" || calls[1] != "economy:g" {
+		t.Fatalf("err=%v calls=%v", err, calls)
+	}
+}
