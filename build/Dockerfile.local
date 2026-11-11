@@ -54,10 +54,11 @@ RUN mkdir -p /nakama/data/modules /nakama/uploads && \
 WORKDIR /nakama/
 COPY --from=builder "/go/build-out/nakama" /nakama/
 COPY --from=builder "/go/build-out/modules/" /nakama/data/modules/
-COPY --chmod=755 build/nakama-db.sh /nakama/
-EXPOSE 7349 7350 7351
+COPY --chmod=755 build/nakama-db.sh build/nakama-start.sh /nakama/
+VOLUME /nakama/uploads
+EXPOSE 7349 7350 7351 7353 9100
 
-ENTRYPOINT ["tini", "--", "/nakama/nakama"]
+ENTRYPOINT ["tini", "--", "/nakama/nakama-start.sh"]
 
 HEALTHCHECK --interval=30s --timeout=10s \
   CMD /nakama/nakama healthcheck || exit 1
