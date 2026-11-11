@@ -60,6 +60,8 @@ type LocalLeaderboardScheduler struct {
 
 	ctx         context.Context
 	ctxCancelFn context.CancelFunc
+
+	claim func(kind, id string, ts int64) bool
 }
 
 func NewLocalLeaderboardScheduler(logger *zap.Logger, db *sql.DB, config Config, cache LeaderboardCache, rankCache LeaderboardRankCache) LeaderboardScheduler {
@@ -349,6 +351,9 @@ func (ls *LocalLeaderboardScheduler) invokeCallback() {
 		case <-ls.ctx.Done():
 			return
 		case callback := <-ls.queue:
+			if ls.claim != nil && !ls.claim(schedulerCallbackKind(callback), callback.id, callback.ts) {
+				continue
+			}
 			if callback.leaderboard != nil {
 				if callback.leaderboard.IsTournament() {
 					// Tournament, fetch most up-to-date info for size etc.
@@ -415,4 +420,14 @@ WHERE id = $1`
 			}
 		}
 	}
+}
+
+func schedulerCallbackKind(cb *LeaderboardSchedulerCallback) string {
+	if cb.leaderboard == nil {
+		return "tournament_end"
+	}
+	if cb.leaderboard.IsTournament() {
+		return "tournament_reset"
+	}
+	return "leaderboard_reset"
 }

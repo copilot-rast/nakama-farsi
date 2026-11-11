@@ -69,6 +69,7 @@ type Cluster struct {
 	matchRegistry   *ClusterMatchRegistry
 	sessions        *ClusterSessionRegistry
 	sessionCaches   []*ClusterSessionCache
+	scheduler       *ClusterLeaderboardScheduler
 	matchmaker      *ClusterMatchmaker
 	streamManager   *ClusterStreamManager
 	localRouter     MessageRouter
@@ -380,6 +381,10 @@ func (c *Cluster) HandleFrame(from string, kind byte, payload []byte) {
 		}
 	case frameDisconnect, frameSingleSession:
 		c.handleSessionFrame(kind, payload)
+	case frameLeaderboard:
+		if c.scheduler != nil {
+			c.scheduler.handleChange(payload)
+		}
 	case frameEnvelopeSessions:
 		c.router.handleSessions(payload)
 	case frameEnvelopeStream:

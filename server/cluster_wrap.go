@@ -1,6 +1,9 @@
 package server
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 func (c *Cluster) SessionRegistry(local SessionRegistry) SessionRegistry {
 	if c == nil {
@@ -9,6 +12,48 @@ func (c *Cluster) SessionRegistry(local SessionRegistry) SessionRegistry {
 	c.sessionRegistry = local
 	c.sessions = &ClusterSessionRegistry{c: c, local: local}
 	return c.sessions
+}
+
+func (c *Cluster) SessionCache(local SessionCache, console bool) SessionCache {
+	if c == nil {
+		return local
+	}
+	keep := time.Duration(max(c.config.GetSession().TokenExpirySec, c.config.GetSession().RefreshTokenExpirySec)+60) * time.Second
+	if console {
+		keep = time.Duration(c.config.GetConsole().TokenExpirySec+60) * time.Second
+	}
+	sc := newClusterSessionCache(c, local, console, keep)
+	c.sessionCaches = append(c.sessionCaches, sc)
+	return sc
+}
+
+func (c *Cluster) MatchRegistry(local MatchRegistry) MatchRegistry {
+	if c == nil {
+		return local
+	}
+	if lm, ok := local.(*LocalMatchRegistry); ok {
+		c.matchRegistry = &ClusterMatchRegistry{c: c, local: lm}
+		return c.matchRegistry
+	}
+	return local
+}
+
+func (c *Cluster) LeaderboardCache(local LeaderboardCache) LeaderboardCache {
+	if c == nil {
+		return local
+	}
+	return &ClusterLeaderboardCache{LeaderboardCache: local, c: c}
+}
+
+func (c *Cluster) LeaderboardScheduler(local LeaderboardScheduler, cache LeaderboardCache, db *sql.DB) LeaderboardScheduler {
+	if c == nil {
+		return local
+	}
+	if ls, ok := local.(*LocalLeaderboardScheduler); ok {
+		c.scheduler = newClusterLeaderboardScheduler(c, ls, cache, db)
+		return c.scheduler
+	}
+	return local
 }
 
 func (c *Cluster) Tracker(local Tracker) Tracker {
@@ -66,30 +111,6 @@ func (c *Cluster) PartyRegistry(local PartyRegistry) PartyRegistry {
 	if lp, ok := local.(*LocalPartyRegistry); ok {
 		c.partyRegistry = &ClusterPartyRegistry{c: c, local: lp}
 		return c.partyRegistry
-	}
-	return local
-}
-
-func (c *Cluster) SessionCache(local SessionCache, console bool) SessionCache {
-	if c == nil {
-		return local
-	}
-	keep := time.Duration(max(c.config.GetSession().TokenExpirySec, c.config.GetSession().RefreshTokenExpirySec)+60) * time.Second
-	if console {
-		keep = time.Duration(c.config.GetConsole().TokenExpirySec+60) * time.Second
-	}
-	sc := newClusterSessionCache(c, local, console, keep)
-	c.sessionCaches = append(c.sessionCaches, sc)
-	return sc
-}
-
-func (c *Cluster) MatchRegistry(local MatchRegistry) MatchRegistry {
-	if c == nil {
-		return local
-	}
-	if lm, ok := local.(*LocalMatchRegistry); ok {
-		c.matchRegistry = &ClusterMatchRegistry{c: c, local: lm}
-		return c.matchRegistry
 	}
 	return local
 }
