@@ -62,6 +62,8 @@ type LocalStatusRegistry struct {
 
 	onlineMutex *sync.RWMutex
 	onlineCache map[uuid.UUID]map[string]struct{}
+
+	followHook func(added, removed []uuid.UUID)
 }
 
 func NewLocalStatusRegistry(logger *zap.Logger, config Config, sessionRegistry SessionRegistry, protojsonMarshaler *protojson.MarshalOptions) StatusRegistry {
@@ -186,6 +188,7 @@ func (s *LocalStatusRegistry) Follow(sessionID uuid.UUID, userIDs map[uuid.UUID]
 		return
 	}
 
+	var added []uuid.UUID
 	s.Lock()
 
 	sessionFollows, ok := s.bySession[sessionID]
@@ -203,6 +206,9 @@ func (s *LocalStatusRegistry) Follow(sessionID uuid.UUID, userIDs map[uuid.UUID]
 		if !ok {
 			userFollowers = make(map[uuid.UUID]struct{})
 			s.byUser[userID] = userFollowers
+			if s.followHook != nil {
+				added = append(added, userID)
+			}
 		}
 
 		if _, alreadyFollowing := userFollowers[sessionID]; alreadyFollowing {
@@ -211,6 +217,9 @@ func (s *LocalStatusRegistry) Follow(sessionID uuid.UUID, userIDs map[uuid.UUID]
 		userFollowers[sessionID] = struct{}{}
 	}
 
+	if len(added) != 0 {
+		s.followHook(added, nil)
+	}
 	s.Unlock()
 }
 
@@ -219,6 +228,7 @@ func (s *LocalStatusRegistry) Unfollow(sessionID uuid.UUID, userIDs []uuid.UUID)
 		return
 	}
 
+	var removed []uuid.UUID
 	s.Lock()
 
 	sessionFollows, ok := s.bySession[sessionID]
@@ -235,6 +245,9 @@ func (s *LocalStatusRegistry) Unfollow(sessionID uuid.UUID, userIDs []uuid.UUID)
 		if userFollowers := s.byUser[userID]; len(userFollowers) == 1 {
 			// This was the only follower for that user.
 			delete(s.byUser, userID)
+			if s.followHook != nil {
+				removed = append(removed, userID)
+			}
 		} else {
 			// That user had other followers, just drop this one.
 			delete(userFollowers, sessionID)
@@ -250,6 +263,9 @@ func (s *LocalStatusRegistry) Unfollow(sessionID uuid.UUID, userIDs []uuid.UUID)
 		}
 	}
 
+	if len(removed) != 0 {
+		s.followHook(nil, removed)
+	}
 	s.Unlock()
 }
 
@@ -261,15 +277,22 @@ func (s *LocalStatusRegistry) UnfollowAll(sessionID uuid.UUID) {
 		s.Unlock()
 		return
 	}
+	var removed []uuid.UUID
 	for userID := range sessionFollows {
 		if userFollowers := s.byUser[userID]; len(userFollowers) == 1 {
 			delete(s.byUser, userID)
+			if s.followHook != nil {
+				removed = append(removed, userID)
+			}
 		} else {
 			delete(userFollowers, sessionID)
 		}
 	}
 	delete(s.bySession, sessionID)
 
+	if len(removed) != 0 {
+		s.followHook(nil, removed)
+	}
 	s.Unlock()
 }
 

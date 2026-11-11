@@ -192,6 +192,7 @@ type LocalTracker struct {
 	presencesByStream  map[uint8]map[PresenceStream]map[presenceCompact]*Presence
 	presencesBySession map[uuid.UUID]map[presenceCompact]*Presence
 	count              *atomic.Int64
+	clusterHook        func(joins, leaves []*Presence, updates [][2]*Presence, reason runtime.PresenceReason, silent bool)
 
 	ctx         context.Context
 	ctxCancelFn context.CancelFunc
@@ -308,6 +309,9 @@ func (t *LocalTracker) Track(ctx context.Context, sessionID uuid.UUID, stream Pr
 	}
 
 	t.Unlock()
+	if t.clusterHook != nil {
+		t.clusterHook([]*Presence{p}, nil, nil, runtime.PresenceReasonJoin, false)
+	}
 	if !meta.Hidden {
 		t.queueEvent([]*Presence{p}, nil)
 	}
@@ -322,6 +326,7 @@ func (t *LocalTracker) TrackMulti(ctx context.Context, sessionID uuid.UUID, ops 
 	}
 
 	joins := make([]*Presence, 0, len(ops))
+	var added []*Presence
 	t.Lock()
 
 	select {
@@ -368,12 +373,18 @@ func (t *LocalTracker) TrackMulti(ctx context.Context, sessionID uuid.UUID, ops 
 			byStream[pc] = p
 		}
 
+		if t.clusterHook != nil {
+			added = append(added, p)
+		}
 		if !op.Meta.Hidden {
 			joins = append(joins, p)
 		}
 	}
 	t.Unlock()
 
+	if len(added) != 0 {
+		t.clusterHook(added, nil, nil, runtime.PresenceReasonJoin, false)
+	}
 	if len(joins) != 0 {
 		t.queueEvent(joins, nil)
 	}
@@ -429,6 +440,9 @@ func (t *LocalTracker) Untrack(sessionID uuid.UUID, stream PresenceStream, userI
 	}
 
 	t.Unlock()
+	if t.clusterHook != nil {
+		t.clusterHook(nil, []*Presence{p}, nil, runtime.PresenceReasonLeave, false)
+	}
 	if !p.Meta.Hidden {
 		syncAtomic.StoreUint32(&p.Meta.Reason, uint32(runtime.PresenceReasonLeave))
 		t.queueEvent(nil, []*Presence{p})
@@ -437,6 +451,7 @@ func (t *LocalTracker) Untrack(sessionID uuid.UUID, stream PresenceStream, userI
 
 func (t *LocalTracker) UntrackMulti(sessionID uuid.UUID, streams []*PresenceStream, userID uuid.UUID) {
 	leaves := make([]*Presence, 0, len(streams))
+	var removed []*Presence
 	t.Lock()
 
 	for _, stream := range streams {
@@ -485,6 +500,9 @@ func (t *LocalTracker) UntrackMulti(sessionID uuid.UUID, streams []*PresenceStre
 			}
 		}
 
+		if t.clusterHook != nil {
+			removed = append(removed, p)
+		}
 		if !p.Meta.Hidden {
 			syncAtomic.StoreUint32(&p.Meta.Reason, uint32(runtime.PresenceReasonLeave))
 			leaves = append(leaves, p)
@@ -492,6 +510,9 @@ func (t *LocalTracker) UntrackMulti(sessionID uuid.UUID, streams []*PresenceStre
 	}
 	t.Unlock()
 
+	if len(removed) != 0 {
+		t.clusterHook(nil, removed, nil, runtime.PresenceReasonLeave, false)
+	}
 	if len(leaves) != 0 {
 		t.queueEvent(nil, leaves)
 	}
@@ -508,7 +529,11 @@ func (t *LocalTracker) UntrackAll(sessionID uuid.UUID, reason runtime.PresenceRe
 	}
 
 	leaves := make([]*Presence, 0, len(bySession))
+	var removed []*Presence
 	for pc, p := range bySession {
+		if t.clusterHook != nil {
+			removed = append(removed, p)
+		}
 		// Update the tracking for stream.
 		if byStreamMode := t.presencesByStream[pc.Stream.Mode]; len(byStreamMode) == 1 {
 			// This is the only stream for this stream mode.
@@ -542,6 +567,9 @@ func (t *LocalTracker) UntrackAll(sessionID uuid.UUID, reason runtime.PresenceRe
 	delete(t.presencesBySession, sessionID)
 
 	t.Unlock()
+	if len(removed) != 0 {
+		t.clusterHook(nil, removed, nil, reason, false)
+	}
 	if len(leaves) != 0 {
 		t.queueEvent(nil, leaves)
 	}
@@ -596,6 +624,14 @@ func (t *LocalTracker) Update(ctx context.Context, sessionID uuid.UUID, stream P
 
 	t.Unlock()
 
+	if t.clusterHook != nil {
+		if alreadyTracked {
+			t.clusterHook(nil, nil, [][2]*Presence{{previousP, p}}, runtime.PresenceReasonUpdate, false)
+		} else {
+			t.clusterHook([]*Presence{p}, nil, nil, runtime.PresenceReasonJoin, false)
+		}
+	}
+
 	if !meta.Hidden || (alreadyTracked && !previousP.Meta.Hidden) {
 		var joins []*Presence
 		if !meta.Hidden {
@@ -624,7 +660,11 @@ func (t *LocalTracker) UntrackLocalByStream(stream PresenceStream) {
 	}
 
 	// Drop the presences from tracking for each session.
-	for pc := range byStream {
+	var removed []*Presence
+	for pc, p := range byStream {
+		if t.clusterHook != nil {
+			removed = append(removed, p)
+		}
 		if bySession := t.presencesBySession[pc.ID.SessionID]; len(bySession) == 1 {
 			// This is the only presence for that session, discard the whole list.
 			delete(t.presencesBySession, pc.ID.SessionID)
@@ -645,6 +685,9 @@ func (t *LocalTracker) UntrackLocalByStream(stream PresenceStream) {
 	}
 
 	t.Unlock()
+	if len(removed) != 0 {
+		t.clusterHook(nil, removed, nil, runtime.PresenceReasonLeave, true)
+	}
 }
 
 func (t *LocalTracker) UntrackByStream(stream PresenceStream) {
@@ -659,7 +702,11 @@ func (t *LocalTracker) UntrackByStream(stream PresenceStream) {
 	}
 
 	// Drop the presences from tracking for each session.
-	for pc := range byStream {
+	var removed []*Presence
+	for pc, p := range byStream {
+		if t.clusterHook != nil {
+			removed = append(removed, p)
+		}
 		if bySession := t.presencesBySession[pc.ID.SessionID]; len(bySession) == 1 {
 			// This is the only presence for that session, discard the whole list.
 			delete(t.presencesBySession, pc.ID.SessionID)
@@ -680,10 +727,14 @@ func (t *LocalTracker) UntrackByStream(stream PresenceStream) {
 	}
 
 	t.Unlock()
+	if len(removed) != 0 {
+		t.clusterHook(nil, removed, nil, runtime.PresenceReasonLeave, true)
+	}
 }
 
 func (t *LocalTracker) UntrackLocalByModes(sessionID uuid.UUID, modes map[uint8]struct{}, skipStream PresenceStream) {
 	leaves := make([]*Presence, 0, 1)
+	var removed []*Presence
 
 	t.Lock()
 	bySession, anyTracked := t.presencesBySession[sessionID]
@@ -733,12 +784,19 @@ func (t *LocalTracker) UntrackLocalByModes(sessionID uuid.UUID, modes map[uint8]
 			}
 		}
 
+		if t.clusterHook != nil {
+			removed = append(removed, p)
+		}
 		if !p.Meta.Hidden {
 			syncAtomic.StoreUint32(&p.Meta.Reason, uint32(runtime.PresenceReasonLeave))
 			leaves = append(leaves, p)
 		}
 	}
 	t.Unlock()
+
+	if len(removed) != 0 {
+		t.clusterHook(nil, removed, nil, runtime.PresenceReasonLeave, false)
+	}
 
 	if len(leaves) > 0 {
 		t.queueEvent(nil, leaves)

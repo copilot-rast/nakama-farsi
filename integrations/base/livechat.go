@@ -13,6 +13,7 @@ import (
 
 	"github.com/gofrs/uuid/v5"
 	"github.com/heroiclabs/nakama/v3/internal/activity"
+	"github.com/heroiclabs/nakama/v3/internal/cluster"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
@@ -72,7 +73,19 @@ func cleanChatBody(body string) (string, error) {
 	return body, nil
 }
 
+func chatTopic(id string) string {
+	return "chat:" + id
+}
+
+func chatPollWait() time.Duration {
+	if cluster.SignalsEnabled() {
+		return 5 * time.Second
+	}
+	return 600 * time.Millisecond
+}
+
 func (s *service) pushChat(ctx context.Context, userID, chatID, event string, seq int64) {
+	cluster.Signal(chatTopic(chatID))
 	_ = s.nk.NotificationSend(ctx, userID, "support", map[string]any{"type": "chat", "chatId": chatID, "event": event, "seq": seq}, notifyChat, "", false)
 }
 
@@ -204,10 +217,9 @@ func (s *service) supportChatGet(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, http.StatusOK, c)
 			return
 		}
-		select {
-		case <-r.Context().Done():
+		cluster.WaitSignal(r.Context(), chatTopic(id), chatPollWait())
+		if r.Context().Err() != nil {
 			return
-		case <-time.After(600 * time.Millisecond):
 		}
 	}
 }
@@ -593,6 +605,7 @@ func (s *service) playerChat(ctx context.Context, userID, chatID string, after i
 		if _, err := s.db.ExecContext(ctx, `UPDATE base_live_chat SET player_seen_at=now(), player_read_seq=last_seq WHERE id=$1 AND status <> 'closed'`, chatID); err != nil {
 			return nil, err
 		}
+		cluster.Signal(chatTopic(chatID))
 	}
 	c, err := s.chatState(ctx, chatID)
 	if err != nil {
@@ -755,6 +768,7 @@ func (s *service) rpcChatTyping(ctx context.Context, userID, payload string) (an
 	if _, err := s.db.ExecContext(ctx, `UPDATE base_live_chat SET player_typing_at=now(), player_seen_at=now() WHERE id=$1 AND user_id=$2 AND status <> 'closed'`, in.ChatID, userID); err != nil {
 		return nil, err
 	}
+	cluster.Signal(chatTopic(in.ChatID))
 	return map[string]any{}, nil
 }
 
@@ -782,6 +796,7 @@ func (s *service) rpcChatClose(ctx context.Context, userID, payload string) (any
 		data["ticketId"] = ticketID
 	}
 	s.record(ctx, activity.Entry{UserID: userID, Kind: activity.KindChat, Action: "closed", RefID: in.ChatID, Actor: "player", Data: data})
+	cluster.Signal(chatTopic(in.ChatID))
 	return s.playerChat(ctx, userID, in.ChatID, 0, false)
 }
 

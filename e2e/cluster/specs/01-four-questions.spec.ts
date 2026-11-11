@@ -1,0 +1,153 @@
+import { expect, test } from '@playwright/test';
+import { joinsOf, leavesOf, player, runTag, sleep } from '../lib';
+
+test.describe.configure({ mode: 'serial' });
+
+test('1. players on different nodes see each other in relayed and authoritative matches', async () => {
+  const a = await player(2, 'ma');
+  const b = await player(3, 'mb');
+  const m = await a.socket.createMatch();
+  const jb = await b.socket.joinMatch(m.match_id);
+  expect(jb.presences.map((p) => p.user_id)).toContain(a.id);
+  expect(await a.wait('onmatchpresence', (e) => joinsOf(e, b.id))).not.toBeNull();
+  await a.socket.sendMatchState(m.match_id, 1, 'from a');
+  await b.socket.sendMatchState(m.match_id, 2, 'from b');
+  expect(await b.wait('onmatchdata', (d) => d.op_code === 1)).not.toBeNull();
+  expect(await a.wait('onmatchdata', (d) => d.op_code === 2)).not.toBeNull();
+  await b.socket.leaveMatch(m.match_id);
+  expect(await a.wait('onmatchpresence', (e) => leavesOf(e, b.id))).not.toBeNull();
+  await a.socket.sendMatchState(m.match_id, 3, 'after leave');
+  await sleep(500);
+  expect(b.count('onmatchdata', (d) => d.op_code === 3)).toBe(0);
+
+  const tag = `t${runTag}`;
+  const created = await a.rpc('cle2e_create_match', { tag });
+  expect(created.node).toBe('node2');
+  expect(created.match_id).toMatch(/\.node2$/);
+  const c = await player(4, 'mc');
+  const ja = await a.socket.joinMatch(created.match_id);
+  const jc = await c.socket.joinMatch(created.match_id);
+  expect(jc.presences.map((p) => p.user_id)).toContain(a.id);
+  expect(ja.match_id).toBe(jc.match_id);
+  expect(await a.wait('onmatchpresence', (e) => joinsOf(e, c.id))).not.toBeNull();
+  await c.socket.sendMatchState(created.match_id, 7, 'via host');
+  expect(await a.wait('onmatchdata', (d) => d.op_code === 7)).not.toBeNull();
+  await a.socket.sendMatchState(created.match_id, 8, 'back');
+  expect(await c.wait('onmatchdata', (d) => d.op_code === 8)).not.toBeNull();
+  const signal = await (await player(1, 'ms')).rpc('cle2e_signal', { match_id: created.match_id });
+  expect(signal.result).toBe('pong:node2:ping');
+  await sleep(1500);
+  const listed = await c.rpc('cle2e_list', { tag });
+  expect(listed.node).toBe('node4');
+  expect(listed.ids).toContain(created.match_id);
+  await c.socket.sendMatchState(created.match_id, 99, 'kick me');
+  expect(await a.wait('onmatchpresence', (e) => leavesOf(e, c.id))).not.toBeNull();
+  await a.socket.sendMatchState(created.match_id, 9, 'after kick');
+  await sleep(500);
+  expect(c.count('onmatchdata', (d) => d.op_code === 9)).toBe(0);
+  for (const p of [a, b, c]) p.close();
+});
+
+test('2. the matchmaker matches players on four nodes exactly once, parties included', async () => {
+  const players = [] as Awaited<ReturnType<typeof player>>[];
+  for (let i = 0; i < 12; i++) players.push(await player(1 + (i % 4), 'mm'));
+  const pool = `p${runTag}`;
+  for (let round = 1; round <= 3; round++) {
+    const since = Date.now();
+    for (const p of players) await p.socket.addMatchmaker(`+properties.pool:${pool}`, 2, 2, { pool });
+    await expect.poll(() => players.every((p) => p.count('onmatchmakermatched') >= round), { timeout: 15_000 }).toBe(true);
+    await sleep(2500);
+    const counts = players.map((p) => p.count('onmatchmakermatched'));
+    expect(counts, `round ${round}`).toEqual(players.map(() => round));
+    const tokens = new Set(players.map((p) => p.events.filter((e) => e.type === 'onmatchmakermatched' && e.t >= since).pop()!.ev.token));
+    expect(tokens.size).toBe(6);
+  }
+  const pair = players[0].events.filter((e) => e.type === 'onmatchmakermatched').pop()!.ev;
+  const partner = players.find((p, i) => i > 0 && p.events.filter((e) => e.type === 'onmatchmakermatched').pop()!.ev.token === pair.token)!;
+  expect(partner.node).not.toBe(players[0].node);
+  const j1 = await players[0].socket.joinMatch(undefined, pair.token);
+  const j2 = await partner.socket.joinMatch(undefined, pair.token);
+  expect(j1.match_id).toBe(j2.match_id);
+
+  const leader = await player(1, 'pl');
+  const member = await player(2, 'pm');
+  const solo = await player(3, 'ps');
+  const party = await leader.socket.createParty(true, 4);
+  await member.socket.joinParty(party.party_id);
+  expect(await member.wait('onparty', (p) => p.party_id === party.party_id)).not.toBeNull();
+  expect(await leader.wait('onpartypresence', (e) => joinsOf(e, member.id))).not.toBeNull();
+  await member.socket.sendPartyData(party.party_id, 5, 'm');
+  expect(await leader.wait('onpartydata', (d) => d.op_code === 5)).not.toBeNull();
+  await leader.socket.sendPartyData(party.party_id, 6, 'l');
+  expect(await member.wait('onpartydata', (d) => d.op_code === 6)).not.toBeNull();
+  const ppool = `q${runTag}`;
+  await leader.socket.addMatchmakerParty(party.party_id, `+properties.pool:${ppool}`, 3, 3, { pool: ppool });
+  await solo.socket.addMatchmaker(`+properties.pool:${ppool}`, 3, 3, { pool: ppool });
+  const ml = await leader.wait('onmatchmakermatched', () => true, 15_000);
+  const mm = await member.wait('onmatchmakermatched', () => true, 15_000);
+  const ms = await solo.wait('onmatchmakermatched', () => true, 15_000);
+  expect(ml && mm && ms).toBeTruthy();
+  expect(ml!.ev.token).toBe(ms!.ev.token);
+  expect(mm!.ev.token).toBe(ms!.ev.token);
+  await member.socket.leaveParty(party.party_id);
+  expect(await leader.wait('onpartypresence', (e) => leavesOf(e, member.id))).not.toBeNull();
+  await leader.socket.sendPartyData(party.party_id, 7, 'after');
+  await sleep(500);
+  expect(member.count('onpartydata', (d) => d.op_code === 7)).toBe(0);
+  for (const p of [...players, leader, member, solo]) p.close();
+});
+
+test('3. players on different nodes chat in rooms and direct messages, with join and leave events', async () => {
+  const a = await player(1, 'ca');
+  const b = await player(2, 'cb');
+  const c = await player(3, 'cc');
+  const room = `room${runTag}`;
+  const ca = await a.socket.joinChat(room, 1, true, false);
+  const cb = await b.socket.joinChat(room, 1, true, false);
+  const cc = await c.socket.joinChat(room, 1, true, false);
+  expect(cc.presences.map((p) => p.user_id).sort()).toEqual([a.id, b.id].sort());
+  expect(await a.wait('onchannelpresence', (e) => joinsOf(e, c.id))).not.toBeNull();
+  await b.socket.writeChatMessage(cb.id, { text: 'سلام از node2' });
+  expect(await a.wait('onchannelmessage', (m) => m.sender_id === b.id)).not.toBeNull();
+  expect(await c.wait('onchannelmessage', (m) => m.sender_id === b.id)).not.toBeNull();
+  await c.socket.leaveChat(cc.id);
+  expect(await a.wait('onchannelpresence', (e) => leavesOf(e, c.id))).not.toBeNull();
+  expect(await b.wait('onchannelpresence', (e) => leavesOf(e, c.id))).not.toBeNull();
+  await a.socket.writeChatMessage(ca.id, { text: 'after leave' });
+  await sleep(500);
+  expect(c.count('onchannelmessage', (m) => m.content?.text === 'after leave')).toBe(0);
+
+  const dmA = await a.socket.joinChat(c.id, 2, true, false);
+  const dmC = await c.socket.joinChat(a.id, 2, true, false);
+  expect(dmA.id).toBe(dmC.id);
+  await c.socket.writeChatMessage(dmC.id, { text: 'dm' });
+  expect(await a.wait('onchannelmessage', (m) => m.channel_id === dmA.id && m.sender_id === c.id)).not.toBeNull();
+  const history = await b.client.listChannelMessages(b.session, cb.id, 50);
+  expect((history.messages || []).some((m: any) => m.sender_id === b.id)).toBe(true);
+  for (const p of [a, b, c]) p.close();
+});
+
+test('4. players on different nodes see each other online and get status changes', async () => {
+  const a = await player(1, 'sa');
+  const b = await player(4, 'sb');
+  await b.socket.updateStatus('آماده');
+  const follow = await a.socket.followUsers([b.id]);
+  expect(follow.presences.map((p: any) => p.status)).toContain('آماده');
+  const users = await a.client.getUsers(a.session, [b.id]);
+  expect(users.users![0].online).toBe(true);
+  await b.socket.updateStatus('در بازی');
+  expect(await a.wait('onstatuspresence', (e) => (e.joins || []).some((j: any) => j.user_id === b.id && j.status === 'در بازی'))).not.toBeNull();
+  const since = Date.now();
+  b.close();
+  expect(await a.wait('onstatuspresence', (e) => leavesOf(e, b.id), 8000, since)).not.toBeNull();
+  await expect.poll(async () => !!(await a.client.getUsers(a.session, [b.id])).users![0].online).toBe(false);
+  await b.connect(2);
+  await expect.poll(async () => !!(await a.client.getUsers(a.session, [b.id])).users![0].online).toBe(true);
+  const friends = await a.client.addFriends(a.session, [b.id]);
+  expect(friends).toBeTruthy();
+  const list = await b.client.listFriends(b.session);
+  expect((list.friends || []).map((f: any) => f.user.id)).toContain(a.id);
+  expect((list.friends || []).find((f: any) => f.user.id === a.id)!.user.online).toBe(true);
+  test.info().annotations.push({ type: 'status-events', description: String(a.count('onstatuspresence')) });
+  for (const p of [a, b]) p.close();
+});
