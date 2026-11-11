@@ -159,8 +159,18 @@ services:
       - "/bin/sh"
       - "-ec"
       - >
+        NODE_NAME=nakama1;
+        if [ "$$NAKAMA_CLUSTER_ENABLED" = "true" ]; then NODE_NAME="$${NAKAMA_NODE_NAME:-$$(hostname | cut -c1-16)}"; fi;
         exec /nakama/nakama-db.sh server
-        --name nakama1
+        --name "$$NODE_NAME"
+        --cluster.enabled="$$NAKAMA_CLUSTER_ENABLED"
+        --cluster.redis_address "$$NAKAMA_CLUSTER_REDIS_ADDRESS"
+        --cluster.redis_password "$$NAKAMA_CLUSTER_REDIS_PASSWORD"
+        --cluster.port 7353
+        --cluster.advertise_address "$${NAKAMA_CLUSTER_ADVERTISE_ADDRESS:-$$(hostname -i | cut -d' ' -f1)}"
+        --cluster.secret "$$NAKAMA_CLUSTER_SECRET"
+        --cluster.matchmaker_shards "$$NAKAMA_CLUSTER_MATCHMAKER_SHARDS"
+        --cluster.matchmaker_shard_property "$$NAKAMA_CLUSTER_MATCHMAKER_SHARD_PROPERTY"
         --logger.level DEBUG
         --session.token_expiry_sec 7200
         --metrics.prometheus_port 9100
@@ -228,6 +238,18 @@ services:
       STORAGE_S3_PATH_STYLE: ${STORAGE_S3_PATH_STYLE:-true}
       STORAGE_S3_PUBLIC_BASE_URL: ${STORAGE_S3_PUBLIC_BASE_URL:-}
       STORAGE_S3_PREFIX: ${STORAGE_S3_PREFIX:-}
+      # Cluster (docs/cluster-design.md). Off by default: one node, no Redis.
+      # On: start with the cluster profile (COMPOSE_PROFILES=cluster), use
+      # STORAGE_DRIVER=s3 and scale with --scale nakama=N behind a load
+      # balancer for 7350/7351.
+      NAKAMA_CLUSTER_ENABLED: ${NAKAMA_CLUSTER_ENABLED:-false}
+      NAKAMA_NODE_NAME: ${NAKAMA_NODE_NAME:-}
+      NAKAMA_CLUSTER_REDIS_ADDRESS: ${NAKAMA_CLUSTER_REDIS_ADDRESS:-redis:6379}
+      NAKAMA_CLUSTER_REDIS_PASSWORD: ${NAKAMA_CLUSTER_REDIS_PASSWORD:-}
+      NAKAMA_CLUSTER_ADVERTISE_ADDRESS: ${NAKAMA_CLUSTER_ADVERTISE_ADDRESS:-}
+      NAKAMA_CLUSTER_SECRET: ${NAKAMA_CLUSTER_SECRET:-${NAKAMA_SESSION_ENCRYPTION_KEY}}
+      NAKAMA_CLUSTER_MATCHMAKER_SHARDS: ${NAKAMA_CLUSTER_MATCHMAKER_SHARDS:-16}
+      NAKAMA_CLUSTER_MATCHMAKER_SHARD_PROPERTY: ${NAKAMA_CLUSTER_MATCHMAKER_SHARD_PROPERTY:-}
 
     volumes:
       - economy-uploads:/nakama/uploads
@@ -246,6 +268,7 @@ services:
       - "7349"
       - "7350"
       - "7351"
+      - "7353"
       - "9100"
 
     healthcheck:
@@ -257,6 +280,29 @@ services:
         ]
       interval: 10s
       timeout: 5s
+      retries: 5
+
+
+  # Shared state of the cluster (presence, matchmaker shards, logout and ban
+  # log, node registry). Only with COMPOSE_PROFILES=cluster. No persistence
+  # is needed: the nodes republish their state when Redis comes back empty.
+  redis:
+    profiles: ["cluster"]
+    image: redis:7.4-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "${NAKAMA_CLUSTER_REDIS_MAXMEMORY:-1gb}", "--maxmemory-policy", "noeviction"]
+    restart: unless-stopped
+    mem_limit: 2g
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+    expose:
+      - "6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
       retries: 5
 
 

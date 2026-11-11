@@ -9,6 +9,7 @@
     "report": "playwright show-report playwright-report"
   },
   "devDependencies": {
+    "@heroiclabs/nakama-js": "^2.8.0",
     "@playwright/test": "1.65.0"
   }
 }

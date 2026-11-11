@@ -69,6 +69,22 @@ Read from the environment first, then from `~/.config/nakama-farsi/mac-dev.env` 
 | `game/18-events.spec.ts` | daily sign-in reward: day one claimed once, the next day (moved in the database) unlocks day two, two missed days start again; level card from experience, level prize claimed, rewards screen goals (record 100, ten golden stars, three rounds paid automatically), server-only event refused from the game; English with Latin digits |
 | `game/13-accounts.spec.ts` | guest links a phone (wrong code, Persian digits, resend wait), stays signed in over a reload, the same number on a second device reaches the same account, sign-out back to the guest; new phone account without keeping progress; country picker saves my country, dialling code follows it, a disabled country disappears; username rules from the console in the account screen; optional-update banner and «بعداً», forced-update screen that blocks navigation, both driven by the console row |
 
+## Multi-node cluster suite (phase 6)
+
+`cluster/` is a separate Playwright project that starts four cluster nodes of `.local/cluster/nakama` as plain processes and drives them with `@heroiclabs/nakama-js` from Node (no browser). It does not touch the single node on 7450.
+
+```sh
+cd e2e
+npx playwright test -c cluster/playwright.config.ts
+```
+
+- Needs Redis on `127.0.0.1:6495` (`REDIS_PORT`) and the database `nakama_cluster` (`CL_DB`) on the shared Postgres, migrated with `nakama migrate up`. Keys use the prefix `nkce2e` (`CL_PREFIX`) and are deleted before the run.
+- `cluster/nodes.sh start|stop|kill|status <i>…` runs node `i` with socket `76i1`, console `76i2`, cluster port `76i3` and metrics `76i4`; state and logs in `cluster/.run/n<i>/`. The runtime folder is `cluster/.run/modules`: the five built plugins (symlinked from `.local/cluster/modules`) plus the test Lua modules in `cluster/modules/` (an authoritative match handler and RPCs for match create/signal/list, notifications, stream calls, logout, ban and disconnect). Those Lua files exist only for this suite.
+- Test players are device accounts named `cle2e…`; they are deleted at the start and end.
+- `specs/01-four-questions.spec.ts`: the owner's four questions with players on different nodes (relayed and authoritative matches with data, signal, listing and kick; matchmaker exactly once over three rounds of 12 players on 4 nodes, party matchmaking; room and direct chat with join/leave events and history; online flags and status changes, reconnect on another node).
+- `specs/02-failures.spec.ts`: `kill -9` of a node by PID (leaves, offline, `match_ended`, its matchmaker ticket gone, players reconnect elsewhere, the node rejoins), logout and ban across nodes, live notifications and runtime stream join/send/kick/disconnect across nodes, a phase 3 suspension from the console on one node kicking the player on another, and the live support chat long-poll woken by a message on another node.
+- Load: `cluster/load/` (k6 `load.js`, `run.sh`, `sample.sh`, `summ.py`, latency `probe.mjs`, `ghosts.sh` for presences and tickets left in Redis). Results are in `docs/cluster-results.md`.
+
 ## Adding specs for a new phase
 
 1. Put console journeys in `specs/console/NN-<phase>.spec.ts`, game journeys in `specs/game/`. Import `test`/`expect` from `lib/fixtures.ts`.
