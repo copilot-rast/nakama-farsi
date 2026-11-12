@@ -20,6 +20,8 @@ const PAGES: [string, string][] = [
   ['#/economy/payments', 'پرداخت‌ها'],
   ['#/publication/faqs', 'سؤال‌های متداول'],
   ['#/publication/news', 'اخبار'],
+  ['#/publication/banners', 'بنرها'],
+  ['#/publication/banner-lists', 'جایگاه‌های بنر'],
   ['#/publication/comments', 'کامنت‌ها'],
   ['#/publication/notifications', 'اعلان‌ها'],
   ['#/moderation/players', 'مدیریت بازیکنان'],

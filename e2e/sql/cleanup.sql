@@ -47,4 +47,7 @@ DELETE FROM economy_user_item WHERE item_id IN (SELECT id FROM economy_item WHER
 DELETE FROM economy_user_item u WHERE NOT EXISTS (SELECT 1 FROM users x WHERE x.id = u.user_id);
 DELETE FROM economy_item_request r WHERE NOT EXISTS (SELECT 1 FROM users x WHERE x.id = r.user_id);
 DELETE FROM economy_item WHERE key LIKE 'e2e%';
+DELETE FROM publication_banner WHERE key LIKE 'e2e%';
+DELETE FROM publication_banner_seen s WHERE NOT EXISTS (SELECT 1 FROM users x WHERE x.id = s.user_id);
+DELETE FROM publication_banner_list WHERE key LIKE 'e2e%';
 COMMIT;

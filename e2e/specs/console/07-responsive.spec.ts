@@ -20,6 +20,8 @@ const PAGES = [
   '#/economy/task-groups',
   '#/economy/items',
   '#/economy/achievements',
+  '#/publication/banners',
+  '#/publication/banner-lists',
   '#/economy/event-log',
   '#/project-settings/events',
   '#/economy/payments',
