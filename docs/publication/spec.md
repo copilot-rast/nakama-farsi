@@ -122,3 +122,32 @@ Players sign in with a mobile number and a one-time SMS code sent through the pr
 ## In-app notifications from other plugins (phase 5)
 
 `internal/inapp` holds one sender that the publication plugin registers at start (`inapp.SetSender`). Base calls `inapp.Send` for support replies: the message becomes a normal `in_app` notification to the listed users (translated title and body, optional action), created by `support:<agent>`, delivered by the worker and shown in the inbox like any other. When the publication plugin is not loaded the support code only sends its live notice.
+
+## Banners and placements (phase 10)
+
+Ported from rakhtkan `publishing/banners` and `banner-lists` (placement key and name, banner name, content tags, title, subtitle, description, cover, one action button), extended with scheduling, targeting, ordering, per-language content, in-game actions and counters. Migration `20261117000000-publication-banners.sql`.
+
+### Data
+
+- `publication_banner_list` (placement): `key` (`^[a-z][a-z0-9_]{1,63}$`, the game asks by it, locked after creation), translated `name`/`description`, `layout` (`carousel`, `single`, `grid`, `strip`), `max_items` (1–20), `rotate_seconds` (0–60, 0 = by hand), `is_active`, `sort`. A placement with banners cannot be deleted (`IN_USE`).
+- `publication_banner`: `key` (locked), `list_id`, internal `name`, content `tag_ids` (tag key type `banner` or `general`, new key type `banner` in base), translated `title` (required), `subtitle`, `description`, per-language `image_url` (a language without one falls back to the default language), `bg_color` (`#rrggbb`), action (`none`, `screen` + screen name, `product` + product key, `achievement` + achievement key, `url` + per-language http(s) URL) with a translated button `label`, `priority` (−1000…1000, higher first, then oldest first).
+- Schedule: `starts_at`/`ends_at` (instants; the console enters and shows them in the project zone from `economy_event_settings.timezone`), `days` (0 = Sunday … 6 = Saturday, empty = every day) and `day_start`/`day_end` (minutes in the project zone, `HH:MM` on the wire, `24:00` allowed as an end).
+- Targeting: `audience_tag_ids` (player tags, any one is enough), `exclude_tag_ids` (never shown to these; a tag cannot be in both), `level_table_id` + `min_level`/`max_level` (empty table = the main level table, else the `level` meta), `platforms`, `min_version`/`max_version`, `countries` (ISO codes; the player's saved country, else the request country), `languages` (the player's resolved language), `player_age` `all`/`new`/`returning` against `new_days` (account age).
+- A banner whose product is inactive or not visible to the player (product audience tags) or whose achievement is inactive is not shown.
+- Counters: `publication_banner_seen` (banner, player, day in the project zone, `viewed_at`, `clicked_at`; no foreign key to `users`, swept after 45 days and for deleted players under the lease `publication-banner-sweep`) and `publication_banner_day` (views and clicks per banner per day). Each player counts at most once per banner per day for a view and once for a click: one statement inserts the seen row with `ON CONFLICT … WHERE viewed_at IS NULL` and bumps the day row only when that insert or update happened, so parallel calls and many nodes never double count.
+
+### Client RPCs (user session)
+
+| RPC | Payload | Answer |
+|---|---|---|
+| `publication_banners` | `placement`, optional `platform`, `version`, `lang` | `placement` (key, name, layout, rotateSeconds, maxItems) and `items` (id, key, title, subtitle, description, imageUrl, bgColor, priority, endsAt, `action` {type, value or url, label}) for banners the caller may see right now, at most `max_items`. Unknown or inactive placement: `BANNER_LIST_NOT_FOUND`. |
+| `publication_banner_view` | `bannerIds` (1–20), `platform`, `version`, `lang` | `counted` (ids counted now), `skipped` (not eligible now), `day` |
+| `publication_banner_click` | `bannerId`, `platform`, `version`, `lang` | `counted`, `bannerId` and the `action` from the server; a banner the caller may not see now: `BANNER_NOT_AVAILABLE` |
+
+Each RPC re-checks eligibility on the server. Rate limits in the database (`cluster_rate_limit`): 60 list calls and 60 count calls a minute per player (`TOO_MANY_REQUESTS`). Counting never grants anything; the client gets the action from the server.
+
+### Console API and pages
+
+Generic resources `banner-lists` and `banners` (list with search and filters `isActive`, `layout`, `key`; `listId`, `state` = `live`/`scheduled`/`ended`/`off`, `actionType`, `tagId`), plus `GET /banners/settings` (project zone), `GET /banners/{id}/stats?days=` (daily series in the project zone, totals) and `GET /banner-lists/{id}/preview?userId=&platform=&version=&lang=&at=` (what that player gets now, and the reason for every hidden banner). Writes go to the console audit log like every `/v2/console/publication/` call.
+
+Pages «بنرها» and «جایگاه‌های بنر» in the «انتشار» section (sidebar, Ctrl K): banner list with picture, placement and priority, state and window, a short targeting line and 7-day views/clicks/click rate; the docked editor has a live preview card (follows typing, preview language switch, placement layout), per-language image upload through the economy uploads store, product and achievement pickers, zone-aware start/end inputs, week days and hours, player targeting, and a 14-day views/clicks chart. The placement editor lists its banners in display order and has the «یک بازیکن چه می‌بیند» check.
