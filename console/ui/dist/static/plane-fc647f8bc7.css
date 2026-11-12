@@ -3615,10 +3615,10 @@ html.pl .x-toggle {
   position: relative;
 }
 
-html.pl .x-toggle::after {
+html.pl .x-toggle .rounded-full.border-\[3px\]::after {
   content: "";
   position: absolute;
-  inset: -12px -6px;
+  inset: -12px -4px;
 }
 
 html.pl .x-toggle .rounded-full.border-\[3px\] {
@@ -3721,4 +3721,9 @@ html.pl .x-button[style*="--x-button-text:rgb(102,84,226)"] {
 
 html.pl.dark .x-tag:not([style*="success"]):not([style*="error"]):not([style*="warning"]):not([style*="primary"]) {
   color: var(--ink-1);
+}
+
+html.pl .pl-stats {
+  inset-inline-start: auto !important;
+  inset-inline-end: 0;
 }
