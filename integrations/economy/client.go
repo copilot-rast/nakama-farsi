@@ -384,6 +384,7 @@ func (s *service) rpcPurchaseStart(ctx context.Context, userID, payload string) 
 		ProductID string `json:"productId"`
 		Method    string `json:"method"`
 		GiftCode  string `json:"giftCode"`
+		Lang      string `json:"lang"`
 	}
 	if err := decodeStrict(payload, &in); err != nil {
 		return nil, err
@@ -438,7 +439,7 @@ func (s *service) rpcPurchaseStart(ctx context.Context, userID, payload string) 
 	}
 	switch {
 	case in.Method == "in_app":
-		return s.startInApp(ctx, userID, product)
+		return s.startInApp(ctx, userID, product, in.Lang)
 	case isStore(in.Method):
 		return s.startStore(ctx, userID, product, pm)
 	default:
@@ -446,7 +447,7 @@ func (s *service) rpcPurchaseStart(ctx context.Context, userID, payload string) 
 	}
 }
 
-func (s *service) startInApp(ctx context.Context, userID string, product productView) (any, error) {
+func (s *service) startInApp(ctx context.Context, userID string, product productView, lang string) (any, error) {
 	if product.CoinPrice == nil {
 		return nil, badRequest("METHOD_NOT_ALLOWED", "method", "product has no coin price")
 	}
@@ -487,14 +488,14 @@ func (s *service) startInApp(ctx context.Context, userID string, product product
 	}
 	s.recordServerEvent(ctx, userID, "purchase_completed", float64(product.CoinPrice.Amount), map[string]any{"paymentId": id, "method": "in_app", "productKey": product.Key, "currency": product.CoinPrice.CurrencyKey})
 	activity.Safe(ctx, s.db, s.logger, activity.FromContext(ctx, activity.Entry{UserID: userID, Kind: activity.KindPurchase, Action: "completed", RefID: id, Actor: "player", Data: map[string]any{"method": "in_app", "productKey": product.Key, "coins": product.CoinPrice.Amount, "currency": product.CoinPrice.CurrencyKey}}))
-	return map[string]any{"paymentId": id, "status": "success", "rewards": rewards, "purchaseMessage": s.purchaseMessage(ctx, userID, product)}, nil
+	return map[string]any{"paymentId": id, "status": "success", "rewards": rewards, "purchaseMessage": s.purchaseMessage(ctx, userID, product, lang)}, nil
 }
 
-func (s *service) purchaseMessage(ctx context.Context, userID string, p productView) string {
+func (s *service) purchaseMessage(ctx context.Context, userID string, p productView, want string) string {
 	if len(p.PurchaseMessage) == 0 {
 		return ""
 	}
-	langs, lang, err := localized.ForUser(ctx, s.db, userID, "")
+	langs, lang, err := localized.ForUser(ctx, s.db, userID, want)
 	if err != nil {
 		return ""
 	}
@@ -841,6 +842,7 @@ func (s *service) storeResult(ctx context.Context, p payment) (any, error) {
 func (s *service) rpcPurchaseStatus(ctx context.Context, userID, payload string) (any, error) {
 	var in struct {
 		PaymentID string `json:"paymentId"`
+		Lang      string `json:"lang"`
 	}
 	if err := decodeStrict(payload, &in); err != nil {
 		return nil, err
@@ -860,7 +862,7 @@ func (s *service) rpcPurchaseStatus(ctx context.Context, userID, payload string)
 	}
 	if p.Status == "success" && p.RewardGranted {
 		if product, err := s.loadProduct(ctx, s.db, p.ProductID); err == nil {
-			if msg := s.purchaseMessage(ctx, userID, product); msg != "" {
+			if msg := s.purchaseMessage(ctx, userID, product, in.Lang); msg != "" {
 				out["purchaseMessage"] = msg
 			}
 		}

@@ -1089,4 +1089,5 @@ func (s *service) adminRevokeItem(ctx context.Context, userID, itemID, adminID s
 
 func (s *service) sweepItemRequests(ctx context.Context) {
 	_, _ = s.db.ExecContext(ctx, `DELETE FROM economy_item_request WHERE expires_at < now()`)
+	_, _ = s.db.ExecContext(ctx, `DELETE FROM economy_user_item WHERE user_id IN (SELECT DISTINCT u.user_id FROM economy_user_item u LEFT JOIN users x ON x.id=u.user_id WHERE x.id IS NULL LIMIT 200)`)
 }
