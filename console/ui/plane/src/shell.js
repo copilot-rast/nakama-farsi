@@ -139,7 +139,10 @@ var rail = { el: null, side: null, key: '', model: null, tip: null, mode: null, 
 
 function modesOf(model) {
   var out = [];
-  if (model.direct.length) out.push({ id: 'game', label: pst('group.game'), icon: 'home', links: model.direct });
+  if (model.direct.length) {
+    if (!model.game) model.game = { id: 'game', label: pst('group.game'), icon: 'home', links: model.direct };
+    out.push(model.game);
+  }
   model.groups.forEach(function (g) { out.push(g); });
   return out;
 }

@@ -118,6 +118,8 @@ html.pl {
   --tint-teal-fg: oklch(0.45 0.09 195);
   --tint-mute-bg: var(--well-2);
   --tint-mute-fg: var(--ink-2);
+  --switch-off: oklch(0.62 0.01 250);
+  --switch-knob: #fff;
 
   --accent: var(--pl-accent, oklch(0.4799 0.1158 242.91));
   --accent-ink: var(--pl-accent-ink, oklch(0.4799 0.1158 242.91));
@@ -173,6 +175,7 @@ html.pl.dark {
   --accent-soft: color-mix(in srgb, var(--accent) 18%, transparent);
   --accent-line: color-mix(in srgb, var(--accent) 40%, transparent);
   --thick-shadow: 0 1px 2px rgb(0 0 0 / .4), 0 16px 40px -8px rgb(0 0 0 / .65);
+  --switch-off: oklch(0.58 0.01 250);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3606,4 +3609,81 @@ html.pl div.fixed.inset-0.flex.justify-end > .x-form {
     width: 36px;
     height: 36px;
   }
+}
+
+html.pl .x-toggle {
+  position: relative;
+}
+
+html.pl .x-toggle::after {
+  content: "";
+  position: absolute;
+  inset: -12px -6px;
+}
+
+html.pl .x-toggle .rounded-full.border-\[3px\] {
+  position: relative;
+  display: block;
+  width: 36px;
+  height: 20px;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 10px;
+  background-color: var(--switch-off);
+  transition: background-color var(--d1) var(--ease);
+}
+
+html.pl .x-toggle .rounded-full.border-\[3px\].bg-\[color\:var\(--x-toggle-bg\)\],
+html.pl .x-toggle .rounded-full.border-\[3px\].bg-primary-500 {
+  background-color: var(--accent);
+}
+
+html.pl .x-toggle .rounded-full.border-\[3px\] > .relative {
+  position: static;
+  width: 100% !important;
+  height: 100%;
+}
+
+html.pl .x-toggle .rounded-full.border-\[3px\] > .relative > .rounded-full {
+  position: absolute;
+  top: 2px;
+  inset-inline-start: 2px;
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50%;
+  background: var(--switch-knob) !important;
+  box-shadow: 0 1px 2px rgb(0 0 0 / .3);
+  transform: none;
+  translate: none !important;
+  transition: transform var(--d1) var(--ease);
+}
+
+html.pl .x-toggle .rounded-full.border-\[3px\] > .relative > .rounded-full.translate-x-full {
+  transform: translateX(calc(var(--dir) * 16px));
+}
+
+html.pl .x-toggle:focus-visible {
+  outline: none;
+}
+
+html.pl .x-toggle:focus-visible .rounded-full.border-\[3px\] {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+
+html.pl .x-toggle:has(input:disabled),
+html.pl .x-toggle[aria-disabled="true"] {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+html.pl .x-toggle > .flex {
+  gap: 8px;
+}
+
+html.pl .x-toggle > .flex > span {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-1);
 }

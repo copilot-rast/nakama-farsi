@@ -119,6 +119,7 @@ test.describe('plane shell: rail, sidebar and top bar', () => {
     await page.locator('.pl-pal-input').fill('هدیه');
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/#\/economy\/gifts/);
+    await expect(page.locator('.pl-pal-input')).toHaveCount(0);
     await page.keyboard.press('Control+k');
     await page.locator('.pl-pal-input').fill('پیامک');
     await expect(page.locator('.pl-pal-row').first()).toBeVisible();
@@ -133,6 +134,33 @@ test.describe('plane shell: rail, sidebar and top bar', () => {
     await expect(page.locator('html')).toHaveClass(/pl-auth/);
     await expect(page.locator('.pl-rail:visible')).toHaveCount(0);
     await expect(page.locator('.pl-side:visible')).toHaveCount(0);
+  });
+});
+
+test.describe('plane switch', () => {
+  test('every switch shows a white knob inside its track, on the end side when on and the start side when off', async ({ page }) => {
+    for (const hash of ['#/project-settings/email', '#/players']) {
+      await visit(page, hash);
+      const toggles = page.locator('.x-toggle:visible');
+      await toggles.first().waitFor();
+      const states = await toggles.evaluateAll((ts) => ts.map((t) => {
+        const track = t.querySelector('.rounded-full.border-\\[3px\\]')!;
+        const knob = track.querySelector('.relative > .rounded-full')!;
+        const a = track.getBoundingClientRect();
+        const k = knob.getBoundingClientRect();
+        const on = (t.querySelector('input') as HTMLInputElement).getAttribute('aria-checked') === 'true';
+        const rtl = getComputedStyle(t).direction === 'rtl';
+        const mid = k.left + k.width / 2 - a.left;
+        const endSide = rtl ? mid < a.width / 2 : mid > a.width / 2;
+        return { inside: k.left >= a.left - 0.5 && k.right <= a.right + 0.5, visible: k.width >= 14 && getComputedStyle(knob).backgroundColor === 'rgb(255, 255, 255)', ok: on === endSide, hit: t.getBoundingClientRect().height };
+      }));
+      expect(states.length).toBeGreaterThan(0);
+      for (const st of states) {
+        expect(st.inside).toBe(true);
+        expect(st.visible).toBe(true);
+        expect(st.ok).toBe(true);
+      }
+    }
   });
 });
 

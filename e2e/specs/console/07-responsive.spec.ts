@@ -126,6 +126,7 @@ test.describe('native console at 390px with the plane shell', () => {
     const side = page.locator('.pl-side');
     await expect(rail).toBeVisible();
     await expect(side).toBeVisible();
+    await page.waitForTimeout(400);
     const rb = await rail.boundingBox();
     expect(rb!.x + rb!.width).toBeGreaterThan(380);
     const sb = await side.boundingBox();
