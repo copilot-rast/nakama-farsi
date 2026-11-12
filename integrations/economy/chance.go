@@ -194,7 +194,28 @@ func (s *service) drawFromPrizeGroup(ctx context.Context, q rowsQueryer, groupID
 	return drawGroupMember(members)
 }
 
-func (s *service) pickChance(ctx context.Context, tx *sql.Tx, g *chanceGame) (chancePick, error) {
+func (s *service) pickChance(ctx context.Context, tx *sql.Tx, g *chanceGame, userID string) (chancePick, error) {
+	p, err := s.drawChance(ctx, tx, g)
+	if err != nil || p.PrizeID == "" {
+		return p, err
+	}
+	var repeatable bool
+	if err := tx.QueryRowContext(ctx, `SELECT is_repeatable FROM economy_prize WHERE id=$1`, p.PrizeID).Scan(&repeatable); err != nil {
+		return p, err
+	}
+	if !repeatable {
+		owned, err := prizeClaimedByUser(ctx, tx, userID, p.PrizeID)
+		if err != nil {
+			return p, err
+		}
+		if owned {
+			p.PrizeID = ""
+		}
+	}
+	return p, nil
+}
+
+func (s *service) drawChance(ctx context.Context, tx *sql.Tx, g *chanceGame) (chancePick, error) {
 	roll, err := secureInt(chanceTotal)
 	if err != nil {
 		return chancePick{}, err
@@ -367,7 +388,7 @@ func (s *service) playChance(ctx context.Context, userID, gameID, mode string) (
 			price = &coinPrice{CurrencyKey: key, Amount: g.Price.Amount}
 			play.Price = price
 		}
-		pick, err := s.pickChance(ctx, tx, g)
+		pick, err := s.pickChance(ctx, tx, g, userID)
 		if err != nil {
 			return err
 		}

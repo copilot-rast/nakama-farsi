@@ -151,8 +151,13 @@ func TestChanceGameValidation(t *testing.T) {
 	if c, out := h.api(http.MethodDelete, "/prizes/"+p20, nil); c != 409 || out["error"] != "IN_USE" {
 		t.Fatalf("delete a group member prize = %d %v", c, out)
 	}
+	gem := h.mustAPI(201, http.MethodPost, "/currencies", map[string]any{"key": "gem", "name": map[string]string{"fa": "گوهر"}, "type": "hard"})
+	h.chanceGame(map[string]any{"key": "gems", "price": map[string]any{"currencyId": gem["id"], "amount": 1}, "prize": []any{row(100, "")}})
+	if c, out := h.api(http.MethodDelete, "/currencies/"+gem["id"].(string), nil); c != 409 || out["error"] != "IN_USE" {
+		t.Fatalf("delete a ticket currency = %d %v", c, out)
+	}
 	list := h.mustAPI(200, http.MethodGet, "/chance-games?mode=ticket", nil)
-	if list["total"].(float64) != 1 {
+	if list["total"].(float64) != 2 {
 		t.Fatalf("mode filter = %v", list)
 	}
 	if got := h.mustAPI(200, http.MethodGet, "/prize-groups/"+grp["id"].(string), nil); got["games"].(float64) != 1 {
@@ -384,6 +389,22 @@ func TestChancePrizeGroupAndFailures(t *testing.T) {
 	}
 	if n := h.count(`SELECT count(*) FROM economy_reward_claim WHERE kind='chance' AND status<>'granted'`); n != 0 {
 		t.Fatalf("a failed play left a claim: %d", n)
+	}
+
+	once := h.mustAPI(201, http.MethodPost, "/prizes", map[string]any{"key": "once", "name": map[string]string{"fa": "یک بار"}, "isRepeatable": false,
+		"items": []map[string]any{{"type": "currency", "key": "coin", "action": "add", "value": 100}}})
+	single := h.chanceGame(map[string]any{"key": "single", "intervalTime": 1, "prize": []any{row(100, once["id"].(string))}})
+	lucky := h.user()
+	if res := h.mustRPC(lucky, "economy_chance_play", map[string]any{"id": single["id"]}); res["prizeId"] != once["id"] {
+		t.Fatalf("first win of a one-time prize = %v", res)
+	}
+	h.at(time.Now().Add(2 * time.Minute))
+	if res := h.mustRPC(lucky, "economy_chance_play", map[string]any{"id": single["id"]}); res["prizeId"] != nil || res["slot"].(float64) != 0 {
+		t.Fatalf("a one-time prize already owned must count as nothing: %v", res)
+	}
+	h.s.now = time.Now
+	if w := h.wallet(lucky); w["coin"] != 100 {
+		t.Fatalf("one-time prize paid twice: %v", w)
 	}
 
 	nothing := h.chanceGame(map[string]any{"key": "blank", "price": map[string]any{"currencyId": h.currencyID("coin"), "amount": 2}, "prize": []any{row(100, "")}})

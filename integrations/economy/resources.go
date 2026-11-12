@@ -33,7 +33,8 @@ func resources() []resource {
 			save:    saveCurrency,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
 				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_currency c JOIN economy_product p ON p.coin_price->>'currencyKey' = c.key WHERE c.id=$1)
-					OR EXISTS (SELECT 1 FROM economy_currency c JOIN economy_prize z ON z.items @> jsonb_build_array(jsonb_build_object('type','currency','key',c.key)) WHERE c.id=$1)`)
+					OR EXISTS (SELECT 1 FROM economy_currency c JOIN economy_prize z ON z.items @> jsonb_build_array(jsonb_build_object('type','currency','key',c.key)) WHERE c.id=$1)
+					OR EXISTS (SELECT 1 FROM economy_chance_game g WHERE g.price->>'currencyId' = $1::uuid::text)`)
 			},
 		},
 		{
