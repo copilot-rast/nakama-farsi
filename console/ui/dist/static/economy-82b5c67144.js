@@ -2100,7 +2100,121 @@ var MESSAGES = {
     'cf.preview.country': "کد کشور",
     'cf.preview.run': "امتحان کن",
     'cf.variant.default': "پیش‌فرض",
-    'cf.bucket': "جایگاه {n}٪"
+    'cf.bucket': "جایگاه {n}٪",
+    'nav.items': "آیتم‌ها",
+    'desc.items': "چیزهایی که بازیکن در بازی دارد، مثل پوسته، قاب و آواتار. بازیکن آن‌ها را می‌خرد، با رسیدن به سطح باز می‌کند یا جایزه می‌گیرد.",
+    'new.items': "آیتم جدید",
+    'search.items': "جست‌وجو در کلید و نام آیتم",
+    'kind.item': "آیتم",
+    'kind.item_type': "نوع آیتم",
+    'col.it.type': "نوع",
+    'col.it.rarity': "کمیابی",
+    'col.it.get': "راه گرفتن",
+    'col.it.owners': "دارندگان",
+    'filter.it.type': "نوع",
+    'filter.it.rarity': "کمیابی",
+    'rarity.common': "معمولی",
+    'rarity.uncommon': "کمی کمیاب",
+    'rarity.rare': "کمیاب",
+    'rarity.epic': "حماسی",
+    'rarity.legendary': "افسانه‌ای",
+    'it.get.starter': "از اول دارد",
+    'it.get.level': "از سطح {n}",
+    'it.get.prize': "فقط با جایزه",
+    'it.get.requires': "پیش‌نیاز: {key}",
+    'it.upgradesN': "{n} سطح ارتقا",
+    'it.ownersN': "{n} بازیکن",
+    'it.equippedN': "{n} نفر انتخاب کرده‌اند",
+    'f.it.type': "نوع آیتم",
+    'f.it.type.hint': "بازیکن از هر نوع فقط یک آیتم را انتخاب می‌کند، مثلاً یک پوسته.",
+    'f.it.rarity': "کمیابی",
+    'h.it.get': "بازیکن چطور آن را می‌گیرد",
+    'f.it.starter': "همه از اول دارند",
+    'f.it.starter.hint': "به هر بازیکن خودکار داده می‌شود و نمی‌شود پسش گرفت.",
+    'f.it.price.currency': "ارز قیمت",
+    'f.it.price.amount': "قیمت",
+    'f.it.price.hint': "خالی بگذارید تا آیتم فقط با جایزه یا سطح به دست بیاید.",
+    'f.it.levelTable': "جدول سطح",
+    'f.it.levelTable.hint': "خالی یعنی جدول سطح اصلی بازی.",
+    'f.it.unlockLevel': "باز شدن از سطح",
+    'f.it.unlockLevel.hint': "بدون قیمت: بازیکن در این سطح آن را رایگان باز می‌کند. با قیمت: از این سطح خریدنی می‌شود.",
+    'f.it.parent': "آیتم پایه",
+    'f.it.requires': "پیش‌نیاز",
+    'f.it.requires.hint': "بازیکن اول باید این آیتم را داشته باشد.",
+    'h.it.upgrades': "ارتقاها",
+    'it.up.add': "سطح ارتقای تازه",
+    'it.up.empty': "این آیتم ارتقا ندارد.",
+    'f.it.up.currency': "ارز",
+    'f.it.up.amount': "قیمت این سطح",
+    'h.it.services': "خدمت‌ها",
+    'it.sv.add': "خدمت تازه",
+    'it.sv.empty': "این آیتم خدمتی ندارد.",
+    'f.it.sv.key': "کلید",
+    'f.it.sv.currency': "ارز",
+    'f.it.sv.price': "قیمت هر واحد",
+    'f.it.sv.max': "بیشترین واحد",
+    'f.it.sv.name': "نام خدمت",
+    'f.it.image': "تصویر بزرگ",
+    'item.item': "آیتم",
+    'item.item.once': "یک بار به بازیکن داده می‌شود",
+    'h.pr.rules': "قانون‌های خرید",
+    'f.maxLevel': "حداکثر سطح",
+    'f.maxLevel.hint': "بازیکن بالاتر از این سطح، این محصول را نمی‌بیند.",
+    'f.pr.levelTable': "جدول سطح",
+    'f.pr.levelTable.hint': "خالی یعنی جدول سطح اصلی بازی.",
+    'f.isOneTime': "فقط یک بار خریدنی",
+    'f.isOneTime.hint': "بعد از خرید، از فروشگاه همان بازیکن برداشته می‌شود.",
+    'f.checkContents': "اگر بازیکن همه را دارد، نفروش",
+    'f.checkContents.hint': "وقتی بازیکن همهٔ آیتم‌های جایزهٔ این محصول را دارد، خرید رد می‌شود.",
+    'f.purchaseMessage': "پیام بعد از خرید",
+    'pr.oneTime': "یک بار",
+    'pr.levels': "سطح {min} تا {max}",
+    'pr.levelFrom': "از سطح {n}",
+    'pr.levelTo': "تا سطح {n}",
+    'inv.card': "انبار بازیکن",
+    'inv.counts': "{n} از {total} آیتم",
+    'inv.equipped': "انتخاب‌شده",
+    'inv.slot': "{slot}: {name}",
+    'inv.source.starter': "از اول",
+    'inv.source.buy': "خرید",
+    'inv.source.unlock': "با سطح",
+    'inv.source.prize': "جایزه",
+    'inv.source.admin': "از کنسول",
+    'inv.upgrade': "ارتقای {n} از {max}",
+    'inv.inactive': "غیرفعال",
+    'inv.grant': "دادن آیتم",
+    'inv.grant.pick': "آیتمی که می‌خواهید بدهید",
+    'inv.grant.done': "آیتم به بازیکن داده شد.",
+    'inv.revoke': "پس گرفتن",
+    'inv.revoke.title': "آیتم پس گرفته شود؟",
+    'inv.revoke.text': "«{name}» از انبار این بازیکن برداشته می‌شود و پولی برنمی‌گردد.",
+    'inv.revoke.done': "آیتم پس گرفته شد.",
+    'inv.none': "این بازیکن هنوز آیتمی ندارد.",
+    'inv.all': "همهٔ آیتم‌ها",
+    'act.item': "آیتم",
+    'act.item.bought': "«{item}» را خرید",
+    'act.item.unlocked': "«{item}» را با سطح باز کرد",
+    'act.item.upgraded': "«{item}» را به ارتقای {level} رساند",
+    'act.item.granted': "«{item}» از کنسول به او داده شد",
+    'act.item.revoked': "«{item}» از کنسول پس گرفته شد",
+    'act.item.starter': "آیتم‌های شروع را گرفت",
+    'code.ITEM_NOT_FOUND': "آیتم پیدا نشد.",
+    'code.ITEM_TYPE_NOT_FOUND': "نوع آیتم پیدا نشد.",
+    'code.SELF_REFERENCE': "آیتم نمی‌تواند پیش‌نیاز خودش باشد.",
+    'code.INVALID_RARITY': "کمیابی را از فهرست انتخاب کنید.",
+    'code.STARTER_HAS_LEVEL': "آیتم شروع از اول باز است و سطح نمی‌خواهد.",
+    'code.TOO_MANY_UPGRADES': "حداکثر ۵۰ سطح ارتقا.",
+    'code.TOO_MANY_SERVICES': "حداکثر ۲۰ خدمت.",
+    'code.DUPLICATE_SERVICE': "کلید خدمت تکراری است.",
+    'code.INVALID_UNITS': "تعداد واحد درست نیست.",
+    'code.ALREADY_OWNED': "بازیکن این آیتم را دارد.",
+    'code.NOT_OWNED': "بازیکن این آیتم را ندارد.",
+    'code.STARTER_ITEM': "آیتم شروع را نمی‌شود پس گرفت.",
+    'code.LEVEL_TOO_LOW': "سطح بازیکن کافی نیست.",
+    'code.LEVEL_TOO_HIGH': "سطح بازیکن از حد این محصول بالاتر است.",
+    'code.PRODUCT_ALREADY_BOUGHT': "این محصول فقط یک بار خریدنی است و بازیکن آن را خریده.",
+    'code.PRIZE_ALREADY_OWNED': "بازیکن همهٔ چیزهای این جایزه را دارد.",
+    'code.ONE_TIME_SUBSCRIPTION': "اشتراک نمی‌تواند یک‌بار خرید باشد."
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -4201,7 +4315,121 @@ var MESSAGES = {
     'cf.preview.country': "Country code",
     'cf.preview.run': "Try it",
     'cf.variant.default': "Default",
-    'cf.bucket': "bucket {n}%"
+    'cf.bucket': "bucket {n}%",
+    'nav.items': "Items",
+    'desc.items': "Things a player owns in the game, like skins, frames and avatars. Players buy them, unlock them by level or get them as prizes.",
+    'new.items': "New item",
+    'search.items': "Search item key and name",
+    'kind.item': "Item",
+    'kind.item_type': "Item type",
+    'col.it.type': "Type",
+    'col.it.rarity': "Rarity",
+    'col.it.get': "How to get",
+    'col.it.owners': "Owners",
+    'filter.it.type': "Type",
+    'filter.it.rarity': "Rarity",
+    'rarity.common': "Common",
+    'rarity.uncommon': "Uncommon",
+    'rarity.rare': "Rare",
+    'rarity.epic': "Epic",
+    'rarity.legendary': "Legendary",
+    'it.get.starter': "Everyone has it",
+    'it.get.level': "From level {n}",
+    'it.get.prize': "Prize only",
+    'it.get.requires': "Needs: {key}",
+    'it.upgradesN': "{n} upgrade levels",
+    'it.ownersN': "{n} players",
+    'it.equippedN': "{n} equipped",
+    'f.it.type': "Item type",
+    'f.it.type.hint': "A player equips one item of each type, for example one skin.",
+    'f.it.rarity': "Rarity",
+    'h.it.get': "How a player gets it",
+    'f.it.starter': "Everyone has it from the start",
+    'f.it.starter.hint': "Given to every player automatically and cannot be taken back.",
+    'f.it.price.currency': "Price currency",
+    'f.it.price.amount': "Price",
+    'f.it.price.hint': "Leave empty when the item comes only from prizes or levels.",
+    'f.it.levelTable': "Level table",
+    'f.it.levelTable.hint': "Empty means the game's main level table.",
+    'f.it.unlockLevel': "Unlocks at level",
+    'f.it.unlockLevel.hint': "Without a price the player unlocks it for free at this level. With a price it can be bought from this level.",
+    'f.it.parent': "Base item",
+    'f.it.requires': "Requires",
+    'f.it.requires.hint': "The player must own this item first.",
+    'h.it.upgrades': "Upgrades",
+    'it.up.add': "New upgrade level",
+    'it.up.empty': "This item has no upgrades.",
+    'f.it.up.currency': "Currency",
+    'f.it.up.amount': "Price of this level",
+    'h.it.services': "Services",
+    'it.sv.add': "New service",
+    'it.sv.empty': "This item has no services.",
+    'f.it.sv.key': "Key",
+    'f.it.sv.currency': "Currency",
+    'f.it.sv.price': "Price per unit",
+    'f.it.sv.max': "Most units",
+    'f.it.sv.name': "Service name",
+    'f.it.image': "Large image",
+    'item.item': "Item",
+    'item.item.once': "Given to the player once",
+    'h.pr.rules': "Purchase rules",
+    'f.maxLevel': "Maximum level",
+    'f.maxLevel.hint': "Players above this level do not see the product.",
+    'f.pr.levelTable': "Level table",
+    'f.pr.levelTable.hint': "Empty means the game's main level table.",
+    'f.isOneTime': "Can be bought only once",
+    'f.isOneTime.hint': "After a purchase it leaves that player's shop.",
+    'f.checkContents': "Don't sell when the player owns it all",
+    'f.checkContents.hint': "When the player already owns every item of the product's prize, the purchase is refused.",
+    'f.purchaseMessage': "Message after purchase",
+    'pr.oneTime': "Once",
+    'pr.levels': "Level {min} to {max}",
+    'pr.levelFrom': "From level {n}",
+    'pr.levelTo': "Up to level {n}",
+    'inv.card': "Player inventory",
+    'inv.counts': "{n} of {total} items",
+    'inv.equipped': "Equipped",
+    'inv.slot': "{slot}: {name}",
+    'inv.source.starter': "Starter",
+    'inv.source.buy': "Bought",
+    'inv.source.unlock': "Level",
+    'inv.source.prize': "Prize",
+    'inv.source.admin': "Console",
+    'inv.upgrade': "Upgrade {n} of {max}",
+    'inv.inactive': "Inactive",
+    'inv.grant': "Give item",
+    'inv.grant.pick': "Item to give",
+    'inv.grant.done': "Item given to the player.",
+    'inv.revoke': "Take back",
+    'inv.revoke.title': "Take this item back?",
+    'inv.revoke.text': "\"{name}\" leaves this player's inventory. Nothing is refunded.",
+    'inv.revoke.done': "Item taken back.",
+    'inv.none': "This player has no items yet.",
+    'inv.all': "All items",
+    'act.item': "Item",
+    'act.item.bought': "Bought \"{item}\"",
+    'act.item.unlocked': "Unlocked \"{item}\" by level",
+    'act.item.upgraded': "Upgraded \"{item}\" to {level}",
+    'act.item.granted': "Got \"{item}\" from the console",
+    'act.item.revoked': "\"{item}\" was taken back in the console",
+    'act.item.starter': "Got the starter items",
+    'code.ITEM_NOT_FOUND': "Item not found.",
+    'code.ITEM_TYPE_NOT_FOUND': "Item type not found.",
+    'code.SELF_REFERENCE': "An item cannot require itself.",
+    'code.INVALID_RARITY': "Pick a rarity from the list.",
+    'code.STARTER_HAS_LEVEL': "A starter item is open from the start and needs no level.",
+    'code.TOO_MANY_UPGRADES': "At most 50 upgrade levels.",
+    'code.TOO_MANY_SERVICES': "At most 20 services.",
+    'code.DUPLICATE_SERVICE': "Service keys must be unique.",
+    'code.INVALID_UNITS': "The number of units is not valid.",
+    'code.ALREADY_OWNED': "The player already owns this item.",
+    'code.NOT_OWNED': "The player does not own this item.",
+    'code.STARTER_ITEM': "Starter items cannot be taken back.",
+    'code.LEVEL_TOO_LOW': "The player's level is too low.",
+    'code.LEVEL_TOO_HIGH': "The player's level is above this product's limit.",
+    'code.PRODUCT_ALREADY_BOUGHT': "This product can be bought once and the player already bought it.",
+    'code.PRIZE_ALREADY_OWNED': "The player already owns everything in this prize.",
+    'code.ONE_TIME_SUBSCRIPTION': "A subscription cannot be a one-time product."
   }
 };
 
@@ -4546,6 +4774,7 @@ var ICONS = {
 var MIRROR = { first: 1, prev: 1, next: 1, back: 1, reply: 1 };
 
 var PH_ICONS = {
+  items: '<path d="M168,40.58V32A24,24,0,0,0,144,8H112A24,24,0,0,0,88,32v8.58A56.09,56.09,0,0,0,40,96V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V96A56.09,56.09,0,0,0,168,40.58ZM112,24h32a8,8,0,0,1,8,8v8H104V32A8,8,0,0,1,112,24Zm56,136H88v-8a8,8,0,0,1,8-8h64a8,8,0,0,1,8,8ZM88,176h48v8a8,8,0,0,0,16,0v-8h16v40H88Zm112,40H184V152a24,24,0,0,0-24-24H96a24,24,0,0,0-24,24v64H56V96A40,40,0,0,1,96,56h64a40,40,0,0,1,40,40V216ZM152,88a8,8,0,0,1-8,8H112a8,8,0,0,1,0-16h32A8,8,0,0,1,152,88Z"/>',
   overview: '<path d="M104,40H56A16,16,0,0,0,40,56v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,104,40Zm0,64H56V56h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40Zm0,64H152V56h48v48Zm-96,32H56a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,104,136Zm0,64H56V152h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,200,136Zm0,64H152V152h48v48Z"/>',
   currencies: '<path d="M184,89.57V84c0-25.08-37.83-44-88-44S8,58.92,8,84v40c0,20.89,26.25,37.49,64,42.46V172c0,25.08,37.83,44,88,44s88-18.92,88-44V132C248,111.3,222.58,94.68,184,89.57ZM232,132c0,13.22-30.79,28-72,28-3.73,0-7.43-.13-11.08-.37C170.49,151.77,184,139,184,124V105.74C213.87,110.19,232,122.27,232,132ZM72,150.25V126.46A183.74,183.74,0,0,0,96,128a183.74,183.74,0,0,0,24-1.54v23.79A163,163,0,0,1,96,152,163,163,0,0,1,72,150.25Zm96-40.32V124c0,8.39-12.41,17.4-32,22.87V123.5C148.91,120.37,159.84,115.71,168,109.93ZM96,56c41.21,0,72,14.78,72,28s-30.79,28-72,28S24,97.22,24,84,54.79,56,96,56ZM24,124V109.93c8.16,5.78,19.09,10.44,32,13.57v23.37C36.41,141.4,24,132.39,24,124Zm64,48v-4.17c2.63.1,5.29.17,8,.17,3.88,0,7.67-.13,11.39-.35A121.92,121.92,0,0,0,120,171.41v23.46C100.41,189.4,88,180.39,88,172Zm48,26.25V174.4a179.48,179.48,0,0,0,24,1.6,183.74,183.74,0,0,0,24-1.54v23.79a165.45,165.45,0,0,1-48,0Zm64-3.38V171.5c12.91-3.13,23.84-7.79,32-13.57V172C232,180.39,219.59,189.4,200,194.87Z"/>',
   metas: '<path d="M232,208a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V48a8,8,0,0,1,16,0V156.69l50.34-50.35a8,8,0,0,1,11.32,0L128,132.69,180.69,80H160a8,8,0,0,1,0-16h40a8,8,0,0,1,8,8v40a8,8,0,0,1-16,0V91.31l-58.34,58.35a8,8,0,0,1-11.32,0L96,123.31l-56,56V200H224A8,8,0,0,1,232,208Z"/>',
@@ -5671,7 +5900,7 @@ function actionsEditor(value, onchange) {
   return el;
 }
 
-var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'] };
+var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'], item: ['give'] };
 
 function itemsEditor(value, onchange) {
   var rows = (value || []).map(function (r) { return Object.assign({}, r); });
@@ -5683,23 +5912,28 @@ function itemsEditor(value, onchange) {
     errors = [];
     if (!rows.length) listEl.appendChild(h('div', { class: 'text-sm text-secondary-500 dark:text-secondary-400 border border-dashed border-secondary-300 dark:border-secondary-700 rounded-md px-3 py-4 text-center', text: t('f.items.empty') }));
     rows.forEach(function (row, idx) {
-      var typeSel = selectInput(row.type, ['currency', 'meta', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
+      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
         row.type = v;
         row.key = '';
         row.action = (ITEM_ACTIONS[v] || ['add'])[0];
-        row.value = v === 'storage' ? {} : 0;
+        row.value = v === 'storage' ? {} : v === 'item' ? 1 : 0;
         render();
         emit();
       }, { placeholder: false, label: t('f.item.type') });
       var keyCtl;
       if (row.type === 'storage') {
         keyCtl = textInput(row.key, { ltr: true, mono: true, label: t('f.item.key'), oninput: function (v) { row.key = v.trim(); emit(); } });
+      } else if (row.type === 'item') {
+        keyCtl = refPicker({ resource: 'items', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
+        keyCtl.setAttribute('data-item-picker', '');
       } else {
         keyCtl = refPicker({ resource: row.type === 'meta' ? 'metas' : 'currencies', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
       }
       var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t('action.' + k) }; }), function (v) { row.action = v; emit(); }, { placeholder: false, label: t('f.item.action') });
       var valCtl;
-      if (row.type === 'storage') {
+      if (row.type === 'item') {
+        valCtl = h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300 py-2', text: t('item.item.once') });
+      } else if (row.type === 'storage') {
         valCtl = textInput(row.value == null ? '{}' : JSON.stringify(row.value), { ltr: true, mono: true, label: t('f.item.value'), oninput: function (v) {
           try { row.value = JSON.parse(v); row._bad = false; } catch (e) { row._bad = true; }
           emit();
@@ -5736,7 +5970,7 @@ function itemsEditor(value, onchange) {
       var msg = '';
       if (!r.key) msg = t('f.item.key') + ': ' + t('err.required');
       else if (r.type === 'storage' && (r._bad || r.value === null || typeof r.value !== 'object')) msg = t('err.json');
-      else if (r.type !== 'storage' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
+      else if (r.type !== 'storage' && r.type !== 'item' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
       e.el.textContent = msg;
       e.el.hidden = !msg;
       e.el.parentElement.classList.toggle('eco-row-invalid', !!msg);
@@ -6112,6 +6346,7 @@ function priceText(it) {
 function itemSummary(items) {
   return (items || []).map(function (r) {
     if (r.type === 'storage') return r.key;
+    if (r.type === 'item') return t('item.item') + ': ' + r.key;
     var sign = r.action === 'add' && Number(r.value) > 0 ? '+' : '';
     return t('amount.of', { n: (r.action === 'set' ? '= ' : sign) + fmtNum(r.value), name: keyName(r.type === 'meta' ? 'meta' : 'currency', r.key) });
   });
@@ -6487,7 +6722,7 @@ var RESOURCES = {
 };
 
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'comments', 'notifications', 'remote-config'],
   moderation: ['players', 'reports', 'restrictions', 'chat-words', 'activity'],
   support: ['tickets', 'live-chat']
@@ -9244,7 +9479,8 @@ function rowsEditor(value, f, onchange) {
   function control(c, row) {
     var label = t(c.label);
     if (c.type === 'number') return numberInput(row[c.name], { int: c.int !== false, label: label, oninput: function (v) { row[c.name] = v === '' ? null : parseNumber(v, c.int !== false); emit(); } });
-    if (c.type === 'ref') return refPicker({ resource: c.resource, api: c.api, filter: c.filter, value: row[c.name], required: c.required, label: label, onchange: function (v) { row[c.name] = v; emit(); } });
+    if (c.type === 'ref') return refPicker({ resource: c.resource, api: c.api, filter: c.filter, valueKey: c.valueKey, value: row[c.name], required: c.required, label: label, onchange: function (v) { row[c.name] = v; emit(); } });
+    if (c.type === 'text') return textInput(row[c.name] || '', { ltr: c.ltr, mono: c.mono, label: label, oninput: function (v) { row[c.name] = v.trim(); emit(); } });
     if (c.type === 'select') {
       if (row[c.name] == null) row[c.name] = c.options()[0].value;
       return selectInput(row[c.name], c.options(), function (v) { row[c.name] = v; emit(); }, { placeholder: false, label: label });
@@ -11491,6 +11727,276 @@ function historyCard(item, onrestored) {
   return card(h('div', {}, h('h2', { class: 'font-medium px-4 pt-4 pb-2', text: t('cf.history') }), list));
 }
 
+var RARITIES = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+var RARITY_COLOR = { common: 'secondary', uncommon: 'success', rare: 'primary', epic: 'warning', legendary: 'error' };
+
+if (ACTIVITY_KINDS.indexOf('item') === -1) ACTIVITY_KINDS.push('item');
+if (CATEGORY_KEY_TYPES.indexOf('item') === -1) CATEGORY_KEY_TYPES.push('item', 'item_type');
+if (TAG_KEY_TYPES.indexOf('item') === -1) TAG_KEY_TYPES.splice(TAG_KEY_TYPES.indexOf('general'), 0, 'item');
+
+function rarityTag(r) {
+  return tag(t('rarity.' + (r || 'common')), RARITY_COLOR[r] || 'secondary');
+}
+
+function priceLabel(p) {
+  if (!p || p.amount == null) return '';
+  return t('amount.of', { n: fmtNum(p.amount), name: keyName('currency', p.currencyKey) });
+}
+
+function itemGetCell(it) {
+  return h('div', { class: 'flex flex-col gap-1 min-w-0 text-sm' }, withKeyNames(function () {
+    var out = [];
+    if (it.isStarter) out.push(tag(t('it.get.starter'), 'success'));
+    if (it.price) out.push(h('span', { class: 'tabular-nums whitespace-nowrap', text: priceLabel(it.price) }));
+    if (it.unlockLevel) out.push(h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('it.get.level', { n: fmtNum(it.unlockLevel) }) }));
+    if (!it.isStarter && !it.price && !it.unlockLevel) out.push(h('span', { class: 'text-secondary-600 dark:text-secondary-300', text: t('it.get.prize') }));
+    if (it.requiresKey || it.parentKey) out.push(h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300 truncate', text: t('it.get.requires', { key: it.requiresKey || it.parentKey }) }));
+    if ((it.upgrades || []).length) out.push(h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('it.upgradesN', { n: fmtNum(it.upgrades.length) }) }));
+    return out;
+  }));
+}
+
+RESOURCES.items = {
+  filters: [
+    { name: 'typeId', label: 'filter.it.type', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'item_type' } },
+    { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'item' } },
+    { name: 'rarity', label: 'filter.it.rarity', options: opts('rarity.', RARITIES) },
+    activeFilter()
+  ],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '45%' },
+    { label: 'col.it.type', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, tag(i18nText(it.typeName) || it.typeKey, 'secondary'), rarityTag(it.rarity)); }, width: 170 },
+    { label: 'col.it.get', render: itemGetCell, skeleton: '40%', width: 190 },
+    { label: 'col.it.owners', render: function (it) {
+      return h('div', { class: 'flex flex-col text-sm' }, h('span', { class: 'tabular-nums', text: t('it.ownersN', { n: fmtNum(it.owners || 0) }) }),
+        it.equippedBy ? h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('it.equippedN', { n: fmtNum(it.equippedBy) }) }) : null);
+    }, width: 150 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, lockOnEdit: true },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
+    ] },
+    tr('name', { required: true, max: 128 }),
+    tr('description', { multiline: true, max: 1000, optional: true }),
+    { type: 'row', fields: [
+      { name: 'typeId', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'item_type' }, quick: 'item_type', label: 'f.it.type', hint: 'f.it.type.hint', required: true },
+      { name: 'rarity', type: 'select', label: 'f.it.rarity', required: true, options: opts('rarity.', RARITIES) }
+    ] },
+    { type: 'row', fields: [categoryField('item'), tagsField('item')] },
+    { type: 'heading', label: 'h.it.get' },
+    { name: 'isStarter', type: 'bool', inline: true, label: 'f.it.starter', hint: 'f.it.starter.hint' },
+    { type: 'row', when: function (v) { return !v.isStarter; }, fields: [
+      { name: 'price.currencyKey', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.it.price.currency', optional: true,
+        check: function (c, v) { return !c && v.price && v.price.amount != null ? t('err.required') : null; } },
+      { name: 'price.amount', type: 'number', label: 'f.it.price.amount', hint: 'f.it.price.hint', optional: true, min: 1,
+        check: function (n, v) { return n == null && v.price && v.price.currencyKey ? t('err.required') : null; } }
+    ] },
+    { type: 'row', when: function (v) { return !v.isStarter; }, fields: [
+      { name: 'unlockLevel', type: 'number', label: 'f.it.unlockLevel', hint: 'f.it.unlockLevel.hint', optional: true, min: 1 },
+      { name: 'levelTableId', type: 'ref', resource: 'level-tables', label: 'f.it.levelTable', hint: 'f.it.levelTable.hint', optional: true }
+    ] },
+    { type: 'row', fields: [
+      { name: 'requiresKey', type: 'ref', resource: 'items', valueKey: 'key', label: 'f.it.requires', hint: 'f.it.requires.hint', optional: true,
+        check: function (v, vals) { return v && v === vals.key ? t('code.SELF_REFERENCE') : null; } },
+      { name: 'parentKey', type: 'ref', resource: 'items', valueKey: 'key', label: 'f.it.parent', optional: true,
+        check: function (v, vals) { return v && v === vals.key ? t('code.SELF_REFERENCE') : null; } }
+    ] },
+    { type: 'heading', label: 'h.it.upgrades' },
+    { name: 'upgrades', type: 'rows', addLabel: 'it.up.add', emptyText: 'it.up.empty', max: 50,
+      newRow: function (rows) { var last = rows[rows.length - 1]; return { currencyKey: last ? last.currencyKey : null, amount: last ? Number(last.amount || 0) * 2 || 10 : 10 }; },
+      columns: [
+        { name: 'currencyKey', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.it.up.currency', required: true },
+        { name: 'amount', type: 'number', label: 'f.it.up.amount', required: true, min: 1 }
+      ] },
+    { type: 'heading', label: 'h.it.services' },
+    { name: 'services', type: 'rows', addLabel: 'it.sv.add', emptyText: 'it.sv.empty', max: 20,
+      newRow: function () { return { key: '', currencyKey: null, unitPrice: 1, maxUnits: 1, name: {} }; },
+      check: duplicateCheck('key', 'DUPLICATE_SERVICE'),
+      columns: [
+        { name: 'key', type: 'text', ltr: true, mono: true, label: 'f.it.sv.key', required: true },
+        { name: 'currencyKey', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.it.sv.currency', required: true },
+        { name: 'unitPrice', type: 'number', label: 'f.it.sv.price', required: true, min: 1 },
+        { name: 'maxUnits', type: 'number', label: 'f.it.sv.max', required: true, min: 1, max: 1000 },
+        { name: 'name', type: 'i18n', label: 'f.it.sv.name', max: 64, wide: true }
+      ] },
+    { type: 'heading', label: 'f.icon' },
+    { type: 'row', fields: [
+      { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
+      { name: 'imageUrl', type: 'image', label: 'f.it.image', optional: true }
+    ] },
+    { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' },
+    { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
+  ],
+  defaults: function (query) {
+    return { key: '', isActive: true, name: {}, description: {}, typeId: (query && query.typeId) || null, rarity: 'common', categoryId: null, tagIds: [], isStarter: false,
+      price: null, unlockLevel: null, levelTableId: null, requiresKey: null, parentKey: null, upgrades: [], services: [], iconUrl: '', imageUrl: '', sort: 0, metadata: {} };
+  },
+  fixPayload: function (p) {
+    if (p.isStarter || !p.price || (p.price.currencyKey == null && p.price.amount == null)) p.price = null;
+    if (p.isStarter) { p.unlockLevel = null; p.levelTableId = null; }
+    if (!p.iconUrl) p.iconUrl = '';
+    if (!p.imageUrl) p.imageUrl = '';
+    if (p.sort == null) p.sort = 0;
+    p.requiresKey = p.requiresKey || '';
+    p.parentKey = p.parentKey || '';
+    p.levelTableId = p.levelTableId || '';
+    p.categoryId = p.categoryId || '';
+    p.upgrades = (p.upgrades || []).map(function (r) { return { currencyKey: r.currencyKey, amount: r.amount }; });
+    p.services = (p.services || []).map(function (r) { return { key: r.key, currencyKey: r.currencyKey, unitPrice: r.unitPrice, maxUnits: r.maxUnits, name: r.name || {} }; });
+    return p;
+  },
+  afterSave: function () { forgetRefs('items'); }
+};
+
+OVERVIEW_CATALOG.push('items');
+
+(function productRules() {
+  var def = RESOURCES.products;
+  var at = -1;
+  def.fields.forEach(function (f, i) { if (f.type === 'row' && f.fields.some(function (x) { return x.name === 'minLevel'; })) at = i; });
+  var rules = [
+    { type: 'heading', label: 'h.pr.rules' },
+    { type: 'row', fields: [
+      { name: 'minLevel', type: 'number', label: 'f.minLevel', min: 0, empty: 0 },
+      { name: 'maxLevel', type: 'number', label: 'f.maxLevel', hint: 'f.maxLevel.hint', optional: true, min: 0,
+        check: function (v, vals) { return v != null && Number(v) < Number(vals.minLevel || 0) ? t('code.INVALID_LEVEL_RANGE') : null; } }
+    ] },
+    { name: 'levelTableId', type: 'ref', resource: 'level-tables', label: 'f.pr.levelTable', hint: 'f.pr.levelTable.hint', optional: true },
+    { type: 'row', fields: [
+      { name: 'isOneTime', type: 'bool', inline: true, label: 'f.isOneTime', hint: 'f.isOneTime.hint', empty: false },
+      { name: 'checkContents', type: 'bool', inline: true, label: 'f.checkContents', hint: 'f.checkContents.hint' }
+    ] },
+    tr('purchaseMessage', { multiline: true, max: 500, optional: true }),
+    { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+  ];
+  if (at !== -1) def.fields.splice(at, 1);
+  var meta = -1;
+  def.fields.forEach(function (f, i) { if (f.name === 'metadata') meta = i; });
+  Array.prototype.splice.apply(def.fields, [meta === -1 ? def.fields.length : meta, 0].concat(rules));
+  var baseDefaults = def.defaults;
+  def.defaults = function (q) { return Object.assign(baseDefaults(q), { maxLevel: null, levelTableId: null, isOneTime: false, checkContents: true, purchaseMessage: {} }); };
+  var baseFix = def.fixPayload;
+  def.fixPayload = function (p) { p = baseFix(p); p.levelTableId = p.levelTableId || ''; if (p.isOneTime == null) p.isOneTime = false; if (p.checkContents == null) p.checkContents = true; return p; };
+  def.columns.splice(3, 0, { label: 'h.pr.rules', render: function (it) {
+    var box = h('div', { class: 'flex flex-wrap gap-1', 'data-product-rules': '' });
+    if (it.isOneTime) box.appendChild(tag(t('pr.oneTime'), 'warning'));
+    if (it.minLevel && it.maxLevel != null) box.appendChild(tag(t('pr.levels', { min: fmtNum(it.minLevel), max: fmtNum(it.maxLevel) }), 'secondary'));
+    else if (it.minLevel) box.appendChild(tag(t('pr.levelFrom', { n: fmtNum(it.minLevel) }), 'secondary'));
+    else if (it.maxLevel != null) box.appendChild(tag(t('pr.levelTo', { n: fmtNum(it.maxLevel) }), 'secondary'));
+    if (!box.childNodes.length) box.appendChild(h('span', { class: 'text-secondary-400', text: t('none') }));
+    return box;
+  }, width: 150 });
+})();
+
+var INV_CARD = { id: null, data: null, loading: false, at: 0, err: null };
+
+function loadInvCard(id) {
+  INV_CARD.loading = true;
+  return api('GET', '/users/' + encodeURIComponent(id) + '/items' + qs({ lang: lang() })).then(function (res) {
+    INV_CARD.loading = false;
+    INV_CARD.at = Date.now();
+    INV_CARD.data = res;
+    INV_CARD.err = null;
+    var old = document.querySelector('[data-player-items]');
+    if (old) old.removeAttribute('data-key');
+    schedule();
+  }, function (err) {
+    INV_CARD.loading = false;
+    INV_CARD.at = Date.now();
+    INV_CARD.err = err;
+    schedule();
+  });
+}
+
+function reloadInv(id) { INV_CARD.at = 0; loadInvCard(id); }
+
+function invLine(userId, it, write) {
+  var pic = h('div', { class: 'h-8 w-8 shrink-0 rounded-md bg-secondary-100 dark:bg-secondary-700 overflow-hidden flex items-center justify-center text-secondary-500' });
+  pic.appendChild(it.iconUrl ? img(it.iconUrl, 'items') : icon('items', 'h-4 w-4'));
+  var line = h('div', { class: 'flex flex-wrap items-center gap-2 py-1.5 text-sm', 'data-inv-item': it.key, 'data-equipped': it.equipped ? '' : null },
+    pic,
+    h('span', { class: 'font-medium truncate min-w-0', text: it.name || it.key }),
+    tag(it.typeName || it.type, 'secondary'),
+    rarityTag(it.rarity),
+    it.equipped ? tag(t('inv.equipped'), 'success') : null,
+    !it.isActive ? tag(t('inv.inactive'), 'secondary') : null,
+    h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300 whitespace-nowrap', text: t('inv.source.' + it.source) }),
+    it.maxUpgradeLevel ? h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300 whitespace-nowrap tabular-nums', text: t('inv.upgrade', { n: fmtNum(it.upgradeLevel || 0), max: fmtNum(it.maxUpgradeLevel) }) }) : null,
+    h('span', { class: 'flex-1' }));
+  if (write && !it.isStarter) {
+    var rb = button({ variant: 'link', size: 'sm', label: t('inv.revoke'), onclick: function () {
+      confirmModal({ title: t('inv.revoke.title'), text: t('inv.revoke.text', { name: it.name || it.key }), ok: t('inv.revoke'), danger: true }).then(function (yes) {
+        if (!yes) return;
+        api('DELETE', '/users/' + encodeURIComponent(userId) + '/items/' + encodeURIComponent(it.id)).then(function () { toast('success', t('inv.revoke.done')); reloadInv(userId); }, function (err) { toast('error', errorText(err)); });
+      });
+    } });
+    rb.setAttribute('data-inv-revoke', it.key);
+    line.appendChild(rb);
+  }
+  return line;
+}
+
+function playerItemsCard() {
+  var id = playerCardRoute();
+  var existing = document.querySelector('[data-player-items]');
+  if (!id || !token() || !aclCan('HIRO_ECONOMY', 0)) { if (existing) existing.remove(); return; }
+  var main = null;
+  var mains = document.querySelectorAll('#main > main');
+  for (var i = 0; i < mains.length; i++) if (mains[i].style.display !== 'none') main = mains[i];
+  var grid = main && main.querySelector('div.flex.flex-col.flex-1.min-w-0 > div.grid.grid-cols-1.gap-4');
+  if (!grid) return;
+  if (INV_CARD.id !== id) { INV_CARD.id = id; INV_CARD.data = null; INV_CARD.err = null; INV_CARD.at = 0; }
+  if (!INV_CARD.loading && Date.now() - INV_CARD.at > 20000) loadInvCard(id);
+  var p = INV_CARD.data;
+  var anchor = grid.querySelector('[data-player-tasks]') || grid.querySelector('[data-player-activity]') || grid.querySelector('[data-player-progress]') || grid.querySelector('[data-player-mod]');
+  var key = lang() + '|' + id + '|' + (p ? JSON.stringify([p.items, p.equipped]) : INV_CARD.err ? 'err' : 'loading');
+  var placed = existing && existing.parentNode === grid && (anchor ? existing.previousElementSibling === anchor : grid.firstChild === existing);
+  if (existing && existing.getAttribute('data-key') === key && placed) return;
+  if (existing) existing.remove();
+  var body = h('div', { class: 'px-4 py-3' });
+  var cardEl = h('section', { class: 'flex flex-col dark:bg-secondary-800 rounded-md shadow bg-white', 'data-player-items': '', 'data-key': key, 'data-economy': 'player-items', 'data-l10n-skip': '', 'aria-labelledby': 'player-items-title', dir: document.documentElement.getAttribute('dir') || 'ltr' }, body);
+  var title = h('h2', { id: 'player-items-title', class: 'font-medium flex items-center gap-2' }, icon('items', 'h-4 w-4'), h('span', { text: t('inv.card') }));
+  var place = function () { if (anchor) anchor.after(cardEl); else grid.insertBefore(cardEl, grid.firstChild); };
+  if (!p) {
+    body.appendChild(h('div', { class: 'flex items-center justify-between gap-2 mb-3' }, title));
+    body.appendChild(INV_CARD.err ? notice('error', errorText(INV_CARD.err), button({ variant: 'link', size: 'sm', label: t('try.again'), onclick: function () { reloadInv(id); } })) : h('div', { class: 'flex flex-col gap-2' }, bar('40%'), bar('60%')));
+    place();
+    return;
+  }
+  var write = aclCan('HIRO_ECONOMY', 1);
+  var owned = (p.items || []).filter(function (it) { return it.owned; });
+  body.appendChild(h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-2' }, title,
+    h('span', { class: 'text-sm text-secondary-600 dark:text-secondary-300 tabular-nums', 'data-inv-counts': '', text: t('inv.counts', { n: fmtNum(owned.length), total: fmtNum((p.items || []).length) }) }),
+    h('a', { href: hashFor('items'), class: 'eco-link text-sm', text: t('inv.all') })));
+  var eq = Object.keys(p.equipped || {});
+  if (eq.length) {
+    var byKey = {};
+    (p.items || []).forEach(function (it) { byKey[it.key] = it; });
+    body.appendChild(h('div', { class: 'flex flex-wrap gap-1 mb-2', 'data-inv-equipped': '' }, eq.sort().map(function (slot) {
+      var it = byKey[p.equipped[slot]];
+      return tag(t('inv.slot', { slot: it ? it.typeName || slot : slot, name: it ? it.name || it.key : p.equipped[slot] }), 'success');
+    })));
+  }
+  var list = h('div', { class: 'flex flex-col', 'data-inv-list': '' });
+  owned.forEach(function (it) { list.appendChild(invLine(id, it, write)); });
+  if (!owned.length) list.appendChild(h('span', { class: 'text-sm text-secondary-500 dark:text-secondary-400 py-1', text: t('inv.none') }));
+  body.appendChild(list);
+  if (write) {
+    var pick = '';
+    var picker = refPicker({ resource: 'items', value: '', label: t('inv.grant.pick'), placeholder: t('inv.grant.pick'), onchange: function (v) { pick = v || ''; } });
+    var give = button({ variant: 'primary', size: 'sm', icon: 'plus', label: t('inv.grant'), onclick: function () {
+      if (!pick) { toast('error', t('inv.grant.pick')); return; }
+      api('POST', '/users/' + encodeURIComponent(id) + '/items', { itemId: pick }).then(function () { toast('success', t('inv.grant.done')); reloadInv(id); }, function (err) { toast('error', errorText(err)); });
+    } });
+    give.setAttribute('data-inv-grant', '');
+    body.appendChild(h('div', { class: 'mt-3 border-t border-secondary-200 dark:border-secondary-700 pt-4 flex flex-wrap items-center gap-2', 'data-inv-give': '' },
+      h('div', { class: 'min-w-0 flex-1 eco-inv-pick' }, picker), give));
+  }
+  place();
+}
+
 var BRAND_KEY = 'nakama-brand';
 var BRAND_SHADES = { 50: 0.9, 100: 0.8, 200: 0.6, 300: 0.4, 400: 0.1, 500: 0, 600: -0.1, 700: -0.25, 800: -0.58, 900: -0.7, 950: -0.8 };
 var BRAND_DEFAULT_SHADES = { '244,244,253': 50, '233,232,252': 100, '209,205,248': 200, '181,175,245': 300, '130,117,240': 400, '107,89,238': 500, '102,84,226': 600, '93,77,206': 700, '69,58,154': 800, '59,49,130': 900, '48,40,106': 950 };
@@ -13545,6 +14051,7 @@ function nativeTweaks() {
   playerProgressCard();
   playerActivityCard();
   playerTasksCard();
+  playerItemsCard();
 }
 
 var ROOT_ID = 'economy-root';

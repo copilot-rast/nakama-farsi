@@ -104,7 +104,8 @@ function rowsEditor(value, f, onchange) {
   function control(c, row) {
     var label = t(c.label);
     if (c.type === 'number') return numberInput(row[c.name], { int: c.int !== false, label: label, oninput: function (v) { row[c.name] = v === '' ? null : parseNumber(v, c.int !== false); emit(); } });
-    if (c.type === 'ref') return refPicker({ resource: c.resource, api: c.api, filter: c.filter, value: row[c.name], required: c.required, label: label, onchange: function (v) { row[c.name] = v; emit(); } });
+    if (c.type === 'ref') return refPicker({ resource: c.resource, api: c.api, filter: c.filter, valueKey: c.valueKey, value: row[c.name], required: c.required, label: label, onchange: function (v) { row[c.name] = v; emit(); } });
+    if (c.type === 'text') return textInput(row[c.name] || '', { ltr: c.ltr, mono: c.mono, label: label, oninput: function (v) { row[c.name] = v.trim(); emit(); } });
     if (c.type === 'select') {
       if (row[c.name] == null) row[c.name] = c.options()[0].value;
       return selectInput(row[c.name], c.options(), function (v) { row[c.name] = v; emit(); }, { placeholder: false, label: label });

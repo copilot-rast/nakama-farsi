@@ -664,7 +664,7 @@ function actionsEditor(value, onchange) {
   return el;
 }
 
-var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'] };
+var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'], item: ['give'] };
 
 function itemsEditor(value, onchange) {
   var rows = (value || []).map(function (r) { return Object.assign({}, r); });
@@ -676,23 +676,28 @@ function itemsEditor(value, onchange) {
     errors = [];
     if (!rows.length) listEl.appendChild(h('div', { class: 'text-sm text-secondary-500 dark:text-secondary-400 border border-dashed border-secondary-300 dark:border-secondary-700 rounded-md px-3 py-4 text-center', text: t('f.items.empty') }));
     rows.forEach(function (row, idx) {
-      var typeSel = selectInput(row.type, ['currency', 'meta', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
+      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
         row.type = v;
         row.key = '';
         row.action = (ITEM_ACTIONS[v] || ['add'])[0];
-        row.value = v === 'storage' ? {} : 0;
+        row.value = v === 'storage' ? {} : v === 'item' ? 1 : 0;
         render();
         emit();
       }, { placeholder: false, label: t('f.item.type') });
       var keyCtl;
       if (row.type === 'storage') {
         keyCtl = textInput(row.key, { ltr: true, mono: true, label: t('f.item.key'), oninput: function (v) { row.key = v.trim(); emit(); } });
+      } else if (row.type === 'item') {
+        keyCtl = refPicker({ resource: 'items', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
+        keyCtl.setAttribute('data-item-picker', '');
       } else {
         keyCtl = refPicker({ resource: row.type === 'meta' ? 'metas' : 'currencies', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
       }
       var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t('action.' + k) }; }), function (v) { row.action = v; emit(); }, { placeholder: false, label: t('f.item.action') });
       var valCtl;
-      if (row.type === 'storage') {
+      if (row.type === 'item') {
+        valCtl = h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300 py-2', text: t('item.item.once') });
+      } else if (row.type === 'storage') {
         valCtl = textInput(row.value == null ? '{}' : JSON.stringify(row.value), { ltr: true, mono: true, label: t('f.item.value'), oninput: function (v) {
           try { row.value = JSON.parse(v); row._bad = false; } catch (e) { row._bad = true; }
           emit();
@@ -729,7 +734,7 @@ function itemsEditor(value, onchange) {
       var msg = '';
       if (!r.key) msg = t('f.item.key') + ': ' + t('err.required');
       else if (r.type === 'storage' && (r._bad || r.value === null || typeof r.value !== 'object')) msg = t('err.json');
-      else if (r.type !== 'storage' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
+      else if (r.type !== 'storage' && r.type !== 'item' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
       e.el.textContent = msg;
       e.el.hidden = !msg;
       e.el.parentElement.classList.toggle('eco-row-invalid', !!msg);
