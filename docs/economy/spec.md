@@ -381,8 +381,97 @@ CRUD `achievements` through the generic resource handlers (search on key and eve
 
 ### Console pages
 
-Economy section after «آیتم‌ها»: «دستاوردها» (`#/economy/achievements`, Phosphor medal icon): search, filters for source, rarity, category, hidden and status; rows with the badge tile, a sentence such as «پایان یک دور» ۳ بار and the tier targets (برنزی: ۳، نقره‌ای: ۱۰، طلایی: ۳۰), tiers and first prize, rarity and points, players who unlocked it, status, hidden and source chips; cards at 390px. The docked editor has name, description, the locked hint, rarity, points, category and tags, badge and locked badge, «پنهان تا باز شدن», the source with the task condition fields (event, count, value range) or the task / task group pickers, a live sentence, the tier row editor (target, prize, mode, translated name; order checked) for event achievements and one unlock prize for the others, and the in-app note switch. The prize item editor has the new type «دستاورد» with an achievement picker. The native player page gets «دستاوردهای بازیکن» after the inventory card: every achievement with its badge, state, rarity, tier, a progress meter toward the next tier, who unlocked it and when, «جایزه را بده» for waiting tiers, «پس گرفتن» with a confirmation, «دادن دستاورد» with a picker and an optional tier, and a link to the player's achievement history in the activity log. The page is in Ctrl K; the plane sidebar now has 18 economy entries.
+Economy section after «آیتم‌ها»: «دستاوردها» (`#/economy/achievements`, Phosphor medal icon): search, filters for source, rarity, category, hidden and status; rows with the badge tile, a sentence such as «پایان یک دور» ۳ بار and the tier targets (برنزی: ۳، نقره‌ای: ۱۰، طلایی: ۳۰), tiers and first prize, rarity and points, players who unlocked it, status, hidden and source chips; cards at 390px. The docked editor has name, description, the locked hint, rarity, points, category and tags, badge and locked badge, «پنهان تا باز شدن», the source with the task condition fields (event, count, value range) or the task / task group pickers, a live sentence, the tier row editor (target, prize, mode, translated name; order checked) for event achievements and one unlock prize for the others, and the in-app note switch. The prize item editor has the new type «دستاورد» with an achievement picker. The native player page gets «دستاوردهای بازیکن» after the inventory card: every achievement with its badge, state, rarity, tier, a progress meter toward the next tier, who unlocked it and when, «جایزه را بده» for waiting tiers, «پس گرفتن» with a confirmation, «دادن دستاورد» with a picker and an optional tier, and a link to the player's achievement history in the activity log. The page is in Ctrl K; the plane sidebar then had 18 economy entries (20 since the chance game pages).
 
 ### Star Catcher
 
 The seed adds the achievement categories `star_ach_play` and `star_ach_special` and five achievements: «اولین دور» (one round, 5 points), «ستاره‌چین پرکار» (rounds played, tiers برنزی ۳ / نقره‌ای ۱۰ / طلایی ۳۰ with 20 / 50 / 100 coins to collect), «شکارچی کامل» (the «زنجیرهٔ شکارچی» task group, 50 coins), «هوادار ستاره‌چین» (manual, given by the prize `star_fan_badge` of the gift code `STARFAN` with 20 coins, in-app note) and the hidden «شکار افسانه‌ای» (a 300-point round, 30 coins, hint «یک دور واقعاً بزرگ بازی کن.»). Every tier is collected with a button, so no balance changes on its own. Rows are matched by key and never updated; tiers are written only when the achievement row is created.
+
+## Chance game (phase 11)
+
+A wheel of fortune, loot box or slot machine: the player plays and wins one prize by chance, or nothing. The contract below is the owner's spec (2026-11-12), kept word for word; field names, error codes, HTTP-style status codes, response shapes and the cumulative pick are implemented as written. The rest of this section is what the spec did not say. Migration `20261118000000-economy-chance-games.sql` (Up re-runnable, Down raises) adds the tables, lets `economy_reward_claim.kind` and `economy_user_prize.source_type` be `chance`, and seeds the server-only built-in event type `ChanceGame:Played`. Reference behaviour: rakhtkan `app/modules/gamification/chance_games` (and `economy/prize_group`), without its holes.
+
+### Owner's spec
+
+```
+Fields: id, name, description?, metadata JSON?, prizeType enum(prize, prizeGroup)=prize,
+prize[]: {chance number 0-100, prizeId? | prizeGroupId?} (empty = nothing won),
+intervalTime number (minutes)?, price?: {currencyId, amount}.
+
+Wheel of fortune, loot box, slot machine: the player plays, wins one prize by chance (may be empty).
+Sum of chances must be exactly 100 on create/update, else 400 TOTAL_CHANCE_MUST_BE_100 meta {totalChance}.
+
+Admin: CRUD.
+Client:
+- intervalTime null → CanPlay, GetNextPlayTime, Play return 400 INTERVAL_TIME_IS_NULL.
+- CanPlay(id): false if last recorded play is newer than intervalTime.
+- GetNextPlayTime(id): intervalTime - (now - lastPlay), 0 if negative.
+- Play(id): if waiting → 403 WAITING_FOR_TURN meta {nextPlayTime: intervalTime - (now - lastPlayDate)}; else random pick.
+- PlayWithTicket(id): price null → 400 TICKET_PLAY_IS_NOT_SUPPORT; not enough currency → 409 CURRENCY_IS_NOT_ENOUGH; else deduct and play.
+Pick: random number 0..100, walk prizes in order by cumulative chance (30/40/30: 25→1st, 50→2nd, 85→3rd).
+Response 200 {code: SUCCESS, prizeId: id | null}.
+Prize is recorded and claimed at once. Event "ChanceGame:Played", context entity id = chance game id, metadata null.
+```
+
+### Decisions
+
+- **Pick.** Chances are stored with at most four decimals and compared as integers in units of 1/10000 (the sum must be exactly 1 000 000 units, so 33.3333 × 3 is refused with `totalChance` 99.9999). The roll is `crypto/rand` over `[0, 1 000 000)`, i.e. `0 ≤ roll < 100`; rows are walked in order and the first row whose running total is greater than the roll wins (30/40/30: 25 → row 1, 30 → row 2, 50 → row 2, 85 → row 3). A row with chance 0 can never win. A row without `prizeId`/`prizeGroupId` wins nothing. A prize that is not repeatable and that the player already has counts as nothing won for that play (the slot is still reported), so a free turn cannot be re-rolled by failing on an owned prize. The roll is stored with the play and returned as `roll` (0–100), so a client can land its wheel on the exact point the server drew.
+- **Prize groups.** New `economy_prize_group` (key, translated name and description) with `economy_prize_group_member (group_id, prize_id, weight 1–1 000 000, sort)`, 1–100 prizes, each prize once. A group pays **one** member, drawn with `crypto/rand` by weight (all weights 1 = uniform, which is what rakhtkan's `get_random` did); paying every member was not chosen because a loot-box slot should stay one prize. The draw is a plain function (`drawFromPrizeGroup`) so other features can reuse groups later. An empty group cannot be saved (`PRIZE_GROUP_EMPTY`); a prize in a group or in a chance game cannot be deleted, and a group used by a chance game or a play cannot be deleted (`IN_USE`). rakhtkan cleaned dangling references silently on read; here references are refused at write time instead.
+- **Turns.** `intervalTime` is whole minutes (1–525 600). The wait is counted from the player's last **free** play of that game; ticket plays do not move the free turn. `nextPlayTime` is **seconds**, rounded up (rakhtkan mixed minutes and seconds). `GetNextPlayTime`/`Play` also return `nextPlayAt` (RFC 3339) when there is a wait.
+- **Race safety.** Every play first takes a row lock on `economy_chance_state (game_id, user_id)` (`INSERT … ON CONFLICT DO NOTHING` then `SELECT … FOR UPDATE`), reads the game `FOR SHARE`, checks the turn against the last free play, draws, and inserts the play row and its claim in the same transaction. Parallel `Play` calls for one player on any number of nodes therefore play at most once per interval (Postgres test: 16 parallel calls → 1 play, 15 `WAITING_FOR_TURN`). No player row has a foreign key to `users`.
+- **Recorded and claimed at once.** A winning play inserts an `economy_reward_claim` (kind `chance`, `owner_id` = game, `ref_id` = play, scope `play`, a fresh claim id per play) in the decision transaction, then grants it right away through `grantClaim` → `grant()` (`source_type='chance'`, `source_id` = claim id). The play row is `pending` until the grant transaction marks it `done` (`After` hook), so the claim, the user-prize row and the play are one record. Any path that grants a `chance` claim (player claim RPC, console retry, the auto-claim worker) goes through the same hook, so it can never pay a ticket prize without taking the ticket.
+- **Ticket spend + prize in one grant.** `PlayWithTicket` puts the price into `grant()`'s `Debit`; `grant()` now sends the debit as its own wallet update *before* the prize update in the same `nk.MultiUpdate` call (one Nakama transaction), so a prize of the same currency can never pay for its own ticket (Postgres test: 10 coins, price 10, prize 5, six parallel plays → exactly one play, 5 coins left). This also fixes the same net-changeset hole for coin (`in_app`) purchases, which now write two ledger rows (`part: debit` and `part: prize`). A ticket play that wins nothing debits through the item wallet helper with the play id as `grantId`. Both are idempotent by `grantId`; a short balance is checked first (`409 CURRENCY_IS_NOT_ENOUGH` with `meta {currencyKey, amount, balance}`) and again by the wallet itself. If the grant fails and the ledger shows no `chance` row for the play, the play, its claim and its user-prize row are deleted (no free prize, no lost coins, the free turn is given back). Plays left `pending` by a crash are finished or cancelled by `recoverChancePlays` on every node (every 30 s, `FOR UPDATE SKIP LOCKED`, after two minutes, at most 8 attempts).
+- **Event.** After a play is `done` the server records `ChanceGame:Played` (value 1, server only) through `recordEvent`, so tasks, event prizes, achievements and streaks can count chance games. Nakama events have no separate context, so the entity id goes into the event metadata: `{entityId: <game id>, mode: "free"|"ticket", playId}`. It is recorded once per play (`economy_chance_play.event_at` guard). Built-in event keys may have the form `Word:Word` (`builtinEventKeyPattern`); admins still create keys with the lower-case pattern.
+- **Not copied from rakhtkan:** the unlocked interval check, `random.uniform`, currency spend and prize grant in separate transactions, ticket plays without a recorded event, the silent cleanup of stale references, seconds vs minutes, and `WAITING_FOR_TURN` as 400.
+
+### Status codes and Nakama RPC errors
+
+Client RPCs answer like every economy RPC: the HTTP-style status of the spec is mapped onto a gRPC code with `grpcCode` (`errors.go`), and Nakama's HTTP gateway turns that into the HTTP status the client sees. Because the spec carries `meta`, every chance RPC error message is JSON (the same convention as the phase 3 suspension notice): `{"code":"WAITING_FOR_TURN","status":403,"meta":{"nextPlayTime":3540}}`; `status` is the spec's status even where the gateway sends another one.
+
+| Spec | Code | gRPC code | HTTP from Nakama |
+|---|---|---|---|
+| 400 | `INTERVAL_TIME_IS_NULL`, `TICKET_PLAY_IS_NOT_SUPPORT`, `INVALID_JSON` | 3 `InvalidArgument` | 400 |
+| 403 | `WAITING_FOR_TURN` (`meta.nextPlayTime` seconds) | 7 `PermissionDenied` | 403 |
+| 404 | `CHANCE_GAME_NOT_FOUND` (unknown or inactive) | 5 `NotFound` | 404 |
+| 409 | `CURRENCY_IS_NOT_ENOUGH` (`meta {currencyKey, amount, balance}`) | 9 `FailedPrecondition` (as `INSUFFICIENT_BALANCE`, `ALREADY_CLAIMED`) | 400 |
+
+The console API answers with the real HTTP status and `{"error", "message", "field", "meta"}`, e.g. `400 {"error":"TOTAL_CHANCE_MUST_BE_100","field":"prize","meta":{"totalChance":90}}`.
+
+### Tables
+
+| Table | What |
+|---|---|
+| `economy_chance_game` | `key` (unique, immutable: `KEY_IMMUTABLE`), translated `name` / `description`, `metadata` (object), `prize_type` (`prize`, `prizeGroup`), `prize` (jsonb `[{chance, prizeId, prizeGroupId}]`, 1–50 rows), `interval_time` (minutes or null), `price` (jsonb `{currencyId, amount}` or null), `is_active`, `sort` |
+| `economy_prize_group`, `economy_prize_group_member` | see above |
+| `economy_chance_state` | `(game_id, user_id)` lock row with `plays` and `last_play_at` |
+| `economy_chance_play` | one row per play: `mode` (`free`, `ticket`), `status` (`pending`, `done`), `roll` (0–999 999), `slot`, `prize_id`, `prize_group_id`, `claim_id`, `price` (`{currencyKey, amount}` taken), `error`, `attempts`, `created_at`, `finished_at`, `event_at` |
+
+Save errors (400 unless noted, `field` points at the row as `prize[i]` / `members[i]`): `TOTAL_CHANCE_MUST_BE_100` (`meta.totalChance`), `PRIZE_LIST_REQUIRED`, `TOO_MANY_PRIZES`, `INVALID_PRIZE_CHANCE`, `INVALID_PRIZE_TYPE`, `PRIZE_TYPE_MISMATCH` (a `prizeGroupId` in a `prize` game or the other way round), `PRIZE_NOT_FOUND`, `PRIZE_GROUP_NOT_FOUND`, `INVALID_INTERVAL_TIME`, `INVALID_PRICE_PAYLOAD` (currency without amount or the other way round), `INVALID_PRICE_AMOUNT`, `CURRENCY_NOT_FOUND`, `INTERVAL_OR_PRICE_REQUIRED` (a game needs a free turn, a ticket price or both), `PRIZE_GROUP_EMPTY`, `DUPLICATE_PRIZE`, `INVALID_WEIGHT`, `KEY_IMMUTABLE`, 409 `IN_USE` (a game with plays; delete is refused, switch it off instead).
+
+### Client RPCs
+
+All answers carry `code: "SUCCESS"`. `id` may be replaced by `key`.
+
+| Spec | RPC | Input | Output |
+|---|---|---|---|
+| list | `economy_chance_games` | `{lang?}` | `{code, lang, items:[{id, key, name, description, metadata, prizeType, prize:[{chance, prizeId, prizeGroupId, prize:{id,key,name,message}|null, group:{id,key,name,prizes:[{id,key,name,weight,share}]}|null}], intervalTime, price:{currencyId, currencyKey, currencyName, amount}|null, plays, canPlay?, nextPlayTime?, nextPlayAt?, lastPlayAt?}]}` (active games; the turn fields only when the game has a free turn) |
+| get | `economy_chance_game` | `{id, lang?}` | `{code, lang, game}` |
+| CanPlay | `economy_chance_can_play` | `{id}` | `{code, canPlay, nextPlayTime}` |
+| GetNextPlayTime | `economy_chance_next_play_time` | `{id}` | `{code, nextPlayTime, nextPlayAt?}` |
+| Play | `economy_chance_play` | `{id, lang?}` | `{code, prizeId, prize, prizeGroupId, group, playId, gameId, gameKey, mode, slot, roll, rewards, spent, status, nextPlayTime, nextPlayAt?, wallet, lang}` |
+| PlayWithTicket | `economy_chance_play_with_ticket` | `{id, lang?}` | same, `spent: {currencyKey, amount}` |
+| history | `economy_chance_history` | `{id?, limit?, cursor?, lang?}` | `{code, lang, items:[{playId, gameId, gameKey, gameName, mode, status, roll, slot, prizeId, prize, prizeGroupId, spent, rewards, createdAt}], cursor}` (own plays, newest first) |
+
+`economy_rewards_mine` and the console claims list name chance claims with the game (`kind: "chance"`). A won prize also writes the usual `prize granted` activity row (source `chance`).
+
+### Console API (`/v2/console/economy/`, `HIRO_ECONOMY`, every write in the console audit log)
+
+CRUD `chance-games` (search on key and every name translation; filters `isActive`, `prizeType`, `mode=free|ticket`; rows carry `plays`, `players`, `wins`, `lastPlayAt`) and `prize-groups` (filter `prizeId`; rows carry `members` and `games`) through the generic resource handlers. `GET /chance-plays?gameId&userId&prizeId&mode&won&status&q&page&limit` and `GET /users/{userId}/chance-plays?…` list plays with game, player, prize, group, roll, price and status. A currency used as a ticket price cannot be deleted (`IN_USE`). The summary counts `chance-games`, `prize-groups` and `chancePlaysToday`.
+
+### Console pages
+
+Economy section after «دستاوردها»: «بازی شانس» (`#/economy/chance-games`, Phosphor dice-five duotone) and «گروه‌های جایزه» (`#/economy/prize-groups`, Phosphor package duotone), both in the plane sidebar (now 20 economy entries) and in Ctrl K. The game list shows a dice tile, a stacked chance bar (empty slots hatched) with «۴ خانه، ۳ با جایزه», the way to play («رایگان هر ۱ روز», «بلیت: ۱۵ سکه»), plays and players, status and prize type; cards at 390px. The docked editor has key, name, description, play stats, «هر خانه چه می‌دهد» (prize or prize group), the chances table (chance in %, prize or group picker by type, add/remove rows, a new row gets what is left to 100), a live sum «جمع شانس‌ها: ۹۰ از ۱۰۰» with «۱۰ مانده» / «درست است» and the bar (green when exactly 100, red otherwise; saving is blocked until it is 100), the free-turn interval, ticket currency and price (both or none), a warning when neither is set, metadata and sort. The group editor has key, name, description, the prize rows with weights and a live «شانس هر جایزه در گروه» list in percent. The native player page gets «بازی‌های شانس بازیکن» after the achievements card: the last plays with game, time, free or ticket, «برد: …» or «پوچ», the group it came from, the price taken and the roll, «بیشتر نشان بده». Light and dark use the plane tokens; Persian digits in fa.
+
+### Star Catcher
+
+The seed adds the prize groups «کیسهٔ سکه» (`star_box_coins`: 15 / 25 / 40 coins, weights 3 / 2 / 1) and «گنج بزرگ» (`star_box_big`: 100 / 200 coins, weights 2 / 1), the free game «گردونهٔ روزانه» (`star_wheel_daily`, once a day: 10 coins 35%, 20 coins 25%, 50 coins 10%, nothing 30%) and the ticket game «جعبهٔ شانس» (`star_lucky_box`, 15 coins: coin pouch 55%, big treasure 10%, nothing 35%). Rows are matched by key and never updated; group members are written only when the group is created. The «شانس» screen (`web/chance.js`) draws each game as a wheel from its chance table, spins it to the server's `roll`, shows the win or «پوچ», counts down to the next free turn, disables the ticket button when coins are short, lists the odds and «بازی‌های اخیر من»; the menu card has a dot with the free turns ready.
