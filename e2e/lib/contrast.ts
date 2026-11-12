@@ -41,7 +41,7 @@ export async function measureContrast(page: Page, min = 4.5): Promise<{ count: n
           const st = getComputedStyle(a);
           if (st.overflowX === 'visible' && st.overflowY === 'visible') continue;
           const cr = a.getBoundingClientRect();
-          if (cy < cr.top || cy > cr.bottom || cx < cr.left || cx > cr.right) { clipped = true; break; }
+          if (b.top < cr.top - 1 || b.bottom > cr.bottom + 1 || cx < cr.left || cx > cr.right) { clipped = true; break; }
         }
         if (clipped) continue;
         const hit = document.elementFromPoint(cx, cy);

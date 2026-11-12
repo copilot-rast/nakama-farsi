@@ -111,16 +111,18 @@ function brandLoad(force) {
 var SP_INK_LIGHT_BG = [255, 255, 255];
 var SP_INK_DARK_BG = [36, 37, 41];
 
-function pickShade(p, shades, bg) {
-  for (var i = 0; i < shades.length; i++) if (contrastRatio(p[shades[i]], bg) >= 4.5) return shades[i];
+var SP_INK_MIN = 5.5;
+
+function pickShade(p, shades, bg, min) {
+  for (var i = 0; i < shades.length; i++) if (contrastRatio(p[shades[i]], bg) >= (min || 4.5)) return shades[i];
   return shades[shades.length - 1];
 }
 
 function spatialAccent(hex) {
   var p = brandPalette(hex);
   var a = pickShade(p, [500, 600, 700, 800, 900], [255, 255, 255]);
-  var ink = pickShade(p, [600, 700, 800, 900, 950], SP_INK_LIGHT_BG);
-  var inkDark = pickShade(p, [300, 200, 100, 50], SP_INK_DARK_BG);
+  var ink = pickShade(p, [600, 700, 800, 900, 950], SP_INK_LIGHT_BG, SP_INK_MIN);
+  var inkDark = pickShade(p, [300, 200, 100, 50], SP_INK_DARK_BG, SP_INK_MIN);
   return {
     accent: p[a], ink: p[ink], inkDark: p[inkDark],
     shades: { accent: +a, ink: +ink, inkDark: +inkDark },

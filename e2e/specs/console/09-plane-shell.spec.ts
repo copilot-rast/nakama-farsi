@@ -75,6 +75,21 @@ test.describe('plane shell: rail, sidebar and top bar', () => {
     }
   });
 
+  test('economy sidebar lists the two task pages with their icons, current state and breadcrumbs', async ({ page }) => {
+    await visit(page, '#/economy/products');
+    const side = page.locator('.pl-side a.pl-nav');
+    await expect(side).toHaveCount(16);
+    for (const [hash, label] of [['#/economy/tasks', 'تسک‌ها'], ['#/economy/task-groups', 'گروه‌های تسک']]) {
+      const link = page.locator(`.pl-side a.pl-nav[href="${hash}"]`);
+      await expect(link).toContainText(label);
+      await expect(link.locator('svg')).toHaveCount(1);
+      await link.click();
+      await expect(link).toHaveAttribute('aria-current', 'page');
+      await expect(page.locator('.pl-crumbs .pl-crumb-current')).toHaveText(label);
+      await expect(page.locator('#economy-root h1, #economy-root h2').first()).toContainText(label);
+    }
+  });
+
   test('breadcrumbs follow the route and sidebar badges match the old sidebar', async ({ page }) => {
     await visit(page, '#/economy/currencies');
     await expect(page.locator('.pl-crumbs .pl-crumb-current')).toHaveText('ارزها');
