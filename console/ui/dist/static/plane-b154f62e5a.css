@@ -2602,6 +2602,11 @@ html.pl .eco-tk-meter > span {
 html.pl .eco-tk-meter[data-done] > span {
   background: var(--pos);
 }
+
+html.pl .eco-ach-tile {
+  background: var(--well-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
 @media (max-width: 767px) {
   html.pl {
     --gap: 12px;

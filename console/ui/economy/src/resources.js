@@ -157,6 +157,7 @@ function itemSummary(items) {
   return (items || []).map(function (r) {
     if (r.type === 'storage') return r.key;
     if (r.type === 'item') return t('item.item') + ': ' + r.key;
+    if (r.type === 'achievement') return t('item.achievement') + ': ' + r.key;
     var sign = r.action === 'add' && Number(r.value) > 0 ? '+' : '';
     return t('amount.of', { n: (r.action === 'set' ? '= ' : sign) + fmtNum(r.value), name: keyName(r.type === 'meta' ? 'meta' : 'currency', r.key) });
   });

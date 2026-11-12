@@ -382,4 +382,5 @@ function nativeTweaks() {
   playerActivityCard();
   playerTasksCard();
   playerItemsCard();
+  playerAchievementsCard();
 }

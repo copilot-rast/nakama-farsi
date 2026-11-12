@@ -500,3 +500,17 @@ html.dark .monaco-editor :is(.minimap canvas,canvas.decorationsOverviewRuler){fi
 .dark .eco-tk-meter{background:rgb(var(--secondary-color-700))}
 .eco-tk-meter>span{display:block;block-size:100%;border-radius:inherit;background:rgb(var(--primary-color-500))}
 .eco-tk-meter[data-done]>span{background:rgb(var(--success-color-600))}
+.eco-ach-tile{background:rgb(var(--secondary-color-100));color:rgb(var(--secondary-color-600))}
+.dark .eco-ach-tile{background:rgb(var(--secondary-color-700));color:rgb(var(--secondary-color-200))}
+.eco-ach-tile[data-rarity=uncommon]{color:rgb(var(--success-color-700))}
+.eco-ach-tile[data-rarity=rare]{color:rgb(var(--primary-color-700))}
+.eco-ach-tile[data-rarity=epic]{color:rgb(var(--warning-color-700))}
+.eco-ach-tile[data-rarity=legendary]{color:rgb(var(--error-color-700))}
+.dark .eco-ach-tile[data-rarity=uncommon]{color:rgb(var(--success-color-300))}
+.dark .eco-ach-tile[data-rarity=rare]{color:rgb(var(--primary-color-300))}
+.dark .eco-ach-tile[data-rarity=epic]{color:rgb(var(--warning-color-300))}
+.dark .eco-ach-tile[data-rarity=legendary]{color:rgb(var(--error-color-300))}
+.eco-ach-tile[data-locked]{color:rgb(var(--secondary-color-500))}
+.dark .eco-ach-tile[data-locked]{color:rgb(var(--secondary-color-300))}
+.eco-ach-tile>img{inline-size:100%;block-size:100%;object-fit:cover}
+.eco-ach-tile[data-locked]>img{filter:grayscale(1);opacity:.7}

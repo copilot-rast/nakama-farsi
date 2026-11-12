@@ -664,7 +664,7 @@ function actionsEditor(value, onchange) {
   return el;
 }
 
-var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'], item: ['give'] };
+var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'], item: ['give'], achievement: ['give'] };
 
 function itemsEditor(value, onchange) {
   var rows = (value || []).map(function (r) { return Object.assign({}, r); });
@@ -676,11 +676,11 @@ function itemsEditor(value, onchange) {
     errors = [];
     if (!rows.length) listEl.appendChild(h('div', { class: 'text-sm text-secondary-500 dark:text-secondary-400 border border-dashed border-secondary-300 dark:border-secondary-700 rounded-md px-3 py-4 text-center', text: t('f.items.empty') }));
     rows.forEach(function (row, idx) {
-      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
+      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'achievement', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
         row.type = v;
         row.key = '';
         row.action = (ITEM_ACTIONS[v] || ['add'])[0];
-        row.value = v === 'storage' ? {} : v === 'item' ? 1 : 0;
+        row.value = v === 'storage' ? {} : v === 'item' || v === 'achievement' ? 1 : 0;
         render();
         emit();
       }, { placeholder: false, label: t('f.item.type') });
@@ -690,13 +690,16 @@ function itemsEditor(value, onchange) {
       } else if (row.type === 'item') {
         keyCtl = refPicker({ resource: 'items', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
         keyCtl.setAttribute('data-item-picker', '');
+      } else if (row.type === 'achievement') {
+        keyCtl = refPicker({ resource: 'achievements', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
+        keyCtl.setAttribute('data-achievement-picker', '');
       } else {
         keyCtl = refPicker({ resource: row.type === 'meta' ? 'metas' : 'currencies', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
       }
       var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t('action.' + k) }; }), function (v) { row.action = v; emit(); }, { placeholder: false, label: t('f.item.action') });
       var valCtl;
-      if (row.type === 'item') {
-        valCtl = h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300 py-2', text: t('item.item.once') });
+      if (row.type === 'item' || row.type === 'achievement') {
+        valCtl = h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300 py-2', text: t('item.' + row.type + '.once') });
       } else if (row.type === 'storage') {
         valCtl = textInput(row.value == null ? '{}' : JSON.stringify(row.value), { ltr: true, mono: true, label: t('f.item.value'), oninput: function (v) {
           try { row.value = JSON.parse(v); row._bad = false; } catch (e) { row._bad = true; }
@@ -734,7 +737,7 @@ function itemsEditor(value, onchange) {
       var msg = '';
       if (!r.key) msg = t('f.item.key') + ': ' + t('err.required');
       else if (r.type === 'storage' && (r._bad || r.value === null || typeof r.value !== 'object')) msg = t('err.json');
-      else if (r.type !== 'storage' && r.type !== 'item' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
+      else if (r.type !== 'storage' && r.type !== 'item' && r.type !== 'achievement' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
       e.el.textContent = msg;
       e.el.hidden = !msg;
       e.el.parentElement.classList.toggle('eco-row-invalid', !!msg);
@@ -836,7 +839,7 @@ function buildForm(fields, values, ctx) {
     } else if (t2 === 'actions') {
       control = actionsEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
     } else if (t2 === 'rows') {
-      control = rowsEditor(cur, f, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
+      control = rowsEditor(cur, f, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); if (f.refresh) refresh(); });
     } else if (t2 === 'links') {
       control = storeLinksEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
     } else if (t2 === 'static') {

@@ -1,5 +1,5 @@
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'achievements', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'comments', 'notifications', 'remote-config'],
   moderation: ['players', 'reports', 'restrictions', 'chat-words', 'activity'],
   support: ['tickets', 'live-chat']
@@ -208,6 +208,7 @@ function openEditor(name, id, query, onSaved) {
   Promise.all([item, freshLanguages(), loadKeyTypes(), def.prepare ? def.prepare() : null]).then(function (all) { return all[0]; }).then(function (data) {
     if (!panelState || panelState.el !== el) return;
     var values = clone(data) || {};
+    if (def.toForm) values = def.toForm(values);
     var form = buildForm(def.fields, values);
     var top = h('div', {});
     clear(body).appendChild(h('form', { novalidate: true, onsubmit: function (e) { e.preventDefault(); save(); } }, top, form.el, h('button', { type: 'submit', hidden: true })));
