@@ -704,6 +704,8 @@ const SKINS = {
   skin_gold: { body: ["#ffe27a", "#c98a00"], rim: "#fff4c2", glow: "rgba(255,201,60,0.55)" },
   skin_neon: { body: ["#0b1f2a", "#0b1f2a"], rim: "#2ef2ff", glow: "rgba(46,242,255,0.8)", neon: true },
   skin_galaxy: { body: ["#7b3fe4", "#1c1a6b"], rim: "#c6a8ff", glow: "rgba(150,110,255,0.6)", galaxy: true },
+  skin_ruby: { body: ["#ff5a6e", "#9b0f2a"], rim: "#ffc2cb", glow: "rgba(255,70,100,0.55)" },
+  skin_ice: { body: ["#d8f6ff", "#5fb8e8"], rim: "#ffffff", glow: "rgba(150,220,255,0.7)" },
 };
 
 const LOCALES = { fa: "fa-IR", en: "en-US" };
@@ -953,6 +955,7 @@ function show(name) {
   }
   if (typeof growthShow === "function") growthShow(name);
   if (typeof missionsShow === "function") missionsShow(name);
+  if (typeof inventoryShow === "function") inventoryShow(name);
 }
 
 async function refreshBalances() {
@@ -966,7 +969,7 @@ async function refreshBalances() {
 }
 
 function ownsSkin(key) {
-  return key === "default" || state.items.some((i) => i.key === key);
+  return key === "default" || state.items.some((i) => i.key === key) || (state.invArts || []).includes(key);
 }
 
 function selectedSkin() {
@@ -1561,6 +1564,7 @@ function rewardText(rewards) {
   return rewards.map((r) => {
     if (r.type === "currency") return r.key === "coin" ? t("coins", r.value) : `${num(r.value)} ${r.key}`;
     if (r.type === "storage") return SKINS[r.key] ? skinName(r.key) : (r.value && r.value.name) || r.key;
+    if (r.type === "item") return typeof itemName === "function" ? itemName(r.key) : r.key;
     return `${r.key} ${num(r.value)}`;
   }).join(t("listSep"));
 }
@@ -1579,7 +1583,7 @@ async function loadShop() {
   box.textContent = "";
   box.append(el("div", { class: "center-block" }, [el("div", { class: "spinner" })]));
   try {
-    const [catalog] = await Promise.all([rpc("economy_catalog", { lang: i18n.lang }), refreshBalances()]);
+    const [catalog] = await Promise.all([rpc("economy_catalog", { lang: i18n.lang }), refreshBalances(), typeof loadInvArts === "function" ? loadInvArts() : null]);
     state.catalog = catalog;
     renderShop();
   } catch (err) {
@@ -1615,11 +1619,17 @@ function skinKeyOf(p) {
 }
 
 function productCard(p) {
-  const skin = skinKeyOf(p);
-  const owned = skin && ownsSkin(skin);
+  const itemArt = typeof productItemArt === "function" ? productItemArt(p) : null;
+  const skin = skinKeyOf(p) || itemArt;
+  const owned = p.owned || (skinKeyOf(p) && ownsSkin(skin));
   const art = el("div", { class: "product-art" }, skin ? skinPreview(skin, 72, 36) : el("span", { class: "coin" }));
   const methods = el("div", { class: "methods" });
-  if (owned) {
+  if (owned && !skinKeyOf(p)) {
+    methods.append(el("span", { class: "owned", "data-owned": "", text: t("owned") }));
+    methods.append(el("button", { class: "btn", type: "button", text: t("inventory"), onclick: () => show("inventory") }));
+  } else if (p.levelLocked) {
+    methods.append(el("span", { class: "chip chip-wait", "data-level-locked": "", text: t("fromLevel", p.minLevel) }));
+  } else if (owned) {
     const selected = selectedSkin() === skin;
     methods.append(el("span", { class: "owned", text: t("owned") }));
     methods.append(el("button", { class: "btn", type: "button", disabled: selected, text: selected ? t("selected") : t("useInGame"), onclick: () => { localStorage.setItem(LS.skin, skin); toast(t("skinSelected", skinName(skin)), "ok"); renderShop(); } }));
@@ -1629,7 +1639,7 @@ function productCard(p) {
     }
   }
   return el("article", { class: "product" + (p.exclusive ? " exclusive" : ""), "data-key": p.key }, [
-    el("div", { class: "product-top" }, [art, el("div", {}, [el("h3", {}, [p.name, p.exclusive ? el("span", { class: "badge-exclusive", text: t("exclusive") }) : null]), p.description ? el("p", { class: "muted small", text: p.description }) : null])]),
+    el("div", { class: "product-top" }, [art, el("div", {}, [el("h3", {}, [p.name, p.exclusive ? el("span", { class: "badge-exclusive", text: t("exclusive") }) : null, p.isOneTime ? el("span", { class: "badge-exclusive", "data-one-time": "", text: t("oneTime") }) : null]), p.description ? el("p", { class: "muted small", text: p.description }) : null])]),
     priceView(p),
     methods,
   ]);
@@ -1642,7 +1652,7 @@ async function buy(p, method, button) {
       const ok = await confirmDialog(t("buyWithCoins"), t("confirmBuy", p.name, p.coinPrice.amount), t("buy"));
       if (!ok) return;
     }
-    const payload = { productId: p.id, method };
+    const payload = { productId: p.id, method, lang: i18n.lang };
     const code = $("#discount-code").value.trim().toUpperCase();
     if ((method === "zarinpal" || method === "zibal") && code) payload.giftCode = code;
     const r = await rpc("economy_purchase_start", payload);
@@ -1656,8 +1666,12 @@ async function buy(p, method, button) {
       return;
     }
     await refreshBalances();
-    toast(t("buyOk", rewardText(r.rewards)), "ok");
+    toast(r.purchaseMessage || t("buyOk", rewardText(r.rewards)), "ok");
     if (skinKeyOf(p)) localStorage.setItem(LS.skin, skinKeyOf(p));
+    if (p.isOneTime || (p.items || []).length) {
+      state.catalog = await rpc("economy_catalog", { lang: i18n.lang });
+      if (typeof loadInvArts === "function") loadInvArts();
+    }
     renderShop();
   } catch (err) {
     toast(errorText(err), "bad");

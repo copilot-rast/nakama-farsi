@@ -837,3 +837,13 @@ body.blocked .topbar-end { visibility: hidden; }
 .mission-steps { display: grid; gap: 8px; padding-inline-start: 12px; border-inline-start: 2px solid var(--line); }
 .mission-step { padding: 10px 12px; background: var(--bg2); }
 .group-foot { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+.inv-group { margin-top: 16px; }
+.inv-group-title { font-size: 1rem; margin: 0 0 8px; color: var(--muted); }
+.inv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+.inv-item.inv-on { border-color: var(--gold); }
+.inv-frame { width: 34px; height: 34px; border-radius: 50%; border: 4px solid var(--gold); box-shadow: 0 0 10px rgba(255, 201, 60, 0.45); }
+.inv-rare { background: rgba(124, 140, 255, 0.18); color: #c3caff; }
+.inv-epic { background: rgba(190, 120, 255, 0.18); color: #e2c6ff; }
+.inv-uncommon { background: rgba(61, 220, 151, 0.15); color: var(--ok); }
+.inv-legendary { background: rgba(255, 107, 107, 0.15); color: #ffb3b3; }
