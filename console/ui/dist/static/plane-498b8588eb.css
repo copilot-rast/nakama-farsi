@@ -158,7 +158,7 @@ html.pl.dark {
   --active: oklch(1 0 0 / .11);
   --pos: oklch(0.79 0.13 151);
   --neg: oklch(0.77 0.14 28);
-  --danger-fill: oklch(0.55 0.18 28);
+  --danger-fill: oklch(0.5 0.18 28);
   --warn: oklch(0.83 0.12 80);
   --scrim: oklch(0 0 0 / .5);
   --scrim-modal: oklch(0 0 0 / .55);
@@ -2965,7 +2965,7 @@ html.pl :is(#main, [data-economy]) div.max-w-\[1600px\] > div.mb-4 .text-2xl {
 }
 
 html.pl :is(#main, [data-economy], .ps-window, .x-modal) .x-button,
-html.pl :is(#main, [data-economy]) button {
+html.pl :is(#main, [data-economy]) button:not(.eco-tr-tab):not(.eco-seg-btn) {
   box-shadow: none;
 }
 
@@ -3685,5 +3685,40 @@ html.pl .x-toggle > .flex > span {
   margin: 0;
   font-size: 13px;
   font-weight: 600;
+  color: var(--ink-1);
+}
+
+html.pl:not(.dark) .eco-tag--primary,
+html.pl:not(.dark) .x-tag[style*="primary-color"] {
+  color: color-mix(in srgb, var(--accent-ink) 78%, #000);
+}
+
+html.pl:not(.dark) .eco-tag--success,
+html.pl:not(.dark) .x-tag[style*="success-color"] {
+  color: color-mix(in srgb, var(--pos) 85%, #000);
+}
+
+html.pl:not(.dark) .eco-tag--warning,
+html.pl:not(.dark) .x-tag[style*="warning-color"] {
+  color: color-mix(in srgb, var(--warn) 85%, #000);
+}
+
+html.pl:not(.dark) .eco-tag--error,
+html.pl:not(.dark) .x-tag[style*="error-color"] {
+  color: color-mix(in srgb, var(--neg) 85%, #000);
+}
+
+html.pl.dark .x-tag[style*="secondary-color"],
+html.pl.dark .eco-tag--secondary {
+  color: var(--ink-1);
+}
+
+html.pl .x-button[style*="--x-button-text: rgb(102,84,226)"],
+html.pl .x-button[style*="--x-button-text:rgb(102,84,226)"] {
+  --x-button-text: var(--accent-ink) !important;
+  --x-button-dark-text: var(--accent-ink) !important;
+}
+
+html.pl.dark .x-tag:not([style*="success"]):not([style*="error"]):not([style*="warning"]):not([style*="primary"]) {
   color: var(--ink-1);
 }

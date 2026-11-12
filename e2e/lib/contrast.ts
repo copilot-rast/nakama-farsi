@@ -4,7 +4,18 @@ export type Run = { text: string; ratio: number; size: number; at: [number, numb
 
 export async function measureContrast(page: Page, min = 4.5): Promise<{ count: number; min: number; fails: Run[] }> {
   const runs = await page.evaluate(() => {
-    const parse = (c: string) => { const m = (c.match(/[\d.]+/g) || []).map(Number); return [m[0], m[1], m[2], m.length > 3 ? m[3] : 1]; };
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = 1;
+    const cx = cv.getContext('2d', { willReadFrequently: true })!;
+    const parse = (c: string) => {
+      if (/^rgba?\(/.test(c)) { const m = (c.match(/[\d.]+/g) || []).map(Number); return [m[0], m[1], m[2], m.length > 3 ? m[3] : 1]; }
+      cx.clearRect(0, 0, 1, 1);
+      cx.fillStyle = '#000';
+      cx.fillStyle = c;
+      cx.fillRect(0, 0, 1, 1);
+      const d = cx.getImageData(0, 0, 1, 1).data;
+      return [d[0], d[1], d[2], d[3] / 255];
+    };
     const out: any[] = [];
     const W = innerWidth, H = innerHeight;
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);

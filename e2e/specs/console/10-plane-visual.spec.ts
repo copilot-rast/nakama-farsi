@@ -153,8 +153,8 @@ test.describe('plane visual: native pages', () => {
     await expect(page.locator('#main [_echarts_instance_] svg')).toHaveCount(4);
     const fill = await page.locator('#main [_echarts_instance_] text').first().evaluate((e) => getComputedStyle(e).fill);
     const ink3 = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--ink-3').trim());
-    expect(fill).toBe('rgb(79, 86, 101)');
-    expect(ink3).toBe('#4f5665');
+    expect(ink3).toBe('oklch(0.4176 0.0072 239.98)');
+    expect(fill.replace(/\s+/g, ' ')).toBe(ink3);
   });
 
   test('storage object editor: docked panel, Monaco takes typing where it was clicked', async ({ page }) => {
