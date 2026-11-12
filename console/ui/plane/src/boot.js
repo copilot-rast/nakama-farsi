@@ -19,6 +19,7 @@ function tick() {
     countKpis();
     iconKpis();
     attentionCard();
+    iconEcoKpis();
   }
 }
 

@@ -3558,3 +3558,42 @@ html.pl .setup-inner {
     background: var(--surface);
   }
 }
+
+html.pl div.fixed.inset-0.flex.justify-end:has(> .x-form) {
+  padding: 0;
+}
+
+html.pl div.fixed.inset-0.flex.justify-end > .x-form {
+  height: 100%;
+  max-height: 100%;
+  border-radius: 0;
+  border: 0;
+  border-inline-start: 1px solid var(--line-1);
+  box-shadow: var(--thick-shadow);
+}
+
+.pl-eco-kpi {
+  display: grid !important;
+  grid-template-columns: 40px minmax(0, 1fr);
+  column-gap: 12px;
+  align-items: start;
+}
+
+.pl-eco-kpi > .pl-kpi-ic {
+  grid-row: 1 / span 3;
+}
+
+.pl-eco-kpi {
+  grid-template-columns: 32px minmax(0, 1fr);
+  column-gap: 10px;
+}
+
+.pl-eco-kpi > .pl-kpi-ic {
+  width: 32px;
+  height: 32px;
+}
+
+.pl-eco-kpi > .pl-kpi-ic .pl-ic {
+  width: 18px;
+  height: 18px;
+}

@@ -175,3 +175,28 @@ function attentionCard() {
   });
   box.appendChild(list);
 }
+
+function ecoKpiTint(href) {
+  if (/status=failed|grant|claimsFailed/.test(href || '')) return 'bad';
+  var p = routePath(href || '#/').split('/').filter(Boolean)[1] || '';
+  if (/payments|methods/.test(p)) return 'ok';
+  if (/event|streak|level|task|meta-rules/.test(p)) return 'violet';
+  if (/referral/.test(p)) return 'teal';
+  return 'info';
+}
+
+function iconEcoKpis() {
+  var cards = document.querySelectorAll('#economy-root .eco-stat-grid > *');
+  for (var i = 0; i < cards.length; i++) {
+    var c = cards[i];
+    var body = c.querySelector('.p-4') || c.firstElementChild;
+    if (!body || body.querySelector(':scope > .pl-kpi-ic') || !body.querySelector('.text-3xl')) continue;
+    var href = c.getAttribute('href') || '';
+    var alert = !!body.querySelector('.text-error-600');
+    var name = href ? iconFor(href) : alert ? 'alert' : 'chart';
+    if (name === 'page') name = 'chart';
+    var tint = alert ? 'bad' : href ? ecoKpiTint(href) : 'mute';
+    body.insertBefore(el('span', { class: 'pl-kpi-ic pl-tint-' + tint, 'aria-hidden': 'true', html: plIconD(name) }), body.firstChild);
+    body.classList.add('pl-eco-kpi');
+  }
+}
