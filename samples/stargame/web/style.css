@@ -847,3 +847,23 @@ body.blocked .topbar-end { visibility: hidden; }
 .inv-epic { background: rgba(190, 120, 255, 0.18); color: #e2c6ff; }
 .inv-uncommon { background: rgba(61, 220, 151, 0.15); color: var(--ok); }
 .inv-legendary { background: rgba(255, 107, 107, 0.15); color: #ffb3b3; }
+
+.ach-grid { display: grid; gap: 12px; margin-top: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.ach-card { display: grid; gap: 8px; align-content: start; }
+.ach-card.ach-on { border-color: rgba(255, 201, 60, 0.55); }
+.ach-hidden { border-style: dashed; }
+.ach-top { display: flex; gap: 12px; align-items: flex-start; }
+.ach-body { min-width: 0; flex: 1; }
+.ach-badge { width: 56px; height: 56px; flex-shrink: 0; border-radius: 16px; display: grid; place-items: center; background: var(--card2); border: 1px solid var(--line); color: var(--gold); overflow: hidden; }
+.ach-badge img { width: 100%; height: 100%; object-fit: cover; }
+.ach-badge.ach-uncommon { color: var(--ok); }
+.ach-badge.ach-rare { color: #c3caff; }
+.ach-badge.ach-epic { color: #e2c6ff; }
+.ach-badge.ach-legendary { color: #ffb3b3; }
+.ach-badge.ach-off { color: var(--muted); background: var(--bg2); }
+.ach-badge.ach-off img { filter: grayscale(1); opacity: 0.6; }
+.ach-tier { margin: 0; color: var(--gold); }
+.ach-tiers { display: flex; flex-wrap: wrap; gap: 6px; }
+.ach-t-claimed { background: rgba(61, 220, 151, 0.15); color: var(--ok); }
+.ach-t-claimable { background: rgba(255, 201, 60, 0.15); color: var(--gold); }
+.ach-t-locked { opacity: 0.8; }

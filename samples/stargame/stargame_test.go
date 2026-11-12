@@ -155,7 +155,10 @@ func resetSeedData(t *testing.T, db *sql.DB) {
 	t.Helper()
 	for _, q := range []string{
 		`DELETE FROM economy_gift_use`,
-		`DELETE FROM economy_gift WHERE code IN ('STAR100','HALF50')`,
+		`DELETE FROM economy_gift WHERE code IN ('STAR100','HALF50','STARFAN')`,
+		`DELETE FROM economy_user_achievement`,
+		`DELETE FROM economy_achievement WHERE key LIKE 'star\_%'`,
+		`DELETE FROM base_category WHERE key_type='achievement' AND key LIKE 'star\_%'`,
 		`DELETE FROM economy_payment_log`,
 		`DELETE FROM economy_payment`,
 		`DELETE FROM economy_product WHERE key LIKE 'star\_%'`,
@@ -231,16 +234,20 @@ func TestSeedPostgres(t *testing.T) {
 		}
 		created += len(reports[i].created)
 	}
-	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2 + 2 + 1 + 11 + 4 + 2 + 2; created != want {
+	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2 + 2 + 1 + 11 + 4 + 2 + 2 + 2 + 5 + 1 + 1; created != want {
 		t.Fatalf("created %d rows across nodes, want %d: %v", created, want, reports)
 	}
 
 	for q, want := range map[string]int{
-		`SELECT count(*) FROM base_language WHERE code IN ('fa','en','ar')`:                                                                                                                                                        3,
-		`SELECT count(*) FROM base_language WHERE is_default`:                                                                                                                                                                      1,
-		`SELECT count(*) FROM economy_currency WHERE key='coin' AND default_value=50`:                                                                                                                                              1,
-		`SELECT count(*) FROM base_category WHERE key IN ('star_coin_packs','star_skins')`:                                                                                                                                         2,
-		`SELECT count(*) FROM economy_prize WHERE key LIKE 'star\_%'`:                                                                                                                                                              16,
+		`SELECT count(*) FROM base_language WHERE code IN ('fa','en','ar')`:                3,
+		`SELECT count(*) FROM base_language WHERE is_default`:                              1,
+		`SELECT count(*) FROM economy_currency WHERE key='coin' AND default_value=50`:      1,
+		`SELECT count(*) FROM base_category WHERE key IN ('star_coin_packs','star_skins')`: 2,
+		`SELECT count(*) FROM economy_prize WHERE key LIKE 'star\_%'`:                      17,
+		`SELECT count(*) FROM economy_achievement_tier r JOIN economy_achievement a ON a.id=r.achievement_id WHERE a.key='star_ach_rounds' AND r.prize_id IS NOT NULL AND r.grant_mode='claim'`:                                    3,
+		`SELECT count(*) FROM economy_achievement WHERE key='star_ach_legend' AND is_hidden AND metric='high_value'`:                                                                                                               1,
+		`SELECT count(*) FROM economy_achievement a JOIN economy_task_group g ON g.id=a.task_group_id WHERE a.key='star_ach_hunter' AND g.key='star_hunter_chain'`:                                                                 1,
+		`SELECT count(*) FROM economy_gift g JOIN economy_prize z ON z.id=g.prize_id WHERE g.code='STARFAN' AND z.items @> '[{"type":"achievement","key":"star_ach_supporter"}]'`:                                                  1,
 		`SELECT count(*) FROM economy_event_type WHERE key IN ('round_finished','golden_star','login')`:                                                                                                                            3,
 		`SELECT count(*) FROM economy_event_rule WHERE key LIKE 'star\_%' AND is_active`:                                                                                                                                           4,
 		`SELECT count(*) FROM economy_meta_rule r JOIN economy_meta m ON m.id=r.meta_id WHERE r.key LIKE 'star\_%' AND m.key='xp'`:                                                                                                 2,

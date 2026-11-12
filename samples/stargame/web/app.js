@@ -956,6 +956,7 @@ function show(name) {
   if (typeof growthShow === "function") growthShow(name);
   if (typeof missionsShow === "function") missionsShow(name);
   if (typeof inventoryShow === "function") inventoryShow(name);
+  if (typeof achievementsShow === "function") achievementsShow(name);
 }
 
 async function refreshBalances() {
@@ -1091,6 +1092,8 @@ function roundNotes(ev) {
   if (waiting) lines.push(t("newRewards", waiting));
   const missions = typeof missionNotes === "function" ? missionNotes(ev) : null;
   if (missions) lines.push(missions);
+  const achs = typeof achievementNotes === "function" ? achievementNotes(ev) : null;
+  if (achs) lines.push(achs);
   if (!lines.length) return null;
   return el("div", { class: "round-notes", "data-round-notes": "" }, lines.map((x) => el("p", { text: x })));
 }
