@@ -380,4 +380,5 @@ function nativeTweaks() {
   playerModCard();
   playerProgressCard();
   playerActivityCard();
+  playerTasksCard();
 }

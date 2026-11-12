@@ -492,3 +492,7 @@ html.dark .monaco-editor :is(.minimap canvas,canvas.decorationsOverviewRuler){fi
 .eco-tree-list{max-height:18rem;overflow-y:auto}
 .eco-hist-val{max-width:10rem}
 .dark .eco-wait{color:rgb(var(--warning-color-300))}
+.eco-tk-sub{padding-inline-start:1.25rem;border-inline-start:2px solid rgb(var(--secondary-color-200));margin-inline-start:.25rem}
+.dark .eco-tk-sub{border-inline-start-color:rgb(var(--secondary-color-700))}
+.eco-tk-list>*+*{border-top:1px solid rgb(var(--secondary-color-200))}
+.dark .eco-tk-list>*+*{border-top-color:rgb(var(--secondary-color-700))}

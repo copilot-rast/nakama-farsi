@@ -1437,6 +1437,188 @@ var MESSAGES = {
     'ov.eventsToday': 'رویدادهای ۲۴ ساعت اخیر',
     'ov.claimsReady': 'جایزه‌های منتظر',
     'ov.claimsFailed': 'جایزه‌های ناموفق',
+    'nav.tasks': "تسک‌ها",
+    'nav.task-groups': "گروه‌های تسک",
+    'desc.tasks': "کارهایی که بازیکن در بازی انجام می‌دهد و برایش جایزه می‌گیرد، مثل «امروز سه دور بازی کن». پیشرفت هر تسک از رویدادها می‌آید.",
+    'desc.task-groups': "چند تسک که به بازیکن داده می‌شوند؛ یکی‌یکی یا چندتا با هم، به ترتیب یا تصادفی.",
+    'new.tasks': "تسک جدید",
+    'edit.tasks': "ویرایش تسک",
+    'new.task-groups': "گروه تسک جدید",
+    'edit.task-groups': "ویرایش گروه تسک",
+    'empty.hint.tasks': "مثلاً: «امروز سه دور بازی کن» با ۲۰ سکه جایزه.",
+    'empty.hint.task-groups': "مثلاً یک زنجیرهٔ سه‌تایی که تسک‌ها را به ترتیب می‌دهد.",
+    'col.tk.when': "شرط",
+    'col.tk.place': "جایگاه",
+    'col.tk.done': "انجام‌شده",
+    'col.tg.rule': "روش دادن",
+    'col.tg.tasks': "تسک‌ها",
+    'filter.tk.level': "نوع",
+    'filter.tk.group': "گروه",
+    'filter.tg.handout': "روش دادن",
+    'tk.level.top': "تسک اصلی",
+    'tk.level.sub': "زیرتسک",
+    'tk.when.count': "«{event}» {n} بار",
+    'tk.when.sum_value': "جمع «{event}» به {n} برسد",
+    'tk.when.high_value': "یک «{event}» با مقدار {n} یا بیشتر",
+    'tk.when.children': "وقتی همهٔ زیرتسک‌ها انجام شوند",
+    'tk.filter.min': "فقط مقدار {n} به بالا",
+    'tk.filter.max': "فقط مقدار تا {n}",
+    'tk.filter.range': "فقط مقدار {min} تا {max}",
+    'tk.repeat.once': "یک بار",
+    'tk.repeat.daily': "هر روز",
+    'tk.repeat.weekly': "هر هفته",
+    'tk.repeat.interval': "هر {time} یک بار",
+    'tk.repeatopt.once': "یک بار",
+    'tk.repeatopt.daily': "هر روز از نو",
+    'tk.repeatopt.weekly': "هر هفته از نو",
+    'tk.repeatopt.interval': "بعد از یک فاصلهٔ زمانی",
+    'tk.max': "حداکثر {n} بار",
+    'tk.minutes': "{n} دقیقه",
+    'tk.hours': "{n} ساعت",
+    'tk.days': "{n} روز",
+    'tk.noPrize': "بدون جایزه",
+    'tk.sub': "زیرتسک",
+    'tk.inGroup': "گروه",
+    'tk.childrenN': "{n} زیرتسک",
+    'tk.depsN': "بعد از {n} تسک دیگر",
+    'tk.standalone': "مستقل",
+    'tk.doneN': "{n} بار · {p} بازیکن",
+    'f.tk.key.hint': "بازی با این کلید تسک را می‌شناسد و بعداً عوض نمی‌شود.",
+    'f.tk.name': "نام تسک",
+    'f.tk.name.hint': "همین نام در بازی دیده می‌شود.",
+    'f.tk.description': "توضیح برای بازیکن",
+    'tk.h.when': "کی انجام می‌شود",
+    'f.tk.condition': "نوع شرط",
+    'f.tk.condition.hint': "یا با یک رویداد پیش می‌رود، یا با تمام شدن زیرتسک‌هایش.",
+    'tk.condition.event': "با رویداد",
+    'tk.condition.children': "با زیرتسک‌ها",
+    'f.tk.metric': "شمارش",
+    'f.tk.metric.hint': "تعداد رویدادها، جمع مقدارها یا بیشترین مقدار.",
+    'tk.metric.count': "تعداد دفعه‌ها",
+    'tk.metric.sum_value': "جمع مقدارها",
+    'tk.metric.high_value': "بیشترین مقدار",
+    'f.tk.target': "هدف",
+    'f.tk.valueMin': "کمترین مقدار قابل‌قبول",
+    'f.tk.valueMax': "بیشترین مقدار قابل‌قبول",
+    'f.tk.valueFilter.hint': "رویدادی که مقدارش بیرون این بازه باشد شمرده نمی‌شود.",
+    'f.tk.parent': "تسک اصلی",
+    'f.tk.parent.hint': "اگر این تسک بخشی از یک تسک بزرگ‌تر است، آن را انتخاب کنید. زیرتسک تکرار، زمان و مخاطبِ تسک اصلی را دارد.",
+    'tk.h.repeat': "تکرار",
+    'f.tk.repeat': "تکرار",
+    'f.tk.repeatMinutes': "فاصله (دقیقه)",
+    'f.tk.repeatMinutes.hint': "بعد از انجام شدن، این مدت صبر می‌کند تا دوباره شروع شود.",
+    'f.tk.maxCompletions': "حداکثر دفعه‌ها",
+    'f.tk.maxCompletions.hint': "خالی یعنی بی‌حد.",
+    'f.tk.group': "گروه",
+    'f.tk.group.hint': "تسکِ گروه فقط وقتی دیده می‌شود که گروه آن را به بازیکن بدهد.",
+    'f.tk.dependsOn': "بعد از این تسک‌ها",
+    'f.tk.dependsOn.hint': "تا این تسک‌ها انجام نشوند، این تسک قفل است.",
+    'f.tk.prize.hint': "بدون جایزه هم می‌شود؛ مثلاً برای زیرتسک‌ها.",
+    'f.tk.notify': "خبر دادن در بازی",
+    'f.tk.notify.hint': "وقتی تسک تمام شد، یک پیام درون‌برنامه‌ای برای بازیکن می‌رود.",
+    'f.tk.levelTable': "جدول سطح",
+    'f.tk.levelTable.hint': "برای محدود کردن بر اساس سطح بازیکن.",
+    'f.tk.minLevel': "از سطح",
+    'f.tk.maxLevel': "تا سطح",
+    'f.tg.name': "نام گروه",
+    'tg.h.handout': "دادن تسک‌ها",
+    'f.tg.activeCount': "تسک‌های هم‌زمان",
+    'f.tg.activeCount.hint': "بازیکن هم‌زمان چند تسک از این گروه دارد.",
+    'f.tg.orderMode': "ترتیب",
+    'tg.order.ordered': "به ترتیب",
+    'tg.order.random': "تصادفی",
+    'f.tg.handout': "تسک بعدی کی بیاید",
+    'f.tg.handout.hint': "بعد از گرفتن جایزهٔ تسک قبلی.",
+    'tg.handout.auto': "تسک بعدی خودکار",
+    'tg.handout.request': "تسک بعدی با درخواست بازیکن",
+    'tg.handout.timer.after': "تسک بعدی {time} بعد",
+    'tg.handoutopt.auto': "خودکار",
+    'tg.handoutopt.request': "با درخواست بازیکن",
+    'tg.handoutopt.timer': "بعد از مدتی",
+    'f.tg.handoutMinutes': "صبر (دقیقه)",
+    'f.tg.repeatable': "تکرار گروه",
+    'f.tg.repeatable.hint': "وقتی همهٔ تسک‌ها تمام شد، گروه از اول شروع می‌شود.",
+    'tg.h.tasks': "تسک‌های گروه",
+    'f.tg.tasks': "تسک‌ها",
+    'f.tg.tasks.hint': "به همان ترتیبی که اضافه می‌کنید داده می‌شوند. فقط تسک‌های یک‌باره.",
+    'tg.active': "هم‌زمان {n} تسک",
+    'tg.repeatable': "تکرارشونده",
+    'tg.tasksN': "{n} تسک",
+    'tk.card': "تسک‌های بازیکن",
+    'tk.all': "همهٔ تسک‌ها",
+    'tk.none': "تسکی برای این بازیکن نیست.",
+    'tk.hiddenN': "{n} تسک دیگر برای این بازیکن دیده نمی‌شود (خاموش، تمام‌شده یا مخصوص بازیکنان دیگر).",
+    'tk.state.active': "در جریان",
+    'tk.state.completed': "تمام شده",
+    'tk.state.claimed': "جایزه گرفته",
+    'tk.state.locked': "قفل",
+    'tk.state.cooldown': "منتظر نوبت بعد",
+    'tk.state.done': "به سقف رسید",
+    'tk.state.hidden': "پنهان",
+    'tk.state.finished': "انجام شد",
+    'tk.reason.inactive': "خاموش",
+    'tk.reason.ended': "زمانش تمام شده",
+    'tk.reason.notStarted': "هنوز شروع نشده",
+    'tk.reason.notTargeted': "برای این بازیکن نیست",
+    'tk.reason.notHanded': "هنوز داده نشده",
+    'tk.reason.parent': "تسک اصلی پنهان است",
+    'tk.reason.groupClosed': "گروه بسته است",
+    'tk.reason.groupInactive': "گروه خاموش است",
+    'tk.progress': "{n} از {total}",
+    'tk.progress.children': "{n} از {total} زیرتسک",
+    'tk.completionsN': "{n} بار انجام شده",
+    'tk.reset': "از نو",
+    'tk.reset.title': "پیشرفت این تسک صفر شود؟",
+    'tk.reset.text': "پیشرفت «{name}» برای این بازیکن پاک می‌شود. جایزه‌های گرفته‌شده می‌مانند.",
+    'tk.reset.done': "پیشرفت صفر شد.",
+    'tk.complete': "تمامش کن",
+    'tk.complete.title': "این تسک تمام شود؟",
+    'tk.complete.text': "«{name}» برای این بازیکن تمام‌شده حساب می‌شود و جایزه‌اش آماده می‌شود.",
+    'tk.complete.done': "تسک تمام شد.",
+    'tk.claim': "جایزه را بده",
+    'tk.claim.done': "جایزه به بازیکن رسید.",
+    'tg.round': "دور {n}",
+    'tg.progress': "{n} از {total} انجام شده",
+    'tg.nextAt': "بعدی: {date}",
+    'tg.next': "تسک بعدی را بده",
+    'tg.next.done': "تسک بعدی داده شد.",
+    'tg.empty': "الان تسکی از این گروه ندارد.",
+    'claim.kind.task': "تسک",
+    'kind.task': "تسک",
+    'code.INVALID_METRIC': "روش شمارش درست نیست.",
+    'code.INVALID_CONDITION': "نوع شرط درست نیست.",
+    'code.INVALID_REPEAT_MINUTES': "فاصله باید بین ۱ دقیقه و یک سال باشد.",
+    'code.INVALID_MAX_COMPLETIONS': "حداقل ۱، یا خالی برای بی‌حد.",
+    'code.HAS_SUBTASKS': "این تسک زیرتسک دارد؛ اول زیرتسک‌ها را پاک یا جابه‌جا کنید.",
+    'code.SELF_PARENT': "تسک نمی‌تواند زیرتسکِ خودش باشد.",
+    'code.NESTED_SUBTASK': "زیرتسک فقط یک لایه دارد.",
+    'code.PARENT_NOT_GROUPING': "تسک اصلی باید «با زیرتسک‌ها» تمام شود.",
+    'code.SUBTASK_NEEDS_EVENT': "زیرتسک باید با رویداد پیش برود.",
+    'code.SUBTASK_IN_GROUP': "زیرتسک دنبال تسک اصلی است؛ تسک اصلی را در گروه بگذارید.",
+    'code.GROUP_TASK_REPEAT': "تسکِ گروه در هر دورِ گروه یک بار انجام می‌شود؛ تکرار را «یک بار» بگذارید.",
+    'code.SELF_DEPENDENCY': "تسک نمی‌تواند منتظر خودش باشد.",
+    'code.TOO_MANY_DEPENDENCIES': "حداکثر ۱۰ تسک.",
+    'code.DEPENDENCY_CYCLE': "این تسک‌ها منتظر همدیگر می‌مانند و هیچ‌وقت باز نمی‌شوند.",
+    'code.LEVEL_TABLE_REQUIRED': "جدول سطح را انتخاب کنید.",
+    'code.INVALID_LEVEL_RANGE': "«تا سطح» نباید کمتر از «از سطح» باشد.",
+    'code.LEVEL_TABLE_NOT_FOUND': "جدول سطح پیدا نشد.",
+    'code.TASK_NOT_FOUND': "تسک پیدا نشد.",
+    'code.TASK_GROUP_NOT_FOUND': "گروه تسک پیدا نشد.",
+    'code.INVALID_ACTIVE_COUNT': "بین ۱ تا ۲۰.",
+    'code.INVALID_ORDER_MODE': "ترتیب درست نیست.",
+    'code.INVALID_HANDOUT': "روش دادن درست نیست.",
+    'code.INVALID_HANDOUT_MINUTES': "صبر باید بین ۱ دقیقه و یک سال باشد.",
+    'code.TASK_NOT_AVAILABLE': "این تسک الان برای بازیکن باز نیست.",
+    'code.TASK_ALREADY_COMPLETED': "این تسک قبلاً تمام شده.",
+    'code.TASK_ALREADY_CLAIMED': "جایزهٔ این تسک قبلاً داده شده.",
+    'code.TASK_NOT_STARTED': "بازیکن هنوز این تسک را شروع نکرده.",
+    'code.TASK_NOT_COMPLETED': "این تسک هنوز تمام نشده.",
+    'code.TASK_HAS_NO_PRIZE': "این تسک جایزه ندارد.",
+    'code.CURRENT_TASK_MUST_BE_DONE': "اول تسک‌های فعلی باید تمام شوند.",
+    'code.DURATION_NOT_ELAPSED': "هنوز وقتِ تسک بعدی نرسیده.",
+    'code.NO_TASK_AVAILABLE': "الان تسکی برای دادن نیست.",
+    'code.TASK_GROUP_FINISHED': "همهٔ تسک‌های این گروه تمام شده.",
+    'code.HANDOUT_AUTOMATIC': "تسک‌های این گروه خودکار داده می‌شوند.",
     'section.sup': "پشتیبانی",
     'section.sup.short': "پشتیبانی",
     'nav.tickets': "تیکت‌ها",
@@ -3356,6 +3538,188 @@ var MESSAGES = {
     'ov.eventsToday': 'Events in the last 24 hours',
     'ov.claimsReady': 'Rewards waiting',
     'ov.claimsFailed': 'Failed rewards',
+    'nav.tasks': "Tasks",
+    'nav.task-groups': "Task groups",
+    'desc.tasks': "Things a player does in the game for a prize, like \"play three rounds today\". Progress comes from events.",
+    'desc.task-groups': "A set of tasks handed to the player one at a time or a few at once, in order or at random.",
+    'new.tasks': "New task",
+    'edit.tasks': "Edit task",
+    'new.task-groups': "New task group",
+    'edit.task-groups': "Edit task group",
+    'empty.hint.tasks': "For example: \"Play three rounds today\" for 20 coins.",
+    'empty.hint.task-groups': "For example a chain of three tasks handed out in order.",
+    'col.tk.when': "Condition",
+    'col.tk.place': "Place",
+    'col.tk.done': "Done",
+    'col.tg.rule': "Hand-out",
+    'col.tg.tasks': "Tasks",
+    'filter.tk.level': "Kind",
+    'filter.tk.group': "Group",
+    'filter.tg.handout': "Hand-out",
+    'tk.level.top': "Main task",
+    'tk.level.sub': "Sub-task",
+    'tk.when.count': "\"{event}\" {n} times",
+    'tk.when.sum_value': "\"{event}\" adds up to {n}",
+    'tk.when.high_value': "one \"{event}\" of {n} or more",
+    'tk.when.children': "when every sub-task is done",
+    'tk.filter.min': "only values from {n}",
+    'tk.filter.max': "only values up to {n}",
+    'tk.filter.range': "only values {min} to {max}",
+    'tk.repeat.once': "once",
+    'tk.repeat.daily': "every day",
+    'tk.repeat.weekly': "every week",
+    'tk.repeat.interval': "once every {time}",
+    'tk.repeatopt.once': "Once",
+    'tk.repeatopt.daily': "Again every day",
+    'tk.repeatopt.weekly': "Again every week",
+    'tk.repeatopt.interval': "Again after a wait",
+    'tk.max': "at most {n} times",
+    'tk.minutes': "{n} min",
+    'tk.hours': "{n} h",
+    'tk.days': "{n} days",
+    'tk.noPrize': "No prize",
+    'tk.sub': "Sub-task",
+    'tk.inGroup': "Group",
+    'tk.childrenN': "{n} sub-tasks",
+    'tk.depsN': "after {n} other tasks",
+    'tk.standalone': "On its own",
+    'tk.doneN': "{n} times · {p} players",
+    'f.tk.key.hint': "The game finds the task by this key; it cannot change later.",
+    'f.tk.name': "Task name",
+    'f.tk.name.hint': "Players see this name in the game.",
+    'f.tk.description': "Description for players",
+    'tk.h.when': "When is it done",
+    'f.tk.condition': "Condition type",
+    'f.tk.condition.hint': "Either an event moves it forward, or it is done when its sub-tasks are done.",
+    'tk.condition.event': "By an event",
+    'tk.condition.children': "By sub-tasks",
+    'f.tk.metric': "Count",
+    'f.tk.metric.hint': "How many events, the sum of their values or the highest value.",
+    'tk.metric.count': "Number of times",
+    'tk.metric.sum_value': "Sum of values",
+    'tk.metric.high_value': "Highest value",
+    'f.tk.target': "Target",
+    'f.tk.valueMin': "Lowest value that counts",
+    'f.tk.valueMax': "Highest value that counts",
+    'f.tk.valueFilter.hint': "An event with a value outside this range does not count.",
+    'f.tk.parent': "Main task",
+    'f.tk.parent.hint': "Pick it if this task is part of a bigger one. A sub-task uses the repeat, time and players of its main task.",
+    'tk.h.repeat': "Repeat",
+    'f.tk.repeat': "Repeat",
+    'f.tk.repeatMinutes': "Wait (minutes)",
+    'f.tk.repeatMinutes.hint': "After it is done, it waits this long before it starts again.",
+    'f.tk.maxCompletions': "Most times",
+    'f.tk.maxCompletions.hint': "Empty means no limit.",
+    'f.tk.group': "Group",
+    'f.tk.group.hint': "A group task shows only when the group hands it to the player.",
+    'f.tk.dependsOn': "After these tasks",
+    'f.tk.dependsOn.hint': "The task stays locked until these are done.",
+    'f.tk.prize.hint': "A task can have no prize, for example a sub-task.",
+    'f.tk.notify': "Tell the player in the game",
+    'f.tk.notify.hint': "Sends an in-app message when the task is done.",
+    'f.tk.levelTable': "Level table",
+    'f.tk.levelTable.hint': "To limit the task by player level.",
+    'f.tk.minLevel': "From level",
+    'f.tk.maxLevel': "Up to level",
+    'f.tg.name': "Group name",
+    'tg.h.handout': "Handing out tasks",
+    'f.tg.activeCount': "Tasks at once",
+    'f.tg.activeCount.hint': "How many tasks of this group a player has at the same time.",
+    'f.tg.orderMode': "Order",
+    'tg.order.ordered': "in order",
+    'tg.order.random': "at random",
+    'f.tg.handout': "When the next task comes",
+    'f.tg.handout.hint': "After the prize of the last one is collected.",
+    'tg.handout.auto': "next task automatically",
+    'tg.handout.request': "next task when the player asks",
+    'tg.handout.timer.after': "next task {time} later",
+    'tg.handoutopt.auto': "Automatically",
+    'tg.handoutopt.request': "When the player asks",
+    'tg.handoutopt.timer': "After a wait",
+    'f.tg.handoutMinutes': "Wait (minutes)",
+    'f.tg.repeatable': "Repeat the group",
+    'f.tg.repeatable.hint': "When every task is done, the group starts again.",
+    'tg.h.tasks': "Tasks in the group",
+    'f.tg.tasks': "Tasks",
+    'f.tg.tasks.hint': "Handed out in the order you add them. One-time tasks only.",
+    'tg.active': "{n} at once",
+    'tg.repeatable': "repeats",
+    'tg.tasksN': "{n} tasks",
+    'tk.card': "Player tasks",
+    'tk.all': "All tasks",
+    'tk.none': "No tasks for this player.",
+    'tk.hiddenN': "{n} more tasks are not shown to this player (off, ended or for other players).",
+    'tk.state.active': "In progress",
+    'tk.state.completed': "Done",
+    'tk.state.claimed': "Prize collected",
+    'tk.state.locked': "Locked",
+    'tk.state.cooldown': "Waiting for next round",
+    'tk.state.done': "Limit reached",
+    'tk.state.hidden': "Hidden",
+    'tk.state.finished': "Done",
+    'tk.reason.inactive': "Off",
+    'tk.reason.ended': "Ended",
+    'tk.reason.notStarted': "Not started yet",
+    'tk.reason.notTargeted': "Not for this player",
+    'tk.reason.notHanded': "Not handed out yet",
+    'tk.reason.parent': "Main task hidden",
+    'tk.reason.groupClosed': "Group closed",
+    'tk.reason.groupInactive': "Group off",
+    'tk.progress': "{n} of {total}",
+    'tk.progress.children': "{n} of {total} sub-tasks",
+    'tk.completionsN': "done {n} times",
+    'tk.reset': "Start over",
+    'tk.reset.title': "Clear this task’s progress?",
+    'tk.reset.text': "Progress of \"{name}\" is cleared for this player. Collected prizes stay.",
+    'tk.reset.done': "Progress cleared.",
+    'tk.complete': "Mark done",
+    'tk.complete.title': "Mark this task done?",
+    'tk.complete.text': "\"{name}\" counts as done for this player and its prize gets ready.",
+    'tk.complete.done': "Task marked done.",
+    'tk.claim': "Give the prize",
+    'tk.claim.done': "The player got the prize.",
+    'tg.round': "Round {n}",
+    'tg.progress': "{n} of {total} done",
+    'tg.nextAt': "Next: {date}",
+    'tg.next': "Hand out next task",
+    'tg.next.done': "Next task handed out.",
+    'tg.empty': "No task from this group right now.",
+    'claim.kind.task': "Task",
+    'kind.task': "Task",
+    'code.INVALID_METRIC': "Unknown way of counting.",
+    'code.INVALID_CONDITION': "Unknown condition type.",
+    'code.INVALID_REPEAT_MINUTES': "The wait must be between 1 minute and one year.",
+    'code.INVALID_MAX_COMPLETIONS': "At least 1, or empty for no limit.",
+    'code.HAS_SUBTASKS': "This task has sub-tasks; delete or move them first.",
+    'code.SELF_PARENT': "A task cannot be its own sub-task.",
+    'code.NESTED_SUBTASK': "Sub-tasks go one level deep.",
+    'code.PARENT_NOT_GROUPING': "The main task must be done \"by sub-tasks\".",
+    'code.SUBTASK_NEEDS_EVENT': "A sub-task must move with an event.",
+    'code.SUBTASK_IN_GROUP': "Sub-tasks follow their main task; put the main task in the group.",
+    'code.GROUP_TASK_REPEAT': "A group task runs once per round of the group; set repeat to \"Once\".",
+    'code.SELF_DEPENDENCY': "A task cannot wait for itself.",
+    'code.TOO_MANY_DEPENDENCIES': "At most 10 tasks.",
+    'code.DEPENDENCY_CYCLE': "These tasks would wait for each other forever.",
+    'code.LEVEL_TABLE_REQUIRED': "Pick the level table.",
+    'code.INVALID_LEVEL_RANGE': "\"Up to level\" must not be below \"From level\".",
+    'code.LEVEL_TABLE_NOT_FOUND': "Level table not found.",
+    'code.TASK_NOT_FOUND': "Task not found.",
+    'code.TASK_GROUP_NOT_FOUND': "Task group not found.",
+    'code.INVALID_ACTIVE_COUNT': "Between 1 and 20.",
+    'code.INVALID_ORDER_MODE': "Unknown order.",
+    'code.INVALID_HANDOUT': "Unknown hand-out.",
+    'code.INVALID_HANDOUT_MINUTES': "The wait must be between 1 minute and one year.",
+    'code.TASK_NOT_AVAILABLE': "This task is not open for the player right now.",
+    'code.TASK_ALREADY_COMPLETED': "This task is already done.",
+    'code.TASK_ALREADY_CLAIMED': "The prize of this task was already given.",
+    'code.TASK_NOT_STARTED': "The player has not started this task.",
+    'code.TASK_NOT_COMPLETED': "This task is not done yet.",
+    'code.TASK_HAS_NO_PRIZE': "This task has no prize.",
+    'code.CURRENT_TASK_MUST_BE_DONE': "The current tasks must be done first.",
+    'code.DURATION_NOT_ELAPSED': "It is not time for the next task yet.",
+    'code.NO_TASK_AVAILABLE': "No task to hand out right now.",
+    'code.TASK_GROUP_FINISHED': "Every task of this group is done.",
+    'code.HANDOUT_AUTOMATIC': "Tasks of this group are handed out automatically.",
     'section.sup': "Support",
     'section.sup.short': "Support",
     'nav.tickets': "Tickets",
@@ -5426,6 +5790,7 @@ function buildForm(fields, values, ctx) {
       var visible = !e.def.when || e.def.when(values);
       var el = e.row ? e.el : e.wrap;
       el.hidden = !visible;
+      if (!visible && !e.hidden && !e.row && e.wrap && e.wrap.setError) e.wrap.setError(null);
       e.hidden = !visible;
     });
     if (ctx && ctx.onchange) ctx.onchange(values);
@@ -5517,8 +5882,8 @@ function buildForm(fields, values, ctx) {
 var METHODS = ['zarinpal', 'zibal', 'bazaar', 'myket', 'in_app'];
 var GATEWAYS = ['zarinpal', 'zibal'];
 var STORES = ['bazaar', 'myket'];
-var CATEGORY_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news'];
-var TAG_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news', 'general', 'user'];
+var CATEGORY_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news', 'task'];
+var TAG_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news', 'task', 'general', 'user'];
 var LANG_CODE_RE = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/;
 var keyTypeCache = {};
 var keyTypePromise = null;
@@ -6047,7 +6412,7 @@ var RESOURCES = {
 };
 
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'event-log', 'referrals', 'payments'],
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'comments', 'notifications', 'remote-config'],
   moderation: ['players', 'reports', 'restrictions', 'chat-words', 'activity'],
   support: ['tickets', 'live-chat']
@@ -9362,6 +9727,336 @@ function playerProgressCard() {
   });
   if (!(p.claims || []).length) claims.appendChild(h('span', { class: 'text-sm text-secondary-400', text: t('pp.noClaims') }));
   body.appendChild(claims);
+  place();
+}
+
+ICONS.tasks = '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>';
+ICONS['task-groups'] = '<rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="11" width="18" height="5" rx="1"/><path d="M7 20h10"/>';
+
+function minutesText(n) {
+  n = Number(n) || 0;
+  if (n && n % 1440 === 0) return t('tk.days', { n: fmtNum(n / 1440) });
+  if (n && n % 60 === 0) return t('tk.hours', { n: fmtNum(n / 60) });
+  return t('tk.minutes', { n: fmtNum(n) });
+}
+
+function taskSentence(it, eventName) {
+  var parts = [];
+  if (it.condition === 'children') parts.push(t('tk.when.children'));
+  else {
+    parts.push(t('tk.when.' + (it.metric || 'count'), { event: eventName, n: numLocal(it.target) }));
+    if (it.valueMin != null && it.valueMax != null) parts.push(t('tk.filter.range', { min: numLocal(it.valueMin), max: numLocal(it.valueMax) }));
+    else if (it.valueMin != null) parts.push(t('tk.filter.min', { n: numLocal(it.valueMin) }));
+    else if (it.valueMax != null) parts.push(t('tk.filter.max', { n: numLocal(it.valueMax) }));
+  }
+  if (!it.parentId) {
+    parts.push(it.repeat === 'interval' ? t('tk.repeat.interval', { time: minutesText(it.repeatMinutes) }) : t('tk.repeat.' + (it.repeat || 'once')));
+    if (it.repeat !== 'once' && it.maxCompletions) parts.push(t('tk.max', { n: fmtNum(it.maxCompletions) }));
+  }
+  return parts.join(' · ');
+}
+
+function taskSentenceCell(it) {
+  var box = h('div', { class: 'text-sm text-secondary-700 dark:text-secondary-200 eco-clamp', 'data-task-sentence': '' });
+  if (it.condition === 'children' || !it.eventTypeId) { box.appendChild(document.createTextNode(taskSentence(it, ''))); return box; }
+  var ref = refName('event-types', it.eventTypeId);
+  function paint(et) { clear(box).appendChild(document.createTextNode(taskSentence(it, et ? i18nText(et.name) || et.key : '…'))); }
+  if (ref.item !== undefined) paint(ref.item);
+  else { box.appendChild(bar('70%')); ref.p.then(paint); }
+  return box;
+}
+
+function handoutSentence(it) {
+  var parts = [t('tg.active', { n: fmtNum(it.activeCount || 1) }), t('tg.order.' + it.orderMode)];
+  parts.push(it.handout === 'timer' ? t('tg.handout.timer.after', { time: minutesText(it.handoutMinutes) }) : t('tg.handout.' + it.handout));
+  if (it.isRepeatable) parts.push(t('tg.repeatable'));
+  return parts.join(' · ');
+}
+
+function levelRow() {
+  return { type: 'row', fields: [
+    { name: 'levelTableId', type: 'ref', resource: 'level-tables', label: 'f.tk.levelTable', hint: 'f.tk.levelTable.hint', optional: true,
+      check: function (v, vals) { return !v && (vals.minLevel != null || vals.maxLevel != null) ? t('code.LEVEL_TABLE_REQUIRED') : null; } },
+    { name: 'minLevel', type: 'number', label: 'f.tk.minLevel', optional: true, min: 0 },
+    { name: 'maxLevel', type: 'number', label: 'f.tk.maxLevel', optional: true, min: 0,
+      check: function (v, vals) { return v != null && vals.minLevel != null && Number(v) < Number(vals.minLevel) ? t('code.INVALID_LEVEL_RANGE') : null; } }
+  ] };
+}
+
+function isEvent(v) { return v.condition !== 'children'; }
+function isTop(v) { return !v.parentId; }
+
+RESOURCES.tasks = {
+  filters: [
+    { name: 'level', label: 'filter.tk.level', options: function () { return [{ value: 'top', label: t('tk.level.top') }, { value: 'sub', label: t('tk.level.sub') }]; } },
+    { name: 'groupId', label: 'filter.tk.group', type: 'ref', resource: 'task-groups' },
+    { name: 'eventTypeId', label: 'filter.ev.event', type: 'ref', resource: 'event-types' },
+    { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'task' } },
+    activeFilter()
+  ],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '40%' },
+    { label: 'col.tk.when', render: taskSentenceCell, skeleton: '55%' },
+    { label: 'col.ev.prize', render: function (it) {
+      if (!it.prizeId) return h('span', { class: 'text-secondary-400', text: t('tk.noPrize') });
+      return h('div', { class: 'flex flex-col gap-1 min-w-0' }, refNameCell('prizes', it.prizeId), h('div', {}, grantTag(it.grantMode)));
+    }, width: 170 },
+    { label: 'col.tk.place', render: function (it) {
+      var box = h('div', { class: 'flex flex-col gap-1 min-w-0 text-sm' });
+      if (it.parentId) box.appendChild(h('div', { class: 'flex items-center gap-1 min-w-0' }, tag(t('tk.sub'), 'secondary'), refNameCell('tasks', it.parentId)));
+      else if (it.groupId) box.appendChild(h('div', { class: 'flex items-center gap-1 min-w-0' }, tag(t('tk.inGroup'), 'primary'), refNameCell('task-groups', it.groupId)));
+      if (it.children) box.appendChild(h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('tk.childrenN', { n: fmtNum(it.children) }) }));
+      if ((it.dependsOn || []).length) box.appendChild(h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('tk.depsN', { n: fmtNum(it.dependsOn.length) }) }));
+      if (!box.childNodes.length) box.appendChild(h('span', { class: 'text-secondary-400', text: t('tk.standalone') }));
+      return box;
+    }, width: 170 },
+    { label: 'col.tk.done', render: function (it) { return h('span', { class: 'tabular-nums whitespace-nowrap', text: t('tk.doneN', { n: fmtNum(it.completed || 0), p: fmtNum(it.players || 0) }) }); }, width: 120 },
+    { label: 'col.status', render: function (it) {
+      return h('div', { class: 'flex flex-wrap gap-1' }, activeTag(it.isActive),
+        (it.audienceTagIds || []).length || it.minLevel != null || it.maxLevel != null ? tag(t('audience.only'), 'primary') : null,
+        it.endsAt && new Date(it.endsAt) < new Date() ? tag(t('ev.ended'), 'secondary') : null);
+    }, width: 130 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.tk.key.hint', required: true, lockOnEdit: true },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+    ] },
+    tr('name', { label: 'f.tk.name', hint: 'f.tk.name.hint', required: true, max: 128 }),
+    tr('description', { label: 'f.tk.description', multiline: true, max: 1000, optional: true }),
+    { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
+    { type: 'row', fields: [categoryField('task'), tagsField('task')] },
+    { type: 'heading', label: 'tk.h.when' },
+    { name: 'condition', type: 'select', label: 'f.tk.condition', hint: 'f.tk.condition.hint', required: true, noPlaceholder: true, options: opts('tk.condition.', ['event', 'children']) },
+    { name: 'eventTypeId', type: 'ref', resource: 'event-types', label: 'f.ev.event', required: true, when: isEvent },
+    { type: 'row', when: isEvent, fields: [
+      { name: 'metric', type: 'select', label: 'f.tk.metric', hint: 'f.tk.metric.hint', required: true, noPlaceholder: true, options: opts('tk.metric.', ['count', 'sum_value', 'high_value']), when: isEvent },
+      { name: 'target', type: 'number', int: false, label: 'f.tk.target', required: true, min: 0.0001, when: isEvent }
+    ] },
+    { type: 'row', when: isEvent, fields: [
+      { name: 'valueMin', type: 'number', int: false, label: 'f.tk.valueMin', hint: 'f.tk.valueFilter.hint', optional: true, when: isEvent },
+      { name: 'valueMax', type: 'number', int: false, label: 'f.tk.valueMax', optional: true, when: isEvent,
+        check: function (v, vals) { return v != null && vals.valueMin != null && Number(v) < Number(vals.valueMin) ? t('code.INVALID_RANGE') : null; } }
+    ] },
+    { name: 'parentId', type: 'ref', resource: 'tasks', filter: { level: 'top' }, label: 'f.tk.parent', hint: 'f.tk.parent.hint', optional: true, when: isEvent },
+    { name: 'preview', type: 'static', readonly: true, live: true, render: function (v) {
+      if (isEvent(v) && (!v.eventTypeId || v.target == null || v.target === '')) return h('span', {});
+      var item = { condition: v.condition, eventTypeId: v.eventTypeId, metric: v.metric, target: parseNumber(v.target, false), valueMin: v.valueMin, valueMax: v.valueMax, repeat: v.repeat, repeatMinutes: v.repeatMinutes, maxCompletions: v.maxCompletions, parentId: v.parentId };
+      return h('div', { class: 'eco-rule-preview text-sm rounded-md px-3 py-2', 'data-task-preview': '' }, taskSentenceCell(item));
+    } },
+    { type: 'heading', label: 'tk.h.repeat', when: isTop },
+    { type: 'row', when: isTop, fields: [
+      { name: 'repeat', type: 'select', label: 'f.tk.repeat', required: true, noPlaceholder: true, options: opts('tk.repeatopt.', ['once', 'daily', 'weekly', 'interval']), when: isTop,
+        check: function (v, vals) { return vals.groupId && v !== 'once' ? t('code.GROUP_TASK_REPEAT') : null; } },
+      { name: 'repeatMinutes', type: 'number', label: 'f.tk.repeatMinutes', hint: 'f.tk.repeatMinutes.hint', required: true, min: 1, max: 525600, when: function (v) { return isTop(v) && v.repeat === 'interval'; } },
+      { name: 'maxCompletions', type: 'number', label: 'f.tk.maxCompletions', hint: 'f.tk.maxCompletions.hint', optional: true, min: 1, when: function (v) { return isTop(v) && v.repeat !== 'once'; } }
+    ] },
+    { name: 'groupId', type: 'ref', resource: 'task-groups', label: 'f.tk.group', hint: 'f.tk.group.hint', optional: true, when: isTop },
+    { name: 'dependsOn', type: 'refMulti', resource: 'tasks', label: 'f.tk.dependsOn', hint: 'f.tk.dependsOn.hint', optional: true, empty: [] },
+    { type: 'heading', label: 'ev.h.prize' },
+    { type: 'row', fields: [
+      { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', hint: 'f.tk.prize.hint', optional: true },
+      { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', hint: 'f.ev.grantMode.hint', required: true, noPlaceholder: true, options: grantOptions }
+    ] },
+    { name: 'notify', type: 'bool', inline: true, label: 'f.tk.notify', hint: 'f.tk.notify.hint', empty: false },
+    { type: 'heading', label: 'ev.h.who', when: isTop },
+    { name: 'audienceTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.ev.audience', hint: 'f.ev.audience.hint', optional: true, empty: [], when: isTop },
+    Object.assign(levelRow(), { when: isTop }),
+    Object.assign(windowRow(), { when: isTop }),
+    { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
+  ],
+  defaults: function (query) {
+    return { key: '', name: {}, description: {}, iconUrl: '', categoryId: null, tagIds: [], condition: 'event', eventTypeId: (query && query.eventTypeId) || null, metric: 'count', target: 1, valueMin: null, valueMax: null,
+      repeat: 'once', repeatMinutes: null, maxCompletions: null, parentId: (query && query.parentId) || null, dependsOn: [], groupId: (query && query.groupId) || null, prizeId: null, grantMode: 'claim', notify: false,
+      audienceTagIds: [], levelTableId: null, minLevel: null, maxLevel: null, startsAt: null, endsAt: null, isActive: true, sort: 0 };
+  },
+  fixPayload: function (p) {
+    if (p.sort == null) p.sort = 0;
+    if (p.condition === 'children') { p.eventTypeId = null; p.parentId = null; p.valueMin = null; p.valueMax = null; p.target = 1; p.metric = 'count'; }
+    if (p.parentId) { p.groupId = null; p.repeat = 'once'; p.audienceTagIds = []; p.levelTableId = null; p.minLevel = null; p.maxLevel = null; p.startsAt = null; p.endsAt = null; }
+    if (p.repeat !== 'interval') p.repeatMinutes = null;
+    if (p.repeat === 'once') p.maxCompletions = null;
+    if (p.minLevel == null && p.maxLevel == null) p.levelTableId = null;
+    p.dependsOn = p.dependsOn || [];
+    return p;
+  },
+  afterSave: afterEventSave('tasks')
+};
+
+RESOURCES['task-groups'] = {
+  filters: [
+    { name: 'handout', label: 'filter.tg.handout', options: opts('tg.handoutopt.', ['auto', 'request', 'timer']) },
+    activeFilter()
+  ],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it, true); }, skeleton: '40%' },
+    { label: 'col.tg.rule', render: function (it) { return h('div', { class: 'text-sm text-secondary-700 dark:text-secondary-200 eco-clamp', 'data-group-sentence': '', text: handoutSentence(it) }); }, skeleton: '55%' },
+    { label: 'col.tg.tasks', render: function (it) { return h('span', { class: 'tabular-nums', text: t('tg.tasksN', { n: fmtNum((it.taskIds || []).length) }) }); }, width: 120 },
+    { label: 'col.ev.players', render: function (it) { return h('span', { class: 'tabular-nums', text: fmtNum(it.players || 0) }); }, width: 100 },
+    { label: 'col.status', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, activeTag(it.isActive), (it.audienceTagIds || []).length || it.minLevel != null || it.maxLevel != null ? tag(t('audience.only'), 'primary') : null); }, width: 130 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.tk.key.hint', required: true, lockOnEdit: true },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+    ] },
+    tr('name', { label: 'f.tg.name', required: true, max: 128 }),
+    tr('description', { multiline: true, max: 1000, optional: true }),
+    { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
+    categoryField('task'),
+    { type: 'heading', label: 'tg.h.handout' },
+    { type: 'row', fields: [
+      { name: 'activeCount', type: 'number', label: 'f.tg.activeCount', hint: 'f.tg.activeCount.hint', required: true, min: 1, max: 20 },
+      { name: 'orderMode', type: 'select', label: 'f.tg.orderMode', required: true, noPlaceholder: true, options: opts('tg.order.', ['ordered', 'random']) }
+    ] },
+    { type: 'row', fields: [
+      { name: 'handout', type: 'select', label: 'f.tg.handout', hint: 'f.tg.handout.hint', required: true, noPlaceholder: true, options: opts('tg.handoutopt.', ['auto', 'request', 'timer']) },
+      { name: 'handoutMinutes', type: 'number', label: 'f.tg.handoutMinutes', required: true, min: 1, max: 525600, when: function (v) { return v.handout === 'timer'; } }
+    ] },
+    { name: 'isRepeatable', type: 'bool', inline: true, label: 'f.tg.repeatable', hint: 'f.tg.repeatable.hint', empty: false },
+    { type: 'heading', label: 'tg.h.tasks' },
+    { name: 'taskIds', type: 'refMulti', resource: 'tasks', filter: { level: 'top' }, label: 'f.tg.tasks', hint: 'f.tg.tasks.hint', optional: true, empty: [] },
+    { type: 'heading', label: 'ev.h.who' },
+    playerTagsField(),
+    levelRow(),
+    windowRow(),
+    { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
+  ],
+  defaults: function () {
+    return { key: '', name: {}, description: {}, iconUrl: '', categoryId: null, activeCount: 1, orderMode: 'ordered', handout: 'auto', handoutMinutes: 60, isRepeatable: false, taskIds: [],
+      audienceTagIds: [], levelTableId: null, minLevel: null, maxLevel: null, startsAt: null, endsAt: null, isActive: true, sort: 0 };
+  },
+  fixPayload: function (p) {
+    if (p.sort == null) p.sort = 0;
+    if (p.handout !== 'timer') p.handoutMinutes = 0;
+    if (p.minLevel == null && p.maxLevel == null) p.levelTableId = null;
+    p.taskIds = p.taskIds || [];
+    return p;
+  },
+  afterSave: function () { forgetRefs('task-groups'); forgetRefs('tasks'); }
+};
+
+OVERVIEW_CATALOG.push('tasks', 'task-groups');
+
+var TASK_CARD = { id: null, data: null, loading: false, at: 0, err: null };
+
+function loadTaskCard(id) {
+  TASK_CARD.loading = true;
+  return api('GET', '/users/' + encodeURIComponent(id) + '/tasks' + qs({ lang: lang() })).then(function (res) {
+    TASK_CARD.loading = false;
+    TASK_CARD.at = Date.now();
+    TASK_CARD.data = res;
+    TASK_CARD.err = null;
+    var old = document.querySelector('[data-player-tasks]');
+    if (old) old.removeAttribute('data-key');
+    schedule();
+  }, function (err) {
+    TASK_CARD.loading = false;
+    TASK_CARD.at = Date.now();
+    TASK_CARD.err = err;
+    schedule();
+  });
+}
+
+function taskStateTag(it) {
+  var s = it.state;
+  var color = s === 'claimed' ? 'success' : s === 'completed' ? 'warning' : s === 'active' ? 'primary' : 'secondary';
+  var label = t('tk.state.' + (s === 'claimed' && !it.prize ? 'finished' : s));
+  if (s === 'hidden' && it.reason) label = t('tk.reason.' + it.reason);
+  return tag(label, color);
+}
+
+function taskAction(userId, it, what) {
+  var done = { reset: 'tk.reset.done', complete: 'tk.complete.done', claim: 'tk.claim.done' }[what];
+  function run() {
+    api('POST', '/users/' + encodeURIComponent(userId) + '/tasks/' + encodeURIComponent(it.id) + '/' + what, {}).then(function () {
+      toast('success', t(done));
+      TASK_CARD.at = 0;
+      loadTaskCard(userId);
+    }, function (err) { toast('error', errorText(err)); });
+  }
+  if (what === 'claim') { run(); return; }
+  confirmModal({ title: t('tk.' + what + '.title'), text: t('tk.' + what + '.text', { name: it.name }), ok: t('tk.' + what), danger: what === 'reset' }).then(function (yes) { if (yes) run(); });
+}
+
+function taskLine(userId, it, write, depth) {
+  var progress = it.condition === 'children' ? t('tk.progress.children', { n: fmtNum(it.value), total: fmtNum(it.target) }) : t('tk.progress', { n: numLocal(it.value), total: numLocal(it.target) });
+  var line = h('div', { class: 'flex flex-wrap items-center gap-2 py-1.5 text-sm' + (depth ? ' eco-tk-sub' : ''), 'data-pp-task': it.key, 'data-state': it.state },
+    h('span', { class: 'font-medium truncate min-w-0', text: it.name || it.key }),
+    taskStateTag(it),
+    h('span', { class: 'tabular-nums text-secondary-600 dark:text-secondary-300 whitespace-nowrap', 'data-task-progress': '', text: progress }),
+    it.repeat && it.repeat !== 'once' && !depth ? h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: t('tk.repeat.' + it.repeat) + (it.completions ? ' · ' + t('tk.completionsN', { n: fmtNum(it.completions) }) : '') }) : null,
+    h('span', { class: 'flex-1' }));
+  if (write && it.state !== 'hidden' && it.state !== 'locked') {
+    var acts = h('div', { class: 'flex flex-wrap items-center gap-1' });
+    if (it.state === 'active' && it.status) acts.appendChild(Object.assign(button({ variant: 'link', size: 'sm', label: t('tk.reset'), onclick: function () { taskAction(userId, it, 'reset'); } }), { title: t('tk.reset') }));
+    if (it.state === 'completed' && it.claimable) acts.appendChild(button({ variant: 'link', size: 'sm', label: t('tk.claim'), onclick: function () { taskAction(userId, it, 'claim'); } }));
+    if (it.state === 'completed' && !it.claimable) acts.appendChild(button({ variant: 'link', size: 'sm', label: t('tk.reset'), onclick: function () { taskAction(userId, it, 'reset'); } }));
+    if (it.state === 'active') acts.appendChild(button({ variant: 'link', size: 'sm', label: t('tk.complete'), onclick: function () { taskAction(userId, it, 'complete'); } }));
+    Array.prototype.forEach.call(acts.querySelectorAll('button'), function (b) { b.setAttribute('data-task-action', b.textContent.trim()); });
+    line.appendChild(acts);
+  }
+  var wrap = h('div', { class: 'min-w-0' }, line);
+  (it.children || []).forEach(function (c) { wrap.appendChild(taskLine(userId, c, write, 1)); });
+  return wrap;
+}
+
+function playerTasksCard() {
+  var id = playerCardRoute();
+  var existing = document.querySelector('[data-player-tasks]');
+  if (!id || !token() || !aclCan('HIRO_ECONOMY', 0)) { if (existing) existing.remove(); return; }
+  var main = null;
+  var mains = document.querySelectorAll('#main > main');
+  for (var i = 0; i < mains.length; i++) if (mains[i].style.display !== 'none') main = mains[i];
+  var grid = main && main.querySelector('div.flex.flex-col.flex-1.min-w-0 > div.grid.grid-cols-1.gap-4');
+  if (!grid) return;
+  if (TASK_CARD.id !== id) { TASK_CARD.id = id; TASK_CARD.data = null; TASK_CARD.err = null; TASK_CARD.at = 0; }
+  if (!TASK_CARD.loading && Date.now() - TASK_CARD.at > 20000) loadTaskCard(id);
+  var p = TASK_CARD.data;
+  var anchor = grid.querySelector('[data-player-activity]') || grid.querySelector('[data-player-progress]') || grid.querySelector('[data-player-mod]');
+  var key = lang() + '|' + id + '|' + (p ? JSON.stringify([p.items, p.groups]) : TASK_CARD.err ? 'err' : 'loading');
+  var placed = existing && existing.parentNode === grid && (anchor ? existing.previousElementSibling === anchor : grid.firstChild === existing);
+  if (existing && existing.getAttribute('data-key') === key && placed) return;
+  if (existing) existing.remove();
+  var body = h('div', { class: 'px-4 py-3' });
+  var cardEl = h('section', { class: 'flex flex-col dark:bg-secondary-800 rounded-md shadow bg-white', 'data-player-tasks': '', 'data-key': key, 'data-economy': 'player-tasks', 'data-l10n-skip': '', 'aria-labelledby': 'player-tasks-title', dir: document.documentElement.getAttribute('dir') || 'ltr' }, body);
+  var title = h('h2', { id: 'player-tasks-title', class: 'font-medium', text: t('tk.card') });
+  var place = function () { if (anchor) anchor.after(cardEl); else grid.insertBefore(cardEl, grid.firstChild); };
+  if (!p) {
+    body.appendChild(h('div', { class: 'flex items-center justify-between gap-2 mb-3' }, title));
+    body.appendChild(TASK_CARD.err ? notice('error', errorText(TASK_CARD.err), button({ variant: 'link', size: 'sm', label: t('try.again'), onclick: function () { TASK_CARD.at = 0; loadTaskCard(id); } })) : h('div', { class: 'flex flex-col gap-2' }, bar('40%'), bar('60%')));
+    place();
+    return;
+  }
+  var write = aclCan('HIRO_ECONOMY', 1);
+  var visible = (p.items || []).filter(function (it) { return it.isActive && it.state !== 'hidden'; });
+  var hidden = (p.items || []).length - visible.length;
+  body.appendChild(h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-2' }, title,
+    h('a', { href: hashFor('tasks'), class: 'eco-link text-sm', text: t('tk.all') })));
+  var list = h('div', { class: 'flex flex-col eco-tk-list', 'data-pp-tasks': '' });
+  visible.forEach(function (it) { list.appendChild(taskLine(id, it, write, 0)); });
+  if (!visible.length) list.appendChild(h('span', { class: 'text-sm text-secondary-500 dark:text-secondary-400 py-1', text: t('tk.none') }));
+  body.appendChild(list);
+  if (hidden) body.appendChild(h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1', text: t('tk.hiddenN', { n: fmtNum(hidden) }) }));
+  (p.groups || []).filter(function (g) { return g.isActive; }).forEach(function (g) {
+    var head = h('div', { class: 'flex flex-wrap items-center gap-2 text-sm' },
+      h('span', { class: 'font-medium', text: g.name || g.key }),
+      tag(g.open ? t('tg.round', { n: fmtNum(g.cycle) }) : t('tk.reason.' + (g.reason || 'groupClosed')), g.open ? 'primary' : 'secondary'),
+      h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300 tabular-nums', text: t('tg.progress', { n: fmtNum(g.done), total: fmtNum(g.total) }) }),
+      g.nextAt ? h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('tg.nextAt', { date: fmtDate(g.nextAt, true) }) }) : null,
+      h('span', { class: 'flex-1' }));
+    if (write && g.open && g.canRequest) {
+      var nx = button({ variant: 'link', size: 'sm', label: t('tg.next'), onclick: function () {
+        api('POST', '/users/' + encodeURIComponent(id) + '/task-groups/' + encodeURIComponent(g.id) + '/next', {}).then(function () { toast('success', t('tg.next.done')); TASK_CARD.at = 0; loadTaskCard(id); }, function (err) { toast('error', errorText(err)); });
+      } });
+      nx.setAttribute('data-group-next', g.key);
+      head.appendChild(nx);
+    }
+    var box = h('div', { class: 'mt-3 border-t border-secondary-200 dark:border-secondary-700 pt-4', 'data-pp-group': g.key }, head);
+    (g.tasks || []).forEach(function (it) { box.appendChild(taskLine(id, it, write, 0)); });
+    if (g.open && !(g.tasks || []).length) box.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 py-1', text: t('tg.empty') }));
+    body.appendChild(box);
+  });
   place();
 }
 
@@ -12759,6 +13454,7 @@ function nativeTweaks() {
   playerModCard();
   playerProgressCard();
   playerActivityCard();
+  playerTasksCard();
 }
 
 var ROOT_ID = 'economy-root';

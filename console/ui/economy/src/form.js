@@ -858,6 +858,7 @@ function buildForm(fields, values, ctx) {
       var visible = !e.def.when || e.def.when(values);
       var el = e.row ? e.el : e.wrap;
       el.hidden = !visible;
+      if (!visible && !e.hidden && !e.row && e.wrap && e.wrap.setError) e.wrap.setError(null);
       e.hidden = !visible;
     });
     if (ctx && ctx.onchange) ctx.onchange(values);
