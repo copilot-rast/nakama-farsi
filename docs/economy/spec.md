@@ -275,3 +275,67 @@ Economy section after «روزهای پیاپی»: «تسک‌ها» (`#/economy
 ### Star Catcher
 
 The seed adds the task categories `star_missions_daily` and `star_missions_story`, daily «امروز دو دور بازی کن» (20 coins) and «پنج ستارهٔ طلایی بگیر» (15), weekly «این هفته ۱۰۰۰ امتیاز جمع کن» (100), «شروع ستاره‌چین» with three sub-tasks (one round, three golden stars, a round of 100+; 200 coins, in-app note), «کهنه‌کار: ده دور بازی کن» (after the starter, from level 2; 100) and the group «زنجیرهٔ شکارچی» (three tasks in order, automatic hand-out, 10/15/30 coins). Every seeded task is collected with a button, so no earlier balance changes.
+
+## Items, inventory and product rules (phase 8)
+
+Port of asp `Economy/Inventory` (InventoryItem, PlayerItem, ServiceRequest, InventoryPlayerService, InventoryUseService) and the shop rules of asp `Economy/Shop` (ProductShop MinLevel/MaxLevel/IsOneTime/CheckContents/PurchaseMessages, PlayerShopService Owned/LevelLocked, PaymentProductResolver checks). Migration `20261115000000-economy-items.sql` (Up re-runnable, Down raises) adds the tables, the key types `item` (categories and tags of items) and `item_type` (categories used as item types; seeded `avatar`, `frame`, `skin`, `board`, `piece`, `ball`, `trail`, `emote`, `other`, editable in project settings «دسته‌بندی‌ها»), five server-only built-in event types (`item_bought` value = price, `item_unlocked` value = level, `item_upgraded` value = new upgrade level, `item_equipped`, `item_used` value = units) and the product rule columns.
+
+### Decisions
+
+- Item types are base categories of key type `item_type`, not an enum, so a game adds its own types without a release. The type is also the equip slot: a player equips at most one item per type.
+- Ownership is one row per player and item (`economy_user_item`, primary key `(user_id, item_id)`); items are not stackable. Every grant is `INSERT … ON CONFLICT DO NOTHING`, so a second grant of an owned item is a no-op, never a duplicate.
+- The ownership row has no foreign key to `users`: inserting a referencing row takes a key-share lock on the player row, and Nakama's wallet update takes `FOR UPDATE` on the same row from its own connection, which deadlocked the task claims before (see «Claims» in tasks). Rows of deleted players are removed by the event sweep (200 players per pass) and by the e2e cleanup.
+- Buying, upgrading and services debit through Nakama's wallet with a deterministic `grantId` in the ledger metadata (UUIDv5 of player and `requestId`). The ownership/upgrade row is written (and locked) in the plugin transaction *before* the debit, so a parallel second buy waits on that row and gets `ALREADY_OWNED` without paying. If the transaction fails after the wallet committed, a retry with the same `requestId` finds the ledger row and finishes without a second debit. Without a `requestId` the server makes one, so the call is still safe against double charging (ownership is unique) but cannot be replayed.
+- `requestId` results are kept 24 hours in `economy_item_request (user_id, request_id)`; the same id for another action, item or detail answers `REQUEST_ID_REUSED`. Required for services (`economy_item_use`), optional for buy and upgrade.
+- Starter items are granted lazily on the first economy call of a player (`ensureDefaults`, in its own small transaction, `ON CONFLICT DO NOTHING`), and the first starter of each type is equipped when that slot is empty. Starters cannot be taken back in the console (`STARTER_ITEM`), so they never come back after a revoke.
+- Unlock by level: an item with `unlock_level` and no price is opened free with `economy_item_unlock` once the player reaches the level; an item with both is buyable from that level (`LEVEL_TOO_LOW` before). asp's "pay to unlock early" was not ported.
+- Level everywhere (items, product rules) comes from the level tables: the item's or product's `level_table_id`, else the first active table by `sort`; the reached level is the higher of `economy_user_level` and the level the source meta already reaches (same rule as tasks). Without any level table the old `level` meta is read, so older setups keep working. This replaces the hard-coded `level` meta read of `economy_purchase_start`.
+- Not copied from asp: the non-atomic claim, find-then-insert dedup (here unique keys decide), currency or meta writes from the client, the prize "send gift" transfer, the avatar buy outside a transaction, the best-effort ledger (here the wallet ledger is the record and the request id makes it idempotent) and enum-only types.
+
+### Tables
+
+| Table | What |
+|---|---|
+| `economy_item` | `key` (unique, immutable after create: `KEY_IMMUTABLE`), `type_id` (category of key type `item_type`), translated `name`/`description`, `icon_url`, `image_url` (economy uploads), `category_id` (key type `item`), `tag_ids` (`item` or `general`), `rarity` (`common`, `uncommon`, `rare`, `epic`, `legendary`), `parent_key` / `requires_key` (another item that must be owned first), `is_starter`, `level_table_id` + `unlock_level`, `price` `{currencyKey, amount}` (null = not for sale), `upgrades` `[{currencyKey, amount}]` (the price of level 1, 2, …; the length is the max upgrade level, at most 50), `services` `[{key, name, currencyKey, unitPrice, maxUnits}]` (at most 20), `metadata`, `sort`, `is_active` |
+| `economy_user_item` | `user_id`, `item_id`, `source` (`starter`, `buy`, `unlock`, `prize`, `admin`), `source_ref` (grant row, request grant id, level or admin name), `owned_at`, `upgrade_level`, `equipped`, `slot` (type key), `version`. Unique `(user_id, slot) WHERE equipped` |
+| `economy_item_request` | `(user_id, request_id)`, action, item key, detail, stored result, `expires_at` (24 h; swept with the events) |
+| `economy_product` new columns | `max_level` (null = no limit), `level_table_id`, `is_one_time`, `check_contents` (default true), `purchase_message` (translated) |
+| `economy_payment.once_key` | `user:product` for one-time products, unique where set |
+
+### Prize item type `item`
+
+`{type:'item', key, action:'give'}` (value is stored as `1`). It is granted inside the one `grant()` transaction of every prize source (payments, gifts, tasks, event prizes, streaks, level steps, referrals, admin grants), before the wallet part, with `INSERT … ON CONFLICT DO NOTHING` and `source_ref` = the grant row, so the existing claim / `once_key` design keeps every grant single. A prize with an unknown item is refused (`ITEM_NOT_FOUND`), and an item used in a prize cannot be deleted (`IN_USE`). `storage` items keep working unchanged.
+
+### Product rules
+
+- `min_level` / `max_level` against the level above. `economy_catalog` hides a product when the player is above `max_level` and marks `levelLocked` below `min_level`; `economy_purchase_start` answers `LEVEL_TOO_LOW` / `LEVEL_TOO_HIGH`. Levels are checked only when a purchase starts: a payment that is already paid is delivered even if the level changed meanwhile.
+- `is_one_time`: the catalog hides it once the player has a successful purchase; start answers `PRODUCT_ALREADY_BOUGHT`. Settlement guard: the success transition sets `once_key` in the same `UPDATE … WHERE status='pending'`; when two store or gateway payments of the same player and one-time product settle at the same time, the unique index lets only one win. The loser stays `success` (the money was taken) with `outcome='duplicate'`, `reward_error='PRODUCT_ALREADY_BOUGHT'` and no grant, so it shows in «پرداخت‌ها» as a payment to refund; `retry-grant` refuses it. Coin (`in_app`) payments take the once key at insert, before the debit, and release it if they fail.
+- `check_contents` (default on; it only matters when the prize gives items): start answers `PRIZE_ALREADY_OWNED` when the player owns every item of the prize and `REQUIRES_ITEM` when an item's `requires_key`/`parent_key` is missing and not in the same prize. At settlement the grant refuses with `PRIZE_ALREADY_OWNED` when none of the items could be added; for coin purchases this happens before the debit (the payment fails, no coins move), for paid payments it is kept as `reward_error` for a refund.
+- `purchase_message`: translated, returned as `purchaseMessage` by the catalog, by a successful coin purchase and by `economy_purchase_status` once delivered. `economy_purchase_start` and `economy_purchase_status` accept `lang`.
+- Purchase counts are successful payments that are not duplicates.
+
+### Client RPCs
+
+| RPC | Input | Output |
+|---|---|---|
+| `economy_inventory` | `{type?, lang?}` | `{lang, level, counts:{owned,total}, equipped:{slot:key}, items:[{id, key, type, typeName, name, description, iconUrl, imageUrl, rarity, categoryKey, tags, parentKey, requiresKey, isStarter, unlockLevel, price, maxUpgradeLevel, services, metadata, sort, isActive, owned, equipped, locked, playerLevel, requirementMet, canBuy, canUnlock, upgradeLevel, nextUpgradePrice, source?, ownedAt?, version?}]}` (active items) |
+| `economy_item_buy` | `{key, requestId?, lang?}` | `{lang, item, paid:[{currencyKey,amount}], wallet, replayed}`; `ITEM_NOT_FOUND`, `NOT_FOR_SALE`, `LEVEL_TOO_LOW`, `REQUIRES_ITEM`, `ALREADY_OWNED`, `INSUFFICIENT_BALANCE`, `REQUEST_ID_REUSED` |
+| `economy_item_unlock` | `{key, lang?}` | same; `NOT_UNLOCKABLE`, `LEVEL_TOO_LOW`, `REQUIRES_ITEM`, `ALREADY_OWNED` |
+| `economy_item_upgrade` | `{key, fromLevel?, requestId?, lang?}` | same plus `level`; `NOT_OWNED`, `UPGRADE_CHANGED` (fromLevel differs), `UPGRADE_MAXED` |
+| `economy_item_equip` / `economy_item_unequip` | `{key, lang?}` | `{lang, slot, item, unequipped:[keys]}`; `NOT_OWNED`. All owned rows of the type are locked in id order, so parallel equips leave exactly one equipped |
+| `economy_item_use` | `{key, service, units?, requestId, lang?}` | same plus `service`, `units`; `REQUEST_ID_REQUIRED`, `SERVICE_NOT_FOUND`, `INVALID_UNITS`, `NOT_OWNED` |
+| `economy_purchases_mine` | `{}` | `{items:[{productId, key, count, lastPurchasedAt}]}` |
+
+`economy_catalog` products now also carry `maxLevel`, `isOneTime`, `owned`, `levelLocked`, `bought`, `purchaseCount`, `requiresKey`, `purchaseMessage` and `items` (item keys of the prize). Buy, unlock, upgrade and grant/revoke write player activity rows of the new kind `item` (`bought`, `unlocked`, `upgraded`, `granted`, `revoked`, `starter`).
+
+### Console API (`/v2/console/economy/`, `HIRO_ECONOMY`)
+
+CRUD `items` through the generic resource handlers (search on key and every name translation; filters `typeId`, `categoryId`, `isActive`, `isStarter`, `rarity`, `forSale`; rows carry `owners` and `equippedBy`). Errors: `ITEM_TYPE_NOT_FOUND`, `CATEGORY_KIND_MISMATCH` (field `typeId`), `INVALID_RARITY`, `SELF_REFERENCE`, `ITEM_NOT_FOUND`, `STARTER_HAS_LEVEL`, `INVALID_LEVEL`, `LEVEL_TABLE_NOT_FOUND`, `CURRENCY_NOT_FOUND`, `INVALID_PRICE`, `TOO_MANY_UPGRADES`, `TOO_MANY_SERVICES`, `DUPLICATE_SERVICE`, `INVALID_UNITS`, `KEY_IMMUTABLE`, `IN_USE` (owned, in a prize, or required by another item). Products: `INVALID_LEVEL_RANGE`, `LEVEL_TABLE_NOT_FOUND`, `ONE_TIME_SUBSCRIPTION`. Player tools: `GET /users/{id}/items?lang&type` (also inactive items the player owns), `POST /users/{id}/items {itemId}` (source `admin`, `ALREADY_OWNED`), `DELETE /users/{id}/items/{itemId}` (`NOT_OWNED`, `STARTER_ITEM`); both go to the console audit log and the player activity. The summary counts `items` and `ownedItems`.
+
+### Console pages
+
+Economy section after «فروشگاه»: «آیتم‌ها» (`#/economy/items`, Phosphor backpack icon): search, filters for type, category, rarity and status; rows with type and rarity chips, how a player gets it (starter, price, from level N, prize only, required item, upgrade levels) and owners; cards at 390px. The docked editor has type (with the «+» quick-create of an item type), rarity, category and tags, «همه از اول دارند», price, unlock level and table, required and base item, an upgrade row editor (currency and price per level), a service row editor, icon and large image. The prize item editor has the new type «آیتم» with an item picker. The product editor has a «قانون‌های خرید» block (min and max level, level table, «فقط یک بار خریدنی», «اگر بازیکن همه را دارد، نفروش», «پیام بعد از خرید») and the product list a rules column. The native player page gets «انبار بازیکن» after the tasks card: owned items with type, rarity, equipped mark, source and upgrade level, the equipped item per type, «پس گرفتن» with a confirmation and «دادن آیتم» with an item picker. The page is in Ctrl K.
+
+### Star Catcher
+
+The seed adds four items: «سبد چوبی» (skin, starter), «سبد یاقوتی» (skin, rare, sold only by the product `star_item_ruby` for 60 coins with `check_contents` on), «سبد یخی» (skin, epic, 120 coins straight from the inventory) and «قاب طلایی» (frame, free from level 2 of `star_levels`); and the one-time product «بستهٔ شروع» (`star_starter_pack`, 150 coins for 30 coins or 5000 toman, up to level 2, with a purchase message). The «انبار» screen lists the items by type with rarity, owned and equipped marks, buy, unlock and equip buttons; the equipped skin changes the basket in the game (`metadata.art`).
