@@ -190,10 +190,10 @@ test.describe('support: access and search', () => {
   test('every new page is in the page search', async ({ page }) => {
     await open(page, '#/support/tickets');
     for (const [q, url] of [['گفتگوی زنده', /#\/support\/live-chat/], ['فعالیت بازیکنان', /#\/moderation\/activity/], ['کدهای معرف', /#\/economy\/referrals/], ['پیکربندی بازی', /#\/publication\/remote-config/], ['تیکت‌ها', /#\/support\/tickets/]] as [string, RegExp][]) {
-      await expect(page.locator('.sp-pal-input:visible')).toHaveCount(0);
+      await expect(page.locator('.pl-pal-input:visible')).toHaveCount(0);
       await page.keyboard.press('Control+k');
-      await page.locator('.sp-pal-input:visible').fill(q);
-      await expect(page.locator('.sp-pal-row').first()).toContainText(q);
+      await page.locator('.pl-pal-input:visible').fill(q);
+      await expect(page.locator('.pl-pal-row').first()).toContainText(q);
       await page.keyboard.press('Enter');
       await expect(page).toHaveURL(url);
       await settle(page);

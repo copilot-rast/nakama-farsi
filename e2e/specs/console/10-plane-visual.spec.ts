@@ -7,7 +7,7 @@ import { noHorizontalScroll, still } from '../../lib/console';
 import { ROOT } from '../../lib/env';
 import { restoreConfig } from '../../lib/db';
 
-const SELECTORS = JSON.parse(fs.readFileSync(path.join(ROOT, '..', 'console', 'ui', 'spatial', 'selectors.json'), 'utf8'));
+const SELECTORS = JSON.parse(fs.readFileSync(path.join(ROOT, '..', 'console', 'ui', 'plane', 'selectors.json'), 'utf8'));
 const ZERO = '00000000-0000-0000-0000-000000000000';
 
 type Screen = { name: string; hash: string; ready?: string; act?: (page: Page) => Promise<void> };
@@ -22,7 +22,7 @@ async function firstId(page: Page, list: string, pattern: RegExp) {
 
 async function show(page: Page, hash: string, ready = '#main > main') {
   await page.goto('/' + hash);
-  await page.locator('.sp-rail').waitFor();
+  await page.locator('.pl-rail').waitFor();
   await page.locator(ready).first().waitFor();
   await page.waitForFunction(() => !document.querySelector('#main .animate-pulse, [data-economy] .animate-pulse'));
   await page.waitForTimeout(400);
@@ -82,10 +82,10 @@ const NATIVE: Record<string, Screen[]> = {
   ],
 };
 
-test.describe('spatial visual: native pages', () => {
+test.describe('plane visual: native pages', () => {
   for (const [group, screens] of Object.entries(NATIVE)) {
     for (const mode of ['light', 'dark'] as const) {
-      test(`${group} in fa ${mode}: glass, no sideways scroll, text at 4.5:1`, async ({ spawn }, testInfo) => {
+      test(`${group} in fa ${mode}: no sideways scroll, text at 4.5:1`, async ({ spawn }, testInfo) => {
         const page = await spawn({ signedIn: true, mode });
         for (const s of screens) {
           await show(page, s.hash);
@@ -109,7 +109,7 @@ test.describe('spatial visual: native pages', () => {
   });
 
   for (const mode of ['light', 'dark'] as const) {
-    test(`overlays in fa ${mode}: row menu, editor windows and a confirm dialog are readable glass`, async ({ spawn }, testInfo) => {
+    test(`overlays in fa ${mode}: row menu, editor windows and a confirm dialog are readable`, async ({ spawn }, testInfo) => {
       const page = await spawn({ signedIn: true, mode });
       await show(page, '#/players');
       await page.locator('#main tbody tr').nth(1).locator('button').last().click();
@@ -129,7 +129,7 @@ test.describe('spatial visual: native pages', () => {
       const modal = page.locator('.x-modal form.x-form');
       await expect(modal).toBeVisible();
       await still(page);
-      expect(await modal.evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('28px');
+      expect(await modal.evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('8px');
       await check(page, testInfo, 'confirm', mode);
     });
   }
@@ -149,15 +149,15 @@ test.describe('spatial visual: native pages', () => {
     await show(page, '#/', '[_echarts_instance_] svg');
     const strip = page.locator('#main .grid.xl\\:grid-cols-5');
     await expect(strip.locator(':scope > .rounded-md.shadow.bg-white')).toHaveCount(5);
-    expect(await strip.evaluate((e) => getComputedStyle(e).borderRadius)).toBe('28px');
+    expect(await strip.evaluate((e) => getComputedStyle(e).borderRadius)).toBe('8px');
     await expect(page.locator('#main [_echarts_instance_] svg')).toHaveCount(4);
     const fill = await page.locator('#main [_echarts_instance_] text').first().evaluate((e) => getComputedStyle(e).fill);
     const ink3 = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--ink-3').trim());
-    expect(fill).toBe('rgb(79, 86, 101)');
-    expect(ink3).toBe('#4f5665');
+    expect(ink3).toBe('oklch(0.4176 0.0072 239.98)');
+    expect(fill.replace(/\s+/g, ' ')).toBe(ink3);
   });
 
-  test('storage object editor: floating window, Monaco takes typing where it was clicked', async ({ page }) => {
+  test('storage object editor: docked panel, Monaco takes typing where it was clicked', async ({ page }) => {
     await show(page, '#/storage');
     const row = page.locator('#main tbody tr').filter({ hasText: 'economy_items' }).first();
     await row.click();
@@ -165,8 +165,8 @@ test.describe('spatial visual: native pages', () => {
     await expect(form).toBeVisible();
     await still(page);
     const r = await form.evaluate((e) => ({ radius: getComputedStyle(e).borderTopLeftRadius, top: e.getBoundingClientRect().top }));
-    expect(r.radius).toBe('30px');
-    expect(r.top).toBeGreaterThanOrEqual(15);
+    expect(r.radius).toBe('0px');
+    expect(r.top).toBeGreaterThanOrEqual(0);
     const editor = form.locator('.monaco-editor').first();
     await expect(editor).toBeVisible();
     const box = await editor.locator('.view-lines').boundingBox();
@@ -186,7 +186,7 @@ const OURS: Record<string, string[]> = {
   settings: ['#/project-settings/brand', '#/project-settings/setup', '#/project-settings/languages', '#/project-settings/countries', '#/project-settings/accounts', '#/project-settings/otp', '#/project-settings/app-versions', '#/project-settings/categories', '#/project-settings/tags', '#/project-settings/report-titles', '#/project-settings/events', '#/project-settings/payment-methods', '#/project-settings/sms', '#/project-settings/email'],
 };
 
-test.describe('spatial visual: our pages', () => {
+test.describe('plane visual: our pages', () => {
   for (const [group, hashes] of Object.entries(OURS)) {
     for (const mode of ['light', 'dark'] as const) {
       test(`${group} in fa ${mode}: glass windows and readable text`, async ({ spawn }, testInfo) => {
@@ -201,23 +201,23 @@ test.describe('spatial visual: our pages', () => {
 
   test('list pages put their header inside one window; overview is three KPI strips', async ({ page }) => {
     await show(page, '#/economy/products', '#economy-root table');
-    const win = page.locator('#economy-root div.max-w-\\[1600px\\][data-sp-list]');
+    const win = page.locator('#economy-root div.max-w-\\[1600px\\][data-pl-list]');
     await expect(win).toHaveCount(1);
     await expect(win.locator('h1')).toHaveText('فروشگاه');
-    expect(await win.evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('28px');
+    expect(await win.evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('8px');
     await show(page, '#/economy/overview', '#economy-root .eco-stat-grid');
     const strips = page.locator('#economy-root .eco-stat-grid');
     await expect(strips).toHaveCount(3);
-    expect(await strips.first().evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('28px');
+    expect(await strips.first().evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('8px');
   });
 
-  test('product editor: language tabs as a full-width segment, payment methods as chips, glass window', async ({ page }) => {
+  test('product editor: language tabs as a full-width segment, payment methods as chips, docked panel', async ({ page }) => {
     await show(page, '#/economy/products/new', '[data-economy="panel"] form');
     const form = page.locator('[data-economy="panel"] .x-form');
     await still(page);
     const w = await form.evaluate((e) => ({ width: e.getBoundingClientRect().width, radius: getComputedStyle(e).borderTopLeftRadius }));
     expect(w.width).toBeLessThanOrEqual(682);
-    expect(w.radius).toBe('30px');
+    expect(w.radius).toBe('0px');
     const tabs = form.locator('[data-translated="name"] .eco-tr-tabs');
     const tb = await tabs.boundingBox();
     const inner = await form.locator('[data-translated="name"]').boundingBox();
@@ -229,10 +229,10 @@ test.describe('spatial visual: our pages', () => {
     const before = await chip.getAttribute('aria-checked');
     await chip.click();
     await expect(chip).toHaveAttribute('aria-checked', before === 'true' ? 'false' : 'true');
-    expect(await chip.evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('999px');
+    expect(await chip.evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('6px');
   });
 
-  test('setup wizard sits on the sky with one centered window and a segmented step bar', async ({ page }, testInfo) => {
+  test('setup wizard sits on the canvas with one centered window and a segmented step bar', async ({ page }, testInfo) => {
     await show(page, '#/project-settings/setup', '#project-settings-body');
     try {
       await page.locator('#project-settings-body button', { hasText: 'باز کردن راهنما' }).click();
@@ -240,7 +240,7 @@ test.describe('spatial visual: our pages', () => {
       await expect(inner).toBeVisible();
       await still(page);
       const r = await inner.evaluate((e) => ({ radius: getComputedStyle(e).borderTopLeftRadius, w: e.getBoundingClientRect().width }));
-      expect(r.radius).toBe('30px');
+      expect(r.radius).toBe('12px');
       expect(r.w).toBeLessThanOrEqual(762);
       await expect(page.locator('.setup-step--on')).toHaveCount(1);
       await check(page, testInfo, 'wizard', 'light');

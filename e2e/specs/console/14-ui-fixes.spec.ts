@@ -49,10 +49,10 @@ test.describe('audit fixes', () => {
     const text = await page.locator('#main').innerText();
     expect(text).not.toMatch(/[۰-۹]/);
     expect(await page.evaluate(() => new Date(Date.UTC(2024, 2, 20, 12)).toLocaleDateString(undefined, { timeZone: 'UTC' }))).toBe('3/20/2024');
-    await page.locator('.sp-status').click();
-    await expect(page.locator('.sp-stats dd').first()).toHaveText(/^\d+$/);
-    await expect(page.locator('.sp-stats')).not.toContainText('–');
-    const box = await page.locator('.sp-stats').boundingBox();
+    await page.locator('.pl-status').click();
+    await expect(page.locator('.pl-stats dd').first()).toHaveText(/^\d+$/);
+    await expect(page.locator('.pl-stats')).not.toContainText('–');
+    const box = await page.locator('.pl-stats').boundingBox();
     expect(box!.x + box!.width).toBeLessThanOrEqual(1440);
     expect(box!.x).toBeGreaterThanOrEqual(0);
   });
@@ -167,8 +167,8 @@ test.describe('audit fixes', () => {
   test('page search ranks page names before section names', async ({ page }) => {
     await native(page, '#/');
     await page.keyboard.press('Control+k');
-    await page.locator('.sp-pal-input').fill('تن');
-    const labels = await page.locator('.sp-pal-row .sp-pal-label').allInnerTexts();
+    await page.locator('.pl-pal-input').fill('تن');
+    const labels = await page.locator('.pl-pal-row .pl-pal-label').allInnerTexts();
     expect(labels.length).toBeGreaterThan(0);
     for (const l of labels) expect(l).toContain('تن');
     await page.keyboard.press('Escape');
@@ -224,7 +224,7 @@ test.describe('audit fixes on a phone', () => {
     expect(b!.x).toBeGreaterThanOrEqual(0);
     expect(b!.x + b!.width).toBeLessThanOrEqual(390);
     await native(page, '#/storage', '#main tbody tr');
-    const over = await page.evaluate(() => [...document.querySelectorAll('#main table[data-sp-cards] td[data-sp-label]')].filter((td) => td.scrollWidth > td.clientWidth + 1).length);
+    const over = await page.evaluate(() => [...document.querySelectorAll('#main table[data-pl-cards] td[data-pl-label]')].filter((td) => td.scrollWidth > td.clientWidth + 1).length);
     expect(over).toBe(0);
   });
 

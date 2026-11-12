@@ -1,12 +1,12 @@
 {
   "name": "nakama-console-spatial",
   "private": true,
-  "description": "Spatial look (sky, glass windows, floating rail and top bar) for the prebuilt Nakama Console UI and its overlays.",
+  "description": "Retired: replaced by console/ui/plane. Not injected into dist; kept until the user confirms deletion.",
   "type": "module",
   "license": "Apache-2.0",
   "scripts": {
-    "build": "node scripts/build.mjs",
-    "check": "node scripts/build.mjs --check",
-    "test": "node --test \"test/*.test.mjs\""
+    "build": "node -e \"console.log('spatial is retired; console/ui/plane builds the look')\"",
+    "check": "node -e \"console.log('spatial is retired; nothing to check')\"",
+    "test": "node -e \"console.log('spatial is retired')\""
   }
 }

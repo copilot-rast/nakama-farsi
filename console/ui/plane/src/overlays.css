@@ -1,0 +1,235 @@
+html.pl body > div > div.fixed.inset-0.bg-secondary-900,
+html.pl div.fixed.inset-0.bg-secondary-900.opacity-60 {
+  background: var(--scrim) !important;
+  opacity: 1 !important;
+}
+
+html.pl div.fixed.inset-0.flex.justify-end:has(> .x-form) {
+  z-index: var(--z-window);
+  padding: var(--gap);
+  transform-origin: var(--win-origin, left) center;
+  transition-timing-function: var(--ease);
+}
+
+html[dir="ltr"].pl div.fixed.inset-0.flex.justify-end:has(> .x-form) {
+  --win-origin: right;
+}
+
+html.pl div.fixed.inset-0.flex.justify-end.translate-x-full:has(> .x-form) {
+  transform: scale(.96);
+  opacity: 0;
+}
+
+html.pl div.fixed.inset-0.flex.justify-end.duration-400:has(> .x-form) {
+  transition-duration: var(--d-exit);
+  transition-timing-function: var(--ease-exit);
+}
+
+html.pl div.fixed.inset-0.flex.justify-end.duration-300:has(> .x-form) {
+  transition-duration: var(--d3);
+}
+
+html.pl div.fixed.inset-0.flex.justify-end > .x-form {
+  height: auto;
+  max-height: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--r-editor);
+  background: var(--thick);
+  box-shadow: var(--thick-shadow);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  color: var(--ink-1);
+  overflow: hidden;
+}
+
+html.pl:not(.dark) div.fixed.inset-0.flex.justify-end > .x-form {
+  background: var(--surface);
+}
+
+html.pl div.fixed.inset-0.flex.justify-end > .x-form .\!absolute.top-2 {
+  top: 14px;
+  inset-inline-end: 14px;
+}
+
+html.pl div.fixed.inset-0.flex.justify-end > .x-form :is(.bg-white, .bg-secondary-50) {
+  background: transparent;
+}
+
+html.pl div.fixed.inset-0.flex.justify-end > .x-form :is(input.appearance-none, textarea.appearance-none, select.appearance-none) {
+  min-height: 44px;
+  border-color: var(--line);
+  border-radius: var(--r-field);
+  background-color: var(--well);
+  color: var(--ink-1);
+  box-shadow: none;
+}
+
+html.pl div.fixed.inset-0.flex.justify-end > .x-form :is(input.appearance-none, textarea.appearance-none):focus {
+  background-color: var(--capsule-hi);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+html.pl div.fixed.inset-0.flex.justify-end > .x-form .monaco-editor,
+html.pl div.fixed.inset-0.flex.justify-end > .x-form .monaco-editor-background {
+  border-radius: var(--r-card);
+}
+
+html.pl div.fixed.inset-0.flex.justify-end > .x-form .text-secondary-500 {
+  color: var(--ink-3);
+}
+
+html.pl div.fixed.inset-0.flex.justify-end > .x-form :is(.border-b, .border-t, .border) {
+  border-color: var(--line);
+}
+
+html.pl .x-modal.fixed {
+  z-index: var(--z-scrim);
+}
+
+html.pl .x-modal > div.fixed.inset-0 {
+  background: var(--scrim-modal);
+  opacity: 1;
+}
+
+html.pl .x-modal form.x-form.shadow-lg {
+  border: 1px solid var(--line);
+  border-radius: var(--r-window);
+  background: var(--thick);
+  box-shadow: var(--thick-shadow);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  color: var(--ink-1);
+  transform-origin: center top;
+  transition-timing-function: var(--ease);
+}
+
+html.pl .x-modal form.x-form.shadow-lg.opacity-0 {
+  transform: scale(.96);
+}
+
+html.pl .x-modal form.x-form :is(.bg-white, .bg-secondary-50) {
+  background: transparent;
+}
+
+html.pl :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > fieldset.contents > .text-lg > :is(div, .text-xl),
+html.pl :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > .text-lg > :is(div, .text-xl) {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+html.pl :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > fieldset.contents > .text-lg,
+html.pl :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > .text-lg {
+  padding-block: 20px 14px;
+  padding-inline: 28px 64px;
+  border-color: var(--line);
+}
+
+html.pl :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > fieldset.contents > .text-lg > div.border-b,
+html.pl :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > .text-lg > div.border-b {
+  padding: 0;
+  border: 0;
+}
+
+html.pl :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > fieldset.contents > .flex.gap-4.p-4.justify-end,
+html.pl :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form > .flex.gap-4.p-4.justify-end {
+  padding: 14px 28px 16px;
+  border-top: 1px solid var(--line);
+  background: var(--thick-bot);
+}
+
+html.pl :is(.x-modal, div.fixed.inset-0.flex.justify-end) .x-form :is(.border-b, .border-t, .border) {
+  border-color: var(--line);
+}
+
+html.pl .x-modal .x-form :is(input.appearance-none, textarea.appearance-none) {
+  min-height: 44px;
+  border-color: var(--line);
+  border-radius: var(--r-field);
+  background-color: var(--well);
+  color: var(--ink-1);
+}
+
+html.pl .x-modal .x-form :is(.text-secondary-500, .text-secondary-600, .text-secondary-700) {
+  color: var(--ink-2);
+}
+
+html.pl .v-popper__popper .v-popper__inner {
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--thick);
+  box-shadow: var(--thick-shadow);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  color: var(--ink-1);
+  padding: 6px;
+}
+
+html.pl .v-popper__popper .v-popper__inner > div,
+html.pl .v-popper__popper .v-popper__inner :is(.bg-white, .dark\:bg-secondary-800) {
+  background: transparent;
+}
+
+html.pl .v-popper__popper .v-popper__arrow-container {
+  display: none;
+}
+
+html.pl .v-popper__popper :is(a, button, [role="menuitem"]) {
+  border-radius: 10px;
+  color: var(--ink-1);
+}
+
+html.pl .v-popper__popper :is(a, button, [role="menuitem"]):hover {
+  background: var(--capsule-hi);
+}
+
+html.pl .v-popper__popper.v-popper__popper--shown .v-popper__wrapper {
+  animation: pl-pop-in var(--d2) var(--ease) backwards;
+}
+
+html.pl .x-notifications > * > * {
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--thick);
+  box-shadow: var(--thick-shadow);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  color: var(--ink-1);
+}
+
+html.pl .x-form .even\:bg-secondary-50:nth-child(even),
+html.pl :is(#main, [data-economy]) .even\:bg-secondary-50:nth-child(even) {
+  background-color: var(--well);
+  border-radius: var(--r-control);
+}
+
+html.pl div.fixed.inset-0.flex.justify-end > .x-form > :is(.overflow-y-auto, .x-scroll),
+html.pl div.fixed.inset-0.flex.justify-end > .x-form > fieldset.contents > :is(.overflow-y-auto, .x-scroll) {
+  min-height: 0;
+}
+
+html.pl .x-notifications > * > * {
+  animation: pl-toast-in var(--d3) var(--ease) backwards;
+}
+
+html.pl .eco-pop:not([hidden]),
+html.pl .eco-qc-pop:not([hidden]) {
+  border-color: var(--line);
+  border-radius: var(--r-card);
+  background: var(--thick);
+  box-shadow: var(--thick-shadow);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  animation: pl-pop-in var(--d2) var(--ease) backwards;
+  transform-origin: top center;
+}
+
+html.pl .eco-pop [role="option"] {
+  border-radius: 10px;
+  color: var(--ink-1);
+}
+
+html.pl .eco-pop [role="option"]:hover,
+html.pl .eco-pop [role="option"][aria-selected="true"] {
+  background: var(--capsule-hi);
+}

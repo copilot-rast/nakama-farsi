@@ -268,7 +268,7 @@ test.describe('chat: reports', () => {
     expect((await rpc(C, 'base_report_message', { messageId: bad.id, titleKey: 'nope' })).data.message).toBe('REPORT_TITLE_NOT_FOUND');
 
     await open(page, '#/moderation/reports');
-    await expect(page.locator('.sp-tabs a[href^="#/moderation/reports"] .sp-seg-count')).toBeVisible();
+    await expect(page.locator('.pl-side a[href^="#/moderation/reports"] .pl-badge')).toBeVisible();
     await search(page, k);
     const row = rows(page).filter({ hasText: 'e2e پیام آزاردهنده' });
     await expect(row).toHaveCount(1);

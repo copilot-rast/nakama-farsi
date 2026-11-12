@@ -1,0 +1,12 @@
+{
+  "name": "nakama-console-plane",
+  "private": true,
+  "description": "Plane look (sky, glass windows, floating rail and top bar) for the prebuilt Nakama Console UI and its overlays.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check",
+    "test": "node --test \"test/*.test.mjs\""
+  }
+}
