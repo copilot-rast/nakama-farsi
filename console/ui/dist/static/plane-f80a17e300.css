@@ -3535,3 +3535,26 @@ html.pl .setup-inner {
   color: var(--pos);
   font-size: 13px;
 }
+
+@media (max-width: 767px) {
+  html.pl :is(#main, [data-economy], .ps-window) table.eco-table tbody tr td {
+    height: auto !important;
+    min-height: 32px;
+    padding: 4px 12px;
+  }
+
+  html.pl :is(#main, [data-economy], .ps-window) table.eco-table tbody tr {
+    padding: 8px 0;
+    background: var(--surface);
+  }
+
+  html.pl #main table[data-pl-cards] tbody tr td[data-pl-full] > * {
+    width: 100% !important;
+    max-width: none;
+    margin: 0;
+  }
+
+  html.pl #main table[data-pl-cards] tbody tr {
+    background: var(--surface);
+  }
+}
