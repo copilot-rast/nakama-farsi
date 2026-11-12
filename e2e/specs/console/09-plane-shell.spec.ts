@@ -78,8 +78,8 @@ test.describe('plane shell: rail, sidebar and top bar', () => {
   test('economy sidebar lists the two task pages with their icons, current state and breadcrumbs', async ({ page }) => {
     await visit(page, '#/economy/products');
     const side = page.locator('.pl-side a.pl-nav');
-    await expect(side).toHaveCount(18);
-    for (const [hash, label] of [['#/economy/tasks', 'تسک‌ها'], ['#/economy/task-groups', 'گروه‌های تسک'], ['#/economy/items', 'آیتم‌ها'], ['#/economy/achievements', 'دستاوردها']]) {
+    await expect(side).toHaveCount(20);
+    for (const [hash, label] of [['#/economy/tasks', 'تسک‌ها'], ['#/economy/task-groups', 'گروه‌های تسک'], ['#/economy/items', 'آیتم‌ها'], ['#/economy/achievements', 'دستاوردها'], ['#/economy/chance-games', 'بازی شانس'], ['#/economy/prize-groups', 'گروه‌های جایزه']]) {
       const link = page.locator(`.pl-side a.pl-nav[href="${hash}"]`);
       await expect(link).toContainText(label);
       await expect(link.locator('svg')).toHaveCount(1);
