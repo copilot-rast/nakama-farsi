@@ -109,6 +109,7 @@ function missionCard(it, child) {
   const meta = [];
   if (it.repeat === "daily") meta.push(t("taskToday"));
   if (it.repeat === "weekly") meta.push(t("taskWeek"));
+  const sep = i18n.dir === "rtl" ? "، " : " · ";
   const progress = it.condition === "children" ? t("taskStepsOf", value, target) : t("progressOf", value, target);
   const foot = el("div", { class: "reward-foot" }, [el("span", { class: "reward-prize", text: it.prize ? it.prize.name : "" })]);
   if (ready) {
@@ -134,9 +135,9 @@ function missionCard(it, child) {
     it.description ? el("p", { class: "muted small", text: it.description }) : null,
     el("div", { class: "mission-line" }, [
       el("div", { class: "bar", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(Math.round(pct)), "aria-label": it.name }, [el("i", { style: `width:${pct.toFixed(1)}%` })]),
-      el("span", { class: "muted small", "data-progress": "", text: (meta.length ? meta.join(" · ") + " · " : "") + progress }),
+      el("span", { class: "muted small", "data-progress": "", text: (meta.length ? meta.join(sep) + sep : "") + progress }),
     ]),
-    notes.length ? el("p", { class: "muted small", "data-task-note": "", text: notes.join(" · ") }) : null,
+    notes.length ? el("p", { class: "muted small", "data-task-note": "", text: notes.join(sep) }) : null,
     child ? null : foot,
   ]);
   if ((it.children || []).length) {

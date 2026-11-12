@@ -9985,7 +9985,7 @@ function taskLine(userId, it, write, depth) {
     h('span', { class: 'font-medium truncate min-w-0', text: it.name || it.key }),
     taskStateTag(it),
     h('span', { class: 'tabular-nums text-secondary-600 dark:text-secondary-300 whitespace-nowrap', 'data-task-progress': '', text: progress }),
-    it.repeat && it.repeat !== 'once' && !depth ? h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: t('tk.repeat.' + it.repeat) + (it.completions ? ' · ' + t('tk.completionsN', { n: fmtNum(it.completions) }) : '') }) : null,
+    it.repeat && it.repeat !== 'once' && !depth ? h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: t('tk.repeat.' + it.repeat) + (it.completions ? (lang() === 'fa' ? '، ' : ' · ') + t('tk.completionsN', { n: fmtNum(it.completions) }) : '') }) : null,
     h('span', { class: 'flex-1' }));
   if (write && it.state !== 'hidden' && it.state !== 'locked') {
     var acts = h('div', { class: 'flex flex-wrap items-center gap-1' });

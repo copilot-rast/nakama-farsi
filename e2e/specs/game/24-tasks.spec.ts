@@ -58,7 +58,7 @@ test.describe('stargame: missions', () => {
     await openTasks(page);
     const two = page.locator('[data-task="star_mission_two_rounds"]');
     await expect(two).toHaveAttribute('data-state', 'active');
-    await expect(two.locator('[data-progress]')).toHaveText('امروز · ۰ از ۲');
+    await expect(two.locator('[data-progress]')).toHaveText('امروز، ۰ از ۲');
     await expect(two).toContainText('۲۰ سکه');
     const chain = page.locator('[data-group="star_hunter_chain"]');
     await expect(chain).toContainText('زنجیرهٔ شکارچی');
@@ -84,7 +84,7 @@ test.describe('stargame: missions', () => {
     await expect(page.locator('#tasks-dot')).toBeVisible();
 
     await openTasks(page);
-    await expect(two.locator('[data-progress]')).toHaveText('امروز · ۱ از ۲');
+    await expect(two.locator('[data-progress]')).toHaveText('امروز، ۱ از ۲');
     const step = starter.locator('[data-task="star_mission_starter_round"]');
     await expect(step).toHaveAttribute('data-state', 'claimed');
     await expect(step.locator('[data-task-state]')).toHaveText('تمام شد');
