@@ -36,7 +36,12 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 	routes = append(routes, s.taskConsoleRoutes()...)
 	routes = append(routes, s.itemConsoleRoutes()...)
 	routes = append(routes, s.achievementConsoleRoutes()...)
-	for _, res := range append(append(append(append(resources(), eventResources()...), taskResources()...), itemResources()...), achievementResources()...) {
+	routes = append(routes, s.chanceConsoleRoutes()...)
+	all := resources()
+	for _, more := range [][]resource{eventResources(), taskResources(), itemResources(), achievementResources(), chanceResources()} {
+		all = append(all, more...)
+	}
+	for _, res := range all {
 		base := consolePrefix + "/" + res.name
 		routes = append(routes,
 			route{base, http.MethodGet, s.resourceList(res)},
@@ -328,6 +333,9 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 		"ownedItems":           `SELECT count(*) FROM economy_user_item`,
 		"achievements":         `SELECT count(*) FROM economy_achievement`,
 		"unlockedAchievements": `SELECT count(*) FROM economy_user_achievement WHERE tier > 0`,
+		"chance-games":         `SELECT count(*) FROM economy_chance_game`,
+		"prize-groups":         `SELECT count(*) FROM economy_prize_group`,
+		"chancePlaysToday":     `SELECT count(*) FROM economy_chance_play WHERE created_at >= now() - interval '24 hours'`,
 		"eventsToday":          `SELECT count(*) FROM economy_player_event WHERE created_at >= now() - interval '24 hours'`,
 		"claimsReady":          `SELECT count(*) FROM economy_reward_claim WHERE status='ready'`,
 		"claimsFailed":         `SELECT count(*) FROM economy_reward_claim WHERE status='failed'`,

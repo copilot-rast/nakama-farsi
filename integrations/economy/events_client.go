@@ -706,7 +706,7 @@ func (s *service) claimViews(ctx context.Context, userID, status string, limit i
 	}
 	n := len(where.args)
 	rows, err := s.db.QueryContext(ctx, `SELECT c.id::text, c.kind, c.scope, c.grant_mode, c.status, COALESCE(c.value,0)::float8, COALESCE(c.error,''), c.created_at, c.granted_at, c.prize_id::text,
-			COALESCE(r.key, lt.key, st.key, tk.key, ac.key, ''), COALESCE(r.name, lt.name, st.name, tk.name, ac.name, '{}'::jsonb)::text, COALESCE(ls.level, at.tier, 0)
+			COALESCE(r.key, lt.key, st.key, tk.key, ac.key, cg.key, ''), COALESCE(r.name, lt.name, st.name, tk.name, ac.name, cg.name, '{}'::jsonb)::text, COALESCE(ls.level, at.tier, 0)
 		FROM economy_reward_claim c
 		LEFT JOIN economy_event_rule r ON c.kind='event' AND r.id=c.owner_id
 		LEFT JOIN economy_level_table lt ON c.kind='level' AND lt.id=c.owner_id
@@ -714,7 +714,8 @@ func (s *service) claimViews(ctx context.Context, userID, status string, limit i
 		LEFT JOIN economy_streak st ON c.kind='streak' AND st.id=c.owner_id
 		LEFT JOIN economy_task tk ON c.kind='task' AND tk.id=c.owner_id
 		LEFT JOIN economy_achievement ac ON c.kind='achievement' AND ac.id=c.owner_id
-		LEFT JOIN economy_achievement_tier at ON c.kind='achievement' AND at.id=c.ref_id`+where.sql()+` ORDER BY c.created_at DESC, c.id DESC LIMIT $`+itoa(n+1), append(where.args, limit)...)
+		LEFT JOIN economy_achievement_tier at ON c.kind='achievement' AND at.id=c.ref_id
+		LEFT JOIN economy_chance_game cg ON c.kind='chance' AND cg.id=c.owner_id`+where.sql()+` ORDER BY c.created_at DESC, c.id DESC LIMIT $`+itoa(n+1), append(where.args, limit)...)
 	if err != nil {
 		return nil, err
 	}

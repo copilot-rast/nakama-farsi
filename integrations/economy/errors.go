@@ -19,6 +19,7 @@ type appError struct {
 	Message string
 	Field   string
 	Status  int
+	Meta    map[string]any
 }
 
 func (e *appError) Error() string {

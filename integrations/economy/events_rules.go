@@ -165,7 +165,13 @@ func (s *service) grantClaim(ctx context.Context, claimID string, depth int) (*e
 	if err != nil {
 		return nil, err
 	}
-	rewards, err := s.grant(withEventDepth(ctx, depth), grantRequest{UserID: userID, PrizeID: prizeID, SourceType: kind, SourceID: claimID, Reason: kind + "_reward"})
+	req := grantRequest{UserID: userID, PrizeID: prizeID, SourceType: kind, SourceID: claimID, Reason: kind + "_reward"}
+	if kind == "chance" {
+		if err := s.chanceGrantExtras(ctx, claimID, &req); err != nil {
+			return nil, err
+		}
+	}
+	rewards, err := s.grant(withEventDepth(ctx, depth), req)
 	if err != nil {
 		msg := err.Error()
 		if app, ok := asApp(err); ok {
@@ -307,6 +313,7 @@ func (s *service) sweepEvents(ctx context.Context) (int64, error) {
 	}
 	s.sweepItemRequests(ctx)
 	s.sweepAchievements(ctx)
+	s.sweepChance(ctx)
 	return removed, nil
 }
 
@@ -320,6 +327,7 @@ func (s *service) eventLoop(ctx context.Context) {
 			return
 		case <-ticker.C:
 			s.retryAutoClaims(ctx, 20)
+			s.recoverChancePlays(ctx, 20)
 			if tick%20 == 0 {
 				if n, err := s.sweepEvents(ctx); err != nil {
 					s.logger.Warn("Economy event sweep failed: %v", err)

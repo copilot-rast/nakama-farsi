@@ -24,7 +24,14 @@ const (
 	defaultTimezone  = "Asia/Tehran"
 )
 
-var eventKeyPattern = regexp.MustCompile(`^[a-z][a-z0-9_.]{1,47}$`)
+var (
+	eventKeyPattern        = regexp.MustCompile(`^[a-z][a-z0-9_.]{1,47}$`)
+	builtinEventKeyPattern = regexp.MustCompile(`^[A-Z][A-Za-z]{1,31}:[A-Z][A-Za-z]{1,31}$`)
+)
+
+func validEventKey(key string) bool {
+	return eventKeyPattern.MatchString(key) || builtinEventKeyPattern.MatchString(key)
+}
 
 type eventSettings struct {
 	Timezone        string `json:"timezone"`
@@ -271,7 +278,7 @@ func (s *service) recordEvent(ctx context.Context, in eventInput) (*eventOutcome
 		return nil, badRequest("INVALID_ID", "userId", "user id must be a UUID")
 	}
 	key := strings.TrimSpace(in.Key)
-	if !eventKeyPattern.MatchString(key) {
+	if !validEventKey(key) {
 		return nil, notFound("EVENT_TYPE_NOT_FOUND")
 	}
 	et, err := loadEventType(ctx, s.db, key)

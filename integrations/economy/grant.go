@@ -109,8 +109,11 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 			return conflict("PRIZE_OWNER_MISMATCH", "grant row belongs to another user")
 		}
 		changes := map[string]int64{}
+		debit := map[string]int64{}
 		for k, v := range req.Debit {
-			changes[k] -= v
+			if v != 0 {
+				debit[k] = -v
+			}
 		}
 		var writes []*runtime.StorageWrite
 		var metas []prizeItem
@@ -155,10 +158,22 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 			return err
 		}
 		var wallets []*runtime.WalletUpdate
+		ledger := func(part string) map[string]any {
+			md := map[string]any{"module": "economy", "reason": req.Reason, "sourceType": req.SourceType, "sourceId": req.SourceID, "prizeId": prize.ID, "grantId": rowID}
+			if part != "" {
+				md["part"] = part
+			}
+			return md
+		}
+		if len(debit) > 0 && !applied {
+			wallets = append(wallets, &runtime.WalletUpdate{UserID: req.UserID, Changeset: debit, Metadata: ledger("debit")})
+		}
 		if len(changes) > 0 && !applied {
-			wallets = append(wallets, &runtime.WalletUpdate{UserID: req.UserID, Changeset: changes, Metadata: map[string]any{
-				"module": "economy", "reason": req.Reason, "sourceType": req.SourceType, "sourceId": req.SourceID, "prizeId": prize.ID, "grantId": rowID,
-			}})
+			part := ""
+			if len(debit) > 0 {
+				part = "prize"
+			}
+			wallets = append(wallets, &runtime.WalletUpdate{UserID: req.UserID, Changeset: changes, Metadata: ledger(part)})
 		}
 		if len(wallets) > 0 || len(writes) > 0 {
 			if _, _, err := s.nk.MultiUpdate(ctx, nil, writes, nil, wallets, true); err != nil {

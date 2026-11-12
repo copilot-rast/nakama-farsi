@@ -55,7 +55,8 @@ func resources() []resource {
 			filters: map[string]string{"categoryId": "t.category_id::text = ?"},
 			save:    savePrize,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
-				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_product WHERE prize_id=$1) OR EXISTS (SELECT 1 FROM economy_gift WHERE prize_id=$1) OR EXISTS (SELECT 1 FROM economy_user_prize WHERE prize_id=$1)`)
+				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_product WHERE prize_id=$1) OR EXISTS (SELECT 1 FROM economy_gift WHERE prize_id=$1) OR EXISTS (SELECT 1 FROM economy_user_prize WHERE prize_id=$1)
+					OR EXISTS (SELECT 1 FROM economy_prize_group_member WHERE prize_id=$1) OR EXISTS (SELECT 1 FROM economy_chance_game g WHERE g.prize @> jsonb_build_array(jsonb_build_object('prizeId',$1::uuid::text)))`)
 			},
 		},
 		{

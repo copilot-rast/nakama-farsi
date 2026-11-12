@@ -26,12 +26,15 @@ func writeRaw(w http.ResponseWriter, status int, raw []byte) {
 
 func (s *service) writeError(w http.ResponseWriter, err error) {
 	if app, ok := asApp(err); ok {
-		body := map[string]string{"error": app.Code, "message": app.Message}
+		body := map[string]any{"error": app.Code, "message": app.Message}
 		if app.Message == "" {
 			body["message"] = app.Code
 		}
 		if app.Field != "" {
 			body["field"] = app.Field
+		}
+		if app.Meta != nil {
+			body["meta"] = app.Meta
 		}
 		writeJSON(w, app.Status, body)
 		return

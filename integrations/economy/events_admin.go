@@ -167,7 +167,11 @@ func saveEventType(s *service, ctx context.Context, tx *sql.Tx, id string, creat
 		return err
 	}
 	key := strings.TrimSpace(in.Key)
-	if !eventKeyPattern.MatchString(key) {
+	builtin := false
+	if !create && builtinEventKeyPattern.MatchString(key) {
+		_ = tx.QueryRowContext(ctx, `SELECT is_system AND key=$2 FROM economy_event_type WHERE id=$1`, id, key).Scan(&builtin)
+	}
+	if !eventKeyPattern.MatchString(key) && !builtin {
 		return badRequest("INVALID_EVENT_KEY", "key", "use 2 to 48 lower-case letters, digits, _ or ., starting with a letter")
 	}
 	if err := keepKey(ctx, tx, "economy_event_type", id, create, key); err != nil {
@@ -746,9 +750,10 @@ func (s *service) consoleEventClaims(w http.ResponseWriter, r *http.Request) {
 		LEFT JOIN economy_event_rule er ON c.kind='event' AND er.id=c.owner_id LEFT JOIN economy_level_table lt ON c.kind='level' AND lt.id=c.owner_id
 		LEFT JOIN economy_level_step ls ON c.kind='level' AND ls.id=c.ref_id LEFT JOIN economy_streak st ON c.kind='streak' AND st.id=c.owner_id
 		LEFT JOIN economy_task tk ON c.kind='task' AND tk.id=c.owner_id
-		LEFT JOIN economy_achievement ac ON c.kind='achievement' AND ac.id=c.owner_id LEFT JOIN economy_achievement_tier at ON c.kind='achievement' AND at.id=c.ref_id`
-	s.listRaw(w, r, `SELECT count(*)`+from, `SELECT jsonb_build_object('id',c.id,'userId',c.user_id,'username',u.username,'kind',c.kind,'ownerId',c.owner_id,'sourceKey',COALESCE(er.key,lt.key,st.key,tk.key,ac.key),
-		'sourceName',COALESCE(er.name,lt.name,st.name,tk.name,ac.name),'level',COALESCE(ls.level,at.tier),'scope',c.scope,'prizeId',c.prize_id,'prizeKey',z.key,'prizeName',z.name,'grantMode',c.grant_mode,'status',c.status,'value',c.value,
+		LEFT JOIN economy_achievement ac ON c.kind='achievement' AND ac.id=c.owner_id LEFT JOIN economy_achievement_tier at ON c.kind='achievement' AND at.id=c.ref_id
+		LEFT JOIN economy_chance_game cg ON c.kind='chance' AND cg.id=c.owner_id`
+	s.listRaw(w, r, `SELECT count(*)`+from, `SELECT jsonb_build_object('id',c.id,'userId',c.user_id,'username',u.username,'kind',c.kind,'ownerId',c.owner_id,'sourceKey',COALESCE(er.key,lt.key,st.key,tk.key,ac.key,cg.key),
+		'sourceName',COALESCE(er.name,lt.name,st.name,tk.name,ac.name,cg.name),'level',COALESCE(ls.level,at.tier),'scope',c.scope,'prizeId',c.prize_id,'prizeKey',z.key,'prizeName',z.name,'grantMode',c.grant_mode,'status',c.status,'value',c.value,
 		'error',c.error,'attempts',c.attempts,'createdAt',c.created_at,'grantedAt',c.granted_at)::text`+from, where, ` ORDER BY c.created_at DESC, c.id DESC`, p)
 }
 
