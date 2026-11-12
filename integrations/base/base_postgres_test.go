@@ -251,7 +251,7 @@ func TestCategoriesAndTagsConsole(t *testing.T) {
 		t.Fatalf("key types = %v", types)
 	}
 	tt := items(h.mustAPI(200, http.MethodGet, "/tags/key-types", nil))
-	if len(tt) != 11 || tt[2]["key"] != "gift" || tt[3]["key"] != "currency" || tt[6]["key"] != "task" || tt[7]["key"] != "item" || tt[8]["key"] != "achievement" || tt[9]["key"] != "general" || tt[10]["key"] != "user" || tt[10]["name"].(map[string]any)["fa"] != "بازیکن" || tt[10]["name"].(map[string]any)["en"] != "Player" {
+	if len(tt) != 12 || tt[2]["key"] != "gift" || tt[3]["key"] != "currency" || tt[6]["key"] != "task" || tt[7]["key"] != "item" || tt[8]["key"] != "achievement" || tt[9]["key"] != "banner" || tt[10]["key"] != "general" || tt[11]["key"] != "user" || tt[11]["name"].(map[string]any)["fa"] != "بازیکن" || tt[11]["name"].(map[string]any)["en"] != "Player" {
 		t.Fatalf("tag key types = %v", tt)
 	}
 	for _, kt := range types {

@@ -60,6 +60,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	inapp.SetSender(svc.inappSender())
 	go svc.workerLoop(ctx)
 	go svc.otpSweepLoop(ctx)
+	go svc.bannerSweepLoop(ctx)
 	logger.Info("Publication module registered")
 	return nil
 }

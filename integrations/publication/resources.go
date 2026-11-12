@@ -23,6 +23,7 @@ type resource struct {
 	filters map[string]string
 	order   string
 	save    func(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error
+	remove  func(s *service, ctx context.Context, tx *sql.Tx, id string) error
 }
 
 const faqJSON = `jsonb_build_object('id',t.id,'categoryId',t.category_id,'categoryKey',c.key,'categoryName',c.name,'question',t.question,'answer',t.answer,'isActive',t.is_active,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
@@ -35,7 +36,7 @@ const newsJSON = `jsonb_build_object('id',t.id,'title',t.title,'summary',t.summa
 	'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
 func resources() []resource {
-	return []resource{
+	return append([]resource{
 		{
 			name:    "faqs",
 			table:   "publication_faq",
@@ -56,7 +57,7 @@ func resources() []resource {
 			order:   "t.is_pinned DESC, t.published_at DESC, t.id DESC",
 			save:    saveNews,
 		},
-	}
+	}, bannerResources()...)
 }
 
 func (s *service) resourceList(res resource) http.HandlerFunc {
@@ -196,13 +197,23 @@ func (s *service) resourceDelete(res resource) http.HandlerFunc {
 			s.writeError(w, notFound("NOT_FOUND"))
 			return
 		}
-		result, err := s.db.ExecContext(r.Context(), `DELETE FROM `+res.table+` WHERE id=$1`, id)
+		err := s.inTx(r.Context(), func(tx *sql.Tx) error {
+			if res.remove != nil {
+				if err := res.remove(s, r.Context(), tx, id); err != nil {
+					return err
+				}
+			}
+			result, err := tx.ExecContext(r.Context(), `DELETE FROM `+res.table+` WHERE id=$1`, id)
+			if err != nil {
+				return err
+			}
+			if n, _ := result.RowsAffected(); n == 0 {
+				return notFound("NOT_FOUND")
+			}
+			return nil
+		})
 		if err != nil {
 			s.writeError(w, err)
-			return
-		}
-		if n, _ := result.RowsAffected(); n == 0 {
-			s.writeError(w, notFound("NOT_FOUND"))
 			return
 		}
 		writeJSON(w, http.StatusOK, map[string]any{})

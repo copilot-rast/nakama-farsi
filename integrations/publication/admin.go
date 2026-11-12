@@ -36,6 +36,9 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/otp/settings", http.MethodGet, s.consoleOTPSettingsGet},
 		{consolePrefix + "/otp/settings", http.MethodPut, s.consoleOTPSettingsPut},
 		{consolePrefix + "/otp", http.MethodGet, s.consoleOTPRequests},
+		{consolePrefix + "/banners/settings", http.MethodGet, s.consoleBannerSettings},
+		{consolePrefix + "/banners/{id}/stats", http.MethodGet, s.consoleBannerStats},
+		{consolePrefix + "/banner-lists/{id}/preview", http.MethodGet, s.consoleBannerPreview},
 	}
 	for _, res := range resources() {
 		base := consolePrefix + "/" + res.name
@@ -203,6 +206,8 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 		"notifications":   `SELECT count(*) FROM publication_notification`,
 		"notifications7d": `SELECT count(*) FROM publication_notification WHERE created_at >= now() - interval '7 days'`,
 		"providers":       `SELECT count(*) FROM publication_provider`,
+		"banners":         `SELECT count(*) FROM publication_banner`,
+		"liveBanners":     `SELECT count(*) FROM publication_banner WHERE is_active AND (starts_at IS NULL OR starts_at <= now()) AND (ends_at IS NULL OR ends_at > now())`,
 		"activeProviders": `SELECT count(*) FROM publication_provider WHERE is_active`,
 	} {
 		var n int64

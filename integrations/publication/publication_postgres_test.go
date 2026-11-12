@@ -75,7 +75,7 @@ func newHarness(t *testing.T) *harness {
 	db := openDisposableTestDB(t)
 	t.Cleanup(func() { db.Close() })
 	ctx := context.Background()
-	if _, err := db.ExecContext(ctx, `TRUNCATE publication_notification_recipient, publication_notification, publication_provider, publication_news_comment, publication_news_seen,
+	if _, err := db.ExecContext(ctx, `TRUNCATE publication_banner_seen, publication_banner_day, publication_banner, publication_banner_list, publication_notification_recipient, publication_notification, publication_provider, publication_news_comment, publication_news_seen,
 		publication_news, publication_faq, base_category CASCADE`); err != nil {
 		t.Fatal(err)
 	}
