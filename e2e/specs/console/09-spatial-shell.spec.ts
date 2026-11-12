@@ -184,7 +184,7 @@ test.describe('spatial shell: rail and top bar', () => {
     await page.locator('.sp-tabs a').first().waitFor();
     await expect(page.locator('.sp-crumbs')).toContainText('اقتصاد');
     await expect(page.locator('.sp-crumbs .sp-crumb-current')).toHaveText('فروشگاه');
-    await expect(page.locator('.sp-tabs a')).toHaveCount(14);
+    await expect(page.locator('.sp-tabs a')).toHaveCount(16);
     await expect(page.locator('.sp-tabs a[aria-current="page"]')).toHaveText('فروشگاه');
     const x1 = await page.locator('.sp-tabs .sp-seg-ind').evaluate((e) => getComputedStyle(e).transform);
     await page.locator('.sp-tabs a', { hasText: 'ارزها' }).click();
