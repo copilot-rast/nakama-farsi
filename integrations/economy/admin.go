@@ -35,7 +35,8 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 	routes = append(routes, s.referralConsoleRoutes()...)
 	routes = append(routes, s.taskConsoleRoutes()...)
 	routes = append(routes, s.itemConsoleRoutes()...)
-	for _, res := range append(append(append(resources(), eventResources()...), taskResources()...), itemResources()...) {
+	routes = append(routes, s.achievementConsoleRoutes()...)
+	for _, res := range append(append(append(append(resources(), eventResources()...), taskResources()...), itemResources()...), achievementResources()...) {
 		base := consolePrefix + "/" + res.name
 		routes = append(routes,
 			route{base, http.MethodGet, s.resourceList(res)},
@@ -306,29 +307,31 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	counts := map[string]int64{}
 	for name, query := range map[string]string{
-		"currencies":     `SELECT count(*) FROM economy_currency`,
-		"metas":          `SELECT count(*) FROM economy_meta`,
-		"prizes":         `SELECT count(*) FROM economy_prize`,
-		"products":       `SELECT count(*) FROM economy_product`,
-		"activeProducts": `SELECT count(*) FROM economy_product WHERE is_active`,
-		"gifts":          `SELECT count(*) FROM economy_gift`,
-		"activeGifts":    `SELECT count(*) FROM economy_gift WHERE is_active`,
-		"categories":     `SELECT count(*) FROM base_category WHERE key_type IN ('product','prize','gift','currency')`,
-		"tags":           `SELECT count(*) FROM base_tag WHERE key_type IN ('product','prize','general')`,
-		"grantErrors":    `SELECT count(*) FROM economy_payment WHERE status='success' AND NOT reward_granted`,
-		"paymentsToday":  `SELECT count(*) FROM economy_payment WHERE created_at >= now() - interval '24 hours'`,
-		"event-types":    `SELECT count(*) FROM economy_event_type`,
-		"event-rules":    `SELECT count(*) FROM economy_event_rule`,
-		"level-tables":   `SELECT count(*) FROM economy_level_table`,
-		"streaks":        `SELECT count(*) FROM economy_streak`,
-		"tasks":          `SELECT count(*) FROM economy_task`,
-		"task-groups":    `SELECT count(*) FROM economy_task_group`,
-		"items":          `SELECT count(*) FROM economy_item`,
-		"ownedItems":     `SELECT count(*) FROM economy_user_item`,
-		"eventsToday":    `SELECT count(*) FROM economy_player_event WHERE created_at >= now() - interval '24 hours'`,
-		"claimsReady":    `SELECT count(*) FROM economy_reward_claim WHERE status='ready'`,
-		"claimsFailed":   `SELECT count(*) FROM economy_reward_claim WHERE status='failed'`,
-		"revenueToman30": `SELECT COALESCE(sum(final_toman),0) FROM economy_payment WHERE status='success' AND NOT sandbox AND method IN ('zarinpal','zibal','bazaar','myket') AND created_at >= now() - interval '30 days'`,
+		"currencies":           `SELECT count(*) FROM economy_currency`,
+		"metas":                `SELECT count(*) FROM economy_meta`,
+		"prizes":               `SELECT count(*) FROM economy_prize`,
+		"products":             `SELECT count(*) FROM economy_product`,
+		"activeProducts":       `SELECT count(*) FROM economy_product WHERE is_active`,
+		"gifts":                `SELECT count(*) FROM economy_gift`,
+		"activeGifts":          `SELECT count(*) FROM economy_gift WHERE is_active`,
+		"categories":           `SELECT count(*) FROM base_category WHERE key_type IN ('product','prize','gift','currency')`,
+		"tags":                 `SELECT count(*) FROM base_tag WHERE key_type IN ('product','prize','general')`,
+		"grantErrors":          `SELECT count(*) FROM economy_payment WHERE status='success' AND NOT reward_granted`,
+		"paymentsToday":        `SELECT count(*) FROM economy_payment WHERE created_at >= now() - interval '24 hours'`,
+		"event-types":          `SELECT count(*) FROM economy_event_type`,
+		"event-rules":          `SELECT count(*) FROM economy_event_rule`,
+		"level-tables":         `SELECT count(*) FROM economy_level_table`,
+		"streaks":              `SELECT count(*) FROM economy_streak`,
+		"tasks":                `SELECT count(*) FROM economy_task`,
+		"task-groups":          `SELECT count(*) FROM economy_task_group`,
+		"items":                `SELECT count(*) FROM economy_item`,
+		"ownedItems":           `SELECT count(*) FROM economy_user_item`,
+		"achievements":         `SELECT count(*) FROM economy_achievement`,
+		"unlockedAchievements": `SELECT count(*) FROM economy_user_achievement WHERE tier > 0`,
+		"eventsToday":          `SELECT count(*) FROM economy_player_event WHERE created_at >= now() - interval '24 hours'`,
+		"claimsReady":          `SELECT count(*) FROM economy_reward_claim WHERE status='ready'`,
+		"claimsFailed":         `SELECT count(*) FROM economy_reward_claim WHERE status='failed'`,
+		"revenueToman30":       `SELECT COALESCE(sum(final_toman),0) FROM economy_payment WHERE status='success' AND NOT sandbox AND method IN ('zarinpal','zibal','bazaar','myket') AND created_at >= now() - interval '30 days'`,
 	} {
 		var n int64
 		if err := s.db.QueryRowContext(ctx, query).Scan(&n); err != nil {

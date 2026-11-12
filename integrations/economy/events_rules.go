@@ -165,7 +165,7 @@ func (s *service) grantClaim(ctx context.Context, claimID string, depth int) (*e
 	if err != nil {
 		return nil, err
 	}
-	rewards, err := s.grant(ctx, grantRequest{UserID: userID, PrizeID: prizeID, SourceType: kind, SourceID: claimID, Reason: kind + "_reward"})
+	rewards, err := s.grant(withEventDepth(ctx, depth), grantRequest{UserID: userID, PrizeID: prizeID, SourceType: kind, SourceID: claimID, Reason: kind + "_reward"})
 	if err != nil {
 		msg := err.Error()
 		if app, ok := asApp(err); ok {
@@ -306,6 +306,7 @@ func (s *service) sweepEvents(ctx context.Context) (int64, error) {
 		return removed, err
 	}
 	s.sweepItemRequests(ctx)
+	s.sweepAchievements(ctx)
 	return removed, nil
 }
 

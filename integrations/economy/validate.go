@@ -227,8 +227,16 @@ func normalizePrizeItems(items []prizeItem) ([]prizeItem, error) {
 				return nil, badRequest("INVALID_KEY", "items", "invalid item key")
 			}
 			item.Value = json.RawMessage("1")
+		case "achievement":
+			if item.Action != "give" {
+				return nil, badRequest("INVALID_ACTION", "items", "achievement entries only support give")
+			}
+			if !keyPattern.MatchString(item.Key) {
+				return nil, badRequest("INVALID_KEY", "items", "invalid achievement key")
+			}
+			item.Value = json.RawMessage("1")
 		default:
-			return nil, badRequest("INVALID_ITEM_TYPE", "items", "type must be currency, meta, storage or item")
+			return nil, badRequest("INVALID_ITEM_TYPE", "items", "type must be currency, meta, storage, item or achievement")
 		}
 		out = append(out, item)
 	}

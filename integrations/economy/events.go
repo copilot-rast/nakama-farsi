@@ -210,21 +210,23 @@ type claimRef struct {
 }
 
 type eventOutcome struct {
-	EventID   string             `json:"eventId"`
-	Key       string             `json:"key"`
-	Value     float64            `json:"value"`
-	Rules     []ruleProgress     `json:"rules"`
-	Metas     map[string]float64 `json:"metas"`
-	Streaks   []streakChange     `json:"streaks"`
-	Levels    []levelChange      `json:"levels"`
-	Claims    []claimRef         `json:"claims"`
-	Tasks     []taskChange       `json:"tasks"`
-	metaIDs   []string
-	referrals []string
+	EventID      string              `json:"eventId"`
+	Key          string              `json:"key"`
+	Value        float64             `json:"value"`
+	Rules        []ruleProgress      `json:"rules"`
+	Metas        map[string]float64  `json:"metas"`
+	Streaks      []streakChange      `json:"streaks"`
+	Levels       []levelChange       `json:"levels"`
+	Claims       []claimRef          `json:"claims"`
+	Tasks        []taskChange        `json:"tasks"`
+	Achievements []achievementChange `json:"achievements"`
+	metaIDs      []string
+	referrals    []string
+	achPending   []achievementChange
 }
 
 func newOutcome() *eventOutcome {
-	return &eventOutcome{Rules: []ruleProgress{}, Metas: map[string]float64{}, Streaks: []streakChange{}, Levels: []levelChange{}, Claims: []claimRef{}, Tasks: []taskChange{}}
+	return &eventOutcome{Rules: []ruleProgress{}, Metas: map[string]float64{}, Streaks: []streakChange{}, Levels: []levelChange{}, Claims: []claimRef{}, Tasks: []taskChange{}, Achievements: []achievementChange{}}
 }
 
 func (o *eventOutcome) merge(other *eventOutcome) {
@@ -239,6 +241,7 @@ func (o *eventOutcome) merge(other *eventOutcome) {
 	o.Levels = append(o.Levels, other.Levels...)
 	o.Claims = append(o.Claims, other.Claims...)
 	o.Tasks = append(o.Tasks, other.Tasks...)
+	o.Achievements = append(o.Achievements, other.Achievements...)
 	o.referrals = append(o.referrals, other.referrals...)
 }
 
@@ -356,6 +359,9 @@ func (s *service) recordEvent(ctx context.Context, in eventInput) (*eventOutcome
 		if err := s.applyTasks(ctx, tx, in.UserID, et.ID, value, now, clk, userTags, out); err != nil {
 			return err
 		}
+		if err := s.applyAchievements(ctx, tx, in.UserID, et.ID, value, now, out); err != nil {
+			return err
+		}
 		if err := s.applyMetaRules(ctx, tx, in.UserID, et.ID, value, now, userTags, out); err != nil {
 			return err
 		}
@@ -377,6 +383,11 @@ func (s *service) recordEvent(ctx context.Context, in eventInput) (*eventOutcome
 }
 
 func (s *service) settleOutcome(ctx context.Context, userID string, out *eventOutcome, depth int) {
+	if len(out.achPending) > 0 {
+		pending := out.achPending
+		out.achPending = nil
+		s.settleAchievements(ctx, userID, pending, depth, out)
+	}
 	for i := range out.Claims {
 		c := &out.Claims[i]
 		if c.Mode != "auto" || c.Status != "ready" {

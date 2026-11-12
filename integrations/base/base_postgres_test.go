@@ -247,11 +247,11 @@ func TestLanguagesConsole(t *testing.T) {
 func TestCategoriesAndTagsConsole(t *testing.T) {
 	h := newHarness(t)
 	types := items(h.mustAPI(200, http.MethodGet, "/categories/key-types", nil))
-	if len(types) != 9 || types[0]["key"] != "product" || types[6]["key"] != "task" || types[7]["key"] != "item" || types[8]["key"] != "item_type" || types[0]["name"].(map[string]any)["fa"] == "" {
+	if len(types) != 10 || types[0]["key"] != "product" || types[6]["key"] != "task" || types[7]["key"] != "item" || types[8]["key"] != "item_type" || types[9]["key"] != "achievement" || types[0]["name"].(map[string]any)["fa"] == "" {
 		t.Fatalf("key types = %v", types)
 	}
 	tt := items(h.mustAPI(200, http.MethodGet, "/tags/key-types", nil))
-	if len(tt) != 10 || tt[2]["key"] != "gift" || tt[3]["key"] != "currency" || tt[6]["key"] != "task" || tt[7]["key"] != "item" || tt[8]["key"] != "general" || tt[9]["key"] != "user" || tt[9]["name"].(map[string]any)["fa"] != "بازیکن" || tt[9]["name"].(map[string]any)["en"] != "Player" {
+	if len(tt) != 11 || tt[2]["key"] != "gift" || tt[3]["key"] != "currency" || tt[6]["key"] != "task" || tt[7]["key"] != "item" || tt[8]["key"] != "achievement" || tt[9]["key"] != "general" || tt[10]["key"] != "user" || tt[10]["name"].(map[string]any)["fa"] != "بازیکن" || tt[10]["name"].(map[string]any)["en"] != "Player" {
 		t.Fatalf("tag key types = %v", tt)
 	}
 	for _, kt := range types {

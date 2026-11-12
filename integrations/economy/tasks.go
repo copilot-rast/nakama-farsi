@@ -709,6 +709,9 @@ func (e *taskEnv) complete(ctx context.Context, t *taskDef, scope, by string, va
 		}
 	}
 	out.Tasks = append(out.Tasks, ch)
+	if err := e.s.applyTaskAchievements(ctx, e.q, e.userID, t, scope, e.now, out); err != nil {
+		return err
+	}
 	if t.ParentID != "" {
 		parent, err := e.task(ctx, t.ParentID)
 		if err != nil {

@@ -68,6 +68,9 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	for name, fn := range svc.itemRPCs() {
 		rpcs[name] = fn
 	}
+	for name, fn := range svc.achievementRPCs() {
+		rpcs[name] = fn
+	}
 	for name, fn := range svc.referralRPCs() {
 		rpcs[name] = fn
 	}

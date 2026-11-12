@@ -43,7 +43,7 @@ func taskResources() []resource {
 				if kids {
 					return conflict("HAS_SUBTASKS", "delete or move the sub-tasks first")
 				}
-				if err := refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_reward_claim WHERE kind='task' AND owner_id=$1) OR EXISTS (SELECT 1 FROM economy_user_task WHERE task_id=$1 AND status<>'active')`); err != nil {
+				if err := refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_reward_claim WHERE kind='task' AND owner_id=$1) OR EXISTS (SELECT 1 FROM economy_user_task WHERE task_id=$1 AND status<>'active') OR EXISTS (SELECT 1 FROM economy_achievement WHERE task_id=$1)`); err != nil {
 					return err
 				}
 				_, err := tx.ExecContext(ctx, `UPDATE economy_task SET depends_on=array_remove(depends_on, $1::text), updated_at=now() WHERE $1::text = ANY(depends_on)`, id)
@@ -58,7 +58,7 @@ func taskResources() []resource {
 			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "handout": "t.handout = ?", "categoryId": "t.category_id::text = ?"},
 			save:    saveTaskGroup,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
-				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_user_task_group WHERE group_id=$1 AND cardinality(handed) > 0)`)
+				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_user_task_group WHERE group_id=$1 AND cardinality(handed) > 0) OR EXISTS (SELECT 1 FROM economy_achievement WHERE task_group_id=$1)`)
 			},
 		},
 	}

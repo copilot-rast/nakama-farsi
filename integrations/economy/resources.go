@@ -561,6 +561,13 @@ func checkPrizeItems(ctx context.Context, tx *sql.Tx, items []prizeItem) error {
 			if !exists {
 				return badRequest("ITEM_NOT_FOUND", "items", "item "+item.Key+" does not exist")
 			}
+		case "achievement":
+			if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_achievement WHERE key=$1)`, item.Key).Scan(&exists); err != nil {
+				return err
+			}
+			if !exists {
+				return badRequest("ACHIEVEMENT_NOT_FOUND", "items", "achievement "+item.Key+" does not exist")
+			}
 		}
 	}
 	return nil

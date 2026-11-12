@@ -24,9 +24,10 @@ const (
 	KindReferral    = "referral"
 	KindConfig      = "config"
 	KindItem        = "item"
+	KindAchievement = "achievement"
 )
 
-var Kinds = []string{KindSignIn, KindPurchase, KindPrize, KindEvent, KindRestriction, KindReport, KindTicket, KindChat, KindReferral, KindConfig, KindItem}
+var Kinds = []string{KindSignIn, KindPurchase, KindPrize, KindEvent, KindRestriction, KindReport, KindTicket, KindChat, KindReferral, KindConfig, KindItem, KindAchievement}
 
 type Entry struct {
 	UserID   string

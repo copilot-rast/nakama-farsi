@@ -94,6 +94,7 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 	}
 
 	var rewards []prizeItem
+	var unlocked []achievementChange
 	granted := false
 	err = s.inTx(ctx, func(tx *sql.Tx) error {
 		var owner string
@@ -113,7 +114,7 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 		}
 		var writes []*runtime.StorageWrite
 		var metas []prizeItem
-		var itemKeys []string
+		var itemKeys, achKeys []string
 		for _, item := range prize.Items {
 			switch item.Type {
 			case "currency":
@@ -125,6 +126,8 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 				metas = append(metas, item)
 			case "item":
 				itemKeys = append(itemKeys, item.Key)
+			case "achievement":
+				achKeys = append(achKeys, item.Key)
 			}
 		}
 		if len(itemKeys) > 0 {
@@ -171,6 +174,13 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 				return err
 			}
 		}
+		if len(achKeys) > 0 {
+			got, err := s.grantAchievementItems(ctx, tx, req.UserID, achKeys, rowID)
+			if err != nil {
+				return err
+			}
+			unlocked = got
+		}
 		raw, _ := json.Marshal(prize.Items)
 		if _, err := tx.ExecContext(ctx, `UPDATE economy_user_prize SET claimed=true, error=NULL, rewards=$2, updated_at=now() WHERE id=$1 AND claimed=false`, rowID, string(raw)); err != nil {
 			return err
@@ -194,6 +204,9 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 	}
 	if rewards == nil {
 		rewards = []prizeItem{}
+	}
+	if granted && len(unlocked) > 0 {
+		s.settleAchievements(ctx, req.UserID, unlocked, eventDepth(ctx), nil)
 	}
 	if granted && req.SourceType != "payment" {
 		activity.Safe(ctx, s.db, s.logger, activity.Entry{UserID: req.UserID, Kind: activity.KindPrize, Action: "granted", RefID: rowID, Actor: "system", Data: map[string]any{"prize": prize.Key, "source": req.SourceType, "reason": req.Reason}})
