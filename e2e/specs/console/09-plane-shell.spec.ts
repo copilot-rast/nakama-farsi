@@ -139,7 +139,7 @@ test.describe('plane shell: rail, sidebar and top bar', () => {
 
 test.describe('plane switch', () => {
   test('every switch shows a white knob inside its track, on the end side when on and the start side when off', async ({ page }) => {
-    for (const hash of ['#/project-settings/email', '#/players']) {
+    for (const hash of ['#/project-settings/languages', '#/players']) {
       await visit(page, hash);
       const toggles = page.locator('.x-toggle:visible');
       await toggles.first().waitFor();
