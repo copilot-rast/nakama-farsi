@@ -156,6 +156,8 @@ func resetSeedData(t *testing.T, db *sql.DB) {
 	for _, q := range []string{
 		`DELETE FROM economy_gift_use`,
 		`DELETE FROM economy_gift WHERE code IN ('STAR100','HALF50','STARFAN')`,
+		`DELETE FROM publication_banner WHERE key LIKE 'star\_%'`,
+		`DELETE FROM publication_banner_list WHERE key='menu_carousel'`,
 		`DELETE FROM economy_user_achievement`,
 		`DELETE FROM economy_achievement WHERE key LIKE 'star\_%'`,
 		`DELETE FROM base_category WHERE key_type='achievement' AND key LIKE 'star\_%'`,
@@ -234,7 +236,7 @@ func TestSeedPostgres(t *testing.T) {
 		}
 		created += len(reports[i].created)
 	}
-	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2 + 2 + 1 + 11 + 4 + 2 + 2 + 2 + 5 + 1 + 1; created != want {
+	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2 + 2 + 1 + 11 + 4 + 2 + 2 + 2 + 5 + 1 + 1 + 1 + 5; created != want {
 		t.Fatalf("created %d rows across nodes, want %d: %v", created, want, reports)
 	}
 
@@ -245,6 +247,9 @@ func TestSeedPostgres(t *testing.T) {
 		`SELECT count(*) FROM base_category WHERE key IN ('star_coin_packs','star_skins')`: 2,
 		`SELECT count(*) FROM economy_prize WHERE key LIKE 'star\_%'`:                      17,
 		`SELECT count(*) FROM economy_achievement_tier r JOIN economy_achievement a ON a.id=r.achievement_id WHERE a.key='star_ach_rounds' AND r.prize_id IS NOT NULL AND r.grant_mode='claim'`:                                    3,
+		`SELECT count(*) FROM publication_banner b JOIN publication_banner_list l ON l.id=b.list_id WHERE l.key='menu_carousel' AND b.key LIKE 'star\_bn\_%' AND b.is_active`:                                                      5,
+		`SELECT count(*) FROM publication_banner WHERE key='star_bn_vip' AND cardinality(audience_tag_ids)=1 AND action_type='product' AND action_value='star_pack_vip'`:                                                           1,
+		`SELECT count(*) FROM publication_banner WHERE key='star_bn_welcome' AND player_age='new' AND image_url ? 'en'`:                                                                                                            1,
 		`SELECT count(*) FROM economy_achievement WHERE key='star_ach_legend' AND is_hidden AND metric='high_value'`:                                                                                                               1,
 		`SELECT count(*) FROM economy_achievement a JOIN economy_task_group g ON g.id=a.task_group_id WHERE a.key='star_ach_hunter' AND g.key='star_hunter_chain'`:                                                                 1,
 		`SELECT count(*) FROM economy_gift g JOIN economy_prize z ON z.id=g.prize_id WHERE g.code='STARFAN' AND z.items @> '[{"type":"achievement","key":"star_ach_supporter"}]'`:                                                  1,

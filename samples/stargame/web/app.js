@@ -957,6 +957,7 @@ function show(name) {
   if (typeof missionsShow === "function") missionsShow(name);
   if (typeof inventoryShow === "function") inventoryShow(name);
   if (typeof achievementsShow === "function") achievementsShow(name);
+  if (typeof bannersShow === "function") bannersShow(name);
 }
 
 async function refreshBalances() {
@@ -1589,6 +1590,7 @@ async function loadShop() {
     const [catalog] = await Promise.all([rpc("economy_catalog", { lang: i18n.lang }), refreshBalances(), typeof loadInvArts === "function" ? loadInvArts() : null]);
     state.catalog = catalog;
     renderShop();
+    if (typeof bannerShopHook === "function") bannerShopHook();
   } catch (err) {
     box.textContent = "";
     box.append(el("div", { class: "empty", text: errorText(err) }));
@@ -2452,6 +2454,7 @@ async function changeLanguage(code) {
   const screen = currentScreen();
   if (screen === "article" && state.article) openArticle(state.article.id);
   else if (screen === "home") refreshBalances().then(renderHome).catch(() => renderHome());
+  if (screen === "home" && typeof loadMenuBanners === "function") loadMenuBanners(true);
   else if (["shop", "payments", "news", "faq", "inbox", "support", "referral", "activity", "livechat"].includes(screen)) show(screen);
   else refreshBalances().catch(() => {});
   checkVersion().then(() => { if (state.version && state.version.status === "update_required") show("update"); }).catch(() => {});

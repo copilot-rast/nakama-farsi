@@ -293,6 +293,9 @@ func seed(ctx context.Context, db *sql.DB, env map[string]string) (*seedReport, 
 	if err := seedAchievementData(ctx, tx, prizes, report); err != nil {
 		return nil, err
 	}
+	if err := seedBannerData(ctx, tx, env, vipTag, report); err != nil {
+		return nil, err
+	}
 	if err := seedPaymentMethods(ctx, tx, env, report); err != nil {
 		return nil, err
 	}
