@@ -26,16 +26,21 @@ import (
 
 type fakeNakama struct {
 	runtime.NakamaModule
-	db      *sql.DB
-	mu      sync.Mutex
-	storage map[string]map[string]string
-	calls   int
+	db         *sql.DB
+	mu         sync.Mutex
+	storage    map[string]map[string]string
+	calls      int
+	failWallet bool
 }
 
 func (n *fakeNakama) MultiUpdate(ctx context.Context, _ []*runtime.AccountUpdate, writes []*runtime.StorageWrite, _ []*runtime.StorageDelete, wallets []*runtime.WalletUpdate, ledger bool) ([]*api.StorageObjectAck, []*runtime.WalletUpdateResult, error) {
 	n.mu.Lock()
 	n.calls++
+	failing := n.failWallet
 	n.mu.Unlock()
+	if failing && len(wallets) > 0 {
+		return nil, nil, errors.New("wallet service is down")
+	}
 	tx, err := n.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, nil, err

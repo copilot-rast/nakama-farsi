@@ -26,13 +26,14 @@ var keyTypeNames = map[string]map[string]string{
 	"news":     {"fa": "خبر", "en": "News"},
 	"general":  {"fa": "عمومی", "en": "General"},
 	"user":     {"fa": "بازیکن", "en": "Player"},
+	"task":     {"fa": "تسک", "en": "Task"},
 }
 
-var categoryKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news"}
+var categoryKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task"}
 
-var tagKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "general", "user"}
+var tagKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task", "general", "user"}
 
-var clientTagKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "general"}
+var clientTagKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task", "general"}
 
 func keyTypeList(keys []string) []keyType {
 	out := make([]keyType, 0, len(keys))

@@ -627,6 +627,18 @@ func (s *service) rpcRewardClaim(ctx context.Context, userID, payload string) (a
 	if _, err := uuid.FromString(in.ClaimID); err != nil {
 		return nil, notFound("CLAIM_NOT_FOUND")
 	}
+	if taskOwner, isTask, err := s.taskClaimOwner(ctx, in.ClaimID); err != nil {
+		return nil, err
+	} else if isTask {
+		if taskOwner != userID {
+			return nil, notFound("CLAIM_NOT_FOUND")
+		}
+		res, err := s.claimTask(ctx, userID, "", in.ClaimID, "player")
+		if err != nil {
+			return nil, err
+		}
+		return s.taskClaimResponse(ctx, userID, in.Lang, res)
+	}
 	var owner, status, prizeID, kind string
 	err := s.db.QueryRowContext(ctx, `SELECT user_id::text, status, prize_id::text, kind FROM economy_reward_claim WHERE id=$1`, in.ClaimID).Scan(&owner, &status, &prizeID, &kind)
 	if errors.Is(err, sql.ErrNoRows) || (err == nil && owner != userID) {
@@ -694,12 +706,13 @@ func (s *service) claimViews(ctx context.Context, userID, status string, limit i
 	}
 	n := len(where.args)
 	rows, err := s.db.QueryContext(ctx, `SELECT c.id::text, c.kind, c.scope, c.grant_mode, c.status, COALESCE(c.value,0)::float8, COALESCE(c.error,''), c.created_at, c.granted_at, c.prize_id::text,
-			COALESCE(r.key, lt.key, st.key, ''), COALESCE(r.name, lt.name, st.name, '{}'::jsonb)::text, COALESCE(ls.level, 0)
+			COALESCE(r.key, lt.key, st.key, tk.key, ''), COALESCE(r.name, lt.name, st.name, tk.name, '{}'::jsonb)::text, COALESCE(ls.level, 0)
 		FROM economy_reward_claim c
 		LEFT JOIN economy_event_rule r ON c.kind='event' AND r.id=c.owner_id
 		LEFT JOIN economy_level_table lt ON c.kind='level' AND lt.id=c.owner_id
 		LEFT JOIN economy_level_step ls ON c.kind='level' AND ls.id=c.ref_id
-		LEFT JOIN economy_streak st ON c.kind='streak' AND st.id=c.owner_id`+where.sql()+` ORDER BY c.created_at DESC, c.id DESC LIMIT $`+itoa(n+1), append(where.args, limit)...)
+		LEFT JOIN economy_streak st ON c.kind='streak' AND st.id=c.owner_id
+		LEFT JOIN economy_task tk ON c.kind='task' AND tk.id=c.owner_id`+where.sql()+` ORDER BY c.created_at DESC, c.id DESC LIMIT $`+itoa(n+1), append(where.args, limit)...)
 	if err != nil {
 		return nil, err
 	}

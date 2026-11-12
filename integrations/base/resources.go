@@ -27,7 +27,8 @@ const tagJSON = `jsonb_build_object('id',t.id,'key',t.key,'keyType',t.key_type,'
 
 const categoryUsedSQL = `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_product WHERE category_id=$1)
 	OR EXISTS (SELECT 1 FROM economy_gift WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_currency WHERE category_id=$1)
-	OR EXISTS (SELECT 1 FROM publication_faq WHERE category_id=$1) OR EXISTS (SELECT 1 FROM publication_news WHERE category_id=$1)`
+	OR EXISTS (SELECT 1 FROM publication_faq WHERE category_id=$1) OR EXISTS (SELECT 1 FROM publication_news WHERE category_id=$1)
+	OR EXISTS (SELECT 1 FROM economy_task WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_task_group WHERE category_id=$1)`
 
 const tagUsedSQL = `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_product WHERE $1::text = ANY(tag_ids))
 	OR EXISTS (SELECT 1 FROM economy_gift WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_currency WHERE $1::text = ANY(tag_ids))
@@ -263,13 +264,15 @@ func (s *service) taxonomyDelete(res resource) http.HandlerFunc {
 				return err
 			}
 			if res.name == "tags" {
-				for _, table := range []string{"economy_prize", "economy_product", "economy_gift", "economy_currency"} {
+				for _, table := range []string{"economy_prize", "economy_product", "economy_gift", "economy_currency", "economy_task"} {
 					if _, err := tx.ExecContext(r.Context(), `UPDATE `+table+` SET tag_ids = array_remove(tag_ids, $1::text), updated_at=now() WHERE $1::text = ANY(tag_ids)`, id); err != nil {
 						return err
 					}
 				}
-				if _, err := tx.ExecContext(r.Context(), `UPDATE economy_product SET audience_tag_ids = array_remove(audience_tag_ids, $1::text), updated_at=now() WHERE $1::text = ANY(audience_tag_ids)`, id); err != nil {
-					return err
+				for _, table := range []string{"economy_product", "economy_task", "economy_task_group"} {
+					if _, err := tx.ExecContext(r.Context(), `UPDATE `+table+` SET audience_tag_ids = array_remove(audience_tag_ids, $1::text), updated_at=now() WHERE $1::text = ANY(audience_tag_ids)`, id); err != nil {
+						return err
+					}
 				}
 			} else {
 				var used bool

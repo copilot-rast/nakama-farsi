@@ -182,6 +182,9 @@ func (s *service) grantClaim(ctx context.Context, claimID string, depth int) (*e
 	if n, _ := res.RowsAffected(); n == 0 {
 		return out, nil
 	}
+	if kind == "task" {
+		s.afterTaskGranted(ctx, claimID)
+	}
 	var metaKeys []string
 	for _, item := range rewards {
 		if item.Type == "meta" {
@@ -297,6 +300,9 @@ func (s *service) sweepEvents(ctx context.Context) (int64, error) {
 		return removed, err
 	}
 	if _, err := s.db.ExecContext(ctx, `DELETE FROM economy_event_rule_progress WHERE period_start > DATE '1970-01-01' AND period_start < current_date - $1::int`, keep); err != nil {
+		return removed, err
+	}
+	if _, err := s.db.ExecContext(ctx, `DELETE FROM economy_user_task WHERE window_start IS NOT NULL AND window_start < current_date - $1::int AND status='active'`, keep); err != nil {
 		return removed, err
 	}
 	return removed, nil

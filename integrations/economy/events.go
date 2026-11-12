@@ -218,12 +218,13 @@ type eventOutcome struct {
 	Streaks   []streakChange     `json:"streaks"`
 	Levels    []levelChange      `json:"levels"`
 	Claims    []claimRef         `json:"claims"`
+	Tasks     []taskChange       `json:"tasks"`
 	metaIDs   []string
 	referrals []string
 }
 
 func newOutcome() *eventOutcome {
-	return &eventOutcome{Rules: []ruleProgress{}, Metas: map[string]float64{}, Streaks: []streakChange{}, Levels: []levelChange{}, Claims: []claimRef{}}
+	return &eventOutcome{Rules: []ruleProgress{}, Metas: map[string]float64{}, Streaks: []streakChange{}, Levels: []levelChange{}, Claims: []claimRef{}, Tasks: []taskChange{}}
 }
 
 func (o *eventOutcome) merge(other *eventOutcome) {
@@ -237,6 +238,7 @@ func (o *eventOutcome) merge(other *eventOutcome) {
 	o.Streaks = append(o.Streaks, other.Streaks...)
 	o.Levels = append(o.Levels, other.Levels...)
 	o.Claims = append(o.Claims, other.Claims...)
+	o.Tasks = append(o.Tasks, other.Tasks...)
 	o.referrals = append(o.referrals, other.referrals...)
 }
 
@@ -351,6 +353,9 @@ func (s *service) recordEvent(ctx context.Context, in eventInput) (*eventOutcome
 		if err := s.applyEventRules(ctx, tx, in.UserID, et.ID, value, now, clk, userTags, out); err != nil {
 			return err
 		}
+		if err := s.applyTasks(ctx, tx, in.UserID, et.ID, value, now, clk, userTags, out); err != nil {
+			return err
+		}
 		if err := s.applyMetaRules(ctx, tx, in.UserID, et.ID, value, now, userTags, out); err != nil {
 			return err
 		}
@@ -362,6 +367,7 @@ func (s *service) recordEvent(ctx context.Context, in eventInput) (*eventOutcome
 	if err != nil {
 		return nil, err
 	}
+	s.settleTasks(ctx, in.UserID, out)
 	s.settleOutcome(ctx, in.UserID, out, in.depth)
 	if len(out.referrals) > 0 {
 		s.noteReferralDone(ctx, out.referrals)
