@@ -96,6 +96,7 @@ test.describe('items: console', () => {
     await expect(row).toContainText('۲ سطح ارتقا');
     await row.locator('td').first().click();
     await settlePanel(page);
+    await expect(panel(page)).toContainText('ویرایش آیتم');
     await expect(field(panel(page), 'کلید').locator('input')).toHaveJSProperty('readOnly', true);
     await page.keyboard.press('Escape');
 

@@ -2104,6 +2104,7 @@ var MESSAGES = {
     'nav.items': "آیتم‌ها",
     'desc.items': "چیزهایی که بازیکن در بازی دارد، مثل پوسته، قاب و آواتار. بازیکن آن‌ها را می‌خرد، با رسیدن به سطح باز می‌کند یا جایزه می‌گیرد.",
     'new.items': "آیتم جدید",
+    'edit.items': "ویرایش آیتم",
     'search.items': "جست‌وجو در کلید و نام آیتم",
     'kind.item': "آیتم",
     'kind.item_type': "نوع آیتم",
@@ -4319,6 +4320,7 @@ var MESSAGES = {
     'nav.items': "Items",
     'desc.items': "Things a player owns in the game, like skins, frames and avatars. Players buy them, unlock them by level or get them as prizes.",
     'new.items': "New item",
+    'edit.items': "Edit item",
     'search.items': "Search item key and name",
     'kind.item': "Item",
     'kind.item_type': "Item type",
@@ -11744,7 +11746,7 @@ function priceLabel(p) {
 }
 
 function itemGetCell(it) {
-  return h('div', { class: 'flex flex-col gap-1 min-w-0 text-sm' }, withKeyNames(function () {
+  return h('div', { class: 'flex flex-col items-start gap-1 min-w-0 text-sm' }, withKeyNames(function () {
     var out = [];
     if (it.isStarter) out.push(tag(t('it.get.starter'), 'success'));
     if (it.price) out.push(h('span', { class: 'tabular-nums whitespace-nowrap', text: priceLabel(it.price) }));

@@ -15,7 +15,7 @@ function priceLabel(p) {
 }
 
 function itemGetCell(it) {
-  return h('div', { class: 'flex flex-col gap-1 min-w-0 text-sm' }, withKeyNames(function () {
+  return h('div', { class: 'flex flex-col items-start gap-1 min-w-0 text-sm' }, withKeyNames(function () {
     var out = [];
     if (it.isStarter) out.push(tag(t('it.get.starter'), 'success'));
     if (it.price) out.push(h('span', { class: 'tabular-nums whitespace-nowrap', text: priceLabel(it.price) }));
