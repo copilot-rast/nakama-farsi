@@ -89,7 +89,7 @@ const MAIN: [string, string][] = [
   ['#/matches', 'مسابقه‌ها'], ['#/leaderboards', 'جدول‌های امتیازات'], ['#/notifications', 'اعلان‌ها'], ['#/payments', 'خریدها'], ['#/chat', 'گفتگو'],
 ];
 const GROUPS: [string, string[]][] = [
-  ['economy', ['#/economy/overview', '#/economy/currencies', '#/economy/metas', '#/economy/prizes', '#/economy/products', '#/economy/gifts', '#/economy/event-types', '#/economy/event-rules', '#/economy/meta-rules', '#/economy/level-tables', '#/economy/streaks', '#/economy/event-log', '#/economy/payments']],
+  ['economy', ['#/economy/overview', '#/economy/currencies', '#/economy/metas', '#/economy/prizes', '#/economy/products', '#/economy/gifts', '#/economy/event-types', '#/economy/event-rules', '#/economy/meta-rules', '#/economy/level-tables', '#/economy/streaks', '#/economy/tasks', '#/economy/task-groups', '#/economy/event-log', '#/economy/payments']],
   ['publication', ['#/publication/faqs', '#/publication/news', '#/publication/comments', '#/publication/notifications']],
   ['moderation', ['#/moderation/players', '#/moderation/reports', '#/moderation/restrictions', '#/moderation/chat-words']],
   ['developer', ['#/api-explorer', '#/runtime']],

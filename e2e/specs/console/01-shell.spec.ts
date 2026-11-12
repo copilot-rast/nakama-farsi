@@ -13,6 +13,8 @@ const PAGES: [string, string][] = [
   ['#/economy/meta-rules', 'قانون‌های متا'],
   ['#/economy/level-tables', 'جدول سطح‌ها'],
   ['#/economy/streaks', 'روزهای پیاپی'],
+  ['#/economy/tasks', 'تسک‌ها'],
+  ['#/economy/task-groups', 'گروه‌های تسک'],
   ['#/economy/event-log', 'گزارش رویدادها'],
   ['#/economy/payments', 'پرداخت‌ها'],
   ['#/publication/faqs', 'سؤال‌های متداول'],
