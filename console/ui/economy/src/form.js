@@ -844,6 +844,8 @@ function buildForm(fields, values, ctx) {
       control = storeLinksEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
     } else if (t2 === 'static') {
       control = h('div', { class: 'py-2 text-secondary-700 dark:text-secondary-200' }, f.render(values));
+    } else if (t2 === 'custom') {
+      control = f.build(cur, function (v) { change(v); }, values);
     }
     var entry = entry || {};
     entry.def = f;
@@ -891,6 +893,8 @@ function buildForm(fields, values, ctx) {
         else if (isNaN(n) || (f.min !== undefined && n < f.min) || (f.max !== undefined && n > f.max)) msg = t('err.number');
         else setPath(values, f.name, n);
       } else if (t2 === 'items' || t2 === 'actions' || t2 === 'links' || t2 === 'rows') {
+        msg = e.control.validate();
+      } else if (t2 === 'custom' && e.control.validate) {
         msg = e.control.validate();
       } else if (t2 === 'i18n') {
         var hit = trCheck(v, f);

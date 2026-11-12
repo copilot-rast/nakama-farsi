@@ -1,6 +1,6 @@
 var SECTIONS = {
   economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'achievements', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
-  publication: ['faqs', 'news', 'comments', 'notifications', 'remote-config'],
+  publication: ['faqs', 'news', 'banners', 'banner-lists', 'comments', 'notifications', 'remote-config'],
   moderation: ['players', 'reports', 'restrictions', 'chat-words', 'activity'],
   support: ['tickets', 'live-chat']
 };

@@ -2331,7 +2331,209 @@ var MESSAGES = {
     'code.LEVEL_TOO_HIGH': "سطح بازیکن از حد این محصول بالاتر است.",
     'code.PRODUCT_ALREADY_BOUGHT': "این محصول فقط یک بار خریدنی است و بازیکن آن را خریده.",
     'code.PRIZE_ALREADY_OWNED': "بازیکن همهٔ چیزهای این جایزه را دارد.",
-    'code.ONE_TIME_SUBSCRIPTION': "اشتراک نمی‌تواند یک‌بار خرید باشد."
+    'code.ONE_TIME_SUBSCRIPTION': "اشتراک نمی‌تواند یک‌بار خرید باشد.",
+    'nav.banners': "بنرها",
+    'desc.banners': "تصویرهایی که در جایگاه‌های بازی نشان داده می‌شوند. برای هر بنر زمان نمایش، بازیکنان هدف و کاری که با زدن آن انجام می‌شود را تعیین کن.",
+    'new.banners': "بنر جدید",
+    'edit.banners': "ویرایش بنر",
+    'search.banners': "جست‌وجو در کلید، نام و عنوان بنر",
+    'nav.banner-lists': "جایگاه‌های بنر",
+    'desc.banner-lists': "جایی از بازی که بنرها در آن نشان داده می‌شوند، مثل چرخ‌فلک صفحهٔ اصلی. بازی با کلید جایگاه، بنرهای آن را می‌گیرد.",
+    'new.banner-lists': "جایگاه جدید",
+    'edit.banner-lists': "ویرایش جایگاه",
+    'search.banner-lists': "جست‌وجو در کلید و نام جایگاه",
+    'kind.banner': "بنر",
+    'bn.zoneAt': "{time} به وقت {zone}",
+    'bn.zoneHint': "زمان را به وقت {zone} وارد کن",
+    'bn.zoneNote': "همهٔ زمان‌های این بخش به وقت پروژه ({zone}) است. منطقهٔ زمانی را در تنظیمات پروژه، بخش رویدادها عوض کن.",
+    'bn.preview': "پیش‌نمایش زنده",
+    'bn.preview.lang': "زبان پیش‌نمایش",
+    'bn.preview.noTitle': "عنوان بنر",
+    'bn.cta.screen': "باز کن",
+    'bn.cta.product': "بخر",
+    'bn.cta.achievement': "ببین",
+    'bn.cta.url': "برو",
+    'bn.act.none': "زدن روی این بنر کاری نمی‌کند.",
+    'bn.act.screen': "زدن روی بنر صفحهٔ «{name}» را در بازی باز می‌کند.",
+    'bn.act.product': "زدن روی بنر محصول «{name}» را در فروشگاه نشان می‌دهد.",
+    'bn.act.achievement': "زدن روی بنر دستاورد «{name}» را نشان می‌دهد.",
+    'bn.act.url': "زدن روی بنر نشانی {url} را باز می‌کند.",
+    'bn.action.none': "بدون کار",
+    'bn.action.screen': "باز کردن صفحه‌ای از بازی",
+    'bn.action.product': "نشان دادن محصول",
+    'bn.action.achievement': "نشان دادن دستاورد",
+    'bn.action.url': "باز کردن نشانی وب",
+    'bn.state.live': "در حال نمایش",
+    'bn.state.scheduled': "زمان‌بندی‌شده",
+    'bn.state.ended': "تمام‌شده",
+    'bn.state.off': "خاموش",
+    'bn.tg.all': "همهٔ بازیکنان",
+    'bn.tg.tags': "فقط {n} برچسب",
+    'bn.tg.exclude': "بدون {n} برچسب",
+    'bn.tg.levelRange': "سطح {min} تا {max}",
+    'bn.tg.levelMin': "از سطح {n}",
+    'bn.tg.levelMax': "تا سطح {n}",
+    'bn.tg.version': "نسخهٔ {v}",
+    'bn.tg.hours': "ساعت {from} تا {to}",
+    'bn.age.all': "همه",
+    'bn.age.new': "بازیکنان تازه",
+    'bn.age.returning': "بازیکنان قدیمی",
+    'bn.age.new.short': "تازه (کمتر از {n} روز)",
+    'bn.age.returning.short': "قدیمی (بیش از {n} روز)",
+    'bn.platform.android': "اندروید",
+    'bn.platform.ios': "آی‌اواس",
+    'bn.platform.web': "وب",
+    'bn.platform.windows': "ویندوز",
+    'bn.platform.macos': "مک",
+    'bn.platform.linux': "لینوکس",
+    'bn.day.0': "یکشنبه",
+    'bn.day.1': "دوشنبه",
+    'bn.day.2': "سه‌شنبه",
+    'bn.day.3': "چهارشنبه",
+    'bn.day.4': "پنجشنبه",
+    'bn.day.5': "جمعه",
+    'bn.day.6': "شنبه",
+    'bn.day.0.short': "یک",
+    'bn.day.1.short': "دو",
+    'bn.day.2.short': "سه",
+    'bn.day.3.short': "چهار",
+    'bn.day.4.short': "پنج",
+    'bn.day.5.short': "جمعه",
+    'bn.day.6.short': "شنبه",
+    'bn.ctr': "نرخ کلیک {n}٪",
+    'bn.ctr.none': "هنوز نمایشی نیست",
+    'bn.viewsClicks': "{v} نمایش، {c} کلیک",
+    'bn.priorityN': "اولویت {n}",
+    'bn.from': "از {date}",
+    'bn.to': "تا {date}",
+    'bn.stats.views': "{n} نمایش در ۱۴ روز",
+    'bn.stats.clicks': "{n} کلیک",
+    'bn.stats.all': "از اول: {v} نمایش، {c} کلیک",
+    'bn.stats.viewsKey': "نمایش",
+    'bn.stats.clicksKey': "کلیک",
+    'bn.stats.note': "هر بازیکن در هر روز یک نمایش و یک کلیک حساب می‌شود (روز به وقت {zone}).",
+    'filter.bn.list': "جایگاه",
+    'filter.bn.state': "وضعیت نمایش",
+    'filter.bn.action': "کار بنر",
+    'filter.bn.layout': "چیدمان",
+    'col.bn.banner': "بنر",
+    'col.bn.list': "جایگاه",
+    'col.bn.when': "زمان",
+    'col.bn.who': "برای چه کسی",
+    'col.bn.stats': "۷ روز اخیر",
+    'col.bn.layout': "چیدمان",
+    'col.bn.banners': "بنرها",
+    'f.bn.key.hint': "کلید یکتا با حروف کوچک انگلیسی، عدد و _ ؛ بعد از ساخت عوض نمی‌شود.",
+    'err.bn.key': "کلید باید با حرف انگلیسی شروع شود و فقط a تا z، عدد و _ داشته باشد (۲ تا ۶۴).",
+    'f.bn.list': "جایگاه",
+    'f.bn.list.hint': "بنر در کدام جای بازی نشان داده شود.",
+    'f.bn.priority': "اولویت",
+    'f.bn.priority.hint': "بزرگ‌تر یعنی جلوتر. از ۱۰۰۰- تا ۱۰۰۰.",
+    'f.bn.name': "نام داخلی",
+    'f.bn.name.hint': "فقط در کنسول دیده می‌شود.",
+    'bn.h.content': "محتوا",
+    'f.bn.title': "عنوان",
+    'f.bn.subtitle': "زیرعنوان",
+    'f.bn.description': "توضیح",
+    'f.bn.image': "تصویر",
+    'f.bn.image.hint': "برای هر زبان می‌توانی تصویر جدا بگذاری. اگر زبانی تصویر نداشت، تصویر زبان اصلی نشان داده می‌شود.",
+    'f.bn.color': "رنگ پس‌زمینه",
+    'f.bn.color.hint': "مثل ‎#1e3a8a‎؛ برای وقتی که تصویر هنوز بار نشده.",
+    'bn.h.action': "با زدن روی بنر",
+    'f.bn.action': "کار",
+    'f.bn.action.hint': "بازی این کار را از پاسخ سرور می‌خواند، نه از خود بنر.",
+    'f.bn.screen': "نام صفحه",
+    'f.bn.screen.hint': "نام صفحه در بازی، مثل shop یا tasks.",
+    'f.bn.product': "محصول",
+    'f.bn.achievement': "دستاورد",
+    'f.bn.url': "نشانی وب",
+    'f.bn.url.hint': "برای هر زبان می‌توانی نشانی جدا بگذاری. فقط http و https.",
+    'f.bn.cta': "متن دکمه",
+    'f.bn.cta.hint': "اختیاری؛ اگر خالی باشد بازی متن پیش‌فرض خودش را نشان می‌دهد.",
+    'bn.h.when': "زمان نمایش",
+    'f.bn.days': "روزهای هفته",
+    'f.bn.days.hint': "هیچ روزی را انتخاب نکنی، همهٔ روزها نشان داده می‌شود.",
+    'f.bn.dayStart': "از ساعت",
+    'f.bn.dayEnd': "تا ساعت",
+    'f.bn.hours.hint': "خالی یعنی تمام روز.",
+    'code.INVALID_HOURS': "هر دو ساعت را بده و ساعت پایان بعد از شروع باشد.",
+    'code.INVALID_TIME_OF_DAY': "ساعت را به شکل ۰۹:۳۰ بنویس.",
+    'bn.h.who': "برای چه کسی",
+    'f.bn.audience': "فقط بازیکنان با این برچسب‌ها",
+    'f.bn.audience.hint': "خالی یعنی همه. داشتن یکی از برچسب‌ها کافی است.",
+    'f.bn.exclude': "نه برای بازیکنان با این برچسب‌ها",
+    'f.bn.exclude.hint': "بازیکنی که یکی از این برچسب‌ها را دارد بنر را نمی‌بیند.",
+    'code.TAG_BOTH_WAYS': "یک برچسب نمی‌تواند هم در «فقط» باشد هم در «نه».",
+    'f.bn.levelTable.hint': "خالی یعنی جدول سطح اصلی.",
+    'f.bn.age': "سابقهٔ بازیکن",
+    'f.bn.age.hint': "تازه یعنی حسابش کمتر از چند روز است.",
+    'f.bn.newDays': "چند روز",
+    'f.bn.platforms': "سکوها",
+    'f.bn.platforms.hint': "خالی یعنی همهٔ سکوها.",
+    'f.bn.minVersion': "از نسخه",
+    'f.bn.maxVersion': "تا نسخه",
+    'f.bn.version.hint': "مثل 1.4.0؛ خالی یعنی همهٔ نسخه‌ها.",
+    'f.bn.countries': "کشورها",
+    'f.bn.countries.hint': "کد دوحرفی کشورها با ویرگول، مثل IR, DE. خالی یعنی همه.",
+    'f.bn.languages': "زبان بازیکن",
+    'f.bn.languages.hint': "خالی یعنی همهٔ زبان‌ها.",
+    'bn.h.stats': "نمایش و کلیک",
+    'bn.try.player': "شناسه یا نام کاربری بازیکن",
+    'bn.try.anyPlatform': "هر سکو",
+    'bn.try.run': "ببین",
+    'bn.try.need': "اول یک بازیکن بنویس.",
+    'bn.try.for': "«{name}» الان {n} بنر می‌بیند.",
+    'bn.try.hint': "ببین یک بازیکن الان چه بنرهایی در این جایگاه می‌بیند و چرا بقیه را نمی‌بیند.",
+    'bn.why.inactive': "خاموش است",
+    'bn.why.target_missing': "محصول یا دستاوردش در دسترس نیست",
+    'bn.why.not_started': "هنوز شروع نشده",
+    'bn.why.ended': "تمام شده",
+    'bn.why.day': "امروز روزش نیست",
+    'bn.why.hours': "الان ساعتش نیست",
+    'bn.why.tag': "برچسب لازم را ندارد",
+    'bn.why.excluded': "برچسبش کنار گذاشته شده",
+    'bn.why.platform': "سکویش جور نیست",
+    'bn.why.version': "نسخه‌اش جور نیست",
+    'bn.why.country': "کشورش جور نیست",
+    'bn.why.language': "زبانش جور نیست",
+    'bn.why.new': "دیگر بازیکن تازه نیست",
+    'bn.why.returning': "هنوز بازیکن تازه است",
+    'bn.why.level': "سطحش جور نیست",
+    'bn.why.max_items': "جایگاه پر است",
+    'bn.why.placement_off': "جایگاه خاموش است",
+    'bn.layout.carousel': "چرخ‌فلک",
+    'bn.layout.single': "تکی",
+    'bn.layout.grid': "شبکه",
+    'bn.layout.strip': "نوار",
+    'bn.rotateN': "هر {n} ثانیه، تا {max} بنر",
+    'bn.maxN': "تا {n} بنر",
+    'bn.liveOf': "{n} فعال از {total}",
+    'f.bl.key.hint': "بازی با این کلید بنرها را می‌خواهد، مثل menu_carousel. بعد از ساخت عوض نمی‌شود.",
+    'f.bl.active.hint': "جایگاه خاموش هیچ بنری به بازی نمی‌دهد.",
+    'f.bl.name': "نام جایگاه",
+    'f.bl.layout': "چیدمان",
+    'f.bl.layout.hint': "بازی بنرها را به این شکل می‌چیند.",
+    'f.bl.maxItems': "بیشترین تعداد",
+    'f.bl.maxItems.hint': "از ۱ تا ۲۰ بنر.",
+    'f.bl.rotate': "چرخش (ثانیه)",
+    'f.bl.rotate.hint': "صفر یعنی دستی.",
+    'bl.h.order': "ترتیب بنرها",
+    'bl.order.hint': "بنرها به ترتیب اولویت نشان داده می‌شوند؛ برای جابه‌جایی، اولویت بنر را عوض کن.",
+    'bl.none': "هنوز بنری در این جایگاه نیست.",
+    'bl.add': "بنر تازه در این جایگاه",
+    'bl.h.try': "یک بازیکن چه می‌بیند",
+    'code.KEY_EXISTS': "این کلید قبلاً استفاده شده.",
+    'code.KEY_LOCKED': "کلید بعد از ساخت عوض نمی‌شود.",
+    'code.BANNER_LIST_NOT_FOUND': "این جایگاه پیدا نشد.",
+    'code.BANNER_NOT_AVAILABLE': "این بنر الان برای این بازیکن نیست.",
+    'code.ACTION_TARGET_NOT_FOUND': "محصول یا دستاوردی که انتخاب کردی پیدا نشد.",
+    'code.INVALID_LAYOUT': "چیدمان درست نیست.",
+    'code.INVALID_WEEKDAY': "روز هفته درست نیست.",
+    'code.INVALID_PLAYER_AGE': "سابقهٔ بازیکن درست نیست.",
+    'code.INVALID_NEW_DAYS': "تعداد روز باید بین ۱ و ۳۶۵ باشد.",
+    'code.INVALID_MAX_ITEMS': "تعداد بنر باید بین ۱ و ۲۰ باشد.",
+    'code.INVALID_ROTATE': "زمان چرخش باید بین ۰ و ۶۰ ثانیه باشد.",
+    'code.TOO_MANY_REQUESTS': "درخواست‌ها زیاد شد؛ کمی بعد دوباره امتحان کن."
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -4663,7 +4865,209 @@ var MESSAGES = {
     'code.LEVEL_TOO_HIGH': "The player's level is above this product's limit.",
     'code.PRODUCT_ALREADY_BOUGHT': "This product can be bought once and the player already bought it.",
     'code.PRIZE_ALREADY_OWNED': "The player already owns everything in this prize.",
-    'code.ONE_TIME_SUBSCRIPTION': "A subscription cannot be a one-time product."
+    'code.ONE_TIME_SUBSCRIPTION': "A subscription cannot be a one-time product.",
+    'nav.banners': "Banners",
+    'desc.banners': "Pictures shown in placements inside the game. For each banner, set when it shows, which players see it and what a tap does.",
+    'new.banners': "New banner",
+    'edit.banners': "Edit banner",
+    'search.banners': "Search banner key, name and title",
+    'nav.banner-lists': "Banner placements",
+    'desc.banner-lists': "A place in the game where banners show, like the home carousel. The game asks for banners by placement key.",
+    'new.banner-lists': "New placement",
+    'edit.banner-lists': "Edit placement",
+    'search.banner-lists': "Search placement key and name",
+    'kind.banner': "Banner",
+    'bn.zoneAt': "{time} in {zone}",
+    'bn.zoneHint': "Enter the time in {zone}",
+    'bn.zoneNote': "All times here are in the project time zone ({zone}). Change the zone in project settings, Events.",
+    'bn.preview': "Live preview",
+    'bn.preview.lang': "Preview language",
+    'bn.preview.noTitle': "Banner title",
+    'bn.cta.screen': "Open",
+    'bn.cta.product': "Buy",
+    'bn.cta.achievement': "View",
+    'bn.cta.url': "Go",
+    'bn.act.none': "Tapping this banner does nothing.",
+    'bn.act.screen': "A tap opens the \"{name}\" screen in the game.",
+    'bn.act.product': "A tap shows the product \"{name}\" in the shop.",
+    'bn.act.achievement': "A tap shows the achievement \"{name}\".",
+    'bn.act.url': "A tap opens {url}.",
+    'bn.action.none': "No action",
+    'bn.action.screen': "Open a game screen",
+    'bn.action.product': "Show a product",
+    'bn.action.achievement': "Show an achievement",
+    'bn.action.url': "Open a web address",
+    'bn.state.live': "Showing",
+    'bn.state.scheduled': "Scheduled",
+    'bn.state.ended': "Ended",
+    'bn.state.off': "Off",
+    'bn.tg.all': "All players",
+    'bn.tg.tags': "Only {n} tags",
+    'bn.tg.exclude': "Not {n} tags",
+    'bn.tg.levelRange': "Level {min} to {max}",
+    'bn.tg.levelMin': "From level {n}",
+    'bn.tg.levelMax': "Up to level {n}",
+    'bn.tg.version': "Version {v}",
+    'bn.tg.hours': "{from} to {to}",
+    'bn.age.all': "Everyone",
+    'bn.age.new': "New players",
+    'bn.age.returning': "Returning players",
+    'bn.age.new.short': "New (under {n} days)",
+    'bn.age.returning.short': "Returning (over {n} days)",
+    'bn.platform.android': "Android",
+    'bn.platform.ios': "iOS",
+    'bn.platform.web': "Web",
+    'bn.platform.windows': "Windows",
+    'bn.platform.macos': "macOS",
+    'bn.platform.linux': "Linux",
+    'bn.day.0': "Sunday",
+    'bn.day.1': "Monday",
+    'bn.day.2': "Tuesday",
+    'bn.day.3': "Wednesday",
+    'bn.day.4': "Thursday",
+    'bn.day.5': "Friday",
+    'bn.day.6': "Saturday",
+    'bn.day.0.short': "Sun",
+    'bn.day.1.short': "Mon",
+    'bn.day.2.short': "Tue",
+    'bn.day.3.short': "Wed",
+    'bn.day.4.short': "Thu",
+    'bn.day.5.short': "Fri",
+    'bn.day.6.short': "Sat",
+    'bn.ctr': "Click rate {n}%",
+    'bn.ctr.none': "No views yet",
+    'bn.viewsClicks': "{v} views, {c} clicks",
+    'bn.priorityN': "Priority {n}",
+    'bn.from': "From {date}",
+    'bn.to': "Until {date}",
+    'bn.stats.views': "{n} views in 14 days",
+    'bn.stats.clicks': "{n} clicks",
+    'bn.stats.all': "All time: {v} views, {c} clicks",
+    'bn.stats.viewsKey': "Views",
+    'bn.stats.clicksKey': "Clicks",
+    'bn.stats.note': "Each player counts once a day for views and once for clicks (days in {zone}).",
+    'filter.bn.list': "Placement",
+    'filter.bn.state': "Showing state",
+    'filter.bn.action': "Banner action",
+    'filter.bn.layout': "Layout",
+    'col.bn.banner': "Banner",
+    'col.bn.list': "Placement",
+    'col.bn.when': "When",
+    'col.bn.who': "Who sees it",
+    'col.bn.stats': "Last 7 days",
+    'col.bn.layout': "Layout",
+    'col.bn.banners': "Banners",
+    'f.bn.key.hint': "A unique key in lowercase letters, digits and _. It cannot change later.",
+    'err.bn.key': "Start with a letter and use only a-z, digits and _ (2 to 64).",
+    'f.bn.list': "Placement",
+    'f.bn.list.hint': "Where in the game the banner shows.",
+    'f.bn.priority': "Priority",
+    'f.bn.priority.hint': "Higher comes first. From -1000 to 1000.",
+    'f.bn.name': "Internal name",
+    'f.bn.name.hint': "Only shown in the console.",
+    'bn.h.content': "Content",
+    'f.bn.title': "Title",
+    'f.bn.subtitle': "Subtitle",
+    'f.bn.description': "Description",
+    'f.bn.image': "Image",
+    'f.bn.image.hint': "You can set a separate image per language. A language without one uses the main language image.",
+    'f.bn.color': "Background colour",
+    'f.bn.color.hint': "Like #1e3a8a, shown while the image loads.",
+    'bn.h.action': "On tap",
+    'f.bn.action': "Action",
+    'f.bn.action.hint': "The game reads the action from the server answer, not from the banner itself.",
+    'f.bn.screen': "Screen name",
+    'f.bn.screen.hint': "A screen name in the game, like shop or tasks.",
+    'f.bn.product': "Product",
+    'f.bn.achievement': "Achievement",
+    'f.bn.url': "Web address",
+    'f.bn.url.hint': "You can set a separate address per language. Only http and https.",
+    'f.bn.cta': "Button text",
+    'f.bn.cta.hint': "Optional. When empty the game shows its own default text.",
+    'bn.h.when': "When it shows",
+    'f.bn.days': "Days of the week",
+    'f.bn.days.hint': "Pick none to show it every day.",
+    'f.bn.dayStart': "From",
+    'f.bn.dayEnd': "Until",
+    'f.bn.hours.hint': "Empty means all day.",
+    'code.INVALID_HOURS': "Give both times, and the end after the start.",
+    'code.INVALID_TIME_OF_DAY': "Write the time like 09:30.",
+    'bn.h.who': "Who sees it",
+    'f.bn.audience': "Only players with these tags",
+    'f.bn.audience.hint': "Empty means everyone. One matching tag is enough.",
+    'f.bn.exclude': "Not for players with these tags",
+    'f.bn.exclude.hint': "A player with any of these tags does not see the banner.",
+    'code.TAG_BOTH_WAYS': "A tag cannot be in both \"only\" and \"not\".",
+    'f.bn.levelTable.hint': "Empty means the main level table.",
+    'f.bn.age': "Player age",
+    'f.bn.age.hint': "New means the account is younger than some days.",
+    'f.bn.newDays': "Days",
+    'f.bn.platforms': "Platforms",
+    'f.bn.platforms.hint': "Empty means every platform.",
+    'f.bn.minVersion': "From version",
+    'f.bn.maxVersion': "Up to version",
+    'f.bn.version.hint': "Like 1.4.0. Empty means every version.",
+    'f.bn.countries': "Countries",
+    'f.bn.countries.hint': "Two-letter country codes with commas, like IR, DE. Empty means all.",
+    'f.bn.languages': "Player language",
+    'f.bn.languages.hint': "Empty means every language.",
+    'bn.h.stats': "Views and clicks",
+    'bn.try.player': "Player ID or username",
+    'bn.try.anyPlatform': "Any platform",
+    'bn.try.run': "Check",
+    'bn.try.need': "Type a player first.",
+    'bn.try.for': "\"{name}\" sees {n} banners right now.",
+    'bn.try.hint': "See which banners a player gets in this placement right now, and why the others are hidden.",
+    'bn.why.inactive': "Off",
+    'bn.why.target_missing': "Its product or achievement is not available",
+    'bn.why.not_started': "Not started yet",
+    'bn.why.ended': "Ended",
+    'bn.why.day': "Not today",
+    'bn.why.hours': "Not at this hour",
+    'bn.why.tag': "Missing the needed tag",
+    'bn.why.excluded': "Has an excluded tag",
+    'bn.why.platform': "Other platform",
+    'bn.why.version': "Other version",
+    'bn.why.country': "Other country",
+    'bn.why.language': "Other language",
+    'bn.why.new': "No longer a new player",
+    'bn.why.returning': "Still a new player",
+    'bn.why.level': "Level does not match",
+    'bn.why.max_items': "Placement is full",
+    'bn.why.placement_off': "Placement is off",
+    'bn.layout.carousel': "Carousel",
+    'bn.layout.single': "Single",
+    'bn.layout.grid': "Grid",
+    'bn.layout.strip': "Strip",
+    'bn.rotateN': "Every {n} s, up to {max} banners",
+    'bn.maxN': "Up to {n} banners",
+    'bn.liveOf': "{n} live of {total}",
+    'f.bl.key.hint': "The game asks for banners with this key, like menu_carousel. It cannot change later.",
+    'f.bl.active.hint': "A placement that is off gives the game no banners.",
+    'f.bl.name': "Placement name",
+    'f.bl.layout': "Layout",
+    'f.bl.layout.hint': "How the game lays the banners out.",
+    'f.bl.maxItems': "Most banners",
+    'f.bl.maxItems.hint': "From 1 to 20.",
+    'f.bl.rotate': "Rotate (seconds)",
+    'f.bl.rotate.hint': "Zero means by hand.",
+    'bl.h.order': "Banner order",
+    'bl.order.hint': "Banners show by priority. To move one, change its priority.",
+    'bl.none': "No banners in this placement yet.",
+    'bl.add': "New banner in this placement",
+    'bl.h.try': "What a player sees",
+    'code.KEY_EXISTS': "This key is already used.",
+    'code.KEY_LOCKED': "The key cannot change after creation.",
+    'code.BANNER_LIST_NOT_FOUND': "This placement was not found.",
+    'code.BANNER_NOT_AVAILABLE': "This banner is not available for this player now.",
+    'code.ACTION_TARGET_NOT_FOUND': "The product or achievement you picked was not found.",
+    'code.INVALID_LAYOUT': "The layout is not valid.",
+    'code.INVALID_WEEKDAY': "The day of the week is not valid.",
+    'code.INVALID_PLAYER_AGE': "Player age is not valid.",
+    'code.INVALID_NEW_DAYS': "Days must be between 1 and 365.",
+    'code.INVALID_MAX_ITEMS': "Banners must be between 1 and 20.",
+    'code.INVALID_ROTATE': "Rotation must be between 0 and 60 seconds.",
+    'code.TOO_MANY_REQUESTS': "Too many requests. Try again in a moment."
   }
 };
 
@@ -6314,6 +6718,8 @@ function buildForm(fields, values, ctx) {
       control = storeLinksEditor(cur, function (v) { setPath(values, f.name, v); if (entry.wrap.setError) entry.wrap.setError(''); });
     } else if (t2 === 'static') {
       control = h('div', { class: 'py-2 text-secondary-700 dark:text-secondary-200' }, f.render(values));
+    } else if (t2 === 'custom') {
+      control = f.build(cur, function (v) { change(v); }, values);
     }
     var entry = entry || {};
     entry.def = f;
@@ -6361,6 +6767,8 @@ function buildForm(fields, values, ctx) {
         else if (isNaN(n) || (f.min !== undefined && n < f.min) || (f.max !== undefined && n > f.max)) msg = t('err.number');
         else setPath(values, f.name, n);
       } else if (t2 === 'items' || t2 === 'actions' || t2 === 'links' || t2 === 'rows') {
+        msg = e.control.validate();
+      } else if (t2 === 'custom' && e.control.validate) {
         msg = e.control.validate();
       } else if (t2 === 'i18n') {
         var hit = trCheck(v, f);
@@ -6961,7 +7369,7 @@ var RESOURCES = {
 
 var SECTIONS = {
   economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'achievements', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
-  publication: ['faqs', 'news', 'comments', 'notifications', 'remote-config'],
+  publication: ['faqs', 'news', 'banners', 'banner-lists', 'comments', 'notifications', 'remote-config'],
   moderation: ['players', 'reports', 'restrictions', 'chat-words', 'activity'],
   support: ['tickets', 'live-chat']
 };
@@ -12561,6 +12969,519 @@ function playerAchievementsCard() {
   }
   place();
 }
+
+PH_ICONS.banners = '<path d="M238.76,51.73A8,8,0,0,0,232,48H40a8,8,0,0,0-5.66,13.66L76.69,104,34.34,146.34A8,8,0,0,0,40,160H173.62l-28.84,60.56a8,8,0,1,0,14.44,6.88l80-168A8,8,0,0,0,238.76,51.73ZM181.23,144H59.31l34.35-34.34a8,8,0,0,0,0-11.32L59.31,64h160Z"/>';
+PH_ICONS['banner-lists'] = '<path d="M192,48H64A16,16,0,0,0,48,64V192a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64A16,16,0,0,0,192,48Zm0,144H64V64H192V192ZM240,56V200a8,8,0,0,1-16,0V56a8,8,0,0,1,16,0ZM32,56V200a8,8,0,0,1-16,0V56a8,8,0,0,1,16,0Z"/>';
+PH_ICONS.bannerDuo = '<path d="M232,56l-45.71,96H40l48-48L40,56Z" opacity="0.2"/>' + PH_ICONS.banners;
+
+if (TAG_KEY_TYPES.indexOf('banner') === -1) TAG_KEY_TYPES.splice(TAG_KEY_TYPES.indexOf('general'), 0, 'banner');
+
+var BN_LAYOUTS = ['carousel', 'single', 'grid', 'strip'];
+var BN_ACTIONS = ['none', 'screen', 'product', 'achievement', 'url'];
+var BN_PLATFORMS = ['android', 'ios', 'web', 'windows', 'macos', 'linux'];
+var BN_STATES = ['live', 'scheduled', 'ended', 'off'];
+var BN_STATE_COLOR = { live: 'success', scheduled: 'primary', ended: 'secondary', off: 'secondary' };
+var BN_WEEK = [6, 0, 1, 2, 3, 4, 5];
+var BN_SET = { zone: null, p: null };
+
+function bannerSettings() {
+  if (BN_SET.p) return BN_SET.p;
+  BN_SET.p = pubApi('GET', '/banners/settings').then(function (res) { BN_SET.zone = (res && res.timezone) || 'UTC'; return BN_SET; }, function () { BN_SET.p = null; BN_SET.zone = BN_SET.zone || 'UTC'; return BN_SET; });
+  return BN_SET.p;
+}
+
+function bnZone() { return BN_SET.zone || 'UTC'; }
+
+function zoneParts(ms, zone) {
+  var o = {};
+  new Intl.DateTimeFormat('en-US', { timeZone: zone, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    .formatToParts(new Date(ms)).forEach(function (p) { o[p.type] = p.value; });
+  return o;
+}
+
+function zoneOffset(ms, zone) {
+  var o = zoneParts(ms, zone);
+  return Date.UTC(+o.year, +o.month - 1, +o.day, +o.hour % 24, +o.minute, +o.second) - Math.floor(ms / 1000) * 1000;
+}
+
+function wallToIso(wall, zone) {
+  var m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(wall || '');
+  if (!m) return null;
+  var guess = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
+  var ms = guess - zoneOffset(guess, zone);
+  ms = guess - zoneOffset(ms, zone);
+  return new Date(ms).toISOString();
+}
+
+function isoToWall(iso, zone) {
+  if (!iso) return '';
+  var d = new Date(iso).getTime();
+  if (isNaN(d)) return '';
+  var o = zoneParts(d, zone);
+  return o.year + '-' + o.month + '-' + o.day + 'T' + o.hour + ':' + o.minute;
+}
+
+function zoneFmt(iso, zone) {
+  if (!iso) return '';
+  try {
+    return new Intl.DateTimeFormat(locale(), { timeZone: zone || bnZone(), year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+  } catch (e) {
+    return fmtDate(iso, true);
+  }
+}
+
+function zoneDateInput(value, onchange) {
+  var zone = bnZone();
+  var el = h('input', { type: 'datetime-local', class: INPUT_MD + ' tabular-nums', dir: 'ltr', 'data-ltr': '', 'data-zone-input': '' });
+  el.value = isoToWall(value, zone);
+  var shown = h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1', 'data-zone-shown': '' });
+  function paint() {
+    var iso = wallToIso(el.value, zone);
+    shown.textContent = iso ? t('bn.zoneAt', { time: zoneFmt(iso, zone), zone: zone }) : t('bn.zoneHint', { zone: zone });
+  }
+  el.addEventListener('input', function () { paint(); onchange(wallToIso(el.value, zone)); });
+  paint();
+  return h('div', {}, el, shown);
+}
+
+function timeOfDayInput(value, onchange) {
+  var el = h('input', { type: 'time', class: INPUT_MD + ' tabular-nums', dir: 'ltr', 'data-ltr': '', step: 60 });
+  el.value = value && value !== '24:00' ? value : value === '24:00' ? '23:59' : '';
+  el.addEventListener('input', function () { onchange(el.value ? (el.value === '23:59' ? '24:00' : el.value) : null); });
+  return el;
+}
+
+function perLangInput(value, kind, onchange) {
+  var values = Object.assign({}, value || {});
+  var langs = LANGS.active.slice();
+  var current = langs.length ? langs[0].code : LANGS.def;
+  var tabs = h('div', { class: 'eco-tr-tabs', role: 'tablist' });
+  var panels = h('div', { class: 'eco-tr-panels' });
+  var parts = {};
+  var root;
+  function emit() {
+    var out = {};
+    Object.keys(values).forEach(function (k) { var s = String(values[k] || '').trim(); if (s) out[k] = s; });
+    onchange(out);
+    if (root) root.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  langs.forEach(function (l) {
+    var code = l.code;
+    var dot = h('span', { class: 'eco-tr-dot', 'aria-hidden': 'true' });
+    var tab = h('button', { type: 'button', role: 'tab', class: 'eco-tr-tab', 'data-lang': code, 'aria-selected': 'false', title: langName(code), onclick: function () { select(code); } },
+      h('span', { dir: langDir(code), text: l.nativeName || code }), code === LANGS.def ? h('span', { class: 'eco-tr-def', text: t('tr.default') }) : null, dot);
+    var ctl = kind === 'image'
+      ? imageInput(values[code] || '', function (v) { values[code] = v || ''; paintTab(code); emit(); })
+      : textInput(values[code] || '', { ltr: true, label: langName(code), placeholder: 'https://', oninput: function (v) { values[code] = v; paintTab(code); emit(); } });
+    var panel = h('div', { role: 'tabpanel', 'data-lang': code, hidden: true }, ctl);
+    parts[code] = { tab: tab, dot: dot, panel: panel };
+    tabs.appendChild(tab);
+    panels.appendChild(panel);
+  });
+  function paintTab(code) {
+    var p = parts[code];
+    var empty = !String(values[code] || '').trim();
+    p.dot.hidden = !empty;
+    p.tab.classList.toggle('eco-tr-empty', empty);
+  }
+  function select(code) {
+    current = code;
+    Object.keys(parts).forEach(function (k) {
+      parts[k].panel.hidden = k !== code;
+      parts[k].tab.setAttribute('aria-selected', k === code ? 'true' : 'false');
+      parts[k].tab.classList.toggle('eco-tr-on', k === code);
+    });
+  }
+  Object.keys(parts).forEach(paintTab);
+  select(current);
+  root = h('div', { class: 'eco-tr', 'data-per-lang': kind }, tabs, panels);
+  root.validate = function () {
+    var any = Object.keys(values).some(function (k) { return String(values[k] || '').trim(); });
+    if (any && !String(values[LANGS.def] || '').trim()) { select(LANGS.def); return t('code.DEFAULT_LANGUAGE_REQUIRED', { lang: langName(LANGS.def) }); }
+    for (var k in values) {
+      var v = String(values[k] || '').trim();
+      if (v && (kind === 'url' ? !/^https?:\/\/[^\s"'<>`]+$/i.test(v) : !/^(https?:\/\/|\/(?!\/))[^\s"'<>`]+$/i.test(v))) { select(k); return t('code.INVALID_URL'); }
+    }
+    return null;
+  };
+  return root;
+}
+
+function bnPreviewCard(v, code, layout) {
+  var title = (v.title || {})[code] || (v.title || {})[LANGS.def] || '';
+  var sub = (v.subtitle || {})[code] || (v.subtitle || {})[LANGS.def] || '';
+  var src = (v.imageUrl || {})[code] || (v.imageUrl || {})[LANGS.def] || '';
+  var act = v.action || {};
+  var label = (act.label || {})[code] || (act.label || {})[LANGS.def] || '';
+  var card2 = h('div', { class: 'eco-bn-card', 'data-layout': layout || 'carousel', dir: langDir(code), lang: code, style: v.bgColor ? '--bn-bg:' + v.bgColor : null, 'data-bn-preview-card': '' });
+  if (src) card2.appendChild(h('img', { class: 'eco-bn-img', src: src, alt: '', loading: 'lazy' }));
+  else card2.appendChild(h('div', { class: 'eco-bn-img eco-bn-img-empty', 'aria-hidden': 'true' }, icon('bannerDuo', 'h-8 w-8')));
+  var text = h('div', { class: 'eco-bn-text' },
+    h('div', { class: 'eco-bn-title', 'data-bn-preview-title': '', text: title || t('bn.preview.noTitle') }),
+    sub ? h('div', { class: 'eco-bn-sub', text: sub }) : null,
+    act.type && act.type !== 'none' ? h('span', { class: 'eco-bn-cta', 'data-bn-preview-cta': '', text: label || t('bn.cta.' + act.type) }) : null);
+  card2.appendChild(text);
+  return card2;
+}
+
+function bnActionText(a) {
+  a = a || {};
+  if (!a.type || a.type === 'none') return t('bn.act.none');
+  if (a.type === 'url') return t('bn.act.url', { url: i18nText(a.url) || '' });
+  return t('bn.act.' + a.type, { name: (a.type === 'product' ? a.product : a.type === 'achievement' ? a.achievement : a.value) || a.value || '' });
+}
+
+function bannerPreviewField() {
+  return { name: 'livePreview', type: 'static', readonly: true, render: function (v) {
+    var langs = LANGS.active.slice();
+    var code = langs.length ? langs[0].code : LANGS.def;
+    var stage = h('div', { class: 'eco-bn-stage' });
+    var seg = segmented(langs.map(function (l) { return { value: l.code, label: l.nativeName || l.code }; }), code, function (c) { code = c; paint(); }, t('bn.preview.lang'));
+    seg.setAttribute('data-bn-langs', '');
+    var meta = h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300 mt-2', 'data-bn-preview-action': '' });
+    var layout = 'carousel';
+    var frame = h('div', { class: 'eco-bn-preview', 'data-bn-preview': '' }, h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-2' },
+      h('span', { class: 'text-sm font-medium', text: t('bn.preview') }), seg), stage, meta);
+    function paint() {
+      clear(stage).appendChild(bnPreviewCard(v, code, layout));
+      meta.textContent = bnActionText(v.action);
+    }
+    var pending = 0;
+    function later() { if (pending) return; pending = requestAnimationFrame(function () { pending = 0; paint(); }); }
+    setTimeout(function () {
+      var form = frame.closest('form');
+      if (!form) return;
+      form.addEventListener('input', later);
+      form.addEventListener('change', later);
+      form.addEventListener('click', later);
+    }, 0);
+    function loadLayout() {
+      if (!v.listId) return;
+      var ref = refName('banner-lists', v.listId, pubApi);
+      if (ref.item !== undefined) { layout = (ref.item && ref.item.layout) || 'carousel'; paint(); }
+      else ref.p.then(function (it) { layout = (it && it.layout) || 'carousel'; paint(); });
+    }
+    loadLayout();
+    paint();
+    return frame;
+  } };
+}
+
+function bnTargetChips(it) {
+  var out = [];
+  if ((it.audienceTagIds || []).length) out.push(t('bn.tg.tags', { n: fmtNum(it.audienceTagIds.length) }));
+  if ((it.excludeTagIds || []).length) out.push(t('bn.tg.exclude', { n: fmtNum(it.excludeTagIds.length) }));
+  if (it.minLevel != null && it.maxLevel != null) out.push(t('bn.tg.levelRange', { min: fmtNum(it.minLevel), max: fmtNum(it.maxLevel) }));
+  else if (it.minLevel != null) out.push(t('bn.tg.levelMin', { n: fmtNum(it.minLevel) }));
+  else if (it.maxLevel != null) out.push(t('bn.tg.levelMax', { n: fmtNum(it.maxLevel) }));
+  if ((it.platforms || []).length) out.push(it.platforms.map(function (p) { return t('bn.platform.' + p); }).join(lang() === 'fa' ? '، ' : ', '));
+  if (it.minVersion || it.maxVersion) out.push(t('bn.tg.version', { v: (it.minVersion || '…') + ' - ' + (it.maxVersion || '…') }));
+  if ((it.countries || []).length) out.push(it.countries.join(lang() === 'fa' ? '، ' : ', '));
+  if ((it.languages || []).length) out.push(it.languages.map(langName).join(lang() === 'fa' ? '، ' : ', '));
+  if (it.playerAge && it.playerAge !== 'all') out.push(t('bn.age.' + it.playerAge + '.short', { n: fmtNum(it.newDays || 7) }));
+  if ((it.days || []).length) out.push(BN_WEEK.filter(function (d) { return it.days.indexOf(d) !== -1; }).map(function (d) { return t('bn.day.' + d + '.short'); }).join(lang() === 'fa' ? '، ' : ', '));
+  if (it.dayStart && it.dayEnd) out.push(t('bn.tg.hours', { from: numText(it.dayStart), to: numText(it.dayEnd) }));
+  return out;
+}
+
+function numText(s) {
+  return lang() === 'fa' ? String(s).replace(/[0-9]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; }) : String(s);
+}
+
+function bnStateTag(state) {
+  return tag(t('bn.state.' + state), BN_STATE_COLOR[state] || 'secondary');
+}
+
+function bnThumb(it) {
+  var box = h('div', { class: 'eco-bn-thumb shrink-0 rounded-md overflow-hidden flex items-center justify-center' });
+  var src = i18nText(it.imageUrl);
+  if (src) box.appendChild(img(src, 'banners'));
+  else box.appendChild(icon('bannerDuo', 'h-5 w-5'));
+  return box;
+}
+
+function ctrText(views, clicks) {
+  if (!views) return t('bn.ctr.none');
+  return t('bn.ctr', { n: fmtNum(Math.round((clicks / views) * 1000) / 10) });
+}
+
+function bannerStatsField() {
+  return { name: 'stats', type: 'static', readonly: true, when: function (v) { return !!v.id; }, render: function (v) {
+    if (!v.id) return h('span', {});
+    var box = h('div', { class: 'eco-bn-stats', 'data-bn-stats': '' }, bar('60%'), bar('40%'));
+    pubApi('GET', '/banners/' + encodeURIComponent(v.id) + '/stats' + qs({ days: 14 })).then(function (res) {
+      clear(box);
+      var max = 1;
+      (res.days || []).forEach(function (d) { if (d.views > max) max = d.views; if (d.clicks > max) max = d.clicks; });
+      box.appendChild(h('div', { class: 'flex flex-wrap items-center gap-3 text-sm mb-2' },
+        h('span', { class: 'tabular-nums', 'data-bn-stat-views': '', text: t('bn.stats.views', { n: fmtNum(res.views || 0) }) }),
+        h('span', { class: 'tabular-nums', 'data-bn-stat-clicks': '', text: t('bn.stats.clicks', { n: fmtNum(res.clicks || 0) }) }),
+        h('span', { class: 'tabular-nums text-secondary-600 dark:text-secondary-300', text: ctrText(res.views || 0, res.clicks || 0) }),
+        h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('bn.stats.all', { v: fmtNum(res.allViews || 0), c: fmtNum(res.allClicks || 0) }) })));
+      var bars = h('div', { class: 'eco-bn-bars', 'aria-hidden': 'true' });
+      (res.days || []).forEach(function (d) {
+        bars.appendChild(h('div', { class: 'eco-bn-day', title: d.day },
+          h('span', { class: 'eco-bn-v', style: 'block-size:' + Math.round((d.views / max) * 100) + '%' }),
+          h('span', { class: 'eco-bn-c', style: 'block-size:' + Math.round((d.clicks / max) * 100) + '%' })));
+      });
+      box.appendChild(bars);
+      box.appendChild(h('div', { class: 'flex items-center gap-3 text-xs text-secondary-600 dark:text-secondary-300 mt-1' },
+        h('span', { class: 'eco-bn-key eco-bn-key-v', text: t('bn.stats.viewsKey') }), h('span', { class: 'eco-bn-key eco-bn-key-c', text: t('bn.stats.clicksKey') }),
+        h('span', { text: t('bn.stats.note', { zone: res.timezone || bnZone() }) })));
+    }, function (err) { clear(box).appendChild(notice('error', errorText(err))); });
+    return box;
+  } };
+}
+
+function isAction(type) { return function (v) { return (v.action || {}).type === type; }; }
+
+RESOURCES.banners = {
+  api: 'publication',
+  prepare: bannerSettings,
+  filters: [
+    { name: 'listId', label: 'filter.bn.list', type: 'ref', resource: 'banner-lists', api: pubApi },
+    { name: 'state', label: 'filter.bn.state', options: opts('bn.state.', BN_STATES) },
+    { name: 'actionType', label: 'filter.bn.action', options: opts('bn.action.', BN_ACTIONS) },
+    { name: 'tagId', label: 'filter.tag', type: 'ref', resource: 'tags', api: baseApi, filter: [{ keyType: 'banner' }, { keyType: 'general' }] }
+  ],
+  columns: [
+    { label: 'col.bn.banner', render: function (it) {
+      return h('div', { class: 'flex items-center gap-3 min-w-0' }, bnThumb(it),
+        h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.title) || it.name || it.key }), h('div', { class: 'text-secondary-500' }, mono(it.key))));
+    }, skeleton: '55%' },
+    { label: 'col.bn.list', render: function (it) {
+      return h('div', { class: 'flex flex-col gap-1 min-w-0 text-sm' },
+        h('a', { href: hashFor('banner-lists', it.listId), class: 'eco-link truncate', text: i18nText(it.listName) || it.listKey }),
+        h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300 tabular-nums', text: t('bn.priorityN', { n: fmtNum(it.priority || 0) }) }));
+    }, width: 170 },
+    { label: 'col.bn.when', render: function (it) {
+      var box = h('div', { class: 'flex flex-col items-start gap-1 text-xs' }, bnStateTag(it.state));
+      if (it.startsAt) box.appendChild(h('span', { class: 'text-secondary-600 dark:text-secondary-300', text: t('bn.from', { date: zoneFmt(it.startsAt) }) }));
+      if (it.endsAt) box.appendChild(h('span', { class: 'text-secondary-600 dark:text-secondary-300', text: t('bn.to', { date: zoneFmt(it.endsAt) }) }));
+      return box;
+    }, width: 190 },
+    { label: 'col.bn.who', render: function (it) {
+      var chips = bnTargetChips(it);
+      return h('div', { class: 'text-sm text-secondary-700 dark:text-secondary-200 eco-clamp', 'data-bn-target': '', text: chips.length ? chips.join(' · ') : t('bn.tg.all') });
+    }, skeleton: '50%' },
+    { label: 'col.bn.stats', render: function (it) {
+      return h('div', { class: 'flex flex-col gap-0.5 text-sm tabular-nums whitespace-nowrap', 'data-bn-row-stats': '' },
+        h('span', { text: t('bn.viewsClicks', { v: fmtNum(it.views7 || 0), c: fmtNum(it.clicks7 || 0) }) }),
+        h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: ctrText(it.views7 || 0, it.clicks7 || 0) }));
+    }, width: 150 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.bn.key.hint', required: true, lockOnEdit: true, keyRe: /^[a-z][a-z0-9_]{1,63}$/, keyErr: 'err.bn.key' },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
+    ] },
+    { type: 'row', fields: [
+      { name: 'listId', type: 'ref', resource: 'banner-lists', api: pubApi, label: 'f.bn.list', hint: 'f.bn.list.hint', required: true },
+      { name: 'priority', type: 'number', label: 'f.bn.priority', hint: 'f.bn.priority.hint', min: -1000, max: 1000, empty: 0 }
+    ] },
+    { name: 'name', type: 'text', label: 'f.bn.name', hint: 'f.bn.name.hint', optional: true },
+    bannerPreviewField(),
+    { type: 'heading', label: 'bn.h.content' },
+    tr('title', { label: 'f.bn.title', required: true, max: 120 }),
+    tr('subtitle', { label: 'f.bn.subtitle', max: 200, optional: true }),
+    tr('description', { label: 'f.bn.description', multiline: true, max: 1000, optional: true }),
+    { name: 'imageUrl', type: 'custom', label: 'f.bn.image', hint: 'f.bn.image.hint', optional: true, build: function (cur, change) { return perLangInput(cur, 'image', change); } },
+    { name: 'bgColor', type: 'text', ltr: true, label: 'f.bn.color', hint: 'f.bn.color.hint', optional: true, check: function (v) { return v && !/^#[0-9a-fA-F]{6}$/.test(v) ? t('code.INVALID_COLOR') : null; } },
+    tagsField('banner'),
+    { type: 'heading', label: 'bn.h.action' },
+    { name: 'action.type', type: 'select', label: 'f.bn.action', hint: 'f.bn.action.hint', required: true, noPlaceholder: true, options: opts('bn.action.', BN_ACTIONS) },
+    { name: 'action.value', type: 'text', ltr: true, label: 'f.bn.screen', hint: 'f.bn.screen.hint', required: true, when: isAction('screen'),
+      check: function (v) { return v && !/^[a-z][a-z0-9_-]{0,39}$/.test(v) ? t('code.INVALID_ACTION') : null; } },
+    { name: 'action.product', type: 'ref', resource: 'products', valueKey: 'key', label: 'f.bn.product', required: true, when: isAction('product') },
+    { name: 'action.achievement', type: 'ref', resource: 'achievements', valueKey: 'key', label: 'f.bn.achievement', required: true, when: isAction('achievement') },
+    { name: 'action.url', type: 'custom', label: 'f.bn.url', hint: 'f.bn.url.hint', when: isAction('url'), build: function (cur, change) { return perLangInput(cur, 'url', change); },
+      check: function (v) { return !v || !Object.keys(v).length ? t('err.required') : null; } },
+    tr('action.label', { label: 'f.bn.cta', hint: 'f.bn.cta.hint', max: 40, optional: true, when: function (v) { return (v.action || {}).type && v.action.type !== 'none'; } }),
+    { type: 'heading', label: 'bn.h.when' },
+    { name: 'zoneNote', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300', 'data-bn-zone': '', text: t('bn.zoneNote', { zone: bnZone() }) }); } },
+    { type: 'row', fields: [
+      { name: 'startsAt', type: 'custom', label: 'f.ev.startsAt', optional: true, build: function (cur, change) { return zoneDateInput(cur, change); } },
+      { name: 'endsAt', type: 'custom', label: 'f.ev.endsAt', optional: true, build: function (cur, change) { return zoneDateInput(cur, change); },
+        check: function (v, vals) { return v && vals.startsAt && new Date(v) <= new Date(vals.startsAt) ? t('code.INVALID_WINDOW') : null; } }
+    ] },
+    { name: 'days', type: 'multi', label: 'f.bn.days', hint: 'f.bn.days.hint', optional: true, empty: [], options: function () { return BN_WEEK.map(function (d) { return { value: d, label: t('bn.day.' + d) }; }); } },
+    { type: 'row', fields: [
+      { name: 'dayStart', type: 'custom', label: 'f.bn.dayStart', hint: 'f.bn.hours.hint', optional: true, build: function (cur, change) { return timeOfDayInput(cur, change); },
+        check: function (v, vals) { return !v && vals.dayEnd ? t('code.INVALID_HOURS') : null; } },
+      { name: 'dayEnd', type: 'custom', label: 'f.bn.dayEnd', optional: true, build: function (cur, change) { return timeOfDayInput(cur, change); },
+        check: function (v, vals) { return (!v && vals.dayStart) || (v && vals.dayStart && v <= vals.dayStart) ? t('code.INVALID_HOURS') : null; } }
+    ] },
+    { type: 'heading', label: 'bn.h.who' },
+    { name: 'audienceTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.bn.audience', hint: 'f.bn.audience.hint', optional: true, empty: [] },
+    { name: 'excludeTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.bn.exclude', hint: 'f.bn.exclude.hint', optional: true, empty: [],
+      check: function (v, vals) { return (v || []).some(function (x) { return (vals.audienceTagIds || []).indexOf(x) !== -1; }) ? t('code.TAG_BOTH_WAYS') : null; } },
+    { type: 'row', fields: [
+      { name: 'levelTableId', type: 'ref', resource: 'level-tables', label: 'f.tk.levelTable', hint: 'f.bn.levelTable.hint', optional: true },
+      { name: 'minLevel', type: 'number', label: 'f.tk.minLevel', optional: true, min: 0 },
+      { name: 'maxLevel', type: 'number', label: 'f.tk.maxLevel', optional: true, min: 0,
+        check: function (v, vals) { return v != null && vals.minLevel != null && Number(v) < Number(vals.minLevel) ? t('code.INVALID_LEVEL_RANGE') : null; } }
+    ] },
+    { type: 'row', fields: [
+      { name: 'playerAge', type: 'select', label: 'f.bn.age', hint: 'f.bn.age.hint', required: true, noPlaceholder: true, options: opts('bn.age.', ['all', 'new', 'returning']) },
+      { name: 'newDays', type: 'number', label: 'f.bn.newDays', min: 1, max: 365, required: true, when: function (v) { return v.playerAge && v.playerAge !== 'all'; } }
+    ] },
+    { name: 'platforms', type: 'multi', label: 'f.bn.platforms', hint: 'f.bn.platforms.hint', optional: true, empty: [], options: opts('bn.platform.', BN_PLATFORMS) },
+    { type: 'row', fields: [
+      { name: 'minVersion', type: 'text', ltr: true, label: 'f.bn.minVersion', hint: 'f.bn.version.hint', optional: true },
+      { name: 'maxVersion', type: 'text', ltr: true, label: 'f.bn.maxVersion', optional: true }
+    ] },
+    { type: 'row', fields: [
+      { name: 'countriesText', type: 'text', ltr: true, label: 'f.bn.countries', hint: 'f.bn.countries.hint', optional: true,
+        check: function (v) { return v && toLatinDigits(v).split(/[\s,،]+/).filter(Boolean).some(function (c) { return !/^[a-zA-Z]{2}$/.test(c); }) ? t('code.INVALID_COUNTRY_CODE') : null; } }
+    ] },
+    { name: 'languages', type: 'multi', label: 'f.bn.languages', hint: 'f.bn.languages.hint', optional: true, empty: [], options: function () { return LANGS.active.map(function (l) { return { value: l.code, label: langName(l.code) }; }); } },
+    { type: 'heading', label: 'bn.h.stats', when: function (v) { return !!v.id; } },
+    bannerStatsField()
+  ],
+  defaults: function (query) {
+    return { key: '', isActive: true, listId: (query && query.listId) || null, priority: 0, name: '', title: {}, subtitle: {}, description: {}, imageUrl: {}, bgColor: '', tagIds: [],
+      action: { type: 'none', value: '', label: {}, url: {}, product: null, achievement: null }, startsAt: null, endsAt: null, days: [], dayStart: null, dayEnd: null,
+      audienceTagIds: [], excludeTagIds: [], levelTableId: null, minLevel: null, maxLevel: null, playerAge: 'all', newDays: 7, platforms: [], minVersion: '', maxVersion: '', countriesText: '', languages: [] };
+  },
+  toForm: function (v) {
+    v.action = Object.assign({ type: 'none', value: '', label: {}, url: {} }, v.action || {});
+    v.action.product = v.action.type === 'product' ? v.action.value : null;
+    v.action.achievement = v.action.type === 'achievement' ? v.action.value : null;
+    if (v.action.type !== 'screen') v.action.value = '';
+    v.countriesText = (v.countries || []).join(', ');
+    v.bgColor = v.bgColor || '';
+    return v;
+  },
+  fixPayload: function (p) {
+    var a = p.action || {};
+    var out = { type: a.type || 'none', value: '', label: a.label || {}, url: {} };
+    if (out.type === 'screen') out.value = a.value || '';
+    if (out.type === 'product') out.value = a.product || '';
+    if (out.type === 'achievement') out.value = a.achievement || '';
+    if (out.type === 'url') out.url = a.url || {};
+    if (out.type === 'none') out.label = {};
+    p.action = out;
+    p.countries = toLatinDigits(p.countriesText || '').split(/[\s,،]+/).filter(Boolean).map(function (c) { return c.toUpperCase(); });
+    delete p.countriesText;
+    p.imageUrl = p.imageUrl || {};
+    p.bgColor = (p.bgColor || '').toLowerCase();
+    p.name = p.name || '';
+    p.priority = p.priority == null ? 0 : p.priority;
+    p.minVersion = toLatinDigits(p.minVersion || '');
+    p.maxVersion = toLatinDigits(p.maxVersion || '');
+    p.levelTableId = p.levelTableId || '';
+    p.startsAt = p.startsAt || '';
+    p.endsAt = p.endsAt || '';
+    p.dayStart = p.dayStart || '';
+    p.dayEnd = p.dayEnd || '';
+    if (p.playerAge === 'all' || !p.newDays) p.newDays = 7;
+    delete p.livePreview;
+    delete p.zoneNote;
+    delete p.stats;
+    return p;
+  },
+  afterSave: function () { forgetRefs('banners'); forgetRefs('banner-lists'); }
+};
+
+function bnPreviewTool(v) {
+  var who = textInput('', { ltr: true, label: t('bn.try.player'), placeholder: t('bn.try.player') });
+  who.setAttribute('data-bn-try-player', '');
+  var plat = selectInput('', BN_PLATFORMS.map(function (p) { return { value: p, label: t('bn.platform.' + p) }; }), function () {}, { label: t('f.bn.platforms'), placeholder: t('bn.try.anyPlatform') });
+  var ver = textInput('', { ltr: true, label: t('f.bn.minVersion'), placeholder: '1.4.0' });
+  var out = h('div', { class: 'mt-3 flex flex-col gap-2', 'data-bn-try-out': '' });
+  var run = button({ variant: 'primary', size: 'sm', icon: 'search', label: t('bn.try.run'), onclick: function () {
+    var q = toLatinDigits(who.value).trim();
+    if (!q) { clear(out).appendChild(notice('error', t('bn.try.need'))); return; }
+    setBusy(run, true);
+    pubApi('GET', '/users/search' + qs({ q: q })).then(function (list) {
+      var u = (list || [])[0];
+      if (!u) throw new ApiError(404, 'USER_NOT_FOUND', '');
+      var pv = plat.value;
+      return pubApi('GET', '/banner-lists/' + encodeURIComponent(v.id) + '/preview' + qs({ userId: u.id, platform: pv || '', version: toLatinDigits(ver.value).trim(), lang: '' })).then(function (res) { return { u: u, res: res }; });
+    }).then(function (x) {
+      clear(out);
+      out.appendChild(h('p', { class: 'text-sm', 'data-bn-try-who': '', text: t('bn.try.for', { name: x.u.displayName || x.u.username, n: fmtNum((x.res.items || []).length) }) }));
+      (x.res.items || []).forEach(function (b, i) {
+        out.appendChild(h('div', { class: 'flex items-center gap-2 text-sm', 'data-bn-try-shown': b.key }, h('span', { class: 'tabular-nums text-secondary-500', text: fmtNum(i + 1) }), h('span', { class: 'font-medium', text: b.title || b.key }), mono(b.key)));
+      });
+      (x.res.hidden || []).forEach(function (b) {
+        out.appendChild(h('div', { class: 'flex flex-wrap items-center gap-2 text-sm text-secondary-600 dark:text-secondary-300', 'data-bn-try-hidden': b.key, 'data-reason': b.reason },
+          h('span', { text: b.title || b.key }), tag(t('bn.why.' + b.reason), 'secondary')));
+      });
+    }, function (err) { clear(out).appendChild(notice('error', errorText(err))); }).then(function () { setBusy(run, false); });
+  } });
+  run.setAttribute('data-bn-try-run', '');
+  return h('div', { class: 'eco-bn-try', 'data-bn-try': '' },
+    h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300 mb-2', text: t('bn.try.hint') }),
+    h('div', { class: 'flex flex-wrap items-end gap-2' }, h('div', { class: 'min-w-0 flex-1' }, who), h('div', { style: 'inline-size:9rem' }, plat), h('div', { style: 'inline-size:7rem' }, ver), run),
+    out);
+}
+
+RESOURCES['banner-lists'] = {
+  api: 'publication',
+  prepare: bannerSettings,
+  filters: [
+    { name: 'layout', label: 'filter.bn.layout', options: opts('bn.layout.', BN_LAYOUTS) },
+    activeFilter()
+  ],
+  columns: [
+    { label: 'col.name', render: function (it) {
+      return h('div', { class: 'flex items-center gap-3 min-w-0' }, h('div', { class: 'eco-bn-thumb shrink-0 rounded-md flex items-center justify-center' }, icon('banner-lists', 'h-5 w-5')),
+        h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.name) || it.key }), h('div', { class: 'text-secondary-500' }, mono(it.key))));
+    }, skeleton: '45%' },
+    { label: 'col.bn.layout', render: function (it) {
+      return h('div', { class: 'flex flex-col items-start gap-1' }, tag(t('bn.layout.' + it.layout), 'primary'),
+        h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300 tabular-nums', text: it.layout === 'carousel' && it.rotateSeconds ? t('bn.rotateN', { n: fmtNum(it.rotateSeconds), max: fmtNum(it.maxItems) }) : t('bn.maxN', { n: fmtNum(it.maxItems) }) }));
+    }, width: 170 },
+    { label: 'col.bn.banners', render: function (it) {
+      return h('a', { href: hashFor('banners', null, { listId: it.id }), class: 'eco-link text-sm tabular-nums whitespace-nowrap', 'data-bn-count': '', text: t('bn.liveOf', { n: fmtNum(it.liveBanners || 0), total: fmtNum(it.banners || 0) }) });
+    }, width: 150 },
+    { label: 'col.bn.stats', render: function (it) {
+      return h('div', { class: 'flex flex-col gap-0.5 text-sm tabular-nums whitespace-nowrap' },
+        h('span', { text: t('bn.viewsClicks', { v: fmtNum(it.views7 || 0), c: fmtNum(it.clicks7 || 0) }) }),
+        h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: ctrText(it.views7 || 0, it.clicks7 || 0) }));
+    }, width: 150 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.bl.key.hint', required: true, lockOnEdit: true, keyRe: /^[a-z][a-z0-9_]{1,63}$/, keyErr: 'err.bn.key' },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.bl.active.hint' }
+    ] },
+    tr('name', { label: 'f.bl.name', required: true, max: 100 }),
+    tr('description', { multiline: true, max: 500, optional: true }),
+    { type: 'row', fields: [
+      { name: 'layout', type: 'select', label: 'f.bl.layout', hint: 'f.bl.layout.hint', required: true, noPlaceholder: true, options: opts('bn.layout.', BN_LAYOUTS) },
+      { name: 'maxItems', type: 'number', label: 'f.bl.maxItems', hint: 'f.bl.maxItems.hint', required: true, min: 1, max: 20 },
+      { name: 'rotateSeconds', type: 'number', label: 'f.bl.rotate', hint: 'f.bl.rotate.hint', required: true, min: 0, max: 60, when: function (v) { return v.layout === 'carousel'; } }
+    ] },
+    { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' },
+    { type: 'heading', label: 'bl.h.order', when: function (v) { return !!v.id; } },
+    { name: 'order', type: 'static', readonly: true, when: function (v) { return !!v.id; }, render: function (v) {
+      var list = h('div', { class: 'flex flex-col eco-tk-list', 'data-bl-order': '' });
+      (v.items || []).forEach(function (b, i) {
+        list.appendChild(h('a', { href: hashFor('banners', b.id), class: 'flex items-center gap-2 py-2 text-sm eco-bn-order', 'data-bl-item': b.key },
+          h('span', { class: 'tabular-nums text-secondary-500 w-6', text: fmtNum(i + 1) }), bnThumb(b),
+          h('span', { class: 'font-medium truncate flex-1', text: i18nText(b.title) || b.key }),
+          h('span', { class: 'text-xs tabular-nums text-secondary-600 dark:text-secondary-300 whitespace-nowrap', text: t('bn.priorityN', { n: fmtNum(b.priority || 0) }) }), bnStateTag(b.state)));
+      });
+      if (!(v.items || []).length) list.appendChild(h('span', { class: 'text-sm text-secondary-500 dark:text-secondary-400 py-1', text: t('bl.none') }));
+      return h('div', {}, h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300 mb-1', text: t('bl.order.hint') }), list,
+        h('a', { href: hashFor('banners', 'new', { listId: v.id }), class: 'eco-link text-sm inline-block mt-2', 'data-bl-add': '', text: t('bl.add') }));
+    } },
+    { type: 'heading', label: 'bl.h.try', when: function (v) { return !!v.id; } },
+    { name: 'try', type: 'static', readonly: true, when: function (v) { return !!v.id; }, render: function (v) { return bnPreviewTool(v); } }
+  ],
+  defaults: function () { return { key: '', isActive: true, name: {}, description: {}, layout: 'carousel', maxItems: 5, rotateSeconds: 5, sort: 0 }; },
+  fixPayload: function (p) {
+    if (p.sort == null) p.sort = 0;
+    if (p.rotateSeconds == null) p.rotateSeconds = 0;
+    delete p.order;
+    delete p.try;
+    return p;
+  },
+  afterSave: function () { forgetRefs('banner-lists'); }
+};
 
 var BRAND_KEY = 'nakama-brand';
 var BRAND_SHADES = { 50: 0.9, 100: 0.8, 200: 0.6, 300: 0.4, 400: 0.1, 500: 0, 600: -0.1, 700: -0.25, 800: -0.58, 900: -0.7, 950: -0.8 };

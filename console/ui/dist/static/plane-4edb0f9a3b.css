@@ -2607,6 +2607,31 @@ html.pl .eco-ach-tile {
   background: var(--well-2);
   box-shadow: inset 0 0 0 1px var(--line);
 }
+
+html.pl .eco-bn-thumb {
+  background: var(--well-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--ink-2);
+}
+
+html.pl .eco-bn-preview {
+  border-color: var(--line);
+  border-radius: var(--r-card);
+  background: var(--well-2);
+}
+
+html.pl .eco-bn-card {
+  border-radius: var(--r-card);
+}
+
+html.pl .eco-bn-bars {
+  border-color: var(--line);
+}
+
+html.pl .eco-bn-v,
+html.pl .eco-bn-key-v::before {
+  background: var(--accent);
+}
 @media (max-width: 767px) {
   html.pl {
     --gap: 12px;
