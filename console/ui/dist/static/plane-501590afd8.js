@@ -11,6 +11,9 @@ var PL_MESSAGES = {
     'rail.sections': 'بخش‌ها',
     'rail.console': 'کنسول مدیریت',
     'group.game': 'بازی',
+    'attn.title': 'نیاز به رسیدگی',
+    'attn.count': '{n} مورد',
+    'attn.none': 'کار منتظری نیست.',
     'group.economy': 'اقتصاد',
     'group.publication': 'انتشار',
     'group.moderation': 'بازیکنان و گفتگو',
@@ -53,6 +56,9 @@ var PL_MESSAGES = {
     'rail.sections': 'Sections',
     'rail.console': 'Admin console',
     'group.game': 'Game',
+    'attn.title': 'Needs attention',
+    'attn.count': '{n} items',
+    'attn.none': 'Nothing is waiting.',
     'group.economy': 'Economy',
     'group.publication': 'Publishing',
     'group.moderation': 'Players & chat',
@@ -1275,6 +1281,48 @@ function iconKpis() {
   }
 }
 
+var ATTN_TINT = { reports: 'warn', comments: 'info', tickets: 'violet', 'live-chat': 'teal' };
+
+function attentionCard() {
+  if (root.getAttribute('data-pl-route') !== 'dashboard') return;
+  var main = document.querySelector('#main > main');
+  var flow = main && main.querySelector('div.text-3xl > number-flow-vue');
+  var strip = flow && flow.closest('.rounded-md.shadow.bg-white');
+  var grid = strip && strip.parentElement;
+  var host = grid && grid.parentElement;
+  if (!host) return;
+  var m = rail.model || railModel();
+  if (!m) return;
+  var rows = [];
+  m.groups.forEach(function (g) { g.links.forEach(function (l) { if (l.badge) rows.push({ l: l, g: g }); }); });
+  var key = plLang() + JSON.stringify(rows.map(function (r) { return [r.l.href, r.l.badge, r.l.label]; }));
+  var box = grid.nextElementSibling && grid.nextElementSibling.classList.contains('pl-attn') ? grid.nextElementSibling : null;
+  if (box && box.getAttribute('data-key') === key) return;
+  if (!box) {
+    box = el('section', { class: 'pl-attn', 'data-l10n-skip': '' });
+    grid.after(box);
+  }
+  box.setAttribute('data-key', key);
+  box.innerHTML = '';
+  var total = rows.reduce(function (n, r) { return n + r.l.badge; }, 0);
+  box.appendChild(el('div', { class: 'pl-attn-head' }, el('span', { class: 'pl-kpi-ic pl-tint-warn', 'aria-hidden': 'true', html: plIconD('alert') }), el('h2', { text: pst('attn.title') }), el('span', { class: 'pl-attn-count', text: total ? pst('attn.count', { n: total }) : '' })));
+  if (!rows.length) {
+    box.appendChild(el('p', { class: 'pl-attn-empty', html: plIconD('checkcircle', 'pl-ic') }, el('span', { text: pst('attn.none') })));
+    return;
+  }
+  var list = el('div', { class: 'pl-attn-list' });
+  rows.forEach(function (r) {
+    var seg = routePath(r.l.href).split('/').filter(Boolean)[1] || '';
+    var a = el('a', { class: 'pl-attn-row', href: r.l.href });
+    a.appendChild(el('span', { class: 'pl-kpi-ic pl-tint-' + (ATTN_TINT[seg] || 'info'), 'aria-hidden': 'true', html: plIconD(r.l.icon || 'page') }));
+    a.appendChild(el('span', { class: 'pl-attn-txt' }, el('b', { text: r.l.label }), el('span', { text: r.g.label })));
+    a.appendChild(el('span', { class: 'pl-attn-n', text: plNum(r.l.badge) }));
+    a.insertAdjacentHTML('beforeend', plIcon('chevron', 'pl-ic pl-ic-dir pl-attn-chev'));
+    list.appendChild(a);
+  });
+  box.appendChild(list);
+}
+
 function pageKey(path) {
   var seg = String(path || '/').split('?')[0].split('/').filter(Boolean);
   if (!seg.length) return '/';
@@ -1363,6 +1411,7 @@ function tick() {
     paintNativeTabs();
     countKpis();
     iconKpis();
+    attentionCard();
   }
 }
 

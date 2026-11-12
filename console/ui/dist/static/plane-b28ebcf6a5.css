@@ -1600,7 +1600,7 @@ html.pl div.fixed.inset-0.flex.justify-end > .x-form {
 }
 
 html.pl:not(.dark) div.fixed.inset-0.flex.justify-end > .x-form {
-  background: linear-gradient(180deg, rgb(255 255 255), rgb(250 251 253));
+  background: var(--surface);
 }
 
 html.pl div.fixed.inset-0.flex.justify-end > .x-form .\!absolute.top-2 {
@@ -2308,12 +2308,12 @@ html.pl .brand-preview-pane {
 }
 
 html.pl .brand-preview-light {
-  background: radial-gradient(circle at 22% 14%, rgb(255 222 190 / .85), transparent 45%), linear-gradient(180deg, #dfe7f3, #e9edf3 60%, #f4ece6);
+  background: oklch(0.9614 0.0013 286.38);
   color: #12151c;
 }
 
 html.pl .brand-preview-dark {
-  background: radial-gradient(circle at 82% 20%, rgb(70 96 190 / .30), transparent 50%), linear-gradient(180deg, #0b0e1a, #111528 60%, #1a1630);
+  background: oklch(0.165 0.003 286);
   color: #f1f2f6;
 }
 
@@ -2324,15 +2324,15 @@ html.pl .brand-preview-pane::before {
   margin: -8px -10px -10px;
   border-radius: 14px;
   border: 1px solid rgb(18 21 28 / .08);
-  background: linear-gradient(180deg, rgb(255 255 255 / .70), rgb(255 255 255 / .56));
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / .95), 0 16px 32px -20px rgb(20 24 33 / .35);
+  background: #fff;
+  box-shadow: none;
   z-index: -1;
 }
 
 html.pl .brand-preview-dark::before {
   border-color: rgb(255 255 255 / .09);
-  background: linear-gradient(180deg, rgb(52 55 70 / .62), rgb(40 43 56 / .62));
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / .11), 0 16px 32px -20px rgb(0 0 0 / .7);
+  background: oklch(0.205 0.003 286);
+  box-shadow: none;
 }
 
 html.pl .brand-preview-mode { grid-row: 1; grid-column: 1; opacity: 1; font-size: 12px; }
@@ -2347,14 +2347,11 @@ html.pl .brand-preview-btn {
 
 html.pl .setup-overlay {
   z-index: var(--z-wizard);
-  background: radial-gradient(circle at 22% 14%, rgb(255 222 190 / .85), transparent 42%), radial-gradient(circle at 82% 20%, rgb(170 196 236 / .55), transparent 50%), linear-gradient(180deg, #dfe7f3, #e9edf3 60%, #f4ece6);
+  background: var(--base);
   color: var(--ink-1);
   animation: pl-fade-in var(--d3) var(--ease) backwards;
 }
 
-html.pl.dark .setup-overlay {
-  background: radial-gradient(circle at 82% 20%, rgb(70 96 190 / .30), transparent 50%), radial-gradient(circle at 35% 100%, rgb(120 70 150 / .18), transparent 55%), linear-gradient(180deg, #0b0e1a, #111528 60%, #1a1630);
-}
 
 html.pl .setup-header,
 html.pl .setup-nav,
@@ -3424,4 +3421,117 @@ html.pl.pl-auth #app .sm\:w-\[512px\] .x-button {
 html.pl.pl-auth #app .sm\:w-\[512px\] :is(input.appearance-none, input) {
   background: var(--surface);
   border-radius: 6px;
+}
+
+html.pl .setup-header,
+html.pl .setup-nav,
+html.pl .setup-footer {
+  margin: 0 !important;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--surface);
+}
+
+html.pl .setup-header,
+html.pl .setup-nav {
+  border-bottom: 1px solid var(--line);
+}
+
+html.pl .setup-footer {
+  border-top: 1px solid var(--line);
+}
+
+html.pl .setup-inner {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: none;
+  background: var(--surface);
+}
+
+.pl-attn {
+  margin-block: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink-1);
+}
+
+.pl-attn-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.pl-attn-head h2 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.pl-attn-count {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.pl-attn-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  border-top: 1px solid var(--line);
+}
+
+.pl-attn-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--line);
+  border-inline-end: 1px solid var(--line);
+  color: var(--ink-1);
+  transition: background-color var(--d1) var(--ease);
+}
+
+.pl-attn-row:hover {
+  background: var(--well);
+}
+
+.pl-attn-txt {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.45;
+}
+
+.pl-attn-txt b {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.pl-attn-txt span {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.pl-attn-n {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.pl-attn-chev {
+  width: 14px;
+  height: 14px;
+  color: var(--ink-3);
+}
+
+.pl-attn-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 16px 16px;
+  color: var(--pos);
+  font-size: 13px;
 }

@@ -18,6 +18,7 @@ function tick() {
     paintNativeTabs();
     countKpis();
     iconKpis();
+    attentionCard();
   }
 }
 
