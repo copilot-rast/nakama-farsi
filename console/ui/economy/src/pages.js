@@ -78,7 +78,13 @@ function listPage(container, name, query, ctx) {
   if (def.top) frame.content.appendChild(def.top());
   frame.content.appendChild(h('div', {},
     h('div', { class: 'flex flex-col items-start pb-2 gap-2' },
-      h('div', { class: 'flex flex-col lg:flex-row lg:items-center gap-2 w-full' },
+      filters.length > 3 ? h('div', { class: 'flex flex-col gap-2 w-full' },
+        h('div', { class: 'flex flex-col lg:flex-row lg:items-center gap-2 w-full' },
+          search,
+          h('div', { class: 'flex-grow hidden lg:block' }),
+          pagerTop),
+        h('div', { class: 'eco-filters eco-filters-wrap flex flex-wrap items-center gap-2' }, filters))
+      : h('div', { class: 'flex flex-col lg:flex-row lg:items-center gap-2 w-full' },
         search,
         filters.length ? h('div', { class: 'eco-filters flex flex-wrap items-center gap-2' }, filters) : null,
         h('div', { class: 'flex-grow hidden lg:block' }),

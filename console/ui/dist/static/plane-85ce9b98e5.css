@@ -2580,6 +2580,28 @@ html.pl .eco-thread > li {
     animation: none;
   }
 }
+
+html.pl .eco-tk-list > * + *,
+html.pl [data-pp-group] {
+  border-color: var(--line);
+}
+
+html.pl .eco-tk-sub {
+  border-inline-start-color: var(--line-1);
+}
+
+html.pl .eco-tk-meter {
+  background: var(--well-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+html.pl .eco-tk-meter > span {
+  background: var(--accent);
+}
+
+html.pl .eco-tk-meter[data-done] > span {
+  background: var(--pos);
+}
 @media (max-width: 767px) {
   html.pl {
     --gap: 12px;

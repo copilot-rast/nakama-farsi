@@ -93,7 +93,7 @@ html[data-economy-active] .dark a[data-economy-dimmed][aria-current='page']{colo
 .eco-chip-x{opacity:.7}
 .eco-chip-x:hover{opacity:1}
 .eco-log:last-child{border-bottom-width:0}
-@media (min-width:1024px){.eco-filters{flex-wrap:nowrap}}
+@media (min-width:1024px){.eco-filters{flex-wrap:nowrap}.eco-filters.eco-filters-wrap{flex-wrap:wrap}}
 .eco-readonly.eco-readonly{background-color:rgb(var(--secondary-color-100));color:rgb(var(--secondary-color-500));cursor:not-allowed}
 .dark .eco-readonly.eco-readonly{background-color:rgb(var(--secondary-color-900));color:rgb(var(--secondary-color-400))}
 
@@ -496,3 +496,7 @@ html.dark .monaco-editor :is(.minimap canvas,canvas.decorationsOverviewRuler){fi
 .dark .eco-tk-sub{border-inline-start-color:rgb(var(--secondary-color-700))}
 .eco-tk-list>*+*{border-top:1px solid rgb(var(--secondary-color-200))}
 .dark .eco-tk-list>*+*{border-top-color:rgb(var(--secondary-color-700))}
+.eco-tk-meter{display:inline-block;inline-size:4rem;block-size:.375rem;border-radius:9999px;background:rgb(var(--secondary-color-200));overflow:hidden;flex-shrink:0}
+.dark .eco-tk-meter{background:rgb(var(--secondary-color-700))}
+.eco-tk-meter>span{display:block;block-size:100%;border-radius:inherit;background:rgb(var(--primary-color-500))}
+.eco-tk-meter[data-done]>span{background:rgb(var(--success-color-600))}

@@ -6566,7 +6566,13 @@ function listPage(container, name, query, ctx) {
   if (def.top) frame.content.appendChild(def.top());
   frame.content.appendChild(h('div', {},
     h('div', { class: 'flex flex-col items-start pb-2 gap-2' },
-      h('div', { class: 'flex flex-col lg:flex-row lg:items-center gap-2 w-full' },
+      filters.length > 3 ? h('div', { class: 'flex flex-col gap-2 w-full' },
+        h('div', { class: 'flex flex-col lg:flex-row lg:items-center gap-2 w-full' },
+          search,
+          h('div', { class: 'flex-grow hidden lg:block' }),
+          pagerTop),
+        h('div', { class: 'eco-filters eco-filters-wrap flex flex-wrap items-center gap-2' }, filters))
+      : h('div', { class: 'flex flex-col lg:flex-row lg:items-center gap-2 w-full' },
         search,
         filters.length ? h('div', { class: 'eco-filters flex flex-wrap items-center gap-2' }, filters) : null,
         h('div', { class: 'flex-grow hidden lg:block' }),
@@ -10054,11 +10060,18 @@ function taskAction(userId, it, what) {
   confirmModal({ title: t('tk.' + what + '.title'), text: t('tk.' + what + '.text', { name: it.name }), ok: t('tk.' + what), danger: what === 'reset' }).then(function (yes) { if (yes) run(); });
 }
 
+function taskMeter(it) {
+  var total = Number(it.target) || 0;
+  var pct = it.state === 'completed' || it.state === 'claimed' ? 100 : total > 0 ? Math.max(0, Math.min(100, Math.round((Number(it.value) || 0) * 100 / total))) : 0;
+  return h('span', { class: 'eco-tk-meter', 'aria-hidden': 'true', 'data-done': pct >= 100 ? '' : null }, h('span', { style: 'inline-size:' + pct + '%' }));
+}
+
 function taskLine(userId, it, write, depth) {
   var progress = it.condition === 'children' ? t('tk.progress.children', { n: fmtNum(it.value), total: fmtNum(it.target) }) : t('tk.progress', { n: numLocal(it.value), total: numLocal(it.target) });
   var line = h('div', { class: 'flex flex-wrap items-center gap-2 py-1.5 text-sm' + (depth ? ' eco-tk-sub' : ''), 'data-pp-task': it.key, 'data-state': it.state },
     h('span', { class: 'font-medium truncate min-w-0', text: it.name || it.key }),
     taskStateTag(it),
+    taskMeter(it),
     h('span', { class: 'tabular-nums text-secondary-600 dark:text-secondary-300 whitespace-nowrap', 'data-task-progress': '', text: progress }),
     it.repeat && it.repeat !== 'once' && !depth ? h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: t('tk.repeat.' + it.repeat) + (it.completions ? (lang() === 'fa' ? '، ' : ' · ') + t('tk.completionsN', { n: fmtNum(it.completions) }) : '') }) : null,
     h('span', { class: 'flex-1' }));
