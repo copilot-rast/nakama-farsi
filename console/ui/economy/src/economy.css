@@ -567,3 +567,11 @@ html.dark .monaco-editor :is(.minimap canvas,canvas.decorationsOverviewRuler){fi
 .dark .eco-ch-sum,.dark .eco-ch-sum[data-ch-sum=bad],.dark .eco-ch-sum[data-pg-shares]{background:rgba(255,255,255,.06);color:inherit}
 [data-rows=prize]:not([data-type=prizeGroup]) [data-col=prizeGroupId],[data-rows=prize][data-type=prizeGroup] [data-col=prizeId]{display:none}
 [data-rows=prize] .eco-rows-row{--eco-rows-cols:2 !important}
+.eco-sp-logo{inline-size:2.5rem;block-size:2.5rem;background:rgb(var(--secondary-color-100));color:var(--sp-color,rgb(var(--secondary-color-600)))}
+.dark .eco-sp-logo{background:rgb(var(--secondary-color-700));color:var(--sp-color,rgb(var(--secondary-color-200)))}
+.eco-sp-logo>img{inline-size:100%;block-size:100%;object-fit:contain}
+.eco-sp-chip{display:inline-flex;align-items:center;padding:0 .5rem;border-radius:9999px;background:rgb(var(--warning-color-100));color:rgb(var(--warning-color-800));line-height:1.5rem}
+.dark .eco-sp-chip{background:rgb(var(--secondary-color-700));color:rgb(var(--warning-color-200))}
+.eco-sp-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:.5rem}
+.eco-sp-tile{border:1px solid rgb(var(--secondary-color-200))}
+.dark .eco-sp-tile{border-color:rgb(var(--secondary-color-700))}

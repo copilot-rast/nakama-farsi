@@ -5,7 +5,7 @@ PH_ICONS.bannerDuo = '<path d="M232,56l-45.71,96H40l48-48L40,56Z" opacity="0.2"/
 if (TAG_KEY_TYPES.indexOf('banner') === -1) TAG_KEY_TYPES.splice(TAG_KEY_TYPES.indexOf('general'), 0, 'banner');
 
 var BN_LAYOUTS = ['carousel', 'single', 'grid', 'strip'];
-var BN_ACTIONS = ['none', 'screen', 'product', 'achievement', 'url'];
+var BN_ACTIONS = ['none', 'screen', 'product', 'achievement', 'url', 'sponsor'];
 var BN_PLATFORMS = ['android', 'ios', 'web', 'windows', 'macos', 'linux'];
 var BN_STATES = ['live', 'scheduled', 'ended', 'off'];
 var BN_STATE_COLOR = { live: 'success', scheduled: 'primary', ended: 'secondary', off: 'secondary' };
@@ -156,6 +156,7 @@ function bnActionText(a) {
   a = a || {};
   if (!a.type || a.type === 'none') return t('bn.act.none');
   if (a.type === 'url') return t('bn.act.url', { url: i18nText(a.url) || '' });
+  if (a.type === 'sponsor') return t('bn.act.sponsor');
   return t('bn.act.' + a.type, { name: (a.type === 'product' ? a.product : a.type === 'achievement' ? a.achievement : a.value) || a.value || '' });
 }
 
@@ -270,12 +271,15 @@ RESOURCES.banners = {
     { name: 'listId', label: 'filter.bn.list', type: 'ref', resource: 'banner-lists', api: pubApi },
     { name: 'state', label: 'filter.bn.state', options: opts('bn.state.', BN_STATES) },
     { name: 'actionType', label: 'filter.bn.action', options: opts('bn.action.', BN_ACTIONS) },
-    { name: 'tagId', label: 'filter.tag', type: 'ref', resource: 'tags', api: baseApi, filter: [{ keyType: 'banner' }, { keyType: 'general' }] }
+    { name: 'tagId', label: 'filter.tag', type: 'ref', resource: 'tags', api: baseApi, filter: [{ keyType: 'banner' }, { keyType: 'general' }] },
+    { name: 'sponsorId', label: 'filter.bn.sponsor', type: 'ref', resource: 'sponsors', api: pubApi }
   ],
   columns: [
     { label: 'col.bn.banner', render: function (it) {
       return h('div', { class: 'flex items-center gap-3 min-w-0' }, bnThumb(it),
-        h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.title) || it.name || it.key }), h('div', { class: 'text-secondary-500' }, mono(it.key))));
+        h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.title) || it.name || it.key }),
+          h('div', { class: 'flex flex-wrap items-center gap-1.5 text-secondary-500' }, mono(it.key),
+            it.sponsorId ? h('span', { class: 'eco-sp-chip text-xs', 'data-bn-sponsor': it.sponsorKey || '', text: t('bn.sponsoredBy', { name: i18nText(it.sponsorName) || it.sponsorKey || '' }) }) : null)));
     }, skeleton: '55%' },
     { label: 'col.bn.list', render: function (it) {
       return h('div', { class: 'flex flex-col gap-1 min-w-0 text-sm' },
@@ -316,6 +320,8 @@ RESOURCES.banners = {
     { name: 'imageUrl', type: 'custom', label: 'f.bn.image', hint: 'f.bn.image.hint', optional: true, build: function (cur, change) { return perLangInput(cur, 'image', change); } },
     { name: 'bgColor', type: 'text', ltr: true, label: 'f.bn.color', hint: 'f.bn.color.hint', optional: true, check: function (v) { return v && !/^#[0-9a-fA-F]{6}$/.test(v) ? t('code.INVALID_COLOR') : null; } },
     tagsField('banner'),
+    { name: 'sponsorId', type: 'ref', resource: 'sponsors', api: pubApi, label: 'f.bn.sponsor', hint: 'f.bn.sponsor.hint', optional: true,
+      check: function (v, vals) { return !v && (vals.action || {}).type === 'sponsor' ? t('code.SPONSOR_REQUIRED') : null; } },
     { type: 'heading', label: 'bn.h.action' },
     { name: 'action.type', type: 'select', label: 'f.bn.action', hint: 'f.bn.action.hint', required: true, noPlaceholder: true, options: opts('bn.action.', BN_ACTIONS) },
     { name: 'action.value', type: 'text', ltr: true, label: 'f.bn.screen', hint: 'f.bn.screen.hint', required: true, when: isAction('screen'),
@@ -367,7 +373,7 @@ RESOURCES.banners = {
     bannerStatsField()
   ],
   defaults: function (query) {
-    return { key: '', isActive: true, listId: (query && query.listId) || null, priority: 0, name: '', title: {}, subtitle: {}, description: {}, imageUrl: {}, bgColor: '', tagIds: [],
+    return { key: '', isActive: true, listId: (query && query.listId) || null, sponsorId: (query && query.sponsorId) || null, priority: 0, name: '', title: {}, subtitle: {}, description: {}, imageUrl: {}, bgColor: '', tagIds: [],
       action: { type: 'none', value: '', label: {}, url: {}, product: null, achievement: null }, startsAt: null, endsAt: null, days: [], dayStart: null, dayEnd: null,
       audienceTagIds: [], excludeTagIds: [], levelTableId: null, minLevel: null, maxLevel: null, playerAge: 'all', newDays: 7, platforms: [], minVersion: '', maxVersion: '', countriesText: '', languages: [] };
   },
@@ -398,6 +404,7 @@ RESOURCES.banners = {
     p.minVersion = toLatinDigits(p.minVersion || '');
     p.maxVersion = toLatinDigits(p.maxVersion || '');
     p.levelTableId = p.levelTableId || '';
+    p.sponsorId = p.sponsorId || '';
     p.startsAt = p.startsAt || '';
     p.endsAt = p.endsAt || '';
     p.dayStart = p.dayStart || '';
@@ -408,7 +415,7 @@ RESOURCES.banners = {
     delete p.stats;
     return p;
   },
-  afterSave: function () { forgetRefs('banners'); forgetRefs('banner-lists'); }
+  afterSave: function () { forgetRefs('banners'); forgetRefs('banner-lists'); forgetRefs('sponsors'); }
 };
 
 function bnPreviewTool(v) {
@@ -455,7 +462,9 @@ RESOURCES['banner-lists'] = {
   columns: [
     { label: 'col.name', render: function (it) {
       return h('div', { class: 'flex items-center gap-3 min-w-0' }, h('div', { class: 'eco-bn-thumb shrink-0 rounded-md flex items-center justify-center' }, icon('banner-lists', 'h-5 w-5')),
-        h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.name) || it.key }), h('div', { class: 'text-secondary-500' }, mono(it.key))));
+        h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.name) || it.key }),
+          h('div', { class: 'flex flex-wrap items-center gap-1.5 text-secondary-500' }, mono(it.key),
+            it.sponsorId ? h('span', { class: 'eco-sp-chip text-xs', 'data-bl-sponsor': '', text: t('bn.sponsoredBy', { name: i18nText(it.sponsorName) || '' }) }) : null)));
     }, skeleton: '45%' },
     { label: 'col.bn.layout', render: function (it) {
       return h('div', { class: 'flex flex-col items-start gap-1' }, tag(t('bn.layout.' + it.layout), 'primary'),
@@ -483,6 +492,7 @@ RESOURCES['banner-lists'] = {
       { name: 'maxItems', type: 'number', label: 'f.bl.maxItems', hint: 'f.bl.maxItems.hint', required: true, min: 1, max: 20 },
       { name: 'rotateSeconds', type: 'number', label: 'f.bl.rotate', hint: 'f.bl.rotate.hint', required: true, min: 0, max: 60, when: function (v) { return v.layout === 'carousel'; } }
     ] },
+    { name: 'sponsorId', type: 'ref', resource: 'sponsors', api: pubApi, label: 'f.bl.sponsor', hint: 'f.bl.sponsor.hint', optional: true },
     { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' },
     { type: 'heading', label: 'bl.h.order', when: function (v) { return !!v.id; } },
     { name: 'order', type: 'static', readonly: true, when: function (v) { return !!v.id; }, render: function (v) {
@@ -500,9 +510,10 @@ RESOURCES['banner-lists'] = {
     { type: 'heading', label: 'bl.h.try', when: function (v) { return !!v.id; } },
     { name: 'try', type: 'static', readonly: true, when: function (v) { return !!v.id; }, render: function (v) { return bnPreviewTool(v); } }
   ],
-  defaults: function () { return { key: '', isActive: true, name: {}, description: {}, layout: 'carousel', maxItems: 5, rotateSeconds: 5, sort: 0 }; },
+  defaults: function () { return { key: '', isActive: true, name: {}, description: {}, layout: 'carousel', maxItems: 5, rotateSeconds: 5, sort: 0, sponsorId: null }; },
   fixPayload: function (p) {
     if (p.sort == null) p.sort = 0;
+    p.sponsorId = p.sponsorId || '';
     if (p.rotateSeconds == null) p.rotateSeconds = 0;
     delete p.order;
     delete p.try;

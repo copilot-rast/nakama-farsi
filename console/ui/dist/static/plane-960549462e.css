@@ -2689,6 +2689,22 @@ html.pl .eco-ch-sum[data-pg-shares] {
   background: var(--well-2);
   color: var(--ink-1);
 }
+
+html.pl .eco-sp-logo {
+  background: var(--well-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+html.pl .eco-sp-chip {
+  background: var(--tint-warn-bg);
+  color: var(--tint-warn-fg);
+}
+
+html.pl .eco-sp-tile {
+  border-color: var(--line);
+  border-radius: var(--r-control);
+  background: var(--well-2);
+}
 @media (max-width: 767px) {
   html.pl {
     --gap: 12px;
