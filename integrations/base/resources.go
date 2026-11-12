@@ -33,7 +33,7 @@ const categoryUsedSQL = `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE catego
 
 const tagUsedSQL = `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_product WHERE $1::text = ANY(tag_ids))
 	OR EXISTS (SELECT 1 FROM economy_gift WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_currency WHERE $1::text = ANY(tag_ids))
-	OR EXISTS (SELECT 1 FROM economy_item WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_achievement WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM publication_banner WHERE $1::text = ANY(tag_ids) OR $1::text = ANY(audience_tag_ids) OR $1::text = ANY(exclude_tag_ids)) OR EXISTS (SELECT 1 FROM base_user_tag WHERE tag_id::text=$1::text) OR EXISTS (SELECT 1 FROM economy_product WHERE $1::text = ANY(audience_tag_ids))`
+	OR EXISTS (SELECT 1 FROM economy_item WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_achievement WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM publication_banner WHERE $1::text = ANY(tag_ids) OR $1::text = ANY(audience_tag_ids) OR $1::text = ANY(exclude_tag_ids)) OR EXISTS (SELECT 1 FROM publication_sponsor WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM base_user_tag WHERE tag_id::text=$1::text) OR EXISTS (SELECT 1 FROM economy_product WHERE $1::text = ANY(audience_tag_ids))`
 
 var categoriesResource = resource{name: "categories", table: "base_category", keyTypes: categoryKeyTypes, usedSQL: categoryUsedSQL, json: taxonomyJSON}
 
@@ -265,7 +265,7 @@ func (s *service) taxonomyDelete(res resource) http.HandlerFunc {
 				return err
 			}
 			if res.name == "tags" {
-				for _, table := range []string{"economy_prize", "economy_product", "economy_gift", "economy_currency", "economy_task", "economy_item", "economy_achievement", "publication_banner"} {
+				for _, table := range []string{"economy_prize", "economy_product", "economy_gift", "economy_currency", "economy_task", "economy_item", "economy_achievement", "publication_banner", "publication_sponsor"} {
 					if _, err := tx.ExecContext(r.Context(), `UPDATE `+table+` SET tag_ids = array_remove(tag_ids, $1::text), updated_at=now() WHERE $1::text = ANY(tag_ids)`, id); err != nil {
 						return err
 					}

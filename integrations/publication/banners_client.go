@@ -27,17 +27,19 @@ type placement struct {
 	maxItems        int
 	rotate          int
 	active          bool
+	sponsor         *sponsorRef
 }
 
 func (s *service) loadPlacement(ctx context.Context, by, value string) (placement, error) {
 	var p placement
 	var name string
+	var sponsor sql.NullString
 	col := "key"
 	if by == "id" {
 		col = "id::text"
 	}
-	err := s.db.QueryRowContext(ctx, `SELECT id::text, key, name::text, layout, max_items, rotate_seconds, is_active FROM publication_banner_list WHERE `+col+`=$1`, value).
-		Scan(&p.id, &p.key, &name, &p.layout, &p.maxItems, &p.rotate, &p.active)
+	err := s.db.QueryRowContext(ctx, `SELECT t.id::text, t.key, t.name::text, t.layout, t.max_items, t.rotate_seconds, t.is_active, `+sponsorRefSQL("t.sponsor_id")+` FROM publication_banner_list t WHERE t.`+col+`=$1`, value).
+		Scan(&p.id, &p.key, &name, &p.layout, &p.maxItems, &p.rotate, &p.active, &sponsor)
 	if errors.Is(err, sql.ErrNoRows) {
 		return p, notFound("BANNER_LIST_NOT_FOUND")
 	}
@@ -45,6 +47,7 @@ func (s *service) loadPlacement(ctx context.Context, by, value string) (placemen
 		return p, err
 	}
 	p.name = parseI18n(name)
+	p.sponsor = parseSponsorRef(sponsor)
 	return p, nil
 }
 
@@ -161,7 +164,11 @@ func (s *service) rpcBanners(ctx context.Context, userID, payload string) (any, 
 			items = append(items, b.view(langs, lang))
 		}
 	}
-	return map[string]any{"lang": lang, "placement": map[string]any{"key": p.key, "name": langs.Resolve(p.name, lang), "layout": p.layout, "rotateSeconds": p.rotate, "maxItems": p.maxItems},
+	var sponsor any
+	if p.sponsor.live(v.Now) {
+		sponsor = p.sponsor.view(langs, lang)
+	}
+	return map[string]any{"lang": lang, "placement": map[string]any{"key": p.key, "name": langs.Resolve(p.name, lang), "layout": p.layout, "rotateSeconds": p.rotate, "maxItems": p.maxItems, "sponsor": sponsor},
 		"items": items}, nil
 }
 
@@ -269,7 +276,22 @@ func (s *service) rpcBannerView(ctx context.Context, userID, payload string) (an
 			skipped = append(skipped, id)
 		}
 	}
-	return map[string]any{"counted": counted, "skipped": skipped, "day": localDay(v)}, nil
+	sponsors := []string{}
+	seenSponsor := map[string]bool{}
+	for _, id := range valid {
+		b := ok[id]
+		for _, sp := range []*sponsorRef{b.Sponsor, b.ListSponsor} {
+			if sp.live(v.Now) && !seenSponsor[sp.ID] {
+				seenSponsor[sp.ID] = true
+				sponsors = append(sponsors, sp.ID)
+			}
+		}
+	}
+	sponsorsCounted, err := s.countSponsors(ctx, s.db, sponsors, userID, localDay(v), false)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]any{"counted": counted, "skipped": skipped, "day": localDay(v), "sponsorsCounted": sponsorsCounted}, nil
 }
 
 func (s *service) rpcBannerClick(ctx context.Context, userID, payload string) (any, error) {
@@ -312,12 +334,20 @@ func (s *service) rpcBannerClick(ctx context.Context, userID, payload string) (a
 	if err != nil {
 		return nil, err
 	}
+	sponsorCounted := false
+	if b.Sponsor.live(v.Now) {
+		got, err := s.countSponsors(ctx, s.db, []string{b.Sponsor.ID}, userID, localDay(v), true)
+		if err != nil {
+			return nil, err
+		}
+		sponsorCounted = len(got) == 1
+	}
 	langs, lang, err := localized.ForUser(ctx, s.db, userID, in.Lang)
 	if err != nil {
 		return nil, err
 	}
 	view := b.view(langs, lang)
-	return map[string]any{"counted": counted, "action": view["action"], "bannerId": b.ID}, nil
+	return map[string]any{"counted": counted, "action": view["action"], "bannerId": b.ID, "sponsorCounted": sponsorCounted}, nil
 }
 
 func (s *service) bannerSweepLoop(ctx context.Context) {
@@ -335,6 +365,9 @@ func (s *service) bannerSweepLoop(ctx context.Context) {
 			}
 			if _, err := s.sweepBannerSeen(ctx); err != nil && ctx.Err() == nil {
 				s.logger.Error("Publication banner sweep failed: %v", err)
+			}
+			if _, err := s.sweepSponsorSeen(ctx); err != nil && ctx.Err() == nil {
+				s.logger.Error("Publication sponsor sweep failed: %v", err)
 			}
 		}
 	}

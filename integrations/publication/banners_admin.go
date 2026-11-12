@@ -16,7 +16,7 @@ import (
 
 const bannerStateSQL = `(CASE WHEN NOT t.is_active THEN 'off' WHEN t.ends_at IS NOT NULL AND t.ends_at <= now() THEN 'ended' WHEN t.starts_at IS NOT NULL AND t.starts_at > now() THEN 'scheduled' ELSE 'live' END)`
 
-const bannerJSON = `jsonb_build_object('id',t.id,'key',t.key,'listId',t.list_id,'listKey',l.key,'listName',l.name,'listActive',l.is_active,'name',t.name,'tagIds',to_jsonb(t.tag_ids),
+const bannerJSON = `jsonb_build_object('id',t.id,'key',t.key,'sponsorId',t.sponsor_id,'sponsorKey',(SELECT sp.key FROM publication_sponsor sp WHERE sp.id=t.sponsor_id),'sponsorName',(SELECT sp.name FROM publication_sponsor sp WHERE sp.id=t.sponsor_id),'listId',t.list_id,'listKey',l.key,'listName',l.name,'listActive',l.is_active,'name',t.name,'tagIds',to_jsonb(t.tag_ids),
 	'title',t.title,'subtitle',t.subtitle,'description',t.description,'imageUrl',t.image_url,'bgColor',t.bg_color,
 	'action',jsonb_build_object('type',t.action_type,'value',t.action_value,'label',t.action_label,'url',t.action_url),
 	'priority',t.priority,'startsAt',t.starts_at,'endsAt',t.ends_at,'days',to_jsonb(t.days),
@@ -30,7 +30,7 @@ const bannerJSON = `jsonb_build_object('id',t.id,'key',t.key,'listId',t.list_id,
 	'clicks7',COALESCE((SELECT sum(d.clicks) FROM publication_banner_day d WHERE d.banner_id=t.id AND d.day > current_date - 7),0),
 	'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
-const bannerListJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'layout',t.layout,'maxItems',t.max_items,'rotateSeconds',t.rotate_seconds,
+const bannerListJSON = `jsonb_build_object('id',t.id,'key',t.key,'sponsorId',t.sponsor_id,'sponsorName',(SELECT sp.name FROM publication_sponsor sp WHERE sp.id=t.sponsor_id),'name',t.name,'description',t.description,'layout',t.layout,'maxItems',t.max_items,'rotateSeconds',t.rotate_seconds,
 	'isActive',t.is_active,'sort',t.sort,'banners',(SELECT count(*) FROM publication_banner b WHERE b.list_id=t.id),
 	'liveBanners',(SELECT count(*) FROM publication_banner b WHERE b.list_id=t.id AND b.is_active AND (b.starts_at IS NULL OR b.starts_at <= now()) AND (b.ends_at IS NULL OR b.ends_at > now())),
 	'views7',COALESCE((SELECT sum(d.views) FROM publication_banner_day d JOIN publication_banner b ON b.id=d.banner_id WHERE b.list_id=t.id AND d.day > current_date - 7),0),
@@ -48,7 +48,7 @@ func bannerResources() []resource {
 			json:    bannerListJSON,
 			from:    ` FROM publication_banner_list t`,
 			search:  []string{"t.key", translatedSearch("t.name")},
-			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "layout": "t.layout = ?", "key": "t.key = ?"},
+			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "layout": "t.layout = ?", "key": "t.key = ?", "sponsorId": "t.sponsor_id = ?::uuid"},
 			order:   "t.sort, t.key, t.id",
 			save:    saveBannerList,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
@@ -69,7 +69,7 @@ func bannerResources() []resource {
 			from:   ` FROM publication_banner t JOIN publication_banner_list l ON l.id=t.list_id`,
 			search: []string{"t.key", "t.name", translatedSearch("t.title"), "l.key", translatedSearch("l.name")},
 			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "listId": "t.list_id = ?::uuid", "state": bannerStateSQL + " = ?",
-				"actionType": "t.action_type = ?", "tagId": "? = ANY(t.tag_ids)"},
+				"actionType": "t.action_type = ?", "tagId": "? = ANY(t.tag_ids)", "sponsorId": "t.sponsor_id = ?::uuid"},
 			order: "l.sort, l.key, t.priority DESC, t.created_at, t.id",
 			save:  saveBanner,
 		},
@@ -86,6 +86,7 @@ func saveBannerList(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 		RotateSeconds *int   `json:"rotateSeconds"`
 		IsActive      *bool  `json:"isActive"`
 		Sort          int    `json:"sort"`
+		SponsorID     string `json:"sponsorId"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -125,8 +126,12 @@ func saveBannerList(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 	if rotate < 0 || rotate > 60 {
 		return badRequest("INVALID_ROTATE", "rotateSeconds", "between 0 and 60 seconds")
 	}
-	return execSave(ctx, tx, "publication_banner_list", id, create, []string{"key", "name", "description", "layout", "max_items", "rotate_seconds", "is_active", "sort"},
-		[]any{key, i18nJSON(name), i18nJSON(desc), in.Layout, maxItems, rotate, boolOr(in.IsActive, true), in.Sort})
+	sponsor, err := cleanSponsorID(ctx, tx, in.SponsorID)
+	if err != nil {
+		return err
+	}
+	return execSave(ctx, tx, "publication_banner_list", id, create, []string{"key", "name", "description", "layout", "max_items", "rotate_seconds", "is_active", "sort", "sponsor_id"},
+		[]any{key, i18nJSON(name), i18nJSON(desc), in.Layout, maxItems, rotate, boolOr(in.IsActive, true), in.Sort, sponsor})
 }
 
 func cleanBannerKey(ctx context.Context, tx *sql.Tx, table, id string, create bool, raw string) (string, error) {
@@ -259,6 +264,7 @@ func saveBanner(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 		PlayerAge      string   `json:"playerAge"`
 		NewDays        *int     `json:"newDays"`
 		IsActive       *bool    `json:"isActive"`
+		SponsorID      string   `json:"sponsorId"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -317,7 +323,11 @@ func saveBanner(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 		act.Type = "none"
 	}
 	if !containsStr(bannerActions, act.Type) {
-		return badRequest("INVALID_ACTION", "action.type", "type must be none, screen, product, achievement or url")
+		return badRequest("INVALID_ACTION", "action.type", "type must be none, screen, product, achievement, url or sponsor")
+	}
+	sponsor, err := cleanSponsorID(ctx, tx, in.SponsorID)
+	if err != nil {
+		return err
 	}
 	label, err := cleanI18n(langs, "action.label", act.Label, false, 40)
 	if err != nil {
@@ -342,6 +352,18 @@ func saveBanner(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 		}
 		if !ok {
 			return badRequest("ACTION_TARGET_NOT_FOUND", "action.value", act.Type+" does not exist")
+		}
+	case "sponsor":
+		act.Value = ""
+		if sponsor == nil {
+			return badRequest("SPONSOR_REQUIRED", "sponsorId", "pick the sponsor whose website the button opens")
+		}
+		var site string
+		if err := tx.QueryRowContext(ctx, `SELECT website_url FROM publication_sponsor WHERE id=$1`, *sponsor).Scan(&site); err != nil {
+			return err
+		}
+		if site == "" {
+			return badRequest("SPONSOR_NO_WEBSITE", "action.type", "the sponsor has no website")
 		}
 	case "url":
 		act.Value = ""
@@ -487,10 +509,10 @@ func saveBanner(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 	return execSave(ctx, tx, "publication_banner", id, create,
 		[]string{"key", "list_id", "name", "tag_ids", "title", "subtitle", "description", "image_url", "bg_color", "action_type", "action_value", "action_label", "action_url",
 			"priority", "starts_at", "ends_at", "days", "day_start", "day_end", "audience_tag_ids", "exclude_tag_ids", "level_table_id", "min_level", "max_level",
-			"platforms", "min_version", "max_version", "countries", "languages", "player_age", "new_days", "is_active"},
+			"platforms", "min_version", "max_version", "countries", "languages", "player_age", "new_days", "is_active", "sponsor_id"},
 		[]any{key, *listID, name, tags, i18nJSON(title), i18nJSON(subtitle), i18nJSON(desc), i18nJSON(image), color, act.Type, act.Value, i18nJSON(label), i18nJSON(urls),
 			in.Priority, starts, ends, days, dayStart, dayEnd, audience, exclude, levelTable, in.MinLevel, in.MaxLevel,
-			platforms, minV, maxV, countries, languages, in.PlayerAge, newDays, boolOr(in.IsActive, true)})
+			platforms, minV, maxV, countries, languages, in.PlayerAge, newDays, boolOr(in.IsActive, true), sponsor})
 }
 
 func (s *service) consoleBannerStats(w http.ResponseWriter, r *http.Request) {
@@ -551,7 +573,7 @@ func (s *service) consoleBannerStats(w http.ResponseWriter, r *http.Request) {
 
 func (s *service) consoleBannerSettings(w http.ResponseWriter, r *http.Request) {
 	zone := projectZone(r.Context(), s.db)
-	writeJSON(w, http.StatusOK, map[string]any{"timezone": zone.String(), "now": time.Now().UTC(), "platforms": bannerPlatforms, "layouts": bannerLayouts, "actions": bannerActions})
+	writeJSON(w, http.StatusOK, map[string]any{"timezone": zone.String(), "now": time.Now().UTC(), "platforms": bannerPlatforms, "layouts": bannerLayouts, "actions": bannerActions, "linkTypes": sponsorLinkTypes})
 }
 
 func (s *service) consoleBannerPreview(w http.ResponseWriter, r *http.Request) {

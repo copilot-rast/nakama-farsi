@@ -32,6 +32,9 @@ func (s *service) clientRPCs() map[string]clientRPC {
 		"publication_banners":       s.rpcBanners,
 		"publication_banner_view":   s.rpcBannerView,
 		"publication_banner_click":  s.rpcBannerClick,
+		"publication_sponsors":      s.rpcSponsors,
+		"publication_sponsor_view":  s.rpcSponsorView,
+		"publication_sponsor_click": s.rpcSponsorClick,
 	}
 }
 

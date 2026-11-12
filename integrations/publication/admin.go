@@ -39,6 +39,8 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/banners/settings", http.MethodGet, s.consoleBannerSettings},
 		{consolePrefix + "/banners/{id}/stats", http.MethodGet, s.consoleBannerStats},
 		{consolePrefix + "/banner-lists/{id}/preview", http.MethodGet, s.consoleBannerPreview},
+		{consolePrefix + "/sponsors/{id}/report", http.MethodGet, s.consoleSponsorReport},
+		{consolePrefix + "/sponsors/{id}/report.csv", http.MethodGet, s.consoleSponsorReportCSV},
 	}
 	for _, res := range resources() {
 		base := consolePrefix + "/" + res.name
@@ -209,6 +211,8 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 		"banners":         `SELECT count(*) FROM publication_banner`,
 		"liveBanners":     `SELECT count(*) FROM publication_banner WHERE is_active AND (starts_at IS NULL OR starts_at <= now()) AND (ends_at IS NULL OR ends_at > now())`,
 		"activeProviders": `SELECT count(*) FROM publication_provider WHERE is_active`,
+		"sponsors":        `SELECT count(*) FROM publication_sponsor`,
+		"liveSponsors":    `SELECT count(*) FROM publication_sponsor WHERE is_active AND (starts_at IS NULL OR starts_at <= now()) AND (ends_at IS NULL OR ends_at > now())`,
 	} {
 		var n int64
 		if err := s.db.QueryRowContext(ctx, query).Scan(&n); err != nil {

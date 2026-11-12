@@ -57,7 +57,7 @@ func resources() []resource {
 			order:   "t.is_pinned DESC, t.published_at DESC, t.id DESC",
 			save:    saveNews,
 		},
-	}, bannerResources()...)
+	}, append(bannerResources(), sponsorResource())...)
 }
 
 func (s *service) resourceList(res resource) http.HandlerFunc {

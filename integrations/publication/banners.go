@@ -20,7 +20,7 @@ var (
 	bannerColorPattern  = regexp.MustCompile(`^#[0-9a-f]{6}$`)
 	bannerVersion       = regexp.MustCompile(`^\d+(\.\d+){0,3}([-+][0-9A-Za-z.-]+)?$`)
 	bannerLayouts       = []string{"carousel", "single", "grid", "strip"}
-	bannerActions       = []string{"none", "screen", "product", "achievement", "url"}
+	bannerActions       = []string{"none", "screen", "product", "achievement", "url", "sponsor"}
 	bannerPlatforms     = []string{"android", "ios", "web", "windows", "macos", "linux"}
 	bannerAges          = []string{"all", "new", "returning"}
 )
@@ -59,6 +59,8 @@ type bannerRow struct {
 	IsActive    bool
 	TargetOK    bool
 	CreatedAt   time.Time
+	Sponsor     *sponsorRef
+	ListSponsor *sponsorRef
 }
 
 type viewer struct {
@@ -75,14 +77,14 @@ type viewer struct {
 	q        queryer
 }
 
-const bannerColumns = `b.id::text, b.key, b.list_id::text, b.title::text, b.subtitle::text, b.description::text, b.image_url::text, b.bg_color, b.action_type, b.action_value,
+var bannerColumns = `b.id::text, b.key, b.list_id::text, b.title::text, b.subtitle::text, b.description::text, b.image_url::text, b.bg_color, b.action_type, b.action_value,
 	b.action_label::text, b.action_url::text, b.priority, b.starts_at, b.ends_at, to_jsonb(b.days)::text, b.day_start, b.day_end, to_jsonb(b.audience_tag_ids)::text, to_jsonb(b.exclude_tag_ids)::text,
 	COALESCE(b.level_table_id::text,''), b.min_level, b.max_level, to_jsonb(b.platforms)::text, b.min_version, b.max_version, to_jsonb(b.countries)::text, to_jsonb(b.languages)::text, b.player_age, b.new_days, b.is_active,
 	CASE b.action_type
 		WHEN 'product' THEN EXISTS (SELECT 1 FROM economy_product p WHERE p.key=b.action_value AND p.is_active AND (cardinality(p.audience_tag_ids)=0 OR p.audience_tag_ids && $1::text[]))
 		WHEN 'achievement' THEN EXISTS (SELECT 1 FROM economy_achievement a WHERE a.key=b.action_value AND a.is_active)
 		ELSE true END,
-	b.created_at`
+	b.created_at, ` + sponsorRefSQL("b.sponsor_id") + `, ` + sponsorRefSQL("(SELECT l2.sponsor_id FROM publication_banner_list l2 WHERE l2.id=b.list_id)")
 
 type rowsQueryer interface {
 	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
@@ -101,9 +103,10 @@ func loadBanners(ctx context.Context, q rowsQueryer, where string, tags []string
 		var days, aud, exc, plat, ctry, lng string
 		var dayStart, dayEnd, minLv, maxLv sql.NullInt64
 		var starts, ends sql.NullTime
+		var sponsor, listSponsor sql.NullString
 		if err := rows.Scan(&b.ID, &b.Key, &b.ListID, &title, &sub, &desc, &img, &b.BgColor, &b.ActionType, &b.ActionValue, &label, &url, &b.Priority, &starts, &ends,
 			&days, &dayStart, &dayEnd, &aud, &exc, &b.LevelTable, &minLv, &maxLv, &plat, &b.MinVersion, &b.MaxVersion, &ctry, &lng,
-			&b.PlayerAge, &b.NewDays, &b.IsActive, &b.TargetOK, &b.CreatedAt); err != nil {
+			&b.PlayerAge, &b.NewDays, &b.IsActive, &b.TargetOK, &b.CreatedAt, &sponsor, &listSponsor); err != nil {
 			return nil, err
 		}
 		b.Title, b.Subtitle, b.Description, b.Image, b.ActionLabel, b.ActionURL = parseI18n(title), parseI18n(sub), parseI18n(desc), parseI18n(img), parseI18n(label), parseI18n(url)
@@ -122,6 +125,7 @@ func loadBanners(ctx context.Context, q rowsQueryer, where string, tags []string
 			b.EndsAt = &t
 		}
 		b.DayStart, b.DayEnd, b.MinLevel, b.MaxLevel = nullInt(dayStart), nullInt(dayEnd), nullInt(minLv), nullInt(maxLv)
+		b.Sponsor, b.ListSponsor = parseSponsorRef(sponsor), parseSponsorRef(listSponsor)
 		out = append(out, b)
 	}
 	return out, rows.Err()
@@ -202,6 +206,12 @@ func (b bannerRow) eligible(ctx context.Context, v *viewer) (string, error) {
 		return "inactive", nil
 	}
 	if !b.TargetOK {
+		return "target_missing", nil
+	}
+	if b.Sponsor != nil && !b.Sponsor.live(v.Now) {
+		return "sponsor_off", nil
+	}
+	if b.ActionType == "sponsor" && (b.Sponsor == nil || b.Sponsor.Website == "") {
 		return "target_missing", nil
 	}
 	if b.StartsAt != nil && v.Now.Before(*b.StartsAt) {
@@ -332,7 +342,7 @@ func bannerVersionParts(v string) ([4]int64, bool) {
 func (b bannerRow) view(langs *localized.Set, lang string) map[string]any {
 	action := map[string]any{"type": b.ActionType}
 	if b.ActionType != "none" {
-		if b.ActionType != "url" {
+		if b.ActionType != "url" && b.ActionType != "sponsor" {
 			action["value"] = b.ActionValue
 		}
 		if l := langs.Resolve(b.ActionLabel, lang); l != "" {
@@ -341,8 +351,16 @@ func (b bannerRow) view(langs *localized.Set, lang string) map[string]any {
 		if b.ActionType == "url" {
 			action["url"] = langs.Resolve(b.ActionURL, lang)
 		}
+		if b.ActionType == "sponsor" && b.Sponsor != nil {
+			action["url"] = b.Sponsor.Website
+			action["sponsorId"] = b.Sponsor.ID
+		}
 	}
-	return map[string]any{
+	var sponsor any
+	if b.Sponsor != nil {
+		sponsor = b.Sponsor.view(langs, lang)
+	}
+	return map[string]any{"sponsor": sponsor,
 		"id": b.ID, "key": b.Key, "title": langs.Resolve(b.Title, lang), "subtitle": langs.Resolve(b.Subtitle, lang),
 		"description": langs.Resolve(b.Description, lang), "imageUrl": langs.Resolve(b.Image, lang), "bgColor": b.BgColor,
 		"priority": b.Priority, "action": action, "endsAt": b.EndsAt,
