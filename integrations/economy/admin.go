@@ -34,7 +34,8 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 	routes = append(routes, s.eventConsoleRoutes()...)
 	routes = append(routes, s.referralConsoleRoutes()...)
 	routes = append(routes, s.taskConsoleRoutes()...)
-	for _, res := range append(append(resources(), eventResources()...), taskResources()...) {
+	routes = append(routes, s.itemConsoleRoutes()...)
+	for _, res := range append(append(append(resources(), eventResources()...), taskResources()...), itemResources()...) {
 		base := consolePrefix + "/" + res.name
 		routes = append(routes,
 			route{base, http.MethodGet, s.resourceList(res)},
@@ -322,6 +323,8 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 		"streaks":        `SELECT count(*) FROM economy_streak`,
 		"tasks":          `SELECT count(*) FROM economy_task`,
 		"task-groups":    `SELECT count(*) FROM economy_task_group`,
+		"items":          `SELECT count(*) FROM economy_item`,
+		"ownedItems":     `SELECT count(*) FROM economy_user_item`,
 		"eventsToday":    `SELECT count(*) FROM economy_player_event WHERE created_at >= now() - interval '24 hours'`,
 		"claimsReady":    `SELECT count(*) FROM economy_reward_claim WHERE status='ready'`,
 		"claimsFailed":   `SELECT count(*) FROM economy_reward_claim WHERE status='failed'`,

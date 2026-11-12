@@ -83,7 +83,7 @@ func resources() []resource {
 	}
 }
 
-const productJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'isActive',t.is_active,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'audienceTagIds',to_jsonb(t.audience_tag_ids),'priceToman',t.price_toman,'coinPrice',t.coin_price,'discountPercent',t.discount_percent,'paymentMethods',to_jsonb(t.payment_methods),'sku',t.sku,'isSubscription',t.is_subscription,'prizeId',t.prize_id,'iconUrl',t.icon_url,'coverUrl',t.cover_url,'minLevel',t.min_level,'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
+const productJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'isActive',t.is_active,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'audienceTagIds',to_jsonb(t.audience_tag_ids),'priceToman',t.price_toman,'coinPrice',t.coin_price,'discountPercent',t.discount_percent,'paymentMethods',to_jsonb(t.payment_methods),'sku',t.sku,'isSubscription',t.is_subscription,'prizeId',t.prize_id,'iconUrl',t.icon_url,'coverUrl',t.cover_url,'minLevel',t.min_level,'maxLevel',t.max_level,'levelTableId',t.level_table_id,'isOneTime',t.is_one_time,'checkContents',t.check_contents,'purchaseMessage',t.purchase_message,'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
 func refuseIfUsed(ctx context.Context, tx *sql.Tx, id, query string) error {
 	var used bool
@@ -554,6 +554,13 @@ func checkPrizeItems(ctx context.Context, tx *sql.Tx, items []prizeItem) error {
 			if !exists {
 				return badRequest("META_NOT_FOUND", "items", "meta "+item.Key+" does not exist")
 			}
+		case "item":
+			if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_item WHERE key=$1)`, item.Key).Scan(&exists); err != nil {
+				return err
+			}
+			if !exists {
+				return badRequest("ITEM_NOT_FOUND", "items", "item "+item.Key+" does not exist")
+			}
 		}
 	}
 	return nil
@@ -644,6 +651,11 @@ type productInput struct {
 	IconURL         string            `json:"iconUrl"`
 	CoverURL        string            `json:"coverUrl"`
 	MinLevel        int               `json:"minLevel"`
+	MaxLevel        *int              `json:"maxLevel"`
+	LevelTableID    string            `json:"levelTableId"`
+	IsOneTime       bool              `json:"isOneTime"`
+	CheckContents   *bool             `json:"checkContents"`
+	PurchaseMessage i18n              `json:"purchaseMessage"`
 	Metadata        json.RawMessage   `json:"metadata"`
 	Sort            int               `json:"sort"`
 }
@@ -666,6 +678,9 @@ func validateProductShape(in *productInput) error {
 	}
 	if in.MinLevel < 0 {
 		return badRequest("INVALID_VALUE", "minLevel", "min level cannot be negative")
+	}
+	if in.MaxLevel != nil && (*in.MaxLevel < 0 || *in.MaxLevel < in.MinLevel) {
+		return badRequest("INVALID_LEVEL_RANGE", "maxLevel", "max level must be empty or at least the min level")
 	}
 	if in.PriceToman != nil && *in.PriceToman < 0 {
 		return badRequest("INVALID_PRICE", "priceToman", "price cannot be negative")
@@ -792,10 +807,33 @@ func saveProduct(s *service, ctx context.Context, tx *sql.Tx, id string, create 
 	if err != nil {
 		return err
 	}
+	message, err := cleanI18n(langs, "purchaseMessage", in.PurchaseMessage, false, 500)
+	if err != nil {
+		return err
+	}
+	table, err := cleanUUID("levelTableId", in.LevelTableID, false)
+	if err != nil {
+		return err
+	}
+	if table != nil {
+		if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_level_table WHERE id=$1)`, *table).Scan(&exists); err != nil {
+			return err
+		}
+		if !exists {
+			return badRequest("LEVEL_TABLE_NOT_FOUND", "levelTableId", "level table does not exist")
+		}
+	}
+	if in.IsOneTime && in.IsSubscription {
+		return badRequest("ONE_TIME_SUBSCRIPTION", "isOneTime", "a subscription cannot be a one-time product")
+	}
+	check := true
+	if in.CheckContents != nil {
+		check = *in.CheckContents
+	}
 	skuJSON, _ := json.Marshal(in.SKU)
 	return execSave(ctx, tx, "economy_product", id, create,
-		[]string{"key", "name", "description", "is_active", "category_id", "tag_ids", "audience_tag_ids", "price_toman", "coin_price", "discount_percent", "payment_methods", "sku", "is_subscription", "prize_id", "icon_url", "cover_url", "min_level", "metadata", "sort"},
-		[]any{key, i18nJSON(name), i18nJSON(desc), in.IsActive, category, tags, audience, in.PriceToman, coin, in.DiscountPercent, in.PaymentMethods, string(skuJSON), in.IsSubscription, *prize, icon, cover, in.MinLevel, meta, in.Sort})
+		[]string{"key", "name", "description", "is_active", "category_id", "tag_ids", "audience_tag_ids", "price_toman", "coin_price", "discount_percent", "payment_methods", "sku", "is_subscription", "prize_id", "icon_url", "cover_url", "min_level", "max_level", "level_table_id", "is_one_time", "check_contents", "purchase_message", "metadata", "sort"},
+		[]any{key, i18nJSON(name), i18nJSON(desc), in.IsActive, category, tags, audience, in.PriceToman, coin, in.DiscountPercent, in.PaymentMethods, string(skuJSON), in.IsSubscription, *prize, icon, cover, in.MinLevel, in.MaxLevel, table, in.IsOneTime, check, i18nJSON(message), meta, in.Sort})
 }
 
 func saveGift(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {

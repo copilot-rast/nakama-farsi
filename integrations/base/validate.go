@@ -18,22 +18,24 @@ type keyType struct {
 }
 
 var keyTypeNames = map[string]map[string]string{
-	"product":  {"fa": "محصول", "en": "Product"},
-	"prize":    {"fa": "جایزه", "en": "Prize"},
-	"gift":     {"fa": "هدیه", "en": "Gift"},
-	"currency": {"fa": "ارز", "en": "Currency"},
-	"faq":      {"fa": "سؤال متداول", "en": "FAQ"},
-	"news":     {"fa": "خبر", "en": "News"},
-	"general":  {"fa": "عمومی", "en": "General"},
-	"user":     {"fa": "بازیکن", "en": "Player"},
-	"task":     {"fa": "تسک", "en": "Task"},
+	"product":   {"fa": "محصول", "en": "Product"},
+	"prize":     {"fa": "جایزه", "en": "Prize"},
+	"gift":      {"fa": "هدیه", "en": "Gift"},
+	"currency":  {"fa": "ارز", "en": "Currency"},
+	"faq":       {"fa": "سؤال متداول", "en": "FAQ"},
+	"news":      {"fa": "خبر", "en": "News"},
+	"general":   {"fa": "عمومی", "en": "General"},
+	"user":      {"fa": "بازیکن", "en": "Player"},
+	"task":      {"fa": "تسک", "en": "Task"},
+	"item":      {"fa": "آیتم", "en": "Item"},
+	"item_type": {"fa": "نوع آیتم", "en": "Item type"},
 }
 
-var categoryKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task"}
+var categoryKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task", "item", "item_type"}
 
-var tagKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task", "general", "user"}
+var tagKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task", "item", "general", "user"}
 
-var clientTagKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task", "general"}
+var clientTagKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task", "item", "general"}
 
 func keyTypeList(keys []string) []keyType {
 	out := make([]keyType, 0, len(keys))

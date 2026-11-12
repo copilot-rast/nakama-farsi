@@ -19,6 +19,7 @@ type grantRequest struct {
 	SourceID   string
 	Reason     string
 	Debit      map[string]int64
+	CheckItems bool
 	After      func(ctx context.Context, tx *sql.Tx) error
 }
 
@@ -112,6 +113,7 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 		}
 		var writes []*runtime.StorageWrite
 		var metas []prizeItem
+		var itemKeys []string
 		for _, item := range prize.Items {
 			switch item.Type {
 			case "currency":
@@ -121,6 +123,23 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 				writes = append(writes, &runtime.StorageWrite{Collection: "economy_items", Key: item.Key, UserID: req.UserID, Value: string(item.Value), PermissionRead: 1, PermissionWrite: 0})
 			case "meta":
 				metas = append(metas, item)
+			case "item":
+				itemKeys = append(itemKeys, item.Key)
+			}
+		}
+		if len(itemKeys) > 0 {
+			added := 0
+			for _, key := range itemKeys {
+				res, err := tx.ExecContext(ctx, `INSERT INTO economy_user_item (user_id, item_id, source, source_ref)
+					SELECT $1, id, 'prize', $3 FROM economy_item WHERE key=$2 ON CONFLICT (user_id, item_id) DO NOTHING`, req.UserID, key, rowID)
+				if err != nil {
+					return err
+				}
+				n, _ := res.RowsAffected()
+				added += int(n)
+			}
+			if added == 0 && req.CheckItems {
+				return conflict("PRIZE_ALREADY_OWNED", "the player already owns everything this prize gives")
 			}
 		}
 		for k, v := range changes {

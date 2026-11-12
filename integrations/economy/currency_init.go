@@ -6,6 +6,9 @@ import (
 )
 
 func (s *service) ensureDefaults(ctx context.Context, userID string) error {
+	if err := s.ensureStarters(ctx, userID); err != nil {
+		return err
+	}
 	rows, err := s.db.QueryContext(ctx, `SELECT c.id::text FROM economy_currency c
 		WHERE c.default_value > 0 AND NOT EXISTS (SELECT 1 FROM economy_user_currency_init i WHERE i.user_id=$1 AND i.currency_id=c.id)`, userID)
 	if err != nil {

@@ -31,13 +31,14 @@ type payment struct {
 	RewardGranted bool
 	RewardError   sql.NullString
 	CreatedAt     time.Time
+	Outcome       string
 }
 
-const paymentColumns = `id::text, user_id::text, product_id::text, method, sandbox, status, original_toman, final_toman, amount_rial, gift_id::text, authority, track_id, store_token, error, reward_granted, reward_error, created_at`
+const paymentColumns = `id::text, user_id::text, product_id::text, method, sandbox, status, original_toman, final_toman, amount_rial, gift_id::text, authority, track_id, store_token, error, reward_granted, reward_error, created_at, COALESCE(outcome,'')`
 
 func scanPayment(row interface{ Scan(...any) error }) (payment, error) {
 	var p payment
-	err := row.Scan(&p.ID, &p.UserID, &p.ProductID, &p.Method, &p.Sandbox, &p.Status, &p.OriginalToman, &p.FinalToman, &p.AmountRial, &p.GiftID, &p.Authority, &p.TrackID, &p.StoreToken, &p.Error, &p.RewardGranted, &p.RewardError, &p.CreatedAt)
+	err := row.Scan(&p.ID, &p.UserID, &p.ProductID, &p.Method, &p.Sandbox, &p.Status, &p.OriginalToman, &p.FinalToman, &p.AmountRial, &p.GiftID, &p.Authority, &p.TrackID, &p.StoreToken, &p.Error, &p.RewardGranted, &p.RewardError, &p.CreatedAt, &p.Outcome)
 	return p, err
 }
 
@@ -71,6 +72,11 @@ type productView struct {
 	IconURL         string            `json:"iconUrl"`
 	CoverURL        string            `json:"coverUrl"`
 	MinLevel        int               `json:"minLevel"`
+	MaxLevel        *int              `json:"maxLevel"`
+	LevelTableID    *string           `json:"levelTableId"`
+	IsOneTime       bool              `json:"isOneTime"`
+	CheckContents   bool              `json:"checkContents"`
+	PurchaseMessage i18n              `json:"purchaseMessage"`
 }
 
 func (p productView) allows(method string) bool {
@@ -127,20 +133,36 @@ func (s *service) markSuccess(ctx context.Context, p payment, f successFields) (
 		allowed = []string{"pending"}
 	}
 	won := false
-	err := s.inTx(ctx, func(tx *sql.Tx) error {
-		res, err := tx.ExecContext(ctx, `UPDATE economy_payment SET status='success', ref_id=COALESCE(NULLIF($2,''), ref_id), card_mask=COALESCE(NULLIF($3,''), card_mask),
-			store_token=COALESCE(NULLIF($4,''), store_token), outcome=$5, error=NULL, verified_at=now(), updated_at=now()
-			WHERE id=$1 AND status = ANY($6)`, p.ID, f.RefID, f.Card, f.StoreToken, f.Outcome, allowed)
-		if err != nil {
-			return err
+	update := func(duplicate bool) error {
+		won = false
+		return s.inTx(ctx, func(tx *sql.Tx) error {
+			once := `CASE WHEN (SELECT pr.is_one_time FROM economy_product pr WHERE pr.id=product_id) THEN user_id::text||':'||product_id::text ELSE NULL END`
+			outcome, rewardErr := f.Outcome, ""
+			if duplicate {
+				once, outcome, rewardErr = `NULL`, "duplicate", "PRODUCT_ALREADY_BOUGHT"
+			}
+			res, err := tx.ExecContext(ctx, `UPDATE economy_payment SET status='success', ref_id=COALESCE(NULLIF($2,''), ref_id), card_mask=COALESCE(NULLIF($3,''), card_mask),
+				store_token=COALESCE(NULLIF($4,''), store_token), outcome=$5, error=NULL, verified_at=now(), updated_at=now(), once_key=COALESCE(once_key, `+once+`),
+				reward_error=NULLIF($7,'')
+				WHERE id=$1 AND status = ANY($6)`, p.ID, f.RefID, f.Card, f.StoreToken, outcome, allowed, rewardErr)
+			if err != nil {
+				return err
+			}
+			n, _ := res.RowsAffected()
+			if n == 0 {
+				return nil
+			}
+			won = true
+			return s.consumeGift(ctx, tx, p.ID)
+		})
+	}
+	err := update(false)
+	if c, unique := isUniqueViolation(err); unique && c == "economy_payment_once_idx" {
+		err = update(true)
+		if err == nil && won {
+			s.logger.Warn("Economy payment %s paid a one-time product the player already bought; kept as duplicate for a refund", p.ID)
 		}
-		n, _ := res.RowsAffected()
-		if n == 0 {
-			return nil
-		}
-		won = true
-		return s.consumeGift(ctx, tx, p.ID)
-	})
+	}
 	return won, err
 }
 
@@ -160,7 +182,7 @@ func (s *service) consumeGift(ctx context.Context, tx *sql.Tx, paymentID string)
 func (s *service) closePayment(ctx context.Context, id, status, code string) (bool, error) {
 	closed := false
 	err := s.inTx(ctx, func(tx *sql.Tx) error {
-		res, err := tx.ExecContext(ctx, `UPDATE economy_payment SET status=$2, error=$3, outcome=$2, updated_at=now() WHERE id=$1 AND status='pending'`, id, status, truncate(code, 500))
+		res, err := tx.ExecContext(ctx, `UPDATE economy_payment SET status=$2, error=$3, outcome=$2, once_key=NULL, updated_at=now() WHERE id=$1 AND status='pending'`, id, status, truncate(code, 500))
 		if err != nil {
 			return err
 		}
@@ -187,13 +209,16 @@ func (s *service) grantPayment(ctx context.Context, id string) ([]prizeItem, err
 	if p.Status != "success" {
 		return nil, conflict("PAYMENT_NOT_SUCCESSFUL", "payment is not successful")
 	}
+	if p.Outcome == "duplicate" {
+		return nil, conflict("PRODUCT_ALREADY_BOUGHT", "this one-time product was already delivered by another payment; refund this one")
+	}
 	product, err := s.loadProduct(ctx, s.db, p.ProductID)
 	if err != nil {
 		return nil, err
 	}
 	first := false
 	rewards, err := s.grant(ctx, grantRequest{
-		UserID: p.UserID, PrizeID: product.PrizeID, SourceType: "payment", SourceID: p.ID, Reason: "purchase",
+		UserID: p.UserID, PrizeID: product.PrizeID, SourceType: "payment", SourceID: p.ID, Reason: "purchase", CheckItems: product.CheckContents,
 		After: func(ctx context.Context, tx *sql.Tx) error {
 			res, err := tx.ExecContext(ctx, `UPDATE economy_payment SET reward_granted=true, reward_error=NULL, updated_at=now() WHERE id=$1 AND NOT reward_granted`, p.ID)
 			if err != nil {

@@ -100,6 +100,16 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 	if err != nil {
 		return nil, err
 	}
+	counts, err := s.purchaseCounts(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	ownedKeys, err := s.ownedItemKeys(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	lc := newLevelCache(s.db, userID)
+	prizes := map[string]prizeRow{}
 	products := []map[string]any{}
 	rows, err = s.db.QueryContext(ctx, `SELECT `+productJSON+`::text FROM economy_product t WHERE t.is_active ORDER BY t.sort, t.created_at`)
 	if err != nil {
@@ -138,6 +148,20 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 		if len(available) == 0 {
 			continue
 		}
+		prize, ok := prizes[p.PrizeID]
+		if !ok {
+			if prize, err = loadPrize(ctx, s.db, p.PrizeID); err != nil {
+				return nil, err
+			}
+			prizes[p.PrizeID] = prize
+		}
+		st, err := s.productStateFor(ctx, p, prize, lc, counts, ownedKeys)
+		if err != nil {
+			return nil, err
+		}
+		if st.OverMax || (p.IsOneTime && st.Count > 0) {
+			continue
+		}
 		tags := []string{}
 		for _, id := range p.TagIDs {
 			if k, ok := tagKeys[id]; ok {
@@ -152,7 +176,9 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 			"id": p.ID, "key": p.Key, "name": langs.Resolve(p.Name, lang), "description": langs.Resolve(p.Description, lang),
 			"iconUrl": p.IconURL, "coverUrl": p.CoverURL, "priceToman": p.PriceToman, "finalToman": final, "coinPrice": p.CoinPrice,
 			"discountPercent": p.DiscountPercent, "paymentMethods": available, "sku": sku, "isSubscription": p.IsSubscription,
-			"categoryKey": categoryKey, "tags": tags, "minLevel": p.MinLevel, "exclusive": len(p.AudienceTagIDs) > 0,
+			"categoryKey": categoryKey, "tags": tags, "minLevel": p.MinLevel, "maxLevel": p.MaxLevel, "exclusive": len(p.AudienceTagIDs) > 0,
+			"isOneTime": p.IsOneTime, "owned": st.Owned, "levelLocked": st.LevelLocked, "bought": st.Count > 0, "purchaseCount": st.Count,
+			"requiresKey": st.Missing, "purchaseMessage": langs.Resolve(p.PurchaseMessage, lang), "items": prizeItemKeys(prize.Items),
 		})
 	}
 	return map[string]any{"lang": lang, "currencies": currencies, "categories": categories, "products": products}, rows.Err()
@@ -353,25 +379,6 @@ func tagKeyList(raw string) []string {
 	return out
 }
 
-func (s *service) checkLevel(ctx context.Context, userID string, minLevel int) error {
-	if minLevel <= 0 {
-		return nil
-	}
-	var level sql.NullFloat64
-	err := s.db.QueryRowContext(ctx, `SELECT COALESCE(um.value, m.default_value)::float8 FROM economy_meta m
-		LEFT JOIN economy_user_meta um ON um.meta_id=m.id AND um.user_id=$1 WHERE m.key='level'`, userID).Scan(&level)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil
-	}
-	if err != nil {
-		return err
-	}
-	if level.Float64 < float64(minLevel) {
-		return conflict("LEVEL_TOO_LOW", "your level is too low for this product")
-	}
-	return nil
-}
-
 func (s *service) rpcPurchaseStart(ctx context.Context, userID, payload string) (any, error) {
 	var in struct {
 		ProductID string `json:"productId"`
@@ -410,11 +417,11 @@ func (s *service) rpcPurchaseStart(ctx context.Context, userID, payload string) 
 	if !pm.usable() {
 		return nil, fail(http.StatusServiceUnavailable, "METHOD_UNAVAILABLE", "method", "this payment method is not available")
 	}
-	if err := s.checkLevel(ctx, userID, product.MinLevel); err != nil {
-		return nil, err
-	}
 	prize, err := loadPrize(ctx, s.db, product.PrizeID)
 	if err != nil {
+		return nil, err
+	}
+	if err := s.checkProductRules(ctx, userID, product, prize); err != nil {
 		return nil, err
 	}
 	if !prize.Repeatable {
@@ -451,12 +458,15 @@ func (s *service) startInApp(ctx context.Context, userID string, product product
 		return nil, fail(http.StatusPaymentRequired, "INSUFFICIENT_BALANCE", "", "not enough "+product.CoinPrice.CurrencyKey)
 	}
 	id := uuid.Must(uuid.NewV4()).String()
-	if _, err := s.db.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, status, coin_currency, coin_amount, discount_percent)
-		VALUES ($1,$2,$3,'in_app','pending',$4,$5,0)`, id, userID, product.ID, product.CoinPrice.CurrencyKey, product.CoinPrice.Amount); err != nil {
+	if _, err := s.db.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, status, coin_currency, coin_amount, discount_percent, once_key)
+		VALUES ($1,$2,$3,'in_app','pending',$4,$5,0,$6)`, id, userID, product.ID, product.CoinPrice.CurrencyKey, product.CoinPrice.Amount, productOnceKey(product, userID)); err != nil {
+		if c, unique := isUniqueViolation(err); unique && c == "economy_payment_once_idx" {
+			return nil, conflict("PRODUCT_ALREADY_BOUGHT", "this product can be bought only once")
+		}
 		return nil, err
 	}
 	rewards, err := s.grant(ctx, grantRequest{
-		UserID: userID, PrizeID: product.PrizeID, SourceType: "payment", SourceID: id, Reason: "purchase",
+		UserID: userID, PrizeID: product.PrizeID, SourceType: "payment", SourceID: id, Reason: "purchase", CheckItems: product.CheckContents,
 		Debit: map[string]int64{product.CoinPrice.CurrencyKey: product.CoinPrice.Amount},
 		After: func(ctx context.Context, tx *sql.Tx) error {
 			_, err := tx.ExecContext(ctx, `UPDATE economy_payment SET status='success', outcome='paid', reward_granted=true, reward_error=NULL, verified_at=now(), updated_at=now() WHERE id=$1 AND status='pending'`, id)
@@ -468,7 +478,7 @@ func (s *service) startInApp(ctx context.Context, userID string, product product
 		if app, ok := asApp(err); ok {
 			code = app.Code
 		}
-		if code == "INSUFFICIENT_BALANCE" || code == "PRIZE_ALREADY_CLAIMED" {
+		if code == "INSUFFICIENT_BALANCE" || code == "PRIZE_ALREADY_CLAIMED" || code == "PRIZE_ALREADY_OWNED" {
 			_, _ = s.closePayment(ctx, id, "failed", code)
 		} else {
 			_, _ = s.db.ExecContext(ctx, `UPDATE economy_payment SET reward_error=$2, updated_at=now() WHERE id=$1`, id, truncate(code, 500))
@@ -477,7 +487,18 @@ func (s *service) startInApp(ctx context.Context, userID string, product product
 	}
 	s.recordServerEvent(ctx, userID, "purchase_completed", float64(product.CoinPrice.Amount), map[string]any{"paymentId": id, "method": "in_app", "productKey": product.Key, "currency": product.CoinPrice.CurrencyKey})
 	activity.Safe(ctx, s.db, s.logger, activity.FromContext(ctx, activity.Entry{UserID: userID, Kind: activity.KindPurchase, Action: "completed", RefID: id, Actor: "player", Data: map[string]any{"method": "in_app", "productKey": product.Key, "coins": product.CoinPrice.Amount, "currency": product.CoinPrice.CurrencyKey}}))
-	return map[string]any{"paymentId": id, "status": "success", "rewards": rewards}, nil
+	return map[string]any{"paymentId": id, "status": "success", "rewards": rewards, "purchaseMessage": s.purchaseMessage(ctx, userID, product)}, nil
+}
+
+func (s *service) purchaseMessage(ctx context.Context, userID string, p productView) string {
+	if len(p.PurchaseMessage) == 0 {
+		return ""
+	}
+	langs, lang, err := localized.ForUser(ctx, s.db, userID, "")
+	if err != nil {
+		return ""
+	}
+	return langs.Resolve(p.PurchaseMessage, lang)
 }
 
 func (s *service) startStore(ctx context.Context, userID string, product productView, pm paymentMethod) (any, error) {
@@ -795,7 +816,11 @@ func (s *service) finishStore(ctx context.Context, p payment, product productVie
 	}
 	rewards, err := s.grantPayment(ctx, p.ID)
 	if err != nil {
-		return map[string]any{"paymentId": p.ID, "status": "success", "rewardGranted": false, "error": "REWARD_PENDING"}, nil
+		code := "REWARD_PENDING"
+		if app, ok := asApp(err); ok && (app.Code == "PRODUCT_ALREADY_BOUGHT" || app.Code == "PRIZE_ALREADY_OWNED") {
+			code = app.Code
+		}
+		return map[string]any{"paymentId": p.ID, "status": "success", "rewardGranted": false, "error": code}, nil
 	}
 	return map[string]any{"paymentId": p.ID, "status": "success", "rewardGranted": true, "rewards": rewards}, nil
 }
@@ -832,6 +857,13 @@ func (s *service) rpcPurchaseStatus(ctx context.Context, userID, payload string)
 		out["error"] = p.Error.String
 	} else if p.RewardError.Valid && p.RewardError.String != "" {
 		out["error"] = p.RewardError.String
+	}
+	if p.Status == "success" && p.RewardGranted {
+		if product, err := s.loadProduct(ctx, s.db, p.ProductID); err == nil {
+			if msg := s.purchaseMessage(ctx, userID, product); msg != "" {
+				out["purchaseMessage"] = msg
+			}
+		}
 	}
 	return out, nil
 }

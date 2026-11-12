@@ -305,6 +305,7 @@ func (s *service) sweepEvents(ctx context.Context) (int64, error) {
 	if _, err := s.db.ExecContext(ctx, `DELETE FROM economy_user_task WHERE window_start IS NOT NULL AND window_start < current_date - $1::int AND status='active'`, keep); err != nil {
 		return removed, err
 	}
+	s.sweepItemRequests(ctx)
 	return removed, nil
 }
 

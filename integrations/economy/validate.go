@@ -219,8 +219,16 @@ func normalizePrizeItems(items []prizeItem) ([]prizeItem, error) {
 			}
 			b, _ := json.Marshal(obj)
 			item.Value = b
+		case "item":
+			if item.Action != "give" {
+				return nil, badRequest("INVALID_ACTION", "items", "item entries only support give")
+			}
+			if !keyPattern.MatchString(item.Key) {
+				return nil, badRequest("INVALID_KEY", "items", "invalid item key")
+			}
+			item.Value = json.RawMessage("1")
 		default:
-			return nil, badRequest("INVALID_ITEM_TYPE", "items", "type must be currency, meta or storage")
+			return nil, badRequest("INVALID_ITEM_TYPE", "items", "type must be currency, meta, storage or item")
 		}
 		out = append(out, item)
 	}
