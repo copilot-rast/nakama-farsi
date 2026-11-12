@@ -64,6 +64,7 @@
       <button class="menu-card" type="button" data-go="chat" id="menu-chat"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg></span><span data-i18n="chat">گفتگو</span></button>
       <button class="menu-card" type="button" data-go="faq"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg></span><span data-i18n="faq">سؤال‌های متداول</span></button>
       <button class="menu-card" type="button" data-go="account" id="menu-account"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span data-i18n="account">حساب من</span></button>
+      <button class="menu-card" type="button" data-go="tasks" id="menu-tasks"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span data-i18n="tasks">مأموریت‌ها</span><span class="menu-dot" id="tasks-dot" hidden></span></button>
       <button class="menu-card" type="button" data-go="rewards" id="menu-rewards"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.2 7 22l5-3 5 3-1.2-8.8"/></svg></span><span data-i18n="rewards">جایزه‌ها</span><span class="menu-dot" id="rewards-dot" hidden></span></button>
       <button class="menu-card" type="button" data-go="payments"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span><span data-i18n="payments">پرداخت‌های من</span></button>
       <button class="menu-card" type="button" data-go="support" id="menu-support"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg></span><span data-i18n="support">پشتیبانی</span><span class="menu-dot" id="support-dot" hidden></span></button>
@@ -270,6 +271,16 @@
     <div class="rewards" id="rewards-list"></div>
   </section>
 
+  <section class="screen" id="screen-tasks" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="tasks">مأموریت‌ها</h1>
+      <span></span>
+    </div>
+    <p class="muted small" data-i18n="tasksHint">کارهای کوچک بازی که هر کدام جایزه دارد. پیشرفتشان خودکار ثبت می‌شود.</p>
+    <div class="missions" id="tasks-list"></div>
+  </section>
+
   <section class="screen" id="screen-inbox" hidden>
     <div class="screen-head">
       <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
@@ -399,5 +410,6 @@
 
 <script src="app.js"></script>
 <script src="growth.js"></script>
+<script src="missions.js"></script>
 </body>
 </html>

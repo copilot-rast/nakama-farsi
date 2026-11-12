@@ -952,6 +952,7 @@ function show(name) {
     $("#gift-code").focus();
   }
   if (typeof growthShow === "function") growthShow(name);
+  if (typeof missionsShow === "function") missionsShow(name);
 }
 
 async function refreshBalances() {
@@ -1085,6 +1086,8 @@ function roundNotes(ev) {
   const auto = claims.filter((c) => c.grantMode === "auto" && c.status === "granted").length;
   if (auto) lines.push(t("autoRewards", auto));
   if (waiting) lines.push(t("newRewards", waiting));
+  const missions = typeof missionNotes === "function" ? missionNotes(ev) : null;
+  if (missions) lines.push(missions);
   if (!lines.length) return null;
   return el("div", { class: "round-notes", "data-round-notes": "" }, lines.map((x) => el("p", { text: x })));
 }

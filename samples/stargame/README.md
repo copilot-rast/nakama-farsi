@@ -83,3 +83,9 @@ CONSOLE_URL=https://nakama-console.dastar.dev CONSOLE_USER=admin CONSOLE_PASSWOR
 - «کد معرف»: my code with copy, the rewards for both sides, the goal, my invites, and the form to enter a friend's code in the first week (Persian digits and lower case are fine).
 - «فعالیت من» (`base_my_activity`): my sign-ins, purchases, prizes, tickets, referrals and restrictions with kind tabs and «قدیمی‌ترها».
 - The new code is in `web/growth.js`, loaded after `app.js`.
+
+## Missions (tasks)
+
+- The seed adds two task categories, five tasks, a starter task with three steps and the group «زنجیرهٔ شکارچی» (see `seed_tasks.go`). All are collected with a button, so balances in the other screens and tests do not change on their own. Rows are matched by key and never updated.
+- «مأموریت‌ها» on the home screen (`missions.js`) calls `economy_tasks_list`: the chain at the top with its progress («۱ از ۳ مأموریت») and the current task, then the daily, weekly and story tasks with a progress bar, «امروز» / «این هفته», the end time, the prize and «جایزه را بگیر». A locked task says which task to finish first; the starter shows its steps. The menu card has a dot with the number of prizes to collect.
+- A finished round that completes a task adds «یک مأموریت تمام شد!» to the round result. «شروع ستاره‌چین» sends an in-app message whose button opens the missions screen.

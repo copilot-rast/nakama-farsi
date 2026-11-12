@@ -160,6 +160,10 @@ func resetSeedData(t *testing.T, db *sql.DB) {
 		`DELETE FROM economy_payment`,
 		`DELETE FROM economy_product WHERE key LIKE 'star\_%'`,
 		`DELETE FROM economy_reward_claim`,
+		`DELETE FROM economy_user_task_group`,
+		`DELETE FROM economy_task WHERE key LIKE 'star\_%'`,
+		`DELETE FROM economy_task_group WHERE key LIKE 'star\_%'`,
+		`DELETE FROM base_category WHERE key_type='task' AND key LIKE 'star\_%'`,
 		`DELETE FROM economy_streak WHERE key='daily_login'`,
 		`DELETE FROM economy_level_table WHERE key='star_levels'`,
 		`DELETE FROM economy_meta_rule WHERE key LIKE 'star\_%'`,
@@ -225,7 +229,7 @@ func TestSeedPostgres(t *testing.T) {
 		}
 		created += len(reports[i].created)
 	}
-	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2; created != want {
+	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2 + 2 + 1 + 11; created != want {
 		t.Fatalf("created %d rows across nodes, want %d: %v", created, want, reports)
 	}
 
@@ -246,6 +250,10 @@ func TestSeedPostgres(t *testing.T) {
 		`SELECT count(*) FROM base_app_version WHERE platform IN ('web','android') AND latest_version='1.4.0' AND min_version='1.0.0'`:                                                                                             2,
 		`SELECT count(*) FROM economy_referral_settings WHERE referrer_prize_id=(SELECT id FROM economy_prize WHERE key='referral_inviter') AND goal_event_type_id=(SELECT id FROM economy_event_type WHERE key='round_finished')`: 1,
 		`SELECT count(*) FROM base_config_key k JOIN base_config_history h ON h.key_id=k.id WHERE k.key IN ('stargame.banner','stargame.golden_rush') AND h.version=1`:                                                             2,
+		`SELECT count(*) FROM economy_task WHERE key LIKE 'star\_%' AND grant_mode='claim'`:                                                                                                                                        11,
+		`SELECT count(*) FROM economy_task c JOIN economy_task p ON p.id=c.parent_id WHERE p.key='star_mission_starter' AND p.condition='children'`:                                                                                3,
+		`SELECT count(*) FROM economy_task t JOIN economy_task_group g ON g.id=t.group_id WHERE g.key='star_hunter_chain'`:                                                                                                         3,
+		`SELECT count(*) FROM economy_task WHERE key='star_mission_veteran' AND cardinality(depends_on)=1 AND min_level=2 AND level_table_id IS NOT NULL`:                                                                          1,
 		`SELECT count(*) FROM economy_payment_method WHERE is_active`:                                                                                                                                                              4,
 		`SELECT count(*) FROM economy_product WHERE key='star_skin_gold' AND coin_price @> '{"currencyKey":"coin","amount":80}' AND payment_methods = ARRAY['in_app']`:                                                             1,
 		`SELECT count(*) FROM economy_product WHERE key='star_pack_small' AND price_toman=10000 AND sku @> '{"bazaar":"star_pack_small","myket":"star_pack_small"}'`:                                                               1,
