@@ -57,4 +57,6 @@ DELETE FROM economy_item WHERE key LIKE 'e2e%';
 DELETE FROM publication_banner WHERE key LIKE 'e2e%';
 DELETE FROM publication_banner_seen s WHERE NOT EXISTS (SELECT 1 FROM users x WHERE x.id = s.user_id);
 DELETE FROM publication_banner_list WHERE key LIKE 'e2e%';
+DELETE FROM publication_sponsor_seen s WHERE NOT EXISTS (SELECT 1 FROM users x WHERE x.id = s.user_id);
+DELETE FROM publication_sponsor WHERE key LIKE 'e2e%';
 COMMIT;

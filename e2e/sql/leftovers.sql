@@ -29,5 +29,6 @@ select 'items', count(*) from economy_item where key like 'e2e%';
 select 'achievements', count(*) from economy_achievement where key like 'e2e%';
 select 'banners', count(*) from publication_banner where key like 'e2e%';
 select 'banner placements', count(*) from publication_banner_list where key like 'e2e%';
+select 'sponsors', count(*) from publication_sponsor where key like 'e2e%';
 select 'chance games', count(*) from economy_chance_game where key like 'e2e%';
 select 'prize groups', count(*) from economy_prize_group where key like 'e2e%';

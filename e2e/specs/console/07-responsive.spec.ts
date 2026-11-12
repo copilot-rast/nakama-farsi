@@ -24,6 +24,7 @@ const PAGES = [
   '#/economy/prize-groups',
   '#/publication/banners',
   '#/publication/banner-lists',
+  '#/publication/sponsors',
   '#/economy/event-log',
   '#/project-settings/events',
   '#/economy/payments',

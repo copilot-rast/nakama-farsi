@@ -22,6 +22,7 @@ const PAGES: [string, string][] = [
   ['#/publication/news', 'اخبار'],
   ['#/publication/banners', 'بنرها'],
   ['#/publication/banner-lists', 'جایگاه‌های بنر'],
+  ['#/publication/sponsors', 'اسپانسرها'],
   ['#/publication/comments', 'کامنت‌ها'],
   ['#/publication/notifications', 'اعلان‌ها'],
   ['#/moderation/players', 'مدیریت بازیکنان'],
