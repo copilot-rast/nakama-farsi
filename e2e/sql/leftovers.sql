@@ -25,3 +25,4 @@ select 'task groups', count(*) from economy_task_group where key like 'e2e%';
 select 'support departments', count(*) from base_support_department where key like 'e2e%';
 select 'canned replies', count(*) from base_support_canned where key like 'e2e%';
 select 'config keys', count(*) from base_config_key where key like 'e2e%';
+select 'items', count(*) from economy_item where key like 'e2e%';

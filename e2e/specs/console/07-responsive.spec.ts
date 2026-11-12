@@ -18,6 +18,7 @@ const PAGES = [
   '#/economy/streaks',
   '#/economy/tasks',
   '#/economy/task-groups',
+  '#/economy/items',
   '#/economy/event-log',
   '#/project-settings/events',
   '#/economy/payments',

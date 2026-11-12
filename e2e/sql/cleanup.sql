@@ -39,4 +39,8 @@ DELETE FROM base_config_key WHERE key LIKE 'e2e%';
 DELETE FROM base_config_history WHERE key LIKE 'e2e%';
 DELETE FROM base_support_agent WHERE username LIKE 'e2e%';
 DELETE FROM cluster_rate_limit WHERE key LIKE 'sup-%' OR key LIKE 'ref:%';
+DELETE FROM economy_user_item WHERE item_id IN (SELECT id FROM economy_item WHERE key LIKE 'e2e%');
+DELETE FROM economy_user_item u WHERE NOT EXISTS (SELECT 1 FROM users x WHERE x.id = u.user_id);
+DELETE FROM economy_item_request r WHERE NOT EXISTS (SELECT 1 FROM users x WHERE x.id = r.user_id);
+DELETE FROM economy_item WHERE key LIKE 'e2e%';
 COMMIT;

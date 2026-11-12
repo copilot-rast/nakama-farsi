@@ -15,6 +15,7 @@ const PAGES: [string, string][] = [
   ['#/economy/streaks', 'روزهای پیاپی'],
   ['#/economy/tasks', 'تسک‌ها'],
   ['#/economy/task-groups', 'گروه‌های تسک'],
+  ['#/economy/items', 'آیتم‌ها'],
   ['#/economy/event-log', 'گزارش رویدادها'],
   ['#/economy/payments', 'پرداخت‌ها'],
   ['#/publication/faqs', 'سؤال‌های متداول'],
