@@ -108,8 +108,8 @@ function brandLoad(force) {
   return BRAND.promise;
 }
 
-var SP_INK_LIGHT_BG = [223, 228, 238];
-var SP_INK_DARK_BG = [74, 77, 95];
+var SP_INK_LIGHT_BG = [255, 255, 255];
+var SP_INK_DARK_BG = [36, 37, 41];
 
 function pickShade(p, shades, bg) {
   for (var i = 0; i < shades.length; i++) if (contrastRatio(p[shades[i]], bg) >= 4.5) return shades[i];
@@ -132,7 +132,7 @@ function brandCss(hex) {
   var p = brandPalette(hex);
   var sp = spatialAccent(hex);
   return 'html:root{' + Object.keys(p).map(function (k) { return '--primary-color-' + k + ':' + p[k].join(' ') + ';'; }).join('') +
-    '--sp-accent:rgb(' + sp.accent.join(' ') + ');--sp-accent-ink:rgb(' + sp.ink.join(' ') + ');--sp-accent-ink-dark:rgb(' + sp.inkDark.join(' ') + ');}';
+    '--pl-accent:rgb(' + sp.accent.join(' ') + ');--pl-accent-ink:rgb(' + sp.ink.join(' ') + ');--pl-accent-ink-dark:rgb(' + sp.inkDark.join(' ') + ');}';
 }
 
 function recolorEl(el) {

@@ -33,7 +33,7 @@ test('the green brand no longer uses shade 600 at 3.81:1 for white text', () => 
   const a = ctx.spatialAccent('#059669');
   assert.equal(a.shades.accent, 600);
   assert.ok(a.ratios.onAccent > 4.5);
-  assert.match(ctx.brandCss('#059669'), /--sp-accent:rgb\(5 135 95\);--sp-accent-ink:rgb\(4 113 79\);--sp-accent-ink-dark:rgb\(155 213 195\);/);
+  assert.match(ctx.brandCss('#059669'), /--pl-accent:rgb\(5 135 95\);--pl-accent-ink:rgb\(5 135 95\);--pl-accent-ink-dark:rgb\(105 192 165\);/);
 });
 
 test('the console hook for other overlays is exposed', () => {
