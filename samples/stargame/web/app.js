@@ -957,6 +957,7 @@ function show(name) {
   if (typeof missionsShow === "function") missionsShow(name);
   if (typeof inventoryShow === "function") inventoryShow(name);
   if (typeof achievementsShow === "function") achievementsShow(name);
+  if (typeof chanceShow === "function") chanceShow(name);
   if (typeof bannersShow === "function") bannersShow(name);
 }
 

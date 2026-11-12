@@ -898,3 +898,29 @@ body.blocked .topbar-end { visibility: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .bn-dot::before, .bn-flash { transition: none; }
 }
+
+.ch-grid { display: grid; gap: 14px; margin-top: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+.ch-card { gap: 10px; }
+.ch-stage { position: relative; inline-size: min(100%, 280px); aspect-ratio: 1; margin: 6px auto 0; }
+.ch-wheel { position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 6px var(--card2), 0 10px 30px rgba(0, 0, 0, 0.35); will-change: transform; }
+.ch-wheel-svg { display: block; inline-size: 100%; block-size: 100%; }
+.ch-label { font-size: 9px; font-weight: 700; fill: #10153a; }
+.ch-label-empty { fill: var(--muted); }
+.ch-hub { fill: var(--bg); stroke: var(--gold); stroke-width: 3; }
+.ch-pointer { position: absolute; inset-block-start: -10px; inset-inline-start: 50%; z-index: 2; inline-size: 0; block-size: 0; transform: translateX(-50%); border-inline: 12px solid transparent; border-block-start: 22px solid var(--gold); filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5)); }
+[dir="rtl"] .ch-pointer { transform: translateX(50%); }
+.ch-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
+.ch-result { margin: 0; text-align: center; font-weight: 700; min-block-size: 1.4em; }
+.ch-won { color: var(--gold); }
+.ch-lost { color: var(--muted); }
+.ch-card [data-chance-status] { margin: 0; text-align: center; }
+.ch-details summary { cursor: pointer; color: var(--muted); }
+.ch-odds { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.ch-odds li { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: baseline; }
+.ch-odds li > .muted { grid-column: 1 / -1; }
+.ch-odds-pct { color: var(--gold); font-variant-numeric: tabular-nums; }
+.ch-history-title { font-size: 1rem; margin: 20px 0 8px; }
+.ch-history { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ch-history li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px; background: var(--card); border: 1px solid var(--line); }
+.ch-history li > span:first-child { flex: 1; min-inline-size: 8em; }
+@media (prefers-reduced-motion: reduce) { .ch-wheel { transition: none !important; } }
