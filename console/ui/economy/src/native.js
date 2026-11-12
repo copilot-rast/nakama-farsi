@@ -383,4 +383,5 @@ function nativeTweaks() {
   playerTasksCard();
   playerItemsCard();
   playerAchievementsCard();
+  playerChanceCard();
 }
