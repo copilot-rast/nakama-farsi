@@ -12,7 +12,7 @@ export async function measureContrast(page: Page, min = 4.5): Promise<{ count: n
     while ((n = walker.nextNode())) {
       if (!n.textContent || !n.textContent.trim()) continue;
       const el = n.parentElement;
-      if (!el || el.closest('script,style,noscript,.sp-sky,[aria-hidden="true"],[inert],:disabled,[aria-disabled="true"],.x-drawer,.monaco-editor,.sr-only,[_echarts_instance_],.brand-preview,[data-sp-skip-contrast]')) continue;
+      if (!el || el.closest('script,style,noscript,.pl-sky,[aria-hidden="true"],[inert],:disabled,[aria-disabled="true"],.x-drawer,.monaco-editor,.sr-only,[_echarts_instance_],.brand-preview,[data-sp-skip-contrast]')) continue;
       const cs = getComputedStyle(el);
       if (cs.visibility !== 'visible' || cs.display === 'none') continue;
       const col = parse(cs.color);

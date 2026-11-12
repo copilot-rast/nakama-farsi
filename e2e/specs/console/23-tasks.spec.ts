@@ -185,17 +185,17 @@ test.describe('tasks: console', () => {
   test('English, 390px cards without sideways scroll, and the page search', async ({ page }) => {
     await open(page, '#/economy/overview');
     await page.keyboard.press('Control+k');
-    await page.locator('.sp-pal-input').fill('گروه‌های تسک');
-    await expect(page.locator('.sp-pal-row').first()).toContainText('گروه‌های تسک');
+    await page.locator('.pl-pal-input').fill('گروه‌های تسک');
+    await expect(page.locator('.pl-pal-row').first()).toContainText('گروه‌های تسک');
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/#\/economy\/task-groups/);
-    await page.locator('.sp-seg-lang [data-locale="en"]').click();
+    await page.locator('.pl-seg-lang [data-locale="en"]').click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     await go(page, '#/economy/tasks?q=e2e_' + k + '_daily');
     await expect(rows(page).first().locator('[data-task-sentence]')).toHaveText(`"Test hit ${k}" 3 times · only values from 5 · every day`);
     await page.setViewportSize({ width: 390, height: 844 });
     await go(page, '#/economy/tasks?q=e2e_' + k);
     await noHorizontalScroll(page);
-    await page.locator('.sp-seg-lang [data-locale="fa-IR"]').click().catch(() => null);
+    await page.locator('.pl-seg-lang [data-locale="fa-IR"]').click().catch(() => null);
   });
 });

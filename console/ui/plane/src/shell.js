@@ -194,7 +194,11 @@ function buildRail(model, mode) {
     h.addEventListener('click', function () { rail.view = rail.view === 'help' ? null : 'help'; rail.viewHash = currentHash(); rail.key = ''; renderRail(true); });
     nav.appendChild(h);
   }
-  if (model.settings) nav.appendChild(modeItem(model.settings, mode === model.settings));
+  if (model.settings) {
+    var st = el('button', { type: 'button', class: 'pl-mode', 'aria-label': model.settings.label, 'data-pl-tip': model.settings.label, 'data-pl-mode': 'settings', 'aria-current': mode === model.settings ? 'true' : null, html: plIconD('settings') });
+    st.addEventListener('click', function () { rail.view = rail.view === 'settings' ? null : 'settings'; rail.viewHash = currentHash(); rail.key = ''; renderRail(true); });
+    nav.appendChild(st);
+  }
 }
 
 function buildSide(model, mode) {
@@ -261,7 +265,7 @@ function renderRail(force) {
   var model = railModel();
   if (!model) { root.classList.remove('pl-railed'); return; }
   if (rail.view && rail.viewHash !== currentHash()) rail.view = null;
-  var mode = rail.view === 'help' && model.help ? model.help : activeMode(model);
+  var mode = rail.view === 'help' && model.help ? model.help : rail.view === 'settings' && model.settings ? model.settings : activeMode(model);
   var key = railKey(model, mode);
   if (!force && key === rail.key && rail.el && rail.el.isConnected && rail.side && rail.side.isConnected) return;
   rail.key = key;

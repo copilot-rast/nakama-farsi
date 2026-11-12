@@ -669,3 +669,13 @@ html.pl div.fixed.inset-0.flex.justify-end > .x-form {
   width: 18px;
   height: 18px;
 }
+
+@media (max-width: 767px) {
+  html.pl #main > div.sticky:first-child .economy-ps,
+  html.pl #main > div.sticky:first-child .justify-end > .x-popover > button.x-button,
+  html.pl .pl-round,
+  html.pl .pl-tb-end .pl-search {
+    width: 36px;
+    height: 36px;
+  }
+}

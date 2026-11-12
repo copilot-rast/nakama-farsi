@@ -92,19 +92,19 @@ test.describe('console at 390px', () => {
 
 const NATIVE_PHONE = ['#/', '#/players', '#/players/00000000-0000-0000-0000-000000000000', '#/players/00000000-0000-0000-0000-000000000000/wallet', '#/players/00000000-0000-0000-0000-000000000000/storage', '#/groups', '#/storage', '#/notifications', '#/runtime', '#/settings/users', '#/settings/config', '#/api-explorer'];
 
-test.describe('native console at 390px with spatial', () => {
+test.describe('native console at 390px with the plane shell', () => {
   for (const hash of NATIVE_PHONE) {
     test(`${hash} fits the phone, tables become labelled cards`, async ({ page }) => {
       await page.goto('/' + hash);
-      await page.locator('.sp-menu').waitFor();
+      await page.locator('.pl-menu').waitFor();
       await page.waitForFunction(() => !document.querySelector('#main .animate-pulse'));
       await page.waitForTimeout(300);
       await noHorizontalScroll(page);
-      await expect(page.locator('.sp-rail')).toBeHidden();
-      const table = page.locator('#main table[data-sp-cards]').first();
+      await expect(page.locator('.pl-rail')).toBeHidden();
+      const table = page.locator('#main table[data-pl-cards]').first();
       if (await table.count()) {
         await expect(table.locator('thead')).toBeHidden();
-        const cell = table.locator('tbody tr td[data-sp-label]').first();
+        const cell = table.locator('tbody tr td[data-pl-label]').first();
         if (await cell.count()) {
           expect(await cell.evaluate((el) => getComputedStyle(el, '::before').content)).not.toBe('none');
           const box = await cell.boundingBox();
@@ -118,35 +118,27 @@ test.describe('native console at 390px with spatial', () => {
     });
   }
 
-  test('the menu button opens the rail as a sheet from the start side, a group expands its pages inside the sheet, Escape closes', async ({ page }) => {
+  test('the menu button opens the rail and sidebar as a sheet from the start side, every section is listed, Escape closes', async ({ page }) => {
     await page.goto('/#/players');
-    await page.locator('.sp-menu').click();
-    const sheet = page.locator('.sp-rail-full');
-    await expect(page.locator('html')).toHaveClass(/sp-sheet-open/);
-    await expect(sheet).toBeVisible();
-    const box = await sheet.boundingBox();
-    expect(box!.x + box!.width).toBeGreaterThan(380);
-    const group = sheet.locator('button[data-sp-group="economy"]');
-    await group.click();
-    await expect(page.locator('.sp-flyout.open')).toHaveCount(0);
-    await expect(group).toHaveAttribute('aria-expanded', 'true');
-    const sub = sheet.locator('.sp-sub[data-group="economy"]');
-    await expect(sub).toBeVisible();
-    const fb = await sub.boundingBox();
-    const sb = await sheet.boundingBox();
-    expect(fb!.x).toBeGreaterThanOrEqual(sb!.x);
-    expect(fb!.x + fb!.width).toBeLessThanOrEqual(sb!.x + sb!.width + 1);
-    await group.click();
-    await expect(sub).toHaveCount(0);
-    await group.click();
-    await expect(sub).toBeVisible();
-    await sub.locator('a[href^="#/economy/gifts"]').click();
+    await page.locator('.pl-menu').click();
+    await expect(page.locator('html')).toHaveClass(/pl-sheet-open/);
+    const rail = page.locator('.pl-rail');
+    const side = page.locator('.pl-side');
+    await expect(rail).toBeVisible();
+    await expect(side).toBeVisible();
+    const rb = await rail.boundingBox();
+    expect(rb!.x + rb!.width).toBeGreaterThan(380);
+    const sb = await side.boundingBox();
+    expect(sb!.x).toBeGreaterThanOrEqual(0);
+    expect(sb!.x + sb!.width).toBeLessThanOrEqual(rb!.x + 1);
+    await expect(side.locator('.pl-side-label')).not.toHaveCount(1);
+    await side.locator('a[href^="#/economy/gifts"]').click();
     await expect(page).toHaveURL(/#\/economy\/gifts/);
-    await expect(page.locator('html')).not.toHaveClass(/sp-sheet-open/);
-    await page.locator('.sp-menu').click();
-    await expect(page.locator('html')).toHaveClass(/sp-sheet-open/);
+    await expect(page.locator('html')).not.toHaveClass(/pl-sheet-open/);
+    await page.locator('.pl-menu').click();
+    await expect(page.locator('html')).toHaveClass(/pl-sheet-open/);
     await page.keyboard.press('Escape');
-    await expect(page.locator('html')).not.toHaveClass(/sp-sheet-open/);
+    await expect(page.locator('html')).not.toHaveClass(/pl-sheet-open/);
   });
 
   test('a native editor opens as a bottom sheet and closes', async ({ page }) => {
