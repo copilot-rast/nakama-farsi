@@ -26,3 +26,4 @@ select 'support departments', count(*) from base_support_department where key li
 select 'canned replies', count(*) from base_support_canned where key like 'e2e%';
 select 'config keys', count(*) from base_config_key where key like 'e2e%';
 select 'items', count(*) from economy_item where key like 'e2e%';
+select 'achievements', count(*) from economy_achievement where key like 'e2e%';

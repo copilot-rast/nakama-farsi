@@ -1,4 +1,8 @@
 BEGIN;
+DELETE FROM economy_user_achievement WHERE achievement_id IN (SELECT id FROM economy_achievement WHERE key LIKE 'e2e%');
+DELETE FROM economy_user_achievement u WHERE NOT EXISTS (SELECT 1 FROM users x WHERE x.id = u.user_id);
+DELETE FROM economy_reward_claim WHERE kind='achievement' AND owner_id IN (SELECT id FROM economy_achievement WHERE key LIKE 'e2e%');
+DELETE FROM economy_achievement WHERE key LIKE 'e2e%' OR id IN (SELECT achievement_id FROM economy_achievement_tier WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%'));
 DELETE FROM users WHERE id IN (SELECT user_id FROM user_device WHERE id LIKE 'e2e-%');
 DELETE FROM economy_reward_claim WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%') OR owner_id IN (SELECT id FROM economy_event_rule WHERE key LIKE 'e2e%' UNION SELECT id FROM economy_level_table WHERE key LIKE 'e2e%' UNION SELECT id FROM economy_streak WHERE key LIKE 'e2e%');
 DELETE FROM economy_reward_claim WHERE kind='task' AND owner_id IN (SELECT id FROM economy_task WHERE key LIKE 'e2e%' OR prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%'));
