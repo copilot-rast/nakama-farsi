@@ -22,6 +22,7 @@ DELETE FROM economy_level_table WHERE key LIKE 'e2e%' OR meta_id IN (SELECT id F
 DELETE FROM economy_level_step WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%');
 DELETE FROM economy_streak WHERE key LIKE 'e2e%';
 DELETE FROM economy_streak_reward WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%');
+DELETE FROM economy_streak_milestone WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%');
 DELETE FROM economy_event_type WHERE key LIKE 'e2e%';
 DELETE FROM economy_gift WHERE code LIKE 'E2E%' OR name::text LIKE '%e2e\_%';
 DELETE FROM economy_product WHERE key LIKE 'e2e%';
