@@ -52,6 +52,8 @@ const PAGES = [
   '#/moderation/reports',
   '#/moderation/restrictions',
   '#/moderation/chat-words',
+  '#/system/updates',
+  '#/project-settings/updates-source',
 ];
 
 test.describe('console at 390px', () => {

@@ -31,6 +31,7 @@ const PAGES: [string, string][] = [
   ['#/moderation/reports', 'گزارش‌ها'],
   ['#/moderation/restrictions', 'تعلیق و سکوت'],
   ['#/moderation/chat-words', 'فیلتر کلمات'],
+  ['#/system/updates', 'به‌روزرسانی‌ها'],
 ];
 const NATIVE_TABS = ['users', 'general', 'config', 'data-management', 'audit-log'];
 

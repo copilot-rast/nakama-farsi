@@ -50,4 +50,8 @@ DELETE FROM base_config_history;
 INSERT INTO base_config_history SELECT * FROM zz_e2e_backup.cfghist;
 DELETE FROM economy_referral_settings;
 INSERT INTO economy_referral_settings SELECT * FROM zz_e2e_backup.refset;
+DELETE FROM base_updates_settings;
+INSERT INTO base_updates_settings SELECT * FROM zz_e2e_backup.updset;
+DELETE FROM base_updates_state;
+INSERT INTO base_updates_state SELECT * FROM zz_e2e_backup.updstate;
 COMMIT;

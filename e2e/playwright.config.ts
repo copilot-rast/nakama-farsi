@@ -15,6 +15,14 @@ export default defineConfig({
     actionTimeout: 15_000,
     navigationTimeout: 30_000,
   },
+  webServer: {
+    command: 'node fake-github/server.mjs',
+    url: 'http://127.0.0.1:7489/__fake/scenario',
+    reuseExistingServer: true,
+    stdout: 'ignore',
+    stderr: 'pipe',
+    timeout: 15_000,
+  },
   projects: [
     { name: 'setup', testMatch: /global\.setup\.ts/, teardown: 'teardown', use: { pageOpts: { signedIn: false } } as any },
     { name: 'teardown', testMatch: /global\.teardown\.ts/ },

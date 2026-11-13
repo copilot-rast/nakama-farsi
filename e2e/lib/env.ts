@@ -32,6 +32,7 @@ export const DB = {
   password: pick('DB_PASSWORD'),
 };
 export const FIXTURES = path.join(ROOT, 'fixtures');
+export const FAKE_GITHUB = pick('E2E_FAKE_GITHUB_URL', 'http://127.0.0.1:7489').replace(/\/+$/, '');
 export const SERVER_LOG = pick('E2E_SERVER_LOG', path.join(ROOT, '..', 'logs', 'nakama.log'));
 export const AUTH_FILE = path.join(ROOT, '.auth', 'admin.json');
 export const STATE_DIR = path.join(ROOT, '.auth');

@@ -14,6 +14,7 @@ const MODES: [string, string, string][] = [
   ['publication', 'انتشار', '#/publication/faqs'],
   ['moderation', 'بازیکنان و گفتگو', '#/moderation/players'],
   ['support', 'پشتیبانی', '#/support/tickets'],
+  ['system', 'سامانه', '#/system/updates'],
 ];
 
 test.describe('plane shell: look', () => {
