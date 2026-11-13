@@ -59,6 +59,7 @@
       <section class="panel streak-card" id="streak-card" aria-labelledby="streak-title" hidden></section>
     </div>
     <div class="menu-grid">
+      <button class="menu-card" type="button" data-go="games" id="menu-games"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 256 256" width="28" height="28" fill="currentColor"><path d="M204,168a28,28,0,0,0,12-2.69V208a8,8,0,0,1-8,8H64a8,8,0,0,1-8-8V165.31a28,28,0,1,1,0-50.62V72a8,8,0,0,1,8-8h46.69a28,28,0,1,1,50.61,0H208a8,8,0,0,1,8,8v42.69A28,28,0,1,0,204,168Z" opacity="0.25"/><path d="M220.27,158.54a8,8,0,0,0-7.7-.46,20,20,0,1,1,0-36.16A8,8,0,0,0,224,114.69V72a16,16,0,0,0-16-16H171.78a35.36,35.36,0,0,0,.22-4,36.15,36.15,0,0,0-11.36-26.25,36,36,0,0,0-60.55,23.63,36.56,36.56,0,0,0,.14,6.62H64A16,16,0,0,0,48,72v32.22a35.36,35.36,0,0,0-4-.22,36.12,36.12,0,0,0-26.24,11.36,35.7,35.7,0,0,0-9.69,27,36.08,36.08,0,0,0,33.31,33.6,36.56,36.56,0,0,0,6.62-.14V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V165.31A8,8,0,0,0,220.27,158.54ZM208,208H64V165.31a8,8,0,0,0-11.43-7.23,20,20,0,1,1,0-36.16A8,8,0,0,0,64,114.69V72h46.69a8,8,0,0,0,7.23-11.43,20,20,0,1,1,36.16,0A8,8,0,0,0,161.31,72H208v32.23a35.68,35.68,0,0,0-6.62-.14A36,36,0,0,0,204,176a35.36,35.36,0,0,0,4-.22Z"/></svg></span><span data-i18n="games">بازی‌ها</span></button>
       <button class="menu-card" type="button" data-go="shop"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 7H6"/></svg></span><span data-i18n="shop">فروشگاه</span></button>
       <button class="menu-card" type="button" data-go="inventory" id="menu-inventory"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M5 9a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v11a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M8 21v-6a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v6M10 8h4"/></svg></span><span data-i18n="inventory">انبار</span></button>
       <button class="menu-card" type="button" data-go="achievements" id="menu-achievements"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 256 256" width="28" height="28" fill="currentColor"><path d="M216,96A88,88,0,1,0,72,163.83V240a8,8,0,0,0,11.58,7.16L128,225l44.43,22.21A8.07,8.07,0,0,0,176,248a8,8,0,0,0,8-8V163.83A87.85,87.85,0,0,0,216,96ZM56,96a72,72,0,1,1,72,72A72.08,72.08,0,0,1,56,96ZM168,227.06l-36.43-18.21a8,8,0,0,0-7.16,0L88,227.06V174.37a87.89,87.89,0,0,0,80,0ZM128,152A56,56,0,1,0,72,96,56.06,56.06,0,0,0,128,152Zm0-96A40,40,0,1,1,88,96,40,40,0,0,1,128,56Z"/></svg></span><span data-i18n="achievements">دستاوردها</span><span class="menu-dot" id="achievements-dot" hidden></span></button>
@@ -306,6 +307,28 @@
     <div id="achievements-list"></div>
   </section>
 
+  <section class="screen" id="screen-games" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="games">بازی‌ها</h1>
+      <span class="muted small"></span>
+    </div>
+    <p class="muted small" data-i18n="gamesHint">یک بازی و یک اتاق انتخاب کن.</p>
+    <div class="games-search panel" id="games-search" role="status" aria-live="polite" hidden></div>
+    <div id="games-list"></div>
+  </section>
+
+  <section class="screen" id="screen-ttt" hidden>
+    <div class="screen-head">
+      <button class="btn btn-ghost" type="button" data-go="games" data-i18n="back">بازگشت</button>
+      <h1 data-i18n="tttTitle">دوز</h1>
+      <span class="muted small"></span>
+    </div>
+    <div class="ttt-status" id="ttt-status" aria-live="polite"></div>
+    <div class="ttt-board" id="ttt-board" role="grid"></div>
+    <div class="ttt-result panel" id="ttt-result" role="status" hidden></div>
+  </section>
+
   <section class="screen" id="screen-chance" hidden>
     <div class="screen-head">
       <button class="btn btn-ghost" type="button" data-go="home" data-i18n="back">بازگشت</button>
@@ -464,6 +487,7 @@
 <script src="inventory.js"></script>
 <script src="achievements.js"></script>
 <script src="chance.js"></script>
+<script src="lobby.js"></script>
 <script src="banners.js"></script>
 <script src="sponsors.js"></script>
 <script src="notify.js"></script>

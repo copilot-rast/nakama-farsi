@@ -969,3 +969,31 @@ body.blocked .topbar-end { visibility: hidden; }
 .nt-device p { margin: 0; }
 .nt-token { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; text-align: start; }
 .nt-pref .chip { white-space: nowrap; flex: none; }
+
+.chip-bad { background: rgba(255, 107, 107, 0.16); color: var(--bad); }
+.game-card { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.game-card[data-active="false"] { opacity: 0.85; }
+.game-head { display: flex; gap: 12px; align-items: center; }
+.game-icon { width: 56px; height: 56px; border-radius: 14px; background: var(--card2); flex-shrink: 0; }
+.game-title { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.game-title h2 { margin: 0; font-size: 1.1rem; }
+.game-title .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.game-maint { margin: 0; padding: 8px 12px; border-radius: 10px; background: rgba(255, 107, 107, 0.12); color: var(--bad); font-weight: 700; }
+.rooms { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.room-card { display: flex; flex-direction: column; gap: 4px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--card2); }
+.room-card.locked { opacity: 0.6; }
+.room-card .btn { margin-top: 6px; }
+.room-fee { font-weight: 700; color: var(--gold); }
+.games-search { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; }
+.ttt-status { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; min-height: 40px; margin: 8px 0 14px; }
+.ttt-status [data-ttt-turn="me"] { color: var(--gold); font-weight: 700; }
+.ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: min(360px, 100%); margin: 0 auto; direction: ltr; }
+.ttt-cell { aspect-ratio: 1; min-height: 44px; border-radius: 14px; border: 1px solid var(--line); background: var(--card2); color: var(--text, #fff); font-size: 2.4rem; font-weight: 800; cursor: pointer; }
+.ttt-cell:disabled { cursor: default; }
+.ttt-cell.mark-x { color: var(--gold); }
+.ttt-cell.mark-o { color: #7c8cff; }
+.ttt-board[data-turn="me"] .ttt-cell:not(:disabled):hover { border-color: var(--gold); }
+.ttt-result { margin-top: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.ttt-result[hidden] { display: none; }
+.ttt-result h2 { margin: 0; }
+.ttt-prize { color: var(--gold); font-weight: 700; }

@@ -163,6 +163,9 @@ func resetSeedData(t *testing.T, db *sql.DB) {
 		`DELETE FROM economy_user_achievement`,
 		`DELETE FROM economy_achievement WHERE key LIKE 'star\_%'`,
 		`DELETE FROM base_category WHERE key_type='achievement' AND key LIKE 'star\_%'`,
+		`DELETE FROM economy_game_match`,
+		`DELETE FROM economy_game WHERE key LIKE 'stargame%'`,
+		`DELETE FROM base_category WHERE key_type='game' AND key LIKE 'star\_%'`,
 		`DELETE FROM economy_chance_play`,
 		`DELETE FROM economy_chance_game WHERE key LIKE 'star\_%'`,
 		`DELETE FROM economy_prize_group WHERE key LIKE 'star\_%'`,
@@ -241,7 +244,7 @@ func TestSeedPostgres(t *testing.T) {
 		}
 		created += len(reports[i].created)
 	}
-	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2 + 2 + 1 + 11 + 4 + 2 + 2 + 2 + 5 + 1 + 1 + 1 + 5 + 2 + 2 + 3 + 4 + 1; created != want {
+	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2 + 2 + 1 + 11 + 4 + 2 + 2 + 2 + 5 + 1 + 1 + 1 + 5 + 2 + 2 + 3 + 4 + 1 + 2 + 2; created != want {
 		t.Fatalf("created %d rows across nodes, want %d: %v", created, want, reports)
 	}
 

@@ -966,6 +966,7 @@ function show(name) {
   if (typeof inventoryShow === "function") inventoryShow(name);
   if (typeof achievementsShow === "function") achievementsShow(name);
   if (typeof chanceShow === "function") chanceShow(name);
+  if (typeof lobbyShow === "function") lobbyShow(name);
   if (typeof bannersShow === "function") bannersShow(name);
   if (typeof notifyShow === "function") notifyShow(name);
   if (typeof sponsorsShow === "function") sponsorsShow(name);
@@ -1347,6 +1348,7 @@ async function startGame() {
   game.objects = [];
   game.floats = [];
   game.score = 0;
+  game.roundSeconds = ROUND_SECONDS;
   game.time = ROUND_SECONDS;
   game.spawnIn = 0.4;
   game.basket.x = game.w / 2;
@@ -1364,6 +1366,11 @@ async function startGame() {
     const r = await rpc("stargame_start", {});
     if (!game.running) return;
     game.roundId = r.roundId;
+    if (r.seconds > 0) {
+      game.roundSeconds = r.seconds;
+      game.time = r.seconds;
+      updateHud();
+    }
   } catch (err) {
     if (!game.running) return;
     game.phase = "error";
@@ -1386,7 +1393,7 @@ function spawn() {
   const gold = typeof goldenRush === "function" && goldenRush() ? 0.2 : 0.1;
   const kind = r < gold ? "gold" : r < gold + 0.2 ? "bomb" : "star";
   const size = kind === "gold" ? 17 : kind === "bomb" ? 15 : 13;
-  const elapsed = ROUND_SECONDS - game.time;
+  const elapsed = (game.roundSeconds || ROUND_SECONDS) - game.time;
   const speed = (game.h * (0.38 + Math.random() * 0.22)) * (1 + elapsed / 45);
   game.objects.push({ kind, x: size + Math.random() * (game.w - size * 2), y: -size, r: size, vy: speed, rot: Math.random() * Math.PI, spin: (Math.random() - 0.5) * 3 });
 }
@@ -1425,7 +1432,7 @@ function update(dt) {
 
   game.time -= dt;
   game.spawnIn -= dt;
-  const elapsed = ROUND_SECONDS - game.time;
+  const elapsed = (game.roundSeconds || ROUND_SECONDS) - game.time;
   if (game.spawnIn <= 0) {
     spawn();
     game.spawnIn = Math.max(0.28, 0.55 - elapsed * 0.009) * (0.7 + Math.random() * 0.6);
@@ -2352,6 +2359,7 @@ function connectSocket() {
       else p.resolve(msg);
       return;
     }
+    if (typeof lobbySocket === "function" && lobbySocket(msg)) return;
     if (msg && msg.channel_message) {
       chatIncoming(msg.channel_message);
       return;

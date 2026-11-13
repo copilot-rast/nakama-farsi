@@ -27,6 +27,8 @@ type round struct {
 	Finished   bool  `json:"finished"`
 	FinishedAt int64 `json:"finishedAt,omitempty"`
 	Score      int64 `json:"score,omitempty"`
+	Seconds    int   `json:"seconds,omitempty"`
+	MaxCoins   int64 `json:"maxCoins,omitempty"`
 	Coins      int64 `json:"coins,omitempty"`
 }
 
@@ -39,6 +41,7 @@ var (
 	errRoundExpired    = runtime.NewError("ROUND_EXPIRED", 9)
 	errScoreTooHigh    = runtime.NewError("SCORE_TOO_HIGH", 3)
 	errInternal        = runtime.NewError("INTERNAL_ERROR", 13)
+	errGameDisabled    = runtime.NewError("GAME_DISABLED", 9)
 )
 
 func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {
@@ -47,6 +50,12 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	}
 	if err := initializer.RegisterRpc("stargame_finish", rpcFinish); err != nil {
 		return err
+	}
+	if err := registerGames(initializer); err != nil {
+		return err
+	}
+	if err := nk.LeaderboardCreate(ctx, tttLeaderboard, true, "desc", "incr", "", map[string]interface{}{"game": tttGameKey}, true); err != nil {
+		logger.Warn("Tic-tac-toe leaderboard not created: %v", err)
 	}
 	env, _ := ctx.Value(runtime.RUNTIME_CTX_ENV).(map[string]string)
 	site, err := newWebSite(strings.TrimSpace(env["STARGAME_SERVER_KEY"]))
@@ -82,15 +91,19 @@ func rpcStart(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime
 	if err != nil {
 		return "", err
 	}
+	seconds, coins, err := roundSettings(ctx, logger)
+	if err != nil {
+		return "", err
+	}
 	id := uuid.Must(uuid.NewV4()).String()
-	value, _ := json.Marshal(round{StartedAt: time.Now().UnixMilli()})
+	value, _ := json.Marshal(round{StartedAt: time.Now().UnixMilli(), Seconds: seconds, MaxCoins: coins})
 	if _, err := nk.StorageWrite(ctx, []*runtime.StorageWrite{{
 		Collection: roundCollection, Key: id, UserID: uid, Value: string(value), Version: "*", PermissionRead: 0, PermissionWrite: 0,
 	}}); err != nil {
 		logger.Error("stargame_start write failed: %v", err)
 		return "", errInternal
 	}
-	out, _ := json.Marshal(map[string]any{"roundId": id, "seconds": 30})
+	out, _ := json.Marshal(map[string]any{"roundId": id, "seconds": seconds, "maxCoins": coins})
 	return string(out), nil
 }
 
@@ -129,15 +142,20 @@ func rpcFinish(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtim
 	}
 	now := time.Now()
 	elapsed := now.Sub(time.UnixMilli(r.StartedAt))
-	if elapsed < minRound {
+	least, limit := minRound, int64(maxCoins)
+	if r.Seconds > 0 {
+		least = time.Duration(r.Seconds-5) * time.Second
+		limit = r.MaxCoins
+	}
+	if elapsed < least {
 		return "", errRoundTooShort
 	}
 	if elapsed > maxRound {
 		return "", errRoundExpired
 	}
 	coins := in.Score / 5
-	if coins > maxCoins {
-		coins = maxCoins
+	if coins > limit {
+		coins = limit
 	}
 	if coins < 0 {
 		coins = 0
