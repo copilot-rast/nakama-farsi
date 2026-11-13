@@ -70,7 +70,7 @@ func eventResources() []resource {
 		{
 			name:    "streaks",
 			table:   "economy_streak",
-			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'eventTypeId',t.event_type_id,'periodDays',t.period_days,'gracePeriods',t.grace_periods,'missAction',t.miss_action,'cycleLength',t.cycle_length,'isActive',t.is_active,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at,'rewards',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',r.id,'day',r.day,'prizeId',r.prize_id,'grantMode',r.grant_mode) ORDER BY r.day),'[]'::jsonb) FROM economy_streak_reward r WHERE r.streak_id=t.id),'players',(SELECT count(*) FROM economy_user_streak u WHERE u.streak_id=t.id AND u.count > 0))`,
+			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'eventTypeId',t.event_type_id,'periodDays',t.period_days,'gracePeriods',t.grace_periods,'missAction',t.miss_action,'cycleLength',t.cycle_length,'repayAfterFall',t.repay_after_fall,'isActive',t.is_active,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at,'rewards',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',r.id,'day',r.day,'prizeId',r.prize_id,'grantMode',r.grant_mode) ORDER BY r.day),'[]'::jsonb) FROM economy_streak_reward r WHERE r.streak_id=t.id),'milestones',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',m.id,'day',m.day,'prizeId',m.prize_id,'grantMode',m.grant_mode) ORDER BY m.day),'[]'::jsonb) FROM economy_streak_milestone m WHERE m.streak_id=t.id),'players',(SELECT count(*) FROM economy_user_streak u WHERE u.streak_id=t.id AND u.count > 0))`,
 			search:  []string{"t.key", translatedSearch("t.name")},
 			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "eventTypeId": "t.event_type_id::text = ?"},
 			save:    saveStreak,
@@ -486,21 +486,27 @@ func saveLevelTable(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 
 func saveStreak(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
 	var in struct {
-		Key          string `json:"key"`
-		Name         i18n   `json:"name"`
-		Description  i18n   `json:"description"`
-		EventTypeID  string `json:"eventTypeId"`
-		PeriodDays   int    `json:"periodDays"`
-		GracePeriods int    `json:"gracePeriods"`
-		MissAction   string `json:"missAction"`
-		CycleLength  *int   `json:"cycleLength"`
-		IsActive     bool   `json:"isActive"`
-		Sort         int    `json:"sort"`
-		Rewards      []struct {
+		Key            string `json:"key"`
+		Name           i18n   `json:"name"`
+		Description    i18n   `json:"description"`
+		EventTypeID    string `json:"eventTypeId"`
+		PeriodDays     int    `json:"periodDays"`
+		GracePeriods   int    `json:"gracePeriods"`
+		MissAction     string `json:"missAction"`
+		CycleLength    *int   `json:"cycleLength"`
+		RepayAfterFall bool   `json:"repayAfterFall"`
+		IsActive       bool   `json:"isActive"`
+		Sort           int    `json:"sort"`
+		Rewards        []struct {
 			Day       int    `json:"day"`
 			PrizeID   string `json:"prizeId"`
 			GrantMode string `json:"grantMode"`
 		} `json:"rewards"`
+		Milestones []struct {
+			Day       int    `json:"day"`
+			PrizeID   string `json:"prizeId"`
+			GrantMode string `json:"grantMode"`
+		} `json:"milestones"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -583,8 +589,46 @@ func saveStreak(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 		days = append(days, r.Day)
 		rewards = append(rewards, reward{day: r.Day, prize: prize, mode: mode})
 	}
-	if err := execSave(ctx, tx, "economy_streak", id, create, []string{"key", "name", "description", "event_type_id", "period_days", "grace_periods", "miss_action", "cycle_length", "is_active", "sort"},
-		[]any{key, i18nJSON(name), i18nJSON(desc), typeID, in.PeriodDays, in.GracePeriods, in.MissAction, in.CycleLength, in.IsActive, in.Sort}); err != nil {
+	if len(in.Milestones) > 50 {
+		return badRequest("TOO_MANY_MILESTONES", "milestones", "at most 50 milestones")
+	}
+	seenM := map[int]bool{}
+	mdays := []int{}
+	var milestones []reward
+	for i, m := range in.Milestones {
+		field := "milestones[" + strconv.Itoa(i) + "]"
+		if m.Day < 1 || m.Day > 3650 {
+			return badRequest("INVALID_MILESTONE_DAY", field+".day", "between day 1 and 3650")
+		}
+		if seenM[m.Day] {
+			return badRequest("DUPLICATE_MILESTONE", field+".day", "each milestone day once")
+		}
+		seenM[m.Day] = true
+		prize, err := refExists(ctx, tx, "economy_prize", field+".prizeId", "PRIZE_NOT_FOUND", m.PrizeID, false)
+		if err != nil {
+			return err
+		}
+		mode := m.GrantMode
+		if mode == "" {
+			mode = "claim"
+		}
+		if err := oneOf(field+".grantMode", "INVALID_GRANT_MODE", mode, "auto", "claim"); err != nil {
+			return err
+		}
+		mdays = append(mdays, m.Day)
+		milestones = append(milestones, reward{day: m.Day, prize: prize, mode: mode})
+	}
+	if err := execSave(ctx, tx, "economy_streak", id, create, []string{"key", "name", "description", "event_type_id", "period_days", "grace_periods", "miss_action", "cycle_length", "repay_after_fall", "is_active", "sort"},
+		[]any{key, i18nJSON(name), i18nJSON(desc), typeID, in.PeriodDays, in.GracePeriods, in.MissAction, in.CycleLength, in.RepayAfterFall, in.IsActive, in.Sort}); err != nil {
+		return err
+	}
+	for _, m := range milestones {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO economy_streak_milestone (id, streak_id, day, prize_id, grant_mode) VALUES ($1,$2,$3,$4,$5)
+			ON CONFLICT (streak_id, day) DO UPDATE SET prize_id=EXCLUDED.prize_id, grant_mode=EXCLUDED.grant_mode`, uuid.Must(uuid.NewV4()).String(), id, m.day, m.prize, m.mode); err != nil {
+			return err
+		}
+	}
+	if _, err := tx.ExecContext(ctx, `DELETE FROM economy_streak_milestone WHERE streak_id=$1 AND NOT (day = ANY($2))`, id, mdays); err != nil {
 		return err
 	}
 	for _, r := range rewards {
@@ -890,7 +934,7 @@ func (s *service) consoleStreakReset(w http.ResponseWriter, r *http.Request) {
 		s.writeError(w, notFound("STREAK_NOT_FOUND"))
 		return
 	}
-	res, err := s.db.ExecContext(r.Context(), `UPDATE economy_user_streak SET run=run+1, count=0, grace_used=0, last_period=NULL, started_at=now(), updated_at=now() WHERE streak_id=$1 AND user_id=$2`, streakID, userID)
+	res, err := s.db.ExecContext(r.Context(), `UPDATE economy_user_streak SET run=run+1, count=0, grace_used=0, peak=0, falls=0, last_period=NULL, started_at=now(), updated_at=now() WHERE streak_id=$1 AND user_id=$2`, streakID, userID)
 	if err != nil {
 		s.writeError(w, err)
 		return

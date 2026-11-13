@@ -115,41 +115,79 @@ func last(v int64) *int64 { return &v }
 
 func TestAdvanceStreakGraceResetAndStepBack(t *testing.T) {
 	rule := streakRule{Grace: 1, MissAction: "reset"}
-	st, adv, reset := advanceStreak(streakState{}, 100, rule)
-	if !adv || reset || st.Count != 1 || st.Run != 1 || *st.Last != 100 {
+	st, step := advanceStreak(streakState{}, 100, rule)
+	if !step.Advanced || step.Reset || st.Count != 1 || st.Run != 1 || *st.Last != 100 {
 		t.Fatalf("first day: %+v", st)
 	}
-	same, adv, _ := advanceStreak(st, 100, rule)
-	if adv || same.Count != 1 {
+	same, step := advanceStreak(st, 100, rule)
+	if step.Advanced || same.Count != 1 {
 		t.Fatal("a second event on the same day changes nothing")
 	}
-	st, _, _ = advanceStreak(st, 101, rule)
+	st, _ = advanceStreak(st, 101, rule)
 	if st.Count != 2 || st.GraceUsed != 0 {
 		t.Fatalf("next day: %+v", st)
 	}
-	st, adv, reset = advanceStreak(st, 103, rule)
-	if !adv || reset || st.Count != 3 || st.GraceUsed != 1 {
+	st, step = advanceStreak(st, 103, rule)
+	if !step.Advanced || step.Reset || st.Count != 3 || st.GraceUsed != 1 {
 		t.Fatalf("one missed day is covered by the grace day: %+v", st)
 	}
-	st, adv, reset = advanceStreak(st, 105, rule)
-	if !adv || !reset || st.Count != 1 || st.Run != 2 || st.GraceUsed != 0 || st.Best != 3 {
+	st, step = advanceStreak(st, 105, rule)
+	if !step.Advanced || !step.Reset || step.Floored || st.Count != 1 || st.Run != 2 || st.GraceUsed != 0 || st.Best != 3 || st.Falls != 0 {
 		t.Fatalf("a second miss resets the streak: %+v", st)
 	}
 	if !streakBroken(streakState{Count: 4, Last: last(10)}, 12, streakRule{}) || streakBroken(streakState{Count: 4, Last: last(10)}, 11, streakRule{}) {
 		t.Fatal("broken means a period was missed beyond the grace")
 	}
 	back := streakRule{Grace: 0, MissAction: "step_back"}
-	st, _, reset = advanceStreak(streakState{Count: 5, Best: 5, Run: 1, Last: last(10)}, 13, back)
-	if reset || st.Count != 4 || st.Run != 1 {
+	st, step = advanceStreak(streakState{Count: 5, Best: 5, Run: 1, Peak: 5, Last: last(10)}, 13, back)
+	if step.Reset || step.Floored || st.Count != 4 || st.Run != 1 {
 		t.Fatalf("two missed days step back two and count today: %+v", st)
 	}
-	st, _, _ = advanceStreak(streakState{Count: 1, Run: 1, Last: last(10)}, 20, back)
+	st, _ = advanceStreak(streakState{Count: 1, Run: 1, Last: last(10)}, 20, back)
 	if st.Count != 1 || st.Run != 1 {
 		t.Fatalf("stepping back never goes below day one: %+v", st)
 	}
-	old, adv, _ := advanceStreak(streakState{Count: 3, Run: 1, Last: last(50)}, 49, rule)
-	if adv || old.Count != 3 {
+	old, step := advanceStreak(streakState{Count: 3, Run: 1, Last: last(50)}, 49, rule)
+	if step.Advanced || old.Count != 3 {
 		t.Fatal("an earlier period (clock skew) is ignored")
+	}
+}
+
+func TestStreakMilestoneFloor(t *testing.T) {
+	ms := []int{7, 20, 50}
+	if streakFloor(6, ms) != 0 || streakFloor(7, ms) != 7 || streakFloor(25, ms) != 20 || streakFloor(80, ms) != 50 || streakFloor(25, nil) != 0 {
+		t.Fatal("the floor is the highest milestone reached")
+	}
+	if streakNextMilestone(6, ms) != 7 || streakNextMilestone(20, ms) != 50 || streakNextMilestone(50, ms) != 0 {
+		t.Fatal("the next milestone is the first one above the peak")
+	}
+	reset := streakRule{Grace: 0, MissAction: "reset", Milestones: ms}
+	st, step := advanceStreak(streakState{Count: 25, Best: 25, Run: 1, Peak: 25, Last: last(10)}, 15, reset)
+	if !step.Floored || step.Reset || !step.Fell || st.Count != 21 || st.Run != 1 || st.Falls != 1 || st.Best != 25 || st.Peak != 25 {
+		t.Fatalf("a reset falls to milestone 20 and today is day 21: %+v %+v", st, step)
+	}
+	st, step = advanceStreak(streakState{Count: 5, Best: 30, Run: 2, Peak: 5, Last: last(10)}, 15, reset)
+	if !step.Reset || step.Floored || st.Count != 1 || st.Run != 3 || st.Peak != 1 {
+		t.Fatalf("below the first milestone a reset starts a new run: %+v", st)
+	}
+	back := streakRule{Grace: 1, MissAction: "step_back", Milestones: ms}
+	st, step = advanceStreak(streakState{Count: 25, Run: 1, Peak: 25, Last: last(10)}, 14, back)
+	if step.Floored || st.Count != 24 || st.Falls != 1 {
+		t.Fatalf("three missed days with one grace day step back two: %+v", st)
+	}
+	st, step = advanceStreak(streakState{Count: 23, Run: 1, Peak: 25, Last: last(10)}, 20, back)
+	if !step.Floored || st.Count != 21 || st.GraceUsed != 1 {
+		t.Fatalf("stepping back stops at the milestone: %+v", st)
+	}
+	st, _ = advanceStreak(streakState{Count: 23, Run: 1, Peak: 25, GraceUsed: 0, Last: last(10)}, 12, back)
+	if st.Count != 24 || st.Falls != 0 || st.GraceUsed != 1 {
+		t.Fatalf("a miss inside the grace keeps counting: %+v", st)
+	}
+	if streakDayScope(1, 0, 21, true) != "r1:21" || streakDayScope(1, 2, 21, false) != "r1:21" || streakDayScope(1, 2, 21, true) != "r1f2:21" || streakMilestoneScope(20) != "m20" {
+		t.Fatal("day scopes keep the old form without a re-pay fall")
+	}
+	if got := streakDayScopes(3, 2, 5, true); len(got) != 3 || got[0] != "r3f2:5" || got[2] != "r3:5" {
+		t.Fatalf("scopes to look up = %v", got)
 	}
 }
 

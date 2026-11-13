@@ -438,8 +438,8 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 	}
 	clk := settings.clock()
 	now := s.now()
-	q := `SELECT st.id::text, st.key, st.name::text, st.description::text, st.period_days, st.grace_periods, st.miss_action, COALESCE(st.cycle_length,0), st.is_active, et.key,
-			COALESCE(u.count,0), COALESCE(u.best,0), COALESCE(u.run,1), COALESCE(u.grace_used,0), u.last_period, u.updated_at
+	q := `SELECT st.id::text, st.key, st.name::text, st.description::text, st.period_days, st.grace_periods, st.miss_action, COALESCE(st.cycle_length,0), st.is_active, et.key, st.repay_after_fall,
+			COALESCE(u.count,0), COALESCE(u.best,0), COALESCE(u.run,1), COALESCE(u.grace_used,0), COALESCE(u.peak,0), COALESCE(u.falls,0), u.last_period, u.updated_at
 		FROM economy_streak st JOIN economy_event_type et ON et.id=st.event_type_id LEFT JOIN economy_user_streak u ON u.streak_id=st.id AND u.user_id=$1`
 	if activeOnly {
 		q += ` WHERE st.is_active`
@@ -451,7 +451,7 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 	type streak struct {
 		id, key, name, desc, miss, eventKey string
 		days, grace, cycle                  int
-		active                              bool
+		active, repay                       bool
 		st                                  streakState
 		updated                             sql.NullTime
 	}
@@ -459,8 +459,8 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 	for rows.Next() {
 		var sk streak
 		var last sql.NullInt64
-		if err := rows.Scan(&sk.id, &sk.key, &sk.name, &sk.desc, &sk.days, &sk.grace, &sk.miss, &sk.cycle, &sk.active, &sk.eventKey,
-			&sk.st.Count, &sk.st.Best, &sk.st.Run, &sk.st.GraceUsed, &last, &sk.updated); err != nil {
+		if err := rows.Scan(&sk.id, &sk.key, &sk.name, &sk.desc, &sk.days, &sk.grace, &sk.miss, &sk.cycle, &sk.active, &sk.eventKey, &sk.repay,
+			&sk.st.Count, &sk.st.Best, &sk.st.Run, &sk.st.GraceUsed, &sk.st.Peak, &sk.st.Falls, &last, &sk.updated); err != nil {
 			rows.Close()
 			return nil, err
 		}
@@ -479,6 +479,10 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 		ids = append(ids, sk.id)
 	}
 	claims, err := s.userClaims(ctx, userID, "streak", ids)
+	if err != nil {
+		return nil, err
+	}
+	milestones, err := loadStreakMilestones(ctx, s.db, ids)
 	if err != nil {
 		return nil, err
 	}
@@ -504,31 +508,37 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 			prizeIDs = append(prizeIDs, r.prize)
 		}
 		rrows.Close()
+		ms := milestones[sk.id]
+		for _, m := range ms {
+			if m.prize != "" {
+				prizeIDs = append(prizeIDs, m.prize)
+			}
+		}
 		names, err := s.prizeNames(ctx, langs, lang, prizeIDs)
 		if err != nil {
 			return nil, err
 		}
 		idx := clk.streakIndex(now, sk.days)
-		rule := streakRule{Grace: sk.grace, MissAction: sk.miss}
+		rule := streakRule{Grace: sk.grace, MissAction: sk.miss, Milestones: milestoneDays(ms)}
 		broken := streakBroken(sk.st, idx, rule)
 		count := sk.st.Count
 		run := sk.st.Run
+		peak := sk.st.Peak
+		falls := sk.st.Falls
+		floored := false
 		if broken {
-			if sk.miss == "step_back" {
-				missed := int(idx - *sk.st.Last - 1)
-				left := sk.grace - sk.st.GraceUsed
-				if left < 0 {
-					left = 0
-				}
-				count -= missed - left
-				if count < 0 {
-					count = 0
-				}
+			missed, left := streakMissed(sk.st, idx, rule)
+			c, fl := streakFallCount(sk.st, missed-left, rule)
+			count, floored = c, fl
+			if sk.miss == "step_back" || fl {
+				falls++
 			} else {
-				count = 0
 				run++
+				peak = 0
+				falls = 0
 			}
 		}
+		floor := streakFloor(peak, rule.Milestones)
 		counted := !broken && sk.st.Last != nil && *sk.st.Last == idx
 		graceLeft := sk.grace - sk.st.GraceUsed
 		if broken || graceLeft < 0 {
@@ -580,18 +590,18 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 			if r, ok := byDay[d]; ok {
 				row["prize"] = prizeJSON(names[r.prize], r.prize)
 				row["grantMode"] = r.mode
-				scope := "r" + itoa(run) + ":" + itoa(pos)
-				for _, c := range claims {
-					if c.RefID == r.id && c.Scope == scope {
-						row["claimId"] = c.ID
-						if c.Status == "granted" {
-							row["status"] = "claimed"
-						} else if c.Mode == "claim" {
-							row["status"] = "claimable"
-						} else {
-							row["status"] = "pending"
+				scopes := streakDayScopes(run, falls, pos, sk.repay)
+				var found *claimRow
+				for _, scope := range scopes {
+					for i := range claims {
+						if found == nil && claims[i].RefID == r.id && claims[i].Scope == scope {
+							found = &claims[i]
 						}
 					}
+				}
+				if c := found; c != nil {
+					row["claimId"] = c.ID
+					row["status"] = claimStatusWord(c)
 				}
 			}
 			days = append(days, row)
@@ -601,7 +611,32 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 				claimable = append(claimable, c.ID)
 			}
 		}
-		item := map[string]any{"key": sk.key, "name": langs.Resolve(localized.Parse(sk.name), lang), "description": langs.Resolve(localized.Parse(sk.desc), lang),
+		mlist := []map[string]any{}
+		for _, m := range ms {
+			row := map[string]any{"day": m.day, "reached": m.day <= peak, "safe": m.day == floor && floor > 0}
+			status := "locked"
+			if m.day <= peak {
+				status = "reached"
+			}
+			if m.prize != "" {
+				row["prize"] = prizeJSON(names[m.prize], m.prize)
+				row["grantMode"] = m.mode
+				for i := range claims {
+					c := &claims[i]
+					if c.RefID == sk.id && c.Scope == streakMilestoneScope(m.day) {
+						row["claimId"] = c.ID
+						status = claimStatusWord(c)
+					}
+				}
+			}
+			row["status"] = status
+			mlist = append(mlist, row)
+		}
+		var nextMilestone any
+		if n := streakNextMilestone(peak, rule.Milestones); n > 0 {
+			nextMilestone = n
+		}
+		item := map[string]any{"key": sk.key, "milestones": mlist, "floor": floor, "nextMilestone": nextMilestone, "floored": floored, "peak": peak, "repayAfterFall": sk.repay, "name": langs.Resolve(localized.Parse(sk.name), lang), "description": langs.Resolve(localized.Parse(sk.desc), lang),
 			"eventKey": sk.eventKey, "periodDays": sk.days, "count": count, "best": sk.st.Best, "run": run, "countedThisPeriod": counted, "broken": broken,
 			"graceLeft": graceLeft, "gracePeriods": sk.grace, "missAction": sk.miss, "cycleLength": sk.cycle, "nextPeriodAt": nextAt, "breaksAt": breaksAt,
 			"days": days, "claimable": claimable, "isActive": sk.active}
@@ -761,4 +796,14 @@ func (s *service) claimViews(ctx context.Context, userID, status string, limit i
 		out = append(out, item)
 	}
 	return out, nil
+}
+
+func claimStatusWord(c *claimRow) string {
+	if c.Status == "granted" {
+		return "claimed"
+	}
+	if c.Mode == "claim" {
+		return "claimable"
+	}
+	return "pending"
 }

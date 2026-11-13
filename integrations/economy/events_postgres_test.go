@@ -525,3 +525,205 @@ func TestStreakGraceResetCycleAndClaims(t *testing.T) {
 		t.Fatalf("ten parallel logins on one day count once: count %d wallet %d", n, h.wallet(fresh)["coin"])
 	}
 }
+
+func (h *harness) milestoneStreak(key, eventTypeID, miss string, grace int, repay bool, rewardDays int, milestones []map[string]any) map[string]any {
+	h.t.Helper()
+	rewards := []map[string]any{}
+	for d := 1; d <= rewardDays; d++ {
+		rewards = append(rewards, map[string]any{"day": d, "prizeId": h.coinPrize(key+"_d"+itoa(d), d, true), "grantMode": "auto"})
+	}
+	return h.mustAPI(201, http.MethodPost, "/streaks", map[string]any{"key": key, "name": map[string]string{"fa": key}, "eventTypeId": eventTypeID,
+		"periodDays": 1, "gracePeriods": grace, "missAction": miss, "isActive": true, "repayAfterFall": repay, "rewards": rewards, "milestones": milestones})
+}
+
+func streakItem(out map[string]any, key string) map[string]any {
+	for _, raw := range out["streaks"].([]any) {
+		if it := raw.(map[string]any); it["key"] == key {
+			return it
+		}
+	}
+	return nil
+}
+
+func (h *harness) streakView(user, key string) map[string]any {
+	h.t.Helper()
+	for _, raw := range h.mustRPC(user, "economy_streaks", map[string]any{})["items"].([]any) {
+		if it := raw.(map[string]any); it["key"] == key {
+			return it
+		}
+	}
+	h.t.Fatalf("streak %s not listed", key)
+	return nil
+}
+
+func TestStreakMilestonesFloorRepayAndPrize(t *testing.T) {
+	h := newEventHarness(t)
+	h.eventType("visit", false, nil)
+	visit := h.typeIDByKey("visit")
+	bonus3 := h.coinPrize("ms_bonus_3", 1000, true)
+	bonus5 := h.coinPrize("ms_bonus_5", 5000, true)
+	if code, out := h.api(http.MethodPost, "/streaks", map[string]any{"key": "dup", "name": map[string]string{"fa": "x"}, "eventTypeId": visit,
+		"milestones": []map[string]any{{"day": 3}, {"day": 3}}}); code != 400 || out["error"] != "DUPLICATE_MILESTONE" {
+		t.Fatalf("duplicate milestone = %d %v", code, out)
+	}
+	if code, out := h.api(http.MethodPost, "/streaks", map[string]any{"key": "far", "name": map[string]string{"fa": "x"}, "eventTypeId": visit,
+		"milestones": []map[string]any{{"day": 4000}}}); code != 400 || out["error"] != "INVALID_MILESTONE_DAY" {
+		t.Fatalf("milestone day range = %d %v", code, out)
+	}
+	sk := h.milestoneStreak("safe_reset", visit, "reset", 0, false, 8, []map[string]any{{"day": 3, "prizeId": bonus3, "grantMode": "auto"}, {"day": 5, "prizeId": bonus5}, {"day": 10}})
+	if ms := sk["milestones"].([]any); len(ms) != 3 || sk["repayAfterFall"] != false || ms[2].(map[string]any)["prizeId"] != nil {
+		t.Fatalf("saved milestones = %v", sk)
+	}
+	user := h.user()
+	base := time.Date(2026, 11, 10, 8, 0, 0, 0, time.UTC)
+	visitOn := func(user string, day int) map[string]any {
+		h.at(base.Add(time.Duration(day) * 24 * time.Hour))
+		return h.mustAPI(200, http.MethodPost, "/users/"+user+"/events", map[string]any{"key": "visit", "value": 1})
+	}
+	for d := 0; d < 6; d++ {
+		visitOn(user, d)
+	}
+	v := h.streakView(user, "safe_reset")
+	if v["count"].(float64) != 6 || v["floor"].(float64) != 5 || v["nextMilestone"].(float64) != 10 || h.wallet(user)["coin"] != 21+1000 {
+		t.Fatalf("six days: floor 5, next 10, days 1..6 paid and the auto milestone prize: %v %v", v, h.wallet(user))
+	}
+	ms := v["milestones"].([]any)
+	if ms[0].(map[string]any)["status"] != "claimed" || ms[1].(map[string]any)["status"] != "claimable" || ms[2].(map[string]any)["status"] != "locked" || ms[1].(map[string]any)["safe"] != true {
+		t.Fatalf("milestone states = %v", ms)
+	}
+	h.mustRPC(user, "economy_reward_claim", map[string]any{"claimId": ms[1].(map[string]any)["claimId"]})
+	h.at(base.Add(9 * 24 * time.Hour))
+	v = h.streakView(user, "safe_reset")
+	if v["broken"] != true || v["floored"] != true || v["count"].(float64) != 5 || v["run"].(float64) != 1 {
+		t.Fatalf("a broken streak shows the milestone, not zero: %v", v)
+	}
+	if days := v["days"].([]any); days[5].(map[string]any)["status"] != "claimed" {
+		t.Fatalf("day six stays claimed after the fall: %v", days[5])
+	}
+	out := visitOn(user, 9)
+	st := streakItem(out, "safe_reset")
+	if st["count"].(float64) != 6 || st["floored"] != true || st["reset"] != false || st["floor"].(float64) != 5 {
+		t.Fatalf("the next counted day after the fall is the milestone plus one: %v", st)
+	}
+	if h.wallet(user)["coin"] != 21+1000+5000 {
+		t.Fatalf("day six is not paid twice with re-pay off: %d", h.wallet(user)["coin"])
+	}
+	visitOn(user, 10)
+	if h.wallet(user)["coin"] != 21+1000+5000+7 {
+		t.Fatalf("day seven was never paid, so it pays: %d", h.wallet(user)["coin"])
+	}
+	if n := h.count(`SELECT count(*) FROM economy_reward_claim WHERE user_id=$1 AND scope LIKE 'm%'`, user); n != 2 {
+		t.Fatalf("milestone prizes are claimed once: %d", n)
+	}
+
+	h.mustAPI(200, http.MethodPost, "/users/"+user+"/streaks/"+sk["id"].(string)+"/reset", nil)
+	if v := h.streakView(user, "safe_reset"); v["count"].(float64) != 0 || v["floor"].(float64) != 0 || v["peak"].(float64) != 0 || v["best"].(float64) != 7 {
+		t.Fatalf("console reset clears the floor and keeps best: %v", v)
+	}
+	before := h.wallet(user)["coin"]
+	for d := 20; d < 26; d++ {
+		visitOn(user, d)
+	}
+	if got := h.wallet(user)["coin"] - before; got != 21 {
+		t.Fatalf("a new run pays days again but never the milestone prizes: %d", got)
+	}
+	if n := h.count(`SELECT count(*) FROM economy_reward_claim WHERE user_id=$1 AND scope LIKE 'm%'`, user); n != 2 {
+		t.Fatalf("milestone prizes stay once ever: %d", n)
+	}
+
+	h.eventType("visit_repay", false, nil)
+	repaySk := h.milestoneStreak("safe_repay", h.typeIDByKey("visit_repay"), "reset", 0, true, 8, []map[string]any{{"day": 3}})
+	other := h.user()
+	visitRepay := func(day int) map[string]any {
+		h.at(base.Add(time.Duration(day) * 24 * time.Hour))
+		return h.mustAPI(200, http.MethodPost, "/users/"+other+"/events", map[string]any{"key": "visit_repay", "value": 1})
+	}
+	for d := 0; d < 5; d++ {
+		visitRepay(d)
+	}
+	visitRepay(8)
+	if c := h.wallet(other)["coin"]; c != 15+4 {
+		t.Fatalf("with re-pay on, day four pays again after the fall to three: %d", c)
+	}
+	visitRepay(10)
+	visitRepay(11)
+	if c := h.wallet(other)["coin"]; c != 15+4+4+5 {
+		t.Fatalf("each fall starts a new chain of day rewards: %d", c)
+	}
+	if v := h.streakView(other, "safe_repay"); v["repayAfterFall"] != true || v["days"].([]any)[3].(map[string]any)["status"] != "claimed" {
+		t.Fatalf("re-pay view = %v", v)
+	}
+	if _, err := h.s.db.Exec(`UPDATE economy_streak SET repay_after_fall=false WHERE id=$1`, repaySk["id"]); err != nil {
+		t.Fatal(err)
+	}
+	visitRepay(14)
+	if c := h.wallet(other)["coin"]; c != 15+4+4+5 {
+		t.Fatalf("turning re-pay off stops paying days already paid: %d", c)
+	}
+
+	h.eventType("visit_back", false, nil)
+	h.milestoneStreak("safe_back", h.typeIDByKey("visit_back"), "step_back", 1, false, 0, []map[string]any{{"day": 4}})
+	third := h.user()
+	visitBack := func(day int) map[string]any {
+		h.at(base.Add(time.Duration(day) * 24 * time.Hour))
+		return streakItem(h.mustAPI(200, http.MethodPost, "/users/"+third+"/events", map[string]any{"key": "visit_back", "value": 1}), "safe_back")
+	}
+	for d := 0; d < 6; d++ {
+		visitBack(d)
+	}
+	if st := visitBack(8); st["count"].(float64) != 6 || st["floored"] != false {
+		t.Fatalf("two missed days with one grace day: one step back, then today: %v", st)
+	}
+	if st := visitBack(15); st["count"].(float64) != 5 || st["floored"] != true {
+		t.Fatalf("stepping back stops at milestone four: %v", st)
+	}
+
+	fresh := h.user()
+	for d := 0; d < 5; d++ {
+		visitOn(fresh, d)
+	}
+	h.at(base.Add(8 * 24 * time.Hour))
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			h.s.recordServerEvent(h.ctx, fresh, "visit", 1, nil)
+		}()
+	}
+	wg.Wait()
+	if n := h.count(`SELECT count FROM economy_user_streak u JOIN economy_streak s ON s.id=u.streak_id WHERE u.user_id=$1 AND s.key='safe_reset'`, fresh); n != 6 {
+		t.Fatalf("ten parallel events after a fall count once from the floor: %d", n)
+	}
+	if n := h.count(`SELECT falls FROM economy_user_streak u JOIN economy_streak s ON s.id=u.streak_id WHERE u.user_id=$1 AND s.key='safe_reset'`, fresh); n != 1 {
+		t.Fatalf("one fall recorded: %d", n)
+	}
+	if n := h.count(`SELECT count(*) FROM economy_reward_claim WHERE user_id=$1`, fresh); n != 8 {
+		t.Fatalf("six days and two milestone prizes, nothing doubled: %d", n)
+	}
+}
+
+func TestStreakWithoutMilestonesKeepsOldScopes(t *testing.T) {
+	h := newEventHarness(t)
+	h.eventType("plain", false, nil)
+	sk := h.milestoneStreak("plain_sk", h.typeIDByKey("plain"), "step_back", 0, false, 4, nil)
+	user := h.user()
+	base := time.Date(2026, 11, 10, 8, 0, 0, 0, time.UTC)
+	for _, d := range []int{0, 1, 2, 3, 6} {
+		h.at(base.Add(time.Duration(d) * 24 * time.Hour))
+		h.s.recordServerEvent(h.ctx, user, "plain", 1, nil)
+	}
+	v := h.streakView(user, "plain_sk")
+	if v["count"].(float64) != 3 || v["floor"].(float64) != 0 || v["nextMilestone"] != nil || len(v["milestones"].([]any)) != 0 || v["repayAfterFall"] != false {
+		t.Fatalf("step back without milestones = %v", v)
+	}
+	if n := h.count(`SELECT count(*) FROM economy_reward_claim WHERE user_id=$1 AND scope !~ '^r1:[0-9]+$'`, user); n != 0 {
+		t.Fatal("claims keep the r<run>:<day> scope")
+	}
+	if c := h.wallet(user)["coin"]; c != 10 {
+		t.Fatalf("days stepped back to are not paid twice: %d", c)
+	}
+	if got := h.mustAPI(200, http.MethodGet, "/streaks/"+sk["id"].(string), nil); len(got["milestones"].([]any)) != 0 {
+		t.Fatalf("admin view = %v", got)
+	}
+}

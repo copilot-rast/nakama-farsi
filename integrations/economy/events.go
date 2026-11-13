@@ -192,12 +192,15 @@ type ruleProgress struct {
 }
 
 type streakChange struct {
-	StreakID string `json:"streakId"`
-	Key      string `json:"key"`
-	Count    int    `json:"count"`
-	Best     int    `json:"best"`
-	Advanced bool   `json:"advanced"`
-	Reset    bool   `json:"reset"`
+	StreakID      string `json:"streakId"`
+	Key           string `json:"key"`
+	Count         int    `json:"count"`
+	Best          int    `json:"best"`
+	Advanced      bool   `json:"advanced"`
+	Reset         bool   `json:"reset"`
+	Floored       bool   `json:"floored"`
+	Floor         int    `json:"floor"`
+	NextMilestone int    `json:"nextMilestone,omitempty"`
 }
 
 type levelChange struct {
