@@ -936,3 +936,28 @@ body.blocked .topbar-end { visibility: hidden; }
 @media (max-width: 480px) {
   .sp-card { aspect-ratio: 16 / 9; }
 }
+
+.nt-device { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.nt-device h2 { margin: 0; font-size: 1.05rem; }
+.nt-device-state { margin: 0; font-weight: 600; }
+.nt-device-state[data-push="off"] { color: var(--muted); }
+.nt-kinds-title { font-size: 1.05rem; margin: 8px 0; }
+.nt-prefs { display: flex; flex-direction: column; gap: 0; padding: 4px 16px; }
+.nt-pref { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 10px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+.nt-pref:last-child { border-bottom: 0; }
+.nt-pref-text { display: flex; flex-direction: column; gap: 2px; }
+.nt-pref input[type="checkbox"] { appearance: none; width: 46px; height: 26px; flex: none; border-radius: 999px; background: var(--card2); border: 1px solid var(--line); position: relative; cursor: pointer; transition: background 0.2s; }
+.nt-pref input[type="checkbox"]::after { content: ""; position: absolute; top: 2px; inset-inline-start: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+.nt-pref input[type="checkbox"]:checked { background: var(--gold); border-color: var(--gold); }
+.nt-pref input[type="checkbox"]:checked::after { transform: translateX(20px); }
+[dir="rtl"] .nt-pref input[type="checkbox"]:checked::after { transform: translateX(-20px); }
+.nt-pref input[type="checkbox"]:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.nt-pref input[type="checkbox"]:disabled { opacity: 0.6; }
+.inbox-img { display: block; width: 100%; max-height: 180px; object-fit: cover; border-radius: 10px; margin: 8px 0; }
+.inbox-cat { display: inline-block; margin-top: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  .nt-pref input[type="checkbox"], .nt-pref input[type="checkbox"]::after { transition: none; }
+}
+.nt-device p { margin: 0; }
+.nt-token { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; text-align: start; }
+.nt-pref .chip { white-space: nowrap; flex: none; }

@@ -697,7 +697,7 @@ const STRINGS = {
   },
 };
 
-const SCREENS = ["home", "play", "shop", "gift", "payments", "news", "faq", "inbox", "account", "update", "chat", "rewards", "support", "ticket", "livechat", "referral", "activity"];
+const SCREENS = ["home", "play", "shop", "gift", "payments", "news", "faq", "inbox", "account", "update", "chat", "rewards", "support", "ticket", "livechat", "referral", "activity", "notify"];
 
 const SKINS = {
   default: { body: ["#c98a52", "#8a5a30"], rim: "#e4b383", glow: null },
@@ -959,6 +959,7 @@ function show(name) {
   if (typeof achievementsShow === "function") achievementsShow(name);
   if (typeof chanceShow === "function") chanceShow(name);
   if (typeof bannersShow === "function") bannersShow(name);
+  if (typeof notifyShow === "function") notifyShow(name);
   if (typeof sponsorsShow === "function") sponsorsShow(name);
 }
 
@@ -2190,12 +2191,19 @@ function inboxItem(m) {
       el("h3", { text: m.title || t("message") }),
       el("span", { class: "muted small", text: formatDate(m.createdAt) }),
     ]),
+    m.category ? el("span", { class: "chip inbox-cat", "data-inbox-category": m.category.key, text: m.category.name }) : null,
+    m.imageUrl ? el("img", { class: "inbox-img", src: m.imageUrl, alt: "", loading: "lazy", decoding: "async" }) : null,
     richText(m.bodyHtml),
   ]);
   if (m.action && m.action.value) {
-    node.append(el("button", { class: "btn", type: "button", "data-action": m.action.type, text: m.action.type === "url" ? t("openLink") : t("goTo", SCREENS.includes(m.action.value) ? t(m.action.value) : m.action.value), onclick: () => {
-      if (!m.seen) rpc("publication_inbox_seen", { ids: [m.id] }).then((r) => setUnread(r.unread)).catch(() => {});
-      runAction(m.action);
+    const label = m.action.label || (m.action.type === "url" ? t("openLink") : t("goTo", SCREENS.includes(m.action.value) ? t(m.action.value) : m.action.value));
+    node.append(el("button", { class: "btn", type: "button", "data-action": m.action.type, text: label, onclick: () => {
+      if (typeof markOpened === "function" && !m.opened) {
+        m.opened = true;
+        markOpened(m.id);
+      } else if (!m.seen) rpc("publication_inbox_seen", { ids: [m.id] }).then((r) => setUnread(r.unread)).catch(() => {});
+      if (typeof runNoteAction === "function" && ["screen", "product", "achievement"].includes(m.action.type)) runNoteAction(m.action);
+      else runAction(m.action);
     } }));
   }
   return node;
@@ -2520,6 +2528,7 @@ async function connect() {
   loadCountries();
   loadPhone();
   refreshUnread();
+  if (typeof registerPush === "function") registerPush(false);
   refreshNewsDot();
   if (typeof loadConfig === "function") await loadConfig();
   if (typeof refreshSupportDot === "function") refreshSupportDot();

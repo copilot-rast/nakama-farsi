@@ -159,6 +159,7 @@ func resetSeedData(t *testing.T, db *sql.DB) {
 		`DELETE FROM publication_banner WHERE key LIKE 'star\_%'`,
 		`DELETE FROM publication_banner_list WHERE key IN ('menu_carousel','luck_sponsor')`,
 		`DELETE FROM publication_sponsor WHERE key LIKE 'star\_%'`,
+		`DELETE FROM publication_auto_rule WHERE key LIKE 'star\_%'`,
 		`DELETE FROM economy_user_achievement`,
 		`DELETE FROM economy_achievement WHERE key LIKE 'star\_%'`,
 		`DELETE FROM base_category WHERE key_type='achievement' AND key LIKE 'star\_%'`,
@@ -240,7 +241,7 @@ func TestSeedPostgres(t *testing.T) {
 		}
 		created += len(reports[i].created)
 	}
-	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2 + 2 + 1 + 11 + 4 + 2 + 2 + 2 + 5 + 1 + 1 + 1 + 5 + 2 + 2 + 3; created != want {
+	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2 + 2 + 1 + 11 + 4 + 2 + 2 + 2 + 5 + 1 + 1 + 1 + 5 + 2 + 2 + 3 + 4; created != want {
 		t.Fatalf("created %d rows across nodes, want %d: %v", created, want, reports)
 	}
 
@@ -254,6 +255,8 @@ func TestSeedPostgres(t *testing.T) {
 		`SELECT count(*) FROM publication_banner b JOIN publication_banner_list l ON l.id=b.list_id WHERE l.key='menu_carousel' AND b.key LIKE 'star\_bn\_%' AND b.is_active`:                                                                                                                                         5,
 		`SELECT count(*) FROM publication_banner WHERE key='star_bn_vip' AND cardinality(audience_tag_ids)=1 AND action_type='product' AND action_value='star_pack_vip'`:                                                                                                                                              1,
 		`SELECT count(*) FROM publication_banner WHERE key='star_bn_welcome' AND player_age='new' AND image_url ? 'en'`:                                                                                                                                                                                               1,
+		`SELECT count(*) FROM publication_auto_rule r JOIN publication_notify_category c ON c.id=r.category_id WHERE r.key LIKE 'star\_auto\_%' AND r.is_active AND c.key IN ('rewards','reminders')`:                                                                                                                 4,
+		`SELECT count(*) FROM publication_auto_rule WHERE key='star_auto_wheel' AND trigger='chance_ready' AND params->>'gameKey'='star_wheel_daily' AND quiet_start=1380 AND quiet_end=480`:                                                                                                                          1,
 		`SELECT count(*) FROM publication_banner b JOIN publication_sponsor s ON s.id=b.sponsor_id JOIN publication_banner_list l ON l.id=b.list_id WHERE b.key='star_bn_nova' AND b.action_type='sponsor' AND l.key='luck_sponsor' AND l.sponsor_id=s.id AND s.key='star_sp_nova' AND jsonb_array_length(s.links)=2`: 1,
 		`SELECT count(*) FROM economy_prize_group_member m JOIN economy_prize_group g ON g.id=m.group_id WHERE g.key IN ('star_box_coins','star_box_big')`:                                                                                                                                                            5,
 		`SELECT count(*) FROM economy_chance_game WHERE key='star_wheel_daily' AND interval_time=1440 AND price IS NULL AND prize_type='prize' AND jsonb_array_length(prize)=4`:                                                                                                                                       1,
