@@ -241,7 +241,7 @@ func TestSeedPostgres(t *testing.T) {
 		}
 		created += len(reports[i].created)
 	}
-	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2 + 2 + 1 + 11 + 4 + 2 + 2 + 2 + 5 + 1 + 1 + 1 + 5 + 2 + 2 + 3 + 4; created != want {
+	if want := 1 + 1 + 2 + 14 + 1 + 7 + 2 + 2 + 2 + 4 + 2 + 1 + 1 + 4 + 2 + 2 + 1 + 2 + 2 + 1 + 11 + 4 + 2 + 2 + 2 + 5 + 1 + 1 + 1 + 5 + 2 + 2 + 3 + 4 + 1; created != want {
 		t.Fatalf("created %d rows across nodes, want %d: %v", created, want, reports)
 	}
 
@@ -269,6 +269,7 @@ func TestSeedPostgres(t *testing.T) {
 		`SELECT count(*) FROM economy_meta_rule r JOIN economy_meta m ON m.id=r.meta_id WHERE r.key LIKE 'star\_%' AND m.key='xp'`:                                                                                                                                                                                    2,
 		`SELECT count(*) FROM economy_level_step s JOIN economy_level_table t ON t.id=s.table_id WHERE t.key='star_levels'`:                                                                                                                                                                                           6,
 		`SELECT count(*) FROM economy_streak_reward r JOIN economy_streak s ON s.id=r.streak_id WHERE s.key='daily_login' AND s.cycle_length=7`:                                                                                                                                                                       7,
+		`SELECT count(*) FROM economy_streak_milestone m JOIN economy_streak s ON s.id=m.streak_id WHERE s.key='daily_login' AND m.day=7 AND m.prize_id=(SELECT id FROM economy_prize WHERE key='star_coins_100') AND NOT s.repay_after_fall`:                                                                         1,
 		`SELECT count(*) FROM economy_product WHERE key LIKE 'star\_%' AND is_active`:                                                                                                                                                                                                                                 9,
 		`SELECT count(*) FROM economy_item i JOIN base_category c ON c.id=i.type_id WHERE i.key LIKE 'star\_%' AND c.key_type='item_type'`:                                                                                                                                                                            4,
 		`SELECT count(*) FROM economy_item WHERE key='star_basket_classic' AND is_starter`:                                                                                                                                                                                                                            1,

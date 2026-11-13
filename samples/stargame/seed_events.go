@@ -79,7 +79,11 @@ var (
 		{5, 1000, text{"fa": "استاد آسمان", "en": "Sky master", "ar": "سيد السماء"}, "star_coins_200"},
 		{6, 1600, text{"fa": "افسانهٔ کهکشان", "en": "Galaxy legend", "ar": "أسطورة المجرة"}, "star_coins_200"},
 	}
-	streakDays = []int{10, 15, 20, 25, 30, 40, 100}
+	streakDays           = []int{10, 15, 20, 25, 30, 40, 100}
+	streakMilestoneDay   = 7
+	streakDescriptionOld = text{"fa": "هر روز وارد بازی شو و جایزهٔ همان روز را بگیر. اگر یک روز جا بماند اشکالی ندارد، ولی با دو روز غیبت از روز اول شروع می‌شود.", "en": "Sign in every day and collect that day's prize. Missing one day is fine, but two days away start you again from day one.", "ar": "سجّل الدخول كل يوم واجمع جائزة اليوم. لا بأس بتفويت يوم واحد، لكن غياب يومين يعيدك إلى اليوم الأول."}
+	streakDescription    = text{"fa": "هر روز وارد بازی شو و جایزهٔ همان روز را بگیر. یک روز جا ماندن اشکالی ندارد؛ با دو روز غیبت از روز اول شروع می‌شود، ولی وقتی به روز ۷ برسی، از آن به بعد تا روز ۷ امن است و ۱۰۰ سکه هم جایزه می‌گیری.", "en": "Sign in every day and collect that day's prize. Missing one day is fine; two days away start you again from day one, but once you reach day 7 you are safe up to day 7 and win 100 coins too.", "ar": "سجّل الدخول كل يوم واجمع جائزة اليوم. لا بأس بتفويت يوم واحد؛ غياب يومين يعيدك إلى اليوم الأول، لكن عند وصولك إلى اليوم 7 تبقى آمنًا حتى اليوم 7 وتربح 100 عملة أيضًا."}
+	streakMilestonePrize = "star_coins_100"
 )
 
 func eventCoinPrizes() []seedPrize {
@@ -181,7 +185,7 @@ func seedEvents(ctx context.Context, tx *sql.Tx, prizes map[string]string, repor
 	}
 	ok, err = inserted(tx.ExecContext(ctx, `INSERT INTO economy_streak (id, key, name, description, event_type_id, period_days, grace_periods, miss_action, cycle_length, sort) VALUES ($1,'daily_login',$2::jsonb,$3::jsonb,$4,1,1,'reset',7,1) ON CONFLICT DO NOTHING`,
 		newID(), text{"fa": "جایزهٔ ورود روزانه", "en": "Daily sign-in reward", "ar": "مكافأة الدخول اليومي"}.json(),
-		text{"fa": "هر روز وارد بازی شو و جایزهٔ همان روز را بگیر. اگر یک روز جا بماند اشکالی ندارد، ولی با دو روز غیبت از روز اول شروع می‌شود.", "en": "Sign in every day and collect that day's prize. Missing one day is fine, but two days away start you again from day one.", "ar": "سجّل الدخول كل يوم واجمع جائزة اليوم. لا بأس بتفويت يوم واحد، لكن غياب يومين يعيدك إلى اليوم الأول."}.json(), loginID))
+		streakDescription.json(), loginID))
 	if err != nil {
 		return fmt.Errorf("streak: %w", err)
 	}
@@ -197,6 +201,16 @@ func seedEvents(ctx context.Context, tx *sql.Tx, prizes map[string]string, repor
 				return fmt.Errorf("streak day %d: %w", i+1, err)
 			}
 		}
+	}
+	ok, err = inserted(tx.ExecContext(ctx, `INSERT INTO economy_streak_milestone (id, streak_id, day, prize_id, grant_mode)
+		SELECT $1, s.id, $2, $3, 'claim' FROM economy_streak s WHERE s.key='daily_login' AND NOT EXISTS (SELECT 1 FROM economy_streak_milestone m WHERE m.streak_id=s.id)
+		ON CONFLICT DO NOTHING`, newID(), streakMilestoneDay, prizes[streakMilestonePrize]))
+	if err != nil {
+		return fmt.Errorf("streak milestone: %w", err)
+	}
+	report.add("streak milestone", fmt.Sprintf("daily_login:%d", streakMilestoneDay), ok)
+	if _, err := tx.ExecContext(ctx, `UPDATE economy_streak SET description=$1::jsonb, updated_at=now() WHERE key='daily_login' AND description=$2::jsonb`, streakDescription.json(), streakDescriptionOld.json()); err != nil {
+		return fmt.Errorf("streak description: %w", err)
 	}
 	return nil
 }

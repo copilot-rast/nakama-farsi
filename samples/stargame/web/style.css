@@ -764,6 +764,14 @@ body.blocked .topbar-end { visibility: hidden; }
 .streak-day.today { border-style: dashed; border-color: var(--accent); }
 .streak-day.locked { opacity: 0.6; }
 .streak-note { margin-top: 10px; }
+.streak-safe { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.streak-safe .safe-floor { font-weight: 700; color: var(--ok); padding: 4px 10px; border-radius: 999px; background: rgba(61, 220, 151, 0.12); }
+.streak-safe .safe-next { font-size: 0.85rem; color: var(--muted); }
+.streak-safe .safe-prize { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--bg2); border: 1px solid transparent; font: inherit; color: inherit; font-size: 0.85rem; }
+.streak-safe .safe-prize .day-state { color: var(--muted); font-size: 0.75rem; }
+.streak-safe .safe-prize.claimable { border-color: var(--gold); cursor: pointer; }
+.streak-safe .safe-prize.claimable .day-state { color: var(--gold); font-weight: 700; }
+.streak-safe .safe-prize.claimed .day-state { color: var(--ok); }
 @keyframes day-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 201, 60, 0); } 50% { box-shadow: 0 0 0 4px rgba(255, 201, 60, 0.25); } }
 @media (prefers-reduced-motion: reduce) { .streak-day.claimable { animation: none; } .bar > i { transition: none; } }
 @media (max-width: 480px) { .streak-days { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

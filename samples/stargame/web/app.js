@@ -105,6 +105,10 @@ const STRINGS = {
     streakStart: "امروز وارد شدی؛ جایزهٔ امروزت آماده است.",
     streakBroken: "چند روز نیامدی؛ از روز اول شروع کن.",
     streakGrace: (n) => `اگر ${num(n)} روز جا بماند، روزهایت از دست نمی‌رود.`,
+    streakSafe: (n) => `تا روز ${num(n)} امن است`,
+    streakNextSafe: (n, left) => `نقطهٔ امن بعدی: روز ${num(n)} (${num(left)} روز دیگر)`,
+    streakFloored: (n) => `چند روز نیامدی، ولی به روز ${num(n)} برگشتی، نه روز اول.`,
+    streakSafePrize: (n, prize) => `روز ${num(n)}: ${prize}`,
     claim: "بگیر",
     claimed: "گرفتی",
     locked: "بعداً",
@@ -431,6 +435,10 @@ const STRINGS = {
     streakStart: "You signed in today; today's prize is ready.",
     streakBroken: "You missed some days; start again from day one.",
     streakGrace: (n) => `Missing ${num(n)} ${n === 1 ? "day" : "days"} will not break it.`,
+    streakSafe: (n) => `Safe up to day ${num(n)}`,
+    streakNextSafe: (n, left) => `Next safe day: day ${num(n)} (${num(left)} more ${left === 1 ? "day" : "days"})`,
+    streakFloored: (n) => `You missed some days, but you went back to day ${num(n)}, not day one.`,
+    streakSafePrize: (n, prize) => `Day ${num(n)}: ${prize}`,
     claim: "Collect",
     claimed: "Collected",
     locked: "Later",
@@ -1204,8 +1212,29 @@ function renderStreakCard() {
     days.append(tile);
   }
   box.append(days);
-  const note = sk.broken ? t("streakBroken") : sk.countedThisPeriod ? (sk.claimable && sk.claimable.length ? t("streakStart") : t("streakToday")) : sk.gracePeriods ? t("streakGrace", sk.gracePeriods) : "";
+  const safe = streakSafeRow(sk);
+  if (safe) box.append(safe);
+  const note = sk.broken && sk.floored ? t("streakFloored", sk.floor) : sk.broken ? t("streakBroken") : sk.countedThisPeriod ? (sk.claimable && sk.claimable.length ? t("streakStart") : t("streakToday")) : sk.gracePeriods ? t("streakGrace", sk.gracePeriods) : "";
   if (note) box.append(el("p", { class: "muted small streak-note", text: note }));
+}
+
+function streakSafeRow(sk) {
+  const ms = sk.milestones || [];
+  if (!ms.length) return null;
+  const row = el("div", { class: "streak-safe", id: "streak-safe", "data-floor": String(sk.floor || 0) });
+  if (sk.floor) row.append(el("span", { class: "safe-floor", id: "streak-floor", text: t("streakSafe", sk.floor) }));
+  if (sk.nextMilestone) row.append(el("span", { class: "safe-next", id: "streak-next", text: t("streakNextSafe", sk.nextMilestone, Math.max(0, sk.nextMilestone - sk.count)) }));
+  for (const m of ms) {
+    if (!m.prize) continue;
+    const label = { claimed: t("claimed"), claimable: t("claim"), pending: t("pendingLabel") }[m.status] || (m.reached ? t("claimed") : t("locked"));
+    const chip = el(m.status === "claimable" ? "button" : "span", { class: "safe-prize " + m.status, "data-milestone": String(m.day), "data-status": m.status, type: m.status === "claimable" ? "button" : null }, [
+      el("span", { text: t("streakSafePrize", m.day, m.prize.name) }),
+      el("span", { class: "day-state", text: label }),
+    ]);
+    if (m.status === "claimable" && m.claimId) chip.addEventListener("click", () => claimReward(m.claimId, chip));
+    row.append(chip);
+  }
+  return row;
 }
 
 async function loadRewards() {
