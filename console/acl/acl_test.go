@@ -282,7 +282,7 @@ func TestCheckACLHttpSupportAndGrowth(t *testing.T) {
 		paths    []string
 	}{
 		{console.AclResources_ACCOUNT_NOTES, []string{"/v2/console/base/support/tickets", "/v2/console/base/support/tickets/{id}/messages", "/v2/console/base/support/chats/{id}/take", "/v2/console/base/support/departments", "/v2/console/base/support/canned/{id}", "/v2/console/base/support/settings", "/v2/console/base/support/heartbeat"}},
-		{console.AclResources_SETTINGS, []string{"/v2/console/base/remote-config", "/v2/console/base/remote-config/{id}/rollback", "/v2/console/base/remote-config/preview"}},
+		{console.AclResources_SETTINGS, []string{"/v2/console/base/remote-config", "/v2/console/base/remote-config/{id}/rollback", "/v2/console/base/remote-config/preview", "/v2/console/base/updates", "/v2/console/base/updates/check", "/v2/console/base/updates/settings", "/v2/console/base/updates/summary"}},
 		{console.AclResources_ACCOUNT, []string{"/v2/console/base/activity", "/v2/console/base/activity/summary"}},
 		{console.AclResources_HIRO_ECONOMY, []string{"/v2/console/economy/referrals", "/v2/console/economy/referral-settings"}},
 	}

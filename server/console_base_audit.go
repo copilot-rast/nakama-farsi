@@ -38,6 +38,25 @@ var baseSupportAudit = consoleModuleAudit{
 	skipBody: func(pattern string) bool { return strings.HasSuffix(pattern, "/uploads") },
 }
 
+var baseUpdatesAudit = consoleModuleAudit{
+	prefix:   "/v2/console/base/",
+	label:    "base",
+	resource: console.AclResources_SETTINGS,
+	invokes:  []string{"/updates/check"},
+	mask:     maskBaseUpdatesBody,
+}
+
+func maskBaseUpdatesBody(_ string, body any) any {
+	m, ok := body.(map[string]any)
+	if !ok {
+		return body
+	}
+	if v, ok := m["token"].(string); ok && v != "" {
+		m["token"] = "********"
+	}
+	return m
+}
+
 var baseTaxonomyAudit = consoleModuleAudit{
 	prefix:   "/v2/console/base/",
 	label:    "base",
@@ -50,6 +69,9 @@ func consoleBaseAuditLog(ctx context.Context, logger *zap.Logger, db *sql.DB, me
 		if strings.HasPrefix(pattern, prefix) {
 			mod = baseLanguagesAudit
 		}
+	}
+	if strings.HasPrefix(pattern, "/v2/console/base/updates") {
+		mod = baseUpdatesAudit
 	}
 	if strings.HasPrefix(pattern, "/v2/console/base/players") || strings.HasPrefix(pattern, "/v2/console/base/restrictions") || strings.HasPrefix(pattern, "/v2/console/base/activity") {
 		mod = basePlayersAudit

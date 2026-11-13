@@ -21,6 +21,7 @@ type service struct {
 	files      objectstore.Store
 	fileKey    []byte
 	publicBase string
+	updates    updatesConfig
 }
 
 func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {
@@ -29,6 +30,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := svc.configureFiles(env, dataDirFromArgs(os.Args)); err != nil {
 		logger.Warn("Base support attachments are off: %v", err)
 	}
+	svc.configureUpdates(env)
 	for name, fn := range svc.clientRPCs() {
 		limit := 16384
 		if name == "base_support_upload_part" {
@@ -55,6 +57,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	}
 	go svc.restrictionLoop(ctx)
 	go svc.supportLoop(ctx)
+	go svc.updatesLoop(ctx)
 	logger.Info("Base module registered")
 	return nil
 }

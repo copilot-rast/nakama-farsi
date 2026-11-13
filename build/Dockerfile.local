@@ -25,14 +25,21 @@ RUN apt-get update && \
 
 WORKDIR /go/build/nakama
 
+ARG GIT_COMMIT=
+ARG GIT_BRANCH=
+ARG GIT_DIRTY=
+ARG GIT_OWN_AHEAD=
+ARG BUILD_DATE=
+
 COPY . .
 
-RUN go build -o /go/build-out/nakama -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "-s -w -X main.version=local"
-RUN go build -buildmode=plugin -o /go/build-out/modules/jazebe.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" ./integrations/jazebe/native
-RUN go build -buildmode=plugin -o /go/build-out/modules/base.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" ./integrations/base
-RUN go build -buildmode=plugin -o /go/build-out/modules/economy.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" ./integrations/economy
-RUN go build -buildmode=plugin -o /go/build-out/modules/publication.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" ./integrations/publication
-RUN go build -buildmode=plugin -o /go/build-out/modules/stargame.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" ./samples/stargame
+RUN sh build/buildinfo.sh > /go/buildinfo.ldflags && cat /go/buildinfo.ldflags | tr ' ' '\n' | grep -v '^-X$' | grep -v 'Upstream=' | sed 's/^/buildinfo: /'
+RUN go build -o /go/build-out/nakama -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "-s -w -X main.version=local $(cat /go/buildinfo.ldflags)"
+RUN go build -buildmode=plugin -o /go/build-out/modules/jazebe.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/jazebe/native
+RUN go build -buildmode=plugin -o /go/build-out/modules/base.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/base
+RUN go build -buildmode=plugin -o /go/build-out/modules/economy.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/economy
+RUN go build -buildmode=plugin -o /go/build-out/modules/publication.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/publication
+RUN go build -buildmode=plugin -o /go/build-out/modules/stargame.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./samples/stargame
 
 FROM debian:bookworm-slim
 

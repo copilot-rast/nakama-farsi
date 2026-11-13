@@ -106,6 +106,11 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/remote-config/{id}/rollback", http.MethodPost, s.configRollback},
 		{consolePrefix + "/activity", http.MethodGet, s.activityList},
 		{consolePrefix + "/activity/summary", http.MethodGet, s.activitySummary},
+		{consolePrefix + "/updates", http.MethodGet, s.updatesGet},
+		{consolePrefix + "/updates/summary", http.MethodGet, s.updatesSummary},
+		{consolePrefix + "/updates/check", http.MethodPost, s.updatesCheck},
+		{consolePrefix + "/updates/settings", http.MethodGet, s.updatesSettingsGet},
+		{consolePrefix + "/updates/settings", http.MethodPut, s.updatesSettingsPut},
 	}
 	for _, res := range []resource{categoriesResource, tagsResource} {
 		base := consolePrefix + "/" + res.name

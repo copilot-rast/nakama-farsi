@@ -1,0 +1,10 @@
+{
+  "provider": "github",
+  "repo": "heroiclabs/nakama",
+  "remote": "upstream",
+  "branch": "master",
+  "commit": "37618ad4b927a9dd0671599ffc7387a7386f70fa",
+  "date": "2026-11-12T15:32:42Z",
+  "subject": "Fix matchmaker remainder eviction to preserve longest-waiting tickets. (#2544)",
+  "recordedAt": "2026-11-13T08:25:37Z"
+}
