@@ -32,7 +32,7 @@
 
 .eco-select.eco-select{padding-inline-end:2rem;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-size:1rem;background-position:right .5rem center}
 [dir='rtl'] .eco-select.eco-select{background-position:left .5rem center}
-.eco-ref .eco-ref-clear{position:absolute;inset-block-start:.45rem;inset-inline-end:1.75rem}
+.eco-ref .eco-ref-clear{position:absolute;inset-block-start:50%;transform:translateY(-50%);inset-inline-end:1.75rem}
 .eco-ref > button.eco-select{min-height:2.625rem}
 .eco-search{min-width:0;width:100%}
 @media (min-width:1024px){.eco-search{flex:1 1 16rem;max-width:48rem}}

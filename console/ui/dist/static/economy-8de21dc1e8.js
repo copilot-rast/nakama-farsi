@@ -1231,6 +1231,9 @@ var MESSAGES = {
     'rows.empty': 'هنوز ردیفی اضافه نشده.',
     'code.DUPLICATE_LEVEL': 'هر سطح فقط یک بار می‌آید.',
     'code.DUPLICATE_DAY': 'هر روز فقط یک بار می‌آید.',
+    'code.DUPLICATE_MILESTONE': 'هر روز فقط یک نقطهٔ امن دارد.',
+    'code.INVALID_MILESTONE_DAY': 'روز نقطهٔ امن باید بین ۱ و ۳۶۵۰ باشد.',
+    'code.TOO_MANY_MILESTONES': 'حداکثر ۵۰ نقطهٔ امن.',
     'code.THRESHOLDS_NOT_ORDERED': 'سطح بالاتر باید آستانهٔ برابر یا بیشتر داشته باشد.',
     'code.SAME_META': 'سطح باید در متای دیگری نوشته شود.',
     'code.INVALID_RANGE': 'بیشترین مقدار نباید از کمترین کوچک‌تر باشد.',
@@ -1370,6 +1373,15 @@ var MESSAGES = {
     'col.sk.rewards': 'جایزه‌ها',
     'sk.rewardsN': '{n} روز جایزه',
     'sk.cycleN': 'دورهٔ {n} روزه',
+    'sk.milestonesAt': 'نقطهٔ امن: روز {days}',
+    'sk.h.milestones': 'نقطه‌های امن',
+    'sk.milestones.note': 'وقتی بازیکن به روزِ یک نقطهٔ امن برسد، اگر بعداً غیبت کند شمارشش از آن روز پایین‌تر نمی‌آید. مثلاً با نقطهٔ امن ۲۰، بازیکنی که به روز ۲۵ رسیده بعد از غیبت به روز ۲۰ برمی‌گردد و روز بعدش ۲۱ است. «صفر کردن» در صفحهٔ بازیکن این را هم پاک می‌کند.',
+    'sk.ms.add': 'افزودن نقطهٔ امن',
+    'sk.ms.empty': 'نقطهٔ امنی ندارد؛ با غیبت، شمارش طبق قانون بالا کم می‌شود.',
+    'f.sk.msDay': 'روز',
+    'f.sk.msPrize': 'جایزهٔ رسیدن (یک بار)',
+    'f.sk.repay': 'جایزهٔ روزها دوباره داده شود',
+    'f.sk.repay.hint': 'خاموش (پیشنهادی): اگر بازیکن به نقطهٔ امن برگردد و دوباره به همان روزها برسد، جایزهٔ آن روزها را دوباره نمی‌گیرد. این جلوی غیبتِ عمدی برای جمع‌کردن دوبارهٔ جایزه را می‌گیرد.',
     'sk.hiro.notice': 'این بخش مال خود این سرور است و به Hiro نیازی ندارد. صفحهٔ «زنجیره‌ها»ی Hiro جدا و دست‌نخورده می‌ماند.',
     'f.sk.event': 'رویداد شمارنده',
     'f.sk.event.hint': 'مثلاً «ورود به بازی». هر بازه فقط یک بار شمرده می‌شود.',
@@ -1418,6 +1430,9 @@ var MESSAGES = {
     'pp.broken': 'قطع شده',
     'pp.today': 'امروز شمرده شد',
     'pp.streak': 'روز {n} · بهترین: {best}',
+    'pp.floor': 'تا روز {n} امن است',
+    'pp.noFloor': 'هنوز نقطهٔ امنی ندارد',
+    'pp.nextMilestone': 'نقطهٔ امن بعدی: روز {n}',
     'pp.reset': 'صفر کردن',
     'pp.reset.title': 'روزهای پیاپی صفر شود؟',
     'pp.reset.text': 'شمارش «{name}» برای این بازیکن از اول شروع می‌شود. جایزه‌های گرفته‌شده می‌مانند.',
@@ -4145,6 +4160,9 @@ var MESSAGES = {
     'rows.empty': 'No rows yet.',
     'code.DUPLICATE_LEVEL': 'Each level can appear only once.',
     'code.DUPLICATE_DAY': 'Each day can appear only once.',
+    'code.DUPLICATE_MILESTONE': 'Each milestone day can appear only once.',
+    'code.INVALID_MILESTONE_DAY': 'A milestone day must be between 1 and 3650.',
+    'code.TOO_MANY_MILESTONES': 'At most 50 milestones.',
     'code.THRESHOLDS_NOT_ORDERED': 'A higher level needs the same or a larger threshold.',
     'code.SAME_META': 'Write the level to a different meta.',
     'code.INVALID_RANGE': 'The largest value cannot be smaller than the smallest.',
@@ -4284,6 +4302,15 @@ var MESSAGES = {
     'col.sk.rewards': 'Rewards',
     'sk.rewardsN': '{n} reward days',
     'sk.cycleN': '{n}-day cycle',
+    'sk.milestonesAt': 'Safe at day {days}',
+    'sk.h.milestones': 'Safe days (milestones)',
+    'sk.milestones.note': 'Once a player reaches a milestone day, missed days never take the count below it. With a milestone at 20, a player on day 25 who misses days goes back to 20 and the next counted day is 21. "Reset" on the player page clears this too.',
+    'sk.ms.add': 'Add milestone',
+    'sk.ms.empty': 'No milestones; missed days lower the count by the rule above.',
+    'f.sk.msDay': 'Day',
+    'f.sk.msPrize': 'Prize for reaching it (once)',
+    'f.sk.repay': 'Pay day rewards again',
+    'f.sk.repay.hint': 'Off (recommended): a player who falls back to a milestone and reaches the same days again does not get those day rewards twice. This stops players missing days on purpose to collect them again.',
     'sk.hiro.notice': 'This is built into this server and does not need Hiro. The Hiro Streaks page stays separate and untouched.',
     'f.sk.event': 'Counting event',
     'f.sk.event.hint': 'For example "Sign-in". Counted at most once per period.',
@@ -4332,6 +4359,9 @@ var MESSAGES = {
     'pp.broken': 'Broken',
     'pp.today': 'Counted today',
     'pp.streak': 'Day {n} · best {best}',
+    'pp.floor': 'Safe up to day {n}',
+    'pp.noFloor': 'No safe day yet',
+    'pp.nextMilestone': 'Next milestone: day {n}',
     'pp.reset': 'Reset',
     'pp.reset.title': 'Reset this streak?',
     'pp.reset.text': '"{name}" starts again from day one for this player. Rewards already given stay.',
@@ -11380,9 +11410,11 @@ RESOURCES.streaks = {
     }, skeleton: '40%' },
     { label: 'col.sk.rewards', render: function (it) {
       var n = (it.rewards || []).length;
+      var ms = (it.milestones || []).map(function (m) { return m.day; });
       return h('div', { class: 'flex flex-col text-sm' }, h('span', { class: 'tabular-nums', text: t('sk.rewardsN', { n: n }) }),
-        it.cycleLength ? h('span', { class: 'text-xs text-secondary-500', text: t('sk.cycleN', { n: it.cycleLength }) }) : null);
-    }, width: 150 },
+        it.cycleLength ? h('span', { class: 'text-xs text-secondary-500', text: t('sk.cycleN', { n: it.cycleLength }) }) : null,
+        ms.length ? h('span', { class: 'text-xs text-secondary-500 tabular-nums', 'data-sk-milestones': '', text: t('sk.milestonesAt', { days: ms.map(function (d) { return numLocal(d); }).join(lang() === 'fa' ? '، ' : ', ') }) }) : null);
+    }, width: 170 },
     { label: 'col.ev.players', render: function (it) { return h('span', { class: 'tabular-nums', text: fmtNum(it.players || 0) }); }, width: 100 },
     { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
   ],
@@ -11415,9 +11447,28 @@ RESOURCES.streaks = {
         { name: 'day', type: 'number', label: 'f.sk.day', required: true, min: 1 },
         { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', required: true },
         { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', options: grantOptions }
-      ] }
+      ] },
+    { type: 'heading', label: 'sk.h.milestones' },
+    { name: 'milestonesNote', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', 'data-milestones-note': '', text: t('sk.milestones.note') }); } },
+    { name: 'milestones', type: 'rows', addLabel: 'sk.ms.add', emptyText: 'sk.ms.empty', max: 50,
+      newRow: function (rows) {
+        var last = rows[rows.length - 1];
+        return { day: last ? Number(last.day || 0) * 2 || 7 : 7, prizeId: null, grantMode: 'claim' };
+      },
+      check: function (rows) {
+        var dup = duplicateCheck('day', 'DUPLICATE_MILESTONE')(rows);
+        if (dup) return dup;
+        for (var i = 0; i < rows.length; i++) if (Number(rows[i].day) > 3650) return { index: i, message: t('code.INVALID_MILESTONE_DAY') };
+        return null;
+      },
+      columns: [
+        { name: 'day', type: 'number', label: 'f.sk.msDay', required: true, min: 1 },
+        { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.sk.msPrize', optional: true },
+        { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', options: grantOptions }
+      ] },
+    { name: 'repayAfterFall', type: 'bool', inline: true, label: 'f.sk.repay', hint: 'f.sk.repay.hint' }
   ],
-  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', isActive: true, sort: 0, rewards: [] }; },
+  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', isActive: true, sort: 0, rewards: [], milestones: [], repayAfterFall: false }; },
   fixPayload: function (p) {
     if (p.sort == null) p.sort = 0;
     return p;
@@ -11598,7 +11649,9 @@ function playerProgressCard() {
   (p.streaks || []).forEach(function (sk) {
     var row = h('div', { class: 'min-w-0', 'data-pp-streak': sk.key },
       h('div', { class: 'flex items-center gap-2 min-w-0' }, h('span', { class: 'font-medium truncate', text: sk.name }), sk.broken ? tag(t('pp.broken'), 'secondary') : sk.countedThisPeriod ? tag(t('pp.today'), 'success') : null),
-      h('div', { class: 'text-sm tabular-nums', text: t('pp.streak', { n: sk.count, best: sk.best }) }));
+      h('div', { class: 'text-sm tabular-nums', text: t('pp.streak', { n: sk.count, best: sk.best }) }),
+      sk.floor || sk.nextMilestone ? h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 tabular-nums', 'data-pp-floor': String(sk.floor || 0),
+        text: [sk.floor ? t('pp.floor', { n: sk.floor }) : t('pp.noFloor'), sk.nextMilestone ? t('pp.nextMilestone', { n: sk.nextMilestone }) : null].filter(Boolean).join(' · ') }) : null);
     if (write && (sk.count > 0 || sk.countedThisPeriod)) {
       var reset = button({ variant: 'link', size: 'sm', label: t('pp.reset'), onclick: function () {
         confirmModal({ title: t('pp.reset.title'), text: t('pp.reset.text', { name: sk.name }), ok: t('pp.reset'), danger: true }).then(function (yes) {
