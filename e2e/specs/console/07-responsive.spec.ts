@@ -25,6 +25,8 @@ const PAGES = [
   '#/publication/banners',
   '#/publication/banner-lists',
   '#/publication/sponsors',
+  '#/publication/auto-rules',
+  '#/publication/notify-categories',
   '#/economy/event-log',
   '#/project-settings/events',
   '#/economy/payments',

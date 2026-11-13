@@ -32,3 +32,5 @@ select 'banner placements', count(*) from publication_banner_list where key like
 select 'sponsors', count(*) from publication_sponsor where key like 'e2e%';
 select 'chance games', count(*) from economy_chance_game where key like 'e2e%';
 select 'prize groups', count(*) from economy_prize_group where key like 'e2e%';
+select 'automatic notification rules', count(*) from publication_auto_rule where key like 'e2e%';
+select 'notification categories', count(*) from publication_notify_category where key like 'e2e%';

@@ -255,7 +255,7 @@ test.describe('accounts: access', () => {
       await p.goto(CONSOLE_URL + '/#/project-settings/otp');
       await expect(psWindow(p)).toBeVisible();
       const ids = await psWindow(p).locator('.ps-list [role="tab"]').evaluateAll((els) => els.map((e) => e.getAttribute('data-ps-section')));
-      expect(ids).toEqual(['otp', 'sms', 'email']);
+      expect(ids).toEqual(['otp', 'sms', 'email', 'push']);
       await settle(p);
       await expect(root(p).locator('[data-settings-form="otp"] form')).toBeVisible();
       await p.goto(CONSOLE_URL + '/#/project-settings/countries');

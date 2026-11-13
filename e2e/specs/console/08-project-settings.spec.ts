@@ -26,6 +26,7 @@ const SECTIONS: [string, string, string][] = [
   ['payment-methods', 'درگاه‌های پرداخت', '[data-method]'],
   ['sms', 'پیامک', '[data-channel="sms"]'],
   ['email', 'ایمیل', '[data-channel="email"]'],
+  ['push', 'پوش', '[data-channel="push"]'],
 ];
 
 function tab(page: Page, id: string) {
@@ -135,13 +136,13 @@ test.describe('project settings window', () => {
     await expect(tab(page, 'setup')).toBeFocused();
     await expect(page).toHaveURL(/#\/project-settings\/setup$/);
     await page.keyboard.press('End');
-    await expect(tab(page, 'email')).toBeFocused();
-    await expect(page).toHaveURL(/#\/project-settings\/email$/);
+    await expect(tab(page, 'push')).toBeFocused();
+    await expect(page).toHaveURL(/#\/project-settings\/push$/);
     await page.keyboard.press('Home');
     await expect(page).toHaveURL(/#\/project-settings\/brand$/);
     await page.keyboard.press('ArrowUp');
-    await expect(page).toHaveURL(/#\/project-settings\/email$/);
-    await expect(root(page).locator('[data-channel="email"]')).toBeVisible();
+    await expect(page).toHaveURL(/#\/project-settings\/push$/);
+    await expect(root(page).locator('[data-channel="push"]')).toBeVisible();
     await settle(page);
     for (let i = 0; i < 25; i++) {
       await page.keyboard.press('Tab');

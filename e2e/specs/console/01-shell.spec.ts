@@ -23,6 +23,8 @@ const PAGES: [string, string][] = [
   ['#/publication/banners', 'بنرها'],
   ['#/publication/banner-lists', 'جایگاه‌های بنر'],
   ['#/publication/sponsors', 'اسپانسرها'],
+  ['#/publication/auto-rules', 'اعلان‌های خودکار'],
+  ['#/publication/notify-categories', 'دسته‌های اعلان'],
   ['#/publication/comments', 'کامنت‌ها'],
   ['#/publication/notifications', 'اعلان‌ها'],
   ['#/moderation/players', 'مدیریت بازیکنان'],
