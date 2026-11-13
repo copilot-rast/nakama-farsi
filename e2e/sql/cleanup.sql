@@ -1,4 +1,8 @@
 BEGIN;
+DELETE FROM economy_game_match WHERE game_key LIKE 'e2e%';
+DELETE FROM economy_game WHERE key LIKE 'e2e%';
+DELETE FROM economy_game_entry e WHERE NOT EXISTS (SELECT 1 FROM users x WHERE x.id = e.user_id);
+DELETE FROM economy_game_match m WHERE NOT EXISTS (SELECT 1 FROM economy_game_entry e WHERE e.match_id = m.id);
 DELETE FROM economy_chance_play WHERE game_id IN (SELECT id FROM economy_chance_game WHERE key LIKE 'e2e%') OR prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%') OR prize_group_id IN (SELECT id FROM economy_prize_group WHERE key LIKE 'e2e%');
 DELETE FROM economy_reward_claim WHERE kind='chance' AND owner_id IN (SELECT id FROM economy_chance_game WHERE key LIKE 'e2e%');
 DELETE FROM economy_chance_game WHERE key LIKE 'e2e%';

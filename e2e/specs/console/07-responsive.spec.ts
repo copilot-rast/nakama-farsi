@@ -22,6 +22,7 @@ const PAGES = [
   '#/economy/achievements',
   '#/economy/chance-games',
   '#/economy/prize-groups',
+  '#/economy/games',
   '#/publication/banners',
   '#/publication/banner-lists',
   '#/publication/sponsors',
