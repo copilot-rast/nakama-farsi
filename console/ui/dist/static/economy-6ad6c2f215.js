@@ -15956,7 +15956,7 @@ function gameRegLine(v) {
   var def = gameDef(v.key);
   if (!v.key) return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('gm.key.pick') });
   if (!def) return h('p', { class: 'text-xs text-error-600 dark:text-error-400', 'data-gm-reg': 'missing', text: t('gm.key.missing') });
-  return h('p', { class: 'text-xs text-success-700 dark:text-success-400', 'data-gm-reg': def.realtime ? 'realtime' : 'registered', text: t(def.realtime ? 'gm.key.realtime' : 'gm.key.registered', { plugin: def.plugin || '—' }) });
+  return h('p', { class: 'text-xs text-success-600', 'data-gm-reg': def.realtime ? 'realtime' : 'registered', text: t(def.realtime ? 'gm.key.realtime' : 'gm.key.registered', { plugin: def.plugin || '—' }) });
 }
 
 RESOURCES.games = {
