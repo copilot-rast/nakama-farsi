@@ -17,7 +17,8 @@ var PS_SECTIONS = [
   { id: 'support-settings', label: 'tab.support-settings', icon: 'support-settings', acl: 'ACCOUNT_NOTES', render: function (box) { supportSettingsPage(box); } },
   { id: 'payment-methods', label: 'tab.payment-methods', icon: 'payments', acl: 'HIRO_ECONOMY', render: function (box) { paymentMethodsPage(box); } },
   { id: 'sms', label: 'tab.sms', icon: 'comments', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'sms'); } },
-  { id: 'email', label: 'tab.email', icon: 'mail', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'email'); } }
+  { id: 'email', label: 'tab.email', icon: 'mail', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'email'); } },
+  { id: 'push', label: 'tab.push', icon: 'push', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'push'); } }
 ];
 var PS_LEGACY = {
   'settings/brand': 'brand',
@@ -26,6 +27,7 @@ var PS_LEGACY = {
   'settings/payment-methods': 'payment-methods',
   'settings/sms': 'sms',
   'settings/email': 'email',
+  'settings/push': 'push',
   'base/categories': 'categories',
   'base/tags': 'tags',
   'economy/categories': 'categories',

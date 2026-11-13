@@ -2705,6 +2705,23 @@ html.pl .eco-sp-tile {
   border-radius: var(--r-control);
   background: var(--well-2);
 }
+
+html.pl .eco-ar-sentence {
+  background: var(--tint-info-bg);
+  color: var(--tint-info-fg);
+  border-radius: var(--r-control);
+}
+
+html.pl .eco-nt-aud {
+  border-color: var(--line);
+  border-radius: var(--r-card);
+  background: var(--well-2);
+}
+
+html.pl .eco-nt-image {
+  border-radius: var(--r-card);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
 @media (max-width: 767px) {
   html.pl {
     --gap: 12px;

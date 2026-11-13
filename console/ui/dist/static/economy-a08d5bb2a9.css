@@ -575,3 +575,10 @@ html.dark .monaco-editor :is(.minimap canvas,canvas.decorationsOverviewRuler){fi
 .eco-sp-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:.5rem}
 .eco-sp-tile{border:1px solid rgb(var(--secondary-color-200))}
 .dark .eco-sp-tile{border-color:rgb(var(--secondary-color-700))}
+.eco-ms-auto{margin-inline-start:auto}
+.eco-ar-sentence{background:rgb(var(--primary-color-50));color:rgb(var(--primary-color-800));line-height:1.7}
+.dark .eco-ar-sentence{background:rgb(var(--secondary-color-700));color:rgb(var(--primary-color-200))}
+.eco-nt-aud{border:1px solid rgb(var(--secondary-color-200));border-radius:.5rem;padding:.75rem}
+.dark .eco-nt-aud{border-color:rgb(var(--secondary-color-700))}
+.eco-nt-image{display:block;inline-size:100%;max-inline-size:24rem;max-block-size:12rem;object-fit:cover}
+.eco-seg-scroll{overflow-x:auto;max-inline-size:100%}

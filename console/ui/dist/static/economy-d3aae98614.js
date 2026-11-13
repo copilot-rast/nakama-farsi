@@ -2712,7 +2712,208 @@ var MESSAGES = {
     'code.TOO_MANY_SPONSORS': "اسپانسرهای زیادی فرستاده شده.",
     'new.sponsors': "اسپانسر جدید",
     'edit.sponsors': "ویرایش اسپانسر",
-    'search.sponsors': "جست‌وجو در کلید، نام، رابط و وب‌سایت"
+    'search.sponsors': "جست‌وجو در کلید، نام، رابط و وب‌سایت",
+    'nav.auto-rules': "اعلان‌های خودکار",
+    'desc.auto-rules': "پیام‌هایی که سرور خودش می‌فرستد: وقتی بازیکن کاری می‌کند، زنجیره‌اش در خطر است، نوبت رایگانش آماده است یا چند روز نیامده. برای هر قانون فاصلهٔ تکرار و ساعت سکوت بگذار.",
+    'new.auto-rules': "قانون خودکار جدید",
+    'edit.auto-rules': "ویرایش قانون خودکار",
+    'search.auto-rules': "جست‌وجو در کلید، نام، عنوان و رویداد",
+    'nav.notify-categories': "دسته‌های اعلان",
+    'desc.notify-categories': "هر اعلان در یک دسته است و بازیکن می‌تواند هر دسته را برای خودش خاموش کند، مگر دسته‌هایی که همیشه روشن‌اند.",
+    'new.notify-categories': "دستهٔ اعلان جدید",
+    'edit.notify-categories': "ویرایش دستهٔ اعلان",
+    'search.notify-categories': "جست‌وجو در کلید و نام دسته",
+    'tab.push': "پوش",
+    'desc.push': "سرویس‌هایی که اعلان را روی گوشی و مرورگر بازیکن می‌فرستند. «ثبت در گزارش» هیچ پیامی نمی‌فرستد و فقط در گزارش سرور می‌نویسد؛ برای آزمایش همین را نگه دار.",
+    'pv.kind.fcm': "Firebase Cloud Messaging",
+    'pv.kind.log': "ثبت در گزارش (آزمایشی)",
+    'pv.field.serviceAccount': "کلید حساب سرویس (JSON)",
+    'pv.hint.serviceAccount': "فایل JSON حساب سرویس فایربیس را این‌جا بچسبان. بعد از ذخیره دیگر نشان داده نمی‌شود.",
+    'pv.empty.push': "هنوز سرویس پوشی نیست",
+    'pv.test.player': "بازیکن (نام کاربری یا شناسه)",
+    'pv.project': "پروژهٔ {id}",
+    'pv.log.note': "این سرویس هیچ‌وقت پیام واقعی نمی‌فرستد.",
+    'ch.push': "پوش",
+    'ch.push_in_app': "پوش و صندوق",
+    'nst.scheduled': "زمان‌بندی‌شده",
+    'nst.cancelled': "لغوشده",
+    'nk.message': "پیام",
+    'nk.campaign': "کمپین",
+    'nk.auto': "خودکار",
+    'nk.test': "آزمایشی",
+    'nt.f.name': "نام داخلی کمپین",
+    'nt.f.name.hint': "فقط در کنسول دیده می‌شود.",
+    'nt.s.category': "دسته و تصویر",
+    'nt.f.category': "دستهٔ اعلان",
+    'nt.f.category.hint': "بازیکنانی که این دسته را خاموش کرده‌اند اعلان را نمی‌گیرند.",
+    'nt.f.image': "تصویر",
+    'nt.f.image.hint': "روی گوشی کنار پیام و در صندوق پیام نشان داده می‌شود.",
+    'nt.s.audience': "فیلتر بازیکنان",
+    'nt.audience.hint': "از میان گیرندگان بالا فقط بازیکنانی که با این شرط‌ها جورند پیام می‌گیرند. سکو و نسخه از دستگاه‌های ثبت‌شدهٔ بازیکن خوانده می‌شود.",
+    'nt.f.inactiveDays': "دست‌کم این تعداد روز نیامده",
+    'nt.f.inactiveDays.hint': "خالی یعنی فرقی نمی‌کند.",
+    'nt.s.when': "زمان ارسال",
+    'nt.when.now': "همین حالا",
+    'nt.when.later': "در زمان مشخص",
+    'nt.when.at': "زمان ارسال",
+    'nt.scheduledFor': "ارسال در {t}",
+    'nt.push.hint': "پیام روی دستگاه‌های ثبت‌شدهٔ بازیکن می‌رود. «پوش و صندوق» همان پیام را در صندوق پیام بازی هم می‌گذارد.",
+    'nt.noPushProvider': "هیچ سرویس پوش فعالی نیست.",
+    'nt.goSettings.push': "رفتن به تنظیمات پوش",
+    'tg.withPush': "{n} نفر دستگاه ثبت‌شده دارند",
+    'tg.optedOut': "{n} نفر این دسته را خاموش کرده‌اند",
+    'tg.noDevice': "{n} نفر دستگاه ندارند و پوش نمی‌گیرند",
+    'nt.test': "ارسال آزمایشی",
+    'nt.test.hint': "همین پیام را فقط برای یک بازیکن می‌فرستد، بدون زمان‌بندی و بدون نگاه به خاموش بودن دسته.",
+    'nt.test.send': "بفرست برای همین بازیکن",
+    'nt.test.need': "اول یک بازیکن انتخاب کن.",
+    'nt.test.done': "پیام آزمایشی ساخته شد.",
+    'nt.open': "دیدن پیام",
+    'nt.schedule': "زمان‌بندی کن",
+    'nt.scheduled': "کمپین زمان‌بندی شد.",
+    'nt.confirmSchedule.title': "این کمپین زمان‌بندی شود؟",
+    'nt.confirmSchedule.text': "پیام در {t} برای بازیکنانی که آن موقع با شرط‌ها جورند فرستاده می‌شود.",
+    'nt.cancel': "لغو ارسال",
+    'nt.cancel.title': "ارسال لغو شود؟",
+    'nt.cancel.text': "پیام‌هایی که هنوز نرفته‌اند فرستاده نمی‌شوند. پیام‌های رفته برنمی‌گردند.",
+    'nt.cancel.ok': "لغو کن",
+    'nt.cancelled': "ارسال لغو شد.",
+    'nt.cancelledBy': "لغو به دست {who} در {t}",
+    'nt.opened': "باز شده",
+    'nt.pushSent': "پوش رسیده",
+    'nt.pushFailed': "پوش ناموفق",
+    'nt.category': "دسته",
+    'nt.kind': "نوع",
+    'nt.rule': "قانون",
+    'nt.audience': "فیلتر",
+    'nt.audience.none': "همهٔ گیرندگان",
+    'nt.openedAt': "باز شد {t}",
+    'nt.pushN': "پوش: {n}",
+    'act.screen': "باز کردن صفحه",
+    'act.product': "نشان دادن محصول",
+    'col.ar.rule': "قانون",
+    'col.ar.when': "کی",
+    'col.ar.how': "چطور",
+    'filter.ar.trigger': "شروع‌کننده",
+    'filter.ar.category': "دسته",
+    'ar.trigger.event': "یک رویداد بازیکن",
+    'ar.trigger.streak_at_risk': "زنجیره در خطر شکستن",
+    'ar.trigger.chance_ready': "نوبت رایگان شانس آماده",
+    'ar.trigger.inactive': "چند روز نیامدن",
+    'ar.s.eventNone': "وقتی بازیکن رویدادی ثبت کند",
+    'ar.s.event': "وقتی رویداد «{event}» برای بازیکن ثبت شود",
+    'ar.s.eventMatch': "وقتی رویداد «{event}» با {field} = {value} برای بازیکن ثبت شود",
+    'ar.s.streak': "وقتی زنجیرهٔ «{streak}» تا {n} ساعت دیگر می‌شکند",
+    'ar.s.chance': "وقتی نوبت رایگان «{game}» آماده شود",
+    'ar.s.inactive': "وقتی بازیکن {n} روز نیامده باشد",
+    'ar.s.then': "پیام با «{ch}» می‌رود؛",
+    'ar.anyStreak': "هر زنجیره",
+    'ar.anyGame': "هر بازی شانس",
+    'ar.cool.none': "بدون فاصلهٔ تکرار",
+    'ar.cool.days': "هر بازیکن هر {n} روز یک بار",
+    'ar.cool.hours': "هر بازیکن هر {n} ساعت یک بار",
+    'ar.cool.minutes': "هر بازیکن هر {n} دقیقه یک بار",
+    'ar.quiet': "نه بین {from} تا {to}",
+    'ar.sentN': "{n} رفته در ۷ روز",
+    'ar.skippedN': "{n} رد شده",
+    'f.ar.key.hint': "کلید ثابت قانون. بعد از ساختن عوض نمی‌شود.",
+    'f.ar.active.hint': "قانون خاموش چیزی نمی‌فرستد و پیام‌های در صف را هم رد می‌کند.",
+    'f.ar.name': "نام داخلی",
+    'f.ar.name.hint': "فقط در کنسول دیده می‌شود.",
+    'ar.h.when': "کی فرستاده شود",
+    'ar.h.message': "پیام",
+    'ar.h.limits': "محدودیت‌ها",
+    'ar.h.stats': "آمار و آزمایش",
+    'f.ar.trigger': "شروع‌کننده",
+    'f.ar.event': "رویداد",
+    'f.ar.event.hint': "رویدادهای سرور مثل «باز شدن دستاورد» یا «ChanceGame:Played» هم این‌جا هستند. هر رویداد فقط یک بار پیام می‌سازد.",
+    'f.ar.matchField': "فیلد شرط (اختیاری)",
+    'f.ar.match.hint': "فقط وقتی این فیلد از جزئیات رویداد با مقدار جور باشد، مثل key = star_ach_rounds.",
+    'f.ar.matchValue': "مقدار شرط",
+    'f.ar.streak': "زنجیره",
+    'f.ar.streak.hint': "خالی یعنی همهٔ زنجیره‌ها.",
+    'f.ar.hoursBefore': "چند ساعت پیش از شکستن",
+    'f.ar.hoursBefore.hint': "از ۱ تا ۲۳ ساعت مانده به پایان روز در وقت پروژه.",
+    'f.ar.game': "بازی شانس",
+    'f.ar.game.hint': "خالی یعنی هر بازی‌ای که نوبت رایگان دارد.",
+    'f.ar.days': "روزهای نیامدن",
+    'f.ar.days.hint': "بر پایهٔ آخرین ورود. پیام تا دو روز بعد از رسیدن به این عدد فرستاده می‌شود.",
+    'f.ar.channel': "راه ارسال",
+    'f.ar.category': "دستهٔ اعلان",
+    'f.ar.category.hint': "بازیکنی که این دسته را خاموش کرده پیام نمی‌گیرد.",
+    'f.ar.title': "عنوان",
+    'f.ar.body': "متن",
+    'ar.vars': "این‌ها در متن جایگزین می‌شوند:",
+    'f.ar.image': "تصویر",
+    'f.ar.image.hint': "اختیاری؛ روی گوشی کنار پیام نشان داده می‌شود.",
+    'f.ar.action.hint': "زدن روی پیام چه کند.",
+    'f.ar.url': "نشانی وب",
+    'f.ar.cooldown': "فاصلهٔ تکرار (دقیقه)",
+    'f.ar.cooldown.hint': "هر بازیکن در این فاصله فقط یک پیام از این قانون می‌گیرد. ۰ یعنی بدون فاصله.",
+    'ar.quietNote': "در ساعت سکوت (وقت {zone}) پیام نگه داشته می‌شود و بعد از آن می‌رود.",
+    'f.ar.quietStart': "سکوت از",
+    'f.ar.quietEnd': "سکوت تا",
+    'ar.st.sent': "رفته در ۷ روز",
+    'ar.st.skipped': "رد شده در ۷ روز",
+    'ar.st.pending': "در صف",
+    'ar.st.opened': "باز شده در ۷ روز",
+    'ar.recent': "آخرین بارها",
+    'ar.noFires': "هنوز پیامی ساخته نشده.",
+    'ar.fire.pending': "در صف",
+    'ar.fire.sent': "رفت",
+    'ar.fire.skipped': "رد شد",
+    'ar.why.cooldown': "فاصلهٔ تکرار",
+    'ar.why.opted_out': "دسته را خاموش کرده",
+    'ar.why.rule_off': "قانون خاموش بود",
+    'ar.dueAt': "می‌رود در {t}",
+    'ar.openNote': "دیدن پیام",
+    'ar.test': "ارسال آزمایشی",
+    'ar.test.hint': "پیام این قانون را با مقدارهای نمونه همین حالا برای یک بازیکن می‌فرستد.",
+    'ar.test.player': "بازیکن",
+    'ar.test.send': "بفرست",
+    'ar.test.need': "اول یک بازیکن انتخاب کن.",
+    'ar.test.done': "پیام آزمایشی ساخته شد.",
+    'col.nc.choice': "انتخاب بازیکن",
+    'col.nc.players': "بازیکنان",
+    'nc.canOptOut': "بازیکن خاموشش می‌کند",
+    'nc.locked': "همیشه روشن",
+    'nc.defaultOn': "پیش‌فرض روشن",
+    'nc.defaultOff': "پیش‌فرض خاموش",
+    'nc.optedOutN': "{n} نفر خاموش کرده‌اند",
+    'nc.usedN': "{c} کمپین، {r} قانون",
+    'f.nc.key.hint': "کلید ثابت دسته. بازی با همین کلید انتخاب بازیکن را می‌فرستد.",
+    'f.nc.active.hint': "دستهٔ خاموش در تنظیمات بازی نشان داده نمی‌شود.",
+    'f.nc.name': "نام دسته",
+    'f.nc.description.hint': "یک جملهٔ کوتاه که بازیکن در تنظیمات اعلان می‌بیند.",
+    'f.nc.canOptOut': "بازیکن بتواند خاموشش کند",
+    'f.nc.canOptOut.hint': "برای پیام‌های مهم حساب و پرداخت خاموش بگذار.",
+    'f.nc.defaultOn': "پیش‌فرض روشن",
+    'f.nc.defaultOn.hint': "بازیکنی که هنوز چیزی انتخاب نکرده این را می‌گیرد.",
+    'code.CATEGORY_ALWAYS_ON': "دسته‌ای که بازیکن خاموشش نمی‌کند باید پیش‌فرض روشن باشد.",
+    'code.CATEGORY_REQUIRED': "دستهٔ اعلان را انتخاب کن.",
+    'code.CATEGORY_LOCKED': "این دسته خاموش نمی‌شود.",
+    'code.INVALID_TRIGGER': "شروع‌کننده درست نیست.",
+    'code.INVALID_MATCH_FIELD': "نام فیلد شرط را مثل entityId بنویس.",
+    'code.INVALID_MATCH_VALUE': "مقدار شرط را بنویس (حداکثر ۱۰۰ نویسه).",
+    'code.INVALID_HOURS_BEFORE': "عددی از ۱ تا ۲۳ ساعت بده.",
+    'code.INVALID_DAYS': "عددی از ۱ تا ۳۶۵ روز بده.",
+    'code.INVALID_COOLDOWN': "فاصلهٔ تکرار باید از ۰ تا ۵۲۵۶۰۰ دقیقه باشد.",
+    'code.INVALID_QUIET_HOURS': "شروع و پایان سکوت را بده و یکی نباشند.",
+    'code.SCHEDULE_IN_PAST': "زمانی در آینده انتخاب کن.",
+    'code.SCHEDULE_TOO_FAR': "حداکثر یک سال جلوتر.",
+    'code.NOT_CANCELLABLE': "فقط پیام زمان‌بندی‌شده یا در حال ارسال لغو می‌شود.",
+    'code.AUDIENCE_NOT_ALLOWED': "فیلتر بازیکنان فقط برای پیام درون‌بازی و پوش است.",
+    'code.IMAGE_NOT_ALLOWED': "پیامک و ایمیل تصویر ندارند.",
+    'code.INVALID_SERVICE_ACCOUNT': "کلید حساب سرویس درست نیست.",
+    'code.INVALID_TOKEN': "توکن دستگاه درست نیست.",
+    'code.PREFS_REQUIRED': "دست‌کم یک دسته بفرست.",
+    'code.TOO_MANY_PREFS': "دسته‌های زیادی فرستاده شده.",
+    'nt.openedN': "{n} بار باز شده",
+    'nt.awayN': "دست‌کم {n} روز نیامده",
+    'rerr.opted_out': "این دسته را خاموش کرده",
+    'rerr.no_device': "دستگاه ثبت‌شده ندارد",
+    'rerr.cancelled': "لغو شد",
+    'rerr.cooldown': "فاصلهٔ تکرار"
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -5425,7 +5626,208 @@ var MESSAGES = {
     'code.TOO_MANY_SPONSORS': "Too many sponsors were sent.",
     'new.sponsors': "New sponsor",
     'edit.sponsors': "Edit sponsor",
-    'search.sponsors': "Search key, name, contact and website"
+    'search.sponsors': "Search key, name, contact and website",
+    'nav.auto-rules': "Automatic notifications",
+    'desc.auto-rules': "Messages the server sends by itself: when a player does something, a streak is about to break, a free turn is ready or a player has been away. Give each rule a repeat gap and quiet hours.",
+    'new.auto-rules': "New automatic rule",
+    'edit.auto-rules': "Edit automatic rule",
+    'search.auto-rules': "Search key, name, title and event",
+    'nav.notify-categories': "Notification categories",
+    'desc.notify-categories': "Every notification belongs to a category, and players can turn each category off for themselves, except the ones that are always on.",
+    'new.notify-categories': "New notification category",
+    'edit.notify-categories': "Edit notification category",
+    'search.notify-categories': "Search category key and name",
+    'tab.push': "Push",
+    'desc.push': "Services that deliver notifications to players' phones and browsers. «Log only» never sends anything and only writes to the server log; keep it for testing.",
+    'pv.kind.fcm': "Firebase Cloud Messaging",
+    'pv.kind.log': "Log only (test)",
+    'pv.field.serviceAccount': "Service account key (JSON)",
+    'pv.hint.serviceAccount': "Paste the Firebase service account JSON file here. It is never shown again after saving.",
+    'pv.empty.push': "No push service yet",
+    'pv.test.player': "Player (username or ID)",
+    'pv.project': "Project {id}",
+    'pv.log.note': "This service never sends a real message.",
+    'ch.push': "Push",
+    'ch.push_in_app': "Push and inbox",
+    'nst.scheduled': "Scheduled",
+    'nst.cancelled': "Cancelled",
+    'nk.message': "Message",
+    'nk.campaign': "Campaign",
+    'nk.auto': "Automatic",
+    'nk.test': "Test",
+    'nt.f.name': "Internal campaign name",
+    'nt.f.name.hint': "Only the console shows it.",
+    'nt.s.category': "Category and picture",
+    'nt.f.category': "Notification category",
+    'nt.f.category.hint': "Players who turned this category off do not get it.",
+    'nt.f.image': "Picture",
+    'nt.f.image.hint': "Shown next to the message on the phone and in the inbox.",
+    'nt.s.audience': "Player filters",
+    'nt.audience.hint': "Of the recipients above, only players who match these filters get the message. Platform and version come from the player's registered devices.",
+    'nt.f.inactiveDays': "Away for at least these days",
+    'nt.f.inactiveDays.hint': "Empty means it does not matter.",
+    'nt.s.when': "When to send",
+    'nt.when.now': "Now",
+    'nt.when.later': "At a set time",
+    'nt.when.at': "Send at",
+    'nt.scheduledFor': "Sends at {t}",
+    'nt.push.hint': "The message goes to the player's registered devices. «Push and inbox» also puts it in the game inbox.",
+    'nt.noPushProvider': "No push service is active.",
+    'nt.goSettings.push': "Go to the push settings",
+    'tg.withPush': "{n} have a registered device",
+    'tg.optedOut': "{n} turned this category off",
+    'tg.noDevice': "{n} have no device and get no push",
+    'nt.test': "Test send",
+    'nt.test.hint': "Sends this message to one player only, with no schedule and ignoring their category choices.",
+    'nt.test.send': "Send to this player",
+    'nt.test.need': "Pick a player first.",
+    'nt.test.done': "The test message was created.",
+    'nt.open': "Open the message",
+    'nt.schedule': "Schedule",
+    'nt.scheduled': "The campaign is scheduled.",
+    'nt.confirmSchedule.title': "Schedule this campaign?",
+    'nt.confirmSchedule.text': "It goes out at {t} to the players who match the filters then.",
+    'nt.cancel': "Cancel sending",
+    'nt.cancel.title': "Cancel sending?",
+    'nt.cancel.text': "Messages that have not gone out are not sent. Messages already sent stay.",
+    'nt.cancel.ok': "Cancel it",
+    'nt.cancelled': "Sending was cancelled.",
+    'nt.cancelledBy': "Cancelled by {who} at {t}",
+    'nt.opened': "Opened",
+    'nt.pushSent': "Pushes delivered",
+    'nt.pushFailed': "Pushes failed",
+    'nt.category': "Category",
+    'nt.kind': "Kind",
+    'nt.rule': "Rule",
+    'nt.audience': "Filters",
+    'nt.audience.none': "All recipients",
+    'nt.openedAt': "Opened {t}",
+    'nt.pushN': "Push: {n}",
+    'act.screen': "Open a screen",
+    'act.product': "Show a product",
+    'col.ar.rule': "Rule",
+    'col.ar.when': "When",
+    'col.ar.how': "How",
+    'filter.ar.trigger': "Trigger",
+    'filter.ar.category': "Category",
+    'ar.trigger.event': "A player event",
+    'ar.trigger.streak_at_risk': "Streak about to break",
+    'ar.trigger.chance_ready': "Free chance turn ready",
+    'ar.trigger.inactive': "Away for some days",
+    'ar.s.eventNone': "When a player records an event",
+    'ar.s.event': "When \"{event}\" is recorded for a player",
+    'ar.s.eventMatch': "When \"{event}\" with {field} = {value} is recorded for a player",
+    'ar.s.streak': "When the streak \"{streak}\" breaks within {n} hours",
+    'ar.s.chance': "When the free turn of \"{game}\" is ready",
+    'ar.s.inactive': "When a player has been away for {n} days",
+    'ar.s.then': "the message goes by \"{ch}\";",
+    'ar.anyStreak': "any streak",
+    'ar.anyGame': "any chance game",
+    'ar.cool.none': "no repeat gap",
+    'ar.cool.days': "once every {n} days per player",
+    'ar.cool.hours': "once every {n} hours per player",
+    'ar.cool.minutes': "once every {n} minutes per player",
+    'ar.quiet': "not between {from} and {to}",
+    'ar.sentN': "{n} sent in 7 days",
+    'ar.skippedN': "{n} skipped",
+    'f.ar.key.hint': "A fixed rule key. It cannot change after creation.",
+    'f.ar.active.hint': "A rule that is off sends nothing and skips its queued messages.",
+    'f.ar.name': "Internal name",
+    'f.ar.name.hint': "Only the console shows it.",
+    'ar.h.when': "When to send",
+    'ar.h.message': "Message",
+    'ar.h.limits': "Limits",
+    'ar.h.stats': "Numbers and test",
+    'f.ar.trigger': "Trigger",
+    'f.ar.event': "Event",
+    'f.ar.event.hint': "Server events such as \"Achievement unlocked\" or \"ChanceGame:Played\" are here too. Each event makes at most one message.",
+    'f.ar.matchField': "Condition field (optional)",
+    'f.ar.match.hint': "Only when this field of the event details matches the value, like key = star_ach_rounds.",
+    'f.ar.matchValue': "Condition value",
+    'f.ar.streak': "Streak",
+    'f.ar.streak.hint': "Empty means every streak.",
+    'f.ar.hoursBefore': "Hours before it breaks",
+    'f.ar.hoursBefore.hint': "1 to 23 hours before the day ends in the project zone.",
+    'f.ar.game': "Chance game",
+    'f.ar.game.hint': "Empty means any game with a free turn.",
+    'f.ar.days': "Days away",
+    'f.ar.days.hint': "Counted from the last sign-in. The message goes out within two days of reaching this number.",
+    'f.ar.channel': "Channel",
+    'f.ar.category': "Notification category",
+    'f.ar.category.hint': "A player who turned this category off gets nothing.",
+    'f.ar.title': "Title",
+    'f.ar.body': "Text",
+    'ar.vars': "These are filled in:",
+    'f.ar.image': "Picture",
+    'f.ar.image.hint': "Optional; shown next to the message on the phone.",
+    'f.ar.action.hint': "What a tap on the message does.",
+    'f.ar.url': "Web address",
+    'f.ar.cooldown': "Repeat gap (minutes)",
+    'f.ar.cooldown.hint': "Each player gets at most one message from this rule in this gap. 0 means no gap.",
+    'ar.quietNote': "During quiet hours ({zone} time) messages wait and go out afterwards.",
+    'f.ar.quietStart': "Quiet from",
+    'f.ar.quietEnd': "Quiet until",
+    'ar.st.sent': "Sent in 7 days",
+    'ar.st.skipped': "Skipped in 7 days",
+    'ar.st.pending': "Waiting",
+    'ar.st.opened': "Opened in 7 days",
+    'ar.recent': "Latest",
+    'ar.noFires': "No message made yet.",
+    'ar.fire.pending': "Waiting",
+    'ar.fire.sent': "Sent",
+    'ar.fire.skipped': "Skipped",
+    'ar.why.cooldown': "repeat gap",
+    'ar.why.opted_out': "category turned off",
+    'ar.why.rule_off': "rule was off",
+    'ar.dueAt': "goes at {t}",
+    'ar.openNote': "Open the message",
+    'ar.test': "Test send",
+    'ar.test.hint': "Sends this rule's message with sample values to one player now.",
+    'ar.test.player': "Player",
+    'ar.test.send': "Send",
+    'ar.test.need': "Pick a player first.",
+    'ar.test.done': "The test message was created.",
+    'col.nc.choice': "Player choice",
+    'col.nc.players': "Players",
+    'nc.canOptOut': "Players can turn it off",
+    'nc.locked': "Always on",
+    'nc.defaultOn': "On by default",
+    'nc.defaultOff': "Off by default",
+    'nc.optedOutN': "{n} turned it off",
+    'nc.usedN': "{c} campaigns, {r} rules",
+    'f.nc.key.hint': "A fixed category key. The game sends the player's choice with this key.",
+    'f.nc.active.hint': "A category that is off is not shown in the game settings.",
+    'f.nc.name': "Category name",
+    'f.nc.description.hint': "A short sentence players see in their notification settings.",
+    'f.nc.canOptOut': "Players can turn it off",
+    'f.nc.canOptOut.hint': "Turn this off for important account and payment messages.",
+    'f.nc.defaultOn': "On by default",
+    'f.nc.defaultOn.hint': "Players who have not chosen yet get these.",
+    'code.CATEGORY_ALWAYS_ON': "A category players cannot turn off must be on by default.",
+    'code.CATEGORY_REQUIRED': "Pick a notification category.",
+    'code.CATEGORY_LOCKED': "This category cannot be turned off.",
+    'code.INVALID_TRIGGER': "The trigger is not valid.",
+    'code.INVALID_MATCH_FIELD': "Write the condition field like entityId.",
+    'code.INVALID_MATCH_VALUE': "Write the condition value (at most 100 characters).",
+    'code.INVALID_HOURS_BEFORE': "Give 1 to 23 hours.",
+    'code.INVALID_DAYS': "Give 1 to 365 days.",
+    'code.INVALID_COOLDOWN': "The repeat gap must be 0 to 525600 minutes.",
+    'code.INVALID_QUIET_HOURS': "Give both quiet times, and not the same one.",
+    'code.SCHEDULE_IN_PAST': "Pick a time in the future.",
+    'code.SCHEDULE_TOO_FAR': "At most a year ahead.",
+    'code.NOT_CANCELLABLE': "Only a scheduled or sending message can be cancelled.",
+    'code.AUDIENCE_NOT_ALLOWED': "Player filters only work with in-game and push messages.",
+    'code.IMAGE_NOT_ALLOWED': "SMS and email have no picture.",
+    'code.INVALID_SERVICE_ACCOUNT': "The service account key is not valid.",
+    'code.INVALID_TOKEN': "The device token is not valid.",
+    'code.PREFS_REQUIRED': "Send at least one category.",
+    'code.TOO_MANY_PREFS': "Too many categories were sent.",
+    'nt.openedN': "opened {n} times",
+    'nt.awayN': "away for at least {n} days",
+    'rerr.opted_out': "turned this category off",
+    'rerr.no_device': "no registered device",
+    'rerr.cancelled': "cancelled",
+    'rerr.cooldown': "repeat gap"
   }
 };
 
@@ -7727,7 +8129,7 @@ var RESOURCES = {
 
 var SECTIONS = {
   economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'achievements', 'chance-games', 'prize-groups', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
-  publication: ['faqs', 'news', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'remote-config'],
+  publication: ['faqs', 'news', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'restrictions', 'chat-words', 'activity'],
   support: ['tickets', 'live-chat']
 };
@@ -8373,10 +8775,11 @@ function overviewPage(container) {
   load();
 }
 
-var CHANNELS = ['in_app', 'sms', 'email'];
-var CHANNEL_ICON = { in_app: 'notifications', sms: 'comments', email: 'send' };
-var NOTIF_STATUS = ['queued', 'sending', 'done', 'failed'];
-var NOTIF_COLOR = { queued: 'secondary', sending: 'primary', done: 'success', failed: 'error' };
+var CHANNELS = ['in_app', 'push', 'push_in_app', 'sms', 'email'];
+var CHANNEL_ICON = { in_app: 'notifications', push: 'push', push_in_app: 'push', sms: 'comments', email: 'send' };
+var NOTIF_STATUS = ['scheduled', 'queued', 'sending', 'done', 'failed', 'cancelled'];
+var NOTIF_COLOR = { scheduled: 'primary', queued: 'secondary', sending: 'primary', done: 'success', failed: 'error', cancelled: 'secondary' };
+var NOTIF_KINDS = ['message', 'campaign', 'auto', 'test'];
 var RECIPIENT_STATUS = ['pending', 'sent', 'skipped', 'failed'];
 var RECIPIENT_COLOR = { pending: 'secondary', sent: 'success', skipped: 'warning', failed: 'error' };
 var SMS_MAX = 600;
@@ -8500,13 +8903,15 @@ var NOTIFICATION_LIST = {
   create: function () { return button({ variant: 'primary', size: 'page', icon: 'send', label: t('nt.new'), onclick: function () { go('notifications', 'new'); } }); },
   filters: [
     { name: 'channel', label: 'filter.channel', options: opts('ch.', CHANNELS) },
-    { name: 'status', label: 'filter.status', options: opts('nst.', NOTIF_STATUS) }
+    { name: 'status', label: 'filter.status', options: opts('nst.', NOTIF_STATUS) },
+    { name: 'kind', label: 'filter.kind', options: opts('nk.', NOTIF_KINDS) }
   ],
   columns: [
     { label: 'col.notification', render: function (it) {
       return h('div', { class: 'min-w-0' },
-        h('div', { class: 'font-medium eco-clamp', dir: 'auto', text: notifTitle(it) }),
-        h('div', { class: 'text-xs text-secondary-500 flex flex-wrap eco-meta' }, h('span', { text: fmtDate(it.createdAt) }), it.createdBy ? h('span', { text: it.createdBy }) : null));
+        h('div', { class: 'font-medium eco-clamp', dir: 'auto', text: it.name || notifTitle(it) }),
+        h('div', { class: 'text-xs text-secondary-500 flex flex-wrap items-center eco-meta' }, it.kind && it.kind !== 'message' ? h('span', { 'data-nt-kind': it.kind }, tag(t('nk.' + it.kind), it.kind === 'auto' ? 'primary' : 'secondary')) : null,
+          h('span', { text: it.status === 'scheduled' && it.scheduledAt ? t('nt.scheduledFor', { t: zoneFmt(it.scheduledAt) }) : fmtDate(it.createdAt) }), it.createdBy ? h('span', { text: it.createdBy }) : null));
     }, skeleton: '65%' },
     { label: 'col.channel', render: function (it) {
       return h('div', { class: 'flex flex-wrap items-center gap-1' }, tag(t('ch.' + it.channel), it.channel === 'in_app' ? 'primary' : 'secondary'), it.providerKind ? h('span', { class: 'text-xs text-secondary-500', text: kindLabel(it.providerKind) }) : null);
@@ -8516,7 +8921,8 @@ var NOTIFICATION_LIST = {
       return h('div', { class: 'flex flex-wrap items-center gap-1' },
         h('span', { class: 'tabular-nums whitespace-nowrap text-sm', text: t('nt.sentOf', { sent: it.sentCount || 0, total: it.recipientCount || 0 }) }),
         it.skippedCount ? tag(t('nt.skippedN', { n: it.skippedCount }), 'warning') : null,
-        it.failedCount ? tag(t('nt.failedN', { n: it.failedCount }), 'error') : null);
+        it.failedCount ? tag(t('nt.failedN', { n: it.failedCount }), 'error') : null,
+        it.openedCount ? h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300 tabular-nums', 'data-nt-opened': '', text: t('nt.openedN', { n: fmtNum(it.openedCount) }) }) : null);
     }, width: 210 },
     { label: 'col.status', render: function (it) { return tag(t('nst.' + it.status), NOTIF_COLOR[it.status]); }, width: 120 }
   ]
@@ -8560,6 +8966,25 @@ function notificationDetail(container, id) {
   var built = false;
   var statsBox = h('div', { class: 'eco-tile-grid' });
   var statusBox = h('div', {});
+  var cancelBox = h('div', { class: 'flex items-center gap-2' });
+
+  function paintCancel(n) {
+    clear(cancelBox);
+    if (n.status !== 'scheduled' && n.status !== 'queued' && n.status !== 'sending') return;
+    var btn = button({ variant: 'danger', size: 'sm', icon: 'close', label: t('nt.cancel'), onclick: function () {
+      confirmModal({ title: t('nt.cancel.title'), text: t('nt.cancel.text'), ok: t('nt.cancel.ok'), danger: true, icon: 'alert' }).then(function (yes) {
+        if (!yes) return;
+        setBusy(btn, true);
+        pubApi('POST', '/notifications/' + encodeURIComponent(id) + '/cancel').then(function (res) {
+          toast('success', t('nt.cancelled'));
+          paintStats(res);
+          loadRecipients();
+        }, function (err) { setBusy(btn, false); toast('error', errorText(err)); });
+      });
+    } });
+    btn.setAttribute('data-nt-cancel', '');
+    cancelBox.appendChild(btn);
+  }
 
   function alive() { return container.isConnected && rendered && rendered.root === container; }
 
@@ -8588,16 +9013,24 @@ function notificationDetail(container, id) {
   }
 
   function paintStats(n) {
-    clear(statusBox).appendChild(h('div', { class: 'flex flex-wrap items-center gap-1.5' },
+    clear(statusBox).appendChild(h('div', { class: 'flex flex-wrap items-center gap-1.5', 'data-nt-status': n.status },
       tag(t('nst.' + n.status), NOTIF_COLOR[n.status]),
-      n.status === 'queued' || n.status === 'sending' ? h('span', { class: 'text-xs text-secondary-500', text: t('nt.live') }) : null));
+      n.status === 'queued' || n.status === 'sending' ? h('span', { class: 'text-xs text-secondary-500', text: t('nt.live') }) : null,
+      n.status === 'scheduled' && n.scheduledAt ? h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('nt.scheduledFor', { t: zoneFmt(n.scheduledAt) }) }) : null,
+      n.status === 'cancelled' && n.cancelledAt ? h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('nt.cancelledBy', { who: n.cancelledBy || '—', t: zoneFmt(n.cancelledAt) }) }) : null));
     clear(statsBox);
     statsBox.appendChild(statTile(t('nt.recipients'), n.recipientCount));
     statsBox.appendChild(statTile(t('rst.sent'), n.sentCount, 'success'));
     statsBox.appendChild(statTile(t('rst.skipped'), n.skippedCount, n.skippedCount ? 'warning' : null));
     statsBox.appendChild(statTile(t('rst.failed'), n.failedCount, n.failedCount ? 'error' : null));
     statsBox.appendChild(statTile(t('rst.pending'), n.pendingCount));
-    if (n.channel === 'in_app') statsBox.appendChild(statTile(t('nt.seen'), n.seenCount));
+    if (n.channel === 'in_app' || n.channel === 'push_in_app') statsBox.appendChild(statTile(t('nt.seen'), n.seenCount));
+    if (n.channel !== 'sms' && n.channel !== 'email') statsBox.appendChild(statTile(t('nt.opened'), n.openedCount, n.openedCount ? 'success' : null));
+    if (n.channel === 'push' || n.channel === 'push_in_app') {
+      statsBox.appendChild(statTile(t('nt.pushSent'), n.pushSent, n.pushSent ? 'success' : null));
+      statsBox.appendChild(statTile(t('nt.pushFailed'), n.pushFailed, n.pushFailed ? 'error' : null));
+    }
+    paintCancel(n);
   }
 
   function build(n) {
@@ -8606,8 +9039,15 @@ function notificationDetail(container, id) {
     clear(titleBox).appendChild(h('span', { text: t('nt.title') + ' ' }));
     titleBox.appendChild(h('span', { class: 'font-mono text-base text-secondary-500', dir: 'ltr', text: String(n.id).slice(0, 8) }));
     var action = n.action && n.action.type ? h('div', { class: 'flex flex-wrap items-center gap-1.5' }, tag(t('act.' + n.action.type), 'secondary'), mono(n.action.value), n.action.label && i18nText(n.action.label) ? h('span', { class: 'text-sm', text: i18nText(n.action.label) }) : null) : null;
+    var audChips = n.audience && Object.keys(n.audience).length ? bnTargetChips(Object.assign({ playerAge: 'all' }, n.audience)) : [];
+    if (n.audience && n.audience.inactiveDays) audChips.push(t('nt.awayN', { n: fmtNum(n.audience.inactiveDays) }));
     grid.appendChild(section('nt.info', dl([
-      ['col.status', statusBox],
+      ['col.status', h('div', { class: 'flex flex-wrap items-center justify-between gap-2' }, statusBox, cancelBox)],
+      ['nt.kind', n.kind ? h('span', { 'data-nt-kind': n.kind }, tag(t('nk.' + n.kind), 'secondary')) : null],
+      ['nt.f.name', n.name || null],
+      ['nt.category', n.categoryId ? h('span', { 'data-nt-category': n.categoryKey || '', text: i18nText(n.categoryName) || n.categoryKey }) : null],
+      ['nt.rule', n.ruleId ? h('a', { href: hashFor('auto-rules', n.ruleId), class: 'eco-link', text: n.ruleKey || n.ruleId }) : null],
+      ['nt.audience', n.kind === 'campaign' ? h('span', { 'data-nt-audience': '', text: audChips.length ? audChips.join(' · ') : t('nt.audience.none') }) : null],
       ['col.channel', h('div', { class: 'flex flex-wrap items-center gap-1.5' }, tag(t('ch.' + n.channel), n.channel === 'in_app' ? 'primary' : 'secondary'), n.providerKind ? h('span', { class: 'text-sm', text: kindLabel(n.providerKind) }) : null)],
       ['col.target', h('span', { text: targetText(n.target) })],
       ['nt.action', action],
@@ -8616,6 +9056,7 @@ function notificationDetail(container, id) {
       ['pay.updatedAt', dateCell(n.updatedAt)]
     ])));
     var content = h('div', { class: 'flex flex-col gap-4' });
+    if (n.imageUrl) content.appendChild(h('img', { class: 'eco-nt-image rounded-md', src: n.imageUrl, alt: '', loading: 'lazy', 'data-nt-image': '' }));
     var hasTitle = !!i18nText(n.title);
     if (hasTitle) content.appendChild(h('div', {}, h('div', { class: 'text-sm font-medium mb-1', text: t('nt.f.title') }), i18nBlock(n.title)));
     content.appendChild(h('div', {}, hasTitle ? h('div', { class: 'text-sm font-medium mb-1', text: t('nt.f.body') }) : null, i18nBlock(n.body, n.channel !== 'sms')));
@@ -8651,11 +9092,13 @@ function notificationDetail(container, id) {
           userCell(it.userId, it.username, it.displayName),
           h('div', { class: 'flex flex-wrap gap-1' }, tag(t('rst.' + it.status), RECIPIENT_COLOR[it.status]), sandbox ? tag(t('pv.sandbox.short'), 'warning') : null, it.lang ? h('span', { 'data-recipient-lang': it.lang }, tag(langName(it.lang), 'secondary')) : null),
           it.address ? mono(it.address) : h('span', {}),
-          it.error && !sandbox && it.error !== 'no address' ? h('span', { class: 'text-xs text-error-600 dark:text-error-400 break-words', dir: 'auto', text: it.error }) : h('span', {}),
+          it.error && !sandbox && it.error !== 'no address' ? h('span', { class: 'text-xs ' + (it.status === 'skipped' ? 'text-secondary-600 dark:text-secondary-300' : 'text-error-600 dark:text-error-400') + ' break-words', dir: 'auto', 'data-recipient-error': it.error, text: has('rerr.' + it.error.replace(/ /g, '_')) ? t('rerr.' + it.error.replace(/ /g, '_')) : it.error }) : h('span', {}),
           h('span', { class: 'tabular-nums', text: fmtNum(it.attempts || 0) }),
           h('div', { class: 'flex flex-col text-xs text-secondary-600 dark:text-secondary-300' },
             it.sentAt ? h('span', { class: 'whitespace-nowrap', text: t('nt.sentAt', { t: fmtDate(it.sentAt) }) }) : null,
-            it.seenAt ? h('span', { class: 'whitespace-nowrap', text: t('nt.seenAt', { t: fmtDate(it.seenAt) }) }) : null)
+            it.seenAt ? h('span', { class: 'whitespace-nowrap', text: t('nt.seenAt', { t: fmtDate(it.seenAt) }) }) : null,
+            it.openedAt ? h('span', { class: 'whitespace-nowrap', 'data-recipient-opened': '', text: t('nt.openedAt', { t: fmtDate(it.openedAt) }) }) : null,
+            it.pushSent || it.pushFailed ? h('span', { class: 'whitespace-nowrap tabular-nums', 'data-recipient-push': String(it.pushSent || 0), text: t('nt.pushN', { n: fmtNum(it.pushSent || 0) + '/' + fmtNum((it.pushSent || 0) + (it.pushFailed || 0)) }) }) : null)
         ] };
       })));
     }
@@ -8722,6 +9165,38 @@ function usersApi(method, path) {
   });
 }
 
+function ntAudienceFields() {
+  var all = RESOURCES.banners.fields;
+  var from = -1;
+  var to = all.length;
+  all.forEach(function (f, i) {
+    if (f.type === 'heading' && f.label === 'bn.h.who') from = i;
+    if (f.type === 'heading' && f.label === 'bn.h.stats') to = i;
+  });
+  var out = all.slice(from + 1, to);
+  out.push({ name: 'inactiveDays', type: 'number', label: 'nt.f.inactiveDays', hint: 'nt.f.inactiveDays.hint', optional: true, min: 1, max: 365 });
+  return out;
+}
+
+function ntAudiencePayload(a) {
+  a = a || {};
+  var out = {};
+  if ((a.audienceTagIds || []).length) out.audienceTagIds = a.audienceTagIds.slice();
+  if ((a.excludeTagIds || []).length) out.excludeTagIds = a.excludeTagIds.slice();
+  if (a.minLevel != null && a.minLevel !== '') out.minLevel = Number(a.minLevel);
+  if (a.maxLevel != null && a.maxLevel !== '') out.maxLevel = Number(a.maxLevel);
+  if ((out.minLevel != null || out.maxLevel != null) && a.levelTableId) out.levelTableId = a.levelTableId;
+  if ((a.platforms || []).length) out.platforms = a.platforms.slice();
+  if (a.minVersion) out.minVersion = toLatinDigits(a.minVersion).trim();
+  if (a.maxVersion) out.maxVersion = toLatinDigits(a.maxVersion).trim();
+  var countries = toLatinDigits(a.countriesText || '').split(/[\s,،]+/).filter(Boolean).map(function (c) { return c.toUpperCase(); });
+  if (countries.length) out.countries = countries;
+  if ((a.languages || []).length) out.languages = a.languages.slice();
+  if (a.playerAge && a.playerAge !== 'all') { out.playerAge = a.playerAge; out.newDays = Number(a.newDays) || 7; }
+  if (a.inactiveDays) out.inactiveDays = Number(a.inactiveDays);
+  return Object.keys(out).length ? out : null;
+}
+
 function composePage(container, query) {
   var backBtn = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('back'), onclick: function () { go('notifications', null, lastQuery.notifications || {}); } });
   var frame = pageFrame(t('nt.new'), t('nt.new.desc'), backBtn);
@@ -8733,12 +9208,21 @@ function composePage(container, query) {
     providerId: '',
     title: {},
     body: {},
+    name: '',
+    imageUrl: '',
+    categoryId: query.categoryId || '',
+    audience: { audienceTagIds: [], excludeTagIds: [], levelTableId: null, minLevel: null, maxLevel: null, playerAge: 'all', newDays: 7, platforms: [], minVersion: '', maxVersion: '', countriesText: '', languages: [], inactiveDays: null },
+    when: 'now',
+    scheduledAt: null,
     action: { type: '', value: '', label: {} },
     target: { mode: query.tagId ? 'tags' : 'users', userIds: query.userId ? [query.userId] : [], groupId: '', tagIds: query.tagId ? [query.tagId] : [] }
   };
   var providers = [];
   var preview = null;
   var previewSeq = 0;
+
+  function isPush() { return v.channel === 'push' || v.channel === 'push_in_app'; }
+  function isRich() { return v.channel !== 'sms' && v.channel !== 'email'; }
 
   function skeleton() {
     clear(layout);
@@ -8766,9 +9250,10 @@ function composePage(container, query) {
       v.channel = c;
       v.providerId = '';
       paintChannel();
-      paintCount();
+      refreshPreview();
     }, t('col.channel'), 'md');
-    main.appendChild(section('nt.s.channel', h('div', {}, h('div', { class: 'mb-4' }, channelSeg), providerBox)));
+    channelSeg.setAttribute('data-nt-channels', '');
+    main.appendChild(section('nt.s.channel', h('div', {}, h('div', { class: 'mb-4 eco-seg-scroll' }, channelSeg), providerBox)));
 
     var titleRow = h('div', {});
     var titleCtl = translatedInput(v.title, { label: t('nt.f.title'), oninput: function (x) { v.title = x; fields.title.setError(''); titleCtl.markLang(null); } });
@@ -8778,22 +9263,36 @@ function composePage(container, query) {
     var bodyBox = h('div', {});
     main.appendChild(section('nt.s.content', h('div', {}, titleRow, bodyBox)));
 
-    var actType = selectInput('', [{ value: 'url', label: t('act.url') }, { value: 'goto', label: t('act.goto') }], function (x) {
+    var nameCtl = textInput(v.name, { label: t('nt.f.name'), oninput: function (x) { v.name = x; } });
+    nameCtl.setAttribute('data-nt-name', '');
+    fields.name = field(t('nt.f.name'), nameCtl, t('nt.f.name.hint'), { optional: true });
+    var catPicker = refPicker({ resource: 'notify-categories', api: pubApi, value: v.categoryId, required: false, label: t('nt.f.category'), placeholder: t('nt.f.category'), onchange: function (id) {
+      v.categoryId = id || '';
+      fields.category.setError('');
+      refreshPreview();
+    } });
+    catPicker.setAttribute('data-nt-category-pick', '');
+    fields.category = field(t('nt.f.category'), catPicker, t('nt.f.category.hint'));
+    var imageCtl = imageInput(v.imageUrl, function (x) { v.imageUrl = x || ''; });
+    fields.image = field(t('nt.f.image'), imageCtl, t('nt.f.image.hint'), { optional: true });
+    var catSection = section('nt.s.category', h('div', {}, fields.name, fields.category, fields.image));
+    main.appendChild(catSection);
+
+    var actType = selectInput('', [{ value: 'goto', label: t('act.goto') }, { value: 'url', label: t('act.url') }, { value: 'product', label: t('act.product') }, { value: 'achievement', label: t('act.achievement') }], function (x) {
       v.action.type = x;
       actValue.hidden = !x;
-      actValue.placeholder = x === 'url' ? 'https://' : 'shop';
+      actValue.placeholder = x === 'url' ? 'https://' : x === 'product' ? 'star_pack_vip' : x === 'achievement' ? 'star_ach_rounds' : 'shop';
       if (x === 'goto') actValue.setAttribute('list', 'eco-nt-goto'); else actValue.removeAttribute('list');
       fields.action.setError('');
     }, { label: t('act.type'), placeholder: t('act.none') });
     var actValue = textInput('', { ltr: true, mono: true, label: t('act.value'), oninput: function (x) { v.action.value = x.trim(); fields.action.setError(''); } });
     actValue.hidden = true;
-    fields.action = field(null, h('div', { class: 'eco-form-row' }, actType, actValue, h('datalist', { id: 'eco-nt-goto' }, GOTO_SCREENS.map(function (s) { return h('option', { value: s }); }))), t('nt.action.hint'));
+    fields.action = field(null, h('div', { class: 'eco-form-row' }, actType, actValue, h('datalist', { id: 'eco-nt-goto' }, GOTO_SCREENS.concat(['achievements', 'chance', 'tasks', 'notify']).map(function (s) { return h('option', { value: s }); }))), t('nt.action.hint'));
     var actLabelCtl = translatedInput(v.action.label, { label: t('act.label'), oninput: function (x) { v.action.label = x; fields.actionLabel.setError(''); actLabelCtl.markLang(null); } });
     fields.actionLabel = field(t('act.label'), actLabelCtl, t('nt.action.label.hint'), { optional: true });
     fields.actionLabel.ctl = actLabelCtl;
     fields.actionLabel.hidden = true;
-    var actType0 = actType;
-    actType0.addEventListener('change', function () { fields.actionLabel.hidden = !actType0.value; });
+    actType.addEventListener('change', function () { fields.actionLabel.hidden = !actType.value; });
     var actionSection = section('nt.s.action', h('div', {}, fields.action, fields.actionLabel));
     main.appendChild(actionSection);
 
@@ -8805,19 +9304,73 @@ function composePage(container, query) {
     }, t('col.target'), 'md');
     main.appendChild(section('nt.s.target', h('div', {}, h('div', { class: 'mb-4' }, modeSeg), targetBox)));
 
+    var audForm = buildForm(ntAudienceFields(), v.audience, {});
+    var audBox = h('details', { class: 'eco-nt-aud', 'data-nt-audience-box': '' },
+      h('summary', { class: 'cursor-pointer text-sm font-medium select-none', text: t('nt.s.audience') }),
+      h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300 mt-2 mb-3', text: t('nt.audience.hint') }), audForm.el);
+    var audLater = debounce(function () { refreshPreview(); }, 400);
+    audForm.el.addEventListener('input', audLater);
+    audForm.el.addEventListener('change', audLater);
+    audForm.el.addEventListener('click', audLater);
+    var audSection = section('nt.s.audience', audBox);
+    main.appendChild(audSection);
+
+    var whenBox = h('div', {});
+    var whenSeg = segmented([{ value: 'now', label: t('nt.when.now') }, { value: 'later', label: t('nt.when.later') }], v.when, function (x) { v.when = x; paintWhen(); }, t('nt.s.when'), 'md');
+    whenSeg.setAttribute('data-nt-when', '');
+    var whenSection = section('nt.s.when', h('div', {}, h('div', { class: 'mb-3' }, whenSeg), whenBox));
+    main.appendChild(whenSection);
+
     var countBox = h('div', { class: 'flex flex-col gap-1', 'aria-live': 'polite' });
     var sendBtn = button({ variant: 'primary', size: 'footer', icon: 'send', label: t('nt.send'), class: 'w-full', onclick: function () { send(); } });
+    sendBtn.setAttribute('data-nt-send', '');
     aside.appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' },
       h('h2', { class: 'text-lg font-medium', text: t('nt.summary') }),
       countBox, errTop, sendBtn)));
+
+    var testPicked = '';
+    var testPicker = refPicker({ resource: 'users', api: usersApi, value: '', required: false, label: t('ar.test.player'), placeholder: t('tg.searchUsers'), onchange: function (x) { testPicked = x || ''; } });
+    var testOut = h('div', { 'aria-live': 'polite', 'data-nt-test-out': '' });
+    var testBtn = button({ variant: 'ghost', size: 'sm', icon: 'send', label: t('nt.test.send'), onclick: function () {
+      clear(testOut);
+      if (!testPicked) { testOut.appendChild(notice('error', t('nt.test.need'))); return; }
+      if (!validate(true)) return;
+      setBusy(testBtn, true);
+      var p = payload();
+      delete p.target;
+      delete p.scheduledAt;
+      delete p.audience;
+      p.userId = testPicked;
+      pubApi('POST', '/notifications/test', p).then(function (res) {
+        testOut.appendChild(h('div', { 'data-nt-test-done': res.id }, notice('success', t('nt.test.done'), h('a', { href: hashFor('notifications', res.id), class: 'eco-link text-sm font-medium', text: t('nt.open') }))));
+      }, function (err) { testOut.appendChild(notice('error', errorText(err))); }).then(function () { setBusy(testBtn, false); });
+    } });
+    testBtn.setAttribute('data-nt-test-run', '');
+    var testCard = card(h('div', { class: 'p-4 flex flex-col gap-2', 'data-nt-test': '' },
+      h('h2', { class: 'text-base font-medium', text: t('nt.test') }),
+      h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('nt.test.hint') }), testPicker, h('div', {}, testBtn), testOut));
+    aside.appendChild(testCard);
+
+    function paintWhen() {
+      clear(whenBox);
+      if (v.when !== 'later') return;
+      fields.when = field(t('nt.when.at'), zoneDateInput(v.scheduledAt, function (iso) { v.scheduledAt = iso; fields.when.setError(''); }));
+      whenBox.appendChild(fields.when);
+    }
 
     function paintChannel() {
       clear(providerBox);
       titleRow.hidden = v.channel === 'sms';
       actionSection.hidden = v.channel === 'sms';
+      catSection.hidden = !isRich();
+      audSection.hidden = !isRich();
+      whenSection.hidden = !isRich();
+      testCard.hidden = !isRich();
+      fields.category.hidden = !isRich();
+      if (!isRich()) { v.when = 'now'; }
       clear(bodyBox);
-      var max = v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : 2000;
-      var bodyCtl = translatedInput(v.body, { label: t(v.channel === 'sms' ? 'nt.f.sms' : 'nt.f.body'), markdown: v.channel !== 'sms', multiline: true, rows: 4, max: max, counter: v.channel === 'sms', oninput: function (x) { v.body = x; fields.body.setError(''); bodyCtl.markLang(null); } });
+      var max = v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : isPush() ? 1000 : 2000;
+      var bodyCtl = translatedInput(v.body, { label: t(v.channel === 'sms' ? 'nt.f.sms' : 'nt.f.body'), markdown: v.channel === 'in_app' || v.channel === 'email', multiline: true, rows: 4, max: max, counter: v.channel === 'sms' || isPush(), oninput: function (x) { v.body = x; fields.body.setError(''); bodyCtl.markLang(null); } });
       fields.body = field(t(v.channel === 'sms' ? 'nt.f.sms' : 'nt.f.body'), bodyCtl, v.channel === 'sms' ? t('nt.sms.hint') : null);
       fields.body.ctl = bodyCtl;
       bodyBox.appendChild(fields.body);
@@ -8825,9 +9378,11 @@ function composePage(container, query) {
         providerBox.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('nt.inapp.hint') }));
         return;
       }
-      var list = providers.filter(function (p) { return p.channel === v.channel && p.isActive; });
+      var pch = isPush() ? 'push' : v.channel;
+      if (isPush()) providerBox.appendChild(h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300 mb-3', text: t('nt.push.hint') }));
+      var list = providers.filter(function (p) { return p.channel === pch && p.isActive; });
       if (!list.length) {
-        providerBox.appendChild(notice('error', t('nt.noProvider'), h('a', { href: hashFor(v.channel), class: 'eco-link text-sm font-medium', text: t('nt.goSettings.' + v.channel) })));
+        providerBox.appendChild(notice('error', isPush() ? t('nt.noPushProvider') : t('nt.noProvider'), h('a', { href: hashFor(pch), class: 'eco-link text-sm font-medium', text: t('nt.goSettings.' + pch) })));
         return;
       }
       var def = list.filter(function (p) { return p.isDefault; })[0] || list[0];
@@ -8888,18 +9443,29 @@ function composePage(container, query) {
       countBox.appendChild(h('div', { class: 'flex items-end gap-2' },
         h('span', { class: 'text-3xl font-semibold tabular-nums', 'data-recipient-count': String(preview.count), text: fmtNum(preview.count) }),
         h('span', { class: 'text-sm text-secondary-500', text: t('nt.recipientsWord') })));
-      var reach = v.channel === 'sms' ? preview.withPhone : v.channel === 'email' ? preview.withEmail : preview.count;
-      countBox.appendChild(h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300', text: t('tg.withPhone', { n: preview.withPhone }) + '، ' + t('tg.withEmail', { n: preview.withEmail }) }));
-      if (v.channel !== 'in_app' && reach < preview.count) {
-        countBox.appendChild(h('div', { class: 'text-sm eco-text-warning', text: t('tg.skipped', { n: preview.count - reach }) }));
+      if (isPush()) {
+        countBox.appendChild(h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300', 'data-nt-with-push': String(preview.withPush), text: t('tg.withPush', { n: fmtNum(preview.withPush) }) }));
+      } else {
+        countBox.appendChild(h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300', text: t('tg.withPhone', { n: preview.withPhone }) + '، ' + t('tg.withEmail', { n: preview.withEmail }) }));
       }
+      if (preview.optedOut) countBox.appendChild(h('div', { class: 'text-sm eco-text-warning', 'data-nt-opted-out': String(preview.optedOut), text: t('tg.optedOut', { n: fmtNum(preview.optedOut) }) }));
+      var reach = v.channel === 'sms' ? preview.withPhone : v.channel === 'email' ? preview.withEmail : v.channel === 'push' ? preview.withPush : preview.count - (preview.optedOut || 0);
+      var left = preview.count - (preview.optedOut || 0) - reach;
+      if (v.channel === 'push' && left > 0) countBox.appendChild(h('div', { class: 'text-sm eco-text-warning', text: t('tg.noDevice', { n: fmtNum(left) }) }));
+      else if ((v.channel === 'sms' || v.channel === 'email') && reach < preview.count) countBox.appendChild(h('div', { class: 'text-sm eco-text-warning', text: t('tg.skipped', { n: preview.count - reach }) }));
     }
 
     var runPreview = debounce(function () {
       var my = ++previewSeq;
       var tg = v.target;
       if ((tg.mode === 'users' && !tg.userIds.length) || (tg.mode === 'group' && !tg.groupId) || (tg.mode === 'tags' && !tg.tagIds.length)) { preview = null; paintCount(); return; }
-      pubApi('GET', '/notifications/preview-target' + qs({ mode: tg.mode, groupId: tg.mode === 'group' ? tg.groupId : '', userIds: tg.mode === 'users' ? tg.userIds.join(',') : '', tagIds: tg.mode === 'tags' ? tg.tagIds.join(',') : '' })).then(function (res) {
+      var body = { channel: v.channel, target: { mode: tg.mode, userIds: tg.mode === 'users' ? tg.userIds : undefined, groupId: tg.mode === 'group' ? tg.groupId : undefined, tagIds: tg.mode === 'tags' ? tg.tagIds : undefined } };
+      if (isRich()) {
+        var aud = ntAudiencePayload(v.audience);
+        if (aud) body.audience = aud;
+        if (v.categoryId) body.categoryId = v.categoryId;
+      }
+      pubApi('POST', '/notifications/preview', body).then(function (res) {
         if (my !== previewSeq) return;
         preview = res;
         paintCount();
@@ -8916,27 +9482,39 @@ function composePage(container, query) {
       runPreview();
     }
 
-    function validate() {
+    function validate(testOnly) {
       var ok = true;
       var setErr = function (f, msg) { if (f) f.setError(msg); if (msg) ok = false; };
-      [fields.title, fields.body, fields.action, fields.actionLabel, fields.target].forEach(function (f) { if (f) f.setError(''); });
-      var max = v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : 2000;
+      [fields.title, fields.body, fields.action, fields.actionLabel, fields.target, fields.category, fields.when].forEach(function (f) { if (f) f.setError(''); });
+      var max = v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : isPush() ? 1000 : 2000;
       var trErr = function (f, val, o) {
         var hit = trCheck(val, o);
         f.ctl.markLang(hit ? hit.lang : null);
         if (hit) setErr(f, hit.code === 'TEXT_TOO_LONG' && v.channel === 'sms' ? t('nt.sms.tooLong') : t('code.' + hit.code, { lang: langName(hit.lang) }));
       };
-      if (v.channel !== 'sms') trErr(fields.title, v.title, { required: true, max: 200 });
+      if (v.channel !== 'sms') trErr(fields.title, v.title, { required: true, max: isPush() ? 120 : 200 });
       trErr(fields.body, v.body, { required: true, max: max });
       if (v.channel !== 'sms' && v.action.type) trErr(fields.actionLabel, v.action.label, { max: 64 });
       if (v.channel !== 'sms' && v.action.type) {
         if (!v.action.value) setErr(fields.action, t('act.value') + ': ' + t('err.required'));
         else if (v.action.type === 'url' && !/^https?:\/\/\S+$/i.test(v.action.value)) setErr(fields.action, t('code.INVALID_ACTION'));
       }
-      if (v.target.mode === 'users' && !v.target.userIds.length) setErr(fields.target, t('code.TARGET_USERS_REQUIRED'));
-      if (v.target.mode === 'group' && !v.target.groupId) setErr(fields.target, t('err.required'));
-      if (v.target.mode === 'tags' && !v.target.tagIds.length) setErr(fields.target, t('code.TARGET_TAGS_REQUIRED'));
-      if (v.channel !== 'in_app' && !providers.some(function (p) { return p.channel === v.channel && p.isActive; })) ok = false;
+      if (isPush() && !v.categoryId) setErr(fields.category, t('code.CATEGORY_REQUIRED'));
+      if (!testOnly) {
+        if (v.target.mode === 'users' && !v.target.userIds.length) setErr(fields.target, t('code.TARGET_USERS_REQUIRED'));
+        if (v.target.mode === 'group' && !v.target.groupId) setErr(fields.target, t('err.required'));
+        if (v.target.mode === 'tags' && !v.target.tagIds.length) setErr(fields.target, t('code.TARGET_TAGS_REQUIRED'));
+        if (v.when === 'later' && isRich()) {
+          if (!v.scheduledAt) setErr(fields.when, t('err.required'));
+          else if (new Date(v.scheduledAt) <= new Date()) setErr(fields.when, t('code.SCHEDULE_IN_PAST'));
+        }
+      }
+      var pch = isPush() ? 'push' : v.channel;
+      if (v.channel !== 'in_app' && !providers.some(function (p) { return p.channel === pch && p.isActive; })) ok = false;
+      if (!ok) {
+        var bad = layout.querySelector('.eco-invalid');
+        if (bad) bad.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
       return ok;
     }
 
@@ -8950,6 +9528,14 @@ function composePage(container, query) {
           if (Object.keys(lbl).length) p.action.label = lbl;
         }
       }
+      if (isRich()) {
+        if (v.name.trim()) p.name = v.name.trim();
+        if (v.imageUrl) p.imageUrl = v.imageUrl;
+        if (v.categoryId) p.categoryId = v.categoryId;
+        var aud = ntAudiencePayload(v.audience);
+        if (aud) p.audience = aud;
+        if (v.when === 'later' && v.scheduledAt) p.scheduledAt = v.scheduledAt;
+      }
       if (v.target.mode === 'users') p.target.userIds = v.target.userIds.slice();
       if (v.target.mode === 'group') p.target.groupId = v.target.groupId;
       if (v.target.mode === 'tags') p.target.tagIds = v.target.tagIds.slice();
@@ -8959,16 +9545,15 @@ function composePage(container, query) {
 
     function send() {
       clear(errTop);
-      if (!validate()) {
-        var bad = layout.querySelector('.eco-invalid');
-        if (bad) bad.scrollIntoView({ block: 'center', behavior: 'smooth' });
-        return;
-      }
+      if (!validate(false)) return;
       var prov = providers.filter(function (p) { return p.id === v.providerId; })[0];
       var live = v.channel !== 'in_app' && prov && !prov.sandbox;
       var count = preview && !preview.error && preview !== 'loading' ? preview.count : null;
+      var later = v.when === 'later' && isRich();
       var ask = Promise.resolve(true);
-      if (v.target.mode === 'all' || live) {
+      if (later) {
+        ask = confirmModal({ title: t('nt.confirmSchedule.title'), text: t('nt.confirmSchedule.text', { t: zoneFmt(v.scheduledAt) }) + (live ? ' ' + t('nt.confirmLive.text') : ''), ok: t('nt.schedule'), danger: live, icon: 'send' });
+      } else if (v.target.mode === 'all' || live) {
         ask = confirmModal({
           title: v.target.mode === 'all' ? t('nt.confirmAll.title') : t('nt.confirmLive.title'),
           text: (v.target.mode === 'all' ? (count !== null ? t('nt.confirmAll.text', { n: count }) : t('nt.confirmAll.textNoCount')) : '') + (live ? (v.target.mode === 'all' ? ' ' : '') + t('nt.confirmLive.text') : ''),
@@ -8981,16 +9566,17 @@ function composePage(container, query) {
         if (!yes) return;
         setBusy(sendBtn, true, t('nt.sending'));
         pubApi('POST', '/notifications', payload()).then(function (res) {
-          toast('success', t('nt.queued'));
+          toast('success', later ? t('nt.scheduled') : t('nt.queued'));
           go('notifications', res.id);
         }, function (err) {
           setBusy(sendBtn, false);
-          var map = { title: fields.title, body: fields.body, action: fields.action, 'action.label': fields.actionLabel, 'target.userIds': fields.target, 'target.groupId': fields.target, 'target.tagIds': fields.target, providerId: fields.provider };
+          var map = { title: fields.title, body: fields.body, action: fields.action, 'action.label': fields.actionLabel, 'action.value': fields.action, 'action.type': fields.action, 'target.userIds': fields.target, 'target.groupId': fields.target, 'target.tagIds': fields.target, providerId: fields.provider, categoryId: fields.category, scheduledAt: fields.when, name: fields.name, imageUrl: fields.image };
           var f = err && err.field && map[err.field];
           var vals = { title: v.title, body: v.body, 'action.label': v.action.label };
           var code = f && f.ctl ? trServerLang(err, vals[err.field], { max: err.field === 'title' ? 200 : err.field === 'action.label' ? 64 : v.channel === 'sms' ? SMS_MAX : v.channel === 'email' ? 20000 : 2000 }) : null;
           if (f && f.ctl) f.ctl.markLang(code);
           if (f) { f.hidden = false; f.setError(errorText(err, code)); f.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+          else if (err && err.field && audForm.showServerError(err)) { audBox.open = true; }
           else errTop.appendChild(notice('error', errorText(err)));
         });
       });
@@ -8998,13 +9584,14 @@ function composePage(container, query) {
 
     paintChannel();
     paintTarget();
+    paintWhen();
     paintCount();
     if (v.target.userIds.length || v.target.tagIds.length) refreshPreview();
   }
 
   function load() {
     skeleton();
-    Promise.all([pubApi('GET', '/providers'), freshLanguages()]).then(function (all) {
+    Promise.all([pubApi('GET', '/providers'), freshLanguages(), bannerSettings()]).then(function (all) {
       var res = all[0];
       if (!container.isConnected) return;
       providers = (res && res.items) || [];
@@ -9017,6 +9604,12 @@ function composePage(container, query) {
 function providerField(f, cfg, onchange) {
   var label = has('pv.field.' + f.name) ? t('pv.field.' + f.name) : f.name;
   var ctl;
+  if (f.type === 'secretJson') {
+    ctl = textInput(cfg[f.name] == null ? '' : String(cfg[f.name]), { ltr: true, mono: true, multiline: true, rows: cfg[f.name] ? 1 : 6, label: label, placeholder: '{ "type": "service_account", … }', oninput: function (x) { cfg[f.name] = x; onchange(); } });
+    ctl.classList.add('text-sm', 'eco-secret');
+    ctl.setAttribute('data-secret-json', f.name);
+    return field(label, ctl, t(cfg[f.name] ? 'pm.secret.hint' : 'pv.hint.' + f.name), { optional: !f.required });
+  }
   if (f.type === 'select') {
     ctl = selectInput(cfg[f.name] || f.default || '', (f.options || []).map(function (o) { return { value: o, label: has('pv.opt.' + o) ? t('pv.opt.' + o) : o }; }), function (x) { cfg[f.name] = x; onchange(); }, { placeholder: false, label: label });
   } else {
@@ -9038,7 +9631,7 @@ function providersPage(container, channel) {
   function skeleton() {
     clear(frame.actions).appendChild(bar('12rem', 'h-8'));
     var grid = h('div', { class: 'eco-card-grid' });
-    for (var i = 0; i < (channel === 'sms' ? 3 : 2); i++) {
+    for (var i = 0; i < (channel === 'email' ? 2 : channel === 'push' ? 2 : 3); i++) {
       grid.appendChild(card(h('div', { class: 'p-4' },
         h('div', { class: 'flex items-center justify-between mb-4' }, bar('7rem', 'h-4'), bar('2rem', 'h-5 rounded-full')),
         bar('100%', 'h-14 mb-4'),
@@ -9050,9 +9643,10 @@ function providersPage(container, channel) {
 
   function testBox(p) {
     var email = p.channel === 'email';
-    var to = textInput('', { ltr: true, mono: true, label: t('pv.test.to'), placeholder: email ? 'name@example.com' : '09xxxxxxxxx', inputmode: email ? 'email' : 'tel' });
+    var push = p.channel === 'push';
+    var to = textInput('', { ltr: true, mono: true, label: push ? t('pv.test.player') : t('pv.test.to'), placeholder: push ? 'player_username' : email ? 'name@example.com' : '09xxxxxxxxx', inputmode: push ? null : email ? 'email' : 'tel' });
     to.classList.add('text-sm');
-    var subject = email ? textInput('', { label: t('pv.test.subject'), placeholder: t('pv.test.subject.ph') }) : null;
+    var subject = email || push ? textInput('', { label: t('pv.test.subject'), placeholder: t('pv.test.subject.ph') }) : null;
     if (subject) subject.classList.add('text-sm');
     var msg = textInput(t('pv.test.message.default'), { multiline: true, rows: 2, label: t('pv.test.message') });
     msg.classList.add('text-sm');
@@ -9076,7 +9670,7 @@ function providersPage(container, channel) {
       h('summary', { class: 'cursor-pointer text-sm font-medium text-secondary-700 dark:text-secondary-200 select-none', text: t('pv.test') }),
       h('div', { class: 'mt-3' },
         h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: t('pv.test.hint') }),
-        field(t('pv.test.to'), to),
+        field(push ? t('pv.test.player') : t('pv.test.to'), to),
         subject ? field(t('pv.test.subject'), subject, null, { optional: true }) : null,
         field(t('pv.test.message'), msg),
         h('div', { class: 'flex justify-end -mt-2 mb-2' }, sendBtn),
@@ -9097,7 +9691,7 @@ function providersPage(container, channel) {
     });
     var sandboxText = h('p', { class: 'text-xs mt-1.5' });
     var sandboxBox = h('div', { class: 'rounded-md px-3 py-2.5 mb-4', 'data-sandbox-box': '' });
-    var sandboxToggle = toggle(st.sandbox, t('pv.sandbox'), function (on) { st.sandbox = on; paintSandbox(); });
+    var sandboxToggle = p.kind === 'log' ? h('span', { class: 'text-sm font-medium', text: t('pv.log.note') }) : toggle(st.sandbox, t('pv.sandbox'), function (on) { st.sandbox = on; paintSandbox(); });
     sandboxBox.appendChild(h('div', { class: 'flex items-center gap-2' }, icon('flask', 'h-4 w-4 shrink-0'), sandboxToggle));
     sandboxBox.appendChild(sandboxText);
     function paintSandbox() {
@@ -9148,7 +9742,8 @@ function providersPage(container, channel) {
           h('div', { class: 'text-lg font-medium', text: kindLabel(p.kind) }),
           h('div', { class: 'flex flex-wrap items-center gap-1.5 mt-1' }, mono(p.kind),
             tag(p.configured ? t('pm.configured') : t('pm.notConfigured'), p.configured ? 'success' : 'secondary'),
-            p.isDefault ? tag(t('pv.default'), 'primary') : null)),
+            p.isDefault ? tag(t('pv.default'), 'primary') : null,
+            p.info && p.info.projectId ? h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', 'data-pv-project': p.info.projectId, text: t('pv.project', { id: p.info.projectId }) }) : null)),
         h('div', { class: 'flex flex-col items-end gap-2 shrink-0' }, activeToggle, defToggle)),
       sandboxBox,
       errTop,
@@ -14057,6 +14652,258 @@ RESOURCES.sponsors = {
   afterSave: function () { forgetRefs('sponsors'); }
 };
 
+PH_ICONS['auto-rules'] = '<path d="M215.79,118.17a8,8,0,0,0-5-5.66L153.18,90.9l14.66-73.33a8,8,0,0,0-13.69-7l-112,120a8,8,0,0,0,3,13l57.63,21.61L88.16,238.43a8,8,0,0,0,13.69,7l112-120A8,8,0,0,0,215.79,118.17ZM109.37,214l10.47-52.38a8,8,0,0,0-5-9.06L62,132.71l84.62-90.66L136.16,94.43a8,8,0,0,0,5,9.06l52.8,19.8Z"/>';
+PH_ICONS['notify-categories'] = '<path d="M224,128a8,8,0,0,1-8,8H128a8,8,0,0,1,0-16h88A8,8,0,0,1,224,128ZM128,72h88a8,8,0,0,0,0-16H128a8,8,0,0,0,0,16Zm88,112H128a8,8,0,0,0,0,16h88a8,8,0,0,0,0-16ZM82.34,42.34,56,68.69,45.66,58.34A8,8,0,0,0,34.34,69.66l16,16a8,8,0,0,0,11.32,0l32-32A8,8,0,0,0,82.34,42.34Zm0,64L56,132.69,45.66,122.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Zm0,64L56,196.69,45.66,186.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Z"/>';
+PH_ICONS.push = '<path d="M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16ZM72,64H184V192H72Zm8-32h96a8,8,0,0,1,8,8v8H72V40A8,8,0,0,1,80,32Zm96,192H80a8,8,0,0,1-8-8v-8H184v8A8,8,0,0,1,176,224Z"/>';
+
+var AR_TRIGGERS = ['event', 'streak_at_risk', 'chance_ready', 'inactive'];
+var AR_CHANNELS = ['push_in_app', 'push', 'in_app'];
+var AR_ACTIONS = ['none', 'screen', 'product', 'achievement', 'url'];
+var AR_VARS = { event: ['player', 'value'], streak_at_risk: ['player', 'streak', 'count', 'hours'], chance_ready: ['player', 'game'], inactive: ['player', 'days'] };
+
+function isTrigger(x) { return function (v) { return v.trigger === x; }; }
+
+function arSentence(v) {
+  var p = v.params || {};
+  if (v.trigger === 'event') {
+    if (!v.eventKey) return t('ar.s.eventNone');
+    return v.matchField && v.matchValue ? t('ar.s.eventMatch', { event: v.eventKey, field: v.matchField, value: v.matchValue }) : t('ar.s.event', { event: v.eventKey });
+  }
+  if (v.trigger === 'streak_at_risk') return t('ar.s.streak', { streak: p.streakKey || t('ar.anyStreak'), n: fmtNum(p.hoursBefore || 4) });
+  if (v.trigger === 'chance_ready') return t('ar.s.chance', { game: p.gameKey || t('ar.anyGame') });
+  if (v.trigger === 'inactive') return t('ar.s.inactive', { n: fmtNum(p.days || 3) });
+  return '';
+}
+
+function arLimitText(v) {
+  var out = [];
+  var m = v.cooldownMinutes == null ? 1440 : Number(v.cooldownMinutes);
+  out.push(m ? (m % 1440 === 0 ? t('ar.cool.days', { n: fmtNum(m / 1440) }) : m % 60 === 0 ? t('ar.cool.hours', { n: fmtNum(m / 60) }) : t('ar.cool.minutes', { n: fmtNum(m) })) : t('ar.cool.none'));
+  if (v.quietStart && v.quietEnd) out.push(t('ar.quiet', { from: numText(v.quietStart), to: numText(v.quietEnd) }));
+  return out.join(lang() === 'fa' ? '، ' : ', ');
+}
+
+function arSentenceField() {
+  return { name: 'sentence', type: 'static', readonly: true, render: function (v) {
+    var p = h('p', { class: 'eco-ar-sentence rounded-md px-3 py-2 text-sm', 'data-ar-sentence': '' });
+    function paint() { p.textContent = arSentence(v) + ' ' + t('ar.s.then', { ch: t('ch.' + (v.channel || 'push_in_app')) }) + ' ' + arLimitText(v) + '.'; }
+    var pending = 0;
+    function later() { if (pending) return; pending = requestAnimationFrame(function () { pending = 0; paint(); }); }
+    setTimeout(function () {
+      var form = p.closest('form');
+      if (!form) return;
+      form.addEventListener('input', later);
+      form.addEventListener('change', later);
+      form.addEventListener('click', later);
+    }, 0);
+    paint();
+    return p;
+  } };
+}
+
+function arVarsHint(v) {
+  return h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300', 'data-ar-vars': '' }, t('ar.vars') + ' ', (AR_VARS[v.trigger] || AR_VARS.event).map(function (x) { return mono('{' + x + '}'); }));
+}
+
+function arStatsField() {
+  return { name: 'statsBox', type: 'static', readonly: true, when: function (v) { return !!v.id; }, render: function (v) {
+    if (!v.id) return h('span', {});
+    var box = h('div', { class: 'flex flex-col gap-3', 'data-ar-stats': '' });
+    box.appendChild(h('div', { class: 'eco-sp-tiles' },
+      h('div', { class: 'eco-sp-tile rounded-md px-3 py-2', 'data-ar-sent': '' }, h('div', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('ar.st.sent') }), h('div', { class: 'text-xl font-semibold tabular-nums', text: fmtNum(v.sent7 || 0) })),
+      h('div', { class: 'eco-sp-tile rounded-md px-3 py-2', 'data-ar-skipped': '' }, h('div', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('ar.st.skipped') }), h('div', { class: 'text-xl font-semibold tabular-nums', text: fmtNum(v.skipped7 || 0) })),
+      h('div', { class: 'eco-sp-tile rounded-md px-3 py-2', 'data-ar-pending': '' }, h('div', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('ar.st.pending') }), h('div', { class: 'text-xl font-semibold tabular-nums', text: fmtNum(v.pending || 0) })),
+      h('div', { class: 'eco-sp-tile rounded-md px-3 py-2', 'data-ar-opened': '' }, h('div', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('ar.st.opened') }), h('div', { class: 'text-xl font-semibold tabular-nums', text: fmtNum(v.opened7 || 0) }))));
+    var list = h('div', { class: 'flex flex-col eco-tk-list', 'data-ar-fires': '' }, bar('100%'), bar('80%'));
+    box.appendChild(h('h4', { class: 'text-sm font-medium', text: t('ar.recent') }));
+    box.appendChild(list);
+    pubApi('GET', '/auto-rules/' + encodeURIComponent(v.id) + '/fires' + qs({ limit: 10 })).then(function (res) {
+      clear(list);
+      (res.items || []).forEach(function (f) {
+        list.appendChild(h('div', { class: 'flex flex-wrap items-center gap-2 py-2 text-sm', 'data-ar-fire': f.status, 'data-reason': f.reason || '' },
+          h('a', { href: '#/players/' + encodeURIComponent(f.userId), class: 'eco-link font-medium', text: f.displayName || f.username || String(f.userId).slice(0, 8) }),
+          tag(t('ar.fire.' + f.status), f.status === 'sent' ? 'success' : f.status === 'pending' ? 'primary' : 'secondary'),
+          f.reason ? h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('ar.why.' + f.reason) }) : null,
+          f.status === 'pending' && f.dueAt ? h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('ar.dueAt', { t: zoneFmt(f.dueAt) }) }) : null,
+          f.notificationId ? h('a', { href: hashFor('notifications', f.notificationId), class: 'eco-link text-xs', text: t('ar.openNote') }) : null,
+          h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400 eco-ms-auto', text: fmtDate(f.createdAt, true) })));
+      });
+      if (!(res.items || []).length) list.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 py-1', text: t('ar.noFires') }));
+    }, function (err) { clear(list).appendChild(notice('error', errorText(err))); });
+    var picked = '';
+    var who = refPicker({ resource: 'users', api: usersApi, value: '', required: false, label: t('ar.test.player'), placeholder: t('tg.searchUsers'), onchange: function (x) { picked = x || ''; } });
+    var out = h('div', { 'aria-live': 'polite', 'data-ar-test-out': '' });
+    var run = button({ variant: 'ghost', size: 'sm', icon: 'send', label: t('ar.test.send'), onclick: function () {
+      clear(out);
+      if (!picked) { out.appendChild(notice('error', t('ar.test.need'))); return; }
+      setBusy(run, true);
+      pubApi('POST', '/auto-rules/' + encodeURIComponent(v.id) + '/test', { userId: picked }).then(function (n) {
+        out.appendChild(h('div', { 'data-ar-test-done': n.id }, notice('success', t('ar.test.done'), h('a', { href: hashFor('notifications', n.id), class: 'eco-link text-sm font-medium', text: t('ar.openNote') }))));
+      }, function (err) { out.appendChild(notice('error', errorText(err))); }).then(function () { setBusy(run, false); });
+    } });
+    run.setAttribute('data-ar-test-run', '');
+    box.appendChild(h('h4', { class: 'text-sm font-medium', text: t('ar.test') }));
+    box.appendChild(h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('ar.test.hint') }));
+    box.appendChild(h('div', { class: 'flex flex-wrap items-end gap-2', 'data-ar-test': '' }, h('div', { class: 'min-w-0 flex-1' }, who), run));
+    box.appendChild(out);
+    return box;
+  } };
+}
+
+RESOURCES['auto-rules'] = {
+  api: 'publication',
+  prepare: bannerSettings,
+  filters: [
+    { name: 'trigger', label: 'filter.ar.trigger', options: opts('ar.trigger.', AR_TRIGGERS) },
+    { name: 'categoryId', label: 'filter.ar.category', type: 'ref', resource: 'notify-categories', api: pubApi },
+    activeFilter()
+  ],
+  columns: [
+    { label: 'col.ar.rule', render: function (it) {
+      return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: it.name || i18nText(it.title) || it.key }), h('div', { class: 'text-secondary-500' }, mono(it.key)));
+    }, skeleton: '45%' },
+    { label: 'col.ar.when', render: function (it) {
+      return h('div', { class: 'text-sm text-secondary-700 dark:text-secondary-200 eco-clamp', 'data-ar-when': '', text: arSentence(it) });
+    }, skeleton: '55%' },
+    { label: 'col.ar.how', render: function (it) {
+      return h('div', { class: 'flex flex-col items-start gap-1 text-xs' }, tag(t('ch.' + it.channel), 'primary'),
+        h('span', { class: 'text-secondary-600 dark:text-secondary-300', text: i18nText(it.categoryName) || it.categoryKey }),
+        h('span', { class: 'text-secondary-600 dark:text-secondary-300', text: arLimitText(it) }));
+    }, width: 190 },
+    { label: 'col.bn.stats', render: function (it) {
+      return h('div', { class: 'flex flex-col gap-0.5 text-sm tabular-nums whitespace-nowrap', 'data-ar-row-stats': '' },
+        h('span', { text: t('ar.sentN', { n: fmtNum(it.sent7 || 0) }) }),
+        h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('ar.skippedN', { n: fmtNum(it.skipped7 || 0) }) }));
+    }, width: 140 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.ar.key.hint', required: true, lockOnEdit: true, keyRe: /^[a-z][a-z0-9_]{1,63}$/, keyErr: 'err.bn.key' },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.ar.active.hint' }
+    ] },
+    { name: 'name', type: 'text', label: 'f.ar.name', hint: 'f.ar.name.hint', optional: true },
+    { type: 'heading', label: 'ar.h.when' },
+    arSentenceField(),
+    { name: 'trigger', type: 'select', label: 'f.ar.trigger', required: true, noPlaceholder: true, options: opts('ar.trigger.', AR_TRIGGERS) },
+    { name: 'eventKey', type: 'ref', resource: 'event-types', valueKey: 'key', label: 'f.ar.event', hint: 'f.ar.event.hint', required: true, when: isTrigger('event') },
+    { type: 'row', fields: [
+      { name: 'matchField', type: 'text', ltr: true, label: 'f.ar.matchField', hint: 'f.ar.match.hint', optional: true, when: isTrigger('event') },
+      { name: 'matchValue', type: 'text', ltr: true, label: 'f.ar.matchValue', optional: true, when: isTrigger('event'),
+        check: function (v, vals) { return vals.matchField && !v ? t('err.required') : null; } }
+    ] },
+    { type: 'row', fields: [
+      { name: 'params.streakKey', type: 'ref', resource: 'streaks', valueKey: 'key', label: 'f.ar.streak', hint: 'f.ar.streak.hint', optional: true, when: isTrigger('streak_at_risk') },
+      { name: 'params.hoursBefore', type: 'number', label: 'f.ar.hoursBefore', hint: 'f.ar.hoursBefore.hint', min: 1, max: 23, required: true, when: isTrigger('streak_at_risk') }
+    ] },
+    { name: 'params.gameKey', type: 'ref', resource: 'chance-games', valueKey: 'key', label: 'f.ar.game', hint: 'f.ar.game.hint', optional: true, when: isTrigger('chance_ready') },
+    { name: 'params.days', type: 'number', label: 'f.ar.days', hint: 'f.ar.days.hint', min: 1, max: 365, required: true, when: isTrigger('inactive') },
+    { type: 'heading', label: 'ar.h.message' },
+    { type: 'row', fields: [
+      { name: 'channel', type: 'select', label: 'f.ar.channel', required: true, noPlaceholder: true, options: opts('ch.', AR_CHANNELS) },
+      { name: 'categoryId', type: 'ref', resource: 'notify-categories', api: pubApi, label: 'f.ar.category', hint: 'f.ar.category.hint', required: true }
+    ] },
+    tr('title', { label: 'f.ar.title', required: true, max: 120 }),
+    tr('body', { label: 'f.ar.body', multiline: true, required: true, max: 500 }),
+    { name: 'varsHint', type: 'static', readonly: true, render: function (v) { return arVarsHint(v); } },
+    { name: 'imageUrl', type: 'image', label: 'f.ar.image', hint: 'f.ar.image.hint', optional: true },
+    { name: 'action.type', type: 'select', label: 'f.bn.action', hint: 'f.ar.action.hint', required: true, noPlaceholder: true, options: opts('bn.action.', AR_ACTIONS) },
+    { name: 'action.value', type: 'text', ltr: true, label: 'f.bn.screen', hint: 'f.bn.screen.hint', required: true, when: isAction('screen'),
+      check: function (v) { return v && !/^[a-z][a-z0-9_-]{0,39}$/.test(v) ? t('code.INVALID_ACTION') : null; } },
+    { name: 'action.product', type: 'ref', resource: 'products', valueKey: 'key', label: 'f.bn.product', required: true, when: isAction('product') },
+    { name: 'action.achievement', type: 'ref', resource: 'achievements', valueKey: 'key', label: 'f.bn.achievement', required: true, when: isAction('achievement') },
+    { name: 'action.url', type: 'text', ltr: true, label: 'f.ar.url', required: true, when: isAction('url'), check: function (v) { return v && !/^https?:\/\/[^\s"'<>`]+$/i.test(v) ? t('code.INVALID_URL') : null; } },
+    tr('action.label', { label: 'f.bn.cta', max: 64, optional: true, when: function (v) { return (v.action || {}).type && v.action.type !== 'none'; } }),
+    { type: 'heading', label: 'ar.h.limits' },
+    { name: 'cooldownMinutes', type: 'number', label: 'f.ar.cooldown', hint: 'f.ar.cooldown.hint', min: 0, max: 525600, required: true },
+    { name: 'quietNote', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('ar.quietNote', { zone: bnZone() }) }); } },
+    { type: 'row', fields: [
+      { name: 'quietStart', type: 'custom', label: 'f.ar.quietStart', optional: true, build: function (cur, change) { return timeOfDayInput(cur, change); },
+        check: function (v, vals) { return !v && vals.quietEnd ? t('code.INVALID_QUIET_HOURS') : null; } },
+      { name: 'quietEnd', type: 'custom', label: 'f.ar.quietEnd', optional: true, build: function (cur, change) { return timeOfDayInput(cur, change); },
+        check: function (v, vals) { return (!v && vals.quietStart) || (v && v === vals.quietStart) ? t('code.INVALID_QUIET_HOURS') : null; } }
+    ] },
+    { type: 'heading', label: 'ar.h.stats', when: function (v) { return !!v.id; } },
+    arStatsField()
+  ],
+  defaults: function () {
+    return { key: '', isActive: true, name: '', trigger: 'event', eventKey: null, matchField: '', matchValue: '', params: { streakKey: null, hoursBefore: 4, gameKey: null, days: 3 },
+      channel: 'push_in_app', categoryId: null, title: {}, body: {}, imageUrl: '', action: { type: 'none', value: '', label: {}, url: '', product: null, achievement: null },
+      cooldownMinutes: 1440, quietStart: null, quietEnd: null };
+  },
+  toForm: function (v) {
+    v.params = Object.assign({ streakKey: null, hoursBefore: 4, gameKey: null, days: 3 }, v.params || {});
+    var a = v.action || {};
+    v.action = { type: a.type || 'none', value: '', label: a.label || {}, url: '', product: null, achievement: null };
+    if (a.type === 'screen' || a.type === 'goto') { v.action.type = 'screen'; v.action.value = a.value || ''; }
+    if (a.type === 'product') v.action.product = a.value;
+    if (a.type === 'achievement') v.action.achievement = a.value;
+    if (a.type === 'url') v.action.url = a.value;
+    return v;
+  },
+  fixPayload: function (p) {
+    var a = p.action || {};
+    var out = null;
+    if (a.type && a.type !== 'none') {
+      out = { type: a.type, value: a.type === 'screen' ? a.value : a.type === 'product' ? a.product : a.type === 'achievement' ? a.achievement : (a.url || '').trim() };
+      if (a.label && Object.keys(a.label).length) out.label = a.label;
+    }
+    p.action = out;
+    var pr = p.params || {};
+    p.params = p.trigger === 'streak_at_risk' ? { streakKey: pr.streakKey || '', hoursBefore: pr.hoursBefore || 4 } : p.trigger === 'chance_ready' ? { gameKey: pr.gameKey || '' } : p.trigger === 'inactive' ? { days: pr.days || 3 } : {};
+    if (p.trigger !== 'event') { p.eventKey = ''; p.matchField = ''; p.matchValue = ''; }
+    p.eventKey = p.eventKey || '';
+    p.imageUrl = p.imageUrl || '';
+    p.quietStart = p.quietStart || '';
+    p.quietEnd = p.quietEnd || '';
+    if (p.cooldownMinutes == null) p.cooldownMinutes = 0;
+    delete p.sentence;
+    delete p.varsHint;
+    delete p.quietNote;
+    delete p.statsBox;
+    return p;
+  },
+  afterSave: function () { forgetRefs('auto-rules'); }
+};
+
+RESOURCES['notify-categories'] = {
+  api: 'publication',
+  filters: [activeFilter()],
+  columns: [
+    { label: 'col.name', render: function (it) {
+      return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.name) || it.key }), h('div', { class: 'text-secondary-500' }, mono(it.key)));
+    }, skeleton: '45%' },
+    { label: 'col.nc.choice', render: function (it) {
+      return h('div', { class: 'flex flex-col items-start gap-1 text-xs' },
+        tag(it.canOptOut ? t('nc.canOptOut') : t('nc.locked'), it.canOptOut ? 'secondary' : 'warning'),
+        h('span', { class: 'text-secondary-600 dark:text-secondary-300', text: it.defaultOn ? t('nc.defaultOn') : t('nc.defaultOff') }));
+    }, width: 190 },
+    { label: 'col.nc.players', render: function (it) {
+      return h('div', { class: 'flex flex-col gap-0.5 text-sm tabular-nums whitespace-nowrap', 'data-nc-counts': '' },
+        h('span', { text: t('nc.optedOutN', { n: fmtNum(it.optedOut || 0) }) }),
+        h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('nc.usedN', { c: fmtNum(it.campaigns || 0), r: fmtNum(it.rules || 0) }) }));
+    }, width: 190 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 110 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.nc.key.hint', required: true, lockOnEdit: true, keyRe: /^[a-z][a-z0-9_]{1,63}$/, keyErr: 'err.bn.key' },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.nc.active.hint' }
+    ] },
+    tr('name', { label: 'f.nc.name', required: true, max: 80 }),
+    tr('description', { multiline: true, max: 300, optional: true, hint: 'f.nc.description.hint' }),
+    { type: 'row', fields: [
+      { name: 'canOptOut', type: 'bool', inline: true, label: 'f.nc.canOptOut', hint: 'f.nc.canOptOut.hint' },
+      { name: 'defaultOn', type: 'bool', inline: true, label: 'f.nc.defaultOn', hint: 'f.nc.defaultOn.hint',
+        check: function (v, vals) { return !v && !vals.canOptOut ? t('code.CATEGORY_ALWAYS_ON') : null; } }
+    ] },
+    { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
+  ],
+  defaults: function () { return { key: '', isActive: true, name: {}, description: {}, canOptOut: true, defaultOn: true, sort: 0 }; },
+  fixPayload: function (p) { if (p.sort == null) p.sort = 0; return p; },
+  afterSave: function () { forgetRefs('notify-categories'); }
+};
+
 PH_ICONS['chance-games'] = '<path d="M192,32H64A32,32,0,0,0,32,64V192a32,32,0,0,0,32,32H192a32,32,0,0,0,32-32V64A32,32,0,0,0,192,32Zm16,160a16,16,0,0,1-16,16H64a16,16,0,0,1-16-16V64A16,16,0,0,1,64,48H192a16,16,0,0,1,16,16ZM104,92A12,12,0,1,1,92,80,12,12,0,0,1,104,92Zm72,0a12,12,0,1,1-12-12A12,12,0,0,1,176,92Zm-72,72a12,12,0,1,1-12-12A12,12,0,0,1,104,164Zm36-36a12,12,0,1,1-12-12A12,12,0,0,1,140,128Zm36,36a12,12,0,1,1-12-12A12,12,0,0,1,176,164Z"/>';
 PH_ICONS.diceDuo = '<path d="M216,64V192a24,24,0,0,1-24,24H64a24,24,0,0,1-24-24V64A24,24,0,0,1,64,40H192A24,24,0,0,1,216,64Z" opacity="0.2"/>' + PH_ICONS['chance-games'];
 PH_ICONS['prize-groups'] = '<path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l32-17.51V152a8,8,0,0,0,16,0V107.55L216,90v85.77Z"/>';
@@ -15731,7 +16578,8 @@ var PS_SECTIONS = [
   { id: 'support-settings', label: 'tab.support-settings', icon: 'support-settings', acl: 'ACCOUNT_NOTES', render: function (box) { supportSettingsPage(box); } },
   { id: 'payment-methods', label: 'tab.payment-methods', icon: 'payments', acl: 'HIRO_ECONOMY', render: function (box) { paymentMethodsPage(box); } },
   { id: 'sms', label: 'tab.sms', icon: 'comments', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'sms'); } },
-  { id: 'email', label: 'tab.email', icon: 'mail', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'email'); } }
+  { id: 'email', label: 'tab.email', icon: 'mail', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'email'); } },
+  { id: 'push', label: 'tab.push', icon: 'push', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'push'); } }
 ];
 var PS_LEGACY = {
   'settings/brand': 'brand',
@@ -15740,6 +16588,7 @@ var PS_LEGACY = {
   'settings/payment-methods': 'payment-methods',
   'settings/sms': 'sms',
   'settings/email': 'email',
+  'settings/push': 'push',
   'base/categories': 'categories',
   'base/tags': 'tags',
   'economy/categories': 'categories',
