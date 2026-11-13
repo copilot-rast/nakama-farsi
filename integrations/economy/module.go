@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/heroiclabs/nakama-common/runtime"
+	"github.com/heroiclabs/nakama/v3/internal/gamecatalog"
 	"github.com/heroiclabs/nakama/v3/internal/objectstore"
 	"github.com/heroiclabs/nakama/v3/internal/playerevents"
 	"github.com/heroiclabs/nakama/v3/internal/secretbox"
@@ -37,6 +38,7 @@ type service struct {
 	client *http.Client
 	store  objectstore.Store
 	now    func() time.Time
+	games  gameCache
 }
 
 const defaultDeepLink = "nakama://payment?success={success}&paymentId={paymentId}"
@@ -79,6 +81,11 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 			return err
 		}
 	}
+	for name, fn := range svc.gameRPCs() {
+		if err := initializer.RegisterRpc(name, svc.chanceRPC(fn)); err != nil {
+			return err
+		}
+	}
 	for name, fn := range svc.chanceRPCs() {
 		if err := initializer.RegisterRpc(name, svc.chanceRPC(fn)); err != nil {
 			return err
@@ -93,6 +100,10 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := svc.registerEventHooks(initializer); err != nil {
 		return err
 	}
+	if err := svc.registerGameHooks(initializer); err != nil {
+		return err
+	}
+	gamecatalog.SetProvider(gameProvider{s: svc})
 	playerevents.SetRecorder(svc.playerEventRecorder())
 	go svc.reconcileLoop(ctx)
 	go svc.eventLoop(ctx)

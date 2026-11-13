@@ -37,8 +37,9 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 	routes = append(routes, s.itemConsoleRoutes()...)
 	routes = append(routes, s.achievementConsoleRoutes()...)
 	routes = append(routes, s.chanceConsoleRoutes()...)
+	routes = append(routes, s.gameConsoleRoutes()...)
 	all := resources()
-	for _, more := range [][]resource{eventResources(), taskResources(), itemResources(), achievementResources(), chanceResources()} {
+	for _, more := range [][]resource{eventResources(), taskResources(), itemResources(), achievementResources(), chanceResources(), gameResources()} {
 		all = append(all, more...)
 	}
 	for _, res := range all {

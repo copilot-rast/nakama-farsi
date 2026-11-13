@@ -32,11 +32,12 @@ var keyTypeNames = map[string]map[string]string{
 	"achievement": {"fa": "دستاورد", "en": "Achievement"},
 	"banner":      {"fa": "بنر", "en": "Banner"},
 	"sponsor":     {"fa": "اسپانسر", "en": "Sponsor"},
+	"game":        {"fa": "بازی", "en": "Game"},
 }
 
-var categoryKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task", "item", "item_type", "achievement"}
+var categoryKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task", "item", "item_type", "achievement", "game"}
 
-var tagKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task", "item", "achievement", "banner", "sponsor", "general", "user"}
+var tagKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task", "item", "achievement", "banner", "sponsor", "game", "general", "user"}
 
 var clientTagKeyTypes = []string{"product", "prize", "gift", "currency", "faq", "news", "task", "item", "achievement", "banner", "sponsor", "general"}
 

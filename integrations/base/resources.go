@@ -29,11 +29,11 @@ const categoryUsedSQL = `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE catego
 	OR EXISTS (SELECT 1 FROM economy_gift WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_currency WHERE category_id=$1)
 	OR EXISTS (SELECT 1 FROM publication_faq WHERE category_id=$1) OR EXISTS (SELECT 1 FROM publication_news WHERE category_id=$1)
 	OR EXISTS (SELECT 1 FROM economy_task WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_task_group WHERE category_id=$1)
-	OR EXISTS (SELECT 1 FROM economy_item WHERE category_id=$1 OR type_id=$1) OR EXISTS (SELECT 1 FROM economy_achievement WHERE category_id=$1)`
+	OR EXISTS (SELECT 1 FROM economy_item WHERE category_id=$1 OR type_id=$1) OR EXISTS (SELECT 1 FROM economy_achievement WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_game WHERE category_id=$1)`
 
 const tagUsedSQL = `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_product WHERE $1::text = ANY(tag_ids))
 	OR EXISTS (SELECT 1 FROM economy_gift WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_currency WHERE $1::text = ANY(tag_ids))
-	OR EXISTS (SELECT 1 FROM economy_item WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_achievement WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM publication_banner WHERE $1::text = ANY(tag_ids) OR $1::text = ANY(audience_tag_ids) OR $1::text = ANY(exclude_tag_ids)) OR EXISTS (SELECT 1 FROM publication_sponsor WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM base_user_tag WHERE tag_id::text=$1::text) OR EXISTS (SELECT 1 FROM economy_product WHERE $1::text = ANY(audience_tag_ids))`
+	OR EXISTS (SELECT 1 FROM economy_item WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM economy_achievement WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM publication_banner WHERE $1::text = ANY(tag_ids) OR $1::text = ANY(audience_tag_ids) OR $1::text = ANY(exclude_tag_ids)) OR EXISTS (SELECT 1 FROM publication_sponsor WHERE $1::text = ANY(tag_ids)) OR EXISTS (SELECT 1 FROM base_user_tag WHERE tag_id::text=$1::text) OR EXISTS (SELECT 1 FROM economy_product WHERE $1::text = ANY(audience_tag_ids)) OR EXISTS (SELECT 1 FROM economy_game WHERE $1::text = ANY(tag_ids))`
 
 var categoriesResource = resource{name: "categories", table: "base_category", keyTypes: categoryKeyTypes, usedSQL: categoryUsedSQL, json: taxonomyJSON}
 
