@@ -79,11 +79,11 @@ var seedGameCategories = []seedCategory{
 }
 
 var seedGames = []seedGameDef{
-	{key: starGameKey, category: "star_arcade", min: 1, max: 1, limit: 30, icon: "/stargame/banners/game-stargame.svg", settings: `{"roundSeconds":30,"maxCoins":30}`, sort: 1,
+	{key: starGameKey, category: "star_arcade", min: 1, max: 1, limit: 30, icon: "game-stargame.svg", settings: `{"roundSeconds":30,"maxCoins":30}`, sort: 1,
 		name:  text{"fa": "ستاره‌چین", "en": "Star Catcher", "ar": "صائد النجوم"},
 		desc:  text{"fa": "ستاره‌ها را با سبد بگیر و از بمب‌ها دور بمان.", "en": "Catch the stars with your basket and dodge the bombs.", "ar": "التقط النجوم بسلتك وتجنّب القنابل."},
 		maint: text{"fa": "ستاره‌چین چند دقیقه در حال به‌روز شدن است.", "en": "Star Catcher is being updated for a few minutes.", "ar": "يجري تحديث صائد النجوم لبضع دقائق."}},
-	{key: tttGameKey, category: "star_board", min: 2, max: 2, turn: 15, limit: 300, board: tttLeaderboard, icon: "/stargame/banners/game-tictactoe.svg", settings: `{"firstMove":"random","waitSeconds":60,"forfeitOnLeave":true}`, sort: 2,
+	{key: tttGameKey, category: "star_board", min: 2, max: 2, turn: 15, limit: 300, board: tttLeaderboard, icon: "game-tictactoe.svg", settings: `{"firstMove":"random","waitSeconds":60,"forfeitOnLeave":true}`, sort: 2,
 		name:  text{"fa": "دوز", "en": "Tic-tac-toe", "ar": "إكس أو"},
 		desc:  text{"fa": "سه خانه در یک خط بچین و حریفت را ببر. ورودی می‌دهی و برنده جایزه می‌برد.", "en": "Line up three marks to beat your opponent. Pay the entry and the winner takes the prize.", "ar": "اصنع خطًا من ثلاث علامات لتهزم خصمك. ادفع رسوم الدخول والفائز يأخذ الجائزة."},
 		maint: text{"fa": "دوز فعلاً بسته است. کمی بعد سر بزن.", "en": "Tic-tac-toe is closed for now. Come back soon.", "ar": "إكس أو مغلقة الآن. عد قريبًا."},
@@ -94,7 +94,8 @@ var seedGames = []seedGameDef{
 		}},
 }
 
-func seedGameData(ctx context.Context, tx *sql.Tx, prizes map[string]string, report *seedReport) error {
+func seedGameData(ctx context.Context, tx *sql.Tx, env map[string]string, prizes map[string]string, report *seedReport) error {
+	images := bannerImageBase(env)
 	cats := map[string]string{}
 	for _, c := range seedGameCategories {
 		ok, err := inserted(tx.ExecContext(ctx, `INSERT INTO base_category (id, key_type, key, name, description, sort) VALUES ($1, 'game', $2, $3::jsonb, $4::jsonb, $5) ON CONFLICT DO NOTHING`,
@@ -146,11 +147,14 @@ func seedGameData(ctx context.Context, tx *sql.Tx, prizes map[string]string, rep
 		ok, err := inserted(tx.ExecContext(ctx, `INSERT INTO economy_game (id, key, is_active, name, description, maintenance, icon_url, category_id, min_players, max_players, turn_seconds, match_seconds,
 			bots_allowed, rooms, leaderboard_id, platforms, settings, sort)
 			VALUES ($1,$2,true,$3::jsonb,$4::jsonb,$5::jsonb,$6,$7,$8,$9,$10,$11,false,$12::jsonb,$13,'{}',$14::jsonb,$15) ON CONFLICT DO NOTHING`,
-			newID(), g.key, g.name.json(), g.desc.json(), g.maint.json(), g.icon, cats[g.category], g.min, g.max, turn, limit, string(raw), board, g.settings, g.sort))
+			newID(), g.key, g.name.json(), g.desc.json(), g.maint.json(), images+g.icon, cats[g.category], g.min, g.max, turn, limit, string(raw), board, g.settings, g.sort))
 		if err != nil {
 			return fmt.Errorf("game %s: %w", g.key, err)
 		}
 		report.add("game", g.key, ok)
+		if _, err := tx.ExecContext(ctx, `UPDATE economy_game SET icon_url=$2 WHERE key=$1 AND icon_url=$3 AND $2<>$3`, g.key, images+g.icon, "/stargame/banners/"+g.icon); err != nil {
+			return fmt.Errorf("game %s icon: %w", g.key, err)
+		}
 	}
 	return nil
 }

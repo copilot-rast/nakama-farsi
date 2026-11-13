@@ -296,7 +296,7 @@ func seed(ctx context.Context, db *sql.DB, env map[string]string) (*seedReport, 
 	if err := seedChanceData(ctx, tx, prizes, report); err != nil {
 		return nil, err
 	}
-	if err := seedGameData(ctx, tx, prizes, report); err != nil {
+	if err := seedGameData(ctx, tx, env, prizes, report); err != nil {
 		return nil, err
 	}
 	if err := seedBannerData(ctx, tx, env, vipTag, report); err != nil {
