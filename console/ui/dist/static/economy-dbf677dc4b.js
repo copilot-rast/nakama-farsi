@@ -15620,7 +15620,7 @@ function schemaForm(cur, change, values) {
       var range = [];
       if (p.minimum !== undefined) range.push(t('gm.settings.min', { n: fmtNum(p.minimum) }));
       if (p.maximum !== undefined) range.push(t('gm.settings.max', { n: fmtNum(p.maximum) }));
-      if (p.default !== undefined) range.push(t('gm.settings.default', { v: typeof p.default === 'number' ? fmtNum(p.default) : String(p.default) }));
+      if (p.default !== undefined && p.type !== 'boolean') range.push(t('gm.settings.default', { v: typeof p.default === 'number' ? fmtNum(p.default) : String(p.default) }));
       var wrap = field(p.type === 'boolean' ? '' : label, control, [hint, range.join(' · ')].filter(Boolean).join(' — ') || null, { optional: !(state.schema.required || []).includes(name) });
       wrap.setAttribute('data-setting', name);
       state.wraps[name] = wrap;
@@ -15761,7 +15761,7 @@ RESOURCES.games = {
     ] },
     { name: 'leaderboardId', type: 'text', ltr: true, mono: true, label: 'f.gm.board', hint: 'f.gm.board.hint', optional: true },
     { type: 'heading', label: 'gm.h.settings' },
-    { name: 'settings', type: 'custom', sync: true, label: 'f.gm.settings', optional: true, build: schemaForm }
+    { name: 'settings', type: 'custom', sync: true, build: schemaForm }
   ],
   defaults: function (query) {
     var key = (query && query.key) || '';

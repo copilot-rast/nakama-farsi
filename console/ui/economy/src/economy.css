@@ -585,3 +585,4 @@ html.dark .monaco-editor :is(.minimap canvas,canvas.decorationsOverviewRuler){fi
 .eco-gm-tile{background:rgb(var(--success-color-100));color:rgb(var(--success-color-700))}
 .dark .eco-gm-tile{background:rgb(var(--secondary-color-700));color:rgb(var(--success-color-300))}
 [data-gm-settings] .eco-field:last-child{margin-block-end:0}
+[data-rows=rooms] .eco-rows-row{--eco-rows-cols:4 !important}
