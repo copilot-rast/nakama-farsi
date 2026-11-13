@@ -369,6 +369,9 @@ func (s *service) bannerSweepLoop(ctx context.Context) {
 			if _, err := s.sweepSponsorSeen(ctx); err != nil && ctx.Err() == nil {
 				s.logger.Error("Publication sponsor sweep failed: %v", err)
 			}
+			if _, err := s.sweepPushDevices(ctx); err != nil && ctx.Err() == nil {
+				s.logger.Error("Publication push device sweep failed: %v", err)
+			}
 		}
 	}
 }

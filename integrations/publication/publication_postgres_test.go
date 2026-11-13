@@ -727,7 +727,7 @@ func TestProvidersConsole(t *testing.T) {
 			defaults++
 		}
 	}
-	if defaults != 1 || len(list["catalog"].([]any)) != 5 {
+	if defaults != 1 || len(list["catalog"].([]any)) != 7 {
 		t.Fatalf("list = %v", list)
 	}
 	if code, out := h.api(http.MethodPut, "/providers/"+id, map[string]any{"kind": "smsir"}); code != http.StatusBadRequest || out["error"] != "PROVIDER_KIND_FIXED" {

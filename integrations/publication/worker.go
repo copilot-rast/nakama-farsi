@@ -7,7 +7,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
@@ -18,6 +17,7 @@ type claimed struct {
 	UserID         string
 	Address        string
 	Attempts       int
+	Vars           map[string]string
 }
 
 type notificationRow struct {
@@ -27,6 +27,8 @@ type notificationRow struct {
 	Body     i18n
 	Action   json.RawMessage
 	Provider string
+	Image    string
+	Category string
 }
 
 func (s *service) workerLoop(ctx context.Context) {
@@ -54,6 +56,9 @@ func (s *service) workerLoop(ctx context.Context) {
 }
 
 func (s *service) runWorker(ctx context.Context) (int, error) {
+	if _, err := s.startScheduled(ctx); err != nil {
+		return 0, err
+	}
 	if err := s.sweepExhausted(ctx); err != nil {
 		return 0, err
 	}
@@ -110,7 +115,7 @@ func (s *service) claim(ctx context.Context) ([]claimed, error) {
 			WHERE r2.status='pending' AND r2.next_attempt_at <= now() AND r2.attempts < $3 AND n.status IN ('queued','sending')
 			ORDER BY r2.next_attempt_at, r2.notification_id, r2.user_id LIMIT $1 FOR UPDATE OF r2 SKIP LOCKED) c
 		WHERE r.notification_id = c.notification_id AND r.user_id = c.user_id
-		RETURNING r.notification_id::text, r.user_id::text, COALESCE(r.address,''), r.attempts`, s.cfg.workerBatch, s.cfg.claimLease.Seconds(), s.cfg.maxAttempts)
+		RETURNING r.notification_id::text, r.user_id::text, COALESCE(r.address,''), r.attempts, r.vars::text`, s.cfg.workerBatch, s.cfg.claimLease.Seconds(), s.cfg.maxAttempts)
 	if err != nil {
 		return nil, err
 	}
@@ -118,9 +123,11 @@ func (s *service) claim(ctx context.Context) ([]claimed, error) {
 	out := []claimed{}
 	for rows.Next() {
 		var c claimed
-		if err := rows.Scan(&c.NotificationID, &c.UserID, &c.Address, &c.Attempts); err != nil {
+		var vars string
+		if err := rows.Scan(&c.NotificationID, &c.UserID, &c.Address, &c.Attempts, &vars); err != nil {
 			return nil, err
 		}
+		_ = json.Unmarshal([]byte(vars), &c.Vars)
 		out = append(out, c)
 	}
 	return out, rows.Err()
@@ -130,8 +137,9 @@ func (s *service) loadNotification(ctx context.Context, id string) (notification
 	var n notificationRow
 	var title, body string
 	var act, prov sql.NullString
-	err := s.db.QueryRowContext(ctx, `SELECT id::text, channel, title::text, body::text, action::text, provider FROM publication_notification WHERE id=$1`, id).
-		Scan(&n.ID, &n.Channel, &title, &body, &act, &prov)
+	err := s.db.QueryRowContext(ctx, `SELECT n.id::text, n.channel, n.title::text, n.body::text, n.action::text, n.provider, n.image_url, COALESCE(c.key,'')
+		FROM publication_notification n LEFT JOIN publication_notify_category c ON c.id=n.category_id WHERE n.id=$1`, id).
+		Scan(&n.ID, &n.Channel, &title, &body, &act, &prov, &n.Image, &n.Category)
 	if err != nil {
 		return n, err
 	}
@@ -222,6 +230,9 @@ func (s *service) processNotification(ctx context.Context, id string, batch []cl
 	if n.Channel == "in_app" {
 		return s.sendInApp(ctx, n, batch, set, langs)
 	}
+	if isPushChannel(n.Channel) {
+		return s.sendPushBatch(ctx, n, batch, set, langs)
+	}
 	p, perr := s.loadProvider(ctx, s.db, n.Provider, false)
 	if perr == nil && !p.Active {
 		perr = transientErr("provider %s is not active", p.Kind)
@@ -286,18 +297,7 @@ func (s *service) processNotification(ctx context.Context, id string, batch []cl
 }
 
 func (s *service) sendInApp(ctx context.Context, n notificationRow, batch []claimed, set *localized.Set, langs map[string]string) error {
-	var act *action
-	_ = json.Unmarshal(n.Action, &act)
-	sends := make([]*runtime.NotificationSend, 0, len(batch))
-	for _, c := range batch {
-		lang := langs[c.UserID]
-		if lang == "" {
-			lang = set.Default
-		}
-		title, body := set.Resolve(n.Title, lang), set.Resolve(n.Body, lang)
-		sends = append(sends, &runtime.NotificationSend{UserID: c.UserID, Subject: title, Code: inAppCode, Persistent: true,
-			Content: map[string]any{"notificationId": n.ID, "title": title, "body": body, "action": resolveAction(set, act, lang), "lang": lang}})
-	}
+	sends := s.inAppSends(n, batch, set, langs)
 	if err := s.nk.NotificationsSend(ctx, sends); err != nil {
 		cause := transientErr("in-app send failed: %v", err)
 		for _, c := range batch {

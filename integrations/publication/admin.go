@@ -41,6 +41,12 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/banner-lists/{id}/preview", http.MethodGet, s.consoleBannerPreview},
 		{consolePrefix + "/sponsors/{id}/report", http.MethodGet, s.consoleSponsorReport},
 		{consolePrefix + "/sponsors/{id}/report.csv", http.MethodGet, s.consoleSponsorReportCSV},
+		{consolePrefix + "/notifications/{id}/cancel", http.MethodPost, s.consoleNotificationCancel},
+		{consolePrefix + "/notifications/test", http.MethodPost, s.consoleNotificationTest},
+		{consolePrefix + "/notifications/preview", http.MethodPost, s.consoleNotificationPreview},
+		{consolePrefix + "/auto-rules/{id}/fires", http.MethodGet, s.consoleAutoFires},
+		{consolePrefix + "/auto-rules/{id}/test", http.MethodPost, s.consoleAutoTest},
+		{consolePrefix + "/push-devices", http.MethodGet, s.consolePushDevices},
 	}
 	for _, res := range resources() {
 		base := consolePrefix + "/" + res.name
@@ -213,6 +219,9 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 		"activeProviders": `SELECT count(*) FROM publication_provider WHERE is_active`,
 		"sponsors":        `SELECT count(*) FROM publication_sponsor`,
 		"liveSponsors":    `SELECT count(*) FROM publication_sponsor WHERE is_active AND (starts_at IS NULL OR starts_at <= now()) AND (ends_at IS NULL OR ends_at > now())`,
+		"pushDevices":     `SELECT count(*) FROM publication_push_device WHERE is_active`,
+		"autoRules":       `SELECT count(*) FROM publication_auto_rule WHERE is_active`,
+		"scheduled":       `SELECT count(*) FROM publication_notification WHERE status='scheduled'`,
 	} {
 		var n int64
 		if err := s.db.QueryRowContext(ctx, query).Scan(&n); err != nil {
@@ -221,8 +230,8 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 		}
 		counts[name] = n
 	}
-	byStatus := map[string]int64{"queued": 0, "sending": 0, "done": 0, "failed": 0}
-	byChannel := map[string]int64{"in_app": 0, "sms": 0, "email": 0}
+	byStatus := map[string]int64{"scheduled": 0, "queued": 0, "sending": 0, "done": 0, "failed": 0, "cancelled": 0}
+	byChannel := map[string]int64{"in_app": 0, "sms": 0, "email": 0, "push": 0, "push_in_app": 0}
 	rows, err := s.db.QueryContext(ctx, `SELECT status, channel, count(*) FROM publication_notification GROUP BY status, channel`)
 	if err != nil {
 		s.writeError(w, err)

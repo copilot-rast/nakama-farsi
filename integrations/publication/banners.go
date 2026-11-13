@@ -44,18 +44,7 @@ type bannerRow struct {
 	Days        []int
 	DayStart    *int
 	DayEnd      *int
-	Audience    []string
-	Exclude     []string
-	LevelTable  string
-	MinLevel    *int
-	MaxLevel    *int
-	Platforms   []string
-	MinVersion  string
-	MaxVersion  string
-	Countries   []string
-	Languages   []string
-	PlayerAge   string
-	NewDays     int
+	audienceRule
 	IsActive    bool
 	TargetOK    bool
 	CreatedAt   time.Time
@@ -238,69 +227,7 @@ func (b bannerRow) eligible(ctx context.Context, v *viewer) (string, error) {
 			return "hours", nil
 		}
 	}
-	if len(b.Audience) > 0 {
-		hit := false
-		for _, id := range b.Audience {
-			if v.Tags[id] {
-				hit = true
-			}
-		}
-		if !hit {
-			return "tag", nil
-		}
-	}
-	for _, id := range b.Exclude {
-		if v.Tags[id] {
-			return "excluded", nil
-		}
-	}
-	if len(b.Platforms) > 0 && !containsStr(b.Platforms, v.Platform) {
-		return "platform", nil
-	}
-	if b.MinVersion != "" || b.MaxVersion != "" {
-		if v.Version == "" {
-			return "version", nil
-		}
-		if b.MinVersion != "" {
-			if c, ok := compareBannerVersions(v.Version, b.MinVersion); !ok || c < 0 {
-				return "version", nil
-			}
-		}
-		if b.MaxVersion != "" {
-			if c, ok := compareBannerVersions(v.Version, b.MaxVersion); !ok || c > 0 {
-				return "version", nil
-			}
-		}
-	}
-	if len(b.Countries) > 0 && !containsStr(b.Countries, v.Country) {
-		return "country", nil
-	}
-	if len(b.Languages) > 0 && !containsStr(b.Languages, v.Lang) {
-		return "language", nil
-	}
-	switch b.PlayerAge {
-	case "new":
-		if v.Now.Sub(v.Created) >= time.Duration(b.NewDays)*24*time.Hour {
-			return "new", nil
-		}
-	case "returning":
-		if v.Now.Sub(v.Created) < time.Duration(b.NewDays)*24*time.Hour {
-			return "returning", nil
-		}
-	}
-	if b.MinLevel != nil || b.MaxLevel != nil {
-		lv, err := v.level(ctx, b.LevelTable)
-		if err != nil {
-			return "", err
-		}
-		if b.MinLevel != nil && lv < *b.MinLevel {
-			return "level", nil
-		}
-		if b.MaxLevel != nil && lv > *b.MaxLevel {
-			return "level", nil
-		}
-	}
-	return "", nil
+	return b.audienceRule.match(ctx, v)
 }
 
 func compareBannerVersions(a, b string) (int, bool) {

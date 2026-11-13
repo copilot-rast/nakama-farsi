@@ -197,12 +197,17 @@ func addressFor(channel string, u targetUser) (string, bool) {
 }
 
 type notificationInput struct {
-	Channel    string  `json:"channel"`
-	Title      i18n    `json:"title"`
-	Body       i18n    `json:"body"`
-	Action     *action `json:"action"`
-	Target     target  `json:"target"`
-	ProviderID string  `json:"providerId"`
+	Channel     string         `json:"channel"`
+	Title       i18n           `json:"title"`
+	Body        i18n           `json:"body"`
+	Action      *action        `json:"action"`
+	Target      target         `json:"target"`
+	ProviderID  string         `json:"providerId"`
+	Name        string         `json:"name"`
+	ImageURL    string         `json:"imageUrl"`
+	CategoryID  string         `json:"categoryId"`
+	Audience    *audienceInput `json:"audience"`
+	ScheduledAt string         `json:"scheduledAt"`
 }
 
 func cleanNotification(langs *localized.Set, in notificationInput) (notificationInput, error) {
@@ -214,8 +219,10 @@ func cleanNotification(langs *localized.Set, in notificationInput) (notification
 		bodyMax = 600
 	case "email":
 		bodyMax = 20000
+	case "push", "push_in_app":
+		titleMax, bodyMax = 120, 1000
 	default:
-		return in, badRequest("INVALID_CHANNEL", "channel", "channel must be in_app, sms or email")
+		return in, badRequest("INVALID_CHANNEL", "channel", "channel must be in_app, push, push_in_app, sms or email")
 	}
 	if in.Title, err = cleanI18n(langs, "title", in.Title, in.Channel != "sms", titleMax); err != nil {
 		return in, err
@@ -224,11 +231,15 @@ func cleanNotification(langs *localized.Set, in notificationInput) (notification
 		return in, err
 	}
 	if in.Action != nil && (in.Action.Type != "" || in.Action.Value != "") {
-		a, err := cleanAction(langs, "action", *in.Action, false)
-		if err != nil {
-			return in, err
+		if in.Action.Type == "url" || in.Action.Type == "goto" {
+			a, err := cleanAction(langs, "action", *in.Action, false)
+			if err != nil {
+				return in, err
+			}
+			in.Action = &a
+		} else if !containsStr(campaignActions, in.Action.Type) {
+			return in, badRequest("INVALID_ACTION", "action", "type must be url, goto, screen, product or achievement")
 		}
-		in.Action = &a
 	} else {
 		in.Action = nil
 	}
@@ -238,96 +249,14 @@ func cleanNotification(langs *localized.Set, in notificationInput) (notification
 	return in, nil
 }
 
-const notificationJSON = `jsonb_build_object('id',n.id,'channel',n.channel,'title',n.title,'body',n.body,'action',n.action,'target',n.target,'providerId',n.provider,'providerKind',p.kind,
+const notificationJSON = `jsonb_build_object('id',n.id,'channel',n.channel,'kind',n.kind,'name',n.name,'imageUrl',n.image_url,'categoryId',n.category_id,
+	'categoryKey',(SELECT c.key FROM publication_notify_category c WHERE c.id=n.category_id),'categoryName',(SELECT c.name FROM publication_notify_category c WHERE c.id=n.category_id),
+	'audience',n.audience,'scheduledAt',n.scheduled_at,'ruleId',n.rule_id,'ruleKey',(SELECT r.key FROM publication_auto_rule r WHERE r.id=n.rule_id),
+	'cancelledBy',n.cancelled_by,'cancelledAt',n.cancelled_at,'openedCount',n.opened_count,'pushSent',n.push_sent,'pushFailed',n.push_failed,'title',n.title,'body',n.body,'action',n.action,'target',n.target,'providerId',n.provider,'providerKind',p.kind,
 	'status',n.status,'recipientCount',n.recipient_count,'sentCount',n.sent_count,'failedCount',n.failed_count,'skippedCount',n.skipped_count,
 	'pendingCount',GREATEST(n.recipient_count-n.sent_count-n.failed_count-n.skipped_count,0),'createdBy',n.created_by,'createdAt',n.created_at,'updatedAt',n.updated_at)`
 
 const notificationFrom = ` FROM publication_notification n LEFT JOIN publication_provider p ON p.id::text = n.provider`
-
-func (s *service) createNotification(ctx context.Context, in notificationInput, createdBy string) (string, error) {
-	langs, err := localized.Load(ctx, s.db)
-	if err != nil {
-		return "", err
-	}
-	in, err = cleanNotification(langs, in)
-	if err != nil {
-		return "", err
-	}
-	id := uuid.Must(uuid.NewV4()).String()
-	err = s.inTx(ctx, func(tx *sql.Tx) error {
-		t, err := s.cleanTarget(ctx, tx, in.Target)
-		if err != nil {
-			return err
-		}
-		var providerID *string
-		if in.Channel != "in_app" {
-			var p provider
-			if strings.TrimSpace(in.ProviderID) != "" {
-				if p, err = s.loadProvider(ctx, tx, strings.TrimSpace(in.ProviderID), false); err != nil {
-					if app, ok := asApp(err); ok && app.Status == http.StatusNotFound {
-						return badRequest("PROVIDER_NOT_FOUND", "providerId", "provider does not exist")
-					}
-					return err
-				}
-				if p.Channel != in.Channel {
-					return badRequest("PROVIDER_CHANNEL_MISMATCH", "providerId", "provider channel must be "+in.Channel)
-				}
-				if !p.Active {
-					return badRequest("PROVIDER_INACTIVE", "providerId", "provider is not active")
-				}
-			} else if p, err = s.defaultProvider(ctx, tx, in.Channel); err != nil {
-				return err
-			}
-			if !providerConfigured(p) {
-				return badRequest("PROVIDER_NOT_CONFIGURED", "providerId", "provider is missing required fields")
-			}
-			providerID = &p.ID
-		}
-		targetJSON, _ := json.Marshal(t)
-		var actionJSON *string
-		if in.Action != nil {
-			b, _ := json.Marshal(in.Action)
-			v := string(b)
-			actionJSON = &v
-		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO publication_notification (id, channel, title, body, action, target, provider, status, created_by) VALUES ($1,$2,$3,$4,$5,$6,$7,'queued',$8)`,
-			id, in.Channel, i18nJSON(in.Title), i18nJSON(in.Body), actionJSON, string(targetJSON), providerID, createdBy); err != nil {
-			return err
-		}
-		type rec struct {
-			U string  `json:"u"`
-			S string  `json:"s"`
-			A *string `json:"a"`
-			E *string `json:"e"`
-		}
-		noAddress := "no address"
-		err = s.eachTargetBatch(ctx, tx, t, func(batch []targetUser) error {
-			recs := make([]rec, 0, len(batch))
-			for _, u := range batch {
-				r := rec{U: u.ID, S: "pending"}
-				if in.Channel != "in_app" {
-					if addr, ok := addressFor(in.Channel, u); ok {
-						a := addr
-						r.A = &a
-					} else {
-						r.S = "skipped"
-						r.E = &noAddress
-					}
-				}
-				recs = append(recs, r)
-			}
-			raw, _ := json.Marshal(recs)
-			_, err := tx.ExecContext(ctx, `INSERT INTO publication_notification_recipient (notification_id, user_id, status, address, error)
-				SELECT $1, x.u, x.s, x.a, x.e FROM jsonb_to_recordset($2::jsonb) AS x(u uuid, s text, a text, e text) ON CONFLICT DO NOTHING`, id, string(raw))
-			return err
-		})
-		if err != nil {
-			return err
-		}
-		return refreshCounts(ctx, tx, id)
-	})
-	return id, err
-}
 
 type execer interface {
 	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
@@ -335,11 +264,13 @@ type execer interface {
 
 func refreshCounts(ctx context.Context, q execer, id string) error {
 	_, err := q.ExecContext(ctx, `UPDATE publication_notification n SET recipient_count=c.total, sent_count=c.sent, failed_count=c.failed, skipped_count=c.skipped,
-		status = CASE WHEN c.pending > 0 THEN (CASE WHEN c.sent + c.failed > 0 OR n.status='sending' THEN 'sending' ELSE 'queued' END)
+		push_sent=c.push_sent, push_failed=c.push_failed,
+		status = CASE WHEN n.status IN ('cancelled','scheduled') THEN n.status WHEN c.pending > 0 THEN (CASE WHEN c.sent + c.failed > 0 OR n.status='sending' THEN 'sending' ELSE 'queued' END)
 			WHEN c.sent = 0 AND c.failed > 0 THEN 'failed' ELSE 'done' END,
 		updated_at=now()
 		FROM (SELECT count(*) AS total, count(*) FILTER (WHERE status='sent') AS sent, count(*) FILTER (WHERE status='failed') AS failed,
-			count(*) FILTER (WHERE status='skipped') AS skipped, count(*) FILTER (WHERE status='pending') AS pending
+			count(*) FILTER (WHERE status='skipped') AS skipped, count(*) FILTER (WHERE status='pending') AS pending,
+			COALESCE(sum(push_sent),0) AS push_sent, COALESCE(sum(push_failed),0) AS push_failed
 			FROM publication_notification_recipient WHERE notification_id=$1) c
 		WHERE n.id=$1`, id)
 	return err
@@ -399,10 +330,27 @@ func (s *service) consoleNotificationsList(w http.ResponseWriter, r *http.Reques
 	if v := q.Get("status"); v != "" {
 		where.add("n.status = ?", v)
 	}
+	if v := q.Get("kind"); v != "" {
+		where.add("n.kind = ?", v)
+	}
+	if v := q.Get("ruleId"); v != "" {
+		if _, err := uuid.FromString(v); err != nil {
+			s.writeError(w, badRequest("INVALID_FILTER", "ruleId", "must be a UUID"))
+			return
+		}
+		where.add("n.rule_id = ?::uuid", v)
+	}
+	if v := q.Get("categoryId"); v != "" {
+		if _, err := uuid.FromString(v); err != nil {
+			s.writeError(w, badRequest("INVALID_FILTER", "categoryId", "must be a UUID"))
+			return
+		}
+		where.add("n.category_id = ?::uuid", v)
+	}
 	if p.Q != "" {
 		n := where.next()
 		where.args = append(where.args, likePattern(p.Q))
-		where.parts = append(where.parts, "(COALESCE("+translatedSearch("n.title")+",'') ILIKE "+n+" OR COALESCE("+translatedSearch("n.body")+",'') ILIKE "+n+" OR n.id::text ILIKE "+n+")")
+		where.parts = append(where.parts, "(COALESCE("+translatedSearch("n.title")+",'') ILIKE "+n+" OR COALESCE("+translatedSearch("n.body")+",'') ILIKE "+n+" OR n.id::text ILIKE "+n+" OR n.name ILIKE "+n+")")
 	}
 	var total int64
 	if err := s.db.QueryRowContext(r.Context(), `SELECT count(*)`+notificationFrom+where.sql(), where.args...).Scan(&total); err != nil {
@@ -451,7 +399,7 @@ func (s *service) consoleNotificationGet(w http.ResponseWriter, r *http.Request)
 	}
 	n := len(where.args)
 	rows, err := s.db.QueryContext(r.Context(), `SELECT jsonb_build_object('userId',r.user_id,'username',u.username,'displayName',u.display_name,'status',r.status,'address',r.address,
-		'error',r.error,'lang',r.lang,'message',r.message,'attempts',r.attempts,'nextAttemptAt',CASE WHEN r.status='pending' THEN r.next_attempt_at END,'seenAt',r.seen_at,'sentAt',r.sent_at)::text
+		'error',r.error,'lang',r.lang,'message',r.message,'attempts',r.attempts,'openedAt',r.opened_at,'pushSent',r.push_sent,'pushFailed',r.push_failed,'vars',r.vars,'nextAttemptAt',CASE WHEN r.status='pending' THEN r.next_attempt_at END,'seenAt',r.seen_at,'sentAt',r.sent_at)::text
 		FROM publication_notification_recipient r LEFT JOIN users u ON u.id=r.user_id`+where.sql()+` ORDER BY u.username, r.user_id LIMIT $`+itoa(n+1)+` OFFSET $`+itoa(n+2),
 		append(append([]any{}, where.args...), limit, (page-1)*limit)...)
 	if err != nil {
@@ -466,6 +414,9 @@ func (s *service) consoleNotificationGet(w http.ResponseWriter, r *http.Request)
 	var seen int64
 	_ = s.db.QueryRowContext(r.Context(), `SELECT count(*) FROM publication_notification_recipient WHERE notification_id=$1 AND seen_at IS NOT NULL`, id).Scan(&seen)
 	out["seenCount"] = seen
+	if pc, err := s.pushDeliveryCounts(r.Context(), id); err == nil {
+		out["pushDevices"] = pc
+	}
 	out["recipients"] = map[string]any{"items": items, "total": total, "page": page, "limit": limit}
 	writeJSON(w, http.StatusOK, out)
 }

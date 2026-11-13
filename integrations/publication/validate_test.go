@@ -88,7 +88,7 @@ func TestCleanNotification(t *testing.T) {
 		in   notificationInput
 		code string
 	}{
-		"bad channel":      {notificationInput{Channel: "push", Body: i18n{"fa": "x"}}, "INVALID_CHANNEL"},
+		"bad channel":      {notificationInput{Channel: "fax", Body: i18n{"fa": "x"}}, "INVALID_CHANNEL"},
 		"sms too long":     {notificationInput{Channel: "sms", Body: i18n{"fa": long}}, "TEXT_TOO_LONG"},
 		"email no title":   {notificationInput{Channel: "email", Body: i18n{"fa": "x"}}, "DEFAULT_LANGUAGE_REQUIRED"},
 		"in_app no title":  {notificationInput{Channel: "in_app", Body: i18n{"fa": "x"}}, "DEFAULT_LANGUAGE_REQUIRED"},

@@ -18,23 +18,29 @@ const commentsPerMinute = 5
 
 func (s *service) clientRPCs() map[string]clientRPC {
 	return map[string]clientRPC{
-		"publication_faq_list":      s.rpcFaqList,
-		"publication_news_list":     s.rpcNewsList,
-		"publication_news_get":      s.rpcNewsGet,
-		"publication_news_seen":     s.rpcNewsSeen,
-		"publication_news_comments": s.rpcNewsComments,
-		"publication_news_comment":  s.rpcNewsComment,
-		"publication_inbox":         s.rpcInbox,
-		"publication_inbox_seen":    s.rpcInboxSeen,
-		"publication_otp_request":   s.rpcOTPRequest,
-		"publication_otp_verify":    s.rpcOTPVerify,
-		"publication_phone":         s.rpcPhone,
-		"publication_banners":       s.rpcBanners,
-		"publication_banner_view":   s.rpcBannerView,
-		"publication_banner_click":  s.rpcBannerClick,
-		"publication_sponsors":      s.rpcSponsors,
-		"publication_sponsor_view":  s.rpcSponsorView,
-		"publication_sponsor_click": s.rpcSponsorClick,
+		"publication_faq_list":            s.rpcFaqList,
+		"publication_news_list":           s.rpcNewsList,
+		"publication_news_get":            s.rpcNewsGet,
+		"publication_news_seen":           s.rpcNewsSeen,
+		"publication_news_comments":       s.rpcNewsComments,
+		"publication_news_comment":        s.rpcNewsComment,
+		"publication_inbox":               s.rpcInbox,
+		"publication_inbox_seen":          s.rpcInboxSeen,
+		"publication_otp_request":         s.rpcOTPRequest,
+		"publication_otp_verify":          s.rpcOTPVerify,
+		"publication_phone":               s.rpcPhone,
+		"publication_banners":             s.rpcBanners,
+		"publication_banner_view":         s.rpcBannerView,
+		"publication_banner_click":        s.rpcBannerClick,
+		"publication_sponsors":            s.rpcSponsors,
+		"publication_sponsor_view":        s.rpcSponsorView,
+		"publication_sponsor_click":       s.rpcSponsorClick,
+		"publication_push_register":       s.rpcPushRegister,
+		"publication_push_unregister":     s.rpcPushUnregister,
+		"publication_push_devices":        s.rpcPushDevices,
+		"publication_notify_prefs":        s.rpcNotifyPrefs,
+		"publication_notify_prefs_set":    s.rpcNotifyPrefsSet,
+		"publication_notification_opened": s.rpcNotificationOpened,
 	}
 }
 
@@ -411,7 +417,7 @@ func (s *service) rpcNewsComment(ctx context.Context, userID, payload string) (a
 func (s *service) unreadCount(ctx context.Context, userID string) (int64, error) {
 	var n int64
 	err := s.db.QueryRowContext(ctx, `SELECT count(*) FROM publication_notification_recipient r JOIN publication_notification n ON n.id=r.notification_id
-		WHERE r.user_id=$1 AND n.channel='in_app' AND r.status='sent' AND r.seen_at IS NULL`, userID).Scan(&n)
+		WHERE r.user_id=$1 AND n.channel IN ('in_app','push_in_app') AND r.status='sent' AND r.seen_at IS NULL`, userID).Scan(&n)
 	return n, err
 }
 
@@ -433,9 +439,10 @@ func (s *service) rpcInbox(ctx context.Context, userID, payload string) (any, er
 	if err != nil {
 		return nil, err
 	}
-	rows, err := s.db.QueryContext(ctx, `SELECT n.id::text, n.title::text, n.body::text, COALESCE(n.action::text,'null'), n.created_at, r.seen_at IS NOT NULL
-		FROM publication_notification_recipient r JOIN publication_notification n ON n.id=r.notification_id
-		WHERE r.user_id=$1 AND n.channel='in_app' AND r.status='sent'
+	rows, err := s.db.QueryContext(ctx, `SELECT n.id::text, n.title::text, n.body::text, COALESCE(n.action::text,'null'), n.created_at, r.seen_at IS NOT NULL, r.vars::text, n.image_url,
+		COALESCE(c.key,''), COALESCE(c.name::text,'{}'), r.opened_at IS NOT NULL
+		FROM publication_notification_recipient r JOIN publication_notification n ON n.id=r.notification_id LEFT JOIN publication_notify_category c ON c.id=n.category_id
+		WHERE r.user_id=$1 AND n.channel IN ('in_app','push_in_app') AND r.status='sent'
 		ORDER BY n.created_at DESC, n.id DESC LIMIT $2 OFFSET $3`, userID, limit, offset)
 	if err != nil {
 		return nil, err
@@ -443,17 +450,26 @@ func (s *service) rpcInbox(ctx context.Context, userID, payload string) (any, er
 	defer rows.Close()
 	items := []map[string]any{}
 	for rows.Next() {
-		var id, title, body, act string
+		var id, title, body, act, varsRaw, image, catKey, catName string
 		var created time.Time
-		var seen bool
-		if err := rows.Scan(&id, &title, &body, &act, &created, &seen); err != nil {
+		var seen, opened bool
+		if err := rows.Scan(&id, &title, &body, &act, &created, &seen, &varsRaw, &image, &catKey, &catName, &opened); err != nil {
 			return nil, err
 		}
-		text := langs.Resolve(parseI18n(body), lang)
+		var vars map[string]string
+		_ = json.Unmarshal([]byte(varsRaw), &vars)
+		text := renderVars(langs.Resolve(parseI18n(body), lang), vars)
 		var a *action
 		_ = json.Unmarshal([]byte(act), &a)
-		items = append(items, map[string]any{"id": id, "title": langs.Resolve(parseI18n(title), lang), "body": text, "bodyHtml": renderMarkdown(text),
-			"action": resolveAction(langs, a, lang), "createdAt": created.UTC(), "seen": seen})
+		item := map[string]any{"id": id, "title": renderVars(langs.Resolve(parseI18n(title), lang), vars), "body": text, "bodyHtml": renderMarkdown(text),
+			"action": resolveAction(langs, a, lang), "createdAt": created.UTC(), "seen": seen, "opened": opened}
+		if image != "" {
+			item["imageUrl"] = image
+		}
+		if catKey != "" {
+			item["category"] = map[string]any{"key": catKey, "name": langs.Resolve(parseI18n(catName), lang)}
+		}
+		items = append(items, item)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -476,7 +492,7 @@ func (s *service) rpcInboxSeen(ctx context.Context, userID, payload string) (any
 	switch {
 	case in.All:
 		if _, err := s.db.ExecContext(ctx, `UPDATE publication_notification_recipient r SET seen_at=now() FROM publication_notification n
-			WHERE n.id=r.notification_id AND n.channel='in_app' AND r.user_id=$1 AND r.status='sent' AND r.seen_at IS NULL`, userID); err != nil {
+			WHERE n.id=r.notification_id AND n.channel IN ('in_app','push_in_app') AND r.user_id=$1 AND r.status='sent' AND r.seen_at IS NULL`, userID); err != nil {
 			return nil, err
 		}
 	case len(in.IDs) > 0:

@@ -44,6 +44,8 @@ var providerCatalog = []providerKind{
 		{Name: "fromName", Type: "text"},
 	}},
 	{"email", "resend", []providerField{{Name: "apiKey", Type: "secret", Required: true}, {Name: "from", Type: "email", Required: true}, {Name: "fromName", Type: "text"}}},
+	{"push", "fcm", []providerField{{Name: "serviceAccount", Type: "secretJson", Required: true}}},
+	{"push", "log", []providerField{}},
 }
 
 func catalogFor(channel, kind string) (providerKind, bool) {
@@ -79,7 +81,7 @@ func providerConfigured(p provider) bool {
 		if !f.Required {
 			continue
 		}
-		if p.Sandbox && f.Type == "secret" {
+		if p.Sandbox && (f.Type == "secret" || f.Type == "secretJson") {
 			continue
 		}
 		if p.Config.str(f.Name) == "" {
@@ -142,7 +144,7 @@ func providerView(p provider) map[string]any {
 	def, _ := catalogFor(p.Channel, p.Kind)
 	masked := map[string]any{}
 	for _, f := range def.Fields {
-		if f.Type == "secret" {
+		if f.Type == "secret" || f.Type == "secretJson" {
 			if p.Config.str(f.Name) != "" {
 				masked[f.Name] = secretMask
 			} else {
@@ -156,8 +158,14 @@ func providerView(p provider) map[string]any {
 	if fields == nil {
 		fields = []providerField{}
 	}
+	info := map[string]any{}
+	if p.Kind == "fcm" {
+		if sa, _, err := parseServiceAccount(p.Config.str("serviceAccount")); err == nil {
+			info["projectId"] = sa.ProjectID
+		}
+	}
 	return map[string]any{"id": p.ID, "channel": p.Channel, "kind": p.Kind, "isActive": p.Active, "isDefault": p.Default, "sandbox": p.Sandbox,
-		"configured": providerConfigured(p), "fields": fields, "config": masked, "updatedAt": p.UpdatedAt}
+		"configured": providerConfigured(p), "fields": fields, "config": masked, "info": info, "updatedAt": p.UpdatedAt}
 }
 
 func mergeProviderConfig(def providerKind, old providerConfig, in map[string]any) (providerConfig, error) {
@@ -183,6 +191,25 @@ func mergeProviderConfig(def providerKind, old providerConfig, in map[string]any
 			text = strconv.FormatFloat(t, 'f', -1, 64)
 		default:
 			return nil, badRequest("INVALID_VALUE", f.Name, "must be a string")
+		}
+		if f.Type == "secretJson" {
+			if text == secretMask {
+				if old.str(f.Name) != "" {
+					next[f.Name] = old.str(f.Name)
+				}
+				continue
+			}
+			if text == "" {
+				continue
+			}
+			if len(text) > 16384 {
+				return nil, badRequest("INVALID_SERVICE_ACCOUNT", f.Name, "the key file is too long")
+			}
+			if _, _, err := parseServiceAccount(text); err != nil {
+				return nil, badRequest("INVALID_SERVICE_ACCOUNT", f.Name, err.Error())
+			}
+			next[f.Name] = text
+			continue
 		}
 		if len(text) > 4096 || strings.ContainsAny(text, "\r\n") {
 			return nil, badRequest("INVALID_VALUE", f.Name, "value is too long or has line breaks")
@@ -309,6 +336,9 @@ func (s *service) providerSave(w http.ResponseWriter, r *http.Request, create bo
 		if in.IsDefault != nil {
 			p.Default = *in.IsDefault
 		}
+		if p.Kind == "log" {
+			p.Sandbox = true
+		}
 		if p.Active && !providerConfigured(p) {
 			return badRequest("PROVIDER_NOT_CONFIGURED", "config", "fill the required fields before activating")
 		}
@@ -402,6 +432,10 @@ func (s *service) consoleProviderTest(w http.ResponseWriter, r *http.Request) {
 	langs, err := localized.Load(r.Context(), s.db)
 	if err != nil {
 		s.writeError(w, err)
+		return
+	}
+	if p.Channel == "push" {
+		s.providerPushTest(w, r, p, in.To, in.Subject, in.Message)
 		return
 	}
 	msg := outMessage{Text: in.Message, Lang: langs.Default}

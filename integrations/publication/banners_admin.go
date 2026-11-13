@@ -176,7 +176,7 @@ func cleanURLs(langs *localized.Set, field string, in i18n, required bool) (i18n
 	return out, nil
 }
 
-func cleanTagIDs(ctx context.Context, tx *sql.Tx, field string, ids []string, kinds ...string) ([]string, error) {
+func cleanTagIDs(ctx context.Context, tx queryer, field string, ids []string, kinds ...string) ([]string, error) {
 	out := []string{}
 	seen := map[string]bool{}
 	if len(ids) > 50 {
@@ -245,26 +245,15 @@ func saveBanner(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 			Label i18n   `json:"label"`
 			URL   i18n   `json:"url"`
 		} `json:"action"`
-		Priority       int      `json:"priority"`
-		StartsAt       string   `json:"startsAt"`
-		EndsAt         string   `json:"endsAt"`
-		Days           []int    `json:"days"`
-		DayStart       string   `json:"dayStart"`
-		DayEnd         string   `json:"dayEnd"`
-		AudienceTagIDs []string `json:"audienceTagIds"`
-		ExcludeTagIDs  []string `json:"excludeTagIds"`
-		LevelTableID   string   `json:"levelTableId"`
-		MinLevel       *int     `json:"minLevel"`
-		MaxLevel       *int     `json:"maxLevel"`
-		Platforms      []string `json:"platforms"`
-		MinVersion     string   `json:"minVersion"`
-		MaxVersion     string   `json:"maxVersion"`
-		Countries      []string `json:"countries"`
-		Languages      []string `json:"languages"`
-		PlayerAge      string   `json:"playerAge"`
-		NewDays        *int     `json:"newDays"`
-		IsActive       *bool    `json:"isActive"`
-		SponsorID      string   `json:"sponsorId"`
+		Priority int    `json:"priority"`
+		StartsAt string `json:"startsAt"`
+		EndsAt   string `json:"endsAt"`
+		Days     []int  `json:"days"`
+		DayStart string `json:"dayStart"`
+		DayEnd   string `json:"dayEnd"`
+		audienceInput
+		IsActive  *bool  `json:"isActive"`
+		SponsorID string `json:"sponsorId"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -425,94 +414,22 @@ func saveBanner(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 	if dayStart != nil && *dayStart >= *dayEnd {
 		return badRequest("INVALID_HOURS", "dayEnd", "end must be after start")
 	}
-	audience, err := cleanTagIDs(ctx, tx, "audienceTagIds", in.AudienceTagIDs, "user")
+	in.audienceInput.InactiveDays = nil
+	aud, err := cleanAudience(ctx, tx, in.audienceInput)
 	if err != nil {
 		return err
 	}
-	exclude, err := cleanTagIDs(ctx, tx, "excludeTagIds", in.ExcludeTagIDs, "user")
-	if err != nil {
-		return err
-	}
-	for _, x := range exclude {
-		if containsStr(audience, x) {
-			return badRequest("TAG_BOTH_WAYS", "excludeTagIds", "a tag cannot be both shown to and hidden from")
-		}
-	}
-	levelTable, err := cleanUUID("levelTableId", in.LevelTableID, false)
-	if err != nil {
-		return err
-	}
-	if levelTable != nil {
-		var ok bool
-		if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_level_table WHERE id=$1)`, *levelTable).Scan(&ok); err != nil {
-			return err
-		}
-		if !ok {
-			return badRequest("LEVEL_TABLE_NOT_FOUND", "levelTableId", "level table does not exist")
-		}
-	}
-	for _, p := range []struct {
-		f string
-		v *int
-	}{{"minLevel", in.MinLevel}, {"maxLevel", in.MaxLevel}} {
-		if p.v != nil && (*p.v < 0 || *p.v > 100000) {
-			return badRequest("INVALID_LEVEL", p.f, "between 0 and 100000")
-		}
-	}
-	if in.MinLevel != nil && in.MaxLevel != nil && *in.MinLevel > *in.MaxLevel {
-		return badRequest("INVALID_RANGE", "maxLevel", "max level is below min level")
-	}
-	if in.MinLevel == nil && in.MaxLevel == nil {
-		levelTable = nil
-	}
-	platforms, err := cleanList("platforms", in.Platforms, 10, strings.ToLower, func(v string) bool { return containsStr(bannerPlatforms, v) }, "INVALID_PLATFORM")
-	if err != nil {
-		return err
-	}
-	minV := strings.TrimPrefix(strings.TrimSpace(latinDigits(in.MinVersion)), "v")
-	maxV := strings.TrimPrefix(strings.TrimSpace(latinDigits(in.MaxVersion)), "v")
-	for _, p := range []struct{ f, v string }{{"minVersion", minV}, {"maxVersion", maxV}} {
-		if p.v != "" {
-			if _, ok := bannerVersionParts(p.v); !ok || len(p.v) > 40 {
-				return badRequest("INVALID_VERSION", p.f, "use a version like 1.4.0")
-			}
-		}
-	}
-	if minV != "" && maxV != "" {
-		if c, _ := compareBannerVersions(minV, maxV); c > 0 {
-			return badRequest("INVALID_RANGE", "maxVersion", "max version is below min version")
-		}
-	}
-	countries, err := cleanList("countries", in.Countries, 250, strings.ToUpper, func(v string) bool {
-		return len(v) == 2 && v[0] >= 'A' && v[0] <= 'Z' && v[1] >= 'A' && v[1] <= 'Z'
-	}, "INVALID_COUNTRY_CODE")
-	if err != nil {
-		return err
-	}
-	languages, err := cleanList("languages", in.Languages, 50, localized.Normalize, langs.Known, "INVALID_LANGUAGE")
-	if err != nil {
-		return err
-	}
-	if in.PlayerAge == "" {
-		in.PlayerAge = "all"
-	}
-	if !containsStr(bannerAges, in.PlayerAge) {
-		return badRequest("INVALID_PLAYER_AGE", "playerAge", "playerAge must be all, new or returning")
-	}
-	newDays := 7
-	if in.NewDays != nil {
-		newDays = *in.NewDays
-	}
-	if newDays < 1 || newDays > 365 {
-		return badRequest("INVALID_NEW_DAYS", "newDays", "between 1 and 365 days")
+	var levelTable *string
+	if aud.LevelTable != "" {
+		levelTable = &aud.LevelTable
 	}
 	return execSave(ctx, tx, "publication_banner", id, create,
 		[]string{"key", "list_id", "name", "tag_ids", "title", "subtitle", "description", "image_url", "bg_color", "action_type", "action_value", "action_label", "action_url",
 			"priority", "starts_at", "ends_at", "days", "day_start", "day_end", "audience_tag_ids", "exclude_tag_ids", "level_table_id", "min_level", "max_level",
 			"platforms", "min_version", "max_version", "countries", "languages", "player_age", "new_days", "is_active", "sponsor_id"},
 		[]any{key, *listID, name, tags, i18nJSON(title), i18nJSON(subtitle), i18nJSON(desc), i18nJSON(image), color, act.Type, act.Value, i18nJSON(label), i18nJSON(urls),
-			in.Priority, starts, ends, days, dayStart, dayEnd, audience, exclude, levelTable, in.MinLevel, in.MaxLevel,
-			platforms, minV, maxV, countries, languages, in.PlayerAge, newDays, boolOr(in.IsActive, true), sponsor})
+			in.Priority, starts, ends, days, dayStart, dayEnd, aud.Audience, aud.Exclude, levelTable, aud.MinLevel, aud.MaxLevel,
+			aud.Platforms, aud.MinVersion, aud.MaxVersion, aud.Countries, aud.Languages, aud.PlayerAge, aud.NewDays, boolOr(in.IsActive, true), sponsor})
 }
 
 func (s *service) consoleBannerStats(w http.ResponseWriter, r *http.Request) {
