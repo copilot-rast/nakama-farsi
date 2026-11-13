@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	gameCacheTTL     = 2 * time.Second
+	gameCacheTTL     = time.Duration(0)
 	gameOpenTTL      = 15 * time.Minute
 	maxGameRooms     = 20
 	maxGameMatchID   = 160

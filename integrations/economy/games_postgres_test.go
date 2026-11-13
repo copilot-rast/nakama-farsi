@@ -104,7 +104,7 @@ func TestGameSettingsValidationAndRegistry(t *testing.T) {
 		field string
 	}{
 		{base(map[string]any{"key": "Bad-Key"}), "INVALID_GAME_KEY", "key"},
-		{base(map[string]any{"maxPlayers": 1}), "MAX_BELOW_MIN", "maxPlayers"},
+		{base(map[string]any{"maxPlayers": 1}), "PLAYERS_MAX_BELOW_MIN", "maxPlayers"},
 		{base(map[string]any{"settings": map[string]any{"roundSeconds": 5}}), "INVALID_SETTING", "settings.roundSeconds"},
 		{base(map[string]any{"settings": map[string]any{"board": "huge"}}), "INVALID_SETTING", "settings.board"},
 		{base(map[string]any{"settings": map[string]any{"colour": "red"}}), "UNKNOWN_SETTING", "settings.colour"},
@@ -456,6 +456,7 @@ func TestGameSettingsCacheAcrossNodes(t *testing.T) {
 	nodeB := testService()
 	nodeB.db, nodeB.nk = h.s.db, h.nk
 	nodeB.now = func() time.Time { return clock }
+	nodeB.games.ttl = 2 * time.Second
 	read := func() int {
 		got, err := gameProvider{s: nodeB}.Game(h.ctx, "tst_board")
 		if err != nil {

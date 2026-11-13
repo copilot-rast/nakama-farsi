@@ -222,7 +222,7 @@ func saveGame(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 		hi = lo
 	}
 	if hi < lo {
-		return badRequest("MAX_BELOW_MIN", "maxPlayers", "the most players cannot be below the fewest")
+		return badRequest("PLAYERS_MAX_BELOW_MIN", "maxPlayers", "the most players cannot be below the fewest")
 	}
 	turn, err := optionalInt(in.TurnSeconds, "turnSeconds", "INVALID_SECONDS", "whole seconds from 1 to 86400", 1, 86400)
 	if err != nil {
