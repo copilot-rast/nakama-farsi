@@ -32,8 +32,8 @@ async function putBack(key: string) {
 }
 
 test.afterAll(async () => {
-  for (const key of Object.keys(restore)) await putBack(key);
   for (const id of players) await deleteUser(id);
+  for (const key of Object.keys(restore)) await putBack(key);
   sql(`DELETE FROM economy_game_match m WHERE NOT EXISTS (SELECT 1 FROM economy_game_entry e WHERE e.match_id=m.id AND EXISTS (SELECT 1 FROM users u WHERE u.id=e.user_id))`);
 });
 
@@ -103,7 +103,7 @@ test.describe('games: Star Catcher lobby', () => {
       await pg.locator('[data-game="stargame_tictactoe"] [data-room-card="bronze"] button').click();
       await expect(pg.locator('#games-search')).toContainText('دنبال حریف می‌گردیم');
     }
-    for (const pg of [page, other]) await screen(pg, 'ttt');
+    for (const pg of [page, other]) await expect(pg.locator('#screen-ttt')).toBeVisible({ timeout: 60_000 });
     for (const pg of [page, other]) await expect(pg.locator('#ttt-board [data-cell]')).toHaveCount(9, { timeout: 45_000 });
     const marks = await page.evaluate(() => (window as any).__lobby.view.marks);
     const x = marks[a.id] === 'X' ? page : other;
