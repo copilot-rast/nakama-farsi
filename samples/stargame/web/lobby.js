@@ -192,11 +192,11 @@ async function lobbyCancel() {
   if (ticket) await rtSend({ matchmaker_remove: { ticket } }).catch(() => {});
 }
 
-function b64(text) {
+function lobbyB64(text) {
   return btoa(String.fromCharCode(...new TextEncoder().encode(text)));
 }
 
-function unb64(data) {
+function lobbyUnb64(data) {
   try {
     return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(data || ""), (c) => c.charCodeAt(0))));
   } catch (e) {
@@ -264,7 +264,7 @@ function tttPaint() {
 
 function tttMove(cell) {
   if (!lobby.matchId) return;
-  rtSend({ match_data_send: { match_id: lobby.matchId, op_code: 2, data: b64(JSON.stringify({ cell })) } }).catch(() => {});
+  rtSend({ match_data_send: { match_id: lobby.matchId, op_code: 2, data: lobbyB64(JSON.stringify({ cell })) } }).catch(() => {});
 }
 
 function tttTick() {
@@ -285,7 +285,7 @@ function lobbySocket(msg) {
   const d = msg && msg.match_data;
   if (!d || d.match_id !== lobby.matchId) return false;
   const op = Number(d.op_code);
-  const body = unb64(d.data);
+  const body = lobbyUnb64(d.data);
   if (op === 1 || op === 3 || op === 4) {
     if (op === 4 && body.reason === "cancelled" && !body.board) body.board = [];
     lobby.view = body;
