@@ -2722,6 +2722,16 @@ html.pl .eco-nt-image {
   border-radius: var(--r-card);
   box-shadow: inset 0 0 0 1px var(--line);
 }
+
+html.pl .eco-gm-tile {
+  background: var(--tint-ok-bg);
+  color: var(--tint-ok-fg);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+html.pl [data-gm-warnings] .eco-notice {
+  align-items: flex-start;
+}
 @media (max-width: 767px) {
   html.pl {
     --gap: 12px;

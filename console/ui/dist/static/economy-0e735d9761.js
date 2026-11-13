@@ -2928,7 +2928,115 @@ var MESSAGES = {
     'rerr.opted_out': "این دسته را خاموش کرده",
     'rerr.no_device': "دستگاه ثبت‌شده ندارد",
     'rerr.cancelled': "لغو شد",
-    'rerr.cooldown': "فاصلهٔ تکرار"
+    'rerr.cooldown': "فاصلهٔ تکرار",
+    'nav.games': "بازی‌ها",
+    'desc.games': "تنظیمات هر بازی که کدش روی سرور است: روشن و خاموش، نام و آیکون، تعداد بازیکن، زمان نوبت، اتاق‌ها با ورودی و جایزه، جدول امتیاز، سکو و نسخه، و تنظیمات ویژهٔ هر بازی. منطق بازی در کد افزونه است و از این‌جا ساخته نمی‌شود.",
+    'new.games': "تنظیم بازی تازه",
+    'edit.games': "ویرایش بازی",
+    'search.games': "جست‌وجو در کلید و نام بازی",
+    'empty.games': "هنوز بازی‌ای تنظیم نشده.",
+    'empty.hint.games': "بازی‌هایی که کدشان ثبت شده بالای صفحه آمده‌اند؛ «تنظیم کن» را بزنید.",
+    'kind.game': "بازی",
+    'col.gm.play': "بازیکن",
+    'col.gm.rooms': "اتاق‌ها",
+    'col.gm.matches': "بازی‌ها",
+    'filter.gm.platform': "سکو",
+    'gm.solo': "تک‌نفره",
+    'gm.players': "{n} نفره",
+    'gm.playersRange': "{a} تا {b} نفر",
+    'gm.turnN': "هر نوبت {n} ثانیه",
+    'gm.room.fee': "{name}: {n} {cur}",
+    'gm.room.free': "{name}: رایگان",
+    'gm.room.level': "سطح {n}",
+    'gm.rooms.none': "بدون اتاق",
+    'gm.off': "خاموش",
+    'gm.noHandler': "کد ندارد",
+    'gm.realtime': "بازی زنده",
+    'gm.registered': "کد ثبت شده",
+    'gm.configure': "تنظیم کن",
+    'gm.warn.unconfigured': "کد بازی «{name}» ({key}) در افزونهٔ {plugin} ثبت شده ولی هنوز تنظیم ندارد.",
+    'gm.warn.missing': "بازی «{name}» ({key}) تنظیم شده ولی کدی روی این سرور برایش ثبت نشده. بازیکن نمی‌تواند واردش شود.",
+    'gm.warn.ok': "همهٔ {n} بازیِ ثبت‌شده تنظیم دارند.",
+    'gm.key.pick': "کلید همان نام کنترل‌کنندهٔ بازی در کد است.",
+    'gm.key.missing': "کدی با این کلید روی سرور ثبت نشده. تنظیم ذخیره می‌شود ولی بازی اجرا نمی‌شود.",
+    'gm.key.realtime': "کد این بازی در افزونهٔ {plugin} ثبت شده و بازی زنده دارد.",
+    'gm.key.registered': "کد این بازی در افزونهٔ {plugin} ثبت شده.",
+    'gm.h.play': "بازیکن‌ها و زمان",
+    'gm.h.rooms': "اتاق‌ها",
+    'gm.h.where': "کجا دیده شود",
+    'gm.h.settings': "تنظیمات ویژهٔ این بازی",
+    'gm.room.add': "افزودن اتاق",
+    'gm.room.empty': "این بازی اتاق ندارد؛ همه با هم بازی می‌کنند و ورودی ندارد.",
+    'gm.rooms.hint': "ورودی وقتی کم می‌شود که بازیکن وارد بازی شود؛ اگر بازی پیش از شروع لغو شود برمی‌گردد. جایزه یک بار به برنده داده می‌شود.",
+    'gm.settings.noDef': "کدی برای این کلید ثبت نشده، پس فرمی هم نیست. تنظیمات را به شکل JSON بنویسید.",
+    'gm.settings.json': "تنظیمات (JSON)",
+    'gm.settings.none': "کد این بازی تنظیم ویژه‌ای ندارد.",
+    'gm.settings.min': "کمترین {n}",
+    'gm.settings.max': "بیشترین {n}",
+    'gm.settings.default': "پیش‌فرض {v}",
+    'gm.settings.tooLong': "متن بلند است.",
+    'gm.stat.matches': "{n} بازی",
+    'gm.stat.finished': "{n} تمام‌شده",
+    'gm.stat.cancelled': "{n} لغوشده",
+    'gm.stat.players': "{n} بازیکن",
+    'gm.stat.last': "آخرین بازی: {date}",
+    'gm.platform.android': "اندروید",
+    'gm.platform.ios': "iOS",
+    'gm.platform.web': "وب",
+    'gm.platform.windows': "ویندوز",
+    'gm.platform.macos': "مک",
+    'gm.platform.linux': "لینوکس",
+    'f.gm.key': "کلید بازی",
+    'f.gm.key.hint': "همان نام کنترل‌کنندهٔ بازی در کد، مثل hotboard_ludo. بعد از ساخت عوض نمی‌شود.",
+    'err.gm.key': "حروف کوچک انگلیسی، عدد و _ ؛ با حرف شروع شود (۲ تا ۶۴).",
+    'f.gm.active': "روشن",
+    'f.gm.active.hint': "خاموش که باشد کسی وارد نمی‌شود و پیام تعمیر نشان داده می‌شود.",
+    'f.gm.name': "نام بازی",
+    'f.maintenance': "پیام تعمیر",
+    'f.gm.maintenance': "پیام تعمیر",
+    'f.gm.maintenance.hint': "وقتی بازی خاموش است در لابی دیده می‌شود. خالی باشد، بازی خاموش اصلاً دیده نمی‌شود.",
+    'f.gm.sort': "ترتیب در لابی",
+    'f.gm.sort.hint': "عدد کوچک‌تر بالاتر می‌آید.",
+    'f.gm.minPlayers': "کمترین بازیکن",
+    'f.gm.maxPlayers': "بیشترین بازیکن",
+    'f.gm.turn': "زمان هر نوبت (ثانیه)",
+    'f.gm.turn.hint': "خالی یعنی نوبت زمان ندارد.",
+    'f.gm.limit': "سقف زمان بازی (ثانیه)",
+    'f.gm.limit.hint': "بعد از این زمان بازی تمام می‌شود.",
+    'f.gm.bots': "ربات مجاز است",
+    'f.gm.bots.hint': "کد بازی می‌خواند و اگر حریف نیامد می‌تواند ربات بگذارد.",
+    'f.gm.room.key': "کلید اتاق",
+    'f.gm.room.currency': "ارز ورودی",
+    'f.gm.room.amount': "مبلغ ورودی",
+    'f.gm.room.level': "کمترین سطح",
+    'f.gm.room.prize': "جایزهٔ برنده",
+    'f.gm.room.group': "یا گروه جایزه",
+    'f.gm.room.name': "نام اتاق",
+    'f.gm.platforms': "سکوها",
+    'f.gm.platforms.hint': "هیچ‌کدام را نزنید تا روی همهٔ سکوها باشد.",
+    'f.gm.minVersion': "کمترین نسخهٔ بازی",
+    'f.gm.maxVersion': "بیشترین نسخهٔ بازی",
+    'f.gm.board': "جدول امتیاز",
+    'f.gm.board.hint': "شناسهٔ یک جدول امتیاز نکاما؛ برنده‌ها یک امتیاز می‌گیرند.",
+    'f.gm.settings': "تنظیمات",
+    'code.INVALID_GAME_KEY': "کلید بازی درست نیست؛ حروف کوچک انگلیسی، عدد و _ ، با حرف شروع شود.",
+    'code.PLAYERS_MAX_BELOW_MIN': "بیشترین بازیکن از کمترین کمتر است.",
+    'code.INVALID_PLAYERS': "تعداد بازیکن از ۱ تا ۱۰۰ است.",
+    'code.INVALID_SECONDS': "زمان به ثانیهٔ کامل است.",
+    'code.DUPLICATE_ROOM': "کلید هر اتاق باید یکتا باشد.",
+    'code.INVALID_ROOM_KEY': "کلید اتاق: حروف کوچک انگلیسی، عدد و _ ، با حرف شروع شود.",
+    'code.INVALID_ENTRY_FEE': "ارز و مبلغ ورودی را با هم بدهید، یا هیچ‌کدام.",
+    'code.ONE_ROOM_PRIZE': "هر اتاق یا جایزه دارد یا گروه جایزه، نه هر دو.",
+    'code.PRIZE_NOT_REPEATABLE': "جایزهٔ اتاق باید تکرارشدنی باشد، چون به هر برنده داده می‌شود.",
+    'code.INVALID_MIN_LEVEL': "سطح از ۰ تا ۱۰۰۰ است.",
+    'code.TOO_MANY_ROOMS': "حداکثر ۲۰ اتاق.",
+    'code.LEADERBOARD_NOT_FOUND': "جدول امتیازی با این شناسه نیست.",
+    'code.VERSION_RANGE': "بیشترین نسخه از کمترین پایین‌تر است.",
+    'code.INVALID_SETTING': "این مقدار با تنظیمات بازی جور نیست.",
+    'code.UNKNOWN_SETTING': "این بازی چنین تنظیمی ندارد.",
+    'code.SETTING_REQUIRED': "این تنظیم لازم است.",
+    'code.MATCH_STARTED': "این بازی شروع شده و لغو نمی‌شود.",
+    'code.MATCH_NOT_FOUND': "این بازی پیدا نشد."
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -5857,7 +5965,115 @@ var MESSAGES = {
     'rerr.opted_out': "turned this category off",
     'rerr.no_device': "no registered device",
     'rerr.cancelled': "cancelled",
-    'rerr.cooldown': "repeat gap"
+    'rerr.cooldown': "repeat gap",
+    'nav.games': "Games",
+    'desc.games': "Settings for each game whose code runs on the server: on or off, name and icon, player counts, turn time, rooms with entry fee and prize, leaderboard, platform and version, and each game's own settings. Game logic lives in plugin code and is not made here.",
+    'new.games': "Configure a game",
+    'edit.games': "Edit game",
+    'search.games': "Search game key and name",
+    'empty.games': "No games configured yet.",
+    'empty.hint.games': "Games registered by code are listed at the top; press «Configure».",
+    'kind.game': "Game",
+    'col.gm.play': "Players",
+    'col.gm.rooms': "Rooms",
+    'col.gm.matches': "Matches",
+    'filter.gm.platform': "Platform",
+    'gm.solo': "Solo",
+    'gm.players': "{n} players",
+    'gm.playersRange': "{a} to {b} players",
+    'gm.turnN': "{n} s a turn",
+    'gm.room.fee': "{name}: {n} {cur}",
+    'gm.room.free': "{name}: free",
+    'gm.room.level': "level {n}",
+    'gm.rooms.none': "No rooms",
+    'gm.off': "Off",
+    'gm.noHandler': "No code",
+    'gm.realtime': "Live match",
+    'gm.registered': "Code registered",
+    'gm.configure': "Configure",
+    'gm.warn.unconfigured': "Game «{name}» ({key}) is registered by the {plugin} plugin but has no settings yet.",
+    'gm.warn.missing': "Game «{name}» ({key}) has settings but no code on this server registers it. Players cannot enter it.",
+    'gm.warn.ok': "All {n} registered games have settings.",
+    'gm.key.pick': "The key is the game's match handler name in code.",
+    'gm.key.missing': "No code on the server registers this key. The settings save, but the game will not run.",
+    'gm.key.realtime': "Registered by the {plugin} plugin with a live match handler.",
+    'gm.key.registered': "Registered by the {plugin} plugin.",
+    'gm.h.play': "Players and time",
+    'gm.h.rooms': "Rooms",
+    'gm.h.where': "Where it shows",
+    'gm.h.settings': "This game's own settings",
+    'gm.room.add': "Add room",
+    'gm.room.empty': "This game has no rooms; everyone plays together with no entry fee.",
+    'gm.rooms.hint': "The entry fee is taken when a player enters a match and returned if the match is cancelled before it starts. The prize is paid to the winner once.",
+    'gm.settings.noDef': "No code registers this key, so there is no form. Write the settings as JSON.",
+    'gm.settings.json': "Settings (JSON)",
+    'gm.settings.none': "This game's code has no settings of its own.",
+    'gm.settings.min': "min {n}",
+    'gm.settings.max': "max {n}",
+    'gm.settings.default': "default {v}",
+    'gm.settings.tooLong': "Too long.",
+    'gm.stat.matches': "{n} matches",
+    'gm.stat.finished': "{n} finished",
+    'gm.stat.cancelled': "{n} cancelled",
+    'gm.stat.players': "{n} players",
+    'gm.stat.last': "Last match: {date}",
+    'gm.platform.android': "Android",
+    'gm.platform.ios': "iOS",
+    'gm.platform.web': "Web",
+    'gm.platform.windows': "Windows",
+    'gm.platform.macos': "macOS",
+    'gm.platform.linux': "Linux",
+    'f.gm.key': "Game key",
+    'f.gm.key.hint': "The match handler name in code, like hotboard_ludo. It cannot change later.",
+    'err.gm.key': "Lowercase letters, digits and _, starting with a letter (2 to 64).",
+    'f.gm.active': "On",
+    'f.gm.active.hint': "When off, nobody can enter and the maintenance message shows.",
+    'f.gm.name': "Game name",
+    'f.maintenance': "Maintenance message",
+    'f.gm.maintenance': "Maintenance message",
+    'f.gm.maintenance.hint': "Shown in the lobby while the game is off. Empty means a switched-off game is hidden.",
+    'f.gm.sort': "Order in the lobby",
+    'f.gm.sort.hint': "Smaller numbers come first.",
+    'f.gm.minPlayers': "Fewest players",
+    'f.gm.maxPlayers': "Most players",
+    'f.gm.turn': "Turn time (seconds)",
+    'f.gm.turn.hint': "Empty means turns have no time limit.",
+    'f.gm.limit': "Match time limit (seconds)",
+    'f.gm.limit.hint': "The match ends after this time.",
+    'f.gm.bots': "Bots allowed",
+    'f.gm.bots.hint': "The game code reads this and may add a bot when no opponent comes.",
+    'f.gm.room.key': "Room key",
+    'f.gm.room.currency': "Entry currency",
+    'f.gm.room.amount': "Entry fee",
+    'f.gm.room.level': "Lowest level",
+    'f.gm.room.prize': "Winner's prize",
+    'f.gm.room.group': "Or prize group",
+    'f.gm.room.name': "Room name",
+    'f.gm.platforms': "Platforms",
+    'f.gm.platforms.hint': "Tick none to show it on every platform.",
+    'f.gm.minVersion': "Lowest app version",
+    'f.gm.maxVersion': "Highest app version",
+    'f.gm.board': "Leaderboard",
+    'f.gm.board.hint': "A Nakama leaderboard id; winners get one point.",
+    'f.gm.settings': "Settings",
+    'code.INVALID_GAME_KEY': "The game key is lowercase letters, digits and _, starting with a letter.",
+    'code.PLAYERS_MAX_BELOW_MIN': "The most players is below the fewest.",
+    'code.INVALID_PLAYERS': "Players go from 1 to 100.",
+    'code.INVALID_SECONDS': "Use whole seconds.",
+    'code.DUPLICATE_ROOM': "Each room key must be unique.",
+    'code.INVALID_ROOM_KEY': "Room key: lowercase letters, digits and _, starting with a letter.",
+    'code.INVALID_ENTRY_FEE': "Give both the entry currency and amount, or neither.",
+    'code.ONE_ROOM_PRIZE': "A room has a prize or a prize group, not both.",
+    'code.PRIZE_NOT_REPEATABLE': "A room prize must be repeatable, since every winner gets it.",
+    'code.INVALID_MIN_LEVEL': "The level goes from 0 to 1000.",
+    'code.TOO_MANY_ROOMS': "At most 20 rooms.",
+    'code.LEADERBOARD_NOT_FOUND': "No leaderboard has this id.",
+    'code.VERSION_RANGE': "The highest version is below the lowest.",
+    'code.INVALID_SETTING': "This value does not fit the game's settings.",
+    'code.UNKNOWN_SETTING': "This game has no such setting.",
+    'code.SETTING_REQUIRED': "This setting is required.",
+    'code.MATCH_STARTED': "This match has started and cannot be cancelled.",
+    'code.MATCH_NOT_FOUND': "This match was not found."
   }
 };
 
@@ -7529,6 +7745,7 @@ function buildForm(fields, values, ctx) {
   function refresh() {
     entries.forEach(function (e) {
       if (e.def.live && e.control) append(clear(e.control), e.def.render(values));
+      if (e.def.sync && e.control && e.control.sync) e.control.sync(values);
       var visible = !e.def.when || e.def.when(values);
       var el = e.row ? e.el : e.wrap;
       el.hidden = !visible;
@@ -7589,6 +7806,10 @@ function buildForm(fields, values, ctx) {
     });
     if (!best) return false;
     if ((best.def.type === 'actions' || best.def.type === 'rows') && best.control.showServerError) return best.control.showServerError(err);
+    if (best.def.type === 'custom' && best.control.showError && best.control.showError(String(err.field).split('.').slice(1).join('.'), errorText(err))) {
+      best.wrap.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      return true;
+    }
     if (best.def.type === 'i18n') {
       var code = trServerLang(err, getPath(values, best.def.name), best.def);
       best.control.markLang(code);
@@ -8158,7 +8379,7 @@ var RESOURCES = {
 };
 
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'achievements', 'chance-games', 'prize-groups', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
+  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'restrictions', 'chat-words', 'activity'],
   support: ['tickets', 'live-chat']
@@ -15267,6 +15488,317 @@ function playerChanceCard() {
   }
   place();
 }
+
+PH_ICONS.games = '<path d="M220.27,158.54a8,8,0,0,0-7.7-.46,20,20,0,1,1,0-36.16A8,8,0,0,0,224,114.69V72a16,16,0,0,0-16-16H171.78a35.36,35.36,0,0,0,.22-4,36.11,36.11,0,0,0-11.36-26.24,36,36,0,0,0-60.55,23.62,36.56,36.56,0,0,0,.14,6.62H64A16,16,0,0,0,48,72v32.22a35.36,35.36,0,0,0-4-.22,36.12,36.12,0,0,0-26.24,11.36,35.7,35.7,0,0,0-9.69,27,36.08,36.08,0,0,0,33.31,33.6,35.68,35.68,0,0,0,6.62-.14V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V165.31A8,8,0,0,0,220.27,158.54ZM208,208H64V165.31a8,8,0,0,0-11.43-7.23,20,20,0,1,1,0-36.16A8,8,0,0,0,64,114.69V72h46.69a8,8,0,0,0,7.23-11.43,20,20,0,1,1,36.16,0A8,8,0,0,0,161.31,72H208v32.23a35.68,35.68,0,0,0-6.62-.14A36,36,0,0,0,204,176a35.36,35.36,0,0,0,4-.22Z"/>';
+PH_ICONS.gamesDuo = '<path d="M204,168a28,28,0,0,0,12-2.69V208a8,8,0,0,1-8,8H64a8,8,0,0,1-8-8V165.31a28,28,0,1,1,0-50.62V72a8,8,0,0,1,8-8h46.69a28,28,0,1,1,50.61,0H208a8,8,0,0,1,8,8v42.69A28,28,0,1,0,204,168Z" opacity="0.2"/>' + PH_ICONS.games;
+
+var GAME_PLATFORMS = ['android', 'ios', 'web', 'windows', 'macos', 'linux'];
+var GAME_REG = { items: [], unconfigured: [], missingHandler: [], at: 0 };
+
+function loadGameRegistry(force) {
+  if (!force && Date.now() - GAME_REG.at < 5000) return Promise.resolve(GAME_REG);
+  return api('GET', '/games-registry').then(function (r) {
+    GAME_REG = { items: r.items || [], unconfigured: r.unconfigured || [], missingHandler: r.missingHandler || [], at: Date.now() };
+    setTimeout(paintRegTags, 0);
+    return GAME_REG;
+  }, function () { return GAME_REG; });
+}
+
+function gameDef(key) {
+  for (var i = 0; i < GAME_REG.items.length; i++) if (GAME_REG.items[i].key === key) return GAME_REG.items[i];
+  return null;
+}
+
+function schemaText(v) {
+  if (v == null) return '';
+  if (typeof v === 'string') return v;
+  return v[lang()] || v.en || v.fa || Object.keys(v).map(function (k) { return v[k]; })[0] || '';
+}
+
+function gameTile(it) {
+  var pic = h('div', { class: 'h-9 w-9 shrink-0 rounded-md overflow-hidden flex items-center justify-center eco-gm-tile' });
+  if (it.iconUrl) pic.appendChild(img(it.iconUrl, 'gamesDuo'));
+  else pic.appendChild(icon('gamesDuo', 'h-5 w-5'));
+  return pic;
+}
+
+function gamePlayers(it) {
+  var a = Number(it.minPlayers) || 1, b = Number(it.maxPlayers) || a;
+  if (b <= 1) return t('gm.solo');
+  return a === b ? t('gm.players', { n: fmtNum(a) }) : t('gm.playersRange', { a: fmtNum(a), b: fmtNum(b) });
+}
+
+function gameRoomChip(r) {
+  var fee = r.entryFee && r.entryFee.amount ? t('gm.room.fee', { name: r.key, n: fmtNum(r.entryFee.amount), cur: keyName('currency', r.entryFee.currencyKey) }) : t('gm.room.free', { name: r.key });
+  return h('span', { class: 'eco-tag eco-tag--secondary inline-flex items-center gap-1 leading-tight max-w-full px-2 py-0.5 text-xs rounded-md whitespace-nowrap tabular-nums', 'data-gm-room': r.key }, fee,
+    r.minLevel ? h('span', { class: 'opacity-80', text: '· ' + t('gm.room.level', { n: fmtNum(r.minLevel) }) }) : null);
+}
+
+function gameRegTagFor(key) {
+  var def = gameDef(key);
+  if (!def) return tag(t('gm.noHandler'), 'error');
+  return tag(def.realtime ? t('gm.realtime') : t('gm.registered'), def.realtime ? 'primary' : 'secondary');
+}
+
+function gameRegistryTag(it) {
+  var box = h('span', { class: 'inline-flex', 'data-gm-regtag': it.key });
+  if (GAME_REG.at) box.appendChild(gameRegTagFor(it.key));
+  return box;
+}
+
+function paintRegTags() {
+  var els = document.querySelectorAll('[data-gm-regtag]');
+  for (var i = 0; i < els.length; i++) append(clear(els[i]), gameRegTagFor(els[i].getAttribute('data-gm-regtag')));
+}
+
+function gameWarnings() {
+  var box = h('div', { class: 'flex flex-col gap-2 mb-4', 'data-gm-warnings': '' });
+  loadGameRegistry(true).then(function (reg) {
+    clear(box);
+    reg.unconfigured.forEach(function (d) {
+      var go = button({ variant: 'link', size: 'sm', label: t('gm.configure'), onclick: function () { location.hash = hashFor('games', 'new', { key: d.key }); } });
+      go.setAttribute('data-gm-configure', d.key);
+      var n = notice('warning', t('gm.warn.unconfigured', { key: d.key, name: schemaText(d.name) || d.key, plugin: d.plugin || '—' }), go);
+      n.setAttribute('data-gm-unconfigured', d.key);
+      box.appendChild(n);
+    });
+    reg.missingHandler.forEach(function (d) {
+      var n = notice('error', t('gm.warn.missing', { key: d.key, name: i18nText(d.name) || d.key }));
+      n.setAttribute('data-gm-missing', d.key);
+      box.appendChild(n);
+    });
+    if (!reg.unconfigured.length && !reg.missingHandler.length && reg.items.length) {
+      var ok = notice('success', t('gm.warn.ok', { n: fmtNum(reg.items.length) }));
+      ok.setAttribute('data-gm-ok', '');
+      box.appendChild(ok);
+    }
+  });
+  return box;
+}
+
+function schemaForm(cur, change, values) {
+  var box = h('div', { class: 'flex flex-col', 'data-gm-settings': '' });
+  var state = { key: null, vals: Object.assign({}, cur || {}), wraps: {}, schema: null };
+  function emit() { change(Object.assign({}, state.vals)); }
+  function render() {
+    clear(box);
+    state.wraps = {};
+    var def = gameDef(values.key);
+    state.key = values.key;
+    state.schema = def && def.schema ? def.schema : null;
+    if (!def) {
+      box.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', 'data-gm-noschema': '', text: t('gm.settings.noDef') }));
+      var raw = textInput(JSON.stringify(state.vals, null, 2), { ltr: true, mono: true, multiline: true, rows: 4, label: t('gm.settings.json'), oninput: function (v) {
+        try { state.vals = v.trim() ? JSON.parse(v) : {}; state.bad = false; } catch (x) { state.bad = true; }
+        emit();
+      } });
+      box.appendChild(field(t('gm.settings.json'), raw, null, { optional: true }));
+      return;
+    }
+    var props = (state.schema && state.schema.properties) || {};
+    var names = Object.keys(props);
+    if (!names.length) {
+      box.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('gm.settings.none') }));
+      return;
+    }
+    names.forEach(function (name) {
+      var p = props[name];
+      var label = schemaText(p.title) || name;
+      var hint = schemaText(p.description);
+      var v = state.vals[name];
+      if (v === undefined && p.default !== undefined) { v = p.default; state.vals[name] = v; }
+      var control;
+      if (p.type === 'boolean') {
+        control = toggle(!!v, label, function (on) { state.vals[name] = on; emit(); });
+      } else if (p.enum && p.enum.length) {
+        control = selectInput(v, p.enum.map(function (e) { return { value: e, label: String(e) }; }), function (s) { state.vals[name] = s; emit(); }, { placeholder: false, label: label });
+      } else if (p.type === 'integer' || p.type === 'number') {
+        control = numberInput(v, { int: p.type === 'integer', label: label, oninput: function (s) { state.vals[name] = s === '' ? null : parseNumber(s, p.type === 'integer'); emit(); } });
+      } else {
+        control = textInput(v == null ? '' : String(v), { label: label, oninput: function (s) { state.vals[name] = s; emit(); } });
+      }
+      var range = [];
+      if (p.minimum !== undefined) range.push(t('gm.settings.min', { n: fmtNum(p.minimum) }));
+      if (p.maximum !== undefined) range.push(t('gm.settings.max', { n: fmtNum(p.maximum) }));
+      if (p.default !== undefined) range.push(t('gm.settings.default', { v: typeof p.default === 'number' ? fmtNum(p.default) : String(p.default) }));
+      var wrap = field(p.type === 'boolean' ? '' : label, control, [hint, range.join(' · ')].filter(Boolean).join(' — ') || null, { optional: !(state.schema.required || []).includes(name) });
+      wrap.setAttribute('data-setting', name);
+      state.wraps[name] = wrap;
+      box.appendChild(wrap);
+    });
+    setTimeout(emit, 0);
+  }
+  box.sync = function (vals) { if (vals.key !== state.key) { state.vals = {}; render(); } };
+  box.validate = function () {
+    if (state.bad) return t('err.json');
+    if (!state.schema) return null;
+    var props = state.schema.properties || {};
+    var bad = null;
+    Object.keys(state.wraps).forEach(function (name) {
+      var p = props[name], v = state.vals[name], msg = '';
+      if (v === null || v === undefined || v === '') { if ((state.schema.required || []).includes(name) && p.default === undefined) msg = t('err.required'); }
+      else if ((p.type === 'integer' || p.type === 'number') && (typeof v !== 'number' || isNaN(v) || (p.minimum !== undefined && v < p.minimum) || (p.maximum !== undefined && v > p.maximum))) msg = t('err.number');
+      else if (p.type === 'string' && p.maxLength !== undefined && String(v).length > p.maxLength) msg = t('gm.settings.tooLong');
+      state.wraps[name].setError(msg);
+      if (msg && !bad) bad = msg;
+    });
+    return bad ? t('err.form') : null;
+  };
+  box.showError = function (name, msg) { if (state.wraps[name]) { state.wraps[name].setError(msg); return true; } return false; };
+  render();
+  return box;
+}
+
+function gameStats(v) {
+  if (!v.id) return h('span', {});
+  return h('div', { class: 'flex flex-wrap gap-3 text-sm text-secondary-700 dark:text-secondary-200 tabular-nums', 'data-gm-stats': '' },
+    h('span', { text: t('gm.stat.matches', { n: fmtNum(v.matches || 0) }) }),
+    h('span', { text: t('gm.stat.finished', { n: fmtNum(v.finished || 0) }) }),
+    h('span', { text: t('gm.stat.cancelled', { n: fmtNum(v.cancelled || 0) }) }),
+    h('span', { text: t('gm.stat.players', { n: fmtNum(v.players || 0) }) }),
+    v.lastMatchAt ? h('span', { text: t('gm.stat.last', { date: fmtDate(v.lastMatchAt) }) }) : null);
+}
+
+function gameRegLine(v) {
+  var def = gameDef(v.key);
+  if (!v.key) return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('gm.key.pick') });
+  if (!def) return h('p', { class: 'text-xs text-error-600 dark:text-error-400', 'data-gm-reg': 'missing', text: t('gm.key.missing') });
+  return h('p', { class: 'text-xs text-success-700 dark:text-success-400', 'data-gm-reg': def.realtime ? 'realtime' : 'registered', text: t(def.realtime ? 'gm.key.realtime' : 'gm.key.registered', { plugin: def.plugin || '—' }) });
+}
+
+RESOURCES.games = {
+  top: function () { return gameWarnings(); },
+  prepare: function () { return loadGameRegistry(true); },
+  onItems: function () { loadGameRegistry().then(function () { setTimeout(paintRegTags, 0); }); },
+  filters: [
+    { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'game' } },
+    { name: 'platform', label: 'filter.gm.platform', options: opts('gm.platform.', GAME_PLATFORMS) },
+    activeFilter()
+  ],
+  columns: [
+    { label: 'col.name', render: function (it) {
+      return h('div', { class: 'flex items-center gap-3 min-w-0' }, gameTile(it),
+        h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.name) || '' }), h('div', { class: 'text-secondary-500' }, mono(it.key))));
+    }, skeleton: '40%' },
+    { label: 'col.gm.play', render: function (it) {
+      return h('div', { class: 'flex flex-col gap-1 text-sm min-w-0' },
+        h('span', { class: 'tabular-nums', 'data-gm-players': '', text: gamePlayers(it) }),
+        it.turnSeconds ? h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300 tabular-nums', text: t('gm.turnN', { n: fmtNum(it.turnSeconds) }) }) : null);
+    }, width: 140 },
+    { label: 'col.gm.rooms', render: function (it) {
+      var rooms = it.rooms || [];
+      if (!rooms.length) return h('span', { class: 'text-sm text-secondary-500', text: t('gm.rooms.none') });
+      return withKeyNames(function () { return h('div', { class: 'flex flex-wrap gap-1' }, rooms.slice(0, 4).map(gameRoomChip)); });
+    }, skeleton: '45%' },
+    { label: 'col.gm.matches', render: function (it) {
+      return h('div', { class: 'flex flex-col text-sm tabular-nums whitespace-nowrap' }, h('span', { text: t('gm.stat.matches', { n: fmtNum(it.matches || 0) }) }),
+        h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('gm.stat.players', { n: fmtNum(it.players || 0) }) }));
+    }, width: 120 },
+    { label: 'col.status', render: function (it) {
+      return h('div', { class: 'flex flex-wrap gap-1' }, it.isActive ? tag(t('active'), 'success') : tag(t('gm.off'), 'warning'), gameRegistryTag(it));
+    }, width: 170 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.gm.key', hint: 'f.gm.key.hint', required: true, lockOnEdit: true, keyRe: /^[a-z][a-z0-9_]{1,63}$/, keyErr: 'err.gm.key' },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.gm.active', hint: 'f.gm.active.hint' }
+    ] },
+    { name: 'regLine', type: 'static', readonly: true, live: true, render: gameRegLine },
+    tr('name', { label: 'f.gm.name', required: true, max: 128 }),
+    tr('description', { multiline: true, max: 1000, optional: true }),
+    tr('maintenance', { label: 'f.gm.maintenance', hint: 'f.gm.maintenance.hint', multiline: true, max: 300, optional: true }),
+    { name: 'stats', type: 'static', readonly: true, render: gameStats },
+    { type: 'row', fields: [categoryField('game'), tagsField('game')] },
+    { type: 'row', fields: [
+      { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
+      { name: 'sort', type: 'number', label: 'f.gm.sort', hint: 'f.gm.sort.hint' }
+    ] },
+    { type: 'heading', label: 'gm.h.play' },
+    { type: 'row', fields: [
+      { name: 'minPlayers', type: 'number', label: 'f.gm.minPlayers', required: true, min: 1, max: 100 },
+      { name: 'maxPlayers', type: 'number', label: 'f.gm.maxPlayers', required: true, min: 1, max: 100,
+        check: function (v, vals) { return v != null && vals.minPlayers != null && Number(v) < Number(vals.minPlayers) ? t('code.PLAYERS_MAX_BELOW_MIN') : null; } }
+    ] },
+    { type: 'row', fields: [
+      { name: 'turnSeconds', type: 'number', label: 'f.gm.turn', hint: 'f.gm.turn.hint', optional: true, min: 1, max: 86400 },
+      { name: 'matchSeconds', type: 'number', label: 'f.gm.limit', hint: 'f.gm.limit.hint', optional: true, min: 1, max: 604800 }
+    ] },
+    { name: 'botsAllowed', type: 'bool', inline: true, label: 'f.gm.bots', hint: 'f.gm.bots.hint' },
+    { type: 'heading', label: 'gm.h.rooms' },
+    { name: 'rooms', type: 'rows', addLabel: 'gm.room.add', emptyText: 'gm.room.empty', max: 20, empty: [],
+      newRow: function (rows) {
+        var keys = ['bronze', 'silver', 'gold', 'diamond'];
+        var used = rows.map(function (r) { return r.key; });
+        var key = keys.filter(function (k) { return used.indexOf(k) === -1; })[0] || '';
+        return { key: key, name: {}, feeCurrency: null, feeAmount: null, prizeId: null, prizeGroupId: null, minLevel: 0 };
+      },
+      check: function (rows) {
+        var dup = duplicateCheck('key', 'DUPLICATE_ROOM')(rows);
+        if (dup) return dup;
+        for (var i = 0; i < rows.length; i++) {
+          var r = rows[i];
+          if (!/^[a-z][a-z0-9_]{1,63}$/.test(r.key || '')) return { index: i, message: t('code.INVALID_ROOM_KEY') };
+          if ((r.feeCurrency && (r.feeAmount == null || r.feeAmount === '')) || (!r.feeCurrency && r.feeAmount != null && r.feeAmount !== '')) return { index: i, message: t('code.INVALID_ENTRY_FEE') };
+          if (r.prizeId && r.prizeGroupId) return { index: i, message: t('code.ONE_ROOM_PRIZE') };
+        }
+        return null;
+      },
+      columns: [
+        { name: 'key', type: 'text', ltr: true, mono: true, label: 'f.gm.room.key', required: true },
+        { name: 'feeCurrency', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.gm.room.currency', optional: true },
+        { name: 'feeAmount', type: 'number', label: 'f.gm.room.amount', optional: true, min: 1, max: 1000000000 },
+        { name: 'minLevel', type: 'number', label: 'f.gm.room.level', optional: true, min: 0, max: 1000 },
+        { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.gm.room.prize', optional: true },
+        { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.gm.room.group', optional: true },
+        { name: 'name', type: 'i18n', label: 'f.gm.room.name', max: 64, wide: true }
+      ] },
+    { name: 'roomsHint', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('gm.rooms.hint') }); } },
+    { type: 'heading', label: 'gm.h.where' },
+    { name: 'platforms', type: 'multi', label: 'f.gm.platforms', hint: 'f.gm.platforms.hint', options: opts('gm.platform.', GAME_PLATFORMS) },
+    { type: 'row', fields: [
+      { name: 'minVersion', type: 'text', ltr: true, label: 'f.gm.minVersion', optional: true, check: function (v) { return v && !/^v?\d+(\.\d+){0,3}([-+][0-9A-Za-z.-]+)?$/.test(v) ? t('code.INVALID_VERSION') : null; } },
+      { name: 'maxVersion', type: 'text', ltr: true, label: 'f.gm.maxVersion', optional: true, check: function (v) { return v && !/^v?\d+(\.\d+){0,3}([-+][0-9A-Za-z.-]+)?$/.test(v) ? t('code.INVALID_VERSION') : null; } }
+    ] },
+    { name: 'leaderboardId', type: 'text', ltr: true, mono: true, label: 'f.gm.board', hint: 'f.gm.board.hint', optional: true },
+    { type: 'heading', label: 'gm.h.settings' },
+    { name: 'settings', type: 'custom', sync: true, label: 'f.gm.settings', optional: true, build: schemaForm }
+  ],
+  defaults: function (query) {
+    var key = (query && query.key) || '';
+    var def = key ? gameDef(key) : null;
+    var name = {};
+    if (def && def.name) name = Object.assign({}, def.name);
+    return { key: key, isActive: true, name: name, description: {}, maintenance: {}, iconUrl: '', categoryId: null, tagIds: [], minPlayers: def && def.realtime ? 2 : 1, maxPlayers: def && def.realtime ? 2 : 1,
+      turnSeconds: null, matchSeconds: null, botsAllowed: false, rooms: [], platforms: [], minVersion: '', maxVersion: '', leaderboardId: '', settings: {}, sort: 0 };
+  },
+  toForm: function (v) {
+    v.rooms = (v.rooms || []).map(function (r) {
+      return { key: r.key, name: r.name || {}, feeCurrency: r.entryFee ? r.entryFee.currencyKey : null, feeAmount: r.entryFee ? r.entryFee.amount : null, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null, minLevel: r.minLevel || 0 };
+    });
+    ['minVersion', 'maxVersion', 'leaderboardId'].forEach(function (k) { if (v[k] == null) v[k] = ''; });
+    if (!v.settings) v.settings = {};
+    if (!v.platforms) v.platforms = [];
+    return v;
+  },
+  fixPayload: function (p) {
+    p.rooms = (p.rooms || []).map(function (r) {
+      return { key: r.key, name: r.name || {}, entryFee: r.feeCurrency ? { currencyKey: r.feeCurrency, amount: r.feeAmount } : null, prizeId: r.prizeId || '', prizeGroupId: r.prizeGroupId || '', minLevel: r.minLevel || 0 };
+    });
+    p.categoryId = p.categoryId || '';
+    if (!p.iconUrl) p.iconUrl = '';
+    if (p.sort == null) p.sort = 0;
+    p.minVersion = p.minVersion || '';
+    p.maxVersion = p.maxVersion || '';
+    p.leaderboardId = p.leaderboardId || '';
+    p.platforms = p.platforms || [];
+    if (!p.settings || typeof p.settings !== 'object') p.settings = {};
+    delete p.stats; delete p.regLine; delete p.roomsHint;
+    return p;
+  },
+  afterSave: function () { GAME_REG.at = 0; forgetRefs('games'); }
+};
+
+OVERVIEW_CATALOG.push('games');
 
 var BRAND_KEY = 'nakama-brand';
 var BRAND_SHADES = { 50: 0.9, 100: 0.8, 200: 0.6, 300: 0.4, 400: 0.1, 500: 0, 600: -0.1, 700: -0.25, 800: -0.58, 900: -0.7, 950: -0.8 };

@@ -865,6 +865,7 @@ function buildForm(fields, values, ctx) {
   function refresh() {
     entries.forEach(function (e) {
       if (e.def.live && e.control) append(clear(e.control), e.def.render(values));
+      if (e.def.sync && e.control && e.control.sync) e.control.sync(values);
       var visible = !e.def.when || e.def.when(values);
       var el = e.row ? e.el : e.wrap;
       el.hidden = !visible;
@@ -925,6 +926,10 @@ function buildForm(fields, values, ctx) {
     });
     if (!best) return false;
     if ((best.def.type === 'actions' || best.def.type === 'rows') && best.control.showServerError) return best.control.showServerError(err);
+    if (best.def.type === 'custom' && best.control.showError && best.control.showError(String(err.field).split('.').slice(1).join('.'), errorText(err))) {
+      best.wrap.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      return true;
+    }
     if (best.def.type === 'i18n') {
       var code = trServerLang(err, getPath(values, best.def.name), best.def);
       best.control.markLang(code);
