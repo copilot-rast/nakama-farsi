@@ -134,7 +134,7 @@ function iconKpis() {
   }
 }
 
-var ATTN_TINT = { reports: 'warn', comments: 'info', tickets: 'violet', 'live-chat': 'teal' };
+var ATTN_TINT = { reports: 'warn', comments: 'info', tickets: 'violet', 'live-chat': 'teal', updates: 'teal' };
 
 function attentionCard() {
   if (root.getAttribute('data-pl-route') !== 'dashboard') return;

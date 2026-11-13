@@ -3036,7 +3036,150 @@ var MESSAGES = {
     'code.UNKNOWN_SETTING': "این بازی چنین تنظیمی ندارد.",
     'code.SETTING_REQUIRED': "این تنظیم لازم است.",
     'code.MATCH_STARTED': "این بازی شروع شده و لغو نمی‌شود.",
-    'code.MATCH_NOT_FOUND': "این بازی پیدا نشد."
+    'code.MATCH_NOT_FOUND': "این بازی پیدا نشد.",
+    'section.sys': "سامانه",
+    'section.sys.short': "سامانه",
+    'nav.updates': "به‌روزرسانی‌ها",
+    'desc.updates': "نسخهٔ همین سرور و تغییرهای تازهٔ ریپوی بالایی. این صفحه فقط نشان می‌دهد و هیچ دستوری اجرا نمی‌کند.",
+    'tab.updates-source': "ریپوی بالایی",
+    'desc.updates-source': "ریپویی که این سرور از آن ساخته شده و باید تغییرهایش را دنبال کند. هر ریپو فقط پدر خودش را نگاه می‌کند.",
+    'up.newN': "{n} تغییر تازه",
+    'up.copy': "کپی",
+    'up.copied': "کپی شد.",
+    'up.copyFailed': "کپی نشد. متن را دستی انتخاب کن.",
+    'up.in.min': "{n} دقیقهٔ دیگر",
+    'up.in.hour': "{n} ساعت دیگر",
+    'up.in.day': "{n} روز دیگر",
+    'up.ago.min': "{n} دقیقه پیش",
+    'up.ago.hour': "{n} ساعت پیش",
+    'up.ago.day': "{n} روز پیش",
+    'up.soon': "به‌زودی",
+    'up.justNow': "همین حالا",
+    'up.guide': "راهنمای به‌روزرسانی",
+    'up.g.displayOnly': "این دستورها فقط برای کپی هستند. کنسول هیچ‌کدام را اجرا نمی‌کند؛ آن‌ها را روی سیستم خودت، در پوشهٔ ریپو، بزن.",
+    'up.g.remote': "ریپوی بالایی را یک بار اضافه کن (اگر هست، فقط نشانی‌اش درست می‌شود)",
+    'up.g.fetch': "تغییرهای تازه را بگیر",
+    'up.g.merge': "روی شاخهٔ خودت ادغام کن",
+    'up.g.record': "پایهٔ تازه را ثبت کن و فایلش را کامیت کن",
+    'up.g.build': "سرور و افزونه‌ها را دوباره بساز",
+    'up.g.migrate': "مایگریشن‌های پایگاه داده را اجرا کن",
+    'up.g.parentNote': "یک فورک به‌جای این، ریپوی {repo} و یکی از شاخه‌های main، stage یا dev را در «ریپوی بالایی» می‌گذارد.",
+    'up.g.forkNote': "این سرور فورکی از {repo} است و فقط همان را دنبال می‌کند؛ لازم نیست heroiclabs را نگاه کند.",
+    'up.n.off': "بررسی خودکار خاموش است. از «ریپوی بالایی» در تنظیمات پروژه روشنش کن.",
+    'up.n.queued': "بررسی در صف است و چند ثانیهٔ دیگر انجام می‌شود…",
+    'up.n.stale': "آخرین بررسی برای {repo} بود. بعد از بررسی تازه، نتیجهٔ ریپوی فعلی این‌جا می‌آید.",
+    'up.n.never': "هنوز بررسی نشده. اولین بررسی چند ثانیه بعد از روشن شدن سرور انجام می‌شود.",
+    'up.n.noBase': "این ساخت، کامیت پایه ندارد. سرور را با build/buildinfo.sh بساز تا مقایسه ممکن شود.",
+    'up.n.mismatch': "کامیت پایهٔ این ساخت برای {base} ثبت شده، نه {repo}. بعد از ادغام، build/upstream-sync.sh record را بزن و دوباره بساز.",
+    'up.n.missing': "گیت‌هاب کامیت پایه یا شاخهٔ {branch} را در {repo} پیدا نکرد. نام ریپو و شاخه را بررسی کن.",
+    'up.n.rate': "سهم درخواست گیت‌هاب تمام شده. بررسی بعدی {when} انجام می‌شود.",
+    'up.n.error': "آخرین بررسی ناموفق بود: {msg}",
+    'up.this': "این سرور",
+    'up.commit': "کامیت",
+    'up.dirty': "تغییر کامیت‌نشده",
+    'up.unknown': "نامعلوم",
+    'up.branch': "شاخه",
+    'up.built': "زمان ساخت",
+    'up.ownAhead': "کار خود این ریپو",
+    'up.ownAheadN': "{n} کامیت روی پایه",
+    'up.base': "کامیت پایه",
+    'up.noBase': "ثبت نشده",
+    'up.baseOf': "پایه از",
+    'up.recorded': "ثبت پایه",
+    'up.behindBy': "کامیت عقب‌تر از ریپوی بالایی",
+    'up.upToDate': "به‌روز است",
+    'up.parent': "ریپوی بالایی",
+    'up.recheck': "بررسی دوباره",
+    'up.repo': "ریپو",
+    'up.status': "وضعیت",
+    'up.latest': "آخرین نسخه",
+    'up.checked': "آخرین بررسی",
+    'up.notYet': "هنوز نه",
+    'up.next': "بررسی بعدی",
+    'up.interval': "فاصلهٔ بررسی",
+    'up.everyN': "هر {n} ساعت",
+    'up.rate': "سهم گیت‌هاب",
+    'up.rateN': "{n} از {max} درخواست مانده",
+    'up.newCommits': "کامیت تازه",
+    'up.compare': "دیدن همهٔ تغییرها در گیت‌هاب",
+    'up.st.ok': "بررسی شد",
+    'up.st.never': "بررسی نشده",
+    'up.st.error': "خطا",
+    'up.st.rate_limited': "محدودیت گیت‌هاب",
+    'up.st.base_missing': "پایه پیدا نشد",
+    'up.st.base_mismatch': "پایهٔ نامربوط",
+    'up.st.no_base': "بدون پایه",
+    'up.st.queued': "در صف",
+    'up.warnings': "پیش از ادغام بخوان",
+    'up.warningsN': "{n} هشدار",
+    'up.w.migrations': "{n} مایگریشن تازه",
+    'up.w.migrations.hint': "بعد از ادغام، پیش از روشن کردن سرور، مایگریشن‌ها را اجرا کن و اول از پایگاه داده پشتیبان بگیر.",
+    'up.w.migrationsChanged': "{n} مایگریشن قدیمی عوض شده",
+    'up.w.migrationsChanged.hint': "مایگریشنی که قبلاً اجرا شده دوباره اجرا نمی‌شود؛ تغییرش را با دقت بخوان.",
+    'up.w.env': "{n} متغیر محیطی تازه",
+    'up.w.env.hint': "این نام‌ها در تغییرها اضافه شده‌اند. شاید لازم باشد در محیط اجرا یا build/nakama-start.sh تنظیمشان کنی.",
+    'up.w.goVersion': "نسخهٔ Go عوض شده",
+    'up.w.goVersion.hint': "ابزار ساخت و ایمیج Docker را هم به همین نسخه ببر؛ افزونه‌ها باید با همان نسخه ساخته شوند.",
+    'up.w.deps': "وابستگی‌ها عوض شده‌اند",
+    'up.w.deps.hint': "go.mod یا vendor تغییر کرده. بعد از ادغام همهٔ افزونه‌ها را دوباره بساز.",
+    'up.w.breaking': "{n} تغییر ناسازگار",
+    'up.w.breaking.hint': "در پیام کامیت یا یادداشت نسخه واژه‌هایی مثل breaking یا deprecated آمده. پیش از ادغام بخوانشان.",
+    'up.releases': "نسخه‌ها و یادداشت‌ها",
+    'up.newTags': "برچسب‌های تازه",
+    'up.prerelease': "پیش‌نسخه",
+    'up.breaking': "ناسازگار",
+    'up.noNewRelease': "نسخهٔ تازه‌ای نیامده. آخرین نسخه {tag} است.",
+    'up.noRelease': "این ریپو نسخهٔ منتشرشده‌ای ندارد.",
+    'up.commits': "کامیت‌های تازه",
+    'up.commitsN': "{n} کامیت",
+    'up.merge': "ادغام",
+    'up.more': "دیدن هر {n} کامیت در گیت‌هاب",
+    'up.files': "فایل‌های تغییرکرده",
+    'up.filesN': "{n} فایل",
+    'up.moreFiles': "و {n} فایل دیگر",
+    'up.noFiles': "فایلی تغییر نکرده.",
+    'up.fs.added': "تازه",
+    'up.fs.removed': "حذف",
+    'up.fs.modified': "تغییر",
+    'up.fs.renamed': "تغییر نام",
+    'up.fs.copied': "کپی",
+    'up.fs.changed': "تغییر",
+    'up.area.migrations': "مایگریشن‌ها",
+    'up.area.core': "هستهٔ سرور",
+    'up.area.plugins': "افزونه‌ها و نمونه‌ها",
+    'up.area.console': "کنسول",
+    'up.area.deps': "وابستگی‌ها",
+    'up.area.build': "ساخت و استقرار",
+    'up.area.e2e': "تست‌ها",
+    'up.area.docs': "مستندات",
+    'up.area.other': "دیگر",
+    'up.settings': "تنظیم ریپو",
+    'up.queuedToast': "بررسی در صف قرار گرفت.",
+    'up.none': "تغییر تازه‌ای نیست",
+    'up.none.hint': "این سرور با آخرین کامیت ریپوی بالایی یکی است.",
+    'f.up.enabled': "بررسی خودکار",
+    'f.up.enabled.hint': "سرور در پس‌زمینه ریپوی بالایی را نگاه می‌کند. هیچ کدی خودکار ادغام نمی‌شود.",
+    'f.up.provider': "سرویس",
+    'f.up.provider.hint': "ریپوی بالایی روی گیت‌هاب است.",
+    'f.up.interval': "فاصلهٔ بررسی",
+    'f.up.interval.hint': "پیش‌فرض هر ۶ ساعت. بدون توکن، گیت‌هاب ساعتی ۶۰ درخواست می‌دهد و هر بررسی ۳ درخواست است.",
+    'f.up.repo': "نشانی ریپو",
+    'f.up.repo.hint': "مثل heroiclabs/nakama یا نشانی کامل github.com.",
+    'f.up.branch': "شاخه",
+    'f.up.branch.hint': "شاخه‌ای که این سرور دنبالش می‌کند.",
+    'f.up.token': "توکن فقط‌خواندنی گیت‌هاب",
+    'f.up.token.hint': "برای ریپوی عمومی لازم نیست. اگر بگذاری رمزنگاری می‌شود و هیچ‌جا نشان داده یا ثبت نمی‌شود. برای پاک کردن، خالی‌اش کن.",
+    'f.up.token.noSeal': "ECONOMY_SECRET_KEY روی سرور نیست، پس توکن ذخیره نمی‌شود. ریپوی عمومی بدون توکن کار می‌کند.",
+    'up.fork': "فورک‌ها این‌جا {repo} و یکی از شاخه‌های main، stage یا dev را می‌گذارند و فقط همان را دنبال می‌کنند.",
+    'up.savedBy': "آخرین ذخیره: {who}، {when}",
+    'code.INVALID_REPO': "نشانی ریپو درست نیست. مثل owner/name بنویس.",
+    'code.INVALID_BRANCH': "نام شاخه درست نیست.",
+    'code.INVALID_INTERVAL': "فاصله باید بین ۱ تا ۱۶۸ ساعت باشد.",
+    'code.UNSUPPORTED_PROVIDER': "فعلاً فقط گیت‌هاب پشتیبانی می‌شود.",
+    'code.INVALID_GITHUB_TOKEN': "این توکن شکل درستی ندارد.",
+    'code.SECRET_KEY_MISSING': "ECONOMY_SECRET_KEY روی سرور نیست، پس توکن ذخیره نمی‌شود.",
+    'code.UPDATES_OFF': "بررسی خودکار خاموش است.",
+    'code.TOO_MANY_CHECKS': "چند بار پشت هم بررسی کردی. چند دقیقهٔ دیگر دوباره امتحان کن."
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -6073,7 +6216,150 @@ var MESSAGES = {
     'code.UNKNOWN_SETTING': "This game has no such setting.",
     'code.SETTING_REQUIRED': "This setting is required.",
     'code.MATCH_STARTED': "This match has started and cannot be cancelled.",
-    'code.MATCH_NOT_FOUND': "This match was not found."
+    'code.MATCH_NOT_FOUND': "This match was not found.",
+    'section.sys': "System",
+    'section.sys.short': "System",
+    'nav.updates': "Updates",
+    'desc.updates': "This server's version and the new changes in the parent repo. This page only shows; it never runs a command.",
+    'tab.updates-source': "Parent repo",
+    'desc.updates-source': "The repo this server is built from and should follow. Each repo watches only its own parent.",
+    'up.newN': "{n} new changes",
+    'up.copy': "Copy",
+    'up.copied': "Copied.",
+    'up.copyFailed': "Could not copy. Select the text by hand.",
+    'up.in.min': "in {n} min",
+    'up.in.hour': "in {n} h",
+    'up.in.day': "in {n} days",
+    'up.ago.min': "{n} min ago",
+    'up.ago.hour': "{n} h ago",
+    'up.ago.day': "{n} days ago",
+    'up.soon': "soon",
+    'up.justNow': "just now",
+    'up.guide': "How to update",
+    'up.g.displayOnly': "These commands are only for copying. The console runs none of them; run them on your own machine in the repo folder.",
+    'up.g.remote': "Add the parent repo once (if it is there, only its URL is fixed)",
+    'up.g.fetch': "Fetch the new changes",
+    'up.g.merge': "Merge them into your branch",
+    'up.g.record': "Record the new base and commit the file",
+    'up.g.build': "Build the server and plugins again",
+    'up.g.migrate': "Run the database migrations",
+    'up.g.parentNote': "A fork puts {repo} and one of main, stage or dev in «Parent repo» instead.",
+    'up.g.forkNote': "This server is a fork of {repo} and follows only it; it never needs to watch heroiclabs.",
+    'up.n.off': "Automatic checks are off. Turn them on in project settings, «Parent repo».",
+    'up.n.queued': "A check is queued and runs in a few seconds…",
+    'up.n.stale': "The last check was for {repo}. After a new check the current repo shows here.",
+    'up.n.never': "Not checked yet. The first check runs a few seconds after the server starts.",
+    'up.n.noBase': "This build has no base commit. Build the server with build/buildinfo.sh so it can compare.",
+    'up.n.mismatch': "This build's base commit was recorded for {base}, not {repo}. After merging, run build/upstream-sync.sh record and build again.",
+    'up.n.missing': "GitHub could not find the base commit or the branch {branch} in {repo}. Check the repo and branch.",
+    'up.n.rate': "The GitHub request quota is used up. The next check runs {when}.",
+    'up.n.error': "The last check failed: {msg}",
+    'up.this': "This server",
+    'up.commit': "Commit",
+    'up.dirty': "uncommitted changes",
+    'up.unknown': "unknown",
+    'up.branch': "Branch",
+    'up.built': "Built",
+    'up.ownAhead': "Own work",
+    'up.ownAheadN': "{n} commits on the base",
+    'up.base': "Base commit",
+    'up.noBase': "not recorded",
+    'up.baseOf': "Base from",
+    'up.recorded': "Base recorded",
+    'up.behindBy': "commits behind the parent",
+    'up.upToDate': "up to date",
+    'up.parent': "Parent repo",
+    'up.recheck': "Check again",
+    'up.repo': "Repo",
+    'up.status': "Status",
+    'up.latest': "Latest release",
+    'up.checked': "Last check",
+    'up.notYet': "not yet",
+    'up.next': "Next check",
+    'up.interval': "Interval",
+    'up.everyN': "every {n} h",
+    'up.rate': "GitHub quota",
+    'up.rateN': "{n} of {max} requests left",
+    'up.newCommits': "new commits",
+    'up.compare': "See every change on GitHub",
+    'up.st.ok': "checked",
+    'up.st.never': "not checked",
+    'up.st.error': "error",
+    'up.st.rate_limited': "GitHub limit",
+    'up.st.base_missing': "base not found",
+    'up.st.base_mismatch': "base of another repo",
+    'up.st.no_base': "no base",
+    'up.st.queued': "queued",
+    'up.warnings': "Read before merging",
+    'up.warningsN': "{n} warnings",
+    'up.w.migrations': "{n} new migrations",
+    'up.w.migrations.hint': "After merging, run the migrations before starting the server, and back up the database first.",
+    'up.w.migrationsChanged': "{n} old migrations changed",
+    'up.w.migrationsChanged.hint': "A migration that already ran does not run again; read the change carefully.",
+    'up.w.env': "{n} new environment variables",
+    'up.w.env.hint': "These names were added in the changes. You may need to set them in the runtime or in build/nakama-start.sh.",
+    'up.w.goVersion': "Go version changed",
+    'up.w.goVersion.hint': "Move the toolchain and the Docker image to this version; plugins must be built with the same version.",
+    'up.w.deps': "Dependencies changed",
+    'up.w.deps.hint': "go.mod or vendor changed. Build every plugin again after merging.",
+    'up.w.breaking': "{n} breaking changes",
+    'up.w.breaking.hint': "Commit messages or release notes mention breaking or deprecated. Read them before merging.",
+    'up.releases': "Releases and notes",
+    'up.newTags': "New tags",
+    'up.prerelease': "pre-release",
+    'up.breaking': "breaking",
+    'up.noNewRelease': "No new release. The latest is {tag}.",
+    'up.noRelease': "This repo has no published release.",
+    'up.commits': "New commits",
+    'up.commitsN': "{n} commits",
+    'up.merge': "merge",
+    'up.more': "See all {n} commits on GitHub",
+    'up.files': "Changed files",
+    'up.filesN': "{n} files",
+    'up.moreFiles': "and {n} more files",
+    'up.noFiles': "No file changed.",
+    'up.fs.added': "added",
+    'up.fs.removed': "removed",
+    'up.fs.modified': "modified",
+    'up.fs.renamed': "renamed",
+    'up.fs.copied': "copied",
+    'up.fs.changed': "changed",
+    'up.area.migrations': "Migrations",
+    'up.area.core': "Server core",
+    'up.area.plugins': "Plugins and samples",
+    'up.area.console': "Console",
+    'up.area.deps': "Dependencies",
+    'up.area.build': "Build and deploy",
+    'up.area.e2e': "Tests",
+    'up.area.docs': "Docs",
+    'up.area.other': "Other",
+    'up.settings': "Repo settings",
+    'up.queuedToast': "The check is queued.",
+    'up.none': "Nothing new",
+    'up.none.hint': "This server matches the latest commit of the parent repo.",
+    'f.up.enabled': "Automatic checks",
+    'f.up.enabled.hint': "The server watches the parent repo in the background. Nothing is merged automatically.",
+    'f.up.provider': "Service",
+    'f.up.provider.hint': "The parent repo is on GitHub.",
+    'f.up.interval': "Check interval",
+    'f.up.interval.hint': "Every 6 hours by default. Without a token GitHub allows 60 requests an hour and each check uses 3.",
+    'f.up.repo': "Repo",
+    'f.up.repo.hint': "Like heroiclabs/nakama or a full github.com URL.",
+    'f.up.branch': "Branch",
+    'f.up.branch.hint': "The branch this server follows.",
+    'f.up.token': "Read-only GitHub token",
+    'f.up.token.hint': "Not needed for a public repo. If set, it is encrypted and never shown or logged. Clear it to remove it.",
+    'f.up.token.noSeal': "ECONOMY_SECRET_KEY is not set on the server, so a token cannot be stored. A public repo works without one.",
+    'up.fork': "Forks put {repo} and one of main, stage or dev here, and follow only that.",
+    'up.savedBy': "Last saved by {who}, {when}",
+    'code.INVALID_REPO': "The repo is not valid. Write it as owner/name.",
+    'code.INVALID_BRANCH': "The branch name is not valid.",
+    'code.INVALID_INTERVAL': "The interval must be 1 to 168 hours.",
+    'code.UNSUPPORTED_PROVIDER': "Only GitHub is supported for now.",
+    'code.INVALID_GITHUB_TOKEN': "This token does not look right.",
+    'code.SECRET_KEY_MISSING': "ECONOMY_SECRET_KEY is not set on the server, so a token cannot be stored.",
+    'code.UPDATES_OFF': "Automatic checks are off.",
+    'code.TOO_MANY_CHECKS': "Too many checks in a row. Try again in a few minutes."
   }
 };
 
@@ -6418,6 +6704,11 @@ var ICONS = {
 var MIRROR = { first: 1, prev: 1, next: 1, back: 1, reply: 1 };
 
 var PH_ICONS = {
+  'updates': '<path d="M208,112a32.05,32.05,0,0,0-30.69,23l-42.21-6a8,8,0,0,1-4.95-2.71L94.43,84.55A32,32,0,1,0,72,87v82a32,32,0,1,0,16,0V101.63l30,35a24,24,0,0,0,14.83,8.14l44,6.28A32,32,0,1,0,208,112ZM64,56A16,16,0,1,1,80,72,16,16,0,0,1,64,56ZM96,200a16,16,0,1,1-16-16A16,16,0,0,1,96,200Zm112-40a16,16,0,1,1,16-16A16,16,0,0,1,208,160Z"/>',
+  'updates-source': '<path d="M248,128a87.34,87.34,0,0,1-17.6,52.81,8,8,0,1,1-12.8-9.62A71.34,71.34,0,0,0,232,128a72,72,0,0,0-144,0,8,8,0,0,1-16,0,88,88,0,0,1,3.29-23.88C74.2,104,73.1,104,72,104a48,48,0,0,0,0,96H96a8,8,0,0,1,0,16H72A64,64,0,1,1,81.29,88.68,88,88,0,0,1,248,128Zm-69.66,42.34L160,188.69V128a8,8,0,0,0-16,0v60.69l-18.34-18.35a8,8,0,0,0-11.32,11.32l32,32a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Z"/>',
+  'gitCommit': '<path d="M248,120H183.42a56,56,0,0,0-110.84,0H8a8,8,0,0,0,0,16H72.58a56,56,0,0,0,110.84,0H248a8,8,0,0,0,0-16ZM128,168a40,40,0,1,1,40-40A40,40,0,0,1,128,168Z"/>',
+  'copy': '<path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"/>',
+  'external': '<path d="M224,104a8,8,0,0,1-16,0V59.32l-66.33,66.34a8,8,0,0,1-11.32-11.32L196.68,48H152a8,8,0,0,1,0-16h64a8,8,0,0,1,8,8Zm-40,24a8,8,0,0,0-8,8v72H48V80h72a8,8,0,0,0,0-16H48A16,16,0,0,0,32,80V208a16,16,0,0,0,16,16H176a16,16,0,0,0,16-16V136A8,8,0,0,0,184,128Z"/>',
   items: '<path d="M168,40.58V32A24,24,0,0,0,144,8H112A24,24,0,0,0,88,32v8.58A56.09,56.09,0,0,0,40,96V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V96A56.09,56.09,0,0,0,168,40.58ZM112,24h32a8,8,0,0,1,8,8v8H104V32A8,8,0,0,1,112,24Zm56,136H88v-8a8,8,0,0,1,8-8h64a8,8,0,0,1,8,8ZM88,176h48v8a8,8,0,0,0,16,0v-8h16v40H88Zm112,40H184V152a24,24,0,0,0-24-24H96a24,24,0,0,0-24,24v64H56V96A40,40,0,0,1,96,56h64a40,40,0,0,1,40,40V216ZM152,88a8,8,0,0,1-8,8H112a8,8,0,0,1,0-16h32A8,8,0,0,1,152,88Z"/>',
   overview: '<path d="M104,40H56A16,16,0,0,0,40,56v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,104,40Zm0,64H56V56h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40Zm0,64H152V56h48v48Zm-96,32H56a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,104,136Zm0,64H56V152h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,200,136Zm0,64H152V152h48v48Z"/>',
   currencies: '<path d="M184,89.57V84c0-25.08-37.83-44-88-44S8,58.92,8,84v40c0,20.89,26.25,37.49,64,42.46V172c0,25.08,37.83,44,88,44s88-18.92,88-44V132C248,111.3,222.58,94.68,184,89.57ZM232,132c0,13.22-30.79,28-72,28-3.73,0-7.43-.13-11.08-.37C170.49,151.77,184,139,184,124V105.74C213.87,110.19,232,122.27,232,132ZM72,150.25V126.46A183.74,183.74,0,0,0,96,128a183.74,183.74,0,0,0,24-1.54v23.79A163,163,0,0,1,96,152,163,163,0,0,1,72,150.25Zm96-40.32V124c0,8.39-12.41,17.4-32,22.87V123.5C148.91,120.37,159.84,115.71,168,109.93ZM96,56c41.21,0,72,14.78,72,28s-30.79,28-72,28S24,97.22,24,84,54.79,56,96,56ZM24,124V109.93c8.16,5.78,19.09,10.44,32,13.57v23.37C36.41,141.4,24,132.39,24,124Zm64,48v-4.17c2.63.1,5.29.17,8,.17,3.88,0,7.67-.13,11.39-.35A121.92,121.92,0,0,0,120,171.41v23.46C100.41,189.4,88,180.39,88,172Zm48,26.25V174.4a179.48,179.48,0,0,0,24,1.6,183.74,183.74,0,0,0,24-1.54v23.79a165.45,165.45,0,0,1-48,0Zm64-3.38V171.5c12.91-3.13,23.84-7.79,32-13.57V172C232,180.39,219.59,189.4,200,194.87Z"/>',
@@ -8382,18 +8673,20 @@ var SECTIONS = {
   economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'restrictions', 'chat-words', 'activity'],
-  support: ['tickets', 'live-chat']
+  support: ['tickets', 'live-chat'],
+  system: ['updates']
 };
-var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support'];
-var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup' };
+var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'];
+var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
 var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
-var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION' };
+var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
 var LIMIT = 20;
 var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' }, tickets: { status: 'waiting' } };
 
 function sectionOf(page) {
   if (psSection(page)) return PS_ROUTE;
   if (SECTIONS.support.indexOf(page) !== -1) return 'support';
+  if (SECTIONS.system.indexOf(page) !== -1) return 'system';
   if (SECTIONS.moderation.indexOf(page) !== -1) return 'moderation';
   return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
 }
@@ -9064,9 +9357,9 @@ function refreshBadge(force) {
 }
 
 function navBadge(page, collapsed) {
-  var n = page === 'comments' ? pendingComments : page === 'reports' ? pendingReports : supportBadge(page);
+  var n = page === 'comments' ? pendingComments : page === 'reports' ? pendingReports : page === 'updates' ? updatesBadge() : supportBadge(page);
   if (!n) return null;
-  var label = t(page === 'comments' ? 'cm.pendingN' : page === 'reports' ? 'rp.openN' : page === 'tickets' ? 'tk.waitingN' : 'lc.waitingN', { n: n });
+  var label = t(page === 'comments' ? 'cm.pendingN' : page === 'reports' ? 'rp.openN' : page === 'tickets' ? 'tk.waitingN' : page === 'updates' ? 'up.newN' : 'lc.waitingN', { n: n });
   if (collapsed) return h('span', { class: 'eco-nav-dot', 'aria-label': label });
   return h('span', { class: 'eco-nav-badge tabular-nums', 'aria-label': label, text: fmtNum(n) });
 }
@@ -15800,6 +16093,424 @@ RESOURCES.games = {
 
 OVERVIEW_CATALOG.push('games');
 
+var UPDATES = { summary: null, at: 0, busy: false };
+var UP_AREA_ICON = { migrations: 'database', core: 'server', plugins: 'puzzle', console: 'dashboard', deps: 'package', build: 'code', e2e: 'checklist', docs: 'book', other: 'files' };
+var UP_WARN_ICON = { migrations: 'database', migrationsChanged: 'database', env: 'key', goVersion: 'cpu', deps: 'package', breaking: 'warn' };
+var UP_STATUS_COLOR = { ok: 'success', never: 'secondary', error: 'error', rate_limited: 'warning', base_missing: 'error', base_mismatch: 'warning', no_base: 'warning' };
+var UP_FILE_COLOR = { added: 'success', removed: 'error', modified: 'secondary', renamed: 'primary', copied: 'primary', changed: 'secondary' };
+
+function updatesBadge() {
+  var s = UPDATES.summary;
+  return s && s.enabled && s.newCommits > 0 ? s.newCommits : 0;
+}
+
+function refreshUpdatesBadge(force) {
+  var now = Date.now();
+  if (UPDATES.busy || (!force && now - UPDATES.at < 300000)) return;
+  if (!token() || !aclCan('SETTINGS', 0)) return;
+  UPDATES.at = now;
+  UPDATES.busy = true;
+  quietBase('GET', '/updates/summary').then(function (res) {
+    UPDATES.busy = false;
+    if (!res) return;
+    var before = updatesBadge();
+    UPDATES.summary = res;
+    if (before !== updatesBadge()) schedule();
+  });
+}
+
+function upIcon(name, cls) {
+  var P = window.NakamaPlane;
+  if (P && P.iconD) {
+    var span = h('span', { class: 'eco-up-ic ' + (cls || ''), 'aria-hidden': 'true' });
+    span.innerHTML = P.iconD(name, 'pl-ic');
+    return span;
+  }
+  return icon(name === 'gitMerge' ? 'updates' : name === 'gitCommit' ? 'gitCommit' : 'alert', 'h-4 w-4');
+}
+
+function shortSha(s) {
+  return String(s || '').slice(0, 7);
+}
+
+function ghLink(href, text, extra) {
+  return h('a', { href: href, target: '_blank', rel: 'noopener noreferrer', class: 'eco-link inline-flex items-center gap-1' + (extra ? ' ' + extra : ''), dir: 'ltr' }, h('span', { text: text }), icon('external', 'h-3 w-3'));
+}
+
+function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+  return new Promise(function (resolve, reject) {
+    var ta = h('textarea', { 'aria-hidden': 'true', style: 'position:fixed;top:-1000px;opacity:0' });
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+    if (ok) resolve(); else reject(new Error('copy failed'));
+  });
+}
+
+function codeBlock(text) {
+  var btn = button({ variant: 'muted', size: 'icon', icon: 'copy', title: t('up.copy'), onclick: function () {
+    copyText(text).then(function () { toast('success', t('up.copied')); }, function () { toast('error', t('up.copyFailed')); });
+  } });
+  btn.setAttribute('data-up-copy', '');
+  return h('div', { class: 'eco-up-code', 'data-l10n-skip': '' },
+    h('pre', { class: 'font-mono text-xs', dir: 'ltr', text: text }),
+    h('div', { class: 'eco-up-copy' }, btn));
+}
+
+function relativeHours(iso) {
+  if (!iso) return '';
+  var ms = new Date(iso).getTime() - Date.now();
+  var mins = Math.round(Math.abs(ms) / 60000);
+  var key = ms >= 0 ? 'up.in' : 'up.ago';
+  if (mins < 1) return t(ms >= 0 ? 'up.soon' : 'up.justNow');
+  if (mins < 60) return t(key + '.min', { n: mins });
+  var hrs = Math.round(mins / 60);
+  if (hrs < 48) return t(key + '.hour', { n: hrs });
+  return t(key + '.day', { n: Math.round(hrs / 24) });
+}
+
+function releaseBody(text) {
+  var box = h('div', { class: 'eco-up-notes text-sm', dir: 'ltr' });
+  var list = null;
+  String(text || '').split('\n').forEach(function (raw) {
+    var line = raw.replace(/\s+$/, '');
+    if (!line.trim()) { list = null; return; }
+    var m = /^#{1,6}\s+(.*)$/.exec(line);
+    if (m) { list = null; box.appendChild(h('h4', { class: 'font-semibold mt-3 mb-1', text: m[1] })); return; }
+    var b = /^\s*[-*]\s+(.*)$/.exec(line);
+    if (b) {
+      if (!list) { list = h('ul', { class: 'eco-up-ul' }); box.appendChild(list); }
+      list.appendChild(h('li', { text: b[1].replace(/\*\*/g, '').replace(/`/g, '') }));
+      return;
+    }
+    list = null;
+    box.appendChild(h('p', { class: 'mb-1', text: line.replace(/\*\*/g, '').replace(/`/g, '') }));
+  });
+  return box;
+}
+
+function bigNumber(n, labelKey, alert) {
+  return h('div', { class: 'eco-up-big' + (alert ? ' eco-up-big--alert' : '') },
+    h('span', { class: 'text-3xl font-semibold tabular-nums', text: fmtNum(n || 0) }),
+    h('span', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t(labelKey) }));
+}
+
+function upCard(titleKey, iconName, body, actions, extra) {
+  var c = card(h('div', { class: 'p-4' },
+    h('div', { class: 'flex items-center justify-between gap-2 mb-3' },
+      h('div', { class: 'flex items-center gap-2 min-w-0' }, upIcon(iconName), h('h2', { class: 'text-lg font-medium truncate', text: t(titleKey) })),
+      actions || null),
+    body), extra);
+  return c;
+}
+
+function updatesGuide(v) {
+  var s = v.settings || {};
+  var b = v.build || {};
+  var p = b.parent || {};
+  var remote = p.remote || 'upstream';
+  var url = 'https://github.com/' + (s.repo || 'heroiclabs/nakama') + '.git';
+  var mine = b.branch || 'dev';
+  var steps = [
+    ['up.g.remote', 'git remote add ' + remote + ' ' + url + ' || git remote set-url ' + remote + ' ' + url],
+    ['up.g.fetch', 'git fetch ' + remote + ' ' + s.branch],
+    ['up.g.merge', 'git checkout ' + mine + '\ngit merge ' + remote + '/' + s.branch],
+    ['up.g.record', 'build/upstream-sync.sh record ' + remote + ' ' + s.branch + '\ngit add build/upstream.json\ngit commit -m "chore: record the upstream base"'],
+    ['up.g.build', 'go build -o nakama -ldflags "$(build/buildinfo.sh)" .\ngo build -buildmode=plugin -ldflags "$(build/buildinfo.sh)" -o modules/base.so ./integrations/base'],
+    ['up.g.migrate', './nakama migrate up --database.address "$NAKAMA_DATABASE_ADDRESS"']
+  ];
+  var list = h('ol', { class: 'eco-up-steps' });
+  steps.forEach(function (st, i) {
+    list.appendChild(h('li', {},
+      h('div', { class: 'flex items-center gap-2 mb-1' }, h('span', { class: 'eco-up-step tabular-nums', text: fmtNum(i + 1) }), h('span', { class: 'font-medium', text: t(st[0]) })),
+      codeBlock(st[1])));
+  });
+  var fork = s.repo === v.forkRepo;
+  return upCard('up.guide', 'book', h('div', { 'data-up-guide': '' },
+    h('div', { class: 'mb-3' }, notice('info', t('up.g.displayOnly'))),
+    list,
+    h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 mt-3', text: t(fork ? 'up.g.forkNote' : 'up.g.parentNote', { repo: v.forkRepo }) })), null, 'eco-span-all');
+}
+
+function statusNotice(v) {
+  var st = v.state || {};
+  var s = v.settings || {};
+  if (!s.enabled) return notice('warning', t('up.n.off'));
+  if (st.queued && st.status !== 'rate_limited') return notice('info', t('up.n.queued'));
+  if (!v.current && st.status !== 'never') return notice('info', t('up.n.stale', { repo: st.repo + ' ' + st.branch }));
+  switch (st.status) {
+    case 'never': return notice('info', t('up.n.never'));
+    case 'no_base': return notice('warning', t('up.n.noBase'));
+    case 'base_mismatch': return notice('warning', t('up.n.mismatch', { repo: s.repo, base: (v.build.parent || {}).repo || '' }));
+    case 'base_missing': return notice('error', t('up.n.missing', { repo: s.repo, branch: s.branch }));
+    case 'rate_limited': return notice('warning', t('up.n.rate', { when: fmtDate(st.nextAt) }));
+    case 'error': return notice('error', t('up.n.error', { msg: st.error || '' }));
+  }
+  return null;
+}
+
+function thisServerCard(v) {
+  var b = v.build || {};
+  var p = b.parent;
+  var r = v.result;
+  var behind = r && v.current ? r.aheadBy : null;
+  var rows = [
+    ['up.commit', b.commit ? h('span', { class: 'inline-flex items-center gap-2 flex-wrap' }, mono(shortSha(b.commit)), b.dirty ? tag(t('up.dirty'), 'warning') : null) : h('span', { class: 'text-secondary-500', text: t('up.unknown') })],
+    ['up.branch', b.branch ? mono(b.branch) : h('span', { class: 'text-secondary-500', text: t('up.unknown') })],
+    ['up.built', b.date ? h('span', { text: fmtDate(b.date) }) : h('span', { class: 'text-secondary-500', text: t('up.unknown') })],
+    ['up.ownAhead', b.commit ? h('span', { class: 'tabular-nums', text: t('up.ownAheadN', { n: b.ownAhead || 0 }) }) : null],
+    ['up.base', p ? h('span', { class: 'inline-flex items-center gap-2 flex-wrap' }, ghLink('https://github.com/' + p.repo + '/commit/' + p.commit, shortSha(p.commit), 'font-mono text-xs'), h('span', { class: 'text-xs text-secondary-500', text: fmtDate(p.date) })) : h('span', { class: 'text-secondary-500', text: t('up.noBase') })],
+    ['up.baseOf', p ? mono(p.repo + ' · ' + p.branch) : null],
+    ['up.recorded', p && p.recordedAt ? h('span', { text: fmtDate(p.recordedAt) }) : null]
+  ];
+  var top = behind === null || behind === undefined ? null : bigNumber(behind, behind ? 'up.behindBy' : 'up.upToDate', behind > 0);
+  var c = upCard('up.this', 'server', h('div', {}, top, dl(rows)));
+  c.setAttribute('data-up-this', '');
+  return c;
+}
+
+function parentCard(v, onCheck) {
+  var s = v.settings || {};
+  var st = v.state || {};
+  var r = v.current ? v.result : null;
+  var check = button({ variant: 'primary', size: 'sm', icon: 'refresh', label: t('up.recheck'), disabled: !s.enabled || st.queued, onclick: function () { onCheck(check); } });
+  check.setAttribute('data-up-check', '');
+  var latest = r && (r.latestRelease ? r.latestRelease.tag : r.latestTag ? r.latestTag.name : '');
+  var rows = [
+    ['up.repo', ghLink('https://github.com/' + s.repo + '/tree/' + encodeURIComponent(s.branch), s.repo + ' · ' + s.branch)],
+    ['up.status', h('span', { class: 'inline-flex flex-wrap gap-1' }, tag(t('up.st.' + (st.status || 'never')), UP_STATUS_COLOR[st.status] || 'secondary'), st.queued ? tag(t('up.st.queued'), 'primary') : null)],
+    ['up.latest', latest ? mono(latest) : null],
+    ['up.checked', st.checkedAt ? h('span', { title: fmtDate(st.checkedAt) }, h('span', { text: relativeHours(st.checkedAt) })) : h('span', { class: 'text-secondary-500', text: t('up.notYet') })],
+    ['up.next', s.enabled && st.nextAt ? h('span', { title: fmtDate(st.nextAt) }, h('span', { text: relativeHours(st.nextAt) })) : null],
+    ['up.interval', h('span', { text: t('up.everyN', { n: s.intervalHours || 6 }) })],
+    ['up.rate', r && r.rate && r.rate.limit ? h('span', { class: 'tabular-nums', text: t('up.rateN', { n: r.rate.remaining, max: r.rate.limit }) }) : null]
+  ];
+  var top = r ? bigNumber(r.aheadBy, 'up.newCommits', r.aheadBy > 0) : null;
+  var compare = r && r.compareUrl && r.aheadBy ? h('div', { class: 'mt-3' }, ghLink(r.compareUrl, t('up.compare'))) : null;
+  var c = upCard('up.parent', 'gitMerge', h('div', {}, top, dl(rows), compare), check);
+  c.setAttribute('data-up-parent', '');
+  return c;
+}
+
+function warningsCard(r) {
+  if (!r.warnings || !r.warnings.length) return null;
+  var list = h('div', { class: 'flex flex-col gap-3' });
+  r.warnings.forEach(function (w) {
+    var items = (w.items || []).slice(0, 12);
+    list.appendChild(h('div', { class: 'eco-up-warn eco-up-warn--' + (w.kind === 'breaking' || w.kind === 'migrations' ? 'strong' : 'soft'), 'data-up-warning': w.kind },
+      upIcon(UP_WARN_ICON[w.kind] || 'warn'),
+      h('div', { class: 'min-w-0 flex-1' },
+        h('div', { class: 'font-medium', text: t('up.w.' + w.kind, { n: (w.items || []).length }) }),
+        h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300', text: t('up.w.' + w.kind + '.hint') }),
+        items.length ? h('div', { class: 'flex flex-wrap gap-1 mt-2' }, items.map(function (it) { return h('span', { class: 'eco-up-chip font-mono text-xs', dir: 'ltr', text: it }); })) : null)));
+  });
+  var c = upCard('up.warnings', 'warn', list, tag(t('up.warningsN', { n: r.warnings.length }), 'warning'), 'eco-span-all');
+  c.setAttribute('data-up-warnings', '');
+  return c;
+}
+
+function releasesCard(r) {
+  var body = h('div', { class: 'flex flex-col gap-4' });
+  if (r.tags && r.tags.length) {
+    body.appendChild(h('div', { 'data-up-tags': '' },
+      h('div', { class: 'text-sm font-medium mb-2', text: t('up.newTags') }),
+      h('div', { class: 'flex flex-wrap gap-2' }, r.tags.map(function (tg) { return ghLink(tg.url, tg.name, 'eco-up-chip'); }))));
+  }
+  (r.releases || []).forEach(function (rel) {
+    body.appendChild(h('article', { class: 'eco-up-release', 'data-up-release': rel.tag },
+      h('div', { class: 'flex flex-wrap items-center gap-2' },
+        ghLink(rel.url, rel.name || rel.tag, 'font-semibold'),
+        rel.name && rel.name !== rel.tag ? mono(rel.tag) : null,
+        rel.prerelease ? tag(t('up.prerelease'), 'warning') : null,
+        rel.breaks ? tag(t('up.breaking'), 'error') : null,
+        h('span', { class: 'text-xs text-secondary-500', text: fmtDate(rel.publishedAt, false) })),
+      releaseBody(rel.body)));
+  });
+  if (!(r.releases || []).length && !(r.tags || []).length) {
+    body.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: r.latestRelease ? t('up.noNewRelease', { tag: r.latestRelease.tag }) : t('up.noRelease') }));
+  }
+  var c = upCard('up.releases', 'tag', body, null, 'eco-span-all');
+  c.setAttribute('data-up-releases', '');
+  return c;
+}
+
+function commitsCard(r) {
+  var list = h('ul', { class: 'eco-up-commits' });
+  (r.commits || []).forEach(function (cm) {
+    list.appendChild(h('li', { 'data-up-commit': cm.sha },
+      h('div', { class: 'min-w-0 flex-1' },
+        h('div', { class: 'eco-up-title', dir: 'auto', text: cm.title }),
+        h('div', { class: 'flex flex-wrap items-center gap-2 text-xs text-secondary-500 dark:text-secondary-400 mt-0.5' },
+          h('span', { dir: 'ltr', text: cm.author || '' }),
+          h('span', { text: fmtDate(cm.date) }),
+          cm.merge ? tag(t('up.merge'), 'secondary') : null,
+          cm.breaks ? tag(t('up.breaking'), 'error') : null)),
+      ghLink(cm.url, shortSha(cm.sha), 'font-mono text-xs shrink-0')));
+  });
+  var more = r.truncated && r.compareUrl ? h('div', { class: 'mt-3' }, ghLink(r.compareUrl, t('up.more', { n: r.aheadBy }))) : null;
+  var c = upCard('up.commits', 'gitCommit', h('div', {}, list, more), tag(t('up.commitsN', { n: r.aheadBy }), 'secondary'), 'eco-span-all');
+  c.setAttribute('data-up-commits', '');
+  return c;
+}
+
+function filesCard(r) {
+  var box = h('div', { class: 'flex flex-col gap-2' });
+  (r.areas || []).forEach(function (a) {
+    var files = h('ul', { class: 'eco-up-files' });
+    a.files.forEach(function (f) {
+      files.appendChild(h('li', {},
+        tag(t('up.fs.' + f.status), UP_FILE_COLOR[f.status] || 'secondary'),
+        h('span', { class: 'font-mono text-xs eco-up-path', dir: 'ltr', text: f.previous ? f.previous + ' → ' + f.path : f.path }),
+        h('span', { class: 'text-xs tabular-nums text-secondary-500 shrink-0', dir: 'ltr', text: localDigits('+' + f.additions + ' −' + f.deletions) })));
+    });
+    if (a.files.length < a.count) files.appendChild(h('li', { class: 'text-xs text-secondary-500', text: t('up.moreFiles', { n: a.count - a.files.length }) }));
+    var det = h('details', { class: 'eco-up-area', 'data-up-area': a.key },
+      h('summary', {},
+        upIcon(UP_AREA_ICON[a.key] || 'files'),
+        h('span', { class: 'font-medium flex-1 min-w-0', text: t('up.area.' + a.key) }),
+        h('span', { class: 'text-xs tabular-nums text-secondary-500', text: t('up.filesN', { n: a.count }) }),
+        h('span', { class: 'text-xs tabular-nums text-secondary-500', dir: 'ltr', text: localDigits('+' + a.additions + ' −' + a.deletions) })),
+      files);
+    if (a.key === 'migrations') det.open = true;
+    box.appendChild(det);
+  });
+  if (!(r.areas || []).length) box.appendChild(h('p', { class: 'text-sm text-secondary-500', text: t('up.noFiles') }));
+  var c = upCard('up.files', 'files', box, tag(t('up.filesN', { n: r.fileCount || 0 }), 'secondary'), 'eco-span-all');
+  c.setAttribute('data-up-files', '');
+  return c;
+}
+
+function updatesPage(container) {
+  var settingsBtn = button({ variant: 'ghost', size: 'page', icon: 'gear', label: t('up.settings'), onclick: function () { psNavigate(hashFor('updates-source'), false); } });
+  settingsBtn.setAttribute('data-up-settings', '');
+  var frame = pageFrame(t('nav.updates'), t('desc.updates'), aclCan('SETTINGS', 1) ? settingsBtn : null);
+  clear(container).appendChild(frame.el);
+  var body = h('div', { class: 'flex flex-col gap-4', 'data-updates': '' });
+  frame.content.appendChild(body);
+  var timer = 0;
+  var polls = 0;
+
+  function skeleton() {
+    clear(body);
+    var grid = h('div', { class: 'eco-detail-grid' });
+    [7, 7].forEach(function (n) {
+      var rows = [];
+      for (var i = 0; i < n; i++) rows.push([h('dt', {}, bar('6rem')), h('dd', {}, bar(['70%', '50%', '40%'][i % 3]))]);
+      grid.appendChild(card(h('div', { class: 'p-4' }, h('div', { class: 'mb-4' }, bar('8rem', 'h-4')), h('div', { class: 'mb-3' }, bar('4rem', 'h-8')), h('dl', { class: 'eco-dl' }, rows))));
+    });
+    [4, 6].forEach(function (n) {
+      var lines = [];
+      for (var i = 0; i < n; i++) lines.push(h('div', { class: 'flex items-center gap-3 py-2' }, bar('60%'), bar('4rem')));
+      grid.appendChild(card(h('div', { class: 'p-4' }, h('div', { class: 'mb-4' }, bar('8rem', 'h-4')), lines), 'eco-span-all'));
+    });
+    body.appendChild(grid);
+  }
+
+  function check(btn) {
+    setBusy(btn, true);
+    baseApi('POST', '/updates/check', {}).then(function (v) {
+      toast('success', t('up.queuedToast'));
+      polls = 0;
+      render(v);
+    }, function (err) {
+      setBusy(btn, false);
+      toast('error', err.code === 'TOO_MANY_CHECKS' ? t('code.TOO_MANY_CHECKS') : errorText(err));
+    });
+  }
+
+  function render(v) {
+    if (!body.isConnected) return;
+    UPDATES.summary = { enabled: v.settings.enabled, newCommits: v.current && v.result ? v.result.aheadBy : 0, status: v.state.status };
+    UPDATES.at = Date.now();
+    clear(body);
+    var top = statusNotice(v);
+    if (top) { top.setAttribute('data-up-notice', v.state.status); body.appendChild(top); }
+    var grid = h('div', { class: 'eco-detail-grid' });
+    grid.appendChild(thisServerCard(v));
+    grid.appendChild(parentCard(v, check));
+    var r = v.current ? v.result : null;
+    if (r) {
+      var w = warningsCard(r);
+      if (w) grid.appendChild(w);
+      grid.appendChild(releasesCard(r));
+      if (r.aheadBy) {
+        grid.appendChild(commitsCard(r));
+        grid.appendChild(filesCard(r));
+      } else {
+        grid.appendChild(card(emptyBlock(t('up.none'), t('up.none.hint')), 'eco-span-all'));
+      }
+    }
+    grid.appendChild(updatesGuide(v));
+    body.appendChild(grid);
+    clearTimeout(timer);
+    if (v.state.queued && v.state.status !== 'rate_limited' && polls < 40) {
+      polls++;
+      timer = setTimeout(load, 1500);
+    }
+    schedule();
+  }
+
+  function load() {
+    if (!body.isConnected) return;
+    baseApi('GET', '/updates').then(render, function (err) { clear(body).appendChild(errorBlock(err, load)); });
+  }
+  skeleton();
+  load();
+}
+
+var UPDATE_SETTINGS_FIELDS = function (values) {
+  var branches = (values.branches && values.branches[values.repo]) || [];
+  return [
+    { name: 'enabled', type: 'bool', inline: true, label: 'f.up.enabled', hint: 'f.up.enabled.hint' },
+    { type: 'row', fields: [
+      { name: 'provider', type: 'select', label: 'f.up.provider', hint: 'f.up.provider.hint', required: true, noPlaceholder: true, options: function () { return [{ value: 'github', label: 'GitHub' }]; } },
+      { name: 'intervalHours', type: 'select', label: 'f.up.interval', hint: 'f.up.interval.hint', required: true, noPlaceholder: true, options: function () {
+        var list = [1, 3, 6, 12, 24, 48, 168];
+        if (values.intervalHours && list.indexOf(Number(values.intervalHours)) === -1) list.push(Number(values.intervalHours));
+        return list.sort(function (a, b) { return a - b; }).map(function (n) { return { value: String(n), label: t('up.everyN', { n: n }) }; });
+      } }
+    ] },
+    { name: 'repo', type: 'text', ltr: true, label: 'f.up.repo', hint: 'f.up.repo.hint', required: true },
+    { name: 'branch', type: 'custom', label: 'f.up.branch', hint: 'f.up.branch.hint', required: true, build: function (cur, change, vals) {
+      var listId = 'up-branches';
+      var inp = textInput(cur, { ltr: true, mono: true, label: t('f.up.branch'), oninput: function (v) { change(v.trim()); } });
+      inp.setAttribute('list', listId);
+      var dl2 = h('datalist', { id: listId }, branches.map(function (b) { return h('option', { value: b }); }));
+      var chips = h('div', { class: 'flex flex-wrap gap-1 mt-2' }, branches.map(function (b) {
+        return h('button', { type: 'button', class: 'eco-up-branch eco-up-chip font-mono text-xs', dir: 'ltr', text: b, onclick: function () { inp.value = b; change(b); } });
+      }));
+      return h('div', {}, inp, dl2, branches.length ? chips : null);
+    } },
+    { name: 'token', type: 'custom', label: 'f.up.token', hint: values.canSeal === false ? 'f.up.token.noSeal' : 'f.up.token.hint', optional: true, build: function (cur, change) {
+      var inp = textInput(cur || '', { ltr: true, mono: true, label: t('f.up.token'), oninput: function (v) { change(v.trim()); } });
+      inp.type = 'password';
+      inp.setAttribute('autocomplete', 'new-password');
+      inp.classList.add('eco-secret');
+      inp.setAttribute('data-up-token', '');
+      return inp;
+    } },
+    { name: 'forkInfo', type: 'static', readonly: true, live: true, render: function (v) {
+      return h('div', { class: 'flex flex-col gap-2', 'data-up-fork': '' },
+        notice('info', t('up.fork', { repo: v.forkRepo || 'copilot-rast/nakama-farsi' })),
+        v.updatedBy ? h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('up.savedBy', { who: v.updatedBy, when: fmtDate(v.updatedAt) }) }) : null);
+    } }
+  ];
+};
+
+function updatesSourcePage(container) {
+  var frame = tabFrame(t('desc.updates-source'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(baseApi, '/updates/settings', null, UPDATE_SETTINGS_FIELDS, { id: 'updates-source', fixPayload: function (p) {
+    return { enabled: !!p.enabled, provider: p.provider || 'github', repo: String(p.repo || '').trim(), branch: String(p.branch || '').trim(), intervalHours: Number(p.intervalHours), token: p.token == null ? '' : String(p.token) };
+  }, afterSave: function () { UPDATES.at = 0; refreshUpdatesBadge(true); } });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
 var BRAND_KEY = 'nakama-brand';
 var BRAND_SHADES = { 50: 0.9, 100: 0.8, 200: 0.6, 300: 0.4, 400: 0.1, 500: 0, 600: -0.1, 700: -0.25, 800: -0.58, 900: -0.7, 950: -0.8 };
 var BRAND_DEFAULT_SHADES = { '244,244,253': 50, '233,232,252': 100, '209,205,248': 200, '181,175,245': 300, '130,117,240': 400, '107,89,238': 500, '102,84,226': 600, '93,77,206': 700, '69,58,154': 800, '59,49,130': 900, '48,40,106': 950 };
@@ -17164,7 +17875,8 @@ var PS_SECTIONS = [
   { id: 'payment-methods', label: 'tab.payment-methods', icon: 'payments', acl: 'HIRO_ECONOMY', render: function (box) { paymentMethodsPage(box); } },
   { id: 'sms', label: 'tab.sms', icon: 'comments', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'sms'); } },
   { id: 'email', label: 'tab.email', icon: 'mail', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'email'); } },
-  { id: 'push', label: 'tab.push', icon: 'push', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'push'); } }
+  { id: 'push', label: 'tab.push', icon: 'push', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'push'); } },
+  { id: 'updates-source', label: 'tab.updates-source', icon: 'updates-source', acl: 'SETTINGS', render: function (box) { updatesSourcePage(box); } }
 ];
 var PS_LEGACY = {
   'settings/brand': 'brand',
@@ -17949,7 +18661,7 @@ function replaceHash(hash) {
 }
 
 function parseRoute(hash) {
-  var m = /^#\/(economy|publication|moderation|support|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(economy|publication|moderation|support|system|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
   var page;
@@ -18032,7 +18744,7 @@ function syncSidebar(route, psOn) {
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
     var collapsed = isCollapsed(a);
-    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + pendingReports + '|' + supportBadgeKey() + '|' + JSON.stringify(lastQuery) + '|' + token();
+    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + pendingReports + '|' + supportBadgeKey() + '|' + updatesBadge() + '|' + JSON.stringify(lastQuery) + '|' + token();
     var prev = group;
     for (var si = 0; si < SECTION_ORDER.length; si++) {
       if (!navPages(SECTION_ORDER[si]).length) continue;
@@ -18044,6 +18756,7 @@ function syncSidebar(route, psOn) {
     refreshBadge(false);
     refreshReportBadge(false);
     refreshSupportBadge(false);
+    refreshUpdatesBadge(false);
     var vueActive = group.parentElement.querySelectorAll('a[aria-current="page"]:not([data-economy-page])');
     for (var j = 0; j < vueActive.length && (active || psOn); j++) {
       if (vueActive[j].getAttribute('href') === '#/') vueActive[j].setAttribute('data-economy-dimmed', '');
@@ -18077,7 +18790,8 @@ function mountPage(root, route, ctl) {
   if (route.page === 'comments') refreshBadge(true);
   if (route.page === 'reports') refreshReportBadge(true);
   if (route.page === 'tickets' || route.page === 'live-chat') { refreshSupportBadge(true); supportBeat(); }
-  if (route.page === 'overview') overviewPage(root);
+  if (route.page === 'updates') { refreshUpdatesBadge(true); updatesPage(root); }
+  else if (route.page === 'overview') overviewPage(root);
   else if (route.page === 'tickets' && route.id) ticketDetail(root, route.id);
   else if (route.page === 'tickets') ctl.list = ticketsPage(root, route.query, ctx);
   else if (route.page === 'live-chat') liveChatPage(root, route.id, route.query);
@@ -18273,7 +18987,7 @@ function consoleSections() {
     return {
       id: sec,
       label: t(SECTION_LABEL[sec]),
-      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : supportBadge(p) }; })
+      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : p === 'updates' ? updatesBadge() : supportBadge(p) }; })
     };
   });
 }
@@ -18284,7 +18998,8 @@ window.NakamaConsole = {
   lang: function () { return lang(); },
   t: function (key, vars) { return t(key, vars); },
   sections: consoleSections,
-  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0, tickets: supportBadge('tickets'), chats: supportBadge('live-chat') }; },
+  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0, tickets: supportBadge('tickets'), chats: supportBadge('live-chat'), updates: updatesBadge() }; },
+  updates: function () { var s = UPDATES.summary; return s ? { newCommits: updatesBadge(), status: s.status, latestRelease: s.latestRelease || '', href: hashFor('updates') } : null; },
   onRoute: function (fn) {
     if (typeof fn !== 'function') return function () {};
     routeHooks.push(fn);
@@ -18306,7 +19021,7 @@ window.NakamaConsole = {
   isDark: function () { return isDarkTheme(); }
 };
 
-if (legacyHash(location.hash) || /^#\/(economy|publication|moderation|support|project-settings)(\/|\?|$)/.test(location.hash)) {
+if (legacyHash(location.hash) || /^#\/(economy|publication|moderation|support|system|project-settings)(\/|\?|$)/.test(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }

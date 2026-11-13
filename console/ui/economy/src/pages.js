@@ -2,18 +2,20 @@ var SECTIONS = {
   economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'restrictions', 'chat-words', 'activity'],
-  support: ['tickets', 'live-chat']
+  support: ['tickets', 'live-chat'],
+  system: ['updates']
 };
-var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support'];
-var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup' };
+var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'];
+var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
 var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
-var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION' };
+var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
 var LIMIT = 20;
 var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' }, tickets: { status: 'waiting' } };
 
 function sectionOf(page) {
   if (psSection(page)) return PS_ROUTE;
   if (SECTIONS.support.indexOf(page) !== -1) return 'support';
+  if (SECTIONS.system.indexOf(page) !== -1) return 'system';
   if (SECTIONS.moderation.indexOf(page) !== -1) return 'moderation';
   return SECTIONS.publication.indexOf(page) !== -1 ? 'publication' : 'economy';
 }

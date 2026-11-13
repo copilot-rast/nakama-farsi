@@ -214,15 +214,37 @@ function buildEnd() {
   status.appendChild(el('span', { class: 'pl-status-label', text: pst('top.live') }));
   status.setAttribute('aria-controls', 'pl-stats');
   tb.stats = el('div', { class: 'pl-stats', id: 'pl-stats', role: 'region', 'aria-label': pst('top.status'), 'data-l10n-skip': '' });
+  tb.up = el('a', { class: 'pl-up', href: '#/system/updates', hidden: true, 'data-pl-updates': '' });
   tb.seg = buildLangSeg();
   tb.theme = el('button', { type: 'button', class: 'pl-round pl-theme', onclick: themeClick });
   paintTheme();
+  box.appendChild(tb.up);
   box.appendChild(search);
   box.appendChild(status);
   box.appendChild(tb.stats);
   box.appendChild(tb.seg);
   box.appendChild(tb.theme);
   return box;
+}
+
+function paintUpdates() {
+  var a = tb.up;
+  if (!a) return;
+  var api = nc();
+  var u = api && api.updates ? api.updates() : null;
+  var n = u ? u.newCommits || 0 : 0;
+  var key = plLang() + '|' + n + '|' + (u ? u.href : '');
+  if (a.getAttribute('data-key') === key) return;
+  a.setAttribute('data-key', key);
+  a.hidden = !n;
+  if (!n) return;
+  if (u.href) a.setAttribute('href', u.href);
+  var label = pst('top.updatesLabel', { n: plNum(n) });
+  a.setAttribute('aria-label', label);
+  a.setAttribute('title', label);
+  a.innerHTML = plIconD('cloudDown');
+  a.appendChild(el('span', { class: 'pl-up-label', text: pst('top.updates') }));
+  a.appendChild(el('em', { class: 'pl-up-n', text: plNum(n) }));
 }
 
 function paintTopbar() {
@@ -251,6 +273,7 @@ function paintTopbar() {
   }
   paintTabs(tb.start.querySelector('.pl-tabs'), info);
   paintTheme();
+  paintUpdates();
   var lseg = tb.seg;
   if (lseg && !lseg.__spInit && lseg.offsetWidth) { lseg.__spInit = true; segIndicator(lseg); }
 }

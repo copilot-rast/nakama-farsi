@@ -585,3 +585,46 @@ html.pl.pl-sheet-open .pl-sheet-scrim {
     display: none;
   }
 }
+
+.pl-up {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  min-width: 36px;
+  padding-inline: 10px 6px;
+  border-radius: var(--r-pill);
+  background: var(--tint-teal-bg);
+  color: var(--tint-teal-fg);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--d1) var(--ease);
+}
+
+.pl-up[hidden] {
+  display: none;
+}
+
+.pl-up:hover {
+  background: color-mix(in srgb, var(--tint-teal-bg) 80%, var(--ink-1) 8%);
+}
+
+.pl-up .pl-ic {
+  width: 18px;
+  height: 18px;
+}
+
+.pl-up-n {
+  font-style: normal;
+  font-size: 12px;
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: var(--tint-teal-fg);
+  color: var(--surface);
+  line-height: 20px;
+  text-align: center;
+  font-weight: 600;
+}

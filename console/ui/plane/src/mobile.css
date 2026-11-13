@@ -41,6 +41,14 @@
     display: none;
   }
 
+  html.pl .pl-up-label {
+    display: none;
+  }
+
+  html.pl .pl-up {
+    padding-inline: 8px 4px;
+  }
+
   html.pl #main > div.sticky:first-child .justify-end,
   html.pl .pl-tb-end {
     gap: 4px;

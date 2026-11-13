@@ -947,6 +947,49 @@ html.pl.pl-sheet-open .pl-sheet-scrim {
     display: none;
   }
 }
+
+.pl-up {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  min-width: 36px;
+  padding-inline: 10px 6px;
+  border-radius: var(--r-pill);
+  background: var(--tint-teal-bg);
+  color: var(--tint-teal-fg);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--d1) var(--ease);
+}
+
+.pl-up[hidden] {
+  display: none;
+}
+
+.pl-up:hover {
+  background: color-mix(in srgb, var(--tint-teal-bg) 80%, var(--ink-1) 8%);
+}
+
+.pl-up .pl-ic {
+  width: 18px;
+  height: 18px;
+}
+
+.pl-up-n {
+  font-style: normal;
+  font-size: 12px;
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: var(--tint-teal-fg);
+  color: var(--surface);
+  line-height: 20px;
+  text-align: center;
+  font-weight: 600;
+}
 html.pl :is(#main, [data-economy]) :is(.rounded-md.shadow.bg-white, .bg-white.shadow.rounded-md) {
   border: 1px solid var(--line);
   border-radius: var(--r-window);
@@ -2732,6 +2775,70 @@ html.pl .eco-gm-tile {
 html.pl [data-gm-warnings] .eco-notice {
   align-items: flex-start;
 }
+
+html.pl [data-economy] .eco-up-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--tint-info-bg);
+  color: var(--tint-info-fg);
+}
+
+html.pl [data-economy] .eco-up-ic .pl-ic {
+  width: 18px;
+  height: 18px;
+}
+
+html.pl [data-economy] .eco-up-warn--strong .eco-up-ic {
+  background: var(--tint-warn-bg);
+  color: var(--tint-warn-fg);
+}
+
+html.pl [data-economy] .eco-up-big--alert .text-3xl {
+  color: var(--tint-teal-fg);
+}
+
+html.pl [data-economy] .eco-up-code {
+  background: var(--well);
+  border-color: var(--line);
+  border-radius: var(--r-field);
+}
+
+html.pl [data-economy] .eco-up-step {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+html.pl [data-economy] .eco-up-chip {
+  background: var(--well);
+  border-color: var(--line);
+  color: var(--ink-2);
+}
+
+html.pl [data-economy] .eco-up-area,
+html.pl [data-economy] .eco-up-release,
+html.pl [data-economy] .eco-up-warn {
+  border-color: var(--line);
+  border-radius: var(--r-field);
+}
+
+html.pl [data-economy] .eco-up-commits > li + li,
+html.pl [data-economy] .eco-up-files > li + li {
+  border-color: var(--line);
+}
+
+html.pl [data-economy] .eco-up-branch {
+  color: var(--ink-1);
+  background: var(--well);
+}
+
+html.pl [data-economy] .eco-up-branch:hover {
+  background: var(--capsule-hi);
+}
 @media (max-width: 767px) {
   html.pl {
     --gap: 12px;
@@ -2773,6 +2880,14 @@ html.pl [data-gm-warnings] .eco-notice {
   html.pl .pl-search-ph,
   html.pl .pl-keys {
     display: none;
+  }
+
+  html.pl .pl-up-label {
+    display: none;
+  }
+
+  html.pl .pl-up {
+    padding-inline: 8px 4px;
   }
 
   html.pl #main > div.sticky:first-child .justify-end,

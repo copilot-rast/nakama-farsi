@@ -586,3 +586,32 @@ html.dark .monaco-editor :is(.minimap canvas,canvas.decorationsOverviewRuler){fi
 .dark .eco-gm-tile{background:rgb(var(--secondary-color-700));color:rgb(var(--success-color-300))}
 [data-gm-settings] .eco-field:last-child{margin-block-end:0}
 [data-rows=rooms] .eco-rows-row{--eco-rows-cols:4 !important}
+.eco-up-big{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.75rem}
+.eco-up-code{position:relative;border:1px solid #e5e7eb;border-radius:.375rem;background:#f9fafb}
+.dark .eco-up-code{border-color:#374151;background:#111827}
+.eco-up-code pre{margin:0;padding:.625rem 2.75rem .625rem .75rem;overflow-x:auto;white-space:pre;line-height:1.6;text-align:left}
+.eco-up-copy{position:absolute;top:.375rem;right:.375rem}
+.eco-up-steps{display:flex;flex-direction:column;gap:.875rem;list-style:none;padding:0;margin:0}
+.eco-up-step{display:inline-flex;align-items:center;justify-content:center;min-width:1.5rem;height:1.5rem;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:.75rem;font-weight:600}
+.eco-up-chip{display:inline-flex;align-items:center;gap:.25rem;padding:.125rem .5rem;border:1px solid #e5e7eb;border-radius:.375rem;max-width:100%;overflow-wrap:anywhere}
+.eco-up-warn{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem;border:1px solid #e5e7eb;border-radius:.375rem}
+.eco-up-release{padding:.75rem;border:1px solid #e5e7eb;border-radius:.375rem}
+.eco-up-notes{text-align:left;overflow-wrap:anywhere}
+.eco-up-commits{list-style:none;margin:0;padding:0}
+.eco-up-commits>li{display:flex;align-items:flex-start;gap:.75rem;padding:.625rem 0}
+.eco-up-commits>li+li{border-top:1px solid #e5e7eb}
+.eco-up-title{overflow-wrap:anywhere}
+.eco-up-area{border:1px solid #e5e7eb;border-radius:.375rem}
+.eco-up-area>summary{display:flex;align-items:center;gap:.625rem;padding:.5rem .75rem;cursor:pointer;list-style:none;min-height:2.75rem}
+.eco-up-area>summary::-webkit-details-marker{display:none}
+.eco-up-files{list-style:none;margin:0;padding:0 .75rem .5rem}
+.eco-up-files>li{display:flex;align-items:center;gap:.5rem;padding:.375rem 0;min-width:0}
+.eco-up-files>li+li{border-top:1px solid #f3f4f6}
+.eco-up-path{flex:1;min-width:0;overflow-wrap:anywhere;text-align:left}
+.dark .eco-up-chip,.dark .eco-up-warn,.dark .eco-up-release,.dark .eco-up-area,.dark .eco-up-commits>li+li{border-color:#374151}
+.dark .eco-up-files>li+li{border-color:#1f2937}
+[dir=rtl] .eco-up-code pre{direction:ltr}
+.eco-up-ul{list-style:disc;padding-inline-start:1.25rem}
+.eco-up-branch{cursor:pointer;color:#1f2937;background:#fff;min-height:1.75rem}
+.eco-up-branch:hover{background:#f3f4f6}
+.dark .eco-up-branch{color:#e5e7eb;background:#1f2937}

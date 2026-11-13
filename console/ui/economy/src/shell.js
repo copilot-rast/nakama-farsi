@@ -86,7 +86,7 @@ function replaceHash(hash) {
 }
 
 function parseRoute(hash) {
-  var m = /^#\/(economy|publication|moderation|support|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
+  var m = /^#\/(economy|publication|moderation|support|system|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
   var page;
@@ -169,7 +169,7 @@ function syncSidebar(route, psOn) {
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
     var collapsed = isCollapsed(a);
-    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + pendingReports + '|' + supportBadgeKey() + '|' + JSON.stringify(lastQuery) + '|' + token();
+    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + pendingReports + '|' + supportBadgeKey() + '|' + updatesBadge() + '|' + JSON.stringify(lastQuery) + '|' + token();
     var prev = group;
     for (var si = 0; si < SECTION_ORDER.length; si++) {
       if (!navPages(SECTION_ORDER[si]).length) continue;
@@ -181,6 +181,7 @@ function syncSidebar(route, psOn) {
     refreshBadge(false);
     refreshReportBadge(false);
     refreshSupportBadge(false);
+    refreshUpdatesBadge(false);
     var vueActive = group.parentElement.querySelectorAll('a[aria-current="page"]:not([data-economy-page])');
     for (var j = 0; j < vueActive.length && (active || psOn); j++) {
       if (vueActive[j].getAttribute('href') === '#/') vueActive[j].setAttribute('data-economy-dimmed', '');
@@ -214,7 +215,8 @@ function mountPage(root, route, ctl) {
   if (route.page === 'comments') refreshBadge(true);
   if (route.page === 'reports') refreshReportBadge(true);
   if (route.page === 'tickets' || route.page === 'live-chat') { refreshSupportBadge(true); supportBeat(); }
-  if (route.page === 'overview') overviewPage(root);
+  if (route.page === 'updates') { refreshUpdatesBadge(true); updatesPage(root); }
+  else if (route.page === 'overview') overviewPage(root);
   else if (route.page === 'tickets' && route.id) ticketDetail(root, route.id);
   else if (route.page === 'tickets') ctl.list = ticketsPage(root, route.query, ctx);
   else if (route.page === 'live-chat') liveChatPage(root, route.id, route.query);
@@ -410,7 +412,7 @@ function consoleSections() {
     return {
       id: sec,
       label: t(SECTION_LABEL[sec]),
-      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : supportBadge(p) }; })
+      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : p === 'updates' ? updatesBadge() : supportBadge(p) }; })
     };
   });
 }
@@ -421,7 +423,8 @@ window.NakamaConsole = {
   lang: function () { return lang(); },
   t: function (key, vars) { return t(key, vars); },
   sections: consoleSections,
-  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0, tickets: supportBadge('tickets'), chats: supportBadge('live-chat') }; },
+  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0, tickets: supportBadge('tickets'), chats: supportBadge('live-chat'), updates: updatesBadge() }; },
+  updates: function () { var s = UPDATES.summary; return s ? { newCommits: updatesBadge(), status: s.status, latestRelease: s.latestRelease || '', href: hashFor('updates') } : null; },
   onRoute: function (fn) {
     if (typeof fn !== 'function') return function () {};
     routeHooks.push(fn);
@@ -443,7 +446,7 @@ window.NakamaConsole = {
   isDark: function () { return isDarkTheme(); }
 };
 
-if (legacyHash(location.hash) || /^#\/(economy|publication|moderation|support|project-settings)(\/|\?|$)/.test(location.hash)) {
+if (legacyHash(location.hash) || /^#\/(economy|publication|moderation|support|system|project-settings)(\/|\?|$)/.test(location.hash)) {
   pendingHash = location.hash;
   history.replaceState(history.state, '', location.pathname + location.search + '#/');
 }

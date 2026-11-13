@@ -937,3 +937,67 @@ html.pl .eco-gm-tile {
 html.pl [data-gm-warnings] .eco-notice {
   align-items: flex-start;
 }
+
+html.pl [data-economy] .eco-up-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--tint-info-bg);
+  color: var(--tint-info-fg);
+}
+
+html.pl [data-economy] .eco-up-ic .pl-ic {
+  width: 18px;
+  height: 18px;
+}
+
+html.pl [data-economy] .eco-up-warn--strong .eco-up-ic {
+  background: var(--tint-warn-bg);
+  color: var(--tint-warn-fg);
+}
+
+html.pl [data-economy] .eco-up-big--alert .text-3xl {
+  color: var(--tint-teal-fg);
+}
+
+html.pl [data-economy] .eco-up-code {
+  background: var(--well);
+  border-color: var(--line);
+  border-radius: var(--r-field);
+}
+
+html.pl [data-economy] .eco-up-step {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+html.pl [data-economy] .eco-up-chip {
+  background: var(--well);
+  border-color: var(--line);
+  color: var(--ink-2);
+}
+
+html.pl [data-economy] .eco-up-area,
+html.pl [data-economy] .eco-up-release,
+html.pl [data-economy] .eco-up-warn {
+  border-color: var(--line);
+  border-radius: var(--r-field);
+}
+
+html.pl [data-economy] .eco-up-commits > li + li,
+html.pl [data-economy] .eco-up-files > li + li {
+  border-color: var(--line);
+}
+
+html.pl [data-economy] .eco-up-branch {
+  color: var(--ink-1);
+  background: var(--well);
+}
+
+html.pl [data-economy] .eco-up-branch:hover {
+  background: var(--capsule-hi);
+}

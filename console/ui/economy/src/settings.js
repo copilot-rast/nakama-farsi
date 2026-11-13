@@ -18,7 +18,8 @@ var PS_SECTIONS = [
   { id: 'payment-methods', label: 'tab.payment-methods', icon: 'payments', acl: 'HIRO_ECONOMY', render: function (box) { paymentMethodsPage(box); } },
   { id: 'sms', label: 'tab.sms', icon: 'comments', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'sms'); } },
   { id: 'email', label: 'tab.email', icon: 'mail', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'email'); } },
-  { id: 'push', label: 'tab.push', icon: 'push', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'push'); } }
+  { id: 'push', label: 'tab.push', icon: 'push', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'push'); } },
+  { id: 'updates-source', label: 'tab.updates-source', icon: 'updates-source', acl: 'SETTINGS', render: function (box) { updatesSourcePage(box); } }
 ];
 var PS_LEGACY = {
   'settings/brand': 'brand',
