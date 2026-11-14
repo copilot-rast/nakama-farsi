@@ -486,7 +486,7 @@ function paintSky() {}
 var DIRECT = ['/', '/players', '/groups', '/storage', '/storage-indexes', '/matches', '/leaderboards', '/notifications', '/payments', '/chat'];
 var SETTINGS_PAGES = [['users', 'settings.users', 'users'], ['general', 'settings.general', 'toggle'], ['config', 'settings.config', 'fileCode'], ['data-management', 'settings.data', 'database'], ['audit-log', 'settings.audit', 'list']];
 var NATIVE_LABEL = { '/payments': 'nav.purchases', '/chat': 'nav.chat' };
-var HREF_ICON = { '': 'dashboard', players: 'user', groups: 'users', storage: 'database', 'storage-indexes': 'list', matches: 'gamepad', leaderboards: 'trophy', notifications: 'bell', payments: 'card', chat: 'message', apiexplorer: 'terminal', 'api-explorer': 'terminal', modules: 'cpu', runtime: 'cpu', overview: 'dashboard', currencies: 'coins', metas: 'chart', prizes: 'gift', products: 'shopping', gifts: 'ticket', 'event-types': 'zap', 'event-rules': 'trophy', 'meta-rules': 'sliders', 'level-tables': 'ladder', streaks: 'flame', tasks: 'checklist', 'task-groups': 'layers', items: 'backpack', achievements: 'medal', 'chance-games': 'dice', 'prize-groups': 'package', games: 'puzzle', updates: 'gitMerge', 'event-log': 'list', referrals: 'share', faqs: 'help', news: 'newspaper', banners: 'flagBanner', 'banner-lists': 'slideshow', sponsors: 'handshake', 'auto-rules': 'zap', 'notify-categories': 'tag', comments: 'message', 'remote-config': 'sliders', reports: 'flag', 'player-reports': 'user', restrictions: 'micoff', 'chat-words': 'type', activity: 'activity', tickets: 'ticket', 'live-chat': 'headset', users: 'users', general: 'toggle', config: 'fileCode', 'data-management': 'database', 'audit-log': 'list', 'project-settings': 'settings' };
+var HREF_ICON = { '': 'dashboard', players: 'user', groups: 'users', storage: 'database', 'storage-indexes': 'list', matches: 'gamepad', leaderboards: 'trophy', notifications: 'bell', payments: 'card', chat: 'message', apiexplorer: 'terminal', 'api-explorer': 'terminal', modules: 'cpu', runtime: 'cpu', overview: 'dashboard', currencies: 'coins', metas: 'chart', prizes: 'gift', products: 'shopping', gifts: 'ticket', 'event-types': 'zap', 'event-rules': 'trophy', 'meta-rules': 'sliders', 'level-tables': 'ladder', streaks: 'flame', tasks: 'checklist', 'task-groups': 'layers', items: 'backpack', achievements: 'medal', 'chance-games': 'dice', 'prize-groups': 'package', events: 'zap', games: 'puzzle', updates: 'gitMerge', 'event-log': 'list', referrals: 'share', faqs: 'help', news: 'newspaper', banners: 'flagBanner', 'banner-lists': 'slideshow', sponsors: 'handshake', 'auto-rules': 'zap', 'notify-categories': 'tag', comments: 'message', 'remote-config': 'sliders', reports: 'flag', 'player-reports': 'user', restrictions: 'micoff', 'chat-words': 'type', activity: 'activity', tickets: 'ticket', 'live-chat': 'headset', users: 'users', general: 'toggle', config: 'fileCode', 'data-management': 'database', 'audit-log': 'list', 'project-settings': 'settings' };
 
 function iconFor(href) {
   if (!/^#\//.test(href || '')) return 'open';
@@ -514,7 +514,7 @@ function linkInfo(a) {
   }
   var renamed = NATIVE_LABEL[routePath(a.getAttribute('href') || '#')];
   if (renamed) label = pst(renamed);
-  return { href: a.getAttribute('href') || '', label: label, svg: svg ? svg.outerHTML : '', icon: iconFor(a.getAttribute('href')), badge: badge, external: !/^#\//.test(a.getAttribute('href') || '') };
+  return { href: a.getAttribute('href') || '', label: label, svg: svg ? svg.outerHTML : '', icon: iconFor(a.getAttribute('href')), badge: badge, external: !/^#\//.test(a.getAttribute('href') || ''), group: a.getAttribute('data-economy-group') || '', groupLabel: a.getAttribute('data-economy-group-label') || '' };
 }
 
 function railModel() {
@@ -593,11 +593,42 @@ function allPages() {
   if (!m) return [];
   var out = [];
   m.direct.forEach(function (l) { out.push({ label: l.label, href: l.href, icon: l.icon, group: '' }); });
-  m.groups.forEach(function (g) { g.links.forEach(function (l) { out.push({ label: l.label, href: l.href, icon: l.icon, group: g.label }); }); });
+  var hubs = nc() && nc().pageTabs ? nc().pageTabs() : [];
+  m.groups.forEach(function (g) {
+    g.links.forEach(function (l) {
+      out.push({ label: l.label, href: l.href, icon: l.icon, group: l.groupLabel ? g.label + ' · ' + l.groupLabel : g.label });
+      var hub = hubOf(hubs, l.href);
+      if (hub) hub.tabs.forEach(function (tab) {
+        if (tab.first && tab.label === hub.label) return;
+        out.push({ label: tab.label, href: tab.href, icon: HREF_ICON[tab.id] || l.icon, group: g.label + ' · ' + hub.label, tab: true });
+      });
+    });
+  });
   if (m.settings) m.settings.links.forEach(function (l) { out.push({ label: l.label, href: l.href, icon: l.icon, group: m.settings.label, ps: l.ps }); });
   var api = nc() && nc().projectSettings;
   if (api && api.allowed()) api.sections().forEach(function (s) { out.push({ label: s.label, href: s.href, group: pst('settings.project'), psSection: true }); });
   return out;
+}
+
+function hubOf(hubs, href) {
+  var base = (href || '').split('?')[0];
+  return hubs.filter(function (hb) { return base === hb.href || base.indexOf(hb.href + '/') === 0; })[0] || null;
+}
+
+function tabInfo(hash) {
+  var api = nc();
+  if (!api || !api.pageTabs) return null;
+  var path = (hash || currentHash()).split('?')[0];
+  var best = null;
+  api.pageTabs().forEach(function (hb) {
+    if (path !== hb.href && path.indexOf(hb.href + '/') !== 0) return;
+    hb.tabs.forEach(function (tab) {
+      if (path === tab.href || path.indexOf(tab.href + '/') === 0) {
+        if (!best || tab.href.length > best.tab.href.length) best = { hub: hb, tab: tab };
+      }
+    });
+  });
+  return best;
 }
 
 function pageInfo(hash) {
@@ -671,6 +702,43 @@ function sideLink(l) {
   return a;
 }
 
+function sideGroupOpen(mode, id) {
+  var api = nc() && nc().navGroups;
+  return api ? api.isOpen(mode.id, id) : true;
+}
+
+function sideLinks(box, mode) {
+  var cur = null;
+  mode.links.forEach(function (l) {
+    if (!l.group) { cur = null; box.appendChild(sideLink(l)); return; }
+    if (!cur || cur.id !== l.group) {
+      var open = sideGroupOpen(mode, l.group);
+      var bodyId = 'pl-grp-' + mode.id + '-' + l.group;
+      var head = el('button', { type: 'button', class: 'pl-group-head', 'aria-expanded': open ? 'true' : 'false', 'aria-controls': bodyId, 'data-pl-group': l.group });
+      head.innerHTML = plIcon('down', 'pl-ic pl-group-caret');
+      head.appendChild(el('span', { class: 'pl-group-label', text: l.groupLabel }));
+      var count = el('span', { class: 'pl-badge pl-group-count', hidden: true });
+      head.appendChild(count);
+      var body = el('div', { class: 'pl-group-body', id: bodyId, role: 'group', 'aria-label': l.groupLabel, hidden: open ? null : '' });
+      cur = { id: l.group, head: head, body: body, count: count, badge: 0 };
+      var mine = cur;
+      head.addEventListener('click', function () {
+        var next = head.getAttribute('aria-expanded') !== 'true';
+        head.setAttribute('aria-expanded', next ? 'true' : 'false');
+        body.hidden = !next;
+        mine.count.hidden = next || !mine.badge;
+        var api = nc() && nc().navGroups;
+        if (api) api.set(mode.id, l.group, next);
+      });
+      box.appendChild(el('div', { class: 'pl-group', 'data-pl-group': l.group }, head, body));
+    }
+    cur.body.appendChild(sideLink(l));
+    cur.badge += l.badge || 0;
+    if (cur.badge) cur.count.textContent = plNum(cur.badge);
+    cur.count.hidden = !cur.body.hidden || !cur.badge;
+  });
+}
+
 function buildRail(model, mode) {
   var nav = rail.el;
   nav.innerHTML = '';
@@ -707,12 +775,12 @@ function buildSide(model, mode) {
   p.appendChild(search);
   var scroll = el('div', { class: 'pl-side-scroll' });
   scroll.appendChild(el('div', { class: 'pl-side-label', text: mode.label }));
-  mode.links.forEach(function (l) { scroll.appendChild(sideLink(l)); });
+  sideLinks(scroll, mode);
   if (mqMobile.matches) {
     modesOf(model).concat(model.settings ? [model.settings] : []).forEach(function (g) {
       if (g === mode) return;
       scroll.appendChild(el('div', { class: 'pl-side-label', text: g.label }));
-      g.links.forEach(function (l) { scroll.appendChild(sideLink(l)); });
+      sideLinks(scroll, g);
     });
   }
   p.appendChild(scroll);
@@ -849,7 +917,11 @@ function crumbsFor(bar) {
   var out = [];
   if (info && info.group && info.group.id !== 'settings') out.push({ label: info.group.label, href: null });
   if (nat.length >= 2) return out.concat(nat);
-  if (info) out.push({ label: info.link.label, href: null });
+  var tab = info ? tabInfo() : null;
+  if (tab && !(tab.tab.first && tab.tab.label === tab.hub.label)) {
+    out.push({ label: tab.hub.label, href: tab.hub.tabs[0].href });
+    out.push({ label: tab.tab.label, href: null });
+  } else if (info) out.push({ label: info.link.label, href: null });
   else if (nat.length) out = out.concat(nat);
   return out;
 }
@@ -881,6 +953,10 @@ function segIndicator(seg) {
 
 function paintTabs(box, info) {
   var g = info && info.group && (info.group.id === 'economy' || info.group.id === 'publication' || info.group.id === 'moderation' || info.group.id === 'support') ? info.group : null;
+  if (g) {
+    var sib = g.links.filter(function (l) { return (l.group || '') === (info.link.group || ''); });
+    g = sib.length > 1 ? { id: g.id, label: info.link.groupLabel || g.label, links: sib } : null;
+  }
   var key = g ? g.id + '|' + JSON.stringify(g.links.map(function (l) { return [l.href, l.label, l.badge]; })) + '|' + info.link.href : '';
   if (box.getAttribute('data-key') === key) { if (g) segIndicator(box); return; }
   var first = !box.getAttribute('data-key') || box.getAttribute('data-group') !== (g && g.id);
@@ -892,7 +968,7 @@ function paintTabs(box, info) {
   box.setAttribute('aria-label', g.label);
   box.appendChild(el('span', { class: 'pl-seg-ind', 'aria-hidden': 'true' }));
   g.links.forEach(function (l) {
-    var a = el('a', { href: l.href, class: 'pl-seg-item', 'aria-current': l === info.link ? 'page' : null }, el('span', { text: l.label }));
+    var a = el('a', { href: l.href, class: 'pl-seg-item', 'aria-current': l.href === info.link.href ? 'page' : null }, el('span', { text: l.label }));
     if (l.badge) a.appendChild(el('em', { class: 'pl-seg-count', text: plNum(l.badge) }));
     box.appendChild(a);
   });

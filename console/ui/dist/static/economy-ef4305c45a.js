@@ -3362,7 +3362,18 @@ var MESSAGES = {
     'code.INVALID_GITHUB_TOKEN': "این توکن شکل درستی ندارد.",
     'code.SECRET_KEY_MISSING': "ECONOMY_SECRET_KEY روی سرور نیست، پس توکن ذخیره نمی‌شود.",
     'code.UPDATES_OFF': "بررسی خودکار خاموش است.",
-    'code.TOO_MANY_CHECKS': "چند بار پشت هم بررسی کردی. چند دقیقهٔ دیگر دوباره امتحان کن."
+    'code.TOO_MANY_CHECKS': "چند بار پشت هم بررسی کردی. چند دقیقهٔ دیگر دوباره امتحان کن.",
+    'nav.events': 'رویدادها',
+    'tab.event-log': 'گزارش',
+    'navg.progress': 'ارز و پیشرفت',
+    'navg.sales': 'فروش',
+    'navg.play': 'جایزه و بازی',
+    'navg.growth': 'رویداد و رشد',
+    'navg.content': 'محتوا',
+    'navg.ads': 'بنر و اسپانسر',
+    'navg.messages': 'پیام به بازیکن',
+    'navg.people': 'بازیکنان',
+    'navg.chat': 'گزارش و گفتگو'
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -6725,7 +6736,18 @@ var MESSAGES = {
     'code.INVALID_GITHUB_TOKEN': "This token does not look right.",
     'code.SECRET_KEY_MISSING': "ECONOMY_SECRET_KEY is not set on the server, so a token cannot be stored.",
     'code.UPDATES_OFF': "Automatic checks are off.",
-    'code.TOO_MANY_CHECKS': "Too many checks in a row. Try again in a few minutes."
+    'code.TOO_MANY_CHECKS': "Too many checks in a row. Try again in a few minutes.",
+    'nav.events': 'Events',
+    'tab.event-log': 'Report',
+    'navg.progress': 'Currency & progress',
+    'navg.sales': 'Sales',
+    'navg.play': 'Prizes & games',
+    'navg.growth': 'Events & growth',
+    'navg.content': 'Content',
+    'navg.ads': 'Banners & sponsors',
+    'navg.messages': 'Player messages',
+    'navg.people': 'Players',
+    'navg.chat': 'Reports & chat'
   }
 };
 
@@ -7334,7 +7356,12 @@ function bar(width, extra) {
   return h('div', { class: 'animate-pulse bg-secondary-300 dark:bg-secondary-600 rounded-md eco-bar ' + (extra || 'h-3'), style: 'width:' + width });
 }
 
+var frameHub = null;
+
 function pageFrame(title, desc, actions) {
+  var hub = frameHub;
+  frameHub = null;
+  if (hub) title = hub.label;
   var content = h('div', { class: 'flex flex-col flex-1 min-w-0 px-4 md:px-6' });
   var actionsBox = h('div', { class: 'flex items-center gap-1.5 justify-end w-full sm:w-auto' }, actions || null);
   var frame = h('div', { class: 'flex flex-col flex-1' },
@@ -7348,7 +7375,8 @@ function pageFrame(title, desc, actions) {
                   h('h1', { class: 'text-xl font-semibold truncate max-w-xs md:max-w-sm xl:max-w-xl mr-2' }, h('span', { text: title }))),
                 desc ? h('div', { class: 'flex items-center gap-2' },
                   h('div', { class: 'text-secondary-500 -mt-0.5 space-x-2' }, h('span', { text: desc }))) : null))),
-          actionsBox)),
+          actionsBox),
+        hub ? hub.el : null),
       content));
   return { el: frame, content: content, actions: actionsBox };
 }
@@ -9049,6 +9077,24 @@ var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
 var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
+var HUBS = {
+  metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['level-tables', 'levels']] },
+  tasks: { section: 'economy', tabs: [['tasks', ''], ['task-groups', 'groups']] },
+  prizes: { section: 'economy', tabs: [['prizes', ''], ['prize-groups', 'groups']] },
+  events: { section: 'economy', tabs: [['event-types', ''], ['event-rules', 'prizes'], ['event-log', 'report']] },
+  banners: { section: 'publication', tabs: [['banners', ''], ['banner-lists', 'placements']] },
+  notifications: { section: 'publication', tabs: [['notifications', ''], ['notify-categories', 'categories']] }
+};
+var NAV = {
+  economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'items', 'gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
+  publication: ['remote-config', { id: 'content', items: ['news', 'faqs', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }],
+  moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words'] }],
+  support: ['tickets', 'live-chat'],
+  system: ['updates']
+};
+var HUB_OF = {};
+Object.keys(HUBS).forEach(function (hub) { HUBS[hub].tabs.forEach(function (tab) { HUB_OF[tab[0]] = hub; }); });
+var hubLast = {};
 var LIMIT = 20;
 var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' }, 'player-reports': { status: 'active' }, tickets: { status: 'waiting' } };
 
@@ -9068,8 +9114,28 @@ function apiFor(page) {
   return sec === 'publication' ? pubApi : api;
 }
 
+function pageAllowed(page) {
+  var need = PAGE_ACL[page] || SECTION_ACL[sectionOf(page)];
+  return !need || aclCan(need, 0);
+}
+
+function hubTabs(hub) {
+  return HUBS[hub] ? HUBS[hub].tabs.map(function (tab) { return tab[0]; }).filter(pageAllowed) : [];
+}
+
+function tabLabel(page) {
+  return t(has('tab.' + page) ? 'tab.' + page : 'nav.' + page);
+}
+
+function routeBase(page) {
+  var hub = HUB_OF[page];
+  if (!hub) return page;
+  var slug = HUBS[hub].tabs.filter(function (tab) { return tab[0] === page; })[0][1];
+  return hub + (slug ? '/' + slug : '');
+}
+
 function hashFor(page, id, query) {
-  return '#/' + sectionOf(page) + '/' + page + (id ? '/' + encodeURIComponent(id) : '') + qs(query || {});
+  return '#/' + sectionOf(page) + '/' + routeBase(page) + (id ? '/' + encodeURIComponent(id) : '') + qs(query || {});
 }
 
 function go(page, id, query) {
@@ -19509,6 +19575,13 @@ function legacyHash(hash) {
   return m && PS_LEGACY[m[1]] ? '#/' + PS_ROUTE + '/' + PS_LEGACY[m[1]] + m[2] : null;
 }
 
+function hubLegacyHash(hash) {
+  var m = /^#\/(economy|publication)\/([^/?]+)(.*)$/.exec(hash || '');
+  if (!m || !HUB_OF[m[2]] || SECTIONS[m[1]].indexOf(m[2]) === -1) return null;
+  var base = routeBase(m[2]);
+  return base === m[2] ? null : '#/' + m[1] + '/' + base + m[3];
+}
+
 function trapApp() {
   var proto = Element.prototype;
   if (Object.getOwnPropertyDescriptor(proto, '__vue_app__')) return;
@@ -19535,10 +19608,18 @@ function parseRoute(hash) {
   var m = /^#\/(economy|publication|moderation|support|system|project-settings)(?:\/([^/?]*))?(?:\/([^?]*))?(?:\?(.*))?$/.exec(hash === undefined ? location.hash : hash);
   if (!m) return null;
   var section = m[1];
+  var rest = m[3] || '';
   var page;
   if (section === PS_ROUTE) page = psSection(m[2]) ? m[2] : null;
   else {
     page = m[2] || SECTIONS[section][0];
+    var hub = HUBS[page] && HUBS[page].section === section ? HUBS[page] : null;
+    if (hub) {
+      page = hub.tabs[0][0];
+      var seg = rest ? rest.split('/')[0] : '';
+      var tab = seg ? hub.tabs.filter(function (x) { return x[1] && x[1] === seg; })[0] : null;
+      if (tab) { page = tab[0]; rest = rest.slice(seg.length + 1); }
+    }
     if (SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   }
   var query = {};
@@ -19549,7 +19630,7 @@ function parseRoute(hash) {
     var v = i === -1 ? '' : decodeURIComponent(pair.slice(i + 1).replace(/\+/g, ' '));
     query[k] = v;
   });
-  return { section: section, page: page, id: m[3] ? decodeURIComponent(m[3]) : null, query: query };
+  return { section: section, page: page, id: rest ? decodeURIComponent(rest) : null, query: query };
 }
 
 function keyOf(r) {
@@ -19558,20 +19639,88 @@ function keyOf(r) {
   return lang() + '|' + r.page + detail + '|' + JSON.stringify(r.query);
 }
 
-function navPages(section) {
-  return SECTIONS[section].filter(function (p) { var need = PAGE_ACL[p] || SECTION_ACL[section]; return !need || aclCan(need, 0); });
+function navEntryVisible(p) {
+  return HUBS[p] ? hubTabs(p).length > 0 : pageAllowed(p);
+}
+
+function navLayout(section) {
+  var out = [];
+  (NAV[section] || []).forEach(function (entry) {
+    if (typeof entry === 'string') { if (navEntryVisible(entry)) out.push({ page: entry }); return; }
+    var items = entry.items.filter(navEntryVisible);
+    if (items.length) out.push({ group: entry.id, label: t('navg.' + entry.id), items: items });
+  });
+  return out;
+}
+
+function navGroupOf(section, page) {
+  var hub = HUB_OF[page] && HUBS[HUB_OF[page]].section === section ? HUB_OF[page] : page;
+  var hit = (NAV[section] || []).filter(function (e) { return typeof e !== 'string' && e.items.indexOf(hub) !== -1; })[0];
+  return hit ? hit.id : null;
+}
+
+var NAV_GROUPS_KEY = 'nakama-console:nav-groups';
+
+function navGroupState() {
+  try {
+    var v = JSON.parse(localStorage.getItem(NAV_GROUPS_KEY) || '{}');
+    return v && typeof v === 'object' ? v : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function navGroupOpen(section, group) {
+  return navGroupState()[section + '/' + group] !== false;
+}
+
+function setNavGroupOpen(section, group, open) {
+  var st = navGroupState();
+  if (open) delete st[section + '/' + group];
+  else st[section + '/' + group] = false;
+  try { localStorage.setItem(NAV_GROUPS_KEY, JSON.stringify(st)); } catch (e) { st = null; }
+}
+
+function navTarget(p, active) {
+  if (!HUBS[p]) return { page: p, on: p === active };
+  var tabs = hubTabs(p);
+  if (tabs.indexOf(active) !== -1) return { page: active, on: true };
+  return { page: tabs.indexOf(hubLast[p]) !== -1 ? hubLast[p] : tabs[0], on: false };
+}
+
+function navIcon(p, cls) {
+  return icon(HUBS[p] ? HUBS[p].tabs[0][0] : p, cls);
+}
+
+function navLabel(p) {
+  return t('nav.' + p);
+}
+
+function navLink(p, collapsed, active, group, groupLabel) {
+  var target = navTarget(p, active);
+  var a = h('a', { href: hashFor(target.page, null, target.on ? null : lastQuery[target.page]), class: (target.on ? NAV_ACTIVE + ' ' : '') + NAV_LINK, 'aria-current': target.on ? 'page' : null, title: collapsed ? navLabel(p) : null, 'data-economy-page': p, 'data-economy-group': group || null, 'data-economy-group-label': groupLabel || null });
+  a.appendChild(collapsed ? h('div', { class: 'x-tooltip flex' }, navIcon(p, 'h-4 w-4')) : navIcon(p, 'h-4 w-4'));
+  a.appendChild(h('div', { class: 'font-medium relative truncate' + (collapsed ? '' : ' flex-1') }, h('span', { text: collapsed ? ' ' : navLabel(p) })));
+  var badge = navBadge(p, collapsed);
+  if (badge) a.appendChild(badge);
+  return h('li', {}, a);
 }
 
 function buildNav(section, collapsed, active) {
   var ul = h('ul', { class: 'space-y-0.5' });
-  navPages(section).forEach(function (p) {
-    var on = p === active;
-    var a = h('a', { href: hashFor(p, null, p === active ? null : lastQuery[p]), class: (on ? NAV_ACTIVE + ' ' : '') + NAV_LINK, 'aria-current': on ? 'page' : null, title: collapsed ? t('nav.' + p) : null, 'data-economy-page': p });
-    a.appendChild(collapsed ? h('div', { class: 'x-tooltip flex' }, icon(p, 'h-4 w-4')) : icon(p, 'h-4 w-4'));
-    a.appendChild(h('div', { class: 'font-medium relative truncate' + (collapsed ? '' : ' flex-1') }, h('span', { text: collapsed ? ' ' : t('nav.' + p) })));
-    var badge = navBadge(p, collapsed);
-    if (badge) a.appendChild(badge);
-    ul.appendChild(h('li', {}, a));
+  navLayout(section).forEach(function (entry) {
+    if (entry.page) { ul.appendChild(navLink(entry.page, collapsed, active)); return; }
+    var open = collapsed || navGroupOpen(section, entry.group);
+    var body = h('ul', { class: 'space-y-0.5', id: 'eco-nav-' + section + '-' + entry.group, hidden: open ? null : '' });
+    entry.items.forEach(function (p) { body.appendChild(navLink(p, collapsed, active, entry.group, entry.label)); });
+    var head = collapsed ? null : h('button', { type: 'button', class: 'eco-nav-group', 'aria-expanded': open ? 'true' : 'false', 'aria-controls': body.id, 'data-economy-group-toggle': entry.group,
+      onclick: function () {
+        var next = head.getAttribute('aria-expanded') !== 'true';
+        setNavGroupOpen(section, entry.group, next);
+        head.setAttribute('aria-expanded', next ? 'true' : 'false');
+        body.hidden = !next;
+      } }, icon('chevron', 'h-3 w-3 eco-nav-caret'), h('span', { class: 'truncate', text: entry.label }));
+    ul.appendChild(h('li', { 'data-economy-group': entry.group, class: collapsed ? null : 'eco-nav-grp' }, head, body));
   });
   var title = SECTION_LABEL[section];
   return h('div', { 'data-economy-nav': section, 'data-l10n-skip': '', class: section === SECTION_ORDER[0] ? null : 'eco-nav-next' },
@@ -19615,10 +19764,10 @@ function syncSidebar(route, psOn) {
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
     var collapsed = isCollapsed(a);
-    var key = lang() + '|' + collapsed + '|' + active + '|' + pendingComments + '|' + pendingReports + '|' + supportBadgeKey() + '|' + updatesBadge() + '|' + JSON.stringify(lastQuery) + '|' + token();
+    var key = lang() + '|' + collapsed + '|' + active + '|' + JSON.stringify(navGroupState()) + '|' + JSON.stringify(hubLast) + '|' + pendingComments + '|' + pendingReports + '|' + supportBadgeKey() + '|' + updatesBadge() + '|' + JSON.stringify(lastQuery) + '|' + token();
     var prev = group;
     for (var si = 0; si < SECTION_ORDER.length; si++) {
-      if (!navPages(SECTION_ORDER[si]).length) continue;
+      if (!navLayout(SECTION_ORDER[si]).length) continue;
       prev = placeNav(prev, SECTION_ORDER[si], collapsed, active, key);
       keep.push(prev);
     }
@@ -19655,10 +19804,28 @@ function unmount() {
   rendered = null;
 }
 
+function hubStrip(page) {
+  var hub = HUB_OF[page];
+  var tabs = hubTabs(hub);
+  if (tabs.length < 2) return null;
+  var nav = h('nav', { class: 'eco-tabs', 'aria-label': navLabel(hub), 'data-economy-tabs': hub });
+  tabs.forEach(function (tab) {
+    var on = tab === page;
+    nav.appendChild(h('a', { href: hashFor(tab, null, on ? null : lastQuery[tab]), class: 'eco-tab', 'aria-current': on ? 'page' : null, 'data-economy-tab': tab },
+      icon(tab, 'h-4 w-4'), h('span', { text: tabLabel(tab) })));
+  });
+  return { label: navLabel(hub), el: nav };
+}
+
 function mountPage(root, route, ctl) {
   var ps2 = psSection(route.page);
   var ctx = { id: route.id, query: route.query };
   if (ps2) { ctl.list = ps2.render(root, route, ctx) || null; return; }
+  frameHub = HUB_OF[route.page] && (!route.id || RESOURCES[route.page]) ? hubStrip(route.page) : null;
+  try { mountRoute(root, route, ctl, ctx); } finally { frameHub = null; }
+}
+
+function mountRoute(root, route, ctl, ctx) {
   if (route.page === 'comments') refreshBadge(true);
   if (route.page === 'reports') refreshReportBadge(true);
   if (route.page === 'player-reports') refreshPlayerReportBadge(true);
@@ -19717,7 +19884,7 @@ function sync() {
   maybeClaimSetup();
   nativeTweaks();
   var hash = location.hash;
-  var moved = legacyHash(hash);
+  var moved = legacyHash(hash) || hubLegacyHash(hash);
   if (moved) {
     hash = moved;
     if (router) router.replace(moved.slice(1));
@@ -19741,6 +19908,12 @@ function sync() {
     return;
   }
   if (ps) psHide();
+  if (route && route.page !== navOpenedFor) {
+    navOpenedFor = route.page;
+    var grp = navGroupOf(route.section, route.page);
+    if (grp && !navGroupOpen(route.section, grp)) setNavGroupOpen(route.section, grp, true);
+    if (HUB_OF[route.page]) hubLast[HUB_OF[route.page]] = route.page;
+  }
   psRemember(hash || '#/');
   syncSidebar(route, false);
   dockPsButton();
@@ -19819,6 +19992,7 @@ function dockTheme() {
 
 document.documentElement.classList.toggle('dark', storedTheme() === 'dark');
 
+var navOpenedFor = null;
 var scheduled = false;
 function schedule() {
   if (scheduled) return;
@@ -19857,14 +20031,32 @@ function fireRoute(to, from) {
   }
 }
 
+function pageBadge(p) {
+  return p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : p === 'player-reports' ? pendingPlayerReports || 0 : p === 'updates' ? updatesBadge() : supportBadge(p);
+}
+
 function consoleSections() {
-  return SECTION_ORDER.filter(function (sec) { return navPages(sec).length > 0; }).map(function (sec) {
-    return {
-      id: sec,
-      label: t(SECTION_LABEL[sec]),
-      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : p === 'player-reports' ? pendingPlayerReports || 0 : p === 'updates' ? updatesBadge() : supportBadge(p) }; })
-    };
+  return SECTION_ORDER.filter(function (sec) { return navLayout(sec).length > 0; }).map(function (sec) {
+    var pages = [];
+    navLayout(sec).forEach(function (entry) {
+      (entry.page ? [entry.page] : entry.items).forEach(function (p) {
+        var tabs = HUBS[p] ? hubTabs(p) : null;
+        pages.push({ id: p, href: hashFor(tabs ? tabs[0] : p), label: navLabel(p), group: entry.group || null, groupLabel: entry.label || null, badge: pageBadge(p),
+          tabs: tabs ? tabs.map(function (tab) { return { id: tab, href: hashFor(tab), label: tabLabel(tab) }; }) : null });
+      });
+    });
+    return { id: sec, label: t(SECTION_LABEL[sec]), pages: pages };
   });
+}
+
+function consoleTabs() {
+  var out = [];
+  Object.keys(HUBS).forEach(function (hub) {
+    var tabs = hubTabs(hub);
+    if (!tabs.length) return;
+    out.push({ id: hub, href: '#/' + HUBS[hub].section + '/' + hub, label: navLabel(hub), tabs: tabs.map(function (tab) { return { id: tab, href: hashFor(tab), label: tabLabel(tab), first: tab === HUBS[hub].tabs[0][0] }; }) });
+  });
+  return out;
 }
 
 window.NakamaConsole = {
@@ -19873,6 +20065,11 @@ window.NakamaConsole = {
   lang: function () { return lang(); },
   t: function (key, vars) { return t(key, vars); },
   sections: consoleSections,
+  pageTabs: consoleTabs,
+  navGroups: {
+    isOpen: function (section, group) { return navGroupOpen(section, group); },
+    set: function (section, group, open) { setNavGroupOpen(section, group, !!open); schedule(); }
+  },
   badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0, playerReports: pendingPlayerReports || 0, tickets: supportBadge('tickets'), chats: supportBadge('live-chat'), updates: updatesBadge() }; },
   updates: function () { var s = UPDATES.summary; return s ? { newCommits: updatesBadge(), status: s.status, latestRelease: s.latestRelease || '', href: hashFor('updates') } : null; },
   onRoute: function (fn) {

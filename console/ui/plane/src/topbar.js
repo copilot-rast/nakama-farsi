@@ -24,7 +24,11 @@ function crumbsFor(bar) {
   var out = [];
   if (info && info.group && info.group.id !== 'settings') out.push({ label: info.group.label, href: null });
   if (nat.length >= 2) return out.concat(nat);
-  if (info) out.push({ label: info.link.label, href: null });
+  var tab = info ? tabInfo() : null;
+  if (tab && !(tab.tab.first && tab.tab.label === tab.hub.label)) {
+    out.push({ label: tab.hub.label, href: tab.hub.tabs[0].href });
+    out.push({ label: tab.tab.label, href: null });
+  } else if (info) out.push({ label: info.link.label, href: null });
   else if (nat.length) out = out.concat(nat);
   return out;
 }
@@ -56,6 +60,10 @@ function segIndicator(seg) {
 
 function paintTabs(box, info) {
   var g = info && info.group && (info.group.id === 'economy' || info.group.id === 'publication' || info.group.id === 'moderation' || info.group.id === 'support') ? info.group : null;
+  if (g) {
+    var sib = g.links.filter(function (l) { return (l.group || '') === (info.link.group || ''); });
+    g = sib.length > 1 ? { id: g.id, label: info.link.groupLabel || g.label, links: sib } : null;
+  }
   var key = g ? g.id + '|' + JSON.stringify(g.links.map(function (l) { return [l.href, l.label, l.badge]; })) + '|' + info.link.href : '';
   if (box.getAttribute('data-key') === key) { if (g) segIndicator(box); return; }
   var first = !box.getAttribute('data-key') || box.getAttribute('data-group') !== (g && g.id);
@@ -67,7 +75,7 @@ function paintTabs(box, info) {
   box.setAttribute('aria-label', g.label);
   box.appendChild(el('span', { class: 'pl-seg-ind', 'aria-hidden': 'true' }));
   g.links.forEach(function (l) {
-    var a = el('a', { href: l.href, class: 'pl-seg-item', 'aria-current': l === info.link ? 'page' : null }, el('span', { text: l.label }));
+    var a = el('a', { href: l.href, class: 'pl-seg-item', 'aria-current': l.href === info.link.href ? 'page' : null }, el('span', { text: l.label }));
     if (l.badge) a.appendChild(el('em', { class: 'pl-seg-count', text: plNum(l.badge) }));
     box.appendChild(a);
   });

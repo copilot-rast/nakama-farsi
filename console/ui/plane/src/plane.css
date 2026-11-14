@@ -276,6 +276,68 @@ html.pl .pl-tb-end .pl-search {
   padding-top: 16px;
 }
 
+.pl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: none;
+  padding-top: 6px;
+}
+
+.pl-group-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+  transition: background-color var(--d1) var(--ease), color var(--d1) var(--ease);
+}
+
+.pl-group-head:hover {
+  background: var(--hover);
+  color: var(--ink-1);
+}
+
+.pl-group-head:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.pl-group-label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pl-group-caret {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  transition: transform var(--d2) var(--ease);
+}
+
+.pl-group-head[aria-expanded="false"] .pl-group-caret {
+  transform: rotate(calc(var(--dir) * -90deg));
+}
+
+.pl-group-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pl-group-body[hidden] {
+  display: none;
+}
+
 .pl-nav {
   display: flex;
   align-items: center;
@@ -389,6 +451,10 @@ html.pl.pl-auth .pl-side {
 
   .pl-nav {
     min-height: 40px;
+  }
+
+  .pl-group-head {
+    min-height: 36px;
   }
 
   html.pl.pl-sheet-open .pl-rail,

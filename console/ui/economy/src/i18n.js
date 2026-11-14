@@ -3360,7 +3360,18 @@ var MESSAGES = {
     'code.INVALID_GITHUB_TOKEN': "این توکن شکل درستی ندارد.",
     'code.SECRET_KEY_MISSING': "ECONOMY_SECRET_KEY روی سرور نیست، پس توکن ذخیره نمی‌شود.",
     'code.UPDATES_OFF': "بررسی خودکار خاموش است.",
-    'code.TOO_MANY_CHECKS': "چند بار پشت هم بررسی کردی. چند دقیقهٔ دیگر دوباره امتحان کن."
+    'code.TOO_MANY_CHECKS': "چند بار پشت هم بررسی کردی. چند دقیقهٔ دیگر دوباره امتحان کن.",
+    'nav.events': 'رویدادها',
+    'tab.event-log': 'گزارش',
+    'navg.progress': 'ارز و پیشرفت',
+    'navg.sales': 'فروش',
+    'navg.play': 'جایزه و بازی',
+    'navg.growth': 'رویداد و رشد',
+    'navg.content': 'محتوا',
+    'navg.ads': 'بنر و اسپانسر',
+    'navg.messages': 'پیام به بازیکن',
+    'navg.people': 'بازیکنان',
+    'navg.chat': 'گزارش و گفتگو'
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -6723,6 +6734,17 @@ var MESSAGES = {
     'code.INVALID_GITHUB_TOKEN': "This token does not look right.",
     'code.SECRET_KEY_MISSING': "ECONOMY_SECRET_KEY is not set on the server, so a token cannot be stored.",
     'code.UPDATES_OFF': "Automatic checks are off.",
-    'code.TOO_MANY_CHECKS': "Too many checks in a row. Try again in a few minutes."
+    'code.TOO_MANY_CHECKS': "Too many checks in a row. Try again in a few minutes.",
+    'nav.events': 'Events',
+    'tab.event-log': 'Report',
+    'navg.progress': 'Currency & progress',
+    'navg.sales': 'Sales',
+    'navg.play': 'Prizes & games',
+    'navg.growth': 'Events & growth',
+    'navg.content': 'Content',
+    'navg.ads': 'Banners & sponsors',
+    'navg.messages': 'Player messages',
+    'navg.people': 'Players',
+    'navg.chat': 'Reports & chat'
   }
 };

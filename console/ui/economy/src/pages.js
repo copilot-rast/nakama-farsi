@@ -9,6 +9,24 @@ var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
 var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
+var HUBS = {
+  metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['level-tables', 'levels']] },
+  tasks: { section: 'economy', tabs: [['tasks', ''], ['task-groups', 'groups']] },
+  prizes: { section: 'economy', tabs: [['prizes', ''], ['prize-groups', 'groups']] },
+  events: { section: 'economy', tabs: [['event-types', ''], ['event-rules', 'prizes'], ['event-log', 'report']] },
+  banners: { section: 'publication', tabs: [['banners', ''], ['banner-lists', 'placements']] },
+  notifications: { section: 'publication', tabs: [['notifications', ''], ['notify-categories', 'categories']] }
+};
+var NAV = {
+  economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'items', 'gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
+  publication: ['remote-config', { id: 'content', items: ['news', 'faqs', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }],
+  moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words'] }],
+  support: ['tickets', 'live-chat'],
+  system: ['updates']
+};
+var HUB_OF = {};
+Object.keys(HUBS).forEach(function (hub) { HUBS[hub].tabs.forEach(function (tab) { HUB_OF[tab[0]] = hub; }); });
+var hubLast = {};
 var LIMIT = 20;
 var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' }, 'player-reports': { status: 'active' }, tickets: { status: 'waiting' } };
 
@@ -28,8 +46,28 @@ function apiFor(page) {
   return sec === 'publication' ? pubApi : api;
 }
 
+function pageAllowed(page) {
+  var need = PAGE_ACL[page] || SECTION_ACL[sectionOf(page)];
+  return !need || aclCan(need, 0);
+}
+
+function hubTabs(hub) {
+  return HUBS[hub] ? HUBS[hub].tabs.map(function (tab) { return tab[0]; }).filter(pageAllowed) : [];
+}
+
+function tabLabel(page) {
+  return t(has('tab.' + page) ? 'tab.' + page : 'nav.' + page);
+}
+
+function routeBase(page) {
+  var hub = HUB_OF[page];
+  if (!hub) return page;
+  var slug = HUBS[hub].tabs.filter(function (tab) { return tab[0] === page; })[0][1];
+  return hub + (slug ? '/' + slug : '');
+}
+
 function hashFor(page, id, query) {
-  return '#/' + sectionOf(page) + '/' + page + (id ? '/' + encodeURIComponent(id) : '') + qs(query || {});
+  return '#/' + sectionOf(page) + '/' + routeBase(page) + (id ? '/' + encodeURIComponent(id) : '') + qs(query || {});
 }
 
 function go(page, id, query) {

@@ -148,7 +148,12 @@ function bar(width, extra) {
   return h('div', { class: 'animate-pulse bg-secondary-300 dark:bg-secondary-600 rounded-md eco-bar ' + (extra || 'h-3'), style: 'width:' + width });
 }
 
+var frameHub = null;
+
 function pageFrame(title, desc, actions) {
+  var hub = frameHub;
+  frameHub = null;
+  if (hub) title = hub.label;
   var content = h('div', { class: 'flex flex-col flex-1 min-w-0 px-4 md:px-6' });
   var actionsBox = h('div', { class: 'flex items-center gap-1.5 justify-end w-full sm:w-auto' }, actions || null);
   var frame = h('div', { class: 'flex flex-col flex-1' },
@@ -162,7 +167,8 @@ function pageFrame(title, desc, actions) {
                   h('h1', { class: 'text-xl font-semibold truncate max-w-xs md:max-w-sm xl:max-w-xl mr-2' }, h('span', { text: title }))),
                 desc ? h('div', { class: 'flex items-center gap-2' },
                   h('div', { class: 'text-secondary-500 -mt-0.5 space-x-2' }, h('span', { text: desc }))) : null))),
-          actionsBox)),
+          actionsBox),
+        hub ? hub.el : null),
       content));
   return { el: frame, content: content, actions: actionsBox };
 }
