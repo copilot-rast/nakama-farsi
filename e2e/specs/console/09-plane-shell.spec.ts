@@ -76,10 +76,10 @@ test.describe('plane shell: rail, sidebar and top bar', () => {
     }
   });
 
-  test('economy sidebar lists its 16 entries with their icons, current state and breadcrumbs', async ({ page }) => {
+  test('economy sidebar lists its 17 entries with their icons, current state and breadcrumbs', async ({ page }) => {
     await visit(page, '#/economy/products');
     const side = page.locator('.pl-side a.pl-nav');
-    await expect(side).toHaveCount(16);
+    await expect(side).toHaveCount(17);
     for (const [hash, label] of [['#/economy/tasks', 'تسک‌ها'], ['#/economy/items', 'آیتم‌ها'], ['#/economy/achievements', 'دستاوردها'], ['#/economy/chance-games', 'بازی شانس'], ['#/economy/prizes', 'جایزه‌ها'], ['#/economy/games', 'بازی‌ها'], ['#/economy/events', 'رویدادها']]) {
       const link = page.locator(`.pl-side a.pl-nav[href="${hash}"]`);
       await expect(link).toContainText(label);

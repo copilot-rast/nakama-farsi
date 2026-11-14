@@ -39,3 +39,4 @@ select 'automatic notification rules', count(*) from publication_auto_rule where
 select 'notification categories', count(*) from publication_notify_category where key like 'e2e%';
 select 'friend tiers', count(*) from base_friend_rule where name like 'e2e%';
 select 'offers', count(*) from economy_offer where key like 'e2e%';
+select 'friend gift rules', count(*) from economy_friend_gift_rule where name like 'e2e%';

@@ -1,4 +1,6 @@
 BEGIN;
+DELETE FROM economy_friend_gift WHERE product_id IN (SELECT id FROM economy_product WHERE key LIKE 'e2e%') OR item_id IN (SELECT id FROM economy_item WHERE key LIKE 'e2e%') OR prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%') OR currency_key LIKE 'e2e%';
+DELETE FROM economy_friend_gift_rule WHERE name LIKE 'e2e%';
 DELETE FROM economy_reward_claim WHERE kind='relation' AND owner_id IN (SELECT id FROM economy_meta_relation WHERE key LIKE 'e2e%' OR meta_id IN (SELECT id FROM economy_meta WHERE key LIKE 'e2e%') OR prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%') OR prize_group_id IN (SELECT id FROM economy_prize_group WHERE key LIKE 'e2e%'));
 DELETE FROM economy_meta_relation WHERE key LIKE 'e2e%' OR meta_id IN (SELECT id FROM economy_meta WHERE key LIKE 'e2e%') OR targets::text ~ ANY(ARRAY(SELECT id::text FROM economy_meta WHERE key LIKE 'e2e%')) OR prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%') OR prize_group_id IN (SELECT id FROM economy_prize_group WHERE key LIKE 'e2e%');
 DELETE FROM economy_game_match WHERE game_key LIKE 'e2e%';
