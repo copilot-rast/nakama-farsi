@@ -20,3 +20,4 @@ select 'H-updset', md5(coalesce(string_agg(enabled::text||provider||repo||'/'||b
 select 'H-frules', md5(coalesce(string_agg(daily_requests||'/'||max_friends||'/'||expiry_days||'/'||reject_cooldown_hours||requests_bonus_meta||'/'||friends_bonus_meta||match_policy||over_limit, '|'),'')) from base_friend_rules;
 select 'H-vset', md5(coalesce(string_agg(enabled::text||provider||config::text||secrets_sealed||ttl_seconds||open_rooms::text||can_publish::text||allowed_tag_ids::text||listen_only_tag_ids::text||tokens_per_minute||'/'||max_room_players, '|'),'')) from base_voice_settings;
 select 'H-rrules', md5(coalesce(string_agg(per_hour||'/'||duplicate_hours||'/'||min_account_hours||note_required::text||trusted_tag_ids::text||trusted_per_hour, '|'),'')) from base_report_rules;
+select 'H-offset', md5(coalesce(string_agg(settings::text, '|'),'')) from economy_offer_settings;

@@ -31,6 +31,7 @@ DELETE FROM economy_streak_reward WHERE prize_id IN (SELECT id FROM economy_priz
 DELETE FROM economy_streak_milestone WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%');
 DELETE FROM economy_event_type WHERE key LIKE 'e2e%';
 DELETE FROM economy_gift WHERE code LIKE 'E2E%' OR name::text LIKE '%e2e\_%';
+DELETE FROM economy_offer WHERE key LIKE 'e2e%' OR product_id IN (SELECT id FROM economy_product WHERE key LIKE 'e2e%');
 DELETE FROM economy_product WHERE key LIKE 'e2e%';
 DELETE FROM economy_gift WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%');
 DELETE FROM economy_user_prize WHERE prize_id IN (SELECT id FROM economy_prize WHERE key LIKE 'e2e%');
