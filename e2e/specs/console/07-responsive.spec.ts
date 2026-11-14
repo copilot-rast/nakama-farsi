@@ -44,6 +44,7 @@ const PAGES = [
   '#/project-settings/setup',
   '#/project-settings/countries',
   '#/project-settings/accounts',
+  '#/project-settings/friends',
   '#/project-settings/otp',
   '#/project-settings/app-versions',
   '#/project-settings/app-versions/new',

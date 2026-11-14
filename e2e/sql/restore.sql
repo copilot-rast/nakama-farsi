@@ -54,4 +54,6 @@ DELETE FROM base_updates_settings;
 INSERT INTO base_updates_settings SELECT * FROM zz_e2e_backup.updset;
 DELETE FROM base_updates_state;
 INSERT INTO base_updates_state SELECT * FROM zz_e2e_backup.updstate;
+DELETE FROM base_friend_rules;
+INSERT INTO base_friend_rules SELECT * FROM zz_e2e_backup.frules;
 COMMIT;

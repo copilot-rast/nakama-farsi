@@ -18,6 +18,7 @@ const SECTIONS: [string, string, string][] = [
   ['languages', 'زبان‌ها', 'table.eco-table'],
   ['countries', 'کشورها', 'table.eco-table'],
   ['accounts', 'قوانین حساب', '[data-settings-form="accounts"] form'],
+  ['friends', 'قوانین دوستی', '[data-settings-form="friends"] form'],
   ['otp', 'ورود با پیامک', '[data-settings-form="otp"] form'],
   ['app-versions', 'نسخه‌های برنامه', 'table.eco-table'],
   ['categories', 'دسته‌بندی‌ها', 'table.eco-table'],

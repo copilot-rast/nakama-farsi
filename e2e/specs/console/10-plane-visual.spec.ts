@@ -184,7 +184,7 @@ const OURS: Record<string, string[]> = {
   publication: ['#/publication/faqs', '#/publication/news', '#/publication/banners', '#/publication/banner-lists', '#/publication/banners/new', '#/publication/sponsors', '#/publication/sponsors/new', '#/publication/auto-rules', '#/publication/auto-rules/new', '#/publication/notify-categories', '#/publication/comments', '#/publication/notifications', '#/publication/notifications/new'],
   moderation: ['#/moderation/players', '#/moderation/reports', '#/moderation/restrictions', '#/moderation/chat-words', '#/moderation/chat-words/new'],
   system: ['#/system/updates'],
-  settings: ['#/project-settings/brand', '#/project-settings/setup', '#/project-settings/languages', '#/project-settings/countries', '#/project-settings/accounts', '#/project-settings/otp', '#/project-settings/app-versions', '#/project-settings/categories', '#/project-settings/tags', '#/project-settings/report-titles', '#/project-settings/events', '#/project-settings/payment-methods', '#/project-settings/sms', '#/project-settings/email', '#/project-settings/updates-source'],
+  settings: ['#/project-settings/brand', '#/project-settings/setup', '#/project-settings/languages', '#/project-settings/countries', '#/project-settings/accounts', '#/project-settings/friends', '#/project-settings/otp', '#/project-settings/app-versions', '#/project-settings/categories', '#/project-settings/tags', '#/project-settings/report-titles', '#/project-settings/events', '#/project-settings/payment-methods', '#/project-settings/sms', '#/project-settings/email', '#/project-settings/updates-source'],
 };
 
 test.describe('plane visual: our pages', () => {

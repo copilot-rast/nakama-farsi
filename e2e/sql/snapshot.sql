@@ -17,3 +17,4 @@ select 'H-canned', md5(coalesce(string_agg(id::text||key||title::text||body::tex
 select 'H-cfgkey', md5(coalesce(string_agg(id::text||key||type||description||value::text||rules::text||is_active::text||version::text, '|' order by id),'')) from base_config_key;
 select 'H-refset', md5(coalesce(string_agg(is_enabled::text||new_account_days||'/'||coalesce(referrer_prize_id::text,'')||coalesce(referee_prize_id::text,'')||coalesce(goal_event_type_id::text,'')||goal_measure||goal_value::text||max_per_referrer||'/'||daily_per_referrer||one_per_device::text||one_per_phone::text||hold_flagged::text, '|'),'')) from economy_referral_settings;
 select 'H-updset', md5(coalesce(string_agg(enabled::text||provider||repo||'/'||branch||interval_hours::text||token_sealed, '|'),'')) from base_updates_settings;
+select 'H-frules', md5(coalesce(string_agg(daily_requests||'/'||max_friends||'/'||expiry_days||'/'||reject_cooldown_hours, '|'),'')) from base_friend_rules;
