@@ -20,6 +20,7 @@ select 'event types', count(*) from economy_event_type where key like 'e2e%';
 select 'event rules', count(*) from economy_event_rule where key like 'e2e%';
 select 'meta rules', count(*) from economy_meta_rule where key like 'e2e%';
 select 'level tables', count(*) from economy_level_table where key like 'e2e%';
+select 'meta relations', count(*) from economy_meta_relation where key like 'e2e%';
 select 'streaks', count(*) from economy_streak where key like 'e2e%';
 select 'tasks', count(*) from economy_task where key like 'e2e%';
 select 'task groups', count(*) from economy_task_group where key like 'e2e%';

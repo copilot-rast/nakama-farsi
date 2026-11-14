@@ -14,6 +14,7 @@ const PAGES = [
   '#/economy/event-types',
   '#/economy/event-rules',
   '#/economy/meta-rules',
+  '#/economy/meta-relations',
   '#/economy/level-tables',
   '#/economy/streaks',
   '#/economy/tasks',

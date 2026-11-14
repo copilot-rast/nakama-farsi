@@ -6,6 +6,7 @@ const GROUPS = 'nakama-console:nav-groups';
 const REDIRECTS: [string, string, string][] = [
   ['#/economy/meta-rules', '#/economy/metas/rules', 'meta-rules'],
   ['#/economy/level-tables', '#/economy/metas/levels', 'level-tables'],
+  ['#/economy/meta-relations', '#/economy/metas/relations', 'meta-relations'],
   ['#/economy/task-groups', '#/economy/tasks/groups', 'task-groups'],
   ['#/economy/prize-groups', '#/economy/prizes/groups', 'prize-groups'],
   ['#/economy/event-types', '#/economy/events', 'event-types'],
