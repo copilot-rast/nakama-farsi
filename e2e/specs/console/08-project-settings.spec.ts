@@ -28,6 +28,7 @@ const SECTIONS: [string, string, string][] = [
   ['sms', 'پیامک', '[data-channel="sms"]'],
   ['email', 'ایمیل', '[data-channel="email"]'],
   ['push', 'پوش', '[data-channel="push"]'],
+  ['voice', 'سرور ویس', '[data-settings-form="voice"] form'],
   ['updates-source', 'ریپوی بالایی', '[data-settings-form="updates-source"] form'],
 ];
 

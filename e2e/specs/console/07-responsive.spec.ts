@@ -55,6 +55,7 @@ const PAGES = [
   '#/moderation/restrictions',
   '#/moderation/chat-words',
   '#/system/updates',
+  '#/project-settings/voice',
   '#/project-settings/updates-source',
 ];
 
