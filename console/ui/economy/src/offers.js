@@ -544,4 +544,3 @@ function playerOffersCard() {
   place();
 }
 
-OVERVIEW_CATALOG.push('offers');

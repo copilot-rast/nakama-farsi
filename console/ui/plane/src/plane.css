@@ -576,32 +576,6 @@ html.pl.pl-auth #app .sm\:w-\[512px\] :is(input.appearance-none, input) {
   border-radius: 6px;
 }
 
-html.pl .setup-header,
-html.pl .setup-nav,
-html.pl .setup-footer {
-  margin: 0 !important;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  background: var(--surface);
-}
-
-html.pl .setup-header,
-html.pl .setup-nav {
-  border-bottom: 1px solid var(--line);
-}
-
-html.pl .setup-footer {
-  border-top: 1px solid var(--line);
-}
-
-html.pl .setup-inner {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  box-shadow: none;
-  background: var(--surface);
-}
-
 .pl-attn {
   margin-block: 16px;
   border: 1px solid var(--line);

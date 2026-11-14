@@ -121,8 +121,6 @@ RESOURCES.items = {
   afterSave: function () { forgetRefs('items'); }
 };
 
-OVERVIEW_CATALOG.push('items');
-
 (function productRules() {
   var def = RESOURCES.products;
   var at = -1;

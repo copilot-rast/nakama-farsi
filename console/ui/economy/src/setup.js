@@ -57,22 +57,25 @@ function focusables(root) {
 function openWizard(state, auto, step) {
   if (wiz) { goStep(step || wiz.step); return; }
   var dir = document.documentElement.getAttribute('dir') || 'ltr';
-  var bar = h('ol', { class: 'setup-steps', 'aria-label': t('setup.steps') });
-  var body = h('div', { class: 'setup-body' });
+  var bar = h('ol', { class: 'setup-steps' });
+  var meter = h('div', { class: 'setup-meter' });
+  var body = h('div', { class: 'setup-main' });
   var footer = h('div', { class: 'setup-footer' });
-  var later = button({ variant: 'ghost', size: 'sm', label: t('setup.later'), onclick: function () { closeWizard(true); } });
+  var later = button({ variant: 'ghost', size: 'sm', icon: 'history', label: t('setup.later'), title: t('setup.later.hint'), onclick: function () { closeWizard(true); } });
   later.setAttribute('data-setup-later', '');
+  later.removeAttribute('aria-label');
   var title = h('div', { class: 'setup-title' },
     h('div', { class: 'setup-title-mark' }, icon('flask', 'h-5 w-5')),
     h('div', { class: 'min-w-0' },
-      h('h1', { id: 'setup-title', class: 'text-lg font-semibold truncate', text: t('setup.title') }),
-      h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 truncate', text: t('setup.subtitle') })));
+      h('h1', { id: 'setup-title', text: t('setup.title') }),
+      h('p', { text: t('setup.subtitle') })));
+  var side = h('aside', { class: 'setup-side' },
+    h('div', { class: 'setup-side-top' }, title, h('div', { class: 'setup-side-later' }, later)),
+    meter,
+    h('nav', { class: 'setup-nav', 'aria-label': t('setup.steps') }, bar));
   var el = h('div', { class: 'setup-overlay', 'data-economy': 'setup', 'data-l10n-skip': '', dir: dir, role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'setup-title' },
-    h('header', { class: 'setup-header' }, title, later),
-    h('nav', { class: 'setup-nav', 'aria-label': t('setup.steps') }, bar),
-    h('main', { class: 'setup-main' }, h('div', { class: 'setup-inner' }, body)),
-    footer);
-  wiz = { el: el, state: state, step: null, ctl: null, bar: bar, body: body, footer: footer, prevFocus: document.activeElement, auto: !!auto };
+    h('div', { class: 'setup-window' }, side, h('div', { class: 'setup-pane' }, body, footer)));
+  wiz = { el: el, state: state, step: null, ctl: null, bar: bar, meter: meter, body: body, footer: footer, prevFocus: document.activeElement, auto: !!auto };
   document.addEventListener('keydown', trapKeys, true);
   document.addEventListener('keydown', wizardEsc);
   document.documentElement.classList.add('setup-open');
@@ -139,22 +142,41 @@ function closeWizard(later, done) {
   });
 }
 
+function stepState(k) {
+  return k === 'review' ? (wiz.state && wiz.state.status === 'completed' ? 'done' : 'pending') : setupStepStatus(wiz.state, k);
+}
+
 function paintBar() {
   if (!wiz) return;
   clear(wiz.bar);
   SETUP_ORDER.forEach(function (k, i) {
-    var st = k === 'review' ? (wiz.state && wiz.state.status === 'completed' ? 'done' : 'pending') : setupStepStatus(wiz.state, k);
+    var st = stepState(k);
     var on = wiz.step === k;
-    var mark = st === 'done' ? icon('check', 'h-3.5 w-3.5') : st === 'skipped' ? h('span', { text: '–' }) : h('span', { text: localDigits(i + 1) });
+    var mark = st === 'done' ? icon('check', 'h-3.5 w-3.5') : h('span', { text: localDigits(i + 1) });
     var b = h('button', { type: 'button', class: 'setup-step setup-step--' + st + (on ? ' setup-step--on' : ''), 'data-step': k, 'aria-current': on ? 'step' : null,
       'aria-label': localDigits(i + 1) + '. ' + t('setup.step.' + k) + ' (' + t('setup.st.' + st) + ')',
       onclick: function () { goStep(k); } },
       h('span', { class: 'setup-step-num', 'aria-hidden': 'true' }, mark),
-      h('span', { class: 'setup-step-label', text: t('setup.step.' + k) }));
+      h('span', { class: 'setup-step-text', 'aria-hidden': 'true' },
+        h('span', { class: 'setup-step-label', text: t('setup.step.' + k) }),
+        k === 'review' ? null : h('span', { class: 'setup-step-state', text: t('setup.st.' + st) })));
     wiz.bar.appendChild(h('li', {}, b));
   });
+  var steps = SETUP_ORDER.slice(0, -1);
+  var finished = steps.filter(function (k) { return setupStepStatus(wiz.state, k) !== 'pending'; }).length;
+  var i = Math.max(0, SETUP_ORDER.indexOf(wiz.step));
+  clear(wiz.meter).appendChild(h('div', { class: 'setup-meter-text' },
+    h('b', { 'data-setup-of': '', text: t('setup.stepOf', { n: localDigits(i + 1), total: localDigits(SETUP_ORDER.length) }) }),
+    h('span', { class: 'tabular-nums', text: t('setup.progress', { n: localDigits(finished), total: localDigits(steps.length) }) })));
+  wiz.meter.appendChild(h('div', { class: 'setup-meter-track', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(steps.length), 'aria-valuenow': String(finished), 'aria-label': t('setup.progress', { n: localDigits(finished), total: localDigits(steps.length) }) },
+    h('div', { class: 'setup-meter-bar', style: 'width:' + Math.round(finished / steps.length * 100) + '%' })));
   var cur = wiz.bar.querySelector('.setup-step--on');
-  if (cur && cur.scrollIntoView) { try { cur.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {} }
+  var nav = wiz.bar.parentNode;
+  if (cur && nav && nav.scrollWidth > nav.clientWidth) {
+    var r = cur.getBoundingClientRect();
+    var nr = nav.getBoundingClientRect();
+    if (r.left < nr.left || r.right > nr.right) nav.scrollLeft += (r.left + r.width / 2) - (nr.left + nr.width / 2);
+  }
 }
 
 function goStep(k, force) {
@@ -181,25 +203,21 @@ function prevOf(k) {
 
 function renderStep(k) {
   var w = wiz;
-  var i = SETUP_ORDER.indexOf(k);
   var st = k === 'review' ? null : setupStepStatus(w.state, k);
   var content = h('div', { class: 'setup-content' });
   clear(w.body).appendChild(h('section', { class: 'setup-section', 'aria-labelledby': 'setup-step-title', 'data-setup-step': k },
-    h('div', { class: 'setup-section-head' },
+    h('div', { class: 'setup-head' },
       h('div', { class: 'setup-section-icon' }, icon(SETUP_ICONS[k], 'h-5 w-5')),
       h('div', { class: 'min-w-0 flex-1' },
-        h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('setup.stepOf', { n: localDigits(i + 1), total: localDigits(SETUP_ORDER.length) }) }),
-        h('h2', { id: 'setup-step-title', class: 'text-xl font-semibold', tabindex: '-1', text: t('setup.step.' + k + '.title') }),
-        h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300 mt-1', text: t('setup.step.' + k + '.desc') })),
-      st ? tag(t('setup.st.' + st), STEP_COLOR[st], 'shrink-0') : null),
-    content));
+        h('h2', { id: 'setup-step-title', tabindex: '-1', text: t('setup.step.' + k + '.title') }),
+        h('p', { text: t('setup.step.' + k + '.desc') })),
+      st && st !== 'pending' ? tag(t('setup.st.' + st), STEP_COLOR[st], 'shrink-0') : null),
+    h('div', { class: 'setup-body' }, content)));
   var ctl = STEP_BUILDERS[k](content, w);
   w.ctl = ctl;
   paintFooter(k, ctl);
   var hd = w.body.querySelector('#setup-step-title');
   if (hd) { try { hd.focus({ preventScroll: true }); } catch (e) { hd.focus(); } }
-  var main = w.el.querySelector('.setup-main');
-  if (main) main.scrollTop = 0;
 }
 
 function paintFooter(k, ctl) {
@@ -208,12 +226,14 @@ function paintFooter(k, ctl) {
   var first = k === SETUP_ORDER[0];
   var review = k === 'review';
   var back = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('setup.back'), disabled: first, onclick: function () { goStep(prevOf(k)); } });
-  var skip = review ? null : button({ variant: 'muted', size: 'sm', label: t('setup.skip'), onclick: function () {
+  back.setAttribute('data-setup-back', '');
+  back.removeAttribute('aria-label');
+  var skip = review ? null : button({ variant: 'ghost', size: 'sm', label: t('setup.skip'), onclick: function () {
     setBusy(skip, true);
     putSetup({ steps: stepPatch(k, 'skipped') }).then(function () { goStep(nextOf(k), true); }, function (err) { setBusy(skip, false); toast('error', errorText(err)); });
   } });
   if (skip) skip.setAttribute('data-setup-skip', '');
-  var primary = button({ variant: 'primary', size: 'sm', icon: review ? 'check' : null, label: review ? t('setup.finish') : t('setup.saveNext'), onclick: function () {
+  var primary = button({ variant: 'primary', size: 'sm', icon: review ? 'check' : null, label: review ? t('setup.finish') : k === SETUP_ORDER[SETUP_ORDER.length - 2] ? t('setup.saveReview') : t('setup.saveNext'), onclick: function () {
     setBusy(primary, true, t('saving'));
     Promise.resolve(ctl.save()).then(function (result) {
       if (!result || !wiz) { setBusy(primary, false); return; }
@@ -230,9 +250,8 @@ function paintFooter(k, ctl) {
     });
   } });
   primary.setAttribute('data-setup-next', '');
-  w.footer.appendChild(h('div', { class: 'setup-footer-inner' },
-    back,
-    h('div', { class: 'flex items-center gap-2' }, skip, primary)));
+  w.footer.appendChild(back);
+  w.footer.appendChild(h('div', { class: 'setup-footer-end' }, skip, primary));
 }
 
 function stepPatch(k, v) {
@@ -263,12 +282,12 @@ function failBox(container, err, retry) {
 
 function stepBrand(box) {
   var editor = null;
-  box.appendChild(card2(brandFormSkeleton()));
+  box.appendChild(brandFormSkeleton());
   function load() {
     Promise.all([baseApi('GET', '/brand'), freshLanguages()]).then(function (all) {
       if (!box.isConnected) return;
-      editor = brandEditor(all[0]);
-      clear(box).appendChild(card2(editor.el));
+      editor = brandEditor(all[0], { compact: true });
+      clear(box).appendChild(editor.el);
     }, function (err) { failBox(box, err, load); });
   }
   load();
@@ -342,30 +361,42 @@ function stepLanguages(box) {
   return { save: function () { return 'done'; }, dirty: function () { return false; } };
 }
 
-var SETUP_CURRENCY_FIELDS = [
+var SETUP_CURRENCY_MAIN = [
+  { name: 'name', type: 'i18n', label: 'f.name', required: true, max: 128 },
+  { name: 'defaultValue', type: 'number', label: 'setup.cur.defaultValue', hint: 'setup.cur.defaultValue.hint', min: 0 }
+];
+var SETUP_CURRENCY_MORE = [
   { type: 'row', fields: [
     { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, keyRe: CURRENCY_KEY_RE, lockOnEdit: true },
     { name: 'type', type: 'select', label: 'f.type', required: true, options: opts('type.', ['soft', 'hard']) }
   ] },
-  { name: 'name', type: 'i18n', label: 'f.name', required: true, max: 128 },
-  { name: 'defaultValue', type: 'number', label: 'setup.cur.defaultValue', hint: 'setup.cur.defaultValue.hint', min: 0 },
   { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true }
 ];
 
+function setupCurrencyDefaults() {
+  var name = {};
+  LANGS.codes.forEach(function (c) { if (c === 'fa') name.fa = 'سکه'; else if (c === 'en') name.en = 'Coins'; });
+  if (!Object.keys(name).length) name[LANGS.def] = LANGS.def === 'fa' ? 'سکه' : 'Coins';
+  return { key: 'coin', type: 'soft', name: name, defaultValue: 100, sort: 0, metadata: {} };
+}
+
 function stepCurrency(box) {
-  var form = null;
+  var forms = null;
   var current = null;
   var dirty = false;
   var items = [];
   var top = h('div', {});
-  box.appendChild(card2([bar('10rem', 'h-4 mb-3'), bar('100%', 'h-10 mb-5'), h('div', { class: 'eco-form-row' }, skeletonField(), skeletonField()), skeletonField('h-16'), skeletonField(), skeletonField('h-16')]));
+  box.appendChild(h('div', {}, skeletonField('h-16'), skeletonField(), bar('10rem', 'h-4')));
   function build(item) {
     current = item;
     dirty = false;
-    var values = clone(item) || { type: 'soft', name: {}, defaultValue: 0, sort: 0, metadata: {} };
-    form = buildForm(SETUP_CURRENCY_FIELDS, values, { onchange: function () { dirty = true; } });
+    var values = clone(item) || setupCurrencyDefaults();
+    var onchange = function () { dirty = true; };
+    var main = buildForm(SETUP_CURRENCY_MAIN, values, { onchange: onchange, editing: !!item });
+    var more = buildForm(SETUP_CURRENCY_MORE, values, { onchange: onchange, editing: !!item });
+    forms = [main, more];
     dirty = false;
-    return form.el;
+    return h('div', {}, main.el, setupMore(t('setup.cur.more.hint'), more.el));
   }
   function paint() {
     var formBox = h('div', {});
@@ -379,11 +410,10 @@ function stepCurrency(box) {
         clear(top);
       }, { label: t('setup.cur.pick'), placeholder: false });
     }
-    clear(box).appendChild(card2([
+    clear(box).appendChild(h('div', { class: 'setup-narrow' },
       pick ? field(t('setup.cur.pick'), pick, t('setup.cur.pick.hint')) : h('div', { class: 'mb-4' }, notice('info', t('setup.cur.none'))),
       top,
-      formBox
-    ]));
+      formBox));
     formBox.appendChild(build(current));
   }
   function load() {
@@ -397,10 +427,12 @@ function stepCurrency(box) {
   load();
   return {
     save: function () {
-      if (!form) return false;
+      if (!forms) return false;
       clear(top);
-      if (!form.validate()) return false;
-      var payload = form.payload();
+      var ok = forms.map(function (f) { return f.validate(); }).every(Boolean);
+      if (!ok) { revealInvalid(box); return false; }
+      var payload = {};
+      forms.forEach(function (f) { var p = f.payload(); Object.keys(p).forEach(function (k) { payload[k] = p[k]; }); });
       var body = current ? { key: current.key, type: current.type, name: current.name, defaultValue: current.defaultValue, iconUrl: current.iconUrl, categoryId: current.categoryId || null, tagIds: current.tagIds || [], metadata: current.metadata || {}, sort: current.sort || 0 } : { metadata: {}, sort: 0 };
       Object.keys(payload).forEach(function (k) { body[k] = payload[k]; });
       if (body.iconUrl == null) body.iconUrl = '';
@@ -414,7 +446,9 @@ function stepCurrency(box) {
         }
         return 'done';
       }, function (err) {
-        if (!form.showServerError(err)) top.appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err))));
+        var shown = forms.some(function (f) { return f.showServerError(err); });
+        if (shown) revealInvalid(box);
+        else top.appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err))));
         return false;
       });
     },
@@ -423,10 +457,10 @@ function stepCurrency(box) {
 }
 
 function needQuestion(labelKey, value, onchange) {
-  var seg = segmented([{ value: 'yes', label: t('yes') }, { value: 'no', label: t('setup.no') }], value, onchange, t(labelKey), 'md');
+  var hint = h('p', { class: 'setup-need-hint', hidden: !!value, text: t('setup.need.hint') });
+  var seg = segmented([{ value: 'yes', label: t('yes') }, { value: 'no', label: t('setup.no') }], value, function (v) { hint.hidden = true; onchange(v); }, t(labelKey), 'md');
   seg.setAttribute('data-need', '');
-  return card2(h('div', { class: 'flex flex-col sm:flex-row sm:items-center justify-between gap-3' },
-    h('div', { class: 'font-medium', text: t(labelKey) }), seg), 'mb-4');
+  return h('div', { class: 'setup-need-wrap' }, h('div', { class: 'setup-need' }, h('div', { class: 'setup-need-q', text: t(labelKey) }), seg), hint);
 }
 
 function sandboxBox(on, onchange, confirmOff) {
@@ -459,6 +493,7 @@ function stepPayment(box) {
   var els = {};
   var need = null;
   var dirty = false;
+  var openM = null;
   var top = h('div', {});
   box.appendChild(questionSkeleton(2));
   function methodCard(m) {
@@ -479,27 +514,41 @@ function stepPayment(box) {
     });
     if (!(m.fields || []).length) fieldsBox.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('pm.noFields') }));
     var errBox = h('div', {});
+    var hasFields = (m.fields || []).length > 0;
+    var edit = hasFields ? h('button', { type: 'button', class: 'setup-method-edit', 'data-method-edit': m.method, 'aria-expanded': 'false', onclick: function () { expand(openM === m.method ? null : m.method); } },
+      h('span', { text: t('setup.pay.settings') }), icon('chevron', 'h-3.5 w-3.5 setup-method-chev')) : null;
     var check = checkbox(picked[m.method], has('method.' + m.method) ? t('method.' + m.method) : m.method, function (on) {
       picked[m.method] = on;
       dirty = true;
-      fieldsBox.hidden = !on;
       el.classList.toggle('setup-method--on', on);
+      if (edit) edit.hidden = !on;
+      expand(on && hasFields ? m.method : openM === m.method ? null : openM);
     });
     check.setAttribute('data-pick-method', m.method);
-    fieldsBox.hidden = !picked[m.method];
-    var el = card2([
-      h('div', { class: 'flex items-center justify-between gap-3' }, check,
-        h('div', { class: 'flex items-center gap-1.5' }, mono(m.method), tag(m.configured ? t('pm.configured') : t('pm.notConfigured'), m.configured ? 'success' : 'secondary'))),
+    if (edit) edit.hidden = !picked[m.method];
+    var el = h('div', { class: 'setup-method' + (picked[m.method] ? ' setup-method--on' : ''), 'data-method': m.method },
+      h('div', { class: 'setup-method-head' }, check,
+        h('div', { class: 'flex items-center gap-2 shrink-0' }, tag(m.configured ? t('pm.configured') : t('pm.notConfigured'), m.configured ? 'success' : 'secondary'), edit)),
       errBox,
-      fieldsBox
-    ], 'setup-method mb-3' + (picked[m.method] ? ' setup-method--on' : ''));
-    el.setAttribute('data-method', m.method);
-    els[m.method] = { el: el, fields: fieldEls, err: errBox };
+      fieldsBox);
+    els[m.method] = { el: el, fields: fieldEls, err: errBox, box: fieldsBox, edit: edit };
     return el;
   }
+  function expand(name) {
+    openM = name;
+    Object.keys(els).forEach(function (k) {
+      var on = k === name && picked[k];
+      els[k].box.hidden = !on;
+      els[k].el.classList.toggle('setup-method--open', on);
+      if (els[k].edit) els[k].edit.setAttribute('aria-expanded', on ? 'true' : 'false');
+    });
+  }
   function paint() {
-    var list = h('div', { 'data-methods': '' });
+    var list = h('div', { class: 'setup-methods', 'data-methods': '' });
+    els = {};
     methods.forEach(function (m) { list.appendChild(methodCard(m)); });
+    var first = methods.filter(function (m) { return picked[m.method] && !m.configured && (m.fields || []).length; })[0];
+    expand(first ? first.method : null);
     list.hidden = need !== 'yes';
     var noBox = h('div', { hidden: need !== 'no' }, notice('info', t('setup.pay.no')));
     clear(box).appendChild(needQuestion('setup.pay.need', need, function (v) { need = v; dirty = true; list.hidden = v !== 'yes'; noBox.hidden = v !== 'no'; }));
@@ -540,6 +589,7 @@ function stepPayment(box) {
             failed = true;
             if (err.field && e.fields[err.field]) e.fields[err.field].setError(errorText(err));
             else e.err.appendChild(h('div', { class: 'mt-3' }, notice('error', errorText(err))));
+            expand(m.method);
             e.el.scrollIntoView({ block: 'center', behavior: 'smooth' });
           });
         });
@@ -565,8 +615,8 @@ function stepProvider(channel) {
     var fieldEls = {};
     var dirty = false;
     var top = h('div', {});
-    var formBox = h('div', {});
-    var testBoxEl = h('div', {});
+    var formBox = h('div', { class: 'setup-fields2' });
+    var testBoxEl = h('div', { class: 'setup-test' });
     box.appendChild(questionSkeleton(1));
     function current() { return items.filter(function (p) { return p.kind === kind; })[0] || null; }
     function buildForm2() {
@@ -576,13 +626,17 @@ function stepProvider(channel) {
       st = { sandbox: p ? !!p.sandbox : true };
       fieldEls = {};
       clear(formBox);
-      formBox.appendChild(sandboxBox(st.sandbox, function (v) { st.sandbox = v; dirty = true; paintTest(); }, true));
+      var sb = sandboxBox(st.sandbox, function (v) { st.sandbox = v; dirty = true; paintTest(); }, true);
+      sb.classList.add('eco-span-all');
+      formBox.appendChild(sb);
+      var extra = [];
       (def.fields || []).forEach(function (f) {
         var w = providerField(f, cfg, function () { dirty = true; if (fieldEls[f.name]) fieldEls[f.name].setError(''); });
         fieldEls[f.name] = w;
-        formBox.appendChild(w);
+        if (f.required) formBox.appendChild(w); else extra.push(w);
       });
-      if (!p) formBox.appendChild(h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 -mt-2 mb-2', text: t('setup.pv.new') }));
+      if (extra.length) formBox.appendChild(h('div', { class: 'eco-span-all' }, setupMore(t('setup.pv.more.hint'), h('div', { class: 'setup-fields2' }, extra))));
+      if (!p) formBox.appendChild(h('p', { class: 'eco-span-all text-xs text-secondary-500 dark:text-secondary-400 -mt-2 mb-2', text: t('setup.pv.new') }));
       paintTest();
     }
     function saveProvider() {
@@ -602,7 +656,7 @@ function stepProvider(channel) {
         buildForm2();
         return true;
       }, function (err) {
-        if (err.field && fieldEls[err.field]) { fieldEls[err.field].setError(errorText(err)); fieldEls[err.field].scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+        if (err.field && fieldEls[err.field]) { fieldEls[err.field].setError(errorText(err)); revealInvalid(formBox); }
         else top.appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err))));
         return false;
       });
@@ -644,25 +698,24 @@ function stepProvider(channel) {
       } });
       testBoxEl.appendChild(card2([
         h('div', { class: 'flex items-center gap-2 font-medium mb-1' }, icon('send', 'h-4 w-4'), h('span', { text: t('setup.test') })),
-        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: live ? t('setup.test.liveBlocked') : t('setup.test.hint') }),
+        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: live ? t('setup.test.liveBlocked') : t('setup.test.short') }),
         field(t('pv.test.to'), to),
         subject ? field(t('pv.test.subject'), subject, null, { optional: true }) : null,
         field(t('pv.test.message'), msg),
         h('div', { class: 'flex justify-end -mt-2' }, sendBtn),
         out
-      ], 'mt-4'));
+      ]));
       if (p) testBoxEl.setAttribute('data-provider-id', p.id);
     }
     function paint() {
       var kinds = catalog.filter(function (k) { return k.channel === channel; });
       var seg = segmented(kinds.map(function (k) { return { value: k.kind, label: kindLabel(k.kind) }; }), kind, function (v) { kind = v; dirty = true; buildForm2(); clear(top); }, t('pv.kind'), 'md');
       seg.setAttribute('data-kind', '');
-      var yesBox = h('div', { hidden: need !== 'yes' },
-        card2([
-          field(t('setup.pv.kind'), seg, t('setup.pv.kind.hint')),
+      var yesBox = h('div', { class: 'setup-cols', hidden: need !== 'yes' },
+        h('div', { class: 'min-w-0' },
+          h('div', { class: 'setup-kind', title: t('setup.pv.kind.hint') }, h('span', { class: 'setup-need-q', text: t('setup.pv.kind') }), seg),
           top,
-          formBox
-        ]),
+          formBox),
         testBoxEl);
       var noBox = h('div', { hidden: need !== 'no' }, notice('info', t('setup.' + channel + '.no')));
       clear(box).appendChild(needQuestion('setup.' + channel + '.need', need, function (v) { need = v; dirty = true; yesBox.hidden = v !== 'yes'; noBox.hidden = v !== 'no'; }));

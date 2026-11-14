@@ -10,8 +10,6 @@ if (TAG_KEY_TYPES.indexOf('achievement') === -1) TAG_KEY_TYPES.splice(TAG_KEY_TY
 
 var ACH_SOURCES = ['event', 'task', 'manual'];
 
-
-
 function isEventAch(v) { return v.source === 'event'; }
 
 function achTierLine(it) {
@@ -186,8 +184,6 @@ RESOURCES.achievements = {
   },
   afterSave: function () { forgetRefs('achievements'); }
 };
-
-OVERVIEW_CATALOG.push('achievements');
 
 var PAC_CARD = { id: null, data: null, loading: false, at: 0, err: null };
 

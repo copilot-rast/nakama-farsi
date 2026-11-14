@@ -500,6 +500,8 @@ function iconFor(href) {
   return HREF_ICON[key] || 'page';
 }
 
+window.NakamaPlane.iconFor = iconFor;
+
 var GROUP_ICON = { economy: 'coins', publication: 'megaphone', moderation: 'shield', support: 'buoy', system: 'cloudDown', developer: 'code', help: 'help', settings: 'settings' };
 
 function linkInfo(a) {

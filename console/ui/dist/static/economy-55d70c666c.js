@@ -4000,7 +4000,61 @@ var MESSAGES = {
     'code.DUPLICATE_TYPE': "هر نوع آیتم فقط یک بار.",
     'code.DUPLICATE_CURRENCY': "هر ارز فقط یک بار.",
     'code.INVALID_AMOUNT': "مقدار درست نیست.",
-    'code.GIFT_NOT_FOUND': "هدیه پیدا نشد."
+    'code.GIFT_NOT_FOUND': "هدیه پیدا نشد.",
+    'ov.sub.active': "{n} فعال",
+    'ov.sub.rules': "{n} قانون",
+    'ov.sub.groups': "{n} گروه",
+    'ov.sub.waiting': "{n} در انتظار",
+    'ov.sub.playsToday': "{n} بازی امروز",
+    'ov.sub.completed': "{n} کامل‌شده",
+    'ov.sub.empty': "هنوز چیزی ساخته نشده",
+    'ov.sep': " · ",
+    'ov.delta.new': "تازه؛ دورهٔ قبل صفر بود",
+    'ov.delta.vs30': "نسبت به ۳۰ روز قبل",
+    'ov.delta.vs30.none': "در ۶۰ روز گذشته درآمدی نبود",
+    'ov.delta.vsDay': "نسبت به ۲۴ ساعت قبل",
+    'ov.delta.vsDay.none': "در ۴۸ ساعت گذشته چیزی نبود",
+    'ov.chart.title': "روند ۳۰ روز اخیر",
+    'ov.chart.metric': "معیار نمودار",
+    'ov.chart.payments': "تعداد پرداخت",
+    'ov.chart.toman': "تومان",
+    'ov.chart.count': "پرداخت",
+    'ov.chart.days': "۳۰ روز اخیر",
+    'ov.chart.peak': "بیشترین: {v} در {day}",
+    'ov.chart.aria': "{what} در ۳۰ روز اخیر: مجموع {total}، بیشترین {peak} در {day}",
+    'ov.chart.empty.revenue': "در ۳۰ روز گذشته درآمد واقعی ثبت نشده.",
+    'ov.chart.empty.payments': "در ۳۰ روز گذشته پرداختی ثبت نشده.",
+    'ov.status': "وضعیت پرداخت‌ها",
+    'ov.status.total': "{n} پرداخت",
+    'ov.grantErrors.n': "{n} پرداخت موفق که جایزه‌اش داده نشده",
+    'ov.empty.methods': "هیچ درگاه پرداختی فعال نیست",
+    'ov.empty.methods.hint': "تا یک درگاه یا فروشگاه را فعال نکنید، بازیکن نمی‌تواند خرید کند.",
+    'ov.empty.methods.cta': "تنظیم درگاه پرداخت",
+    'ov.empty.payments': "هنوز پرداختی ثبت نشده",
+    'ov.empty.payments.hint': "وقتی بازیکنان از فروشگاه بخرند، وضعیت پرداخت‌ها اینجا می‌آید.",
+    'ov.empty.payments.cta': "رفتن به فروشگاه",
+    'ov.empty.none': "به هیچ بخشی از این صفحه دسترسی ندارید.",
+    'ov.method.on': "فعال",
+    'ov.method.sandbox': "آزمایشی",
+    'ov.method.bad': "تنظیم‌نشده",
+    'ov.method.off': "خاموش",
+    'ov.allPayments': "همهٔ پرداخت‌ها",
+    'ov.group.total': "{n} مورد",
+    'ov.shared': "مشترک:",
+    'ov.claimsFailed.n': "{n} ناموفق",
+    'ov.claims.waiting': "منتظر دریافت بازیکن",
+    'ov.claims.clear': "چیزی در صف نیست",
+    'setup.later.hint': "بستن راهنما؛ بعداً از تنظیمات پروژه ادامه بدهید",
+    'setup.saveReview': "ذخیره و مرور نهایی",
+    'setup.more': "تنظیمات بیشتر",
+    'setup.brand.allOptional': "همهٔ موارد اختیاری‌اند و بعداً هم از تنظیمات پروژه عوض می‌شوند.",
+    'setup.brand.more.hint': "نام کوتاه، لوگوی تیره، نشان و پیام خوش‌آمد",
+    'setup.brand.preview': "پیش‌نمایش زنده",
+    'setup.cur.more.hint': "کلید، نوع و آیکون",
+    'setup.pay.settings': "تنظیمات",
+    'setup.test.short': "در حالت آزمایشی چیزی واقعاً فرستاده نمی‌شود.",
+    'setup.need.hint': "با «بله» فرم تنظیم باز می‌شود؛ با «نه» این مرحله کنار می‌رود و بعداً هم می‌شود روشنش کرد.",
+    'setup.pv.more.hint': "فیلدهای اختیاری"
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -8001,7 +8055,61 @@ var MESSAGES = {
     'code.DUPLICATE_TYPE': "Each item type once.",
     'code.DUPLICATE_CURRENCY': "Each currency once.",
     'code.INVALID_AMOUNT': "The amount is not valid.",
-    'code.GIFT_NOT_FOUND': "Gift not found."
+    'code.GIFT_NOT_FOUND': "Gift not found.",
+    'ov.sub.active': "{n} active",
+    'ov.sub.rules': "{n} rules",
+    'ov.sub.groups': "{n} groups",
+    'ov.sub.waiting': "{n} waiting",
+    'ov.sub.playsToday': "{n} plays today",
+    'ov.sub.completed': "{n} completed",
+    'ov.sub.empty': "Nothing yet",
+    'ov.sep': " · ",
+    'ov.delta.new': "New; previous period was zero",
+    'ov.delta.vs30': "vs previous 30 days",
+    'ov.delta.vs30.none': "No revenue in the last 60 days",
+    'ov.delta.vsDay': "vs previous 24 hours",
+    'ov.delta.vsDay.none': "Nothing in the last 48 hours",
+    'ov.chart.title': "Last 30 days",
+    'ov.chart.metric': "Chart metric",
+    'ov.chart.payments': "Payments",
+    'ov.chart.toman': "Toman",
+    'ov.chart.count': "payments",
+    'ov.chart.days': "last 30 days",
+    'ov.chart.peak': "Peak: {v} on {day}",
+    'ov.chart.aria': "{what} over the last 30 days: total {total}, peak {peak} on {day}",
+    'ov.chart.empty.revenue': "No live revenue in the last 30 days.",
+    'ov.chart.empty.payments': "No payments in the last 30 days.",
+    'ov.status': "Payment status",
+    'ov.status.total': "{n} payments",
+    'ov.grantErrors.n': "{n} successful payments whose reward was not granted",
+    'ov.empty.methods': "No payment gateway is on",
+    'ov.empty.methods.hint': "Players cannot buy anything until a gateway or store is turned on.",
+    'ov.empty.methods.cta': "Set up payments",
+    'ov.empty.payments': "No payments yet",
+    'ov.empty.payments.hint': "When players buy from the shop, payment status shows up here.",
+    'ov.empty.payments.cta': "Go to the shop",
+    'ov.empty.none': "You do not have access to any part of this page.",
+    'ov.method.on': "On",
+    'ov.method.sandbox': "Sandbox",
+    'ov.method.bad': "Not set up",
+    'ov.method.off': "Off",
+    'ov.allPayments': "All payments",
+    'ov.group.total': "{n} items",
+    'ov.shared': "Shared:",
+    'ov.claimsFailed.n': "{n} failed",
+    'ov.claims.waiting': "Waiting for players to claim",
+    'ov.claims.clear': "Nothing in the queue",
+    'setup.later.hint': "Close the guide; continue later from project settings",
+    'setup.saveReview': "Save and review",
+    'setup.more': "More settings",
+    'setup.brand.allOptional': "Everything here is optional and can be changed later in project settings.",
+    'setup.brand.more.hint': "short name, dark logo, mark and welcome text",
+    'setup.brand.preview': "Live preview",
+    'setup.cur.more.hint': "key, type and icon",
+    'setup.pay.settings': "Settings",
+    'setup.test.short': "In sandbox mode nothing is actually sent.",
+    'setup.need.hint': "Yes opens the settings form; No sets this step aside and you can turn it on later.",
+    'setup.pv.more.hint': "optional fields"
   }
 };
 
@@ -10866,8 +10974,6 @@ function paymentMethodsPage(container) {
   load();
 }
 
-var OVERVIEW_CATALOG = ['currencies', 'metas', 'prizes', 'products', 'gifts', 'categories', 'tags'];
-
 var COVERAGE_PAGES = { languages: 'languages', categories: 'categories', tags: 'tags', currencies: 'currencies', metas: 'metas', prizes: 'prizes', products: 'products', gifts: 'gifts', faqs: 'faqs', news: 'news' };
 
 function coverageLabel(resource) {
@@ -10948,62 +11054,295 @@ function statCard(label, value, sub, href, opts) {
   return h('a', { href: href, class: 'block bg-white dark:bg-secondary-800 overflow-hidden rounded-md shadow hover:bg-secondary-50 dark:hover:bg-secondary-700 transition' }, inner);
 }
 
+var OVERVIEW_GROUPS = [
+  { id: 'progress', items: [
+    { page: 'currencies' },
+    { page: 'metas', more: 'meta-rules', moreKey: 'ov.sub.rules' },
+    { page: 'meta-relations', active: 'activeMetaRelations' },
+    { page: 'level-tables', active: 'activeLevelTables' },
+    { page: 'tasks', active: 'activeTasks', more: 'task-groups', moreKey: 'ov.sub.groups' },
+    { page: 'achievements', active: 'activeAchievements' },
+    { page: 'streaks', active: 'activeStreaks' }
+  ] },
+  { id: 'sales', items: [
+    { page: 'products', active: 'activeProducts' },
+    { page: 'offers', active: 'activeOffers' },
+    { page: 'items', active: 'activeItems' },
+    { page: 'gifts', active: 'activeGifts' },
+    { page: 'friend-gifts', more: 'friendGiftsPending', moreKey: 'ov.sub.waiting' }
+  ] },
+  { id: 'play', items: [
+    { page: 'prizes' },
+    { page: 'prize-groups' },
+    { page: 'games', active: 'activeGames' },
+    { page: 'chance-games', active: 'activeChanceGames', more: 'chancePlaysToday', moreKey: 'ov.sub.playsToday' }
+  ] },
+  { id: 'growth', items: [
+    { page: 'event-types', active: 'activeEventTypes' },
+    { page: 'event-rules', active: 'activeEventRules' },
+    { page: 'referrals', more: 'referralsCompleted', moreKey: 'ov.sub.completed' }
+  ] }
+];
+var OVERVIEW_SHARED = ['categories', 'tags'];
+var OVERVIEW_TINT = { progress: 'violet', sales: 'info', play: 'warn', growth: 'teal' };
+var PAY_STATUS_ORDER = ['success', 'pending', 'failed', 'expired'];
+
+function ovAllowed(page) {
+  var ps = psSection(page);
+  if (ps) return !ps.acl || aclCan(ps.acl, 0);
+  return pageAllowed(page);
+}
+
+function ovIcon(page, tint, duo) {
+  var box = h('span', { class: 'eco-ov-ic eco-ov-tint-' + (tint || 'info'), 'aria-hidden': 'true' });
+  var P = window.NakamaPlane;
+  if (P && P.iconD && (duo || P.iconFor)) box.innerHTML = P.iconD(duo || P.iconFor('#/economy/' + page));
+  else box.appendChild(icon(page, 'h-4 w-4'));
+  return box;
+}
+
+function ovDelta(cur, prev, sinceKey) {
+  cur = Number(cur || 0);
+  prev = Number(prev || 0);
+  if (!cur && !prev) return h('span', { class: 'eco-ov-delta', 'data-ov-delta': 'flat', text: t(sinceKey + '.none') });
+  if (!prev) return h('span', { class: 'eco-ov-delta eco-ov-delta--up', 'data-ov-delta': 'new', text: t('ov.delta.new') });
+  var pct = Math.round((cur - prev) / prev * 100);
+  var dir = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
+  var sign = pct > 0 ? '+' : pct < 0 ? '−' : '';
+  return h('span', { class: 'eco-ov-delta eco-ov-delta--' + dir, 'data-ov-delta': dir },
+    h('span', { class: 'eco-ov-delta-num', dir: 'ltr', text: sign + fmtNum(Math.abs(pct)) + ovPct() }),
+    h('span', { text: ' ' + t(sinceKey) }));
+}
+
+function ovPct() {
+  return lang() === 'fa' ? '٪' : '%';
+}
+
+function ovRtl() {
+  return document.documentElement.getAttribute('dir') === 'rtl';
+}
+
+function ovSpark(values) {
+  if (ovRtl()) values = values.slice().reverse();
+  var w = 120;
+  var hgt = 32;
+  var max = Math.max.apply(null, values.concat([0]));
+  var svg = h('svg:svg', { viewBox: '0 0 ' + w + ' ' + hgt, preserveAspectRatio: 'none', class: 'eco-ov-spark', 'aria-hidden': 'true', focusable: 'false' });
+  if (!max || values.length < 2) {
+    svg.appendChild(h('svg:line', { x1: 0, x2: w, y1: hgt - 1, y2: hgt - 1, class: 'eco-ov-spark-base' }));
+    return svg;
+  }
+  var step = w / (values.length - 1);
+  var pts = values.map(function (v, i) { return (i * step).toFixed(1) + ',' + (hgt - 2 - (v / max) * (hgt - 4)).toFixed(1); });
+  svg.appendChild(h('svg:path', { d: 'M0,' + hgt + ' L' + pts.join(' L') + ' L' + w + ',' + hgt + ' Z', class: 'eco-ov-spark-area' }));
+  svg.appendChild(h('svg:polyline', { points: pts.join(' '), class: 'eco-ov-spark-line', 'vector-effect': 'non-scaling-stroke' }));
+  return svg;
+}
+
+function ovKpi(opts) {
+  var head = h('div', { class: 'eco-ov-kpi-head' }, ovIcon(opts.icon, opts.tint, opts.duo),
+    h('span', { class: 'eco-ov-kpi-label', text: opts.label }));
+  var value = h('div', { class: 'eco-ov-kpi-value' + (opts.alert ? ' eco-ov-alert' : '') },
+    h('span', { class: 'tabular-nums', text: fmtNum(opts.value || 0) }),
+    opts.unit ? h('span', { class: 'eco-ov-kpi-unit', text: opts.unit }) : null);
+  var inner = [head, value, opts.spark || null, h('div', { class: 'eco-ov-kpi-foot' }, opts.foot || null)];
+  var attrs = { class: 'eco-ov-kpi', 'data-ov-kpi': opts.id };
+  if (opts.attrs) Object.keys(opts.attrs).forEach(function (k) { attrs[k] = opts.attrs[k]; });
+  if (opts.href) { attrs.href = opts.href; return h('a', attrs, inner); }
+  return h('div', attrs, inner);
+}
+
+function ovTile(item, c, tint) {
+  var page = item.page;
+  var n = Number(c[page] || 0);
+  var bits = [];
+  if (item.active && c[item.active] !== undefined && n) bits.push(t('ov.sub.active', { n: localDigits(fmtNum(c[item.active])) }));
+  if (item.more && c[item.more]) bits.push(t(item.moreKey, { n: localDigits(fmtNum(c[item.more])) }));
+  var label = t('nav.' + page);
+  var sub = n ? bits.join(t('ov.sep')) : t('ov.sub.empty');
+  return h('a', { href: hashFor(page), class: 'eco-ov-tile' + (n ? '' : ' eco-ov-tile--zero'), 'data-ov-tile': page, title: label },
+    ovIcon(page, n ? tint : 'mute'),
+    h('span', { class: 'eco-ov-tile-text' },
+      h('span', { class: 'eco-ov-tile-label', text: label }),
+      h('span', { class: 'eco-ov-tile-sub', text: sub || ' ' })),
+    h('span', { class: 'eco-ov-tile-num tabular-nums', text: fmtNum(n) }));
+}
+
+function ovSection(titleText, aside, body, attrs) {
+  var a = { class: 'eco-ov-section' };
+  if (attrs) Object.keys(attrs).forEach(function (k) { a[k] = attrs[k]; });
+  return h('section', a,
+    h('div', { class: 'eco-ov-section-head' }, h('h2', { class: 'eco-ov-h2', text: titleText }), aside || null),
+    body);
+}
+
+function ovShortDay(day) {
+  var d = new Date(day + 'T12:00:00');
+  if (isNaN(d.getTime())) return day;
+  return new Intl.DateTimeFormat(locale(), { month: 'short', day: 'numeric' }).format(d);
+}
+
+function ovChart(daily, metric) {
+  var vals = daily.map(function (d) { return Number((metric === 'revenue' ? d.toman : d.payments) || 0); });
+  var total = vals.reduce(function (a, b) { return a + b; }, 0);
+  var max = Math.max.apply(null, vals.concat([0]));
+  var box = h('div', { class: 'eco-ov-chart', 'data-ov-chart': metric });
+  var unit = metric === 'revenue' ? t('ov.chart.toman') : t('ov.chart.count');
+  var fmt = function (v) { return fmtNum(v) + (metric === 'revenue' ? ' ' + t('ov.chart.toman') : ''); };
+  var peak = vals.indexOf(max);
+  box.appendChild(h('div', { class: 'eco-ov-chart-meta' },
+    h('span', {}, h('span', { class: 'eco-ov-chart-total tabular-nums', text: fmtNum(total) }), h('span', { class: 'eco-ov-muted', text: ' ' + unit + ' · ' + t('ov.chart.days') })),
+    max ? h('span', { class: 'eco-ov-muted', text: t('ov.chart.peak', { v: fmt(max), day: ovShortDay(daily[peak].day) }) }) : null));
+  var W = 600;
+  var H = 140;
+  var gap = 3;
+  var bw = daily.length ? W / daily.length : W;
+  var svg = h('svg:svg', { viewBox: '0 0 ' + W + ' ' + H, preserveAspectRatio: 'none', class: 'eco-ov-bars', role: 'img',
+    'aria-label': max ? t('ov.chart.aria', { what: metric === 'revenue' ? t('ov.revenue') : t('ov.chart.payments'), total: fmt(total), peak: fmt(max), day: ovShortDay(daily[peak].day) }) : t('ov.chart.empty.' + metric) });
+  [0.25, 0.5, 0.75].forEach(function (f) { svg.appendChild(h('svg:line', { x1: 0, x2: W, y1: (H * f).toFixed(1), y2: (H * f).toFixed(1), class: 'eco-ov-grid', 'vector-effect': 'non-scaling-stroke' })); });
+  daily.forEach(function (d, i) {
+    var v = vals[i];
+    var bh = max ? Math.max(v ? 2 : 0, v / max * (H - 6)) : 0;
+    var x = ovRtl() ? W - (i + 1) * bw : i * bw;
+    var g = h('svg:g', { class: 'eco-ov-bar' + (i === daily.length - 1 ? ' eco-ov-bar--today' : '') },
+      h('svg:rect', { x: (x + gap / 2).toFixed(1), y: 0, width: Math.max(1, bw - gap).toFixed(1), height: H, class: 'eco-ov-bar-hit' }),
+      h('svg:rect', { x: (x + gap / 2).toFixed(1), y: (H - bh).toFixed(1), width: Math.max(1, bw - gap).toFixed(1), height: bh.toFixed(1), rx: 2, class: 'eco-ov-bar-fill' }));
+    g.appendChild(h('svg:title', { text: ovShortDay(d.day) + ': ' + fmt(v) }));
+    svg.appendChild(g);
+  });
+  var plot = h('div', { class: 'eco-ov-plot' }, svg);
+  if (!max) plot.appendChild(h('div', { class: 'eco-ov-plot-empty', text: t('ov.chart.empty.' + metric) }));
+  box.appendChild(plot);
+  if (daily.length) {
+    box.appendChild(h('div', { class: 'eco-ov-axis eco-ov-muted' },
+      h('span', { text: ovShortDay(daily[0].day) }),
+      h('span', { text: t('ov.today') })));
+  }
+  return box;
+}
+
+function ovStatus(by, grantErrors) {
+  var total = PAY_STATUS_ORDER.reduce(function (a, st) { return a + Number(by[st] || 0); }, 0);
+  var box = h('div', { class: 'eco-ov-status', 'data-ov-status': '' });
+  var barEl = h('div', { class: 'eco-ov-stack', role: 'img', 'aria-label': PAY_STATUS_ORDER.map(function (st) { return t('status.' + st) + ' ' + fmtNum(by[st] || 0); }).join(t('ov.sep')) });
+  var legend = h('ul', { class: 'eco-ov-legend' });
+  PAY_STATUS_ORDER.forEach(function (st) {
+    var n = Number(by[st] || 0);
+    var pct = total ? n / total * 100 : 0;
+    if (n) barEl.appendChild(h('span', { class: 'eco-ov-stack-seg eco-ov-st-' + st, style: 'width:' + pct.toFixed(2) + '%' }));
+    legend.appendChild(h('li', {}, h('a', { href: hashFor('payments', null, { status: st }), class: 'eco-ov-legend-row', 'data-ov-status-row': st },
+      h('span', { class: 'eco-ov-dot eco-ov-st-' + st, 'aria-hidden': 'true' }),
+      h('span', { class: 'eco-ov-legend-label', text: t('status.' + st) }),
+      h('span', { class: 'eco-ov-muted tabular-nums', text: total ? fmtNum(pct, { maximumFractionDigits: 0 }) + ovPct() : '' }),
+      h('span', { class: 'eco-ov-legend-num tabular-nums', text: fmtNum(n) }))));
+  });
+  if (!total) barEl.classList.add('eco-ov-stack--empty');
+  box.appendChild(h('div', { class: 'eco-ov-status-head' }, h('span', { class: 'eco-ov-h3', text: t('ov.status') }), h('span', { class: 'eco-ov-muted tabular-nums', text: t('ov.status.total', { n: localDigits(fmtNum(total)) }) })));
+  box.appendChild(barEl);
+  box.appendChild(legend);
+  if (grantErrors) box.appendChild(h('a', { href: hashFor('payments', null, { status: 'success' }), class: 'eco-ov-alertrow', 'data-ov-grant-errors': '' },
+    icon('alert', 'h-4 w-4'), h('span', { text: t('ov.grantErrors.n', { n: localDigits(fmtNum(grantErrors)) }) })));
+  return box;
+}
+
+function ovEmpty(textKey, hintKey, ctaKey, href, attr) {
+  var a = { class: 'eco-ov-empty' };
+  a[attr] = '';
+  return h('div', a,
+    h('div', { class: 'eco-ov-empty-text' },
+      h('div', { class: 'eco-ov-empty-title', text: t(textKey) }),
+      hintKey ? h('div', { class: 'eco-ov-muted', text: t(hintKey) }) : null),
+    href ? h('a', { href: href, class: 'eco-ov-cta', 'data-ov-cta': attr }, h('span', { text: t(ctaKey) }), icon('next', 'h-3.5 w-3.5 eco-ov-cta-ic')) : null);
+}
+
 function overviewPage(container) {
   var frame = pageFrame(t('nav.overview'), t('desc.overview'));
   clear(container).appendChild(frame.el);
-  var body = h('div', { class: 'flex flex-col gap-6' });
+  var body = h('div', { class: 'eco-ov', 'data-ov': '' });
   frame.content.appendChild(body);
+  var metric = 'revenue';
 
   function skeleton() {
-    clear(body);
-    [OVERVIEW_CATALOG.length, 6].forEach(function (n, k) {
-      var grid = h('div', { class: 'eco-stat-grid' });
-      for (var i = 0; i < n; i++) grid.appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('6rem'), bar('3rem', 'h-7'), k ? bar('8rem') : null)));
-      body.appendChild(h('div', {}, h('div', { class: 'mb-3' }, bar('7rem', 'h-4')), grid));
-    });
+    var kpis = h('div', { class: 'eco-ov-kpis' });
+    for (var i = 0; i < 4; i++) kpis.appendChild(h('div', { class: 'eco-ov-kpi' }, bar('6rem'), bar('4rem', 'h-7'), bar('8rem')));
+    clear(body).appendChild(kpis);
+    var grp = h('div', { class: 'eco-ov-tiles' });
+    for (var j = 0; j < 8; j++) grp.appendChild(h('div', { class: 'eco-ov-tile' }, bar('2rem', 'h-8'), h('span', { class: 'eco-ov-tile-text' }, bar('5rem'), bar('3rem'))));
+    body.appendChild(ovSection(t('ov.catalog'), null, grp));
   }
 
   function render(s) {
     s = s || {};
     var c = s.counts || {};
     var by = s.paymentsByStatus || {};
+    var daily = s.revenueDaily || [];
     clear(body);
-    var catalog = h('div', { class: 'eco-stat-grid' });
-    OVERVIEW_CATALOG.forEach(function (name) {
-      var active = name === 'products' ? c.activeProducts : name === 'gifts' ? c.activeGifts : undefined;
-      catalog.appendChild(statCard(t('nav.' + name), c[name], active !== undefined ? t('active') + ': ' + fmtNum(active) : null, hashFor(name)));
-    });
-    body.appendChild(h('div', {}, h('h2', { class: 'text-lg font-medium mb-3', text: t('ov.catalog') }), catalog));
 
-    if (c.eventsToday !== undefined) {
-      var events = h('div', { class: 'eco-stat-grid', 'data-ov-events': '' });
-      events.appendChild(statCard(t('ov.eventsToday'), c.eventsToday, null, hashFor('event-log')));
-      events.appendChild(statCard(t('ov.claimsReady'), c.claimsReady, null, null));
-      if (c.claimsFailed) events.appendChild(statCard(t('ov.claimsFailed'), c.claimsFailed, null, null, { alert: true }));
-      body.appendChild(h('div', {}, h('h2', { class: 'text-lg font-medium mb-3', text: t('ov.events') }), events));
+    var kpis = h('div', { class: 'eco-ov-kpis', 'data-ov-kpis': '' });
+    var payOk = ovAllowed('payments');
+    if (payOk) {
+      kpis.appendChild(ovKpi({ id: 'revenue', label: t('ov.revenue30'), value: c.revenueToman30, unit: t('ov.chart.toman'), href: hashFor('payments', null, { status: 'success' }), icon: 'payments', duo: 'wallet', tint: 'ok',
+        foot: ovDelta(c.revenueToman30, c.revenueTomanPrev30, 'ov.delta.vs30'), spark: ovSpark(daily.map(function (d) { return Number(d.toman || 0); })) }));
+      kpis.appendChild(ovKpi({ id: 'payments', label: t('ov.paymentsToday'), value: c.paymentsToday, href: hashFor('payments'), icon: 'payments', duo: 'card', tint: 'info',
+        foot: ovDelta(c.paymentsToday, c.paymentsPrevDay, 'ov.delta.vsDay'), spark: ovSpark(daily.map(function (d) { return Number(d.payments || 0); })) }));
     }
-
-    var payments = h('div', { class: 'eco-stat-grid' });
-    payments.appendChild(statCard(t('ov.revenue30'), c.revenueToman30, t('toman', { n: '' }).trim(), null));
-    payments.appendChild(statCard(t('ov.paymentsToday'), c.paymentsToday, t('ov.total') + ': ' + fmtNum(c.payments || 0), hashFor('payments')));
-    ['pending', 'success', 'failed', 'expired'].forEach(function (st) {
-      payments.appendChild(statCard(t('status.' + st), by[st], null, hashFor('payments', null, { status: st })));
-    });
-    if (c.grantErrors) payments.appendChild(statCard(t('ov.grantErrors'), c.grantErrors, null, hashFor('payments', null, { status: 'success' }), { alert: true }));
-    body.appendChild(h('div', {}, h('h2', { class: 'text-lg font-medium mb-3', text: t('ov.payments') }), payments));
-
-    var methods = s.paymentMethods || [];
-    if (methods.length) {
-      var list = h('div', { class: 'flex flex-col' });
-      methods.forEach(function (m) {
-        list.appendChild(h('a', { href: hashFor('payment-methods'), class: 'eco-log flex flex-wrap items-center gap-2 px-4 py-3 border-b border-secondary-200 dark:border-secondary-700 hover:bg-secondary-50 dark:hover:bg-secondary-700' },
-          h('span', { class: 'font-medium flex-1', text: has('method.' + m.method) ? t('method.' + m.method) : m.method }),
-          m.sandbox ? tag(t('ov.sandbox'), 'warning') : null,
-          tag(m.configured ? t('pm.configured') : t('pm.notConfigured'), m.configured ? 'secondary' : 'error'),
-          tag(m.isActive ? t('active') : t('inactive'), m.isActive ? 'success' : 'secondary')));
-      });
-      body.appendChild(h('div', {}, h('h2', { class: 'text-lg font-medium mb-3', text: t('ov.methods') }), card(list)));
+    if (c.eventsToday !== undefined && ovAllowed('event-log')) {
+      kpis.appendChild(ovKpi({ id: 'events', label: t('ov.eventsToday'), value: c.eventsToday, href: hashFor('event-log'), icon: 'event-types', duo: 'zap', tint: 'violet', attrs: { 'data-ov-events': '' },
+        foot: ovDelta(c.eventsToday, c.eventsPrevDay, 'ov.delta.vsDay') }));
+      var failed = Number(c.claimsFailed || 0);
+      kpis.appendChild(ovKpi({ id: 'claims', label: t('ov.claimsReady'), value: c.claimsReady, href: hashFor('event-log'), icon: 'event-rules', duo: 'gift', tint: failed ? 'bad' : 'warn',
+        foot: failed ? h('span', { class: 'eco-ov-delta eco-ov-delta--down', 'data-ov-claims-failed': '', text: t('ov.claimsFailed.n', { n: localDigits(fmtNum(failed)) }) })
+          : h('span', { class: 'eco-ov-delta', text: c.claimsReady ? t('ov.claims.waiting') : t('ov.claims.clear') }) }));
     }
+    if (kpis.children.length) body.appendChild(kpis);
+
+    var catalog = h('div', { class: 'eco-ov-groups', 'data-ov-catalog': '' });
+    OVERVIEW_GROUPS.forEach(function (g) {
+      var items = g.items.filter(function (it) { return ovAllowed(it.page); });
+      if (!items.length) return;
+      var total = items.reduce(function (a, it) { return a + Number(c[it.page] || 0); }, 0);
+      var tiles = h('div', { class: 'eco-ov-tiles', style: '--ov-cols:' + Math.ceil(items.length / Math.ceil(items.length / 4)) });
+      items.forEach(function (it) { tiles.appendChild(ovTile(it, c, OVERVIEW_TINT[g.id])); });
+      catalog.appendChild(h('div', { class: 'eco-ov-group', 'data-ov-group': g.id },
+        h('div', { class: 'eco-ov-group-head' },
+          h('h3', { class: 'eco-ov-h3', text: t('navg.' + g.id) }),
+          h('span', { class: 'eco-ov-muted tabular-nums', text: t('ov.group.total', { n: localDigits(fmtNum(total)) }) })),
+        tiles));
+    });
+    var shared = OVERVIEW_SHARED.filter(ovAllowed);
+    var sharedEl = shared.length ? h('div', { class: 'eco-ov-shared' }, h('span', { class: 'eco-ov-muted', text: t('ov.shared') }),
+      shared.map(function (p) { return h('a', { href: hashFor(p), class: 'eco-ov-chip', 'data-ov-tile': p }, h('span', { text: t('nav.' + p) }), h('span', { class: 'tabular-nums eco-ov-chip-num', text: fmtNum(c[p] || 0) })); })) : null;
+    if (catalog.children.length) body.appendChild(ovSection(t('ov.catalog'), sharedEl, catalog));
+
+    if (payOk) {
+      var methods = s.paymentMethods || [];
+      var activeMethods = methods.filter(function (m) { return m.isActive; });
+      var chartBox = h('div', { class: 'eco-ov-chartbox' });
+      var seg = segmented([{ value: 'revenue', label: t('ov.revenue') }, { value: 'payments', label: t('ov.chart.payments') }], metric, function (v) { metric = v; paintChart(); }, t('ov.chart.metric'));
+      seg.setAttribute('data-ov-metric', '');
+      function paintChart() { clear(chartBox).appendChild(ovChart(daily, metric)); }
+      paintChart();
+      var left = h('div', { class: 'eco-ov-pane' }, h('div', { class: 'eco-ov-pane-head' }, h('span', { class: 'eco-ov-h3', text: t('ov.chart.title') }), seg), chartBox);
+      var right = h('div', { class: 'eco-ov-pane' });
+      if (!activeMethods.length) {
+        right.appendChild(ovEmpty('ov.empty.methods', 'ov.empty.methods.hint', 'ov.empty.methods.cta', ovAllowed('payment-methods') ? hashFor('payment-methods') : null, 'data-ov-empty-methods'));
+      }
+      if (c.payments) right.appendChild(ovStatus(by, c.grantErrors));
+      else if (activeMethods.length) right.appendChild(ovEmpty('ov.empty.payments', 'ov.empty.payments.hint', 'ov.empty.payments.cta', ovAllowed('products') ? hashFor('products') : null, 'data-ov-empty-payments'));
+      if (methods.length && activeMethods.length) {
+        right.appendChild(h('div', { class: 'eco-ov-methods', 'data-ov-methods': '' },
+          h('span', { class: 'eco-ov-muted', text: t('ov.methods') }),
+          methods.filter(function (m) { return m.isActive || m.configured; }).map(function (m) {
+            var label = has('method.' + m.method) ? t('method.' + m.method) : m.method;
+            var state = !m.isActive ? 'off' : !m.configured ? 'bad' : m.sandbox ? 'sandbox' : 'on';
+            return h('a', { href: ovAllowed('payment-methods') ? hashFor('payment-methods') : '#', class: 'eco-ov-chip eco-ov-method--' + state, 'data-ov-method': m.method, title: t('ov.method.' + state) },
+              h('span', { class: 'eco-ov-dot', 'aria-hidden': 'true' }), h('span', { text: label }), h('span', { class: 'eco-ov-muted', text: t('ov.method.' + state) }));
+          })));
+      }
+      body.appendChild(ovSection(t('ov.payments'), h('a', { href: hashFor('payments'), class: 'eco-ov-link', text: t('ov.allPayments') }),
+        h('div', { class: 'eco-ov-payments', 'data-ov-payments': '' }, left, right)));
+    }
+    if (!body.children.length) body.appendChild(card(emptyBlock(t('ov.empty.none'))));
   }
 
   function load() {
@@ -14035,8 +14374,6 @@ LISTS['event-log'] = {
   ]
 };
 
-OVERVIEW_CATALOG.push('event-types', 'event-rules', 'level-tables', 'streaks');
-
 var TIMEZONES = ['Asia/Tehran', 'UTC', 'Asia/Dubai', 'Asia/Baghdad', 'Asia/Kabul', 'Asia/Baku', 'Asia/Yerevan', 'Europe/Istanbul', 'Europe/London', 'Europe/Berlin', 'Europe/Moscow', 'America/New_York', 'America/Los_Angeles', 'America/Toronto', 'Australia/Sydney', 'Asia/Tokyo', 'Asia/Kolkata', 'Asia/Riyadh'];
 
 function weekdayName(i) {
@@ -14668,8 +15005,6 @@ function relationsProgressSection(p, id, write, reload) {
   return progressSection('pp.relations', box);
 }
 
-OVERVIEW_CATALOG.push('meta-relations');
-
 ICONS.offers = '<path d="M9 15l6-6"/><circle cx="9.5" cy="9.5" r=".5"/><circle cx="14.5" cy="14.5" r=".5"/><path d="M5 7.2A2.2 2.2 0 0 1 7.2 5h1a2.2 2.2 0 0 0 1.55-.64l.7-.7a2.2 2.2 0 0 1 3.12 0l.7.7c.42.41.98.64 1.55.64h1a2.2 2.2 0 0 1 2.2 2.2v1c0 .58.23 1.13.64 1.55l.7.7a2.2 2.2 0 0 1 0 3.12l-.7.7a2.2 2.2 0 0 0-.64 1.55v1a2.2 2.2 0 0 1-2.2 2.2h-1a2.2 2.2 0 0 0-1.55.64l-.7.7a2.2 2.2 0 0 1-3.12 0l-.7-.7a2.2 2.2 0 0 0-1.55-.64h-1a2.2 2.2 0 0 1-2.2-2.2v-1a2.2 2.2 0 0 0-.64-1.55l-.7-.7a2.2 2.2 0 0 1 0-3.12l.7-.7A2.2 2.2 0 0 0 5 8.2z"/>';
 PH_ICONS.offers = '<path d="M243.31,136,144,36.69A15.86,15.86,0,0,0,132.69,32H40a8,8,0,0,0-8,8v92.69A15.86,15.86,0,0,0,36.69,144L136,243.31a16,16,0,0,0,22.63,0l84.68-84.68a16,16,0,0,0,0-22.63Zm-96,96L48,132.69V48h84.69L232,147.31ZM96,84A12,12,0,1,1,84,72,12,12,0,0,1,96,84Z"/>';
 ICONS['entry-offers'] = '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6M22 6l-3-3"/>';
@@ -15216,8 +15551,6 @@ function playerOffersCard() {
   place();
 }
 
-OVERVIEW_CATALOG.push('offers');
-
 ICONS.tasks = '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>';
 ICONS['task-groups'] = '<rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="11" width="18" height="5" rx="1"/><path d="M7 20h10"/>';
 
@@ -15423,8 +15756,6 @@ RESOURCES['task-groups'] = {
   },
   afterSave: function () { forgetRefs('task-groups'); forgetRefs('tasks'); }
 };
-
-OVERVIEW_CATALOG.push('tasks', 'task-groups');
 
 var TASK_CARD = { id: null, data: null, loading: false, at: 0, err: null };
 
@@ -17021,8 +17352,6 @@ RESOURCES.items = {
   afterSave: function () { forgetRefs('items'); }
 };
 
-OVERVIEW_CATALOG.push('items');
-
 (function productRules() {
   var def = RESOURCES.products;
   var at = -1;
@@ -17655,8 +17984,6 @@ if (TAG_KEY_TYPES.indexOf('achievement') === -1) TAG_KEY_TYPES.splice(TAG_KEY_TY
 
 var ACH_SOURCES = ['event', 'task', 'manual'];
 
-
-
 function isEventAch(v) { return v.source === 'event'; }
 
 function achTierLine(it) {
@@ -17831,8 +18158,6 @@ RESOURCES.achievements = {
   },
   afterSave: function () { forgetRefs('achievements'); }
 };
-
-OVERVIEW_CATALOG.push('achievements');
 
 var PAC_CARD = { id: null, data: null, loading: false, at: 0, err: null };
 
@@ -19176,8 +19501,6 @@ RESOURCES['prize-groups'] = {
   afterSave: function () { forgetRefs('prize-groups'); }
 };
 
-OVERVIEW_CATALOG.push('chance-games', 'prize-groups');
-
 var PCH_CARD = { id: null, data: null, loading: false, at: 0, err: null, limit: 10 };
 
 function loadChanceCard(id) {
@@ -19573,8 +19896,6 @@ RESOURCES.games = {
   },
   afterSave: function () { GAME_REG.at = 0; forgetRefs('games'); }
 };
-
-OVERVIEW_CATALOG.push('games');
 
 var UPDATES = { summary: null, at: 0, busy: false };
 var UP_AREA_ICON = { migrations: 'database', core: 'server', plugins: 'puzzle', console: 'dashboard', deps: 'package', build: 'code', e2e: 'checklist', docs: 'book', other: 'files' };
@@ -20555,8 +20876,10 @@ function brandImage(value, extra, onchange) {
   return el;
 }
 
-function brandEditor(data) {
+function brandEditor(data, opts) {
   data = data || {};
+  opts = opts || {};
+  var opt = { optional: !opts.compact };
   var state = {
     name: trValue(data.name), shortName: data.shortName || '', logoUrl: data.logoUrl || '', logoDarkUrl: data.logoDarkUrl || '',
     markUrl: data.markUrl || '', accent: brandHex(data.accent), welcome: trValue(data.welcome)
@@ -20566,12 +20889,12 @@ function brandEditor(data) {
   var onchange = function () { preview.paint(); paintContrast(); };
 
   var nameCtl = translatedInput(state.name, { name: 'name', label: t('brand.f.name'), max: 64, oninput: function (v) { state.name = v; nameField.setError(''); nameCtl.markLang(null); onchange(); } });
-  var nameField = field(t('brand.f.name'), nameCtl, t('brand.f.name.hint'), { optional: true });
+  var nameField = field(t('brand.f.name'), nameCtl, t('brand.f.name.hint'), opt);
   var shortCtl = textInput(state.shortName, { label: t('brand.f.shortName'), oninput: function (v) { state.shortName = v; shortField.setError(''); onchange(); } });
-  var shortField = field(t('brand.f.shortName'), shortCtl, t('brand.f.shortName.hint'), { optional: true });
-  var logoField = field(t('brand.f.logo'), brandImage(state.logoUrl, '', function (v) { state.logoUrl = v || ''; logoField.setError(''); onchange(); }), t('brand.f.logo.hint'), { optional: true });
-  var darkField = field(t('brand.f.logoDark'), brandImage(state.logoDarkUrl, 'brand-img--dark', function (v) { state.logoDarkUrl = v || ''; darkField.setError(''); onchange(); }), t('brand.f.logoDark.hint'), { optional: true });
-  var markField = field(t('brand.f.mark'), brandImage(state.markUrl, '', function (v) { state.markUrl = v || ''; markField.setError(''); onchange(); }), t('brand.f.mark.hint'), { optional: true });
+  var shortField = field(t('brand.f.shortName'), shortCtl, t('brand.f.shortName.hint'), opt);
+  var logoField = field(t('brand.f.logo'), brandImage(state.logoUrl, '', function (v) { state.logoUrl = v || ''; logoField.setError(''); onchange(); }), t('brand.f.logo.hint'), opt);
+  var darkField = field(t('brand.f.logoDark'), brandImage(state.logoDarkUrl, 'brand-img--dark', function (v) { state.logoDarkUrl = v || ''; darkField.setError(''); onchange(); }), t('brand.f.logoDark.hint'), opt);
+  var markField = field(t('brand.f.mark'), brandImage(state.markUrl, '', function (v) { state.markUrl = v || ''; markField.setError(''); onchange(); }), t('brand.f.mark.hint'), opt);
 
   var picker = h('input', { type: 'color', class: 'brand-color-input', 'aria-label': t('brand.f.accent.pick'), value: state.accent || BRAND_DEFAULT_ACCENT });
   var hexInput = textInput(state.accent, { ltr: true, mono: true, label: t('brand.f.accent'), placeholder: BRAND_DEFAULT_ACCENT });
@@ -20608,21 +20931,30 @@ function brandEditor(data) {
   }
   var accentField = field(t('brand.f.accent'), h('div', { class: 'flex flex-col gap-2' },
     h('div', { class: 'flex items-center gap-2' }, picker, h('div', { class: 'brand-hex' }, hexInput), resetBtn),
-    swatches), t('brand.f.accent.hint'), { optional: true });
+    swatches), t('brand.f.accent.hint'), opt);
 
   var welcomeCtl = translatedInput(state.welcome, { name: 'welcome', label: t('brand.f.welcome'), multiline: true, rows: 2, max: 280, counter: true, oninput: function (v) { state.welcome = v; welcomeField.setError(''); welcomeCtl.markLang(null); } });
-  var welcomeField = field(t('brand.f.welcome'), welcomeCtl, t('brand.f.welcome.hint'), { optional: true });
+  var welcomeField = field(t('brand.f.welcome'), welcomeCtl, t('brand.f.welcome.hint'), opt);
 
   var fieldsEl = { name: nameField, shortName: shortField, logoUrl: logoField, logoDarkUrl: darkField, markUrl: markField, accent: accentField, welcome: welcomeField };
   setAccent(state.accent);
-  var el = h('div', { class: 'brand-editor' },
-    h('div', { class: 'brand-editor-main' },
-      nameField, shortField,
-      h('div', { class: 'eco-form-row' }, logoField, darkField),
-      markField, accentField, contrastBox, welcomeField),
-    h('aside', { class: 'brand-editor-aside' },
-      h('div', { class: 'text-sm font-medium text-secondary-700 dark:text-secondary-200 mb-2', text: t('brand.preview') }),
-      preview));
+  var el = opts.compact
+    ? h('div', { class: 'brand-editor brand-editor--compact' },
+      h('div', { class: 'brand-editor-main' },
+        h('p', { class: 'setup-allopt', text: t('setup.brand.allOptional') }),
+        nameField, logoField, accentField,
+        setupMore(t('setup.brand.more.hint'), [shortField, darkField, markField, welcomeField])),
+      h('aside', { class: 'brand-editor-aside', 'aria-label': t('brand.preview') },
+        h('div', { class: 'text-sm font-medium text-secondary-700 dark:text-secondary-200 mb-2', text: t('setup.brand.preview') }),
+        preview, contrastBox))
+    : h('div', { class: 'brand-editor' },
+      h('div', { class: 'brand-editor-main' },
+        nameField, shortField,
+        h('div', { class: 'eco-form-row' }, logoField, darkField),
+        markField, accentField, contrastBox, welcomeField),
+      h('aside', { class: 'brand-editor-aside' },
+        h('div', { class: 'text-sm font-medium text-secondary-700 dark:text-secondary-200 mb-2', text: t('brand.preview') }),
+        preview));
 
   function values() {
     return { name: trClean(state.name), shortName: state.shortName.trim(), logoUrl: (state.logoUrl || '').trim(), logoDarkUrl: (state.logoDarkUrl || '').trim(), markUrl: (state.markUrl || '').trim(), accent: brandHex(state.accent), welcome: trClean(state.welcome) };
@@ -20636,7 +20968,7 @@ function brandEditor(data) {
     if (wh) { welcomeCtl.markLang(wh.lang); welcomeField.setError(t('code.' + wh.code, { lang: langName(wh.lang) })); ok = false; }
     if (Array.from(state.shortName.trim()).length > 24) { shortField.setError(t('brand.err.short')); ok = false; }
     if (state.accent && !brandHex(state.accent)) { accentField.setError(t('brand.err.color')); ok = false; }
-    if (!ok) { var bad = el.querySelector('.eco-invalid'); if (bad) bad.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+    if (!ok) revealInvalid(el);
     return ok;
   }
   function showError(err) {
@@ -20645,7 +20977,7 @@ function brandEditor(data) {
     if (err.field === 'name') nameCtl.markLang(trServerLang(err, state.name, { max: 64 }));
     if (err.field === 'welcome') welcomeCtl.markLang(trServerLang(err, state.welcome, { max: 280 }));
     f.setError(err.code === 'INVALID_COLOR' ? t('brand.err.color') : errorText(err));
-    f.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    revealInvalid(el);
     return true;
   }
   return {
@@ -20653,6 +20985,20 @@ function brandEditor(data) {
     dirty: function () { return JSON.stringify(values()) !== initial; },
     clean: function () { initial = JSON.stringify(values()); }
   };
+}
+
+function setupMore(hint, children, open) {
+  return h('details', { class: 'setup-more', 'data-setup-more': '', open: !!open },
+    h('summary', {}, h('span', { text: t('setup.more') }), hint ? h('span', { class: 'setup-more-hint', text: '· ' + hint }) : null),
+    h('div', { class: 'setup-more-body' }, children));
+}
+
+function revealInvalid(root) {
+  var bad = root.querySelector('.eco-invalid');
+  if (!bad) return;
+  var d = bad.closest('details');
+  if (d) d.open = true;
+  bad.scrollIntoView({ block: 'center', behavior: 'smooth' });
 }
 
 function brandFormSkeleton() {
@@ -20753,22 +21099,25 @@ function focusables(root) {
 function openWizard(state, auto, step) {
   if (wiz) { goStep(step || wiz.step); return; }
   var dir = document.documentElement.getAttribute('dir') || 'ltr';
-  var bar = h('ol', { class: 'setup-steps', 'aria-label': t('setup.steps') });
-  var body = h('div', { class: 'setup-body' });
+  var bar = h('ol', { class: 'setup-steps' });
+  var meter = h('div', { class: 'setup-meter' });
+  var body = h('div', { class: 'setup-main' });
   var footer = h('div', { class: 'setup-footer' });
-  var later = button({ variant: 'ghost', size: 'sm', label: t('setup.later'), onclick: function () { closeWizard(true); } });
+  var later = button({ variant: 'ghost', size: 'sm', icon: 'history', label: t('setup.later'), title: t('setup.later.hint'), onclick: function () { closeWizard(true); } });
   later.setAttribute('data-setup-later', '');
+  later.removeAttribute('aria-label');
   var title = h('div', { class: 'setup-title' },
     h('div', { class: 'setup-title-mark' }, icon('flask', 'h-5 w-5')),
     h('div', { class: 'min-w-0' },
-      h('h1', { id: 'setup-title', class: 'text-lg font-semibold truncate', text: t('setup.title') }),
-      h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 truncate', text: t('setup.subtitle') })));
+      h('h1', { id: 'setup-title', text: t('setup.title') }),
+      h('p', { text: t('setup.subtitle') })));
+  var side = h('aside', { class: 'setup-side' },
+    h('div', { class: 'setup-side-top' }, title, h('div', { class: 'setup-side-later' }, later)),
+    meter,
+    h('nav', { class: 'setup-nav', 'aria-label': t('setup.steps') }, bar));
   var el = h('div', { class: 'setup-overlay', 'data-economy': 'setup', 'data-l10n-skip': '', dir: dir, role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'setup-title' },
-    h('header', { class: 'setup-header' }, title, later),
-    h('nav', { class: 'setup-nav', 'aria-label': t('setup.steps') }, bar),
-    h('main', { class: 'setup-main' }, h('div', { class: 'setup-inner' }, body)),
-    footer);
-  wiz = { el: el, state: state, step: null, ctl: null, bar: bar, body: body, footer: footer, prevFocus: document.activeElement, auto: !!auto };
+    h('div', { class: 'setup-window' }, side, h('div', { class: 'setup-pane' }, body, footer)));
+  wiz = { el: el, state: state, step: null, ctl: null, bar: bar, meter: meter, body: body, footer: footer, prevFocus: document.activeElement, auto: !!auto };
   document.addEventListener('keydown', trapKeys, true);
   document.addEventListener('keydown', wizardEsc);
   document.documentElement.classList.add('setup-open');
@@ -20835,22 +21184,41 @@ function closeWizard(later, done) {
   });
 }
 
+function stepState(k) {
+  return k === 'review' ? (wiz.state && wiz.state.status === 'completed' ? 'done' : 'pending') : setupStepStatus(wiz.state, k);
+}
+
 function paintBar() {
   if (!wiz) return;
   clear(wiz.bar);
   SETUP_ORDER.forEach(function (k, i) {
-    var st = k === 'review' ? (wiz.state && wiz.state.status === 'completed' ? 'done' : 'pending') : setupStepStatus(wiz.state, k);
+    var st = stepState(k);
     var on = wiz.step === k;
-    var mark = st === 'done' ? icon('check', 'h-3.5 w-3.5') : st === 'skipped' ? h('span', { text: '–' }) : h('span', { text: localDigits(i + 1) });
+    var mark = st === 'done' ? icon('check', 'h-3.5 w-3.5') : h('span', { text: localDigits(i + 1) });
     var b = h('button', { type: 'button', class: 'setup-step setup-step--' + st + (on ? ' setup-step--on' : ''), 'data-step': k, 'aria-current': on ? 'step' : null,
       'aria-label': localDigits(i + 1) + '. ' + t('setup.step.' + k) + ' (' + t('setup.st.' + st) + ')',
       onclick: function () { goStep(k); } },
       h('span', { class: 'setup-step-num', 'aria-hidden': 'true' }, mark),
-      h('span', { class: 'setup-step-label', text: t('setup.step.' + k) }));
+      h('span', { class: 'setup-step-text', 'aria-hidden': 'true' },
+        h('span', { class: 'setup-step-label', text: t('setup.step.' + k) }),
+        k === 'review' ? null : h('span', { class: 'setup-step-state', text: t('setup.st.' + st) })));
     wiz.bar.appendChild(h('li', {}, b));
   });
+  var steps = SETUP_ORDER.slice(0, -1);
+  var finished = steps.filter(function (k) { return setupStepStatus(wiz.state, k) !== 'pending'; }).length;
+  var i = Math.max(0, SETUP_ORDER.indexOf(wiz.step));
+  clear(wiz.meter).appendChild(h('div', { class: 'setup-meter-text' },
+    h('b', { 'data-setup-of': '', text: t('setup.stepOf', { n: localDigits(i + 1), total: localDigits(SETUP_ORDER.length) }) }),
+    h('span', { class: 'tabular-nums', text: t('setup.progress', { n: localDigits(finished), total: localDigits(steps.length) }) })));
+  wiz.meter.appendChild(h('div', { class: 'setup-meter-track', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(steps.length), 'aria-valuenow': String(finished), 'aria-label': t('setup.progress', { n: localDigits(finished), total: localDigits(steps.length) }) },
+    h('div', { class: 'setup-meter-bar', style: 'width:' + Math.round(finished / steps.length * 100) + '%' })));
   var cur = wiz.bar.querySelector('.setup-step--on');
-  if (cur && cur.scrollIntoView) { try { cur.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {} }
+  var nav = wiz.bar.parentNode;
+  if (cur && nav && nav.scrollWidth > nav.clientWidth) {
+    var r = cur.getBoundingClientRect();
+    var nr = nav.getBoundingClientRect();
+    if (r.left < nr.left || r.right > nr.right) nav.scrollLeft += (r.left + r.width / 2) - (nr.left + nr.width / 2);
+  }
 }
 
 function goStep(k, force) {
@@ -20877,25 +21245,21 @@ function prevOf(k) {
 
 function renderStep(k) {
   var w = wiz;
-  var i = SETUP_ORDER.indexOf(k);
   var st = k === 'review' ? null : setupStepStatus(w.state, k);
   var content = h('div', { class: 'setup-content' });
   clear(w.body).appendChild(h('section', { class: 'setup-section', 'aria-labelledby': 'setup-step-title', 'data-setup-step': k },
-    h('div', { class: 'setup-section-head' },
+    h('div', { class: 'setup-head' },
       h('div', { class: 'setup-section-icon' }, icon(SETUP_ICONS[k], 'h-5 w-5')),
       h('div', { class: 'min-w-0 flex-1' },
-        h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('setup.stepOf', { n: localDigits(i + 1), total: localDigits(SETUP_ORDER.length) }) }),
-        h('h2', { id: 'setup-step-title', class: 'text-xl font-semibold', tabindex: '-1', text: t('setup.step.' + k + '.title') }),
-        h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300 mt-1', text: t('setup.step.' + k + '.desc') })),
-      st ? tag(t('setup.st.' + st), STEP_COLOR[st], 'shrink-0') : null),
-    content));
+        h('h2', { id: 'setup-step-title', tabindex: '-1', text: t('setup.step.' + k + '.title') }),
+        h('p', { text: t('setup.step.' + k + '.desc') })),
+      st && st !== 'pending' ? tag(t('setup.st.' + st), STEP_COLOR[st], 'shrink-0') : null),
+    h('div', { class: 'setup-body' }, content)));
   var ctl = STEP_BUILDERS[k](content, w);
   w.ctl = ctl;
   paintFooter(k, ctl);
   var hd = w.body.querySelector('#setup-step-title');
   if (hd) { try { hd.focus({ preventScroll: true }); } catch (e) { hd.focus(); } }
-  var main = w.el.querySelector('.setup-main');
-  if (main) main.scrollTop = 0;
 }
 
 function paintFooter(k, ctl) {
@@ -20904,12 +21268,14 @@ function paintFooter(k, ctl) {
   var first = k === SETUP_ORDER[0];
   var review = k === 'review';
   var back = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('setup.back'), disabled: first, onclick: function () { goStep(prevOf(k)); } });
-  var skip = review ? null : button({ variant: 'muted', size: 'sm', label: t('setup.skip'), onclick: function () {
+  back.setAttribute('data-setup-back', '');
+  back.removeAttribute('aria-label');
+  var skip = review ? null : button({ variant: 'ghost', size: 'sm', label: t('setup.skip'), onclick: function () {
     setBusy(skip, true);
     putSetup({ steps: stepPatch(k, 'skipped') }).then(function () { goStep(nextOf(k), true); }, function (err) { setBusy(skip, false); toast('error', errorText(err)); });
   } });
   if (skip) skip.setAttribute('data-setup-skip', '');
-  var primary = button({ variant: 'primary', size: 'sm', icon: review ? 'check' : null, label: review ? t('setup.finish') : t('setup.saveNext'), onclick: function () {
+  var primary = button({ variant: 'primary', size: 'sm', icon: review ? 'check' : null, label: review ? t('setup.finish') : k === SETUP_ORDER[SETUP_ORDER.length - 2] ? t('setup.saveReview') : t('setup.saveNext'), onclick: function () {
     setBusy(primary, true, t('saving'));
     Promise.resolve(ctl.save()).then(function (result) {
       if (!result || !wiz) { setBusy(primary, false); return; }
@@ -20926,9 +21292,8 @@ function paintFooter(k, ctl) {
     });
   } });
   primary.setAttribute('data-setup-next', '');
-  w.footer.appendChild(h('div', { class: 'setup-footer-inner' },
-    back,
-    h('div', { class: 'flex items-center gap-2' }, skip, primary)));
+  w.footer.appendChild(back);
+  w.footer.appendChild(h('div', { class: 'setup-footer-end' }, skip, primary));
 }
 
 function stepPatch(k, v) {
@@ -20959,12 +21324,12 @@ function failBox(container, err, retry) {
 
 function stepBrand(box) {
   var editor = null;
-  box.appendChild(card2(brandFormSkeleton()));
+  box.appendChild(brandFormSkeleton());
   function load() {
     Promise.all([baseApi('GET', '/brand'), freshLanguages()]).then(function (all) {
       if (!box.isConnected) return;
-      editor = brandEditor(all[0]);
-      clear(box).appendChild(card2(editor.el));
+      editor = brandEditor(all[0], { compact: true });
+      clear(box).appendChild(editor.el);
     }, function (err) { failBox(box, err, load); });
   }
   load();
@@ -21038,30 +21403,42 @@ function stepLanguages(box) {
   return { save: function () { return 'done'; }, dirty: function () { return false; } };
 }
 
-var SETUP_CURRENCY_FIELDS = [
+var SETUP_CURRENCY_MAIN = [
+  { name: 'name', type: 'i18n', label: 'f.name', required: true, max: 128 },
+  { name: 'defaultValue', type: 'number', label: 'setup.cur.defaultValue', hint: 'setup.cur.defaultValue.hint', min: 0 }
+];
+var SETUP_CURRENCY_MORE = [
   { type: 'row', fields: [
     { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, keyRe: CURRENCY_KEY_RE, lockOnEdit: true },
     { name: 'type', type: 'select', label: 'f.type', required: true, options: opts('type.', ['soft', 'hard']) }
   ] },
-  { name: 'name', type: 'i18n', label: 'f.name', required: true, max: 128 },
-  { name: 'defaultValue', type: 'number', label: 'setup.cur.defaultValue', hint: 'setup.cur.defaultValue.hint', min: 0 },
   { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true }
 ];
 
+function setupCurrencyDefaults() {
+  var name = {};
+  LANGS.codes.forEach(function (c) { if (c === 'fa') name.fa = 'سکه'; else if (c === 'en') name.en = 'Coins'; });
+  if (!Object.keys(name).length) name[LANGS.def] = LANGS.def === 'fa' ? 'سکه' : 'Coins';
+  return { key: 'coin', type: 'soft', name: name, defaultValue: 100, sort: 0, metadata: {} };
+}
+
 function stepCurrency(box) {
-  var form = null;
+  var forms = null;
   var current = null;
   var dirty = false;
   var items = [];
   var top = h('div', {});
-  box.appendChild(card2([bar('10rem', 'h-4 mb-3'), bar('100%', 'h-10 mb-5'), h('div', { class: 'eco-form-row' }, skeletonField(), skeletonField()), skeletonField('h-16'), skeletonField(), skeletonField('h-16')]));
+  box.appendChild(h('div', {}, skeletonField('h-16'), skeletonField(), bar('10rem', 'h-4')));
   function build(item) {
     current = item;
     dirty = false;
-    var values = clone(item) || { type: 'soft', name: {}, defaultValue: 0, sort: 0, metadata: {} };
-    form = buildForm(SETUP_CURRENCY_FIELDS, values, { onchange: function () { dirty = true; } });
+    var values = clone(item) || setupCurrencyDefaults();
+    var onchange = function () { dirty = true; };
+    var main = buildForm(SETUP_CURRENCY_MAIN, values, { onchange: onchange, editing: !!item });
+    var more = buildForm(SETUP_CURRENCY_MORE, values, { onchange: onchange, editing: !!item });
+    forms = [main, more];
     dirty = false;
-    return form.el;
+    return h('div', {}, main.el, setupMore(t('setup.cur.more.hint'), more.el));
   }
   function paint() {
     var formBox = h('div', {});
@@ -21075,11 +21452,10 @@ function stepCurrency(box) {
         clear(top);
       }, { label: t('setup.cur.pick'), placeholder: false });
     }
-    clear(box).appendChild(card2([
+    clear(box).appendChild(h('div', { class: 'setup-narrow' },
       pick ? field(t('setup.cur.pick'), pick, t('setup.cur.pick.hint')) : h('div', { class: 'mb-4' }, notice('info', t('setup.cur.none'))),
       top,
-      formBox
-    ]));
+      formBox));
     formBox.appendChild(build(current));
   }
   function load() {
@@ -21093,10 +21469,12 @@ function stepCurrency(box) {
   load();
   return {
     save: function () {
-      if (!form) return false;
+      if (!forms) return false;
       clear(top);
-      if (!form.validate()) return false;
-      var payload = form.payload();
+      var ok = forms.map(function (f) { return f.validate(); }).every(Boolean);
+      if (!ok) { revealInvalid(box); return false; }
+      var payload = {};
+      forms.forEach(function (f) { var p = f.payload(); Object.keys(p).forEach(function (k) { payload[k] = p[k]; }); });
       var body = current ? { key: current.key, type: current.type, name: current.name, defaultValue: current.defaultValue, iconUrl: current.iconUrl, categoryId: current.categoryId || null, tagIds: current.tagIds || [], metadata: current.metadata || {}, sort: current.sort || 0 } : { metadata: {}, sort: 0 };
       Object.keys(payload).forEach(function (k) { body[k] = payload[k]; });
       if (body.iconUrl == null) body.iconUrl = '';
@@ -21110,7 +21488,9 @@ function stepCurrency(box) {
         }
         return 'done';
       }, function (err) {
-        if (!form.showServerError(err)) top.appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err))));
+        var shown = forms.some(function (f) { return f.showServerError(err); });
+        if (shown) revealInvalid(box);
+        else top.appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err))));
         return false;
       });
     },
@@ -21119,10 +21499,10 @@ function stepCurrency(box) {
 }
 
 function needQuestion(labelKey, value, onchange) {
-  var seg = segmented([{ value: 'yes', label: t('yes') }, { value: 'no', label: t('setup.no') }], value, onchange, t(labelKey), 'md');
+  var hint = h('p', { class: 'setup-need-hint', hidden: !!value, text: t('setup.need.hint') });
+  var seg = segmented([{ value: 'yes', label: t('yes') }, { value: 'no', label: t('setup.no') }], value, function (v) { hint.hidden = true; onchange(v); }, t(labelKey), 'md');
   seg.setAttribute('data-need', '');
-  return card2(h('div', { class: 'flex flex-col sm:flex-row sm:items-center justify-between gap-3' },
-    h('div', { class: 'font-medium', text: t(labelKey) }), seg), 'mb-4');
+  return h('div', { class: 'setup-need-wrap' }, h('div', { class: 'setup-need' }, h('div', { class: 'setup-need-q', text: t(labelKey) }), seg), hint);
 }
 
 function sandboxBox(on, onchange, confirmOff) {
@@ -21155,6 +21535,7 @@ function stepPayment(box) {
   var els = {};
   var need = null;
   var dirty = false;
+  var openM = null;
   var top = h('div', {});
   box.appendChild(questionSkeleton(2));
   function methodCard(m) {
@@ -21175,27 +21556,41 @@ function stepPayment(box) {
     });
     if (!(m.fields || []).length) fieldsBox.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('pm.noFields') }));
     var errBox = h('div', {});
+    var hasFields = (m.fields || []).length > 0;
+    var edit = hasFields ? h('button', { type: 'button', class: 'setup-method-edit', 'data-method-edit': m.method, 'aria-expanded': 'false', onclick: function () { expand(openM === m.method ? null : m.method); } },
+      h('span', { text: t('setup.pay.settings') }), icon('chevron', 'h-3.5 w-3.5 setup-method-chev')) : null;
     var check = checkbox(picked[m.method], has('method.' + m.method) ? t('method.' + m.method) : m.method, function (on) {
       picked[m.method] = on;
       dirty = true;
-      fieldsBox.hidden = !on;
       el.classList.toggle('setup-method--on', on);
+      if (edit) edit.hidden = !on;
+      expand(on && hasFields ? m.method : openM === m.method ? null : openM);
     });
     check.setAttribute('data-pick-method', m.method);
-    fieldsBox.hidden = !picked[m.method];
-    var el = card2([
-      h('div', { class: 'flex items-center justify-between gap-3' }, check,
-        h('div', { class: 'flex items-center gap-1.5' }, mono(m.method), tag(m.configured ? t('pm.configured') : t('pm.notConfigured'), m.configured ? 'success' : 'secondary'))),
+    if (edit) edit.hidden = !picked[m.method];
+    var el = h('div', { class: 'setup-method' + (picked[m.method] ? ' setup-method--on' : ''), 'data-method': m.method },
+      h('div', { class: 'setup-method-head' }, check,
+        h('div', { class: 'flex items-center gap-2 shrink-0' }, tag(m.configured ? t('pm.configured') : t('pm.notConfigured'), m.configured ? 'success' : 'secondary'), edit)),
       errBox,
-      fieldsBox
-    ], 'setup-method mb-3' + (picked[m.method] ? ' setup-method--on' : ''));
-    el.setAttribute('data-method', m.method);
-    els[m.method] = { el: el, fields: fieldEls, err: errBox };
+      fieldsBox);
+    els[m.method] = { el: el, fields: fieldEls, err: errBox, box: fieldsBox, edit: edit };
     return el;
   }
+  function expand(name) {
+    openM = name;
+    Object.keys(els).forEach(function (k) {
+      var on = k === name && picked[k];
+      els[k].box.hidden = !on;
+      els[k].el.classList.toggle('setup-method--open', on);
+      if (els[k].edit) els[k].edit.setAttribute('aria-expanded', on ? 'true' : 'false');
+    });
+  }
   function paint() {
-    var list = h('div', { 'data-methods': '' });
+    var list = h('div', { class: 'setup-methods', 'data-methods': '' });
+    els = {};
     methods.forEach(function (m) { list.appendChild(methodCard(m)); });
+    var first = methods.filter(function (m) { return picked[m.method] && !m.configured && (m.fields || []).length; })[0];
+    expand(first ? first.method : null);
     list.hidden = need !== 'yes';
     var noBox = h('div', { hidden: need !== 'no' }, notice('info', t('setup.pay.no')));
     clear(box).appendChild(needQuestion('setup.pay.need', need, function (v) { need = v; dirty = true; list.hidden = v !== 'yes'; noBox.hidden = v !== 'no'; }));
@@ -21236,6 +21631,7 @@ function stepPayment(box) {
             failed = true;
             if (err.field && e.fields[err.field]) e.fields[err.field].setError(errorText(err));
             else e.err.appendChild(h('div', { class: 'mt-3' }, notice('error', errorText(err))));
+            expand(m.method);
             e.el.scrollIntoView({ block: 'center', behavior: 'smooth' });
           });
         });
@@ -21261,8 +21657,8 @@ function stepProvider(channel) {
     var fieldEls = {};
     var dirty = false;
     var top = h('div', {});
-    var formBox = h('div', {});
-    var testBoxEl = h('div', {});
+    var formBox = h('div', { class: 'setup-fields2' });
+    var testBoxEl = h('div', { class: 'setup-test' });
     box.appendChild(questionSkeleton(1));
     function current() { return items.filter(function (p) { return p.kind === kind; })[0] || null; }
     function buildForm2() {
@@ -21272,13 +21668,17 @@ function stepProvider(channel) {
       st = { sandbox: p ? !!p.sandbox : true };
       fieldEls = {};
       clear(formBox);
-      formBox.appendChild(sandboxBox(st.sandbox, function (v) { st.sandbox = v; dirty = true; paintTest(); }, true));
+      var sb = sandboxBox(st.sandbox, function (v) { st.sandbox = v; dirty = true; paintTest(); }, true);
+      sb.classList.add('eco-span-all');
+      formBox.appendChild(sb);
+      var extra = [];
       (def.fields || []).forEach(function (f) {
         var w = providerField(f, cfg, function () { dirty = true; if (fieldEls[f.name]) fieldEls[f.name].setError(''); });
         fieldEls[f.name] = w;
-        formBox.appendChild(w);
+        if (f.required) formBox.appendChild(w); else extra.push(w);
       });
-      if (!p) formBox.appendChild(h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 -mt-2 mb-2', text: t('setup.pv.new') }));
+      if (extra.length) formBox.appendChild(h('div', { class: 'eco-span-all' }, setupMore(t('setup.pv.more.hint'), h('div', { class: 'setup-fields2' }, extra))));
+      if (!p) formBox.appendChild(h('p', { class: 'eco-span-all text-xs text-secondary-500 dark:text-secondary-400 -mt-2 mb-2', text: t('setup.pv.new') }));
       paintTest();
     }
     function saveProvider() {
@@ -21298,7 +21698,7 @@ function stepProvider(channel) {
         buildForm2();
         return true;
       }, function (err) {
-        if (err.field && fieldEls[err.field]) { fieldEls[err.field].setError(errorText(err)); fieldEls[err.field].scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+        if (err.field && fieldEls[err.field]) { fieldEls[err.field].setError(errorText(err)); revealInvalid(formBox); }
         else top.appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err))));
         return false;
       });
@@ -21340,25 +21740,24 @@ function stepProvider(channel) {
       } });
       testBoxEl.appendChild(card2([
         h('div', { class: 'flex items-center gap-2 font-medium mb-1' }, icon('send', 'h-4 w-4'), h('span', { text: t('setup.test') })),
-        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: live ? t('setup.test.liveBlocked') : t('setup.test.hint') }),
+        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: live ? t('setup.test.liveBlocked') : t('setup.test.short') }),
         field(t('pv.test.to'), to),
         subject ? field(t('pv.test.subject'), subject, null, { optional: true }) : null,
         field(t('pv.test.message'), msg),
         h('div', { class: 'flex justify-end -mt-2' }, sendBtn),
         out
-      ], 'mt-4'));
+      ]));
       if (p) testBoxEl.setAttribute('data-provider-id', p.id);
     }
     function paint() {
       var kinds = catalog.filter(function (k) { return k.channel === channel; });
       var seg = segmented(kinds.map(function (k) { return { value: k.kind, label: kindLabel(k.kind) }; }), kind, function (v) { kind = v; dirty = true; buildForm2(); clear(top); }, t('pv.kind'), 'md');
       seg.setAttribute('data-kind', '');
-      var yesBox = h('div', { hidden: need !== 'yes' },
-        card2([
-          field(t('setup.pv.kind'), seg, t('setup.pv.kind.hint')),
+      var yesBox = h('div', { class: 'setup-cols', hidden: need !== 'yes' },
+        h('div', { class: 'min-w-0' },
+          h('div', { class: 'setup-kind', title: t('setup.pv.kind.hint') }, h('span', { class: 'setup-need-q', text: t('setup.pv.kind') }), seg),
           top,
-          formBox
-        ]),
+          formBox),
         testBoxEl);
       var noBox = h('div', { hidden: need !== 'no' }, notice('info', t('setup.' + channel + '.no')));
       clear(box).appendChild(needQuestion('setup.' + channel + '.need', need, function (v) { need = v; dirty = true; yesBox.hidden = v !== 'yes'; noBox.hidden = v !== 'no'; }));

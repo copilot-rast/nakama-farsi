@@ -494,8 +494,6 @@ LISTS['event-log'] = {
   ]
 };
 
-OVERVIEW_CATALOG.push('event-types', 'event-rules', 'level-tables', 'streaks');
-
 var TIMEZONES = ['Asia/Tehran', 'UTC', 'Asia/Dubai', 'Asia/Baghdad', 'Asia/Kabul', 'Asia/Baku', 'Asia/Yerevan', 'Europe/Istanbul', 'Europe/London', 'Europe/Berlin', 'Europe/Moscow', 'America/New_York', 'America/Los_Angeles', 'America/Toronto', 'Australia/Sydney', 'Asia/Tokyo', 'Asia/Kolkata', 'Asia/Riyadh'];
 
 function weekdayName(i) {

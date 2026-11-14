@@ -204,8 +204,6 @@ RESOURCES['task-groups'] = {
   afterSave: function () { forgetRefs('task-groups'); forgetRefs('tasks'); }
 };
 
-OVERVIEW_CATALOG.push('tasks', 'task-groups');
-
 var TASK_CARD = { id: null, data: null, loading: false, at: 0, err: null };
 
 function loadTaskCard(id) {

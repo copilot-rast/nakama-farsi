@@ -544,8 +544,6 @@ function paymentMethodsPage(container) {
   load();
 }
 
-var OVERVIEW_CATALOG = ['currencies', 'metas', 'prizes', 'products', 'gifts', 'categories', 'tags'];
-
 var COVERAGE_PAGES = { languages: 'languages', categories: 'categories', tags: 'tags', currencies: 'currencies', metas: 'metas', prizes: 'prizes', products: 'products', gifts: 'gifts', faqs: 'faqs', news: 'news' };
 
 function coverageLabel(resource) {
@@ -626,62 +624,295 @@ function statCard(label, value, sub, href, opts) {
   return h('a', { href: href, class: 'block bg-white dark:bg-secondary-800 overflow-hidden rounded-md shadow hover:bg-secondary-50 dark:hover:bg-secondary-700 transition' }, inner);
 }
 
+var OVERVIEW_GROUPS = [
+  { id: 'progress', items: [
+    { page: 'currencies' },
+    { page: 'metas', more: 'meta-rules', moreKey: 'ov.sub.rules' },
+    { page: 'meta-relations', active: 'activeMetaRelations' },
+    { page: 'level-tables', active: 'activeLevelTables' },
+    { page: 'tasks', active: 'activeTasks', more: 'task-groups', moreKey: 'ov.sub.groups' },
+    { page: 'achievements', active: 'activeAchievements' },
+    { page: 'streaks', active: 'activeStreaks' }
+  ] },
+  { id: 'sales', items: [
+    { page: 'products', active: 'activeProducts' },
+    { page: 'offers', active: 'activeOffers' },
+    { page: 'items', active: 'activeItems' },
+    { page: 'gifts', active: 'activeGifts' },
+    { page: 'friend-gifts', more: 'friendGiftsPending', moreKey: 'ov.sub.waiting' }
+  ] },
+  { id: 'play', items: [
+    { page: 'prizes' },
+    { page: 'prize-groups' },
+    { page: 'games', active: 'activeGames' },
+    { page: 'chance-games', active: 'activeChanceGames', more: 'chancePlaysToday', moreKey: 'ov.sub.playsToday' }
+  ] },
+  { id: 'growth', items: [
+    { page: 'event-types', active: 'activeEventTypes' },
+    { page: 'event-rules', active: 'activeEventRules' },
+    { page: 'referrals', more: 'referralsCompleted', moreKey: 'ov.sub.completed' }
+  ] }
+];
+var OVERVIEW_SHARED = ['categories', 'tags'];
+var OVERVIEW_TINT = { progress: 'violet', sales: 'info', play: 'warn', growth: 'teal' };
+var PAY_STATUS_ORDER = ['success', 'pending', 'failed', 'expired'];
+
+function ovAllowed(page) {
+  var ps = psSection(page);
+  if (ps) return !ps.acl || aclCan(ps.acl, 0);
+  return pageAllowed(page);
+}
+
+function ovIcon(page, tint, duo) {
+  var box = h('span', { class: 'eco-ov-ic eco-ov-tint-' + (tint || 'info'), 'aria-hidden': 'true' });
+  var P = window.NakamaPlane;
+  if (P && P.iconD && (duo || P.iconFor)) box.innerHTML = P.iconD(duo || P.iconFor('#/economy/' + page));
+  else box.appendChild(icon(page, 'h-4 w-4'));
+  return box;
+}
+
+function ovDelta(cur, prev, sinceKey) {
+  cur = Number(cur || 0);
+  prev = Number(prev || 0);
+  if (!cur && !prev) return h('span', { class: 'eco-ov-delta', 'data-ov-delta': 'flat', text: t(sinceKey + '.none') });
+  if (!prev) return h('span', { class: 'eco-ov-delta eco-ov-delta--up', 'data-ov-delta': 'new', text: t('ov.delta.new') });
+  var pct = Math.round((cur - prev) / prev * 100);
+  var dir = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
+  var sign = pct > 0 ? '+' : pct < 0 ? '−' : '';
+  return h('span', { class: 'eco-ov-delta eco-ov-delta--' + dir, 'data-ov-delta': dir },
+    h('span', { class: 'eco-ov-delta-num', dir: 'ltr', text: sign + fmtNum(Math.abs(pct)) + ovPct() }),
+    h('span', { text: ' ' + t(sinceKey) }));
+}
+
+function ovPct() {
+  return lang() === 'fa' ? '٪' : '%';
+}
+
+function ovRtl() {
+  return document.documentElement.getAttribute('dir') === 'rtl';
+}
+
+function ovSpark(values) {
+  if (ovRtl()) values = values.slice().reverse();
+  var w = 120;
+  var hgt = 32;
+  var max = Math.max.apply(null, values.concat([0]));
+  var svg = h('svg:svg', { viewBox: '0 0 ' + w + ' ' + hgt, preserveAspectRatio: 'none', class: 'eco-ov-spark', 'aria-hidden': 'true', focusable: 'false' });
+  if (!max || values.length < 2) {
+    svg.appendChild(h('svg:line', { x1: 0, x2: w, y1: hgt - 1, y2: hgt - 1, class: 'eco-ov-spark-base' }));
+    return svg;
+  }
+  var step = w / (values.length - 1);
+  var pts = values.map(function (v, i) { return (i * step).toFixed(1) + ',' + (hgt - 2 - (v / max) * (hgt - 4)).toFixed(1); });
+  svg.appendChild(h('svg:path', { d: 'M0,' + hgt + ' L' + pts.join(' L') + ' L' + w + ',' + hgt + ' Z', class: 'eco-ov-spark-area' }));
+  svg.appendChild(h('svg:polyline', { points: pts.join(' '), class: 'eco-ov-spark-line', 'vector-effect': 'non-scaling-stroke' }));
+  return svg;
+}
+
+function ovKpi(opts) {
+  var head = h('div', { class: 'eco-ov-kpi-head' }, ovIcon(opts.icon, opts.tint, opts.duo),
+    h('span', { class: 'eco-ov-kpi-label', text: opts.label }));
+  var value = h('div', { class: 'eco-ov-kpi-value' + (opts.alert ? ' eco-ov-alert' : '') },
+    h('span', { class: 'tabular-nums', text: fmtNum(opts.value || 0) }),
+    opts.unit ? h('span', { class: 'eco-ov-kpi-unit', text: opts.unit }) : null);
+  var inner = [head, value, opts.spark || null, h('div', { class: 'eco-ov-kpi-foot' }, opts.foot || null)];
+  var attrs = { class: 'eco-ov-kpi', 'data-ov-kpi': opts.id };
+  if (opts.attrs) Object.keys(opts.attrs).forEach(function (k) { attrs[k] = opts.attrs[k]; });
+  if (opts.href) { attrs.href = opts.href; return h('a', attrs, inner); }
+  return h('div', attrs, inner);
+}
+
+function ovTile(item, c, tint) {
+  var page = item.page;
+  var n = Number(c[page] || 0);
+  var bits = [];
+  if (item.active && c[item.active] !== undefined && n) bits.push(t('ov.sub.active', { n: localDigits(fmtNum(c[item.active])) }));
+  if (item.more && c[item.more]) bits.push(t(item.moreKey, { n: localDigits(fmtNum(c[item.more])) }));
+  var label = t('nav.' + page);
+  var sub = n ? bits.join(t('ov.sep')) : t('ov.sub.empty');
+  return h('a', { href: hashFor(page), class: 'eco-ov-tile' + (n ? '' : ' eco-ov-tile--zero'), 'data-ov-tile': page, title: label },
+    ovIcon(page, n ? tint : 'mute'),
+    h('span', { class: 'eco-ov-tile-text' },
+      h('span', { class: 'eco-ov-tile-label', text: label }),
+      h('span', { class: 'eco-ov-tile-sub', text: sub || ' ' })),
+    h('span', { class: 'eco-ov-tile-num tabular-nums', text: fmtNum(n) }));
+}
+
+function ovSection(titleText, aside, body, attrs) {
+  var a = { class: 'eco-ov-section' };
+  if (attrs) Object.keys(attrs).forEach(function (k) { a[k] = attrs[k]; });
+  return h('section', a,
+    h('div', { class: 'eco-ov-section-head' }, h('h2', { class: 'eco-ov-h2', text: titleText }), aside || null),
+    body);
+}
+
+function ovShortDay(day) {
+  var d = new Date(day + 'T12:00:00');
+  if (isNaN(d.getTime())) return day;
+  return new Intl.DateTimeFormat(locale(), { month: 'short', day: 'numeric' }).format(d);
+}
+
+function ovChart(daily, metric) {
+  var vals = daily.map(function (d) { return Number((metric === 'revenue' ? d.toman : d.payments) || 0); });
+  var total = vals.reduce(function (a, b) { return a + b; }, 0);
+  var max = Math.max.apply(null, vals.concat([0]));
+  var box = h('div', { class: 'eco-ov-chart', 'data-ov-chart': metric });
+  var unit = metric === 'revenue' ? t('ov.chart.toman') : t('ov.chart.count');
+  var fmt = function (v) { return fmtNum(v) + (metric === 'revenue' ? ' ' + t('ov.chart.toman') : ''); };
+  var peak = vals.indexOf(max);
+  box.appendChild(h('div', { class: 'eco-ov-chart-meta' },
+    h('span', {}, h('span', { class: 'eco-ov-chart-total tabular-nums', text: fmtNum(total) }), h('span', { class: 'eco-ov-muted', text: ' ' + unit + ' · ' + t('ov.chart.days') })),
+    max ? h('span', { class: 'eco-ov-muted', text: t('ov.chart.peak', { v: fmt(max), day: ovShortDay(daily[peak].day) }) }) : null));
+  var W = 600;
+  var H = 140;
+  var gap = 3;
+  var bw = daily.length ? W / daily.length : W;
+  var svg = h('svg:svg', { viewBox: '0 0 ' + W + ' ' + H, preserveAspectRatio: 'none', class: 'eco-ov-bars', role: 'img',
+    'aria-label': max ? t('ov.chart.aria', { what: metric === 'revenue' ? t('ov.revenue') : t('ov.chart.payments'), total: fmt(total), peak: fmt(max), day: ovShortDay(daily[peak].day) }) : t('ov.chart.empty.' + metric) });
+  [0.25, 0.5, 0.75].forEach(function (f) { svg.appendChild(h('svg:line', { x1: 0, x2: W, y1: (H * f).toFixed(1), y2: (H * f).toFixed(1), class: 'eco-ov-grid', 'vector-effect': 'non-scaling-stroke' })); });
+  daily.forEach(function (d, i) {
+    var v = vals[i];
+    var bh = max ? Math.max(v ? 2 : 0, v / max * (H - 6)) : 0;
+    var x = ovRtl() ? W - (i + 1) * bw : i * bw;
+    var g = h('svg:g', { class: 'eco-ov-bar' + (i === daily.length - 1 ? ' eco-ov-bar--today' : '') },
+      h('svg:rect', { x: (x + gap / 2).toFixed(1), y: 0, width: Math.max(1, bw - gap).toFixed(1), height: H, class: 'eco-ov-bar-hit' }),
+      h('svg:rect', { x: (x + gap / 2).toFixed(1), y: (H - bh).toFixed(1), width: Math.max(1, bw - gap).toFixed(1), height: bh.toFixed(1), rx: 2, class: 'eco-ov-bar-fill' }));
+    g.appendChild(h('svg:title', { text: ovShortDay(d.day) + ': ' + fmt(v) }));
+    svg.appendChild(g);
+  });
+  var plot = h('div', { class: 'eco-ov-plot' }, svg);
+  if (!max) plot.appendChild(h('div', { class: 'eco-ov-plot-empty', text: t('ov.chart.empty.' + metric) }));
+  box.appendChild(plot);
+  if (daily.length) {
+    box.appendChild(h('div', { class: 'eco-ov-axis eco-ov-muted' },
+      h('span', { text: ovShortDay(daily[0].day) }),
+      h('span', { text: t('ov.today') })));
+  }
+  return box;
+}
+
+function ovStatus(by, grantErrors) {
+  var total = PAY_STATUS_ORDER.reduce(function (a, st) { return a + Number(by[st] || 0); }, 0);
+  var box = h('div', { class: 'eco-ov-status', 'data-ov-status': '' });
+  var barEl = h('div', { class: 'eco-ov-stack', role: 'img', 'aria-label': PAY_STATUS_ORDER.map(function (st) { return t('status.' + st) + ' ' + fmtNum(by[st] || 0); }).join(t('ov.sep')) });
+  var legend = h('ul', { class: 'eco-ov-legend' });
+  PAY_STATUS_ORDER.forEach(function (st) {
+    var n = Number(by[st] || 0);
+    var pct = total ? n / total * 100 : 0;
+    if (n) barEl.appendChild(h('span', { class: 'eco-ov-stack-seg eco-ov-st-' + st, style: 'width:' + pct.toFixed(2) + '%' }));
+    legend.appendChild(h('li', {}, h('a', { href: hashFor('payments', null, { status: st }), class: 'eco-ov-legend-row', 'data-ov-status-row': st },
+      h('span', { class: 'eco-ov-dot eco-ov-st-' + st, 'aria-hidden': 'true' }),
+      h('span', { class: 'eco-ov-legend-label', text: t('status.' + st) }),
+      h('span', { class: 'eco-ov-muted tabular-nums', text: total ? fmtNum(pct, { maximumFractionDigits: 0 }) + ovPct() : '' }),
+      h('span', { class: 'eco-ov-legend-num tabular-nums', text: fmtNum(n) }))));
+  });
+  if (!total) barEl.classList.add('eco-ov-stack--empty');
+  box.appendChild(h('div', { class: 'eco-ov-status-head' }, h('span', { class: 'eco-ov-h3', text: t('ov.status') }), h('span', { class: 'eco-ov-muted tabular-nums', text: t('ov.status.total', { n: localDigits(fmtNum(total)) }) })));
+  box.appendChild(barEl);
+  box.appendChild(legend);
+  if (grantErrors) box.appendChild(h('a', { href: hashFor('payments', null, { status: 'success' }), class: 'eco-ov-alertrow', 'data-ov-grant-errors': '' },
+    icon('alert', 'h-4 w-4'), h('span', { text: t('ov.grantErrors.n', { n: localDigits(fmtNum(grantErrors)) }) })));
+  return box;
+}
+
+function ovEmpty(textKey, hintKey, ctaKey, href, attr) {
+  var a = { class: 'eco-ov-empty' };
+  a[attr] = '';
+  return h('div', a,
+    h('div', { class: 'eco-ov-empty-text' },
+      h('div', { class: 'eco-ov-empty-title', text: t(textKey) }),
+      hintKey ? h('div', { class: 'eco-ov-muted', text: t(hintKey) }) : null),
+    href ? h('a', { href: href, class: 'eco-ov-cta', 'data-ov-cta': attr }, h('span', { text: t(ctaKey) }), icon('next', 'h-3.5 w-3.5 eco-ov-cta-ic')) : null);
+}
+
 function overviewPage(container) {
   var frame = pageFrame(t('nav.overview'), t('desc.overview'));
   clear(container).appendChild(frame.el);
-  var body = h('div', { class: 'flex flex-col gap-6' });
+  var body = h('div', { class: 'eco-ov', 'data-ov': '' });
   frame.content.appendChild(body);
+  var metric = 'revenue';
 
   function skeleton() {
-    clear(body);
-    [OVERVIEW_CATALOG.length, 6].forEach(function (n, k) {
-      var grid = h('div', { class: 'eco-stat-grid' });
-      for (var i = 0; i < n; i++) grid.appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('6rem'), bar('3rem', 'h-7'), k ? bar('8rem') : null)));
-      body.appendChild(h('div', {}, h('div', { class: 'mb-3' }, bar('7rem', 'h-4')), grid));
-    });
+    var kpis = h('div', { class: 'eco-ov-kpis' });
+    for (var i = 0; i < 4; i++) kpis.appendChild(h('div', { class: 'eco-ov-kpi' }, bar('6rem'), bar('4rem', 'h-7'), bar('8rem')));
+    clear(body).appendChild(kpis);
+    var grp = h('div', { class: 'eco-ov-tiles' });
+    for (var j = 0; j < 8; j++) grp.appendChild(h('div', { class: 'eco-ov-tile' }, bar('2rem', 'h-8'), h('span', { class: 'eco-ov-tile-text' }, bar('5rem'), bar('3rem'))));
+    body.appendChild(ovSection(t('ov.catalog'), null, grp));
   }
 
   function render(s) {
     s = s || {};
     var c = s.counts || {};
     var by = s.paymentsByStatus || {};
+    var daily = s.revenueDaily || [];
     clear(body);
-    var catalog = h('div', { class: 'eco-stat-grid' });
-    OVERVIEW_CATALOG.forEach(function (name) {
-      var active = name === 'products' ? c.activeProducts : name === 'gifts' ? c.activeGifts : undefined;
-      catalog.appendChild(statCard(t('nav.' + name), c[name], active !== undefined ? t('active') + ': ' + fmtNum(active) : null, hashFor(name)));
-    });
-    body.appendChild(h('div', {}, h('h2', { class: 'text-lg font-medium mb-3', text: t('ov.catalog') }), catalog));
 
-    if (c.eventsToday !== undefined) {
-      var events = h('div', { class: 'eco-stat-grid', 'data-ov-events': '' });
-      events.appendChild(statCard(t('ov.eventsToday'), c.eventsToday, null, hashFor('event-log')));
-      events.appendChild(statCard(t('ov.claimsReady'), c.claimsReady, null, null));
-      if (c.claimsFailed) events.appendChild(statCard(t('ov.claimsFailed'), c.claimsFailed, null, null, { alert: true }));
-      body.appendChild(h('div', {}, h('h2', { class: 'text-lg font-medium mb-3', text: t('ov.events') }), events));
+    var kpis = h('div', { class: 'eco-ov-kpis', 'data-ov-kpis': '' });
+    var payOk = ovAllowed('payments');
+    if (payOk) {
+      kpis.appendChild(ovKpi({ id: 'revenue', label: t('ov.revenue30'), value: c.revenueToman30, unit: t('ov.chart.toman'), href: hashFor('payments', null, { status: 'success' }), icon: 'payments', duo: 'wallet', tint: 'ok',
+        foot: ovDelta(c.revenueToman30, c.revenueTomanPrev30, 'ov.delta.vs30'), spark: ovSpark(daily.map(function (d) { return Number(d.toman || 0); })) }));
+      kpis.appendChild(ovKpi({ id: 'payments', label: t('ov.paymentsToday'), value: c.paymentsToday, href: hashFor('payments'), icon: 'payments', duo: 'card', tint: 'info',
+        foot: ovDelta(c.paymentsToday, c.paymentsPrevDay, 'ov.delta.vsDay'), spark: ovSpark(daily.map(function (d) { return Number(d.payments || 0); })) }));
     }
-
-    var payments = h('div', { class: 'eco-stat-grid' });
-    payments.appendChild(statCard(t('ov.revenue30'), c.revenueToman30, t('toman', { n: '' }).trim(), null));
-    payments.appendChild(statCard(t('ov.paymentsToday'), c.paymentsToday, t('ov.total') + ': ' + fmtNum(c.payments || 0), hashFor('payments')));
-    ['pending', 'success', 'failed', 'expired'].forEach(function (st) {
-      payments.appendChild(statCard(t('status.' + st), by[st], null, hashFor('payments', null, { status: st })));
-    });
-    if (c.grantErrors) payments.appendChild(statCard(t('ov.grantErrors'), c.grantErrors, null, hashFor('payments', null, { status: 'success' }), { alert: true }));
-    body.appendChild(h('div', {}, h('h2', { class: 'text-lg font-medium mb-3', text: t('ov.payments') }), payments));
-
-    var methods = s.paymentMethods || [];
-    if (methods.length) {
-      var list = h('div', { class: 'flex flex-col' });
-      methods.forEach(function (m) {
-        list.appendChild(h('a', { href: hashFor('payment-methods'), class: 'eco-log flex flex-wrap items-center gap-2 px-4 py-3 border-b border-secondary-200 dark:border-secondary-700 hover:bg-secondary-50 dark:hover:bg-secondary-700' },
-          h('span', { class: 'font-medium flex-1', text: has('method.' + m.method) ? t('method.' + m.method) : m.method }),
-          m.sandbox ? tag(t('ov.sandbox'), 'warning') : null,
-          tag(m.configured ? t('pm.configured') : t('pm.notConfigured'), m.configured ? 'secondary' : 'error'),
-          tag(m.isActive ? t('active') : t('inactive'), m.isActive ? 'success' : 'secondary')));
-      });
-      body.appendChild(h('div', {}, h('h2', { class: 'text-lg font-medium mb-3', text: t('ov.methods') }), card(list)));
+    if (c.eventsToday !== undefined && ovAllowed('event-log')) {
+      kpis.appendChild(ovKpi({ id: 'events', label: t('ov.eventsToday'), value: c.eventsToday, href: hashFor('event-log'), icon: 'event-types', duo: 'zap', tint: 'violet', attrs: { 'data-ov-events': '' },
+        foot: ovDelta(c.eventsToday, c.eventsPrevDay, 'ov.delta.vsDay') }));
+      var failed = Number(c.claimsFailed || 0);
+      kpis.appendChild(ovKpi({ id: 'claims', label: t('ov.claimsReady'), value: c.claimsReady, href: hashFor('event-log'), icon: 'event-rules', duo: 'gift', tint: failed ? 'bad' : 'warn',
+        foot: failed ? h('span', { class: 'eco-ov-delta eco-ov-delta--down', 'data-ov-claims-failed': '', text: t('ov.claimsFailed.n', { n: localDigits(fmtNum(failed)) }) })
+          : h('span', { class: 'eco-ov-delta', text: c.claimsReady ? t('ov.claims.waiting') : t('ov.claims.clear') }) }));
     }
+    if (kpis.children.length) body.appendChild(kpis);
+
+    var catalog = h('div', { class: 'eco-ov-groups', 'data-ov-catalog': '' });
+    OVERVIEW_GROUPS.forEach(function (g) {
+      var items = g.items.filter(function (it) { return ovAllowed(it.page); });
+      if (!items.length) return;
+      var total = items.reduce(function (a, it) { return a + Number(c[it.page] || 0); }, 0);
+      var tiles = h('div', { class: 'eco-ov-tiles', style: '--ov-cols:' + Math.ceil(items.length / Math.ceil(items.length / 4)) });
+      items.forEach(function (it) { tiles.appendChild(ovTile(it, c, OVERVIEW_TINT[g.id])); });
+      catalog.appendChild(h('div', { class: 'eco-ov-group', 'data-ov-group': g.id },
+        h('div', { class: 'eco-ov-group-head' },
+          h('h3', { class: 'eco-ov-h3', text: t('navg.' + g.id) }),
+          h('span', { class: 'eco-ov-muted tabular-nums', text: t('ov.group.total', { n: localDigits(fmtNum(total)) }) })),
+        tiles));
+    });
+    var shared = OVERVIEW_SHARED.filter(ovAllowed);
+    var sharedEl = shared.length ? h('div', { class: 'eco-ov-shared' }, h('span', { class: 'eco-ov-muted', text: t('ov.shared') }),
+      shared.map(function (p) { return h('a', { href: hashFor(p), class: 'eco-ov-chip', 'data-ov-tile': p }, h('span', { text: t('nav.' + p) }), h('span', { class: 'tabular-nums eco-ov-chip-num', text: fmtNum(c[p] || 0) })); })) : null;
+    if (catalog.children.length) body.appendChild(ovSection(t('ov.catalog'), sharedEl, catalog));
+
+    if (payOk) {
+      var methods = s.paymentMethods || [];
+      var activeMethods = methods.filter(function (m) { return m.isActive; });
+      var chartBox = h('div', { class: 'eco-ov-chartbox' });
+      var seg = segmented([{ value: 'revenue', label: t('ov.revenue') }, { value: 'payments', label: t('ov.chart.payments') }], metric, function (v) { metric = v; paintChart(); }, t('ov.chart.metric'));
+      seg.setAttribute('data-ov-metric', '');
+      function paintChart() { clear(chartBox).appendChild(ovChart(daily, metric)); }
+      paintChart();
+      var left = h('div', { class: 'eco-ov-pane' }, h('div', { class: 'eco-ov-pane-head' }, h('span', { class: 'eco-ov-h3', text: t('ov.chart.title') }), seg), chartBox);
+      var right = h('div', { class: 'eco-ov-pane' });
+      if (!activeMethods.length) {
+        right.appendChild(ovEmpty('ov.empty.methods', 'ov.empty.methods.hint', 'ov.empty.methods.cta', ovAllowed('payment-methods') ? hashFor('payment-methods') : null, 'data-ov-empty-methods'));
+      }
+      if (c.payments) right.appendChild(ovStatus(by, c.grantErrors));
+      else if (activeMethods.length) right.appendChild(ovEmpty('ov.empty.payments', 'ov.empty.payments.hint', 'ov.empty.payments.cta', ovAllowed('products') ? hashFor('products') : null, 'data-ov-empty-payments'));
+      if (methods.length && activeMethods.length) {
+        right.appendChild(h('div', { class: 'eco-ov-methods', 'data-ov-methods': '' },
+          h('span', { class: 'eco-ov-muted', text: t('ov.methods') }),
+          methods.filter(function (m) { return m.isActive || m.configured; }).map(function (m) {
+            var label = has('method.' + m.method) ? t('method.' + m.method) : m.method;
+            var state = !m.isActive ? 'off' : !m.configured ? 'bad' : m.sandbox ? 'sandbox' : 'on';
+            return h('a', { href: ovAllowed('payment-methods') ? hashFor('payment-methods') : '#', class: 'eco-ov-chip eco-ov-method--' + state, 'data-ov-method': m.method, title: t('ov.method.' + state) },
+              h('span', { class: 'eco-ov-dot', 'aria-hidden': 'true' }), h('span', { text: label }), h('span', { class: 'eco-ov-muted', text: t('ov.method.' + state) }));
+          })));
+      }
+      body.appendChild(ovSection(t('ov.payments'), h('a', { href: hashFor('payments'), class: 'eco-ov-link', text: t('ov.allPayments') }),
+        h('div', { class: 'eco-ov-payments', 'data-ov-payments': '' }, left, right)));
+    }
+    if (!body.children.length) body.appendChild(card(emptyBlock(t('ov.empty.none'))));
   }
 
   function load() {

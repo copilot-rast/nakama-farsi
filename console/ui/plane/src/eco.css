@@ -553,89 +553,6 @@ html.pl .brand-preview-btn {
   padding: 6px 14px;
 }
 
-html.pl .setup-overlay {
-  z-index: var(--z-wizard);
-  background: var(--base);
-  color: var(--ink-1);
-  animation: pl-fade-in var(--d3) var(--ease) backwards;
-}
-
-
-html.pl .setup-header,
-html.pl .setup-nav,
-html.pl .setup-footer {
-  margin: var(--gap) var(--gap) 0;
-  border: 1px solid var(--line);
-  border-radius: var(--r-panel);
-  background: var(--glass);
-  box-shadow: var(--glass-shadow);
-  -webkit-backdrop-filter: var(--blur);
-  backdrop-filter: var(--blur);
-}
-
-html.pl .setup-footer {
-  margin: 0 var(--gap) var(--gap);
-}
-
-html.pl .setup-nav {
-  padding: 0;
-}
-
-html.pl .setup-steps {
-  gap: 2px;
-  padding: 6px;
-}
-
-html.pl .setup-step {
-  min-height: 36px;
-  border-radius: var(--r-pill);
-  color: var(--ink-2);
-  transition: background-color var(--d2) var(--ease), color var(--d2) var(--ease), box-shadow var(--d2) var(--ease);
-}
-
-html.pl .setup-step:hover {
-  background: var(--well);
-  color: var(--ink-1);
-}
-
-html.pl .setup-step--on,
-html.pl .setup-step--on:hover {
-  background: var(--capsule-hi);
-  box-shadow: var(--seg-shadow);
-  color: var(--ink-1);
-}
-
-html.pl .setup-step-num {
-  background: var(--well);
-  border-color: var(--line-2);
-  color: var(--ink-2);
-}
-
-html.pl .setup-step--done .setup-step-num {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
-}
-
-html.pl .setup-step--on .setup-step-num {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
-}
-
-html.pl .setup-main {
-  padding: var(--gap);
-}
-
-html.pl .setup-inner {
-  max-width: 760px;
-  padding: 28px 32px;
-  border: 1px solid var(--line);
-  border-radius: var(--r-editor);
-  background: var(--thick);
-  box-shadow: var(--thick-shadow);
-  animation: pl-win-in var(--d3) var(--ease) backwards;
-}
-
 html.pl .setup-card {
   border-color: var(--line);
   border-radius: var(--r-card);
@@ -671,23 +588,6 @@ html.pl .setup-progress {
 
 html.pl .setup-progress-bar {
   background: var(--accent);
-}
-
-@media (max-width: 767px) {
-  html.pl .setup-header,
-  html.pl .setup-nav {
-    margin: 8px 8px 0;
-  }
-  html.pl .setup-footer {
-    margin: 0 8px 8px;
-  }
-  html.pl .setup-main {
-    padding: 8px;
-  }
-  html.pl .setup-inner {
-    padding: 18px 16px;
-    border-radius: var(--r-panel);
-  }
 }
 
 html.pl .eco-tr-tab.eco-tr-on .eco-tr-def {

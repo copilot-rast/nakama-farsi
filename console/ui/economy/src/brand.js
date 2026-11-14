@@ -392,8 +392,10 @@ function brandImage(value, extra, onchange) {
   return el;
 }
 
-function brandEditor(data) {
+function brandEditor(data, opts) {
   data = data || {};
+  opts = opts || {};
+  var opt = { optional: !opts.compact };
   var state = {
     name: trValue(data.name), shortName: data.shortName || '', logoUrl: data.logoUrl || '', logoDarkUrl: data.logoDarkUrl || '',
     markUrl: data.markUrl || '', accent: brandHex(data.accent), welcome: trValue(data.welcome)
@@ -403,12 +405,12 @@ function brandEditor(data) {
   var onchange = function () { preview.paint(); paintContrast(); };
 
   var nameCtl = translatedInput(state.name, { name: 'name', label: t('brand.f.name'), max: 64, oninput: function (v) { state.name = v; nameField.setError(''); nameCtl.markLang(null); onchange(); } });
-  var nameField = field(t('brand.f.name'), nameCtl, t('brand.f.name.hint'), { optional: true });
+  var nameField = field(t('brand.f.name'), nameCtl, t('brand.f.name.hint'), opt);
   var shortCtl = textInput(state.shortName, { label: t('brand.f.shortName'), oninput: function (v) { state.shortName = v; shortField.setError(''); onchange(); } });
-  var shortField = field(t('brand.f.shortName'), shortCtl, t('brand.f.shortName.hint'), { optional: true });
-  var logoField = field(t('brand.f.logo'), brandImage(state.logoUrl, '', function (v) { state.logoUrl = v || ''; logoField.setError(''); onchange(); }), t('brand.f.logo.hint'), { optional: true });
-  var darkField = field(t('brand.f.logoDark'), brandImage(state.logoDarkUrl, 'brand-img--dark', function (v) { state.logoDarkUrl = v || ''; darkField.setError(''); onchange(); }), t('brand.f.logoDark.hint'), { optional: true });
-  var markField = field(t('brand.f.mark'), brandImage(state.markUrl, '', function (v) { state.markUrl = v || ''; markField.setError(''); onchange(); }), t('brand.f.mark.hint'), { optional: true });
+  var shortField = field(t('brand.f.shortName'), shortCtl, t('brand.f.shortName.hint'), opt);
+  var logoField = field(t('brand.f.logo'), brandImage(state.logoUrl, '', function (v) { state.logoUrl = v || ''; logoField.setError(''); onchange(); }), t('brand.f.logo.hint'), opt);
+  var darkField = field(t('brand.f.logoDark'), brandImage(state.logoDarkUrl, 'brand-img--dark', function (v) { state.logoDarkUrl = v || ''; darkField.setError(''); onchange(); }), t('brand.f.logoDark.hint'), opt);
+  var markField = field(t('brand.f.mark'), brandImage(state.markUrl, '', function (v) { state.markUrl = v || ''; markField.setError(''); onchange(); }), t('brand.f.mark.hint'), opt);
 
   var picker = h('input', { type: 'color', class: 'brand-color-input', 'aria-label': t('brand.f.accent.pick'), value: state.accent || BRAND_DEFAULT_ACCENT });
   var hexInput = textInput(state.accent, { ltr: true, mono: true, label: t('brand.f.accent'), placeholder: BRAND_DEFAULT_ACCENT });
@@ -445,21 +447,30 @@ function brandEditor(data) {
   }
   var accentField = field(t('brand.f.accent'), h('div', { class: 'flex flex-col gap-2' },
     h('div', { class: 'flex items-center gap-2' }, picker, h('div', { class: 'brand-hex' }, hexInput), resetBtn),
-    swatches), t('brand.f.accent.hint'), { optional: true });
+    swatches), t('brand.f.accent.hint'), opt);
 
   var welcomeCtl = translatedInput(state.welcome, { name: 'welcome', label: t('brand.f.welcome'), multiline: true, rows: 2, max: 280, counter: true, oninput: function (v) { state.welcome = v; welcomeField.setError(''); welcomeCtl.markLang(null); } });
-  var welcomeField = field(t('brand.f.welcome'), welcomeCtl, t('brand.f.welcome.hint'), { optional: true });
+  var welcomeField = field(t('brand.f.welcome'), welcomeCtl, t('brand.f.welcome.hint'), opt);
 
   var fieldsEl = { name: nameField, shortName: shortField, logoUrl: logoField, logoDarkUrl: darkField, markUrl: markField, accent: accentField, welcome: welcomeField };
   setAccent(state.accent);
-  var el = h('div', { class: 'brand-editor' },
-    h('div', { class: 'brand-editor-main' },
-      nameField, shortField,
-      h('div', { class: 'eco-form-row' }, logoField, darkField),
-      markField, accentField, contrastBox, welcomeField),
-    h('aside', { class: 'brand-editor-aside' },
-      h('div', { class: 'text-sm font-medium text-secondary-700 dark:text-secondary-200 mb-2', text: t('brand.preview') }),
-      preview));
+  var el = opts.compact
+    ? h('div', { class: 'brand-editor brand-editor--compact' },
+      h('div', { class: 'brand-editor-main' },
+        h('p', { class: 'setup-allopt', text: t('setup.brand.allOptional') }),
+        nameField, logoField, accentField,
+        setupMore(t('setup.brand.more.hint'), [shortField, darkField, markField, welcomeField])),
+      h('aside', { class: 'brand-editor-aside', 'aria-label': t('brand.preview') },
+        h('div', { class: 'text-sm font-medium text-secondary-700 dark:text-secondary-200 mb-2', text: t('setup.brand.preview') }),
+        preview, contrastBox))
+    : h('div', { class: 'brand-editor' },
+      h('div', { class: 'brand-editor-main' },
+        nameField, shortField,
+        h('div', { class: 'eco-form-row' }, logoField, darkField),
+        markField, accentField, contrastBox, welcomeField),
+      h('aside', { class: 'brand-editor-aside' },
+        h('div', { class: 'text-sm font-medium text-secondary-700 dark:text-secondary-200 mb-2', text: t('brand.preview') }),
+        preview));
 
   function values() {
     return { name: trClean(state.name), shortName: state.shortName.trim(), logoUrl: (state.logoUrl || '').trim(), logoDarkUrl: (state.logoDarkUrl || '').trim(), markUrl: (state.markUrl || '').trim(), accent: brandHex(state.accent), welcome: trClean(state.welcome) };
@@ -473,7 +484,7 @@ function brandEditor(data) {
     if (wh) { welcomeCtl.markLang(wh.lang); welcomeField.setError(t('code.' + wh.code, { lang: langName(wh.lang) })); ok = false; }
     if (Array.from(state.shortName.trim()).length > 24) { shortField.setError(t('brand.err.short')); ok = false; }
     if (state.accent && !brandHex(state.accent)) { accentField.setError(t('brand.err.color')); ok = false; }
-    if (!ok) { var bad = el.querySelector('.eco-invalid'); if (bad) bad.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+    if (!ok) revealInvalid(el);
     return ok;
   }
   function showError(err) {
@@ -482,7 +493,7 @@ function brandEditor(data) {
     if (err.field === 'name') nameCtl.markLang(trServerLang(err, state.name, { max: 64 }));
     if (err.field === 'welcome') welcomeCtl.markLang(trServerLang(err, state.welcome, { max: 280 }));
     f.setError(err.code === 'INVALID_COLOR' ? t('brand.err.color') : errorText(err));
-    f.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    revealInvalid(el);
     return true;
   }
   return {
@@ -490,6 +501,20 @@ function brandEditor(data) {
     dirty: function () { return JSON.stringify(values()) !== initial; },
     clean: function () { initial = JSON.stringify(values()); }
   };
+}
+
+function setupMore(hint, children, open) {
+  return h('details', { class: 'setup-more', 'data-setup-more': '', open: !!open },
+    h('summary', {}, h('span', { text: t('setup.more') }), hint ? h('span', { class: 'setup-more-hint', text: '· ' + hint }) : null),
+    h('div', { class: 'setup-more-body' }, children));
+}
+
+function revealInvalid(root) {
+  var bad = root.querySelector('.eco-invalid');
+  if (!bad) return;
+  var d = bad.closest('details');
+  if (d) d.open = true;
+  bad.scrollIntoView({ block: 'center', behavior: 'smooth' });
 }
 
 function brandFormSkeleton() {

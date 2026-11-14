@@ -421,4 +421,3 @@ function relationsProgressSection(p, id, write, reload) {
   return progressSection('pp.relations', box);
 }
 
-OVERVIEW_CATALOG.push('meta-relations');

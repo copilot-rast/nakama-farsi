@@ -311,4 +311,3 @@ RESOURCES.games = {
   afterSave: function () { GAME_REG.at = 0; forgetRefs('games'); }
 };
 
-OVERVIEW_CATALOG.push('games');

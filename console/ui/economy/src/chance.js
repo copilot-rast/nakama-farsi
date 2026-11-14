@@ -224,8 +224,6 @@ RESOURCES['prize-groups'] = {
   afterSave: function () { forgetRefs('prize-groups'); }
 };
 
-OVERVIEW_CATALOG.push('chance-games', 'prize-groups');
-
 var PCH_CARD = { id: null, data: null, loading: false, at: 0, err: null, limit: 10 };
 
 function loadChanceCard(id) {
