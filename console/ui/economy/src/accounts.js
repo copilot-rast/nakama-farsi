@@ -373,6 +373,44 @@ function accountRulesPage(container) {
   page.load();
 }
 
+var FRIEND_FIELDS = [
+  { type: 'heading', label: 'fr.requests' },
+  { type: 'row', fields: [
+    { name: 'dailyRequests', type: 'number', label: 'f.fr.daily', hint: 'f.fr.daily.hint', required: true, min: 0, max: 1000 },
+    { name: 'maxFriends', type: 'number', label: 'f.fr.max', hint: 'f.fr.max.hint', required: true, min: 0, max: 10000 }
+  ] },
+  { type: 'heading', label: 'fr.pending' },
+  { type: 'row', fields: [
+    { name: 'expiryDays', type: 'number', label: 'f.fr.expiry', hint: 'f.fr.expiry.hint', required: true, min: 0, max: 365 },
+    { name: 'rejectCooldownHours', type: 'number', label: 'f.fr.cooldown', hint: 'f.fr.cooldown.hint', required: true, min: 0, max: 8760 }
+  ] }
+];
+
+function friendSummary(v) {
+  var n = function (x) { return Number(x) || 0; };
+  var parts = [
+    n(v.dailyRequests) ? t('fr.sum.daily', { n: fmtNum(n(v.dailyRequests)) }) : t('fr.sum.dailyOff'),
+    n(v.maxFriends) ? t('fr.sum.max', { n: fmtNum(n(v.maxFriends)) }) : t('fr.sum.maxOff'),
+    n(v.expiryDays) ? t('fr.sum.expiry', { n: fmtNum(n(v.expiryDays)) }) : t('fr.sum.expiryOff'),
+    n(v.rejectCooldownHours) ? t('fr.sum.cooldown', { n: fmtNum(n(v.rejectCooldownHours)) }) : t('fr.sum.cooldownOff')
+  ];
+  var box = h('div', { class: 'mt-2', 'data-friend-summary': '' }, notice('info', parts.join(t('fr.sum.sep'))));
+  if (v.updatedBy) box.appendChild(h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-2', text: t('up.savedBy', { who: v.updatedBy, when: fmtDate(v.updatedAt) }) }));
+  return box;
+}
+
+function friendRulesPage(container) {
+  var frame = tabFrame(t('desc.friends'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(baseApi, '/friend-rules', null, FRIEND_FIELDS, {
+    id: 'friends',
+    onchange: function (v, extra) { clear(extra).appendChild(friendSummary(v)); },
+    fixPayload: function (p) { return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0 }; }
+  });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
 function otpModeNotice(v, providers) {
   var list = providers || [];
   var chosen = v.providerId ? list.filter(function (p) { return p.id === v.providerId; })[0] : list.filter(function (p) { return p.isActive; })[0];

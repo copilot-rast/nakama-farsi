@@ -5,6 +5,7 @@ var PS_SECTIONS = [
   { id: 'languages', label: 'tab.languages', icon: 'languages', acl: 'SETTINGS', render: function (box, route, ctx) { return languagesPage(box, route.query, ctx); } },
   { id: 'countries', label: 'tab.countries', icon: 'flag', acl: 'SETTINGS', render: function (box, route, ctx) { return countriesPage(box, route.query, ctx); } },
   { id: 'accounts', label: 'tab.accounts', icon: 'users', acl: 'SETTINGS', render: function (box) { accountRulesPage(box); } },
+  { id: 'friends', label: 'tab.friends', icon: 'users', acl: 'SETTINGS', render: function (box) { friendRulesPage(box); } },
   { id: 'otp', label: 'tab.otp', icon: 'phone', acl: 'NOTIFICATION', render: function (box, route, ctx) { return otpPage(box, route.query, ctx); } },
   { id: 'app-versions', label: 'tab.app-versions', icon: 'versions', acl: 'SETTINGS', render: function (box, route, ctx) { return appVersionsPage(box, route.query, ctx); } },
   { id: 'categories', label: 'nav.categories', icon: 'categories', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'categories', route.query, ctx); } },
