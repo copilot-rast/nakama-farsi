@@ -204,7 +204,7 @@ RESOURCES.games = {
         h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('gm.stat.players', { n: fmtNum(it.players || 0) }) }));
     }, width: 120 },
     { label: 'col.status', render: function (it) {
-      return h('div', { class: 'flex flex-wrap gap-1' }, it.isActive ? tag(t('active'), 'success') : tag(t('gm.off'), 'warning'), gameRegistryTag(it));
+      return h('div', { class: 'flex flex-wrap gap-1' }, it.isActive ? tag(t('active'), 'success') : tag(t('gm.off'), 'warning'), it.voiceEnabled === false ? tag(t('gm.voiceOff'), 'secondary') : null, gameRegistryTag(it));
     }, width: 170 }
   ],
   fields: [
@@ -233,6 +233,7 @@ RESOURCES.games = {
       { name: 'matchSeconds', type: 'number', label: 'f.gm.limit', hint: 'f.gm.limit.hint', optional: true, min: 1, max: 604800 }
     ] },
     { name: 'botsAllowed', type: 'bool', inline: true, label: 'f.gm.bots', hint: 'f.gm.bots.hint' },
+    { name: 'voiceEnabled', type: 'bool', inline: true, label: 'f.gm.voice', hint: 'f.gm.voice.hint' },
     { type: 'heading', label: 'gm.h.rooms' },
     { name: 'rooms', type: 'rows', addLabel: 'gm.room.add', emptyText: 'gm.room.empty', max: 20, empty: [],
       newRow: function (rows) {
@@ -278,7 +279,7 @@ RESOURCES.games = {
     var name = {};
     if (def && def.name) name = Object.assign({}, def.name);
     return { key: key, isActive: true, name: name, description: {}, maintenance: {}, iconUrl: '', categoryId: null, tagIds: [], minPlayers: def && def.realtime ? 2 : 1, maxPlayers: def && def.realtime ? 2 : 1,
-      turnSeconds: null, matchSeconds: null, botsAllowed: false, rooms: [], platforms: [], minVersion: '', maxVersion: '', leaderboardId: '', settings: {}, sort: 0 };
+      turnSeconds: null, matchSeconds: null, botsAllowed: false, rooms: [], platforms: [], minVersion: '', maxVersion: '', leaderboardId: '', settings: {}, sort: 0, voiceEnabled: true };
   },
   toForm: function (v) {
     v.rooms = (v.rooms || []).map(function (r) {

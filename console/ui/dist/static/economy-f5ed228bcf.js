@@ -3105,6 +3105,59 @@ var MESSAGES = {
     'section.sys.short': "سامانه",
     'nav.updates': "به‌روزرسانی‌ها",
     'desc.updates': "نسخهٔ همین سرور و تغییرهای تازهٔ ریپوی بالایی. این صفحه فقط نشان می‌دهد و هیچ دستوری اجرا نمی‌کند.",
+    'tab.voice': 'سرور ویس',
+    'desc.voice': 'سرویسی که برای چت صوتی بازی‌ها توکن می‌دهد. سرور فقط به بازیکنی توکن می‌دهد که در همان مسابقه، پارتی یا اتاق باز باشد.',
+    'f.vc.enabled': 'چت صوتی روشن باشد',
+    'f.vc.enabled.hint': 'خاموش که باشد، بازی جواب «ویس خاموش است» می‌گیرد و خطا نمی‌بیند.',
+    'f.vc.provider': 'سرویس ویس',
+    'f.vc.provider.hint': 'سرویس تازه فقط یک فایل در سرور است؛ همین فهرست خودش را نشان می‌دهد.',
+    'vc.provider.none': 'هیچ‌کدام',
+    'vc.provider.livekit': 'لایوکیت (LiveKit)',
+    'vc.provider.comms': 'سرویس گفتگوی رستار (comms)',
+    'vc.about.livekit': 'توکن لایوکیت همین‌جا با کلید و رمز API امضا می‌شود و بازی مستقیم به سرور لایوکیت وصل می‌شود.',
+    'vc.about.comms': 'سرور با کلید سرور از سرویس comms توکن ورود می‌گیرد و بازی با همان توکن و نشانی عمومی وارد اتاق می‌شود.',
+    'f.vc.livekit.url': 'نشانی سرور لایوکیت',
+    'f.vc.livekit.url.hint': 'مثل wss://voice.example.com؛ همین نشانی به بازی داده می‌شود.',
+    'f.vc.livekit.apiKey': 'کلید API',
+    'f.vc.livekit.apiKey.hint': 'کلید پروژه در لایوکیت.',
+    'f.vc.livekit.apiSecret': 'رمز API',
+    'f.vc.livekit.apiSecret.hint': 'رمزنگاری‌شده نگه داشته می‌شود و دیگر نشان داده نمی‌شود. برای نگه داشتن رمز فعلی دست نزنید.',
+    'f.vc.comms.url': 'نشانی سرویس comms برای سرور',
+    'f.vc.comms.url.hint': 'نشانی‌ای که این سرور با آن به comms وصل می‌شود.',
+    'f.vc.comms.publicUrl': 'نشانی عمومی comms',
+    'f.vc.comms.publicUrl.hint': 'نشانی‌ای که بازی با آن به comms وصل می‌شود. خالی یعنی همان نشانی بالا.',
+    'f.vc.comms.serverKey': 'کلید سرور (ck_…)',
+    'f.vc.comms.serverKey.hint': 'کلید برنامه در comms. رمزنگاری‌شده نگه داشته می‌شود و دیگر نشان داده نمی‌شود.',
+    'vc.noSeal': 'برای نگه داشتن رمز، متغیر ECONOMY_SECRET_KEY روی سرور لازم است.',
+    'vc.rules': 'قانون‌های توکن',
+    'f.vc.ttl': 'عمر توکن (ثانیه)',
+    'f.vc.ttl.hint': 'از ۶۰ تا ۸۶۴۰۰ ثانیه. بازی پیش از تمام شدن، توکن تازه می‌گیرد.',
+    'f.vc.canPublish': 'بازیکن بتواند حرف بزند',
+    'f.vc.canPublish.hint': 'خاموش یعنی همه فقط می‌شنوند. بازیکن بی‌صدا شده همیشه فقط می‌شنود.',
+    'f.vc.openRooms': 'اتاق‌های باز هر بازی',
+    'f.vc.openRooms.hint': 'بازی می‌تواند با نام اتاق و کلید بازی، بدون مسابقه، اتاق ویس بگیرد؛ مثلاً برای لابی.',
+    'vc.state.off': 'چت صوتی خاموش است.',
+    'vc.state.on': 'چت صوتی روشن است با {name}.',
+    'vc.state.noProvider': 'چت صوتی روشن است ولی سرویسی انتخاب نشده.',
+    'vc.state.noSeal': 'ECONOMY_SECRET_KEY روی سرور نیست؛ رمز سرویس ویس را نمی‌شود نگه داشت.',
+    'vc.test': 'امتحان اتصال',
+    'vc.testing': 'در حال امتحان…',
+    'vc.test.ok': 'اتصال به {name} درست است ({ms} میلی‌ثانیه).',
+    'gm.voiceOff': 'بی‌ویس',
+    'f.gm.voice': 'چت صوتی',
+    'f.gm.voice.hint': 'خاموش یعنی این بازی توکن ویس نمی‌گیرد، حتی وقتی ویس در تنظیمات پروژه روشن است.',
+    'code.VOICE_PROVIDER_REQUIRED': 'اول یک سرویس ویس انتخاب کنید.',
+    'code.INVALID_VOICE_PROVIDER': 'این سرویس ویس شناخته نیست.',
+    'code.VOICE_FIELD_REQUIRED': 'این را پر کنید.',
+    'code.VOICE_FIELD_TOO_LONG': 'بیش از اندازه بلند است.',
+    'code.VOICE_SEAL_UNAVAILABLE': 'برای نگه داشتن رمز، متغیر ECONOMY_SECRET_KEY روی سرور لازم است.',
+    'code.VOICE_BAD_CREDENTIALS': 'کلید یا رمز را سرویس ویس نپذیرفت.',
+    'code.VOICE_PROVIDER_UNAVAILABLE': 'سرویس ویس در دسترس نیست.',
+    'code.VOICE_PROVIDER_TIMEOUT': 'سرویس ویس دیر جواب داد.',
+    'code.VOICE_PROVIDER_ERROR': 'سرویس ویس خطا داد.',
+    'code.VOICE_PROVIDER_BUSY': 'سرویس ویس شلوغ است؛ کمی بعد امتحان کنید.',
+    'code.VOICE_NOT_CONFIGURED': 'سرویس ویس کامل تنظیم نشده.',
+    'code.TOO_MANY_TESTS': 'امتحان زیاد شد؛ یک دقیقه صبر کنید.',
     'tab.updates-source': "ریپوی بالایی",
     'desc.updates-source': "ریپویی که این سرور از آن ساخته شده و باید تغییرهایش را دنبال کند. هر ریپو فقط پدر خودش را نگاه می‌کند.",
     'up.newN': "{n} تغییر تازه",
@@ -6349,6 +6402,59 @@ var MESSAGES = {
     'section.sys.short': "System",
     'nav.updates': "Updates",
     'desc.updates': "This server's version and the new changes in the parent repo. This page only shows; it never runs a command.",
+    'tab.voice': 'Voice server',
+    'desc.voice': 'The service that gives voice chat tokens to games. The server only gives a token to a player who is in that match, party or open room.',
+    'f.vc.enabled': 'Voice chat on',
+    'f.vc.enabled.hint': 'When off, games get "voice is off" instead of an error.',
+    'f.vc.provider': 'Voice service',
+    'f.vc.provider.hint': 'A new service is one file on the server; this list shows it by itself.',
+    'vc.provider.none': 'None',
+    'vc.provider.livekit': 'LiveKit',
+    'vc.provider.comms': 'Rastaar comms',
+    'vc.about.livekit': 'The LiveKit token is signed here with the API key and secret; the game connects straight to the LiveKit server.',
+    'vc.about.comms': 'The server asks comms for a join token with the server key; the game joins the room with that token and the public address.',
+    'f.vc.livekit.url': 'LiveKit server address',
+    'f.vc.livekit.url.hint': 'Like wss://voice.example.com; games get this address.',
+    'f.vc.livekit.apiKey': 'API key',
+    'f.vc.livekit.apiKey.hint': 'The project key in LiveKit.',
+    'f.vc.livekit.apiSecret': 'API secret',
+    'f.vc.livekit.apiSecret.hint': 'Kept sealed and never shown again. Leave it to keep the current secret.',
+    'f.vc.comms.url': 'comms address for the server',
+    'f.vc.comms.url.hint': 'The address this server uses to call comms.',
+    'f.vc.comms.publicUrl': 'Public comms address',
+    'f.vc.comms.publicUrl.hint': 'The address games use to reach comms. Empty means the address above.',
+    'f.vc.comms.serverKey': 'Server key (ck_…)',
+    'f.vc.comms.serverKey.hint': 'The app key in comms. Kept sealed and never shown again.',
+    'vc.noSeal': 'ECONOMY_SECRET_KEY is needed on the server to keep secrets.',
+    'vc.rules': 'Token rules',
+    'f.vc.ttl': 'Token lifetime (seconds)',
+    'f.vc.ttl.hint': '60 to 86400 seconds. Games fetch a new token before it ends.',
+    'f.vc.canPublish': 'Players can talk',
+    'f.vc.canPublish.hint': 'Off means everyone only listens. A muted player always only listens.',
+    'f.vc.openRooms': 'Open rooms per game',
+    'f.vc.openRooms.hint': 'Games can get a voice room by room name and game key without a match, for a lobby for example.',
+    'vc.state.off': 'Voice chat is off.',
+    'vc.state.on': 'Voice chat is on with {name}.',
+    'vc.state.noProvider': 'Voice chat is on but no service is picked.',
+    'vc.state.noSeal': 'ECONOMY_SECRET_KEY is not set on the server; voice service secrets cannot be kept.',
+    'vc.test': 'Test connection',
+    'vc.testing': 'Testing…',
+    'vc.test.ok': 'Connection to {name} works ({ms} ms).',
+    'gm.voiceOff': 'No voice',
+    'f.gm.voice': 'Voice chat',
+    'f.gm.voice.hint': 'Off means this game gets no voice tokens, even when voice is on in project settings.',
+    'code.VOICE_PROVIDER_REQUIRED': 'Pick a voice service first.',
+    'code.INVALID_VOICE_PROVIDER': 'This voice service is not known.',
+    'code.VOICE_FIELD_REQUIRED': 'Fill this in.',
+    'code.VOICE_FIELD_TOO_LONG': 'Too long.',
+    'code.VOICE_SEAL_UNAVAILABLE': 'ECONOMY_SECRET_KEY is needed on the server to keep secrets.',
+    'code.VOICE_BAD_CREDENTIALS': 'The voice service refused the key or secret.',
+    'code.VOICE_PROVIDER_UNAVAILABLE': 'The voice service cannot be reached.',
+    'code.VOICE_PROVIDER_TIMEOUT': 'The voice service answered too late.',
+    'code.VOICE_PROVIDER_ERROR': 'The voice service returned an error.',
+    'code.VOICE_PROVIDER_BUSY': 'The voice service is busy; try again shortly.',
+    'code.VOICE_NOT_CONFIGURED': 'The voice service is not fully set up.',
+    'code.TOO_MANY_TESTS': 'Too many tests; wait a minute.',
     'tab.updates-source': "Parent repo",
     'desc.updates-source': "The repo this server is built from and should follow. Each repo watches only its own parent.",
     'up.newN': "{n} new changes",
@@ -6907,6 +7013,7 @@ var PH_ICONS = {
 };
 
 PH_ICONS['player-reports'] = PH_ICONS.users;
+PH_ICONS.voice = '<path d="M128,176a48.05,48.05,0,0,0,48-48V64a48,48,0,0,0-96,0v64A48.05,48.05,0,0,0,128,176ZM96,64a32,32,0,0,1,64,0v64a32,32,0,0,1-64,0Zm40,143.6V232a8,8,0,0,1-16,0V207.6A80.11,80.11,0,0,1,48,128a8,8,0,0,1,16,0,64,64,0,0,0,128,0,8,8,0,0,1,16,0A80.11,80.11,0,0,1,136,207.6Z"/>';
 
 function icon(name, cls) {
   var el = document.createElementNS(SVG_NS, 'svg');
@@ -16374,7 +16481,7 @@ RESOURCES.games = {
         h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('gm.stat.players', { n: fmtNum(it.players || 0) }) }));
     }, width: 120 },
     { label: 'col.status', render: function (it) {
-      return h('div', { class: 'flex flex-wrap gap-1' }, it.isActive ? tag(t('active'), 'success') : tag(t('gm.off'), 'warning'), gameRegistryTag(it));
+      return h('div', { class: 'flex flex-wrap gap-1' }, it.isActive ? tag(t('active'), 'success') : tag(t('gm.off'), 'warning'), it.voiceEnabled === false ? tag(t('gm.voiceOff'), 'secondary') : null, gameRegistryTag(it));
     }, width: 170 }
   ],
   fields: [
@@ -16403,6 +16510,7 @@ RESOURCES.games = {
       { name: 'matchSeconds', type: 'number', label: 'f.gm.limit', hint: 'f.gm.limit.hint', optional: true, min: 1, max: 604800 }
     ] },
     { name: 'botsAllowed', type: 'bool', inline: true, label: 'f.gm.bots', hint: 'f.gm.bots.hint' },
+    { name: 'voiceEnabled', type: 'bool', inline: true, label: 'f.gm.voice', hint: 'f.gm.voice.hint' },
     { type: 'heading', label: 'gm.h.rooms' },
     { name: 'rooms', type: 'rows', addLabel: 'gm.room.add', emptyText: 'gm.room.empty', max: 20, empty: [],
       newRow: function (rows) {
@@ -16448,7 +16556,7 @@ RESOURCES.games = {
     var name = {};
     if (def && def.name) name = Object.assign({}, def.name);
     return { key: key, isActive: true, name: name, description: {}, maintenance: {}, iconUrl: '', categoryId: null, tagIds: [], minPlayers: def && def.realtime ? 2 : 1, maxPlayers: def && def.realtime ? 2 : 1,
-      turnSeconds: null, matchSeconds: null, botsAllowed: false, rooms: [], platforms: [], minVersion: '', maxVersion: '', leaderboardId: '', settings: {}, sort: 0 };
+      turnSeconds: null, matchSeconds: null, botsAllowed: false, rooms: [], platforms: [], minVersion: '', maxVersion: '', leaderboardId: '', settings: {}, sort: 0, voiceEnabled: true };
   },
   toForm: function (v) {
     v.rooms = (v.rooms || []).map(function (r) {
@@ -16895,6 +17003,164 @@ function updatesSourcePage(container) {
   }, afterSave: function () { UPDATES.at = 0; refreshUpdatesBadge(true); } });
   frame.content.appendChild(page.el);
   page.load();
+}
+
+function voiceSecretInput(cur, change, label, id) {
+  var inp = textInput(cur || '', { ltr: true, mono: true, label: label, oninput: function (v) { change(v.trim()); } });
+  inp.type = 'password';
+  inp.setAttribute('autocomplete', 'new-password');
+  inp.classList.add('eco-secret');
+  inp.setAttribute('data-voice-secret', id);
+  return inp;
+}
+
+function voiceFields(values) {
+  var providers = values.providers || [];
+  var out = [
+    { name: 'enabled', type: 'bool', inline: true, label: 'f.vc.enabled', hint: 'f.vc.enabled.hint' },
+    { name: 'provider', type: 'select', label: 'f.vc.provider', hint: 'f.vc.provider.hint', noPlaceholder: true, options: function () {
+      return [{ value: '', label: t('vc.provider.none') }].concat(providers.map(function (p) { return { value: p.kind, label: t('vc.provider.' + p.kind) }; }));
+    } }
+  ];
+  providers.forEach(function (p) {
+    var when = function (v) { return v.provider === p.kind; };
+    out.push({ type: 'heading', label: 'vc.provider.' + p.kind, when: when });
+    out.push({ name: 'about.' + p.kind, type: 'static', readonly: true, when: when, render: function () { return notice('info', t('vc.about.' + p.kind)); } });
+    p.fields.forEach(function (f) {
+      var name = 'p.' + p.kind + '.' + f.name;
+      var label = 'f.vc.' + p.kind + '.' + f.name;
+      if (f.secret) {
+        out.push({ name: name, type: 'custom', label: label, hint: values.canSeal === false ? 'vc.noSeal' : label + '.hint', optional: !f.required, when: when, build: function (cur, change) { return voiceSecretInput(cur, change, t(label), p.kind + '.' + f.name); } });
+      } else {
+        out.push({ name: name, type: 'text', ltr: true, label: label, hint: label + '.hint', required: !!f.required, optional: !f.required, when: when });
+      }
+    });
+  });
+  out.push({ type: 'heading', label: 'vc.rules' });
+  out.push({ name: 'ttlSeconds', type: 'number', label: 'f.vc.ttl', hint: 'f.vc.ttl.hint', required: true, min: 60, max: 86400 });
+  out.push({ type: 'row', fields: [
+    { name: 'canPublish', type: 'bool', inline: true, label: 'f.vc.canPublish', hint: 'f.vc.canPublish.hint' },
+    { name: 'openRooms', type: 'bool', inline: true, label: 'f.vc.openRooms', hint: 'f.vc.openRooms.hint' }
+  ] });
+  return out;
+}
+
+function voiceValues(data) {
+  var v = clone(data) || {};
+  v.p = {};
+  (v.providers || []).forEach(function (p) {
+    v.p[p.kind] = {};
+    p.fields.forEach(function (f) {
+      if (v.provider !== p.kind) return;
+      v.p[p.kind][f.name] = f.secret ? ((v.secrets || {})[f.name] || '') : ((v.config || {})[f.name] || '');
+    });
+  });
+  if (!v.ttlSeconds) v.ttlSeconds = 600;
+  return v;
+}
+
+function voicePayload(values, raw) {
+  var out = { enabled: !!raw.enabled, provider: raw.provider || '', ttlSeconds: Number(raw.ttlSeconds) || 0, canPublish: !!raw.canPublish, openRooms: !!raw.openRooms, config: {}, secrets: {} };
+  var spec = (values.providers || []).filter(function (p) { return p.kind === out.provider; })[0];
+  if (spec) {
+    spec.fields.forEach(function (f) {
+      var v = getPath(raw, 'p.' + spec.kind + '.' + f.name);
+      v = v == null ? '' : String(v).trim();
+      if (f.secret) out.secrets[f.name] = v;
+      else out.config[f.name] = v;
+    });
+  }
+  return out;
+}
+
+function voiceErrorField(err, provider, providers) {
+  if (!err || !err.field || !provider) return err;
+  var spec = (providers || []).filter(function (p) { return p.kind === provider; })[0];
+  if (!spec || !spec.fields.some(function (f) { return f.name === err.field; })) return err;
+  var copy = new ApiError(err.status, err.code, err.message, 'p.' + provider + '.' + err.field);
+  return copy;
+}
+
+function voiceState(v) {
+  if (v.canSeal === false) return notice('warning', t('vc.state.noSeal'));
+  if (!v.enabled) return notice('secondary', t('vc.state.off'));
+  if (!v.provider) return notice('error', t('vc.state.noProvider'));
+  return notice('success', t('vc.state.on', { name: t('vc.provider.' + v.provider) }));
+}
+
+function voiceTestResult(res) {
+  if (res.ok) return notice('success', t('vc.test.ok', { name: t('vc.provider.' + res.provider), ms: fmtNum(res.ms || 0) }));
+  var code = res.code || 'VOICE_PROVIDER_ERROR';
+  return notice('error', (has('code.' + code) ? t('code.' + code) : code) + (res.status ? ' (' + fmtNum(res.status) + ')' : ''));
+}
+
+function voicePage(container) {
+  var frame = tabFrame(t('desc.voice'));
+  clear(container).appendChild(frame.el);
+  var box = card(h('div', { class: 'p-4 md:p-6' }, formSkeleton({ fields: voiceFields({}) })));
+  box.setAttribute('data-settings-form', 'voice');
+  frame.content.appendChild(box);
+  var body = box.firstChild;
+
+  function load() {
+    Promise.all([baseApi('GET', '/voice/settings'), freshLanguages()]).then(function (all) {
+      if (!box.isConnected) return;
+      paint(all[0] || {});
+    }, function (err) { clear(body).appendChild(errorBlock(err, load)); });
+  }
+
+  function paint(data) {
+    var values = voiceValues(data);
+    var top = h('div', {});
+    var state = h('div', { class: 'mb-4', 'data-voice-state': '' }, voiceState(data));
+    var result = h('div', { class: 'mt-3', 'data-voice-result': '' });
+    var form = buildForm(voiceFields(values), values, {});
+    var lead = form.el.firstElementChild;
+    if (lead && lead.classList.contains('border-t')) lead.classList.add('eco-flush');
+    var saveBtn = button({ variant: 'primary', size: 'sm', label: t('save'), onclick: function () { save(); } });
+    saveBtn.setAttribute('data-settings-save', '');
+    var testBtn = button({ variant: 'secondary', size: 'sm', label: t('vc.test'), onclick: function () { test(); } });
+    testBtn.setAttribute('data-voice-test', '');
+    clear(body).appendChild(h('form', { novalidate: true, onsubmit: function (e) { e.preventDefault(); save(); } },
+      state, top, form.el, result,
+      data.updatedBy ? h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-3', text: t('up.savedBy', { who: data.updatedBy, when: fmtDate(data.updatedAt) }) }) : null,
+      h('div', { class: 'flex flex-wrap justify-end gap-2 pt-2' }, testBtn, saveBtn),
+      h('button', { type: 'submit', hidden: true })));
+
+    function fail(err, btn) {
+      setBusy(btn, false);
+      var mapped = voiceErrorField(err, values.provider, data.providers);
+      if (!form.showServerError(mapped)) {
+        clear(top).appendChild(h('div', { class: 'mb-5' }, notice('error', errorText(err))));
+        top.scrollIntoView({ block: 'start' });
+      }
+    }
+
+    function save() {
+      clear(top);
+      if (!form.validate()) return;
+      var payload = voicePayload(data, form.payload());
+      setBusy(saveBtn, true, t('saving'));
+      baseApi('PUT', '/voice/settings', payload).then(function (res) {
+        toast('success', t('saved'));
+        paint(res || data);
+      }, function (err) { fail(err, saveBtn); });
+    }
+
+    function test() {
+      clear(top);
+      clear(result);
+      var raw = form.payload();
+      var payload = raw.provider ? voicePayload(data, raw) : {};
+      setBusy(testBtn, true, t('vc.testing'));
+      baseApi('POST', '/voice/test', payload).then(function (res) {
+        setBusy(testBtn, false);
+        result.appendChild(voiceTestResult(res || {}));
+      }, function (err) { fail(err, testBtn); });
+    }
+  }
+
+  load();
 }
 
 var BRAND_KEY = 'nakama-brand';
@@ -18263,6 +18529,7 @@ var PS_SECTIONS = [
   { id: 'sms', label: 'tab.sms', icon: 'comments', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'sms'); } },
   { id: 'email', label: 'tab.email', icon: 'mail', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'email'); } },
   { id: 'push', label: 'tab.push', icon: 'push', acl: 'NOTIFICATION', render: function (box) { providersPage(box, 'push'); } },
+  { id: 'voice', label: 'tab.voice', icon: 'voice', acl: 'SETTINGS', render: function (box) { voicePage(box); } },
   { id: 'updates-source', label: 'tab.updates-source', icon: 'updates-source', acl: 'SETTINGS', render: function (box) { updatesSourcePage(box); } }
 ];
 var PS_LEGACY = {
