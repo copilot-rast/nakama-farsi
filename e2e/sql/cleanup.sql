@@ -39,6 +39,7 @@ DELETE FROM publication_faq WHERE question::text LIKE '%e2e%';
 DELETE FROM publication_news WHERE title::text LIKE '%e2e%';
 DELETE FROM base_category WHERE key LIKE 'e2e%';
 DELETE FROM base_chat_report WHERE channel_label LIKE 'e2e%';
+DELETE FROM base_player_report WHERE title_key LIKE 'e2e%';
 DELETE FROM message WHERE stream_label LIKE 'e2e%';
 DELETE FROM base_chat_word WHERE word LIKE 'e2e%';
 DELETE FROM base_report_title WHERE key LIKE 'e2e%';

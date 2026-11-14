@@ -14,6 +14,7 @@ select 'otp codes', count(*) from publication_otp_code where phone like '+98999%
 select 'chat words', count(*) from base_chat_word where word like 'e2e%';
 select 'report titles', count(*) from base_report_title where key like 'e2e%';
 select 'chat reports', count(*) from base_chat_report where channel_label like 'e2e%';
+select 'player reports', count(*) from base_player_report where title_key like 'e2e%';
 select 'chat messages', count(*) from message where stream_label like 'e2e%';
 select 'event types', count(*) from economy_event_type where key like 'e2e%';
 select 'event rules', count(*) from economy_event_rule where key like 'e2e%';

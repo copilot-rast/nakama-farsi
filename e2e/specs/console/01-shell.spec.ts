@@ -29,6 +29,7 @@ const PAGES: [string, string][] = [
   ['#/publication/notifications', 'اعلان‌ها'],
   ['#/moderation/players', 'مدیریت بازیکنان'],
   ['#/moderation/reports', 'گزارش‌ها'],
+  ['#/moderation/player-reports', 'گزارش بازیکن‌ها'],
   ['#/moderation/restrictions', 'تعلیق و سکوت'],
   ['#/moderation/chat-words', 'فیلتر کلمات'],
   ['#/system/updates', 'به‌روزرسانی‌ها'],

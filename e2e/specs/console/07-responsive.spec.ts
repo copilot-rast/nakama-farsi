@@ -51,6 +51,7 @@ const PAGES = [
   '#/project-settings/report-titles',
   '#/moderation/players',
   '#/moderation/reports',
+  '#/moderation/player-reports',
   '#/moderation/restrictions',
   '#/moderation/chat-words',
   '#/system/updates',
