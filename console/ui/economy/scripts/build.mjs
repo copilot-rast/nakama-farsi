@@ -12,7 +12,7 @@ const MANIFEST = path.join(ROOT, 'dist-manifest.json');
 export const START = '<!-- nakama-economy:start -->';
 export const END = '<!-- nakama-economy:end -->';
 const L10N_START = '<!-- nakama-l10n:start -->';
-export const SOURCES = ['i18n.js', 'core.js', 'ui.js', 'form.js', 'resources.js', 'pages.js', 'publication.js', 'accounts.js', 'moderation.js', 'events.js', 'tasks.js', 'support.js', 'growth.js', 'items.js', 'achievements.js', 'banners.js', 'sponsors.js', 'notify.js', 'chance.js', 'games.js', 'updates.js', 'voice.js', 'brand.js', 'setup.js', 'settings.js', 'native.js', 'shell.js'];
+export const SOURCES = ['i18n.js', 'core.js', 'ui.js', 'form.js', 'resources.js', 'pages.js', 'publication.js', 'accounts.js', 'moderation.js', 'events.js', 'relations.js', 'tasks.js', 'support.js', 'growth.js', 'items.js', 'achievements.js', 'banners.js', 'sponsors.js', 'notify.js', 'chance.js', 'games.js', 'updates.js', 'voice.js', 'brand.js', 'setup.js', 'settings.js', 'native.js', 'shell.js'];
 
 function hash(content) {
   return crypto.createHash('sha256').update(content).digest('hex').slice(0, 10);

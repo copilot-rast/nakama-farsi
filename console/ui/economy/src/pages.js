@@ -1,5 +1,5 @@
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
+  economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'items', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'activity'],
   support: ['tickets', 'live-chat'],
@@ -10,7 +10,7 @@ var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation
 var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
 var HUBS = {
-  metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['level-tables', 'levels']] },
+  metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['meta-relations', 'relations'], ['level-tables', 'levels']] },
   tasks: { section: 'economy', tabs: [['tasks', ''], ['task-groups', 'groups']] },
   prizes: { section: 'economy', tabs: [['prizes', ''], ['prize-groups', 'groups']] },
   events: { section: 'economy', tabs: [['event-types', ''], ['event-rules', 'prizes'], ['event-log', 'report']] },
@@ -149,6 +149,7 @@ function listPage(container, name, query, ctx) {
     clear(pagerBottom).appendChild(pager(state, function (p) { state.page = p; sync(); load(); window.scrollTo(0, 0); }));
   }
   function open(item) {
+    if (def.onRow) { def.onRow(item, currentQuery()); return; }
     if (def.rowHref) { location.hash = def.rowHref(item); return; }
     go(name, item.id, currentQuery());
   }
@@ -196,6 +197,7 @@ function listPage(container, name, query, ctx) {
     });
   }
   load();
+  if (def.mounted) def.mounted(query);
   return { reload: load, name: name };
 }
 

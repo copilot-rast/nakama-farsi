@@ -3373,7 +3373,116 @@ var MESSAGES = {
     'navg.ads': 'بنر و اسپانسر',
     'navg.messages': 'پیام به بازیکن',
     'navg.people': 'بازیکنان',
-    'navg.chat': 'گزارش و گفتگو'
+    'navg.chat': 'گزارش و گفتگو',
+    'nav.meta-relations': "رابطهٔ متاها",
+    'desc.meta-relations': "وقتی متایی به عددی برسد، متاهای دیگر تغییر کنند یا بازیکن جایزه بگیرد.",
+    'new.meta-relations': "رابطهٔ تازه",
+    'edit.meta-relations': "ویرایش رابطه",
+    'empty.hint.meta-relations': "مثلاً: وقتی امتیاز تجربه به ۱۰۰ رسید، یک سطح اضافه شود و ۵۰ سکه جایزه بگیرد.",
+    'filter.rel.source': "متای شرط",
+    'filter.rel.target': "متای نتیجه",
+    'col.rel.when': "وقتی",
+    'col.rel.then': "آن‌وقت",
+    'rel.hidden': "پنهان از بازیکن",
+    'rel.repeat.once': "یک بار",
+    'rel.repeat.rearm': "دوباره پس از افت",
+    'rel.repeat.every': "هر بار",
+    'rel.repeat.once.say': "برای هر بازیکن فقط یک بار.",
+    'rel.repeat.rearm.say': "هر بار که شرط از نو برقرار شود.",
+    'rel.repeat.every.say': "هر بار که متا تغییر کند و شرط برقرار باشد.",
+    'rel.maxN': "تا {n} بار",
+    'f.rel.sort.hint': "رابطه‌های یک متا به این ترتیب بررسی می‌شوند.",
+    'f.rel.name': "نام",
+    'f.rel.name.hint': "اگر بازیکن رابطه را ببیند، همین نام را می‌بیند.",
+    'f.rel.description': "توضیح",
+    'f.rel.description.hint': "برای بازیکن، مثلاً «با رسیدن به ۱۰۰ تجربه یک سطح بالا می‌روی».",
+    'rel.h.when': "شرط",
+    'f.rel.meta': "متای شرط",
+    'f.rel.meta.hint': "هر بار این متا به هر راهی تغییر کند، شرط بررسی می‌شود.",
+    'f.rel.operator': "مقایسه",
+    'rel.op.gte': "بزرگ‌تر یا مساوی",
+    'rel.op.gt': "بزرگ‌تر از",
+    'rel.op.eq': "برابر با",
+    'rel.op.lte': "کوچک‌تر یا مساوی",
+    'rel.op.lt': "کوچک‌تر از",
+    'f.rel.value': "عدد",
+    'rel.h.then': "نتیجه روی متاها",
+    'rel.target.add': "افزودن متای نتیجه",
+    'rel.target.empty': "هنوز متای نتیجه‌ای نیست. می‌توانی فقط جایزه بدهی.",
+    'f.rel.target': "متا",
+    'f.rel.action': "تغییر",
+    'rel.action.add': "اضافه کن",
+    'rel.action.set': "برابر کن",
+    'f.rel.amount': "مقدار",
+    'rel.h.prize': "جایزه",
+    'f.rel.prizeType': "جایزه",
+    'rel.prizeType.none': "بدون جایزه",
+    'rel.prizeType.prize': "یک جایزه",
+    'rel.prizeType.prizeGroup': "یکی از گروه جایزه",
+    'f.rel.grantMode.hint': "خودکار به حساب بازیکن می‌رود، یا بازیکن خودش دریافتش می‌کند.",
+    'f.rel.prizeGroup': "گروه جایزه",
+    'f.rel.prizeGroup.hint': "هنگام انجام رابطه یکی از جایزه‌های گروه با وزنش قرعه می‌خورد.",
+    'rel.h.repeat': "تکرار",
+    'f.rel.repeat': "چند بار",
+    'f.rel.repeat.hint': "«دوباره پس از افت» یعنی وقتی شرط برقرار نبود و دوباره برقرار شد، باز انجام شود.",
+    'f.rel.maxFires': "سقف دفعه‌ها",
+    'f.rel.maxFires.hint': "خالی یعنی بی‌سقف.",
+    'rel.preview.when': "وقتی",
+    'f.rel.visible': "بازیکن ببیند",
+    'f.rel.visible.hint': "در فهرست رابطه‌های بازیکن در بازی دیده شود. رابطه‌های پنهان هم کار می‌کنند.",
+    'code.DUPLICATE_TARGET': "هر متا با هر نوع تغییر فقط یک بار.",
+    'code.ZERO_AMOUNT': "اضافه کردن صفر چیزی را عوض نمی‌کند.",
+    'code.RELATION_NEEDS_RESULT': "دست‌کم یک متای نتیجه یا یک جایزه بگذار.",
+    'code.TOO_MANY_TARGETS': "حداکثر ۲۰ متای نتیجه.",
+    'code.INVALID_OPERATOR': "مقایسه درست نیست.",
+    'code.INVALID_REPEAT': "نوع تکرار درست نیست.",
+    'code.INVALID_MAX_FIRES': "سقف دفعه‌ها باید از ۱ تا ۱٬۰۰۰٬۰۰۰ باشد.",
+    'code.INVALID_PRIZE_TYPE': "نوع جایزه درست نیست.",
+    'code.INVALID_CHAIN_DEPTH': "عمق زنجیره باید از ۰ تا ۲۵ باشد.",
+    'code.INVALID_POLICY': "این گزینه درست نیست.",
+    'claim.kind.relation': "رابطهٔ متا",
+    'studio.title': "استودیوی متا",
+    'studio.titleOf': "استودیوی {name}",
+    'studio.hint': "همهٔ راه‌هایی که این متا عوض می‌شود و کارهایی که با تغییرش انجام می‌شود. روی هر مورد بزن تا همین‌جا ویرایشش کنی.",
+    'studio.in': "ورودی‌ها",
+    'studio.out': "خروجی‌ها",
+    'studio.arrow.in': "این‌ها متا را تغییر می‌دهند",
+    'studio.arrow.out': "با هر تغییر بررسی می‌شوند",
+    'studio.add': "افزودن",
+    'studio.back': "بازگشت به جریان متا",
+    'studio.default': "مقدار اولیه {n}",
+    'studio.editMeta': "ویرایش متا",
+    'studio.g.rules': "قانون‌های رویداد",
+    'studio.g.relIn': "رابطه‌هایی که این متا را تغییر می‌دهند",
+    'studio.g.prizes': "جایزه‌هایی که این متا را می‌دهند",
+    'studio.g.levelsIn': "جدول سطح‌هایی که سطح را در این متا می‌نویسند",
+    'studio.g.relOut': "رابطه‌ها با شرط روی این متا",
+    'studio.g.levels': "جدول سطح‌ها روی این متا",
+    'studio.empty.meta-rules': "هیچ رویدادی این متا را تغییر نمی‌دهد.",
+    'studio.empty.relations-in': "هیچ رابطه‌ای این متا را تغییر نمی‌دهد.",
+    'studio.empty.prizes': "هیچ جایزه‌ای این متا را نمی‌دهد.",
+    'studio.empty.levels-in': "هیچ جدول سطحی در این متا نمی‌نویسد.",
+    'studio.empty.relations-out': "هنوز رابطه‌ای با شرط روی این متا نیست.",
+    'studio.empty.level-tables': "هنوز جدول سطحی روی این متا نیست.",
+    'pp.meta.change': "تغییر متا",
+    'pp.meta.change.text': "مقدار یک متای بازیکن را اضافه یا برابر کن. رابطه‌ها و جدول سطح‌ها هم مثل همیشه اجرا می‌شوند.",
+    'pp.meta.change.ok': "اعمال تغییر",
+    'pp.meta.hint': "برای کم کردن عدد منفی بنویس.",
+    'pp.meta.changed': "متا تغییر کرد.",
+    'pp.relations': "رابطه‌های انجام‌شده",
+    'pp.rel.times': "{n} بار",
+    'pp.rel.none': "هنوز رابطه‌ای برای این بازیکن انجام نشده.",
+    'pp.rel.reset': "از نو",
+    'pp.rel.reset.title': "رابطه از نو شروع شود؟",
+    'pp.rel.reset.text': "رابطهٔ «{name}» برای این بازیکن فراموش می‌شود و می‌تواند دوباره انجام شود. جایزه‌های گرفته‌شده می‌مانند و جایزه‌های دریافت‌نشده پاک می‌شوند.",
+    'pp.rel.reset.done': "رابطه برای این بازیکن از نو شد.",
+    'es.h.relations': "رابطهٔ متاها",
+    'f.es.chain': "عمق زنجیرهٔ رابطه‌ها",
+    'f.es.chain.hint': "چند رابطه می‌توانند پشت سر هم یکدیگر را راه بیندازند. صفر یعنی نتیجهٔ یک رابطه رابطهٔ دیگری را اجرا نکند.",
+    'f.es.prizeMissing': "وقتی گروه جایزه خالی است",
+    'f.es.prizeMissing.hint': "رابطه بدون جایزه انجام شود، یا صبر کند تا تغییر بعدی.",
+    'es.prizeMissing.complete': "بدون جایزه انجام شود",
+    'es.prizeMissing.wait': "صبر کند"
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -6747,7 +6856,116 @@ var MESSAGES = {
     'navg.ads': 'Banners & sponsors',
     'navg.messages': 'Player messages',
     'navg.people': 'Players',
-    'navg.chat': 'Reports & chat'
+    'navg.chat': 'Reports & chat',
+    'nav.meta-relations': "Meta relations",
+    'desc.meta-relations': "When a meta reaches a number, change other metas or give the player a prize.",
+    'new.meta-relations': "New relation",
+    'edit.meta-relations': "Edit relation",
+    'empty.hint.meta-relations': "For example: when XP reaches 100, add one level and give 50 coins.",
+    'filter.rel.source': "Condition meta",
+    'filter.rel.target': "Result meta",
+    'col.rel.when': "When",
+    'col.rel.then': "Then",
+    'rel.hidden': "Hidden from players",
+    'rel.repeat.once': "Once",
+    'rel.repeat.rearm': "Again after a drop",
+    'rel.repeat.every': "Every time",
+    'rel.repeat.once.say': "Only once per player.",
+    'rel.repeat.rearm.say': "Each time the condition becomes true again.",
+    'rel.repeat.every.say': "Every time the meta changes while the condition holds.",
+    'rel.maxN': "up to {n} times",
+    'f.rel.sort.hint': "Relations on one meta are checked in this order.",
+    'f.rel.name': "Name",
+    'f.rel.name.hint': "Players who can see the relation see this name.",
+    'f.rel.description': "Description",
+    'f.rel.description.hint': "For players, such as \"Reach 100 XP to level up\".",
+    'rel.h.when': "Condition",
+    'f.rel.meta': "Condition meta",
+    'f.rel.meta.hint': "Checked every time this meta changes, whatever changed it.",
+    'f.rel.operator': "Compare",
+    'rel.op.gte': "≥ at least",
+    'rel.op.gt': "> more than",
+    'rel.op.eq': "= equal to",
+    'rel.op.lte': "≤ at most",
+    'rel.op.lt': "< less than",
+    'f.rel.value': "Number",
+    'rel.h.then': "Result on metas",
+    'rel.target.add': "Add a result meta",
+    'rel.target.empty': "No result metas yet. A prize alone is fine.",
+    'f.rel.target': "Meta",
+    'f.rel.action': "Change",
+    'rel.action.add': "Add",
+    'rel.action.set': "Set",
+    'f.rel.amount': "Amount",
+    'rel.h.prize': "Prize",
+    'f.rel.prizeType': "Prize",
+    'rel.prizeType.none': "No prize",
+    'rel.prizeType.prize': "One prize",
+    'rel.prizeType.prizeGroup': "One from a prize group",
+    'f.rel.grantMode.hint': "Goes to the player automatically, or the player collects it.",
+    'f.rel.prizeGroup': "Prize group",
+    'f.rel.prizeGroup.hint': "One prize of the group is drawn by weight when the relation fires.",
+    'rel.h.repeat': "Repeat",
+    'f.rel.repeat': "How often",
+    'f.rel.repeat.hint': "\"Again after a drop\" fires again once the condition was false and becomes true again.",
+    'f.rel.maxFires': "At most",
+    'f.rel.maxFires.hint': "Empty means no limit.",
+    'rel.preview.when': "When",
+    'f.rel.visible': "Players can see it",
+    'f.rel.visible.hint': "Listed in the player relations in the game. Hidden relations still work.",
+    'code.DUPLICATE_TARGET': "Each meta once per kind of change.",
+    'code.ZERO_AMOUNT': "Adding zero changes nothing.",
+    'code.RELATION_NEEDS_RESULT': "Add at least one result meta or a prize.",
+    'code.TOO_MANY_TARGETS': "At most 20 result metas.",
+    'code.INVALID_OPERATOR': "The comparison is not valid.",
+    'code.INVALID_REPEAT': "The repeat mode is not valid.",
+    'code.INVALID_MAX_FIRES': "The limit must be 1 to 1,000,000.",
+    'code.INVALID_PRIZE_TYPE': "The prize type is not valid.",
+    'code.INVALID_CHAIN_DEPTH': "The chain depth must be 0 to 25.",
+    'code.INVALID_POLICY': "This option is not valid.",
+    'claim.kind.relation': "Meta relation",
+    'studio.title': "Meta studio",
+    'studio.titleOf': "{name} studio",
+    'studio.hint': "Everything that changes this meta and everything that runs when it changes. Select an item to edit it right here.",
+    'studio.in': "Inputs",
+    'studio.out': "Outputs",
+    'studio.arrow.in': "These change the meta",
+    'studio.arrow.out': "Checked on every change",
+    'studio.add': "Add",
+    'studio.back': "Back to the meta flow",
+    'studio.default': "Starts at {n}",
+    'studio.editMeta': "Edit meta",
+    'studio.g.rules': "Event rules",
+    'studio.g.relIn': "Relations that change this meta",
+    'studio.g.prizes': "Prizes that give this meta",
+    'studio.g.levelsIn': "Level tables that write their level here",
+    'studio.g.relOut': "Relations with a condition on this meta",
+    'studio.g.levels': "Level tables on this meta",
+    'studio.empty.meta-rules': "No event changes this meta.",
+    'studio.empty.relations-in': "No relation changes this meta.",
+    'studio.empty.prizes': "No prize gives this meta.",
+    'studio.empty.levels-in': "No level table writes to this meta.",
+    'studio.empty.relations-out': "No relation has a condition on this meta yet.",
+    'studio.empty.level-tables': "No level table on this meta yet.",
+    'pp.meta.change': "Change a meta",
+    'pp.meta.change.text': "Add to or set one of the player metas. Relations and level tables run as usual.",
+    'pp.meta.change.ok': "Apply",
+    'pp.meta.hint': "Use a negative number to subtract.",
+    'pp.meta.changed': "Meta changed.",
+    'pp.relations': "Completed relations",
+    'pp.rel.times': "{n} times",
+    'pp.rel.none': "No relation has fired for this player yet.",
+    'pp.rel.reset': "Reset",
+    'pp.rel.reset.title': "Reset this relation?",
+    'pp.rel.reset.text': "The player forgets \"{name}\" and it can fire again. Received prizes stay; uncollected ones are removed.",
+    'pp.rel.reset.done': "Relation reset for this player.",
+    'es.h.relations': "Meta relations",
+    'f.es.chain': "Relation chain depth",
+    'f.es.chain.hint': "How many relations may trigger one another in a row. Zero means a relation result never runs another relation.",
+    'f.es.prizeMissing': "When a prize group is empty",
+    'f.es.prizeMissing.hint': "Fire the relation without a prize, or wait for the next change.",
+    'es.prizeMissing.complete': "Fire without a prize",
+    'es.prizeMissing.wait': "Wait"
   }
 };
 
@@ -9067,7 +9285,7 @@ var RESOURCES = {
 };
 
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
+  economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'items', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'activity'],
   support: ['tickets', 'live-chat'],
@@ -9078,7 +9296,7 @@ var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation
 var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
 var HUBS = {
-  metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['level-tables', 'levels']] },
+  metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['meta-relations', 'relations'], ['level-tables', 'levels']] },
   tasks: { section: 'economy', tabs: [['tasks', ''], ['task-groups', 'groups']] },
   prizes: { section: 'economy', tabs: [['prizes', ''], ['prize-groups', 'groups']] },
   events: { section: 'economy', tabs: [['event-types', ''], ['event-rules', 'prizes'], ['event-log', 'report']] },
@@ -9217,6 +9435,7 @@ function listPage(container, name, query, ctx) {
     clear(pagerBottom).appendChild(pager(state, function (p) { state.page = p; sync(); load(); window.scrollTo(0, 0); }));
   }
   function open(item) {
+    if (def.onRow) { def.onRow(item, currentQuery()); return; }
     if (def.rowHref) { location.hash = def.rowHref(item); return; }
     go(name, item.id, currentQuery());
   }
@@ -9264,6 +9483,7 @@ function listPage(container, name, query, ctx) {
     });
   }
   load();
+  if (def.mounted) def.mounted(query);
   return { reload: load, name: name };
 }
 
@@ -12809,6 +13029,11 @@ var EVENT_SETTINGS_FIELDS = [
   { type: 'row', fields: [
     { name: 'retentionDays', type: 'number', label: 'f.es.retention', hint: 'f.es.retention.hint', required: true, min: 1, max: 3650 },
     { name: 'playerRateLimit', type: 'number', label: 'f.es.rate', hint: 'f.es.rate.hint', required: true, min: 1, max: 100000 }
+  ] },
+  { type: 'heading', label: 'es.h.relations' },
+  { type: 'row', fields: [
+    { name: 'relationChainDepth', type: 'number', label: 'f.es.chain', hint: 'f.es.chain.hint', required: true, min: 0, max: 25 },
+    { name: 'relationPrizeMissing', type: 'select', label: 'f.es.prizeMissing', hint: 'f.es.prizeMissing.hint', required: true, noPlaceholder: true, options: opts('es.prizeMissing.', ['complete', 'wait']) }
   ] }
 ];
 
@@ -12887,7 +13112,7 @@ function playerProgressCard() {
   if (!PROGRESS_CARD.loading && Date.now() - PROGRESS_CARD.at > 20000) loadProgressCard(id);
   var p = PROGRESS_CARD.data;
   var anchor = grid.querySelector('[data-player-mod]');
-  var key = lang() + '|' + id + '|' + (p ? JSON.stringify([p.totals, p.streaks, p.levels, p.claims, p.readyClaims]) : PROGRESS_CARD.err ? 'err' : 'loading');
+  var key = lang() + '|' + id + '|' + (p ? JSON.stringify([p.totals, p.streaks, p.levels, p.claims, p.readyClaims, p.relations]) : PROGRESS_CARD.err ? 'err' : 'loading');
   var placed = existing && existing.parentNode === grid && (anchor ? existing.previousElementSibling === anchor : grid.firstChild === existing);
   if (existing && existing.getAttribute('data-key') === key && placed) return;
   if (existing) existing.remove();
@@ -12908,6 +13133,9 @@ function playerProgressCard() {
     var rec = button({ variant: 'ghost', size: 'sm', icon: 'event-types', label: t('pp.record'), onclick: function () { recordEventDialog(id).then(function (res) { if (res) toast('success', t('pp.recorded')); reload(res); }); } });
     rec.setAttribute('data-record-event', '');
     actions.appendChild(rec);
+    var chg = button({ variant: 'ghost', size: 'sm', icon: 'metas', label: t('pp.meta.change'), onclick: function () { changeMetaDialog(id).then(function (res) { if (res) toast('success', t('pp.meta.changed')); reload(res); }); } });
+    chg.setAttribute('data-change-meta', '');
+    actions.appendChild(chg);
   }
   actions.appendChild(h('a', { href: hashFor('event-log', null, { userId: id }), class: 'eco-link text-sm', text: t('pp.log') }));
   body.appendChild(h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-3' }, title, actions));
@@ -12952,6 +13180,7 @@ function playerProgressCard() {
   if (!(p.totals || []).length) totals.appendChild(h('span', { class: 'text-sm text-secondary-400', text: t('pp.noEvents') }));
 
   body.appendChild(h('div', { class: 'eco-pc-grid' }, progressSection('pp.levels', levels), progressSection('pp.streaks', streaks), progressSection('pp.events', totals)));
+  body.appendChild(h('div', { class: 'mt-3 border-t border-secondary-200 dark:border-secondary-700 pt-4' }, relationsProgressSection(p, id, write, reload)));
 
   var claims = h('div', { class: 'flex flex-col mt-3 border-t border-secondary-200 dark:border-secondary-700 pt-4', 'data-pp-claims': '' });
   claims.appendChild(h('div', { class: 'flex items-center justify-between gap-2 text-xs text-secondary-500 dark:text-secondary-400 mb-1' }, h('span', { text: t('pp.claims') }), p.readyClaims ? tag(t('pp.readyN', { n: p.readyClaims }), 'warning') : null));
@@ -12976,6 +13205,431 @@ function playerProgressCard() {
   body.appendChild(claims);
   place();
 }
+
+ICONS['meta-relations'] = '<circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M6 15V9a3 3 0 0 1 3-3h6"/><path d="m13 3 3 3-3 3"/>';
+PH_ICONS['meta-relations'] = '<path d="M245.66,74.34l-32-32a8,8,0,0,0-11.32,11.32L220.69,72H208c-49.33,0-61.05,28.12-71.38,52.92-9.38,22.51-16.92,40.59-49.48,42.84a40,40,0,1,0,.1,16c43.26-2.65,54.34-29.15,64.14-52.69C161.41,107,169.33,88,208,88h12.69l-18.35,18.34a8,8,0,0,0,11.32,11.32l32-32A8,8,0,0,0,245.66,74.34ZM48,200a24,24,0,1,1,24-24A24,24,0,0,1,48,200Z"/>';
+PH_ICONS.flowDuo = '<circle cx="48" cy="176" r="24" opacity="0.2"/>' + PH_ICONS['meta-relations'];
+PH_ICONS.metasDuo = '<path d="M224,208H32V48l64,72,32-24,56,56,40-40Z" opacity="0.2"/>' + PH_ICONS.metas;
+PH_ICONS.rulesDuo = '<circle cx="128" cy="88" r="24" opacity="0.2"/><circle cx="56" cy="136" r="24" opacity="0.2"/><circle cx="200" cy="168" r="24" opacity="0.2"/>' + PH_ICONS['meta-rules'];
+PH_ICONS.levelsDuo = '<path d="M80.5,128h47l-11.64,32h-47Z" opacity="0.2"/>' + PH_ICONS['level-tables'];
+PH_ICONS.prizesDuo = '<path d="M208,128v72a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V128Z" opacity="0.2"/>' + PH_ICONS.prizes;
+PH_ICONS.arrowDownDuo = '<path d="M200,136l-72,72L56,136Z" opacity="0.2"/><path d="M205.66,130.34a8,8,0,0,0-11.32,0L136,188.69V40a8,8,0,0,0-16,0V188.69L61.66,130.34a8,8,0,0,0-11.32,11.32l72,72a8,8,0,0,0,11.32,0l72-72A8,8,0,0,0,205.66,130.34Z"/>';
+
+var REL_OPS = ['gte', 'gt', 'eq', 'lte', 'lt'];
+var REL_SYMBOL = { gt: '>', gte: '≥', lt: '<', lte: '≤', eq: '=' };
+
+function relSigned(n, action) {
+  if (action === 'set') return '= ' + numLocal(n);
+  return (Number(n) < 0 ? '− ' + numLocal(Math.abs(Number(n))) : '+ ' + numLocal(n));
+}
+
+function relWhenCell(it) {
+  return h('div', { class: 'flex items-center gap-1.5 text-sm min-w-0', 'data-rel-when': '' },
+    it.metaId ? refNameCell('metas', it.metaId) : h('span', { class: 'text-secondary-400', text: '…' }),
+    h('span', { class: 'eco-rel-op tabular-nums whitespace-nowrap', dir: 'ltr', text: (REL_SYMBOL[it.operator] || '?') + ' ' + numLocal(it.value) }));
+}
+
+function relThenCell(it) {
+  var box = h('div', { class: 'flex flex-wrap items-center gap-1.5 text-sm min-w-0', 'data-rel-then': '' });
+  (it.targets || []).forEach(function (tg) {
+    if (!tg || !tg.metaId) return;
+    box.appendChild(h('span', { class: 'eco-rel-chip inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 min-w-0', 'data-rel-target': tg.action || 'add' },
+      refNameCell('metas', tg.metaId), h('span', { class: 'tabular-nums whitespace-nowrap', dir: 'ltr', text: relSigned(tg.amount, tg.action) })));
+  });
+  if (it.prizeType === 'prize' && it.prizeId) box.appendChild(h('span', { class: 'eco-rel-chip eco-rel-prize inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 min-w-0', 'data-rel-prize': '' }, icon('prizes', 'h-3.5 w-3.5'), refNameCell('prizes', it.prizeId)));
+  if (it.prizeType === 'prizeGroup' && it.prizeGroupId) box.appendChild(h('span', { class: 'eco-rel-chip eco-rel-prize inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 min-w-0', 'data-rel-prize': 'group' }, icon('prize-groups', 'h-3.5 w-3.5'), refNameCell('prize-groups', it.prizeGroupId)));
+  if (it.prizeType && it.prizeType !== 'none') box.appendChild(grantTag(it.grantMode || 'auto'));
+  if (!box.firstChild) box.appendChild(h('span', { class: 'text-secondary-400', text: t('none') }));
+  return box;
+}
+
+function relRepeatTag(it) {
+  if (it.repeat === 'once' || !it.repeat) return tag(t('rel.repeat.once'), 'secondary');
+  return tag(t('rel.repeat.' + it.repeat) + (it.maxFires ? ' · ' + t('rel.maxN', { n: it.maxFires }) : ''), 'primary');
+}
+
+RESOURCES['meta-relations'] = {
+  filters: [
+    { name: 'metaId', label: 'filter.rel.source', type: 'ref', resource: 'metas' },
+    { name: 'targetMetaId', label: 'filter.rel.target', type: 'ref', resource: 'metas' },
+    activeFilter()
+  ],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it); }, skeleton: '35%' },
+    { label: 'col.rel.when', render: relWhenCell, skeleton: '25%' },
+    { label: 'col.rel.then', render: relThenCell, skeleton: '35%' },
+    { label: 'col.ev.players', render: function (it) { return h('span', { class: 'tabular-nums', text: fmtNum(it.players || 0) }); }, width: 90 },
+    { label: 'col.status', render: function (it) {
+      return h('div', { class: 'flex flex-wrap gap-1' }, activeTag(it.isActive), relRepeatTag(it), (it.audienceTagIds || []).length ? tag(t('audience.only'), 'primary') : null,
+        it.clientVisible === false ? tag(t('rel.hidden'), 'secondary') : null, it.endsAt && new Date(it.endsAt) < new Date() ? tag(t('ev.ended'), 'secondary') : null);
+    }, width: 150 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, lockOnEdit: true },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.rel.sort.hint' }
+    ] },
+    tr('name', { label: 'f.rel.name', hint: 'f.rel.name.hint', required: true, max: 128 }),
+    tr('description', { label: 'f.rel.description', hint: 'f.rel.description.hint', multiline: true, max: 1000, optional: true }),
+    { type: 'heading', label: 'rel.h.when' },
+    { name: 'metaId', type: 'ref', resource: 'metas', label: 'f.rel.meta', hint: 'f.rel.meta.hint', required: true },
+    { type: 'row', fields: [
+      { name: 'operator', type: 'select', label: 'f.rel.operator', required: true, noPlaceholder: true, options: opts('rel.op.', REL_OPS) },
+      { name: 'value', type: 'number', int: false, label: 'f.rel.value', required: true }
+    ] },
+    { type: 'heading', label: 'rel.h.then' },
+    { name: 'targets', type: 'rows', addLabel: 'rel.target.add', emptyText: 'rel.target.empty', max: 20, empty: [], refresh: true,
+      newRow: function () { return { metaId: null, action: 'add', amount: 1 }; },
+      check: function (rows) {
+        var seen = {};
+        for (var i = 0; i < rows.length; i++) {
+          var k2 = rows[i].metaId + '|' + rows[i].action;
+          if (rows[i].metaId && seen[k2]) return { index: i, message: t('code.DUPLICATE_TARGET') };
+          seen[k2] = 1;
+          if (rows[i].action !== 'set' && Number(rows[i].amount) === 0) return { index: i, message: t('code.ZERO_AMOUNT') };
+        }
+        return null;
+      },
+      columns: [
+        { name: 'metaId', type: 'ref', resource: 'metas', label: 'f.rel.target', required: true },
+        { name: 'action', type: 'select', label: 'f.rel.action', options: opts('rel.action.', ['add', 'set']) },
+        { name: 'amount', type: 'number', int: false, label: 'f.rel.amount', required: true }
+      ] },
+    { type: 'heading', label: 'rel.h.prize' },
+    { type: 'row', fields: [
+      { name: 'prizeType', type: 'select', label: 'f.rel.prizeType', required: true, noPlaceholder: true, options: opts('rel.prizeType.', ['none', 'prize', 'prizeGroup']) },
+      { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', hint: 'f.rel.grantMode.hint', required: true, noPlaceholder: true, options: grantOptions, when: function (v) { return v.prizeType && v.prizeType !== 'none'; } }
+    ] },
+    { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', required: true, when: function (v) { return v.prizeType === 'prize'; } },
+    { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.rel.prizeGroup', hint: 'f.rel.prizeGroup.hint', required: true, when: function (v) { return v.prizeType === 'prizeGroup'; } },
+    { name: 'needsResult', type: 'static', readonly: true, live: true, render: function (v) {
+      var empty = !(v.targets || []).length && (!v.prizeType || v.prizeType === 'none');
+      return empty ? h('p', { class: 'text-xs text-error-600 dark:text-error-400', 'data-rel-needs': '', text: t('code.RELATION_NEEDS_RESULT') }) : h('span', {});
+    } },
+    { type: 'heading', label: 'rel.h.repeat' },
+    { type: 'row', fields: [
+      { name: 'repeat', type: 'select', label: 'f.rel.repeat', hint: 'f.rel.repeat.hint', required: true, noPlaceholder: true, options: opts('rel.repeat.', ['once', 'rearm', 'every']) },
+      { name: 'maxFires', type: 'number', label: 'f.rel.maxFires', hint: 'f.rel.maxFires.hint', optional: true, min: 1, max: 1000000, when: function (v) { return v.repeat && v.repeat !== 'once'; } }
+    ] },
+    { name: 'preview', type: 'static', readonly: true, live: true, render: function (v) {
+      if (!v.metaId || v.value == null || v.value === '') return h('span', {});
+      var item = { metaId: v.metaId, operator: v.operator, value: parseNumber(v.value, false), targets: v.targets || [], prizeType: v.prizeType, prizeId: v.prizeId, prizeGroupId: v.prizeGroupId, grantMode: v.grantMode };
+      return h('div', { class: 'eco-rule-preview text-sm rounded-md px-3 py-2 flex flex-wrap items-center gap-2', 'data-rel-preview': '' },
+        h('span', { class: 'font-medium', text: t('rel.preview.when') }), relWhenCell(item), icon('chevron', 'h-4 w-4 eco-caret'), relThenCell(item),
+        h('span', { class: 'text-xs', text: t('rel.repeat.' + (v.repeat || 'once') + '.say') }));
+    } },
+    { type: 'heading', label: 'ev.h.who' },
+    playerTagsField(),
+    windowRow(),
+    { name: 'clientVisible', type: 'bool', inline: true, label: 'f.rel.visible', hint: 'f.rel.visible.hint' },
+    { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
+  ],
+  defaults: function (query) {
+    return { key: '', name: {}, description: {}, metaId: (query && query.metaId) || null, operator: 'gte', value: 100, targets: [{ metaId: null, action: 'add', amount: 1 }],
+      prizeType: 'none', prizeId: null, prizeGroupId: null, grantMode: 'auto', repeat: 'once', maxFires: null, audienceTagIds: [], clientVisible: true, startsAt: null, endsAt: null, isActive: true, sort: 0 };
+  },
+  toForm: function (v) {
+    v.targets = (v.targets || []).map(function (tg) { return { metaId: tg.metaId, action: tg.action || 'add', amount: tg.amount }; });
+    if (!v.prizeType) v.prizeType = 'none';
+    return v;
+  },
+  fixPayload: function (p) {
+    if (p.sort == null) p.sort = 0;
+    if (p.prizeType !== 'prize') p.prizeId = '';
+    if (p.prizeType !== 'prizeGroup') p.prizeGroupId = '';
+    if (!p.grantMode) p.grantMode = 'auto';
+    if (p.repeat === 'once') p.maxFires = null;
+    p.targets = (p.targets || []).map(function (tg) { return { metaId: tg.metaId, action: tg.action || 'add', amount: tg.amount }; });
+    return p;
+  },
+  afterSave: function () { forgetRefs('meta-relations'); }
+};
+
+RESOURCES.metas.onRow = function (item) { openMetaStudio(item.id); };
+RESOURCES.metas.mounted = function (query) { if (query && query.studio) setTimeout(function () { openMetaStudio(query.studio); }, 0); };
+
+var STUDIO = null;
+
+function studioHash(id) {
+  var q = Object.assign({}, lastQuery.metas || {});
+  delete q.studio;
+  if (id) q.studio = id;
+  return hashFor('metas', null, q);
+}
+
+function closeMetaStudio() {
+  if (!STUDIO) return;
+  STUDIO = null;
+  if (panelState && panelState.key.indexOf('studio/') === 0) closePanel();
+  if (/^#\/economy\/metas(\?|$)/.test(location.hash)) replaceHash(studioHash(null));
+}
+
+function openMetaStudio(id) {
+  if (STUDIO && STUDIO.id === id && STUDIO.el.isConnected) return;
+  closePanel();
+  var body = h('div', { 'data-meta-studio': id, class: 'eco-studio' });
+  var footer = h('div', { class: 'flex gap-4 w-full items-center' });
+  var el = sidePanel(t('studio.title'), body, footer, function () { if (STUDIO && STUDIO.editing) studioOverview(); else closeMetaStudio(); });
+  el.setAttribute('data-economy-studio', '');
+  var esc = function (e) {
+    if (e.key !== 'Escape' || !STUDIO || document.querySelector('[data-economy="panel"] .eco-pop:not([hidden]), [data-economy="dialog"]')) return;
+    e.preventDefault();
+    if (STUDIO.editing) studioOverview(); else closeMetaStudio();
+  };
+  document.addEventListener('keydown', esc, true);
+  panelState = { el: el, key: 'studio/' + id, esc: esc };
+  STUDIO = { id: id, el: el, body: body, footer: footer, meta: null, editing: null };
+  document.body.appendChild(el);
+  if (/^#\/economy\/metas(\?|$)/.test(location.hash)) replaceHash(studioHash(id));
+  studioOverview();
+}
+
+function studioTitle(text) {
+  var head = STUDIO && STUDIO.el.querySelector('[role="dialog"] > div.text-lg > div');
+  if (head) head.textContent = text;
+  var dlg = STUDIO && STUDIO.el.querySelector('[role="dialog"]');
+  if (dlg) dlg.setAttribute('aria-label', text);
+}
+
+function studioList(path) {
+  return api('GET', path).then(function (res) { return (res && res.items) || []; });
+}
+
+function studioOverview() {
+  var st = STUDIO;
+  if (!st) return;
+  st.editing = null;
+  clear(st.footer).appendChild(h('div', { class: 'flex-1' }));
+  st.footer.appendChild(button({ variant: 'ghost', size: 'footer', label: t('close'), onclick: closeMetaStudio }));
+  clear(st.body).appendChild(h('div', { class: 'flex flex-col gap-3' }, bar('40%', 'h-5'), bar('100%', 'h-20'), bar('100%', 'h-20'), bar('100%', 'h-20')));
+  var id = encodeURIComponent(st.id);
+  api('GET', '/metas/' + id).then(function (meta) {
+    if (STUDIO !== st) return null;
+    st.meta = meta;
+    studioTitle(t('studio.titleOf', { name: i18nText(meta.name) || meta.key }));
+    return Promise.all([
+      studioList('/meta-rules?limit=100&metaId=' + id),
+      studioList('/meta-relations?limit=100&targetMetaId=' + id),
+      studioList('/prizes?limit=100&metaKey=' + encodeURIComponent(meta.key)),
+      studioList('/level-tables?limit=100&levelMetaId=' + id),
+      studioList('/meta-relations?limit=100&metaId=' + id),
+      studioList('/level-tables?limit=100&metaId=' + id)
+    ]).then(function (all) {
+      if (STUDIO !== st || st.editing) return;
+      paintStudio(st, meta, { rules: all[0], relIn: all[1].filter(function (r) { return r.metaId !== st.id; }), prizes: all[2], levelsIn: all[3], relOut: all[4], levels: all[5] });
+    });
+  }).catch(function (err) {
+    if (STUDIO !== st) return;
+    clear(st.body).appendChild(errorBlock(err, studioOverview));
+  });
+}
+
+function studioGroup(kind, iconName, titleKey, items, rowFn, addFn) {
+  var head = h('div', { class: 'eco-studio-ghead flex items-center gap-2' },
+    h('span', { class: 'eco-studio-gicon shrink-0 flex items-center justify-center rounded-md' }, icon(iconName, 'h-5 w-5')),
+    h('span', { class: 'font-medium flex-1 min-w-0', text: t(titleKey) }),
+    h('span', { class: 'eco-studio-count tabular-nums text-xs rounded-full px-2 py-0.5', text: fmtNum(items.length) }),
+    addFn ? (function () {
+      var b = button({ variant: 'link', size: 'sm', icon: 'plus', label: t('studio.add'), onclick: addFn });
+      b.setAttribute('data-studio-add', kind);
+      return b;
+    })() : null);
+  var list = h('div', { class: 'flex flex-col' });
+  items.forEach(function (it) { list.appendChild(rowFn(it)); });
+  if (!items.length) list.appendChild(h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 px-3 py-2', text: t('studio.empty.' + kind) }));
+  return h('section', { class: 'eco-studio-group rounded-md', 'data-studio-group': kind }, head, list);
+}
+
+function studioRow(kind, it, main, sub, onclick, href) {
+  var attrs = { class: 'eco-studio-row flex items-start gap-2 w-full eco-text-start px-3 py-2 min-w-0', 'data-studio-item': it.id, 'data-studio-kind': kind };
+  var inner = [h('div', { class: 'flex-1 min-w-0 flex flex-col gap-1' },
+    h('div', { class: 'flex items-center gap-2 min-w-0' }, h('span', { class: 'font-medium truncate', text: i18nText(it.name) || it.key }), it.isActive === false ? tag(t('inactive'), 'secondary') : null, main || null),
+    sub || null), icon(href ? 'external' : 'chevron', 'h-4 w-4 shrink-0 text-secondary-400 eco-studio-go' + (href ? '' : ' eco-caret'))];
+  if (href) { attrs.href = href; return h('a', attrs, inner); }
+  attrs.type = 'button';
+  attrs.onclick = onclick;
+  return h('button', attrs, inner);
+}
+
+function paintStudio(st, meta, d) {
+  var write = aclCan('HIRO_ECONOMY', 1);
+  var node = h('section', { class: 'eco-studio-node rounded-md flex items-center gap-3 px-4 py-3', 'data-studio-node': meta.key },
+    h('span', { class: 'eco-studio-nicon shrink-0 flex items-center justify-center rounded-md' }, icon('metasDuo', 'h-6 w-6')),
+    h('div', { class: 'flex-1 min-w-0' },
+      h('div', { class: 'font-semibold truncate', text: i18nText(meta.name) || meta.key }),
+      h('div', { class: 'flex flex-wrap items-center gap-2 text-xs text-secondary-500 dark:text-secondary-400' }, mono(meta.key),
+        h('span', { text: t('studio.default', { n: numLocal(meta.defaultValue) }) }), meta.serverOnly ? tag(t('server.only'), 'warning') : null)),
+    write ? (function () { var b = button({ variant: 'ghost', size: 'sm', icon: 'gear', label: t('studio.editMeta'), onclick: function () { closeMetaStudio(); go('metas', meta.id, lastQuery.metas || {}); } }); b.setAttribute('data-studio-edit-meta', ''); return b; })() : null);
+
+  var add = function (name, preset, lock) { return write ? function () { studioEditor(name, null, preset, lock); } : null; };
+  var edit = function (name, it, lock) { return function () { studioEditor(name, it.id, null, lock); }; };
+
+  var inputs = [
+    studioGroup('meta-rules', 'rulesDuo', 'studio.g.rules', d.rules, function (it) {
+      return studioRow('meta-rules', it, null, h('div', { class: 'flex items-center gap-1.5 text-xs text-secondary-600 dark:text-secondary-300 min-w-0' }, refNameCell('event-types', it.eventTypeId),
+        h('span', { class: 'tabular-nums whitespace-nowrap', text: t('mr.change.' + it.action + '.' + it.valueSource, { n: numLocal(it.amount) }) })), edit('meta-rules', it, 'metaId'));
+    }, add('meta-rules', { metaId: st.id }, 'metaId')),
+    studioGroup('relations-in', 'flowDuo', 'studio.g.relIn', d.relIn, function (it) {
+      return studioRow('meta-relations', it, relRepeatTag(it), h('div', { class: 'flex flex-col gap-1 text-xs min-w-0' }, relWhenCell(it), relThenCell(it)), edit('meta-relations', it, null));
+    }, add('meta-relations', { targets: [{ metaId: st.id, action: 'add', amount: 1 }] }, null)),
+    studioGroup('prizes', 'prizesDuo', 'studio.g.prizes', d.prizes, function (it) {
+      var mine = (it.items || []).filter(function (x) { return x.type === 'meta' && x.key === meta.key; })[0];
+      return studioRow('prizes', it, null, mine ? h('div', { class: 'text-xs tabular-nums text-secondary-600 dark:text-secondary-300', dir: 'ltr', text: relSigned(mine.value, mine.action) }) : null, null, hashFor('prizes', it.id));
+    }, null),
+    studioGroup('levels-in', 'levelsDuo', 'studio.g.levelsIn', d.levelsIn, function (it) {
+      return studioRow('level-tables', it, null, h('div', { class: 'flex items-center gap-1.5 text-xs min-w-0' }, refNameCell('metas', it.metaId)), edit('level-tables', it, null));
+    }, null)
+  ];
+  var outputs = [
+    studioGroup('relations-out', 'flowDuo', 'studio.g.relOut', d.relOut, function (it) {
+      return studioRow('meta-relations', it, relRepeatTag(it), h('div', { class: 'flex flex-col gap-1 text-xs min-w-0' }, relWhenCell(it), relThenCell(it)), edit('meta-relations', it, 'metaId'));
+    }, add('meta-relations', { metaId: st.id }, 'metaId')),
+    studioGroup('level-tables', 'levelsDuo', 'studio.g.levels', d.levels, function (it) {
+      var steps = it.steps || [];
+      var top = steps[steps.length - 1];
+      return studioRow('level-tables', it, null, h('div', { class: 'text-xs text-secondary-600 dark:text-secondary-300 tabular-nums' }, t('lv.levelsN', { n: steps.length }) + (top ? ' · ' + t('lv.top', { level: top.level, n: numLocal(top.threshold) }) : '')), edit('level-tables', it, 'metaId'));
+    }, add('level-tables', { metaId: st.id }, 'metaId'))
+  ];
+  var arrow = function (key) {
+    return h('div', { class: 'eco-studio-arrow flex items-center gap-2 text-xs text-secondary-500 dark:text-secondary-400', 'aria-hidden': 'true' }, icon('arrowDownDuo', 'h-4 w-4'), h('span', { text: t(key) }));
+  };
+  clear(st.body).appendChild(h('div', { class: 'flex flex-col gap-3' },
+    h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('studio.hint') }),
+    h('div', { class: 'eco-studio-lane flex flex-col gap-3', 'data-studio-lane': 'in' }, h('div', { class: 'eco-studio-lane-title text-xs font-semibold', text: t('studio.in') }), inputs),
+    arrow('studio.arrow.in'),
+    node,
+    arrow('studio.arrow.out'),
+    h('div', { class: 'eco-studio-lane flex flex-col gap-3', 'data-studio-lane': 'out' }, h('div', { class: 'eco-studio-lane-title text-xs font-semibold', text: t('studio.out') }), outputs)));
+}
+
+function lockFields(fields, lock, meta) {
+  if (!lock) return fields;
+  return fields.map(function walk(f) {
+    if (f.type === 'row') return Object.assign({}, f, { fields: f.fields.map(walk) });
+    if (f.name !== lock) return f;
+    return { name: lock, type: 'static', readonly: true, label: f.label, render: function () {
+      return h('div', { class: 'eco-studio-lock inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm', 'data-locked': lock },
+        icon('lockDuo', 'h-4 w-4'), h('span', { class: 'font-medium', text: i18nText(meta.name) || meta.key }), mono(meta.key));
+    } };
+  });
+}
+
+function studioEditor(name, itemId, preset, lock) {
+  var st = STUDIO;
+  var def = RESOURCES[name];
+  if (!st || !def) return;
+  st.editing = { name: name, id: itemId };
+  var isNew = !itemId;
+  studioTitle(t((isNew ? 'new.' : 'edit.') + name));
+  var top = h('div', {});
+  var back = button({ variant: 'link', size: 'sm', icon: 'back', label: t('studio.back'), onclick: studioOverview });
+  back.setAttribute('data-studio-back', '');
+  clear(st.body).appendChild(h('div', {}, h('div', { class: 'mb-4' }, back), formSkeleton(def)));
+  clear(st.footer);
+  var load = isNew ? Promise.resolve(Object.assign(def.defaults({}), preset || {})) : api('GET', '/' + name + '/' + encodeURIComponent(itemId));
+  Promise.all([load, freshLanguages(), loadKeyTypes()]).then(function (all) {
+    if (STUDIO !== st || !st.editing || st.editing.name !== name) return;
+    var values = clone(all[0]) || {};
+    if (def.toForm) values = def.toForm(values);
+    if (lock) values[lock] = st.id;
+    var form = buildForm(lockFields(def.fields, lock, st.meta), values);
+    clear(st.body).appendChild(h('div', { 'data-studio-editor': name },
+      h('div', { class: 'mb-4' }, back),
+      h('form', { novalidate: true, onsubmit: function (e) { e.preventDefault(); save(); } }, top, form.el, h('button', { type: 'submit', hidden: true }))));
+    var saveBtn = button({ variant: 'primary', size: 'footer', label: isNew ? t('create') : t('save'), onclick: function () { save(); } });
+    saveBtn.setAttribute('data-studio-save', '');
+    var del = h('div', { class: 'flex items-center gap-2' });
+    if (!isNew) {
+      var resetDel = function () {
+        clear(del).appendChild(button({ variant: 'danger', size: 'footer', icon: 'trash', label: t('delete'), onclick: function () {
+          clear(del).appendChild(h('span', { class: 'text-sm', text: t('delete.confirm') }));
+          del.appendChild(button({ variant: 'dangerSolid', size: 'sm', label: t('delete.yes'), onclick: function () {
+            api('DELETE', '/' + name + '/' + encodeURIComponent(itemId)).then(function () {
+              toast('success', t('deleted'));
+              if (def.afterSave) def.afterSave();
+              studioOverview();
+            }, function (err) { resetDel(); clear(top).appendChild(h('div', { class: 'mb-5' }, notice('error', errorText(err)))); });
+          } }));
+          del.appendChild(button({ variant: 'ghost', size: 'sm', label: t('no'), onclick: resetDel }));
+        } }));
+      };
+      resetDel();
+    }
+    clear(st.footer).appendChild(h('div', { class: 'flex-1 flex items-center' }, del));
+    st.footer.appendChild(button({ variant: 'ghost', size: 'footer', label: t('cancel'), onclick: studioOverview }));
+    st.footer.appendChild(saveBtn);
+    function save() {
+      clear(top);
+      if (!form.validate()) return;
+      var payload = form.payload();
+      if (def.fixPayload) payload = def.fixPayload(payload);
+      if (lock) payload[lock] = st.id;
+      setBusy(saveBtn, true, t('saving'));
+      api(isNew ? 'POST' : 'PUT', '/' + name + (isNew ? '' : '/' + encodeURIComponent(itemId)), payload).then(function () {
+        toast('success', t('saved'));
+        if (def.afterSave) def.afterSave();
+        studioOverview();
+      }, function (err) {
+        setBusy(saveBtn, false);
+        if (!form.showServerError(err)) clear(top).appendChild(h('div', { class: 'mb-5' }, notice('error', errorText(err))));
+      });
+    }
+    var first = st.body.querySelector('form input:not([readonly]),form textarea,form select');
+    if (first) first.focus();
+  }, function (err) {
+    if (STUDIO !== st) return;
+    clear(st.body).appendChild(h('div', {}, h('div', { class: 'mb-4' }, back), errorBlock(err, function () { studioEditor(name, itemId, preset, lock); })));
+  });
+}
+
+function changeMetaDialog(userId) {
+  var values = { metaId: null, action: 'add', value: 1 };
+  var picker = refPicker({ resource: 'metas', value: null, required: true, label: t('f.mr.meta'), onchange: function (v) { values.metaId = v || null; } });
+  var action = selectInput('add', opts('rel.action.', ['add', 'set'])(), function (v) { values.action = v; }, { placeholder: false, label: t('f.rel.action') });
+  var val = numberInput(1, { int: false, label: t('f.rel.amount'), oninput: function (v) { values.value = v === '' ? null : parseNumber(v, false); } });
+  var metaWrap = field(t('f.mr.meta'), picker, null);
+  var valWrap = field(t('f.rel.amount'), val, t('pp.meta.hint'));
+  return formDialog({
+    id: 'change-meta',
+    title: t('pp.meta.change'),
+    text: t('pp.meta.change.text'),
+    icon: 'metas',
+    ok: t('pp.meta.change.ok'),
+    body: h('div', {}, metaWrap, field(t('f.rel.action'), action, null), valWrap),
+    validate: function () {
+      metaWrap.setError(values.metaId ? '' : t('err.required'));
+      valWrap.setError(values.value === null || isNaN(values.value) ? t('err.number') : '');
+      return !!values.metaId && values.value !== null && !isNaN(values.value);
+    },
+    submit: function () { return api('POST', '/users/' + encodeURIComponent(userId) + '/metas', { metaId: values.metaId, action: values.action, value: values.value }); }
+  });
+}
+
+function relationsProgressSection(p, id, write, reload) {
+  var box = h('div', { class: 'flex flex-col gap-1', 'data-pp-relations': '' });
+  (p.relations || []).slice(0, 8).forEach(function (r) {
+    var line = h('div', { class: 'flex flex-wrap items-center gap-2 text-sm min-w-0', 'data-pp-relation': r.key },
+      h('span', { class: 'truncate font-medium', text: i18nText(r.name) || r.key }),
+      r.fires > 1 ? tag(t('pp.rel.times', { n: r.fires }), 'primary') : null,
+      h('span', { class: 'flex-1' }),
+      h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: fmtDate(r.lastDoneAt) }));
+    if (write) {
+      var reset = button({ variant: 'link', size: 'sm', label: t('pp.rel.reset'), onclick: function () {
+        confirmModal({ title: t('pp.rel.reset.title'), text: t('pp.rel.reset.text', { name: i18nText(r.name) || r.key }), ok: t('pp.rel.reset'), danger: true }).then(function (yes) {
+          if (!yes) return;
+          api('DELETE', '/users/' + encodeURIComponent(id) + '/meta-relations/' + encodeURIComponent(r.relationId)).then(function () { toast('success', t('pp.rel.reset.done')); reload(true); }, function (err) { toast('error', errorText(err)); });
+        });
+      } });
+      reset.setAttribute('data-relation-reset', r.key);
+      line.appendChild(reset);
+    }
+    box.appendChild(line);
+  });
+  if (!(p.relations || []).length) box.appendChild(h('span', { class: 'text-sm text-secondary-400', text: t('pp.rel.none') }));
+  return progressSection('pp.relations', box);
+}
+
+OVERVIEW_CATALOG.push('meta-relations');
 
 ICONS.tasks = '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>';
 ICONS['task-groups'] = '<rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="11" width="18" height="5" rx="1"/><path d="M7 20h10"/>';

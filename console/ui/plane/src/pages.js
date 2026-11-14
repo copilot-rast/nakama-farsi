@@ -180,7 +180,7 @@ function ecoKpiTint(href) {
   if (/status=failed|grant|claimsFailed/.test(href || '')) return 'bad';
   var p = routePath(href || '#/').split('/').filter(Boolean)[1] || '';
   if (/payments|methods/.test(p)) return 'ok';
-  if (/event|streak|level|task|meta-rules/.test(p)) return 'violet';
+  if (/event|streak|level|task|meta-rules|meta-relations/.test(p)) return 'violet';
   if (/referral/.test(p)) return 'teal';
   return 'info';
 }

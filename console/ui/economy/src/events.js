@@ -527,6 +527,11 @@ var EVENT_SETTINGS_FIELDS = [
   { type: 'row', fields: [
     { name: 'retentionDays', type: 'number', label: 'f.es.retention', hint: 'f.es.retention.hint', required: true, min: 1, max: 3650 },
     { name: 'playerRateLimit', type: 'number', label: 'f.es.rate', hint: 'f.es.rate.hint', required: true, min: 1, max: 100000 }
+  ] },
+  { type: 'heading', label: 'es.h.relations' },
+  { type: 'row', fields: [
+    { name: 'relationChainDepth', type: 'number', label: 'f.es.chain', hint: 'f.es.chain.hint', required: true, min: 0, max: 25 },
+    { name: 'relationPrizeMissing', type: 'select', label: 'f.es.prizeMissing', hint: 'f.es.prizeMissing.hint', required: true, noPlaceholder: true, options: opts('es.prizeMissing.', ['complete', 'wait']) }
   ] }
 ];
 
@@ -605,7 +610,7 @@ function playerProgressCard() {
   if (!PROGRESS_CARD.loading && Date.now() - PROGRESS_CARD.at > 20000) loadProgressCard(id);
   var p = PROGRESS_CARD.data;
   var anchor = grid.querySelector('[data-player-mod]');
-  var key = lang() + '|' + id + '|' + (p ? JSON.stringify([p.totals, p.streaks, p.levels, p.claims, p.readyClaims]) : PROGRESS_CARD.err ? 'err' : 'loading');
+  var key = lang() + '|' + id + '|' + (p ? JSON.stringify([p.totals, p.streaks, p.levels, p.claims, p.readyClaims, p.relations]) : PROGRESS_CARD.err ? 'err' : 'loading');
   var placed = existing && existing.parentNode === grid && (anchor ? existing.previousElementSibling === anchor : grid.firstChild === existing);
   if (existing && existing.getAttribute('data-key') === key && placed) return;
   if (existing) existing.remove();
@@ -626,6 +631,9 @@ function playerProgressCard() {
     var rec = button({ variant: 'ghost', size: 'sm', icon: 'event-types', label: t('pp.record'), onclick: function () { recordEventDialog(id).then(function (res) { if (res) toast('success', t('pp.recorded')); reload(res); }); } });
     rec.setAttribute('data-record-event', '');
     actions.appendChild(rec);
+    var chg = button({ variant: 'ghost', size: 'sm', icon: 'metas', label: t('pp.meta.change'), onclick: function () { changeMetaDialog(id).then(function (res) { if (res) toast('success', t('pp.meta.changed')); reload(res); }); } });
+    chg.setAttribute('data-change-meta', '');
+    actions.appendChild(chg);
   }
   actions.appendChild(h('a', { href: hashFor('event-log', null, { userId: id }), class: 'eco-link text-sm', text: t('pp.log') }));
   body.appendChild(h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-3' }, title, actions));
@@ -670,6 +678,7 @@ function playerProgressCard() {
   if (!(p.totals || []).length) totals.appendChild(h('span', { class: 'text-sm text-secondary-400', text: t('pp.noEvents') }));
 
   body.appendChild(h('div', { class: 'eco-pc-grid' }, progressSection('pp.levels', levels), progressSection('pp.streaks', streaks), progressSection('pp.events', totals)));
+  body.appendChild(h('div', { class: 'mt-3 border-t border-secondary-200 dark:border-secondary-700 pt-4' }, relationsProgressSection(p, id, write, reload)));
 
   var claims = h('div', { class: 'flex flex-col mt-3 border-t border-secondary-200 dark:border-secondary-700 pt-4', 'data-pp-claims': '' });
   claims.appendChild(h('div', { class: 'flex items-center justify-between gap-2 text-xs text-secondary-500 dark:text-secondary-400 mb-1' }, h('span', { text: t('pp.claims') }), p.readyClaims ? tag(t('pp.readyN', { n: p.readyClaims }), 'warning') : null));
