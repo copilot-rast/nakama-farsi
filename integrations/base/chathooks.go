@@ -133,6 +133,9 @@ func (s *service) beforeChannelMessageSend(ctx context.Context, _ runtime.Logger
 	if err != nil {
 		return nil, err
 	}
+	if err := s.chatQuotaGate(ctx, ctxUser(ctx), msg.ChannelId, content); err != nil {
+		return nil, err
+	}
 	msg.Content = content
 	return in, nil
 }

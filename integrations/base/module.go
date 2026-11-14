@@ -65,6 +65,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	go svc.supportLoop(ctx)
 	go svc.updatesLoop(ctx)
 	go svc.friendsLoop(ctx)
+	go svc.chatQuotaLoop(ctx)
 	logger.Info("Base module registered")
 	return nil
 }

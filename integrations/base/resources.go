@@ -265,7 +265,7 @@ func (s *service) taxonomyDelete(res resource) http.HandlerFunc {
 				return err
 			}
 			if res.name == "tags" {
-				for _, table := range []string{"economy_prize", "economy_product", "economy_gift", "economy_currency", "economy_task", "economy_item", "economy_achievement", "publication_banner", "publication_sponsor", "base_friend_rule"} {
+				for _, table := range []string{"economy_prize", "economy_product", "economy_gift", "economy_currency", "economy_task", "economy_item", "economy_achievement", "publication_banner", "publication_sponsor", "base_friend_rule", "base_chat_quota_rule"} {
 					if _, err := tx.ExecContext(r.Context(), `UPDATE `+table+` SET tag_ids = array_remove(tag_ids, $1::text), updated_at=now() WHERE $1::text = ANY(tag_ids)`, id); err != nil {
 						return err
 					}
