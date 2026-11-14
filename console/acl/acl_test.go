@@ -254,7 +254,8 @@ func TestCheckACLHttpBasePlayersAndChat(t *testing.T) {
 		paths    []string
 	}{
 		{console.AclResources_ACCOUNT, []string{"/v2/console/base/players", "/v2/console/base/players/{id}", "/v2/console/base/players/{id}/tags", "/v2/console/base/players/tags", "/v2/console/base/players/{id}/restrictions", "/v2/console/base/restrictions", "/v2/console/base/restrictions/{id}/lift"}},
-		{console.AclResources_CHANNEL_MESSAGE, []string{"/v2/console/base/chat-words", "/v2/console/base/chat-words/{id}", "/v2/console/base/chat-words/test", "/v2/console/base/report-titles", "/v2/console/base/report-titles/{id}", "/v2/console/base/reports", "/v2/console/base/reports/summary", "/v2/console/base/reports/{id}/resolve"}},
+		{console.AclResources_CHANNEL_MESSAGE, []string{"/v2/console/base/chat-words", "/v2/console/base/chat-words/{id}", "/v2/console/base/chat-words/test", "/v2/console/base/report-titles", "/v2/console/base/report-titles/{id}", "/v2/console/base/reports", "/v2/console/base/reports/summary", "/v2/console/base/reports/{id}/resolve",
+			"/v2/console/base/chat-quota/settings", "/v2/console/base/chat-quota/rules/{id}", "/v2/console/base/chat-quota/report", "/v2/console/base/players/{id}/chat-quota", "/v2/console/base/players/{id}/chat-quota/grant", "/v2/console/base/players/{id}/chat-quota/lots/{lot}/revoke"}},
 	}
 	settingsWrite := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
 	for _, c := range cases {

@@ -796,7 +796,7 @@ func (s *service) chatQuotaFailure(ctx context.Context, userID string, sp chatSp
 	if sp.Limits.RuleID != "" {
 		e.Rule = map[string]any{"id": sp.Limits.RuleID, "name": sp.Limits.RuleName}
 	}
-	langs, lang, err := localized.ForUser(ctx, s.db, userID, ctxLang(ctx))
+	langs, lang, err := localized.ForUser(ctx, s.db, userID, "")
 	if err != nil {
 		langs, lang = nil, "en"
 	}

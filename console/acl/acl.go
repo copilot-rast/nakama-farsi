@@ -203,6 +203,10 @@ func CheckACLHttp(method, path string, userPermissions Permission) bool {
 		requiredPermissions = NewPermission(console.AclResources_ACCOUNT_NOTES, PermissionRead)
 	case method != "" && strings.HasPrefix(path, "/v2/console/base/support/"):
 		requiredPermissions = NewPermission(console.AclResources_ACCOUNT_NOTES, PermissionWrite)
+	case method == http.MethodGet && baseChatQuotaPath(path):
+		requiredPermissions = NewPermission(console.AclResources_CHANNEL_MESSAGE, PermissionRead)
+	case method != "" && baseChatQuotaPath(path):
+		requiredPermissions = NewPermission(console.AclResources_CHANNEL_MESSAGE, PermissionWrite)
 	case method == http.MethodGet && basePlayersPath(path):
 		requiredPermissions = NewPermission(console.AclResources_ACCOUNT, PermissionRead)
 	case method != "" && basePlayersPath(path):
@@ -224,6 +228,10 @@ func CheckACLHttp(method, path string, userPermissions Permission) bool {
 
 func basePlayersPath(path string) bool {
 	return strings.HasPrefix(path, "/v2/console/base/players") || strings.HasPrefix(path, "/v2/console/base/restrictions") || strings.HasPrefix(path, "/v2/console/base/activity")
+}
+
+func baseChatQuotaPath(path string) bool {
+	return strings.HasPrefix(path, "/v2/console/base/chat-quota") || (strings.HasPrefix(path, "/v2/console/base/players/") && strings.Contains(path, "/chat-quota"))
 }
 
 func baseChatPath(path string) bool {

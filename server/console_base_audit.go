@@ -27,7 +27,7 @@ var baseChatAudit = consoleModuleAudit{
 	prefix:   "/v2/console/base/",
 	label:    "base",
 	resource: console.AclResources_CHANNEL_MESSAGE,
-	invokes:  []string{"/resolve", "/chat-words/test", "/status", "/notes"},
+	invokes:  []string{"/resolve", "/chat-words/test", "/status", "/notes", "/chat-quota/grant", "/chat-quota/reset", "/revoke"},
 }
 
 var baseSupportAudit = consoleModuleAudit{
@@ -106,6 +106,9 @@ func consoleBaseAuditLog(ctx context.Context, logger *zap.Logger, db *sql.DB, me
 		if strings.HasPrefix(pattern, prefix) {
 			mod = baseChatAudit
 		}
+	}
+	if strings.HasPrefix(pattern, "/v2/console/base/chat-quota") || (strings.HasPrefix(pattern, "/v2/console/base/players/") && strings.Contains(pattern, "/chat-quota")) {
+		mod = baseChatAudit
 	}
 	if strings.HasPrefix(pattern, "/v2/console/base/support/") {
 		if strings.HasSuffix(pattern, "/heartbeat") || strings.HasSuffix(pattern, "/typing") || strings.HasSuffix(pattern, "/read") {
