@@ -372,6 +372,8 @@ Migration `20261124000003-base-friend-tiers.sql`. The row above holds the defaul
 
 The section «قوانین دوستی» gained «وقتی درخواست‌ها از سقف بیشتر شد», the two meta pickers («سقف بیشتر با متا»), «وقتی چند قانون به یک بازیکن بخورد» and below the form the list «قانون‌ها برای برچسب‌های بازیکن» (name and tag chips, daily requests, most friends with «پیش‌فرض»/«بی‌حد», priority with the player count, status) with the drawer editor `#/project-settings/friends/<id>`.
 
+Friend gifts (economy, phase 22, `docs/economy/spec.md` «Friend gifts») read the same `user_edge` rows: accepted friends both ways, `update_time` of the accepted edge as the friendship start, and a block (state 3) on either side refuses any gift. Their gift limits per player tag follow the same pattern as these friend rules (tag rule with priority, `priority` or `generous`, bonus metas) but live in economy (`economy_friend_gift_rule`).
+
 Expiry is lazy on read and also swept: every node runs `friendsLoop` (1 min), the node that holds the `base.friends.expire` lease (`internal/clusterkit`) removes up to 500 expired invites through `nk.FriendsDelete` (so Nakama keeps its edge counts right), day rows older than three days and rejections older than the cooldown (at least 30 days). Removing an expired invite is not a rejection. Known limit: max friends is read before Nakama writes the edge, so two accepts by the same player at the same instant could pass it by one.
 
 Errors are runtime errors whose message is JSON the client can show as is: `{"code", "message" (in the player's language: fa, en or ar built in, with Persian digits in fa), "lang", "limit"?, "remaining"?, "resetsAt"?, "retryAt"?, "userId"?}`.

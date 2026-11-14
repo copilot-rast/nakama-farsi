@@ -322,6 +322,94 @@ CRUD `offers` (daily) and `entry-offers` (entry), same fields; list rows carry `
 
 Sidebar «فروش» gets «پیشنهادهای ویژه» (`#/economy/offers`) with tabs «روزانه» (pool list with price, weight, bought/made and status; editor with product and price, offer SKUs, limit, weight, audience, level, meta conditions, account age and window), «پیشنهاد ورود» (`/entry`; the editor adds the trigger with a live sentence such as «وقتی بازیکن بعد از دست‌کم ۷ روز غیبت برگردد. بعد از آن ۲ ساعت ۳۰ دقیقه فرصت دارد.», duration and repeat), «پیش‌نمایش» (`/preview?userId=`: pick a player or paste an ID; current copies with their countdown, the draw with the reason for every template, entry offers with their state), «گزارش» (`/report`: range and kind filters, totals and per-offer shown, buyers, purchases, conversion and revenue) and «تنظیمات» (`/settings`, every setting above with the current period). The player page gets an «پیشنهادهای ویژه» card: today's copies and the entry offers with price, state and time left, «قرعهٔ دوباره», «بستن» per copy, «از نو» per entry offer and a link to the preview.
 
+## Friend gifts (phase 22)
+
+Owner's request 2026-11-14 (Ludo-style games). A player gives a friend something: an item or currency from their own inventory, or a shop product they pay for. Before this phase the only "gift" was the gift code (`economy_gift`, page «هدیه‌ها»); friend gifts are a separate feature with their own names everywhere (`economy_friend_gift*`, RPCs `economy_friend_gift_*`, console «هدیه به دوست», `#/economy/friend-gifts`). Migration `20261127000000-economy-friend-gifts.sql` (Up re-runnable, Down raises) adds the tables below, `economy_item.giftable` and `economy_product.giftable` (NULL = follow the defaults), `economy_payment.friend_gift_id`, the `gift` source on `economy_user_item`, the `friend_gift` source on `economy_user_prize` and the built-in server events `Gift:Sent` and `Gift:Received`.
+
+### Tables
+
+| Table | What |
+|---|---|
+| `economy_friend_gift` | one gift and its audit trail: `sender_id`, `recipient_id`, `source` (`inventory`, `shop`), `kind` (`item`, `currency`, `product`), `item_id`/`item_key` and `item_state` (the sender's copy: source, upgrade level, equipped), `currency_key`/`amount`, `product_id`/`prize_id`/`payment_id`/`method`, `message` and `message_flagged`, `delivery` (`instant`, `accept`, frozen at send time), `status`, `outcome`, `error`, `request_id` (idempotency, unique per sender), `day` (project day it counts against), `expires_at`, `delivered_at`, `responded_at`, `reversed_at`/`reversed_by`/`reverse_note` |
+| `economy_friend_gift_rule` | limits per player tag: `name`, `tag_ids`, `priority`, `per_sender_daily`, `per_recipient_daily`, `per_pair_daily` (NULL keeps the setting, 0 = no limit), `can_send`, `is_active` |
+| `economy_friend_gift_settings` | one JSON row with the policies below; a missing row or field means the default |
+
+Status: `sending` (currency between the row and the wallet), `paying` (shop gift waiting for its payment), `pending` (waiting for the recipient), `delivered`, `declined`, `expired`, `cancelled` (taken back by the sender), `reversed` (admin), `failed` (nothing moved: payment closed, not enough coins). Outcome: `delivered`, `returned` (back to the sender), `refunded` (coins back), `sender_got` (the sender got the product), `refund_due` (money to refund by hand), `kept` (nobody got it); empty while the wallet or prize step is still to run (a sweep every 30 s retries it).
+
+### Settings (`GET/PUT /friend-gift-settings`, partial body)
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `enabled` | true | off: no new gifts; pending ones stay |
+| `recipients` | `friends` | `friends` (both accepted) or `any` player |
+| `minFriendDays` | 0 | friends for at least N days (from the accept time) |
+| `minMutualFriends` | 0 | sender and recipient share at least N friends |
+| `minSenderAccountDays`, `minRecipientAccountDays` | 0, 0 | account age |
+| `minSenderLevel`, `levelTableId` | 0, main table | sender level |
+| `inventoryEnabled` | true | items from the inventory |
+| `itemsDefault`, `itemTypes` | true, [] | default giftability, per item type `[{typeId, giftable}]`; an item's own `giftable` wins; starter items never |
+| `equipped` | `block` | `block` (take it off first) or `unequip` |
+| `upgradeLevel` | `keep` | `keep` or `reset` the item's upgrade level on the recipient |
+| `regift` | `block` | an item received as a gift can (`allow`) or cannot be given again |
+| `itemRequirements` | `check` | the recipient must own the required/parent item and reach the unlock level (`ignore`) |
+| `currencyEnabled`, `currencies` | false, [] | currency gifts, `[{currencyKey, min, max}]` (max 0 = no limit) |
+| `shopEnabled`, `productsDefault` | true, true | shop gifts; a product's own `giftable` wins; subscriptions never |
+| `methods` | `in_app`, `gateway`, `store` | payment kinds allowed for shop gifts (only the product's active methods) |
+| `partialOwned` | `block` | a product whose items the recipient owns in part: `block` or `allow` (they get the rest) |
+| `stackableProducts` | `allow` | products without items (coins, metas) |
+| `productRules` | `recipient` | whose level is checked against the product min/max level: `recipient`, `sender`, `both`, `none` |
+| `discountCodes` | false | gateway discount codes on gift purchases |
+| `perSenderDaily`, `perRecipientDaily`, `perPairDaily` | 5, 10, 2 | per project day (events time zone); 0 = no limit |
+| `matchPolicy` | `priority` | several tag rules: the first by priority, or `generous` (largest limit, 0 wins; may send if any rule allows) |
+| `sendBonusMeta`, `receiveBonusMeta` | none | a meta whose value adds to the sender/recipient limit (sell it in the shop for purchasable quota) |
+| `delivery` | `instant` | `instant` or `accept` (the server holds the gift until the recipient answers) |
+| `expiryHours` | 72 | time to accept |
+| `onExpiry` | `return` | `return` or `accept` automatically |
+| `coinReturn` | `refund` | a declined/expired/refused coin purchase: `refund`, `sender` (product to the sender), `none` |
+| `moneyReturn` | `sender` | the same for a money purchase: `sender`, `refund_due`, `none` (money is never refunded automatically) |
+| `senderCancel` | true | the sender can take back a pending gift |
+| `messageEnabled`, `messageMaxLength` | true, 120 | optional note, letters |
+| `messageFilter` | `rules` | the chat word list: `rules` (each word's mask/block/flag), `block` (any listed word refuses), `off` |
+| `notifyChannel` | `in_app` | recipient notice in the inbox, `push_in_app` (falls back to inbox when push cannot be queued) or `none` |
+| `socketNotify` | true | live notification (code 1310, subject `friend_gift`, content `{type, event, giftId, status, kind, senderId, recipientId}`; events `received`, `pending`, `accepted`, `declined`, `cancelled`, `expired`, `reversed`) |
+| `notifySender` | true | the sender hears about accept, decline and returns (socket; inbox when something came back) |
+
+### Rules
+
+Who: never yourself; the recipient must exist and not be disabled; a block on either side (`user_edge` state 3) always refuses (`GIFT_BLOCKED`), even with `recipients: any`; then the friend, friendship age, mutual friends, account ages and sender level. Limits: the sender's tag rules give the sender and pair limits and `can_send`, the recipient's tag rules give the receive limit; the bonus metas add to non-zero limits. Gifts count against the day they were sent unless they never left the sender (`failed`, `cancelled`); a shop gift counts from the moment its payment starts. Every send runs in a transaction that holds advisory locks on both players, so parallel sends cannot pass a limit or give the same item twice.
+
+What: only what the recipient lacks. An item the recipient owns or is already getting (pending) is refused (`RECIPIENT_OWNS_ITEM`, `GIFT_ALREADY_PENDING`). A product is refused when its non-repeatable prize was already received, a one-time product was bought by or given to the recipient, all its items are owned, or (with `partialOwned: block`) some are; another gift of the same product to the recipient that is pending or being paid also blocks (`GIFT_ALREADY_PENDING`). The checks run again at delivery: a recipient who got the thing meanwhile makes the gift go back per the return settings.
+
+Inventory items move inside the send transaction (out of the sender, into the recipient with source `gift` or into escrow for `accept`). Currency moves through the wallet ledger right after (`grantId` per step, so retries never move twice). A shop gift creates the gift row (`paying`) and starts a normal payment paid by the sender with `friend_gift_id` on it: coins are taken at once; gateways redirect; stores answer `{status: 'store', sku, developerPayload}` and finish with `economy_purchase_submit`. When the payment is paid (callback, submit, review or reconcile), the prize is granted to the recipient (`economy_user_prize.source_type = friend_gift`) or the gift waits for the recipient. A payment that fails or expires fails the gift. Gift payments are not one-time purchases of the sender and do not count in the sender's own purchase counts.
+
+Accept mode: accept delivers; decline (recipient), cancel (sender) and expiry give it back: items and currency always to the sender, products per `coinReturn`/`moneyReturn` (a product the sender cannot receive becomes a refund for coins or `refund_due` for money).
+
+Events: `Gift:Sent` on the sender when the gift leaves them (inventory: at send; shop: when paid), `Gift:Received` on the recipient at delivery; value = amount (1 for items and products), metadata `giftId, kind, source, key, senderId, recipientId` plus `itemKey`, `currency`/`amount` or `productKey`/`method`. Activity lines `prize/gift_sent`, `gift_received`, `gift_returned`, `gift_reversed`.
+
+Admin reverse (`POST /friend-gifts/{id}/reverse {returnTo, note}`): a pending gift is cancelled; a delivered one is taken back from the recipient (the item if they still have it, else `ITEM_GONE`; the currency, or the product's coins, items and added metas; `INSUFFICIENT_BALANCE` when spent) and goes to `returnTo`: `sender`, `refund` (coin purchases) or `none`. The reversal is idempotent per gift and logged on both players.
+
+### Client RPCs
+
+| RPC | Input | Output |
+|---|---|---|
+| `economy_friend_gift_options` | `{friendId, lang?}` | `{lang, friend:{id, username, displayName, isFriend}, canSend, reason, day, limits:{sender, recipient, pair: {used, limit, remaining?, bonus?}}, delivery, expiryHours, messageEnabled, messageMaxLength, discountCodes, items:[item + {upgradeLevel, equipped, recipientOwns, giftable, reason}], currencies:[{key, name, iconUrl, min, max, balance}], products:[{id, key, name, description, iconUrl, coverUrl, priceToman, finalToman, coinPrice, discountPercent, paymentMethods, sku, items, recipientOwns, giftable, reason}]}` |
+| `economy_friend_gift_send` | `{friendId, itemKey \| currencyKey+amount \| productId+method(+giftCode), message?, requestId?, lang?}` | `{gift, replayed?}`; shop gifts add the purchase answer (`paymentId`, `status` `success`/`redirect`/`store`, `redirectUrl`, `sku`, `developerPayload`) |
+| `economy_friend_gifts` | `{box: received\|sent\|all, status?, limit?, cursor?, lang?}` | `{lang, items:[gift], cursor, pendingCount}` |
+| `economy_friend_gift_accept` / `_decline` | `{giftId, lang?}` | `{gift}` (recipient) |
+| `economy_friend_gift_cancel` | `{giftId, lang?}` | `{gift}` (sender) |
+
+`gift` = `{id, box, kind, source, status, outcome, delivery, name, iconUrl, itemKey, currencyKey, amount, productKey, items?, message, createdAt, expiresAt, secondsLeft?, deliveredAt, respondedAt, from:{id, username, displayName}, to:{…}}`; the sender also sees `method`, `paymentId`, `paymentStatus` (the recipient never sees the price). `economy_purchase_status` adds `friendGiftId` and `friendGiftStatus` for gift payments; `economy_payments_mine` rows carry `friendGiftId`.
+
+Errors (Nakama RPC error message = code): `FRIEND_GIFTS_OFF`, `INVENTORY_GIFTS_OFF`, `SHOP_GIFTS_OFF`, `GIFT_SELF`, `GIFT_SOURCE_REQUIRED`, `RECIPIENT_NOT_FOUND`, `NOT_FRIENDS`, `FRIENDSHIP_TOO_NEW`, `NOT_ENOUGH_MUTUAL_FRIENDS`, `GIFT_BLOCKED`, `SENDER_ACCOUNT_TOO_NEW`, `RECIPIENT_ACCOUNT_TOO_NEW`, `SENDER_LEVEL_TOO_LOW`, `GIFT_SENDING_BLOCKED`, `GIFT_SENDER_DAILY_LIMIT`, `GIFT_RECIPIENT_DAILY_LIMIT`, `GIFT_PAIR_DAILY_LIMIT` (429), `ITEM_NOT_FOUND`, `ITEM_NOT_OWNED`, `STARTER_ITEM`, `ITEM_NOT_GIFTABLE`, `ITEM_EQUIPPED`, `REGIFT_BLOCKED`, `RECIPIENT_OWNS_ITEM`, `GIFT_ALREADY_PENDING`, `RECIPIENT_REQUIRES_ITEM`, `RECIPIENT_LEVEL_TOO_LOW`, `CURRENCY_NOT_GIFTABLE`, `INVALID_AMOUNT`, `INSUFFICIENT_BALANCE`, `PRODUCT_NOT_FOUND`, `PRODUCT_NOT_GIFTABLE`, `METHOD_NOT_ALLOWED`, `METHOD_UNAVAILABLE`, `RECIPIENT_OWNS_PRODUCT`, `RECIPIENT_LEVEL_TOO_HIGH`, `LEVEL_TOO_LOW`, `LEVEL_TOO_HIGH`, `GIFT_NOT_APPLICABLE`, `MESSAGE_TOO_LONG`, `MESSAGE_BLOCKED`, `GIFT_MESSAGES_OFF`, `INVALID_REQUEST_ID`, `REQUEST_ID_REUSED`, `GIFT_NOT_FOUND`, `GIFT_NOT_PENDING`, `GIFT_EXPIRED`, `GIFT_CANCEL_OFF`, plus the payment errors of `economy_purchase_start`.
+
+### Console API (`/v2/console/economy/`, `HIRO_ECONOMY`)
+
+`GET /friend-gifts` (filters `status`, `kind`, `source`, `outcome`, `userId` (either side), `senderId`, `recipientId`, `itemId`, `productId`, `flagged=true`, `q` on usernames, keys and message), `GET /friend-gifts/{id}` (row plus `trail` from the activity log), `POST /friend-gifts/{id}/reverse` (`GIFT_NOT_REVERSIBLE`, `GIFT_CHANGED`, `ITEM_GONE`, `INSUFFICIENT_BALANCE`, `INVALID_POLICY`). CRUD `friend-gift-rules` (`INVALID_NAME`, `INVALID_PRIORITY`, `INVALID_LIMIT`, `TAGS_REQUIRED`, `TAG_KIND_MISMATCH`, `TOO_MANY_TAGS`). `GET/PUT /friend-gift-settings` (`{settings, day}`; `INVALID_SETTING`, `INVALID_POLICY`, `LEVEL_TABLE_NOT_FOUND`, `ITEM_TYPE_NOT_FOUND`, `DUPLICATE_TYPE`, `CURRENCY_NOT_FOUND`, `DUPLICATE_CURRENCY`, `INVALID_AMOUNT`, `META_NOT_FOUND`). `GET /friend-gift-report?days=30` (counts by status and kind, senders, recipients, money revenue, coins spent, currency moved, top senders, recipients and gifts, per-day series). `GET /users/{id}/friend-gifts` (sent, received, pending, today's counts, the sender limits with the matching rule and bonus, last 10 gifts). Items and products take `giftable` (`true`, `false` or `null`).
+
+### Console pages
+
+Sidebar «فروش» gets «هدیه به دوست» (`#/economy/friend-gifts`) with tabs «گزارش هدیه‌ها» (log with filters; a row opens the gift with players, message, payment, trail and «برگرداندن هدیه» with where it goes and a note), «قانون‌ها» (`/rules`, tag rules editor), «تنظیمات» (`/settings`, every setting above) and «آمار» (`/report`). The item and product editors get «هدیه به دوست» (as default, giftable, not giftable). The player page gets a «هدیه به دوست» card: sent, received, waiting, today against the limit, the matching rule and bonus, the last gifts and a link to the log.
+
 ## Referral codes (phase 5)
 
 asp has only a lazily made invite code and "inviter set once, not yourself" (`UserInvite`), with the reward given by a system event. Here the code, the rules against abuse, the goal and the rewards are all server-side. Migration `20261112000002-economy-referral.sql` (Up re-runnable, Down raises) adds the tables, seeds the settings row, and lets `economy_reward_claim.kind` and `economy_user_prize.source_type` be `referral`; Star Catcher sets the default prizes (100 coins for the inviter, 50 for the invited player) and the goal (one finished round) when the rule has none.

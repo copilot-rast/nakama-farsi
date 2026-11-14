@@ -121,7 +121,7 @@ Players sign in with a mobile number and a one-time SMS code sent through the pr
 
 ## In-app notifications from other plugins (phase 5)
 
-`internal/inapp` holds one sender that the publication plugin registers at start (`inapp.SetSender`). Base calls `inapp.Send` for support replies: the message becomes a normal `in_app` notification to the listed users (translated title and body, optional action), created by `support:<agent>`, delivered by the worker and shown in the inbox like any other. When the publication plugin is not loaded the support code only sends its live notice.
+`internal/inapp` holds one sender that the publication plugin registers at start (`inapp.SetSender`). Base calls `inapp.Send` for support replies: the message becomes a normal `in_app` notification to the listed users (translated title and body, optional action), created by `support:<agent>`, delivered by the worker and shown in the inbox like any other. When the publication plugin is not loaded the support code only sends its live notice. A message may ask for `Channel: "push_in_app"` (friend gifts use it when the admin picks «صندوق پیام و پوش»); anything else is `in_app`.
 
 ## Banners and placements (phase 10)
 
