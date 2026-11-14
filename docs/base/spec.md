@@ -366,3 +366,33 @@ Errors are runtime errors whose message is JSON the client can show as is: `{"co
 Console: `GET/PUT /v2/console/base/friend-rules` (`SETTINGS` read/write, audit-logged, full replace, `INVALID_RULE` with `field`). Client RPC `base_friend_rules {lang?}` → `{dailyRequests, sentToday, remainingToday (null when unlimited), resetsAt, maxFriends, friends, expiryDays, rejectCooldownHours, timeZone}`.
 
 Project settings section «قوانین دوستی» (`#/project-settings/friends`, `SETTINGS`), after «قوانین حساب»: requests per day, most friends, request expiry in days, wait after a rejection in hours, each with «صفر یعنی بی‌حد» hints, and a live summary sentence under the form.
+
+### Player reports (17b)
+
+A player can report another player, not tied to a chat message, from any game or screen. The reasons are the same report titles as chat reports (`base_report_title`, «عنوان‌های گزارش»; the title's `used` count adds both kinds). Migration `20261124000001-base-player-reports.sql` (Up re-runnable, Down raises).
+
+`base_player_report`: reporter and reported player (ids kept with a username snapshot; `ON DELETE SET NULL`), reason (`title_id`, `title_key` and a snapshot of the translated name), the player's `note` (≤1000 letters), optional context `match_id`, `content_id` (≤128) and `game_key` (≤64), `status` (`open`, `reviewing`, `resolved`, `dismissed`), `reviewer` and `review_started_at`, internal `notes` (`[{by, at, text}]`, at most 50), the decision (`action` `dismiss|warn|mute|suspend`, `restriction_id`, `resolved_by/at`, `resolution_note`).
+
+Rules on the server: no self-report (`CANNOT_REPORT_SELF`), the reported player must exist (`USER_NOT_FOUND`), the reason must be active (`REPORT_TITLE_NOT_FOUND`), context without control characters (`INVALID_CONTEXT`). One open or reviewing report per reporter, player and reason within 24 hours: under a transaction advisory lock on that triple, a repeat answers the existing id with `duplicate: true` (parallel repeats on many nodes make one row). New reports are limited to 10 per hour per reporter through `clusterkit.Allow` inside the same transaction (`TOO_MANY_REPORTS`, 429); a duplicate does not use the limit. Each new report adds a `report` activity row for both players (`filed`, `received`, data `kind: player`).
+
+Client RPCs:
+
+| RPC | Input | Output |
+|---|---|---|
+| `base_report_player` | `{userId, titleKey, note?, matchId?, contentId?, gameKey?}` | `{reportId, duplicate}` |
+| `base_my_reports` | `{lang?, page?, limit? (≤50)}` | `{lang, items:[{id, userId, username, displayName, titleKey, title, note, matchId, contentId, gameKey, status, createdAt, closedAt}], total, page, limit}`; the reporter sees the status, never the action or the notes |
+
+Console API (`/v2/console/base/player-reports`, `CHANNEL_MESSAGE` like chat reports, audit-logged; `/status`, `/notes` and `/resolve` as invoke):
+
+| Route | Notes |
+|---|---|
+| `GET /player-reports?q&status&titleId&targetId&reporterId&gameKey` | `status` also takes `active` (open or reviewing); `openTotal` counts active reports |
+| `GET /player-reports/summary` | `{open, reviewing, active}` |
+| `GET /player-reports/{id}` | the report, `others` (last 20 reports against the same player) and `target` (player view plus `counts {warn, mute, suspend, chatReports, reports}`) |
+| `POST /player-reports/{id}/status` | `{status: reviewing|open}` takes the report for review (records the console user) or puts it back; `INVALID_REPORT_STATUS`, `REPORT_CLOSED` (409) |
+| `POST /player-reports/{id}/notes` | `{text}` (≤1000) appends an internal note; `TEXT_REQUIRED`, `TOO_MANY_NOTES` |
+| `POST /player-reports/{id}/resolve` | `{action: dismiss|warn|mute|suspend, minutes|endsAt, reason, note, closeOthers}`; warn, mute and suspend go through the same restrictions as chat reports (translated reason, live notice, sign-out for a suspension) with `report_id` set to this report; `closeOthers` closes every other open or reviewing report against the same player with the same decision; `REPORT_CLOSED` (409) when already handled |
+
+`GET /players/{id}` adds `playerReports {against, by, open}`.
+
+Console: page «گزارش بازیکن‌ها» (`#/moderation/player-reports[/<id>]`, `CHANNEL_MESSAGE`, badge with open and reviewing reports) after «گزارش‌ها» in «بازیکنان و گفتگو»: filters (status with «باز یا در حال بررسی» by default, reason, player id), rows with the reported player, the player's note, context chips (game, match, content), reason with the count against the player, reporter and status; the review page shows the report, the reported player (tags, status, counts, links to restrictions, player reports and chat reports), the internal notes with «افزودن یادداشت», «برمی‌دارم برای بررسی» / «برگرداندن به صف», and the decision (dismiss, warn, mute or suspend with the duration chips and translated message used for chat reports, «گزارش‌های باز دیگر علیه این بازیکن هم با همین تصمیم بسته شوند»). The native player page card links to the player reports against the player.

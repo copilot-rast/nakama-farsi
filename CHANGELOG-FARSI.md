@@ -22,6 +22,7 @@ Releases are tagged on `main` as `v3.42-fa.N`: the upstream version this fork is
 - Support and growth: tickets, live support chat, referral codes, remote config, player activity.
 - Games: many games on one server, game settings with rooms, entry fees and prizes, matchmaking hooks, the Star Catcher sample with tic-tac-toe.
 - Friend request rules: requests per day, most friends, invite expiry and a wait after a rejection, with translated JSON errors and `base_friend_rules`.
+- Player reports not tied to a chat message, with a review page, internal notes and the same decisions as chat reports; `base_report_player`, `base_my_reports`.
 - Cluster mode on Redis (off by default).
 - Updates page: this server's version and the parent repo's new commits, releases, changed files and warnings, with a copy-only update guide; build info is embedded by `build/buildinfo.sh` and the base commit is recorded in `build/upstream.json` by `build/upstream-sync.sh record`.
 
