@@ -18,6 +18,7 @@ const (
 	EconomyTicketInfo  = "economy-callback-ticket"
 	PublicationKeyInfo = "publication-provider-config"
 	BaseUpdatesInfo    = "base-updates-token"
+	BaseVoiceInfo      = "base-voice-secrets"
 )
 
 type Box struct {
@@ -29,6 +30,7 @@ var (
 	Economy     = Box{Salt: "nakama-economy", AAD: "economy-payment-method"}
 	Publication = Box{Salt: "nakama-publication", AAD: "publication-provider"}
 	Base        = Box{Salt: "nakama-base", AAD: "base-updates-token"}
+	BaseVoice   = Box{Salt: "nakama-base", AAD: "base-voice-provider"}
 )
 
 func Secret(env map[string]string) ([]byte, error) {

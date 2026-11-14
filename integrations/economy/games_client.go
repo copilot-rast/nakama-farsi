@@ -136,7 +136,7 @@ func (s *service) gameView(ctx context.Context, g *gameRecord, lk *gameLookups) 
 		"key": g.Key, "isActive": g.Active, "name": lk.langs.Resolve(g.Name, lk.lang), "description": lk.langs.Resolve(g.Description, lk.lang),
 		"iconUrl": g.IconURL, "category": nil, "tags": g.Tags, "minPlayers": g.MinPlayers, "maxPlayers": g.MaxPlayers,
 		"turnSeconds": g.TurnSeconds, "matchSeconds": g.MatchSeconds, "botsAllowed": g.BotsAllowed, "leaderboardId": g.LeaderboardID,
-		"rooms": rooms, "settings": g.Settings, "sort": g.Sort, "realtime": registered && def.Realtime, "multiplayer": g.MaxPlayers > 1, "level": lk.level,
+		"rooms": rooms, "settings": g.Settings, "sort": g.Sort, "voice": g.Voice, "realtime": registered && def.Realtime, "multiplayer": g.MaxPlayers > 1, "level": lk.level,
 	}
 	if !g.Active {
 		view["maintenance"] = lk.langs.Resolve(g.Maintenance, lk.lang)

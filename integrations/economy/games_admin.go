@@ -17,7 +17,7 @@ import (
 const gameAdminJSON = `jsonb_build_object('id',t.id,'key',t.key,'isActive',t.is_active,'name',t.name,'description',t.description,'maintenance',t.maintenance,'iconUrl',t.icon_url,
 	'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'minPlayers',t.min_players,'maxPlayers',t.max_players,'turnSeconds',t.turn_seconds,'matchSeconds',t.match_seconds,
 	'botsAllowed',t.bots_allowed,'rooms',t.rooms,'leaderboardId',t.leaderboard_id,'platforms',to_jsonb(t.platforms),'minVersion',t.min_version,'maxVersion',t.max_version,
-	'settings',t.settings,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at,
+	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled,'createdAt',t.created_at,'updatedAt',t.updated_at,
 	'matches',(SELECT count(*) FROM economy_game_match m WHERE m.game_key=t.key),
 	'finished',(SELECT count(*) FROM economy_game_match m WHERE m.game_key=t.key AND m.status='finished'),
 	'cancelled',(SELECT count(*) FROM economy_game_match m WHERE m.game_key=t.key AND m.status='cancelled'),
@@ -162,6 +162,7 @@ func saveGame(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 		MaxVersion    string          `json:"maxVersion"`
 		Settings      json.RawMessage `json:"settings"`
 		Sort          int             `json:"sort"`
+		VoiceEnabled  *bool           `json:"voiceEnabled"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -299,9 +300,9 @@ func saveGame(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	roomsJSON, _ := json.Marshal(rooms)
 	return execSave(ctx, tx, "economy_game", id, create,
 		[]string{"key", "is_active", "name", "description", "maintenance", "icon_url", "category_id", "tag_ids", "min_players", "max_players", "turn_seconds", "match_seconds",
-			"bots_allowed", "rooms", "leaderboard_id", "platforms", "min_version", "max_version", "settings", "sort"},
+			"bots_allowed", "rooms", "leaderboard_id", "platforms", "min_version", "max_version", "settings", "sort", "voice_enabled"},
 		[]any{key, in.IsActive, i18nJSON(name), i18nJSON(desc), i18nJSON(maint), icon, cat, tags, lo, hi, turn, limit,
-			in.BotsAllowed, string(roomsJSON), board, platforms, minV, maxV, settingsRaw, in.Sort})
+			in.BotsAllowed, string(roomsJSON), board, platforms, minV, maxV, settingsRaw, in.Sort, in.VoiceEnabled == nil || *in.VoiceEnabled})
 }
 
 func (s *service) gameConsoleRoutes() []consoleRoute {

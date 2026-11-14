@@ -22,6 +22,8 @@ type service struct {
 	fileKey    []byte
 	publicBase string
 	updates    updatesConfig
+	voiceKey   []byte
+	voiceHTTP  *http.Client
 }
 
 func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {
@@ -31,6 +33,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		logger.Warn("Base support attachments are off: %v", err)
 	}
 	svc.configureUpdates(env)
+	svc.configureVoice(env)
 	for name, fn := range svc.clientRPCs() {
 		limit := 16384
 		if name == "base_support_upload_part" {

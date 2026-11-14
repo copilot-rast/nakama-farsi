@@ -60,6 +60,7 @@ type gameRecord struct {
 	MaxVersion    string             `json:"maxVersion"`
 	Settings      map[string]any     `json:"settings"`
 	Sort          int                `json:"sort"`
+	Voice         bool               `json:"voiceEnabled"`
 }
 
 const gameRecordJSON = `jsonb_build_object('id',t.id,'key',t.key,'isActive',t.is_active,'name',t.name,'description',t.description,'maintenance',t.maintenance,'iconUrl',t.icon_url,
@@ -68,7 +69,7 @@ const gameRecordJSON = `jsonb_build_object('id',t.id,'key',t.key,'isActive',t.is
 	'tags',(SELECT COALESCE(jsonb_agg(g.key ORDER BY g.key),'[]'::jsonb) FROM base_tag g WHERE g.id::text = ANY(t.tag_ids)),
 	'minPlayers',t.min_players,'maxPlayers',t.max_players,'turnSeconds',COALESCE(t.turn_seconds,0),'matchSeconds',COALESCE(t.match_seconds,0),'botsAllowed',t.bots_allowed,
 	'rooms',t.rooms,'leaderboardId',COALESCE(t.leaderboard_id,''),'platforms',to_jsonb(t.platforms),'minVersion',COALESCE(t.min_version,''),'maxVersion',COALESCE(t.max_version,''),
-	'settings',t.settings,'sort',t.sort)`
+	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled)`
 
 type gameCache struct {
 	mu      sync.Mutex

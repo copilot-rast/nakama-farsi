@@ -57,6 +57,29 @@ func maskBaseUpdatesBody(_ string, body any) any {
 	return m
 }
 
+var baseVoiceAudit = consoleModuleAudit{
+	prefix:   "/v2/console/base/",
+	label:    "base",
+	resource: console.AclResources_SETTINGS,
+	invokes:  []string{"/voice/test"},
+	mask:     maskBaseVoiceBody,
+}
+
+func maskBaseVoiceBody(_ string, body any) any {
+	m, ok := body.(map[string]any)
+	if !ok {
+		return body
+	}
+	if secrets, ok := m["secrets"].(map[string]any); ok {
+		for k, v := range secrets {
+			if s, ok := v.(string); ok && s != "" {
+				secrets[k] = "********"
+			}
+		}
+	}
+	return m
+}
+
 var baseTaxonomyAudit = consoleModuleAudit{
 	prefix:   "/v2/console/base/",
 	label:    "base",
@@ -72,6 +95,9 @@ func consoleBaseAuditLog(ctx context.Context, logger *zap.Logger, db *sql.DB, me
 	}
 	if strings.HasPrefix(pattern, "/v2/console/base/updates") {
 		mod = baseUpdatesAudit
+	}
+	if strings.HasPrefix(pattern, "/v2/console/base/voice") {
+		mod = baseVoiceAudit
 	}
 	if strings.HasPrefix(pattern, "/v2/console/base/players") || strings.HasPrefix(pattern, "/v2/console/base/restrictions") || strings.HasPrefix(pattern, "/v2/console/base/activity") {
 		mod = basePlayersAudit
