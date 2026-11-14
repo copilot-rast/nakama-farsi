@@ -211,6 +211,44 @@ API: the console streak resource takes and returns `repayAfterFall` and `milesto
 
 Console: the «روزهای پیاپی» editor has a «نقطه‌های امن» row editor (day, optional one-time prize, grant mode) with a short note, and the switch «جایزهٔ روزها دوباره داده شود» (off by default, with the farming warning); the list shows «نقطهٔ امن: روز ۳، ۱۰». The player card shows «تا روز ۲۰ امن است · نقطهٔ امن بعدی: روز ۵۰». Star Catcher seeds a milestone at day 7 with 100 coins to collect on `daily_login` (only when the streak has no milestone yet) and shows «تا روز ۷ امن است», the next safe day with the days left, the milestone prize chip, and «… به روز ۷ برگشتی، نه روز اول» after a miss.
 
+## Meta relations and the meta studio (phase 20)
+
+Owner's request 2026-11-14: the legacy Rakhtkan `meta_relation` module (backend `economy/resource/meta_relation`, panel `economy/subModules/meta-relations` and `meta-relation-studio-sheet.tsx`) next to the level tables, which stay as they are. Migration `20261125000000-economy-meta-relations.sql` (Up re-runnable, Down raises) adds the tables, widens `economy_reward_claim.kind` and `economy_user_prize.source_type` with `relation`, adds two policy columns to `economy_event_settings` and seeds the built-in server event `MetaRelation:Completed`.
+
+### Tables
+
+| Table | What |
+|---|---|
+| `economy_meta_relation` | `key` (immutable), translated `name`/`description`, source `meta_id`, `operator` (`gt`, `gte`, `lt`, `lte`, `eq`), `value numeric(20,4)`, `targets` (JSON `[{metaId, action: add\|set, amount}]`, at most 20, each meta once per action, adding zero refused), `prize_type` (`none`, `prize`, `prizeGroup`) with `prize_id` or `prize_group_id`, `grant_mode` (`auto` default, `claim`), `repeat` (`once` default, `rearm`, `every`), `max_fires` (for `rearm`/`every`, empty = no cap), `audience_tag_ids`, `client_visible` (default true), `starts_at`/`ends_at`, `is_active`, `sort`. A relation needs a target or a prize (`RELATION_NEEDS_RESULT`) |
+| `economy_user_meta_relation` | per relation and player: `fires`, `armed`, `first_done_at`, `last_done_at` |
+| `economy_event_settings` | `relation_chain_depth` (0–25, default 8): how many relations may trigger one another in a row, 0 = a relation's targets never run another relation; `relation_prize_missing` (`complete` default, `wait`): what a relation does when its prize group has nothing to draw |
+
+### Evaluation
+
+The meta-change hook (`evaluateLevels`) now runs the meta relations of the changed metas first, then their level tables. It is reached from every path that writes a player meta: event meta rules, prizes from claims, tasks and achievements, and (new) every other `grant()` (purchases, gift codes, admin prize grants, game prizes), the new admin meta change, level metas written by a level-up, and relation targets themselves. Relations are not cut off by the event cascade depth (6); their own chain depth applies.
+
+For each active relation of a changed meta, in `sort, created_at` order, inside its window and audience, one transaction locks the player's row (`FOR UPDATE` on `economy_user_meta_relation`, so parallel changes on many nodes fire it once), reads the current value (stored value or the meta default) and compares it at 4 decimals. `once` fires when it never fired; `rearm` fires while armed and re-arms when the condition is checked and no longer holds (the classic «100 XP → level + 1, XP − 100»); `every` fires on every change while the condition holds; `max_fires` caps both. A fire applies all targets in the same transaction (`add` starts from the meta default for a new row, `set`), draws a group member by weight when the prize is a group, inserts a `relation` claim (scope `F<n>@<time>`) and counts the fire. After the commit: `auto` claims are granted, the changed target metas are evaluated one chain step deeper, `MetaRelation:Completed` is recorded (value = fires, metadata `entityId` = relation id and `key`, so event prizes, tasks and achievements can hook it), and the activity log gets `meta_relation`. A relation fires at most once per cascade (loops such as a → b → a stop there), but the cascade can still re-arm it.
+
+### Client RPC
+
+| RPC | Input | Output |
+|---|---|---|
+| `economy_meta_relations` | `{completedOnly?, lang?}` | `{lang, items:[{key, name, description, repeat, fires, maxFires?, completed, done, active, grantMode, prize? or prizeGroup?, condition?:{meta, metaName, operator, value, current, holds}, claims:[{claimId, status: claimable\|pending\|claimed, grantMode, prize, createdAt}], lastDoneAt?, endsAt?}], ready:[{claimId, kind: relation, source, sourceName, prize, createdAt}]}`: visible relations the player completed plus, unless `completedOnly`, the active ones their tags allow. The condition is left out when the source meta is server-only |
+
+Relation prizes are claimed with `economy_reward_claim` and listed by `economy_rewards_mine` like every other reward; the `economy_event_record` answer carries `relations:[{relationId, key, fires, claimId?}]`.
+
+### Console API (`/v2/console/economy/`, `HIRO_ECONOMY`)
+
+CRUD `meta-relations` (filters `metaId`, `targetMetaId`, `isActive`, `prizeId`; list rows carry `players` and `claims`; delete refused with claims, `IN_USE`). Metas used by a relation (source or target), and prizes and prize groups used by one, cannot be deleted. New filters for the studio: `prizes?metaKey=`, `level-tables?levelMetaId=`. `POST /users/{id}/metas {metaId, action: add|set, value, note?}` changes a player meta and runs the relations and level tables (activity `meta_changed`); `GET /users/{id}/meta-relations` and `DELETE /users/{id}/meta-relations/{relationId}` (forget a completion so it can fire again; received prizes stay, uncollected ones are removed). `/users/{id}/progress` adds `relations`. `PUT /event-settings` accepts a partial body and checks `relationChainDepth` (`INVALID_CHAIN_DEPTH`) and `relationPrizeMissing` (`INVALID_POLICY`). Errors: `INVALID_OPERATOR`, `RELATION_NEEDS_RESULT`, `TOO_MANY_TARGETS`, `DUPLICATE_TARGET`, `ZERO_AMOUNT`, `INVALID_PRIZE_TYPE`, `PRIZE_GROUP_NOT_FOUND`, `INVALID_REPEAT`, `INVALID_MAX_FIRES`.
+
+### Console pages
+
+«متاها» gets a tab «رابطهٔ متاها» (`#/economy/metas/relations`; `#/economy/meta-relations` redirects): list with the condition and results as chips, players, repeat and status; editor with the condition, a row editor for target metas, prize or prize group with grant mode, repeat and cap, a live preview, player tags, window and visibility. Clicking a meta in «متاها» opens the meta studio (`#/economy/metas?studio=<id>`), a side panel with the whole flow of that meta: inputs (event meta rules, relations that change it, prizes that give it, level tables that write their level into it), the meta itself, and outputs (relations with a condition on it, level tables on it). Rules, relations and level tables are created and edited inside the panel with the meta locked; Esc goes back, then closes. Project settings «رویدادها» gets the two relation policies. The player progress card gets «تغییر متا» and «رابطه‌های انجام‌شده» with «از نو».
+
+### Differences from the legacy module
+
+Five comparators instead of three (`more`, `less`, `equal`); repeat modes and a cap (legacy fired once per player only); prize groups; window, audience, order and visibility (legacy ordered by creation); chain depth and the empty-group policy in the settings instead of a hard-coded 25; all targets and the claim in one transaction (legacy applied targets best effort, each committing on its own); prizes through the shared claims table so they pay once on any node; a client view of active relations with progress and claims, not only completions.
+
 ## Referral codes (phase 5)
 
 asp has only a lazily made invite code and "inviter set once, not yourself" (`UserInvite`), with the reward given by a system event. Here the code, the rules against abuse, the goal and the rewards are all server-side. Migration `20261112000002-economy-referral.sql` (Up re-runnable, Down raises) adds the tables, seeds the settings row, and lets `economy_reward_claim.kind` and `economy_user_prize.source_type` be `referral`; Star Catcher sets the default prizes (100 coins for the inviter, 50 for the invited player) and the goal (one finished round) when the rule has none.
