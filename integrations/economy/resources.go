@@ -18,8 +18,11 @@ type resource struct {
 	json    string
 	search  []string
 	filters map[string]string
-	save    func(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error
-	remove  func(s *service, ctx context.Context, tx *sql.Tx, id string) error
+	// scope, when set, is a fixed condition on t that limits the resource to
+	// part of its table (offers keep daily and entry templates in one table).
+	scope  string
+	save   func(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error
+	remove func(s *service, ctx context.Context, tx *sql.Tx, id string) error
 }
 
 func resources() []resource {
@@ -103,6 +106,9 @@ func (s *service) resourceList(res resource) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		p := readPage(r)
 		where := &sqlWhere{}
+		if res.scope != "" {
+			where.parts = append(where.parts, res.scope)
+		}
 		if p.Q != "" {
 			parts := make([]string, 0, len(res.search))
 			pattern := likePattern(p.Q)
@@ -158,7 +164,11 @@ func (s *service) fetchResource(ctx context.Context, q queryer, res resource, id
 		return nil, notFound("NOT_FOUND")
 	}
 	var raw string
-	err := q.QueryRowContext(ctx, `SELECT `+res.json+`::text FROM `+res.table+` t WHERE t.id=$1`, id).Scan(&raw)
+	scope := ""
+	if res.scope != "" {
+		scope = " AND " + res.scope
+	}
+	err := q.QueryRowContext(ctx, `SELECT `+res.json+`::text FROM `+res.table+` t WHERE t.id=$1`+scope, id).Scan(&raw)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, notFound("NOT_FOUND")
 	}

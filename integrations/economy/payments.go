@@ -77,6 +77,7 @@ type productView struct {
 	IsOneTime       bool              `json:"isOneTime"`
 	CheckContents   bool              `json:"checkContents"`
 	PurchaseMessage i18n              `json:"purchaseMessage"`
+	offer           *offerRef
 }
 
 func (p productView) allows(method string) bool {
@@ -226,7 +227,11 @@ func (s *service) grantPayment(ctx context.Context, id string) ([]prizeItem, err
 			}
 			n, _ := res.RowsAffected()
 			first = n > 0
-			return nil
+			if first {
+				_, err = tx.ExecContext(ctx, `UPDATE economy_user_offer SET bought=bought+1, last_bought_at=now(), updated_at=now()
+					WHERE id=(SELECT user_offer_id FROM economy_payment WHERE id=$1 AND method<>'in_app')`, p.ID)
+			}
+			return err
 		},
 	})
 	if err != nil {
@@ -240,6 +245,7 @@ func (s *service) grantPayment(ctx context.Context, id string) ([]prizeItem, err
 	if first {
 		s.recordServerEvent(ctx, p.UserID, "purchase_completed", float64(p.FinalToman), map[string]any{"paymentId": p.ID, "method": p.Method, "productKey": product.Key})
 		activity.Safe(ctx, s.db, s.logger, activity.Entry{UserID: p.UserID, Kind: activity.KindPurchase, Action: "completed", RefID: p.ID, Actor: "player", Data: map[string]any{"method": p.Method, "productKey": product.Key, "toman": p.FinalToman}})
+		s.offerBoughtEvent(ctx, p.ID)
 	}
 	return rewards, nil
 }

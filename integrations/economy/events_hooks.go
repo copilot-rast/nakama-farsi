@@ -21,6 +21,7 @@ func (s *service) loginEvent(ctx context.Context, session *api.Session, method s
 	if r, err := restrict.Active(ctx, s.db, uid, restrict.KindSuspend); err == nil && r != nil {
 		return
 	}
+	s.noteOfferLogin(ctx, uid)
 	s.recordServerEvent(ctx, uid, "login", 1, map[string]any{"method": method, "created": session.Created})
 }
 

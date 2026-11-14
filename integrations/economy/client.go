@@ -379,37 +379,78 @@ func tagKeyList(raw string) []string {
 	return out
 }
 
+type purchaseInput struct {
+	ProductID string `json:"productId"`
+	OfferID   string `json:"offerId"`
+	Method    string `json:"method"`
+	GiftCode  string `json:"giftCode"`
+	Lang      string `json:"lang"`
+}
+
 func (s *service) rpcPurchaseStart(ctx context.Context, userID, payload string) (any, error) {
-	var in struct {
-		ProductID string `json:"productId"`
-		Method    string `json:"method"`
-		GiftCode  string `json:"giftCode"`
-		Lang      string `json:"lang"`
-	}
+	var in purchaseInput
 	if err := decodeStrict(payload, &in); err != nil {
 		return nil, err
 	}
+	return s.purchaseStart(ctx, userID, in)
+}
+
+// purchaseStart starts a shop purchase. With offerId it sells the player's
+// personal offer: the frozen offer price replaces the product price, the
+// offer's own audience replaces the product audience and the offer limit
+// applies on top of the product rules.
+func (s *service) purchaseStart(ctx context.Context, userID string, in purchaseInput) (any, error) {
 	if err := s.ensureDefaults(ctx, userID); err != nil {
 		return nil, err
 	}
-	product, err := s.loadProduct(ctx, s.db, in.ProductID)
-	if err != nil {
-		return nil, err
-	}
-	if !product.IsActive {
-		return nil, notFound("PRODUCT_NOT_FOUND")
-	}
-	if len(product.AudienceTagIDs) > 0 {
-		tags, err := s.userTagIDs(ctx, userID)
-		if err != nil {
+	var product productView
+	var err error
+	allowGift := true
+	if strings.TrimSpace(in.OfferID) != "" {
+		var offer userOffer
+		var st offerSettings
+		if offer, st, err = s.offerForPurchase(ctx, userID, in.OfferID); err != nil {
 			return nil, err
 		}
-		if !product.visibleTo(tags) {
+		if in.ProductID != "" && in.ProductID != offer.Tpl.ProductID {
+			return nil, badRequest("OFFER_PRODUCT_MISMATCH", "productId", "this offer sells another product")
+		}
+		if product, err = s.loadProduct(ctx, s.db, offer.Tpl.ProductID); err != nil {
+			return nil, err
+		}
+		if !product.IsActive && st.InactiveProducts == "skip" {
+			return nil, notFound("OFFER_NOT_FOUND")
+		}
+		allowed := false
+		for _, m := range offerMethods(product, offer.price(), nil) {
+			if m == in.Method {
+				allowed = true
+			}
+		}
+		if !validMethod(in.Method) || !allowed {
+			return nil, badRequest("METHOD_NOT_ALLOWED", "method", "this offer cannot be bought with this method")
+		}
+		product = product.withOffer(offer)
+		allowGift = st.GiftCodes
+	} else {
+		if product, err = s.loadProduct(ctx, s.db, in.ProductID); err != nil {
+			return nil, err
+		}
+		if !product.IsActive {
 			return nil, notFound("PRODUCT_NOT_FOUND")
 		}
-	}
-	if !validMethod(in.Method) || !product.allows(in.Method) {
-		return nil, badRequest("METHOD_NOT_ALLOWED", "method", "this product cannot be bought with this method")
+		if len(product.AudienceTagIDs) > 0 {
+			tags, err := s.userTagIDs(ctx, userID)
+			if err != nil {
+				return nil, err
+			}
+			if !product.visibleTo(tags) {
+				return nil, notFound("PRODUCT_NOT_FOUND")
+			}
+		}
+		if !validMethod(in.Method) || !product.allows(in.Method) {
+			return nil, badRequest("METHOD_NOT_ALLOWED", "method", "this product cannot be bought with this method")
+		}
 	}
 	pm, err := s.loadMethod(ctx, s.db, in.Method)
 	if err != nil {
@@ -434,7 +475,10 @@ func (s *service) rpcPurchaseStart(ctx context.Context, userID, payload string) 
 			return nil, conflict("PRIZE_ALREADY_CLAIMED", "you already own this")
 		}
 	}
-	if strings.TrimSpace(in.GiftCode) != "" && !isGateway(in.Method) {
+	if strings.TrimSpace(in.GiftCode) != "" && (!isGateway(in.Method) || !allowGift) {
+		if !allowGift {
+			return nil, badRequest("GIFT_NOT_APPLICABLE", "giftCode", "discount codes do not work on offers")
+		}
 		return nil, badRequest("GIFT_NOT_APPLICABLE", "giftCode", "discount codes work only with online gateways")
 	}
 	switch {
@@ -459,8 +503,14 @@ func (s *service) startInApp(ctx context.Context, userID string, product product
 		return nil, fail(http.StatusPaymentRequired, "INSUFFICIENT_BALANCE", "", "not enough "+product.CoinPrice.CurrencyKey)
 	}
 	id := uuid.Must(uuid.NewV4()).String()
-	if _, err := s.db.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, status, coin_currency, coin_amount, discount_percent, once_key)
-		VALUES ($1,$2,$3,'in_app','pending',$4,$5,0,$6)`, id, userID, product.ID, product.CoinPrice.CurrencyKey, product.CoinPrice.Amount, productOnceKey(product, userID)); err != nil {
+	if product.offer != nil {
+		if err := s.reserveOffer(ctx, product.offer.ID); err != nil {
+			return nil, err
+		}
+	}
+	if _, err := s.db.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, status, coin_currency, coin_amount, discount_percent, once_key, user_offer_id)
+		VALUES ($1,$2,$3,'in_app','pending',$4,$5,$7,$6,$8)`, id, userID, product.ID, product.CoinPrice.CurrencyKey, product.CoinPrice.Amount, productOnceKey(product, userID), offerPercent(product), product.offerID()); err != nil {
+		s.releaseOffer(ctx, product)
 		if c, unique := isUniqueViolation(err); unique && c == "economy_payment_once_idx" {
 			return nil, conflict("PRODUCT_ALREADY_BOUGHT", "this product can be bought only once")
 		}
@@ -480,13 +530,16 @@ func (s *service) startInApp(ctx context.Context, userID string, product product
 			code = app.Code
 		}
 		if code == "INSUFFICIENT_BALANCE" || code == "PRIZE_ALREADY_CLAIMED" || code == "PRIZE_ALREADY_OWNED" {
-			_, _ = s.closePayment(ctx, id, "failed", code)
+			if closed, _ := s.closePayment(ctx, id, "failed", code); closed {
+				s.releaseOffer(ctx, product)
+			}
 		} else {
 			_, _ = s.db.ExecContext(ctx, `UPDATE economy_payment SET reward_error=$2, updated_at=now() WHERE id=$1`, id, truncate(code, 500))
 		}
 		return nil, err
 	}
 	s.recordServerEvent(ctx, userID, "purchase_completed", float64(product.CoinPrice.Amount), map[string]any{"paymentId": id, "method": "in_app", "productKey": product.Key, "currency": product.CoinPrice.CurrencyKey})
+	s.offerBoughtEvent(ctx, id)
 	activity.Safe(ctx, s.db, s.logger, activity.FromContext(ctx, activity.Entry{UserID: userID, Kind: activity.KindPurchase, Action: "completed", RefID: id, Actor: "player", Data: map[string]any{"method": "in_app", "productKey": product.Key, "coins": product.CoinPrice.Amount, "currency": product.CoinPrice.CurrencyKey}}))
 	return map[string]any{"paymentId": id, "status": "success", "rewards": rewards, "purchaseMessage": s.purchaseMessage(ctx, userID, product, lang)}, nil
 }
@@ -513,8 +566,11 @@ func (s *service) startStore(ctx context.Context, userID string, product product
 		price = *product.PriceToman
 	}
 	final := discounted(price, product.DiscountPercent)
-	if _, err := s.db.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial, discount_percent)
-		VALUES ($1,$2,$3,$4,$5,'pending',$6,$7,$8,$9)`, id, userID, product.ID, pm.Method, pm.Config.flag("sandbox"), price, final, final*10, product.DiscountPercent); err != nil {
+	if product.offer != nil && product.offer.Final != nil {
+		final = *product.offer.Final
+	}
+	if _, err := s.db.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial, discount_percent, user_offer_id)
+		VALUES ($1,$2,$3,$4,$5,'pending',$6,$7,$8,$9,$10)`, id, userID, product.ID, pm.Method, pm.Config.flag("sandbox"), price, final, final*10, product.DiscountPercent, product.offerID()); err != nil {
 		return nil, err
 	}
 	return map[string]any{"paymentId": id, "status": "store", "sku": sku, "developerPayload": id}, nil
@@ -526,6 +582,9 @@ func (s *service) startGateway(ctx context.Context, userID string, product produ
 	}
 	original := *product.PriceToman
 	final := discounted(original, product.DiscountPercent)
+	if product.offer != nil && product.offer.Final != nil {
+		final = *product.offer.Final
+	}
 	percent := product.DiscountPercent
 	id := uuid.Must(uuid.NewV4()).String()
 	sandbox := pm.Config.flag("sandbox")
@@ -546,8 +605,8 @@ func (s *service) startGateway(ctx context.Context, userID string, product produ
 		if final != 0 && final < 100 {
 			return badRequest("PRICE_TOO_LOW", "giftCode", "the final price must be 0 or at least 100 Toman")
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial, gift_id, discount_percent)
-			VALUES ($1,$2,$3,$4,$5,'pending',$6,$7,$8,$9,$10)`, id, userID, product.ID, pm.Method, sandbox, original, final, final*10, giftID, percent); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial, gift_id, discount_percent, user_offer_id)
+			VALUES ($1,$2,$3,$4,$5,'pending',$6,$7,$8,$9,$10,$11)`, id, userID, product.ID, pm.Method, sandbox, original, final, final*10, giftID, percent, product.offerID()); err != nil {
 			return err
 		}
 		if giftID != nil {
@@ -627,6 +686,9 @@ func (s *service) rpcPurchaseSubmit(ctx context.Context, userID, payload string)
 	if err != nil {
 		return nil, err
 	}
+	if product, err = s.paymentProduct(ctx, p.ID, product); err != nil {
+		return nil, err
+	}
 	return s.settleStore(ctx, p, product, token, p.Sandbox)
 }
 
@@ -647,7 +709,12 @@ func (s *service) rpcPurchaseReview(ctx context.Context, userID, payload string)
 		return nil, badRequest("INVALID_TOKEN", "token", "sku and token are required")
 	}
 	var productID string
+	viaOffer := false
 	err := s.db.QueryRowContext(ctx, `SELECT id::text FROM economy_product WHERE sku->>$1 = $2 AND $1 = ANY(payment_methods) ORDER BY is_active DESC, created_at DESC LIMIT 1`, in.Method, in.SKU).Scan(&productID)
+	if errors.Is(err, sql.ErrNoRows) {
+		err = s.db.QueryRowContext(ctx, `SELECT t.product_id::text FROM economy_user_offer u JOIN economy_offer t ON t.id=u.offer_id WHERE u.user_id=$3 AND u.sku->>$1 = $2 ORDER BY u.created_at DESC LIMIT 1`, in.Method, in.SKU, userID).Scan(&productID)
+		viaOffer = err == nil
+	}
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, notFound("PRODUCT_NOT_FOUND")
 	}
@@ -657,6 +724,14 @@ func (s *service) rpcPurchaseReview(ctx context.Context, userID, payload string)
 	product, err := s.loadProduct(ctx, s.db, productID)
 	if err != nil {
 		return nil, err
+	}
+	if viaOffer {
+		sku := map[string]string{}
+		for k, v := range product.SKU {
+			sku[k] = v
+		}
+		sku[in.Method] = in.SKU
+		product.SKU = sku
 	}
 	pm, err := s.loadMethod(ctx, s.db, in.Method)
 	if err != nil {
