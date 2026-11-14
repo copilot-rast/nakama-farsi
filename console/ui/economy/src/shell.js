@@ -123,7 +123,7 @@ function parseRoute(hash) {
 
 function keyOf(r) {
   if (!r) return '';
-  var detail = (r.page === 'payments' || r.page === 'notifications' || r.page === 'reports' || r.page === 'player-reports' || r.page === 'tickets' || r.page === 'live-chat' || r.page === 'remote-config' || r.page === 'referrals') && r.id ? '/' + r.id : '';
+  var detail = (r.page === 'payments' || r.page === 'notifications' || r.page === 'reports' || r.page === 'player-reports' || r.page === 'tickets' || r.page === 'live-chat' || r.page === 'remote-config' || r.page === 'referrals' || r.page === 'friend-gifts') && r.id ? '/' + r.id : '';
   return lang() + '|' + r.page + detail + '|' + JSON.stringify(r.query);
 }
 
