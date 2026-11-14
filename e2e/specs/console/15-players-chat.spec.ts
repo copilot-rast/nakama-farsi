@@ -353,11 +353,11 @@ test.describe('players and chat: access', () => {
       await p.goto(CONSOLE_URL + '/#/moderation/reports');
       await settle(p);
       const pages = await p.locator('.x-drawer [data-economy-nav="moderation"] a[data-economy-page]').evaluateAll((els) => els.map((e) => e.getAttribute('data-economy-page')));
-      expect(pages).toEqual(['reports', 'chat-words']);
+      expect(pages).toEqual(['reports', 'player-reports', 'chat-words']);
       await p.goto(CONSOLE_URL + '/#/project-settings/report-titles');
       await expect(psWindow(p)).toBeVisible();
       const ids = await psWindow(p).locator('.ps-list [role="tab"]').evaluateAll((els) => els.map((e) => e.getAttribute('data-ps-section')));
-      expect(ids).toEqual(['report-titles']);
+      expect(ids).toEqual(['report-titles', 'report-rules']);
       const tok = await p.evaluate(() => JSON.parse(localStorage.getItem('SESSION_TOKENS') || '{}'));
       const bearer = 'Bearer ' + tok.accessToken;
       expect((await consoleApi('GET', '/v2/console/base/players', undefined, bearer)).status).toBe(403);
