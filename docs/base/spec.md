@@ -351,6 +351,20 @@ Hooks (`integrations/base/friends.go`):
 | before `DeleteFriends` | records a rejection for every received invite being deleted |
 | before `ListFriends` | expires the caller's sent and received invites older than `expiry_days` |
 
+#### Limits per player type and bought limits (owner's follow-up 2026-11-14)
+
+Migration `20261124000003-base-friend-tiers.sql`. The row above holds the defaults; on top of it:
+
+- `base_friend_rule` (tag rules): `name`, `tag_ids` (player tags, key type `user`, 1–20), `priority` (−1000…1000), and optional `daily_requests`, `max_friends`, `reject_cooldown_hours` (NULL = keep the default, 0 = unlimited / no wait), `is_active`. A rule applies to a player who has any of its tags. Console CRUD `/v2/console/base/friend-rules/tiers` (`SETTINGS`, audit-logged; `TAGS_REQUIRED`, `TAG_KIND_MISMATCH`, `TAG_NOT_FOUND`, `LIMIT_REQUIRED`, `INVALID_RULE`); deleting a tag removes it from the rules.
+- `match_policy` (admin choice): `priority` (default: the matching rule with the highest priority overrides the defaults field by field) or `generous` (for each field the most generous value of all matching rules: unlimited beats any number, then the largest number; the shortest wait).
+- Bonus metas (admin choice): `requests_bonus_meta` and `friends_bonus_meta` name economy metas (`META_NOT_FOUND` on save). The player's meta value (rounded down, never below 0) is added to the daily requests and to the friend limit, so a shop product, prize, event rule or admin grant that raises the meta raises the limit. Effective limit = tag-rule (or default) base + bonus; an unlimited base stays unlimited. A deleted meta counts as 0.
+- `over_limit` (admin choice): `refuse` (default: a request with more new invites than are left is refused whole) or `trim` (the first invites in the order sent go through up to what is left, the rest are dropped from the request).
+- The daily counter is now taken with a row lock (`SELECT … FOR UPDATE` on the day row) so both modes stay exact under parallel calls on many nodes. Accepting checks the sender's effective friend limit. Invite expiry stays global (one sweeper).
+
+`base_friend_rules` also returns `{friendSlotsLeft, base: {dailyRequests, maxFriends}, bonus: {dailyRequests, maxFriends}, tier: {id, name} | null, overLimit}`; `dailyRequests`, `maxFriends` and `rejectCooldownHours` are the caller's effective values.
+
+The section «قوانین دوستی» gained «وقتی درخواست‌ها از سقف بیشتر شد», the two meta pickers («سقف بیشتر با متا»), «وقتی چند قانون به یک بازیکن بخورد» and below the form the list «قانون‌ها برای برچسب‌های بازیکن» (name and tag chips, daily requests, most friends with «پیش‌فرض»/«بی‌حد», priority with the player count, status) with the drawer editor `#/project-settings/friends/<id>`.
+
 Expiry is lazy on read and also swept: every node runs `friendsLoop` (1 min), the node that holds the `base.friends.expire` lease (`internal/clusterkit`) removes up to 500 expired invites through `nk.FriendsDelete` (so Nakama keeps its edge counts right), day rows older than three days and rejections older than the cooldown (at least 30 days). Removing an expired invite is not a rejection. Known limit: max friends is read before Nakama writes the edge, so two accepts by the same player at the same instant could pass it by one.
 
 Errors are runtime errors whose message is JSON the client can show as is: `{"code", "message" (in the player's language: fa, en or ar built in, with Persian digits in fa), "lang", "limit"?, "remaining"?, "resetsAt"?, "retryAt"?, "userId"?}`.
@@ -395,6 +409,8 @@ Console API (`/v2/console/base/player-reports`, `CHANNEL_MESSAGE` like chat repo
 
 `GET /players/{id}` adds `playerReports {against, by, open}`.
 
+Rules are admin-set (owner's follow-up 2026-11-14, migration `20261124000004-base-report-rules.sql`, row `base_report_rules`): `per_hour` (10; 0 = no limit), `duplicate_hours` (24; 0 = no duplicate check), `min_account_hours` (0; newer accounts get `ACCOUNT_TOO_NEW`, 403), `note_required` (false; `NOTE_REQUIRED`), `trusted_tag_ids` with `trusted_per_hour` (30; 0 = no limit) for players with any of those player tags. Console `GET/PUT /v2/console/base/report-rules` (`CHANNEL_MESSAGE`, audit-logged) and the project settings section «قوانین گزارش بازیکن» (`#/project-settings/report-rules`) after «عنوان‌های گزارش». `base_my_reports` also returns `limits {perHour, remaining (null when unlimited), trusted, noteRequired, minAccountHours, duplicateHours, noteMax}`.
+
 Console: page «گزارش بازیکن‌ها» (`#/moderation/player-reports[/<id>]`, `CHANNEL_MESSAGE`, badge with open and reviewing reports) after «گزارش‌ها» in «بازیکنان و گفتگو»: filters (status with «باز یا در حال بررسی» by default, reason, player id), rows with the reported player, the player's note, context chips (game, match, content), reason with the count against the player, reporter and status; the review page shows the report, the reported player (tags, status, counts, links to restrictions, player reports and chat reports), the internal notes with «افزودن یادداشت», «برمی‌دارم برای بررسی» / «برگرداندن به صف», and the decision (dismiss, warn, mute or suspend with the duration chips and translated message used for chat reports, «گزارش‌های باز دیگر علیه این بازیکن هم با همین تصمیم بسته شوند»). The native player page card links to the player reports against the player.
 
 ## Voice chat (phase 18)
@@ -434,8 +450,10 @@ Who may join:
 - `partyId`: a presence in the party stream; room `party.<partyId>`; `NOT_IN_PARTY`.
 - `room` + `gameKey`: only when «اتاق‌های باز هر بازی» is on (`ROOM_NOT_ALLOWED`), room key `^[a-z0-9_-]{1,48}$` (`INVALID_ROOM`), the game must exist (`GAME_NOT_FOUND`, `GAME_KEY_REQUIRED`); room `room.<gameKey>.<room>`.
 
-Then the game's `voice_enabled` is checked, a muted player (`base_restriction`) gets `canPublish: false` (listen only), and 30 tokens a minute per player are allowed (`clusterkit.Allow`, `VOICE_RATE_LIMITED`, 429). The identity is the Nakama user id and the name the display name (or username). Stream presence checks read this node's tracker; in cluster mode use registry matches (database) for reliable checks across nodes.
+Admin policies (owner's follow-up 2026-11-14, migration `20261124000005-base-voice-policies.sql`): `allowed_tag_ids` (empty = everyone; others get `{enabled: false, reason: "VOICE_NOT_FOR_PLAYER"}`), `listen_only_tag_ids` (those players get `canPublish: false`), `tokens_per_minute` (30, 1–600) and `max_room_players` (0 = no limit) with a per-game override `economy_game.voice_max_players` (NULL = the global number): in a match or party only the first players up to the limit (registry entries in join order, otherwise stream order) get a token, others `VOICE_ROOM_FULL` (409), and comms gets only those players. Open rooms are not counted (the providers know who is inside, Nakama does not).
+
+Then the game's `voice_enabled` is checked, a muted player (`base_restriction`) gets `canPublish: false` (listen only), and `tokens_per_minute` tokens a minute per player are allowed (`clusterkit.Allow`, `VOICE_RATE_LIMITED`, 429). The identity is the Nakama user id and the name the display name (or username). Stream presence checks read this node's tracker; in cluster mode use registry matches (database) for reliable checks across nodes.
 
 ### Console
 
-Project settings section «سرور ویس» (`#/project-settings/voice`, `SETTINGS`), before «ریپوی بالایی»: state line, «چت صوتی روشن باشد», provider select (fields of the chosen provider with a short note, secrets as password fields shown as `********` once saved), token lifetime, «بازیکن بتواند حرف بزند», «اتاق‌های باز هر بازی», «امتحان اتصال» (result with the time in ms or the translated error) and save. Games editor: «چت صوتی» switch; games list chip «بی‌ویس».
+Project settings section «سرور ویس» (`#/project-settings/voice`, `SETTINGS`), before «ریپوی بالایی»: state line, «چت صوتی روشن باشد», provider select (fields of the chosen provider with a short note, secrets as password fields shown as `********` once saved), token lifetime, «بازیکن بتواند حرف بزند», «اتاق‌های باز هر بازی», «امتحان اتصال» (result with the time in ms or the translated error) and save. The section also has «توکن در دقیقه برای هر بازیکن», «بیشترین بازیکن در اتاق ویس», «فقط این برچسب‌ها ویس بگیرند» and «این برچسب‌ها فقط بشنوند». Games editor: «چت صوتی» switch with «بیشترین بازیکن در ویس»; games list chip «بی‌ویس».
