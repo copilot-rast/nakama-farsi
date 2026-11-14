@@ -233,7 +233,10 @@ RESOURCES.games = {
       { name: 'matchSeconds', type: 'number', label: 'f.gm.limit', hint: 'f.gm.limit.hint', optional: true, min: 1, max: 604800 }
     ] },
     { name: 'botsAllowed', type: 'bool', inline: true, label: 'f.gm.bots', hint: 'f.gm.bots.hint' },
-    { name: 'voiceEnabled', type: 'bool', inline: true, label: 'f.gm.voice', hint: 'f.gm.voice.hint' },
+    { type: 'row', fields: [
+      { name: 'voiceEnabled', type: 'bool', inline: true, label: 'f.gm.voice', hint: 'f.gm.voice.hint' },
+      { name: 'voiceMaxPlayers', type: 'number', label: 'f.gm.voiceMax', hint: 'f.gm.voiceMax.hint', optional: true, min: 0, max: 1000, when: function (v) { return v.voiceEnabled !== false; } }
+    ] },
     { type: 'heading', label: 'gm.h.rooms' },
     { name: 'rooms', type: 'rows', addLabel: 'gm.room.add', emptyText: 'gm.room.empty', max: 20, empty: [],
       newRow: function (rows) {
@@ -279,7 +282,7 @@ RESOURCES.games = {
     var name = {};
     if (def && def.name) name = Object.assign({}, def.name);
     return { key: key, isActive: true, name: name, description: {}, maintenance: {}, iconUrl: '', categoryId: null, tagIds: [], minPlayers: def && def.realtime ? 2 : 1, maxPlayers: def && def.realtime ? 2 : 1,
-      turnSeconds: null, matchSeconds: null, botsAllowed: false, rooms: [], platforms: [], minVersion: '', maxVersion: '', leaderboardId: '', settings: {}, sort: 0, voiceEnabled: true };
+      turnSeconds: null, matchSeconds: null, botsAllowed: false, rooms: [], platforms: [], minVersion: '', maxVersion: '', leaderboardId: '', settings: {}, sort: 0, voiceEnabled: true, voiceMaxPlayers: null };
   },
   toForm: function (v) {
     v.rooms = (v.rooms || []).map(function (r) {

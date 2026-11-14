@@ -817,6 +817,42 @@ var MESSAGES = {
     'fr.sum.cooldown': 'پس از رد شدن {n} ساعت صبر',
     'fr.sum.cooldownOff': 'بدون فاصله پس از رد شدن',
     'fr.sum.sep': '؛ ',
+    'f.fr.overLimit': 'وقتی درخواست‌ها از سقف بیشتر شد',
+    'f.fr.overLimit.hint': 'اگر بازیکن چند نفر را با هم اضافه کند و سهم امروزش کمتر باشد.',
+    'fr.overLimit.refuse': 'کل درخواست رد شود',
+    'fr.overLimit.trim': 'تا سقف فرستاده شود و بقیه نه',
+    'fr.bonus': 'سقف بیشتر با متا',
+    'f.fr.reqMeta': 'متای درخواست اضافه در روز',
+    'f.fr.reqMeta.hint': 'مقدار این متای بازیکن به سقف درخواست روزانه اضافه می‌شود؛ با محصول، جایزه یا قانون رویداد زیادش کنید.',
+    'f.fr.slotMeta': 'متای جای دوست اضافه',
+    'f.fr.slotMeta.hint': 'مقدار این متای بازیکن به بیشترین تعداد دوست اضافه می‌شود. بی‌حد همیشه بی‌حد می‌ماند.',
+    'fr.tiers': 'قانون برای گروه بازیکن‌ها',
+    'f.fr.policy': 'وقتی چند قانون به یک بازیکن بخورد',
+    'f.fr.policy.hint': 'قانون‌ها با برچسب بازیکن پیدا می‌شوند.',
+    'fr.policy.priority': 'قانونی که اولویت بیشتری دارد',
+    'fr.policy.generous': 'سخاوتمندانه‌ترین عدد از همهٔ قانون‌ها',
+    'fr.tiers.title': 'قانون‌ها برای برچسب‌های بازیکن',
+    'fr.tiers.desc': 'برای بازیکن‌هایی با برچسب خاص (مثلاً ویژه) سقف دیگری بگذارید. هر عددی که خالی بماند از پیش‌فرض بالا می‌آید.',
+    'new.friends': 'قانون تازه',
+    'edit.friends': 'ویرایش قانون دوستی',
+    'empty.hint.friends': 'هنوز قانونی برای برچسب‌ها نساخته‌اید؛ همه با پیش‌فرض بالا کار می‌کنند.',
+    'search.friends': 'جستجوی نام قانون',
+    'col.fr.priority': 'اولویت',
+    'fr.playersN': '{n} بازیکن',
+    'fr.inherit': 'پیش‌فرض',
+    'fr.unlimited': 'بی‌حد',
+    'f.fr.tier.name': 'نام قانون',
+    'f.fr.tier.name.hint': 'فقط در کنسول دیده می‌شود؛ بازی هم نامش را در base_friend_rules می‌گیرد.',
+    'f.fr.tier.tags': 'برچسب‌های بازیکن',
+    'f.fr.tier.tags.hint': 'بازیکنی که یکی از این برچسب‌ها را دارد این قانون را می‌گیرد.',
+    'f.fr.tier.priority': 'اولویت',
+    'f.fr.tier.priority.hint': 'عدد بزرگ‌تر برنده است.',
+    'fr.tier.limits': 'سقف‌ها',
+    'f.fr.tier.limit.hint': 'خالی یعنی همان پیش‌فرض؛ صفر یعنی بی‌حد.',
+    'fr.sum.reqBonus': 'درخواست اضافه از متای {key}',
+    'fr.sum.slotBonus': 'جای اضافه از متای {key}',
+    'fr.sum.trim': 'بیش از سقف بریده می‌شود',
+    'code.LIMIT_REQUIRED': 'دست‌کم یک سقف بگذارید.',
     'tab.accounts': 'قوانین حساب',
     'tab.otp': 'ورود با پیامک',
     'tab.app-versions': 'نسخه‌های برنامه',
@@ -965,6 +1001,23 @@ var MESSAGES = {
     'section.mod': 'بازیکنان و گفتگو',
     'section.mod.short': 'گفتگو',
     'nav.players': 'مدیریت بازیکنان',
+    'tab.report-rules': 'قوانین گزارش بازیکن',
+    'desc.report-rules': 'سرور با همین‌ها جلوی گزارش بی‌جا را می‌گیرد. بازیکن سقف و باقی‌ماندهٔ خودش را در base_my_reports می‌بیند.',
+    'f.rr.perHour': 'گزارش در ساعت',
+    'f.rr.perHour.hint': 'هر بازیکن در یک ساعت چند گزارش بدهد. صفر یعنی بی‌حد.',
+    'f.rr.duplicate': 'گزارش تکراری (ساعت)',
+    'f.rr.duplicate.hint': 'گزارش دوبارهٔ همان بازیکن با همان دلیل تا این مدت همان گزارش قبلی حساب می‌شود. صفر یعنی بدون این چک.',
+    'f.rr.minAge': 'کمترین عمر حساب (ساعت)',
+    'f.rr.minAge.hint': 'حساب تازه‌تر از این نمی‌تواند گزارش بدهد. صفر یعنی همه.',
+    'f.rr.note': 'توضیح بازیکن لازم است',
+    'f.rr.note.hint': 'گزارش بدون توضیح پذیرفته نمی‌شود.',
+    'rr.trusted': 'بازیکن‌های مورد اعتماد',
+    'f.rr.trustedTags': 'برچسب‌های مورد اعتماد',
+    'f.rr.trustedTags.hint': 'بازیکن با یکی از این برچسب‌ها سقف جدای خودش را دارد.',
+    'f.rr.trustedPerHour': 'گزارش در ساعت برای مورد اعتمادها',
+    'f.rr.trustedPerHour.hint': 'صفر یعنی بی‌حد.',
+    'code.NOTE_REQUIRED': 'توضیح بدهید چه شد.',
+    'code.ACCOUNT_TOO_NEW': 'این حساب هنوز برای گزارش دادن خیلی تازه است.',
     'nav.player-reports': 'گزارش بازیکن‌ها',
     'desc.player-reports': 'بازیکن‌هایی که دیگران گزارش کرده‌اند، جدا از پیام گفتگو؛ از هر بازی و هر صفحه.',
     'search.player-reports': 'جست‌وجوی نام بازیکن، توضیح یا شناسهٔ بازی',
@@ -3128,6 +3181,19 @@ var MESSAGES = {
     'f.vc.comms.publicUrl.hint': 'نشانی‌ای که بازی با آن به comms وصل می‌شود. خالی یعنی همان نشانی بالا.',
     'f.vc.comms.serverKey': 'کلید سرور (ck_…)',
     'f.vc.comms.serverKey.hint': 'کلید برنامه در comms. رمزنگاری‌شده نگه داشته می‌شود و دیگر نشان داده نمی‌شود.',
+    'f.vc.perMinute': 'توکن در دقیقه برای هر بازیکن',
+    'f.vc.perMinute.hint': 'از ۱ تا ۶۰۰.',
+    'f.vc.maxPlayers': 'بیشترین بازیکن در اتاق ویس',
+    'f.vc.maxPlayers.hint': 'برای مسابقه و پارتی؛ بازیکن‌های اول تا این تعداد ویس می‌گیرند. صفر یعنی بی‌حد. هر بازی می‌تواند عدد خودش را داشته باشد.',
+    'vc.who': 'چه کسانی',
+    'f.vc.allowed': 'فقط این برچسب‌ها ویس بگیرند',
+    'f.vc.allowed.hint': 'خالی یعنی همه. بقیه جواب «ویس برای شما نیست» می‌گیرند.',
+    'f.vc.listenOnly': 'این برچسب‌ها فقط بشنوند',
+    'f.vc.listenOnly.hint': 'بازیکن با یکی از این برچسب‌ها حرف نمی‌زند، فقط می‌شنود.',
+    'f.gm.voiceMax': 'بیشترین بازیکن در ویس',
+    'f.gm.voiceMax.hint': 'خالی یعنی عدد «سرور ویس»؛ صفر یعنی بی‌حد.',
+    'code.VOICE_ROOM_FULL': 'اتاق ویس پر است.',
+    'code.INVALID_VOICE_PLAYERS': 'عددی از صفر تا هزار.',
     'vc.noSeal': 'برای نگه داشتن رمز، متغیر ECONOMY_SECRET_KEY روی سرور لازم است.',
     'vc.rules': 'قانون‌های توکن',
     'f.vc.ttl': 'عمر توکن (ثانیه)',
@@ -4114,6 +4180,42 @@ var MESSAGES = {
     'fr.sum.cooldown': '{n} hours wait after a rejection',
     'fr.sum.cooldownOff': 'no wait after a rejection',
     'fr.sum.sep': '; ',
+    'f.fr.overLimit': 'When requests go over the limit',
+    'f.fr.overLimit.hint': 'When a player adds several people at once and has fewer requests left today.',
+    'fr.overLimit.refuse': 'Refuse the whole request',
+    'fr.overLimit.trim': 'Send up to the limit, drop the rest',
+    'fr.bonus': 'Higher limits from metas',
+    'f.fr.reqMeta': 'Meta for extra daily requests',
+    'f.fr.reqMeta.hint': "The player's value of this meta is added to the daily request limit; raise it with a product, prize or event rule.",
+    'f.fr.slotMeta': 'Meta for extra friend slots',
+    'f.fr.slotMeta.hint': "The player's value of this meta is added to the friend limit. Unlimited stays unlimited.",
+    'fr.tiers': 'Rules for player groups',
+    'f.fr.policy': 'When several rules match one player',
+    'f.fr.policy.hint': 'Rules are matched by player tags.',
+    'fr.policy.priority': 'The rule with the highest priority',
+    'fr.policy.generous': 'The most generous number of all rules',
+    'fr.tiers.title': 'Rules by player tag',
+    'fr.tiers.desc': 'Give players with a tag (VIP, for example) other limits. A number left empty comes from the defaults above.',
+    'new.friends': 'New rule',
+    'edit.friends': 'Edit friend rule',
+    'empty.hint.friends': 'No tag rules yet; everyone uses the defaults above.',
+    'search.friends': 'Search rule name',
+    'col.fr.priority': 'Priority',
+    'fr.playersN': '{n} players',
+    'fr.inherit': 'Default',
+    'fr.unlimited': 'Unlimited',
+    'f.fr.tier.name': 'Rule name',
+    'f.fr.tier.name.hint': 'Shown in the console; games also get it from base_friend_rules.',
+    'f.fr.tier.tags': 'Player tags',
+    'f.fr.tier.tags.hint': 'A player with any of these tags gets this rule.',
+    'f.fr.tier.priority': 'Priority',
+    'f.fr.tier.priority.hint': 'The bigger number wins.',
+    'fr.tier.limits': 'Limits',
+    'f.fr.tier.limit.hint': 'Empty means the default; zero means unlimited.',
+    'fr.sum.reqBonus': 'extra requests from meta {key}',
+    'fr.sum.slotBonus': 'extra slots from meta {key}',
+    'fr.sum.trim': 'requests over the limit are dropped',
+    'code.LIMIT_REQUIRED': 'Set at least one limit.',
     'tab.accounts': 'Account rules',
     'tab.otp': 'SMS login',
     'tab.app-versions': 'App versions',
@@ -4262,6 +4364,23 @@ var MESSAGES = {
     'section.mod': 'Players & chat',
     'section.mod.short': 'Chat',
     'nav.players': 'Player tags',
+    'tab.report-rules': 'Player report rules',
+    'desc.report-rules': 'The server uses these to stop report abuse. Players see their own limit and what is left in base_my_reports.',
+    'f.rr.perHour': 'Reports per hour',
+    'f.rr.perHour.hint': 'Reports one player may file in an hour. Zero means no limit.',
+    'f.rr.duplicate': 'Duplicate window (hours)',
+    'f.rr.duplicate.hint': 'Reporting the same player for the same reason within this time returns the earlier report. Zero turns the check off.',
+    'f.rr.minAge': 'Minimum account age (hours)',
+    'f.rr.minAge.hint': 'Accounts newer than this cannot report. Zero means everyone.',
+    'f.rr.note': 'Player note required',
+    'f.rr.note.hint': 'Reports without a note are refused.',
+    'rr.trusted': 'Trusted players',
+    'f.rr.trustedTags': 'Trusted tags',
+    'f.rr.trustedTags.hint': 'Players with any of these tags get their own limit.',
+    'f.rr.trustedPerHour': 'Reports per hour for trusted players',
+    'f.rr.trustedPerHour.hint': 'Zero means no limit.',
+    'code.NOTE_REQUIRED': 'Describe what happened.',
+    'code.ACCOUNT_TOO_NEW': 'This account is too new to report players.',
     'nav.player-reports': 'Player reports',
     'desc.player-reports': 'Players reported by others, not tied to a chat message; from any game or screen.',
     'search.player-reports': 'Search player, note or game id',
@@ -6425,6 +6544,19 @@ var MESSAGES = {
     'f.vc.comms.publicUrl.hint': 'The address games use to reach comms. Empty means the address above.',
     'f.vc.comms.serverKey': 'Server key (ck_…)',
     'f.vc.comms.serverKey.hint': 'The app key in comms. Kept sealed and never shown again.',
+    'f.vc.perMinute': 'Tokens per minute per player',
+    'f.vc.perMinute.hint': '1 to 600.',
+    'f.vc.maxPlayers': 'Most players in a voice room',
+    'f.vc.maxPlayers.hint': 'For matches and parties; the first players up to this number get voice. Zero means no limit. Each game can set its own.',
+    'vc.who': 'Who',
+    'f.vc.allowed': 'Only these tags get voice',
+    'f.vc.allowed.hint': 'Empty means everyone. Others get "voice is not for you".',
+    'f.vc.listenOnly': 'These tags only listen',
+    'f.vc.listenOnly.hint': 'A player with any of these tags cannot talk, only listen.',
+    'f.gm.voiceMax': 'Most players in voice',
+    'f.gm.voiceMax.hint': 'Empty means the voice server number; zero means no limit.',
+    'code.VOICE_ROOM_FULL': 'The voice room is full.',
+    'code.INVALID_VOICE_PLAYERS': 'A number from zero to a thousand.',
     'vc.noSeal': 'ECONOMY_SECRET_KEY is needed on the server to keep secrets.',
     'vc.rules': 'Token rules',
     'f.vc.ttl': 'Token lifetime (seconds)',
@@ -10948,12 +11080,55 @@ var FRIEND_FIELDS = [
     { name: 'dailyRequests', type: 'number', label: 'f.fr.daily', hint: 'f.fr.daily.hint', required: true, min: 0, max: 1000 },
     { name: 'maxFriends', type: 'number', label: 'f.fr.max', hint: 'f.fr.max.hint', required: true, min: 0, max: 10000 }
   ] },
+  { name: 'overLimit', type: 'select', label: 'f.fr.overLimit', hint: 'f.fr.overLimit.hint', required: true, noPlaceholder: true, options: function () { return ['refuse', 'trim'].map(function (v) { return { value: v, label: t('fr.overLimit.' + v) }; }); } },
   { type: 'heading', label: 'fr.pending' },
   { type: 'row', fields: [
     { name: 'expiryDays', type: 'number', label: 'f.fr.expiry', hint: 'f.fr.expiry.hint', required: true, min: 0, max: 365 },
     { name: 'rejectCooldownHours', type: 'number', label: 'f.fr.cooldown', hint: 'f.fr.cooldown.hint', required: true, min: 0, max: 8760 }
-  ] }
+  ] },
+  { type: 'heading', label: 'fr.bonus' },
+  { type: 'row', fields: [
+    { name: 'requestsBonusMeta', type: 'ref', resource: 'metas', valueKey: 'key', label: 'f.fr.reqMeta', hint: 'f.fr.reqMeta.hint', optional: true },
+    { name: 'friendsBonusMeta', type: 'ref', resource: 'metas', valueKey: 'key', label: 'f.fr.slotMeta', hint: 'f.fr.slotMeta.hint', optional: true }
+  ] },
+  { type: 'heading', label: 'fr.tiers' },
+  { name: 'matchPolicy', type: 'select', label: 'f.fr.policy', hint: 'f.fr.policy.hint', required: true, noPlaceholder: true, options: function () { return ['priority', 'generous'].map(function (v) { return { value: v, label: t('fr.policy.' + v) }; }); } }
 ];
+
+function frLimit(v) {
+  if (v == null) return h('span', { class: 'text-secondary-400', text: t('fr.inherit') });
+  if (Number(v) === 0) return tag(t('fr.unlimited'), 'success');
+  return h('span', { class: 'tabular-nums', text: fmtNum(v) });
+}
+
+RESOURCES.friends = {
+  api: 'base',
+  path: 'friend-rules/tiers',
+  settings: true,
+  filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
+  columns: [
+    { label: 'col.name', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: it.name }), h('div', { class: 'flex flex-wrap gap-1 mt-1', 'data-fr-tags': '' }, (it.tags || []).map(function (g) { return tag(i18nText(g.name) || g.key, 'primary'); }))); }, skeleton: '50%' },
+    { label: 'f.fr.daily', render: function (it) { return frLimit(it.dailyRequests); }, width: 120 },
+    { label: 'f.fr.max', render: function (it) { return frLimit(it.maxFriends); }, width: 120 },
+    { label: 'col.fr.priority', render: function (it) { return h('div', { class: 'flex flex-col' }, numCell(it.priority), h('span', { class: 'text-xs text-secondary-500', text: t('fr.playersN', { n: fmtNum(it.players || 0) }) })); }, width: 110 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'name', type: 'text', label: 'f.fr.tier.name', hint: 'f.fr.tier.name.hint', required: true },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
+    ] },
+    { name: 'tagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.fr.tier.tags', hint: 'f.fr.tier.tags.hint', required: true, empty: [] },
+    { name: 'priority', type: 'number', label: 'f.fr.tier.priority', hint: 'f.fr.tier.priority.hint', min: -1000, max: 1000 },
+    { type: 'heading', label: 'fr.tier.limits' },
+    { type: 'row', fields: [
+      { name: 'dailyRequests', type: 'number', label: 'f.fr.daily', hint: 'f.fr.tier.limit.hint', optional: true, min: 0, max: 1000 },
+      { name: 'maxFriends', type: 'number', label: 'f.fr.max', hint: 'f.fr.tier.limit.hint', optional: true, min: 0, max: 10000 }
+    ] },
+    { name: 'rejectCooldownHours', type: 'number', label: 'f.fr.cooldown', hint: 'f.fr.tier.limit.hint', optional: true, min: 0, max: 8760 }
+  ],
+  defaults: function () { return { name: '', tagIds: [], priority: 0, dailyRequests: null, maxFriends: null, rejectCooldownHours: null, isActive: true }; }
+};
 
 function friendSummary(v) {
   var n = function (x) { return Number(x) || 0; };
@@ -10963,21 +11138,26 @@ function friendSummary(v) {
     n(v.expiryDays) ? t('fr.sum.expiry', { n: fmtNum(n(v.expiryDays)) }) : t('fr.sum.expiryOff'),
     n(v.rejectCooldownHours) ? t('fr.sum.cooldown', { n: fmtNum(n(v.rejectCooldownHours)) }) : t('fr.sum.cooldownOff')
   ];
+  if (v.requestsBonusMeta) parts.push(t('fr.sum.reqBonus', { key: v.requestsBonusMeta }));
+  if (v.friendsBonusMeta) parts.push(t('fr.sum.slotBonus', { key: v.friendsBonusMeta }));
+  if (v.overLimit === 'trim') parts.push(t('fr.sum.trim'));
   var box = h('div', { class: 'mt-2', 'data-friend-summary': '' }, notice('info', parts.join(t('fr.sum.sep'))));
   if (v.updatedBy) box.appendChild(h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-2', text: t('up.savedBy', { who: v.updatedBy, when: fmtDate(v.updatedAt) }) }));
   return box;
 }
 
-function friendRulesPage(container) {
-  var frame = tabFrame(t('desc.friends'));
-  clear(container).appendChild(frame.el);
+function friendRulesPage(container, query, ctx) {
+  var list = listPage(container, 'friends', query || {}, ctx);
   var page = apiPage(baseApi, '/friend-rules', null, FRIEND_FIELDS, {
     id: 'friends',
     onchange: function (v, extra) { clear(extra).appendChild(friendSummary(v)); },
-    fixPayload: function (p) { return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0 }; }
+    fixPayload: function (p) { return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0, requestsBonusMeta: p.requestsBonusMeta || '', friendsBonusMeta: p.friendsBonusMeta || '', matchPolicy: p.matchPolicy || 'priority', overLimit: p.overLimit || 'refuse' }; }
   });
-  frame.content.appendChild(page.el);
+  var heading = h('div', { class: 'mt-6 mb-2' }, h('h2', { class: 'text-lg font-medium', text: t('fr.tiers.title') }), h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('fr.tiers.desc') }));
+  container.insertBefore(heading, container.firstChild);
+  container.insertBefore(page.el, heading);
   page.load();
+  return list;
 }
 
 function otpModeNotice(v, providers) {
@@ -11801,6 +11981,30 @@ function playerReportDetail(container, id) {
     });
   }
   load();
+}
+
+var REPORT_RULE_FIELDS = [
+  { type: 'row', fields: [
+    { name: 'perHour', type: 'number', label: 'f.rr.perHour', hint: 'f.rr.perHour.hint', required: true, min: 0, max: 1000 },
+    { name: 'duplicateHours', type: 'number', label: 'f.rr.duplicate', hint: 'f.rr.duplicate.hint', required: true, min: 0, max: 720 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'minAccountHours', type: 'number', label: 'f.rr.minAge', hint: 'f.rr.minAge.hint', required: true, min: 0, max: 720 },
+    { name: 'noteRequired', type: 'bool', inline: true, label: 'f.rr.note', hint: 'f.rr.note.hint' }
+  ] },
+  { type: 'heading', label: 'rr.trusted' },
+  { name: 'trustedTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.rr.trustedTags', hint: 'f.rr.trustedTags.hint', optional: true, empty: [] },
+  { name: 'trustedPerHour', type: 'number', label: 'f.rr.trustedPerHour', hint: 'f.rr.trustedPerHour.hint', required: true, min: 0, max: 1000 }
+];
+
+function reportRulesPage(container) {
+  var frame = tabFrame(t('desc.report-rules'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(baseApi, '/report-rules', null, REPORT_RULE_FIELDS, { id: 'report-rules', fixPayload: function (p) {
+    return { perHour: Number(p.perHour) || 0, duplicateHours: Number(p.duplicateHours) || 0, minAccountHours: Number(p.minAccountHours) || 0, noteRequired: !!p.noteRequired, trustedTagIds: p.trustedTagIds || [], trustedPerHour: Number(p.trustedPerHour) || 0 };
+  } });
+  frame.content.appendChild(page.el);
+  page.load();
 }
 
 function wordTry() {
@@ -16510,7 +16714,10 @@ RESOURCES.games = {
       { name: 'matchSeconds', type: 'number', label: 'f.gm.limit', hint: 'f.gm.limit.hint', optional: true, min: 1, max: 604800 }
     ] },
     { name: 'botsAllowed', type: 'bool', inline: true, label: 'f.gm.bots', hint: 'f.gm.bots.hint' },
-    { name: 'voiceEnabled', type: 'bool', inline: true, label: 'f.gm.voice', hint: 'f.gm.voice.hint' },
+    { type: 'row', fields: [
+      { name: 'voiceEnabled', type: 'bool', inline: true, label: 'f.gm.voice', hint: 'f.gm.voice.hint' },
+      { name: 'voiceMaxPlayers', type: 'number', label: 'f.gm.voiceMax', hint: 'f.gm.voiceMax.hint', optional: true, min: 0, max: 1000, when: function (v) { return v.voiceEnabled !== false; } }
+    ] },
     { type: 'heading', label: 'gm.h.rooms' },
     { name: 'rooms', type: 'rows', addLabel: 'gm.room.add', emptyText: 'gm.room.empty', max: 20, empty: [],
       newRow: function (rows) {
@@ -16556,7 +16763,7 @@ RESOURCES.games = {
     var name = {};
     if (def && def.name) name = Object.assign({}, def.name);
     return { key: key, isActive: true, name: name, description: {}, maintenance: {}, iconUrl: '', categoryId: null, tagIds: [], minPlayers: def && def.realtime ? 2 : 1, maxPlayers: def && def.realtime ? 2 : 1,
-      turnSeconds: null, matchSeconds: null, botsAllowed: false, rooms: [], platforms: [], minVersion: '', maxVersion: '', leaderboardId: '', settings: {}, sort: 0, voiceEnabled: true };
+      turnSeconds: null, matchSeconds: null, botsAllowed: false, rooms: [], platforms: [], minVersion: '', maxVersion: '', leaderboardId: '', settings: {}, sort: 0, voiceEnabled: true, voiceMaxPlayers: null };
   },
   toForm: function (v) {
     v.rooms = (v.rooms || []).map(function (r) {
@@ -17037,11 +17244,18 @@ function voiceFields(values) {
     });
   });
   out.push({ type: 'heading', label: 'vc.rules' });
-  out.push({ name: 'ttlSeconds', type: 'number', label: 'f.vc.ttl', hint: 'f.vc.ttl.hint', required: true, min: 60, max: 86400 });
+  out.push({ type: 'row', fields: [
+    { name: 'ttlSeconds', type: 'number', label: 'f.vc.ttl', hint: 'f.vc.ttl.hint', required: true, min: 60, max: 86400 },
+    { name: 'tokensPerMinute', type: 'number', label: 'f.vc.perMinute', hint: 'f.vc.perMinute.hint', required: true, min: 1, max: 600 }
+  ] });
+  out.push({ name: 'maxRoomPlayers', type: 'number', label: 'f.vc.maxPlayers', hint: 'f.vc.maxPlayers.hint', required: true, min: 0, max: 1000 });
   out.push({ type: 'row', fields: [
     { name: 'canPublish', type: 'bool', inline: true, label: 'f.vc.canPublish', hint: 'f.vc.canPublish.hint' },
     { name: 'openRooms', type: 'bool', inline: true, label: 'f.vc.openRooms', hint: 'f.vc.openRooms.hint' }
   ] });
+  out.push({ type: 'heading', label: 'vc.who' });
+  out.push({ name: 'allowedTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.vc.allowed', hint: 'f.vc.allowed.hint', optional: true, empty: [] });
+  out.push({ name: 'listenOnlyTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.vc.listenOnly', hint: 'f.vc.listenOnly.hint', optional: true, empty: [] });
   return out;
 }
 
@@ -17056,11 +17270,13 @@ function voiceValues(data) {
     });
   });
   if (!v.ttlSeconds) v.ttlSeconds = 600;
+  if (!v.tokensPerMinute) v.tokensPerMinute = 30;
+  if (v.maxRoomPlayers == null) v.maxRoomPlayers = 0;
   return v;
 }
 
 function voicePayload(values, raw) {
-  var out = { enabled: !!raw.enabled, provider: raw.provider || '', ttlSeconds: Number(raw.ttlSeconds) || 0, canPublish: !!raw.canPublish, openRooms: !!raw.openRooms, config: {}, secrets: {} };
+  var out = { enabled: !!raw.enabled, provider: raw.provider || '', ttlSeconds: Number(raw.ttlSeconds) || 0, canPublish: !!raw.canPublish, openRooms: !!raw.openRooms, tokensPerMinute: Number(raw.tokensPerMinute) || 30, maxRoomPlayers: Number(raw.maxRoomPlayers) || 0, allowedTagIds: raw.allowedTagIds || [], listenOnlyTagIds: raw.listenOnlyTagIds || [], config: {}, secrets: {} };
   var spec = (values.providers || []).filter(function (p) { return p.kind === out.provider; })[0];
   if (spec) {
     spec.fields.forEach(function (f) {
@@ -18514,12 +18730,13 @@ var PS_SECTIONS = [
   { id: 'languages', label: 'tab.languages', icon: 'languages', acl: 'SETTINGS', render: function (box, route, ctx) { return languagesPage(box, route.query, ctx); } },
   { id: 'countries', label: 'tab.countries', icon: 'flag', acl: 'SETTINGS', render: function (box, route, ctx) { return countriesPage(box, route.query, ctx); } },
   { id: 'accounts', label: 'tab.accounts', icon: 'users', acl: 'SETTINGS', render: function (box) { accountRulesPage(box); } },
-  { id: 'friends', label: 'tab.friends', icon: 'users', acl: 'SETTINGS', render: function (box) { friendRulesPage(box); } },
+  { id: 'friends', label: 'tab.friends', icon: 'users', acl: 'SETTINGS', render: function (box, route, ctx) { return friendRulesPage(box, route.query, ctx); } },
   { id: 'otp', label: 'tab.otp', icon: 'phone', acl: 'NOTIFICATION', render: function (box, route, ctx) { return otpPage(box, route.query, ctx); } },
   { id: 'app-versions', label: 'tab.app-versions', icon: 'versions', acl: 'SETTINGS', render: function (box, route, ctx) { return appVersionsPage(box, route.query, ctx); } },
   { id: 'categories', label: 'nav.categories', icon: 'categories', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'categories', route.query, ctx); } },
   { id: 'tags', label: 'nav.tags', icon: 'tags', acl: 'HIRO_ECONOMY', render: function (box, route, ctx) { return listPage(box, 'tags', route.query, ctx); } },
   { id: 'report-titles', label: 'tab.report-titles', icon: 'report-titles', acl: 'CHANNEL_MESSAGE', render: function (box, route, ctx) { return listPage(box, 'report-titles', route.query, ctx); } },
+  { id: 'report-rules', label: 'tab.report-rules', icon: 'report-titles', acl: 'CHANNEL_MESSAGE', render: function (box) { reportRulesPage(box); } },
   { id: 'events', label: 'tab.events', icon: 'event-types', acl: 'HIRO_ECONOMY', render: function (box) { eventSettingsPage(box); } },
   { id: 'referral-rules', label: 'tab.referral-rules', icon: 'referral-rules', acl: 'HIRO_ECONOMY', render: function (box) { referralRulesPage(box); } },
   { id: 'support-departments', label: 'tab.support-departments', icon: 'support-departments', acl: 'ACCOUNT_NOTES', render: function (box, route, ctx) { loadAgents(); return listPage(box, 'support-departments', route.query, ctx); } },

@@ -379,12 +379,55 @@ var FRIEND_FIELDS = [
     { name: 'dailyRequests', type: 'number', label: 'f.fr.daily', hint: 'f.fr.daily.hint', required: true, min: 0, max: 1000 },
     { name: 'maxFriends', type: 'number', label: 'f.fr.max', hint: 'f.fr.max.hint', required: true, min: 0, max: 10000 }
   ] },
+  { name: 'overLimit', type: 'select', label: 'f.fr.overLimit', hint: 'f.fr.overLimit.hint', required: true, noPlaceholder: true, options: function () { return ['refuse', 'trim'].map(function (v) { return { value: v, label: t('fr.overLimit.' + v) }; }); } },
   { type: 'heading', label: 'fr.pending' },
   { type: 'row', fields: [
     { name: 'expiryDays', type: 'number', label: 'f.fr.expiry', hint: 'f.fr.expiry.hint', required: true, min: 0, max: 365 },
     { name: 'rejectCooldownHours', type: 'number', label: 'f.fr.cooldown', hint: 'f.fr.cooldown.hint', required: true, min: 0, max: 8760 }
-  ] }
+  ] },
+  { type: 'heading', label: 'fr.bonus' },
+  { type: 'row', fields: [
+    { name: 'requestsBonusMeta', type: 'ref', resource: 'metas', valueKey: 'key', label: 'f.fr.reqMeta', hint: 'f.fr.reqMeta.hint', optional: true },
+    { name: 'friendsBonusMeta', type: 'ref', resource: 'metas', valueKey: 'key', label: 'f.fr.slotMeta', hint: 'f.fr.slotMeta.hint', optional: true }
+  ] },
+  { type: 'heading', label: 'fr.tiers' },
+  { name: 'matchPolicy', type: 'select', label: 'f.fr.policy', hint: 'f.fr.policy.hint', required: true, noPlaceholder: true, options: function () { return ['priority', 'generous'].map(function (v) { return { value: v, label: t('fr.policy.' + v) }; }); } }
 ];
+
+function frLimit(v) {
+  if (v == null) return h('span', { class: 'text-secondary-400', text: t('fr.inherit') });
+  if (Number(v) === 0) return tag(t('fr.unlimited'), 'success');
+  return h('span', { class: 'tabular-nums', text: fmtNum(v) });
+}
+
+RESOURCES.friends = {
+  api: 'base',
+  path: 'friend-rules/tiers',
+  settings: true,
+  filters: [{ name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } }],
+  columns: [
+    { label: 'col.name', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: it.name }), h('div', { class: 'flex flex-wrap gap-1 mt-1', 'data-fr-tags': '' }, (it.tags || []).map(function (g) { return tag(i18nText(g.name) || g.key, 'primary'); }))); }, skeleton: '50%' },
+    { label: 'f.fr.daily', render: function (it) { return frLimit(it.dailyRequests); }, width: 120 },
+    { label: 'f.fr.max', render: function (it) { return frLimit(it.maxFriends); }, width: 120 },
+    { label: 'col.fr.priority', render: function (it) { return h('div', { class: 'flex flex-col' }, numCell(it.priority), h('span', { class: 'text-xs text-secondary-500', text: t('fr.playersN', { n: fmtNum(it.players || 0) }) })); }, width: 110 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'name', type: 'text', label: 'f.fr.tier.name', hint: 'f.fr.tier.name.hint', required: true },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
+    ] },
+    { name: 'tagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.fr.tier.tags', hint: 'f.fr.tier.tags.hint', required: true, empty: [] },
+    { name: 'priority', type: 'number', label: 'f.fr.tier.priority', hint: 'f.fr.tier.priority.hint', min: -1000, max: 1000 },
+    { type: 'heading', label: 'fr.tier.limits' },
+    { type: 'row', fields: [
+      { name: 'dailyRequests', type: 'number', label: 'f.fr.daily', hint: 'f.fr.tier.limit.hint', optional: true, min: 0, max: 1000 },
+      { name: 'maxFriends', type: 'number', label: 'f.fr.max', hint: 'f.fr.tier.limit.hint', optional: true, min: 0, max: 10000 }
+    ] },
+    { name: 'rejectCooldownHours', type: 'number', label: 'f.fr.cooldown', hint: 'f.fr.tier.limit.hint', optional: true, min: 0, max: 8760 }
+  ],
+  defaults: function () { return { name: '', tagIds: [], priority: 0, dailyRequests: null, maxFriends: null, rejectCooldownHours: null, isActive: true }; }
+};
 
 function friendSummary(v) {
   var n = function (x) { return Number(x) || 0; };
@@ -394,21 +437,26 @@ function friendSummary(v) {
     n(v.expiryDays) ? t('fr.sum.expiry', { n: fmtNum(n(v.expiryDays)) }) : t('fr.sum.expiryOff'),
     n(v.rejectCooldownHours) ? t('fr.sum.cooldown', { n: fmtNum(n(v.rejectCooldownHours)) }) : t('fr.sum.cooldownOff')
   ];
+  if (v.requestsBonusMeta) parts.push(t('fr.sum.reqBonus', { key: v.requestsBonusMeta }));
+  if (v.friendsBonusMeta) parts.push(t('fr.sum.slotBonus', { key: v.friendsBonusMeta }));
+  if (v.overLimit === 'trim') parts.push(t('fr.sum.trim'));
   var box = h('div', { class: 'mt-2', 'data-friend-summary': '' }, notice('info', parts.join(t('fr.sum.sep'))));
   if (v.updatedBy) box.appendChild(h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-2', text: t('up.savedBy', { who: v.updatedBy, when: fmtDate(v.updatedAt) }) }));
   return box;
 }
 
-function friendRulesPage(container) {
-  var frame = tabFrame(t('desc.friends'));
-  clear(container).appendChild(frame.el);
+function friendRulesPage(container, query, ctx) {
+  var list = listPage(container, 'friends', query || {}, ctx);
   var page = apiPage(baseApi, '/friend-rules', null, FRIEND_FIELDS, {
     id: 'friends',
     onchange: function (v, extra) { clear(extra).appendChild(friendSummary(v)); },
-    fixPayload: function (p) { return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0 }; }
+    fixPayload: function (p) { return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0, requestsBonusMeta: p.requestsBonusMeta || '', friendsBonusMeta: p.friendsBonusMeta || '', matchPolicy: p.matchPolicy || 'priority', overLimit: p.overLimit || 'refuse' }; }
   });
-  frame.content.appendChild(page.el);
+  var heading = h('div', { class: 'mt-6 mb-2' }, h('h2', { class: 'text-lg font-medium', text: t('fr.tiers.title') }), h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('fr.tiers.desc') }));
+  container.insertBefore(heading, container.firstChild);
+  container.insertBefore(page.el, heading);
   page.load();
+  return list;
 }
 
 function otpModeNotice(v, providers) {

@@ -30,11 +30,18 @@ function voiceFields(values) {
     });
   });
   out.push({ type: 'heading', label: 'vc.rules' });
-  out.push({ name: 'ttlSeconds', type: 'number', label: 'f.vc.ttl', hint: 'f.vc.ttl.hint', required: true, min: 60, max: 86400 });
+  out.push({ type: 'row', fields: [
+    { name: 'ttlSeconds', type: 'number', label: 'f.vc.ttl', hint: 'f.vc.ttl.hint', required: true, min: 60, max: 86400 },
+    { name: 'tokensPerMinute', type: 'number', label: 'f.vc.perMinute', hint: 'f.vc.perMinute.hint', required: true, min: 1, max: 600 }
+  ] });
+  out.push({ name: 'maxRoomPlayers', type: 'number', label: 'f.vc.maxPlayers', hint: 'f.vc.maxPlayers.hint', required: true, min: 0, max: 1000 });
   out.push({ type: 'row', fields: [
     { name: 'canPublish', type: 'bool', inline: true, label: 'f.vc.canPublish', hint: 'f.vc.canPublish.hint' },
     { name: 'openRooms', type: 'bool', inline: true, label: 'f.vc.openRooms', hint: 'f.vc.openRooms.hint' }
   ] });
+  out.push({ type: 'heading', label: 'vc.who' });
+  out.push({ name: 'allowedTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.vc.allowed', hint: 'f.vc.allowed.hint', optional: true, empty: [] });
+  out.push({ name: 'listenOnlyTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.vc.listenOnly', hint: 'f.vc.listenOnly.hint', optional: true, empty: [] });
   return out;
 }
 
@@ -49,11 +56,13 @@ function voiceValues(data) {
     });
   });
   if (!v.ttlSeconds) v.ttlSeconds = 600;
+  if (!v.tokensPerMinute) v.tokensPerMinute = 30;
+  if (v.maxRoomPlayers == null) v.maxRoomPlayers = 0;
   return v;
 }
 
 function voicePayload(values, raw) {
-  var out = { enabled: !!raw.enabled, provider: raw.provider || '', ttlSeconds: Number(raw.ttlSeconds) || 0, canPublish: !!raw.canPublish, openRooms: !!raw.openRooms, config: {}, secrets: {} };
+  var out = { enabled: !!raw.enabled, provider: raw.provider || '', ttlSeconds: Number(raw.ttlSeconds) || 0, canPublish: !!raw.canPublish, openRooms: !!raw.openRooms, tokensPerMinute: Number(raw.tokensPerMinute) || 30, maxRoomPlayers: Number(raw.maxRoomPlayers) || 0, allowedTagIds: raw.allowedTagIds || [], listenOnlyTagIds: raw.listenOnlyTagIds || [], config: {}, secrets: {} };
   var spec = (values.providers || []).filter(function (p) { return p.kind === out.provider; })[0];
   if (spec) {
     spec.fields.forEach(function (f) {

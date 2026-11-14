@@ -750,6 +750,30 @@ function playerReportDetail(container, id) {
   load();
 }
 
+var REPORT_RULE_FIELDS = [
+  { type: 'row', fields: [
+    { name: 'perHour', type: 'number', label: 'f.rr.perHour', hint: 'f.rr.perHour.hint', required: true, min: 0, max: 1000 },
+    { name: 'duplicateHours', type: 'number', label: 'f.rr.duplicate', hint: 'f.rr.duplicate.hint', required: true, min: 0, max: 720 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'minAccountHours', type: 'number', label: 'f.rr.minAge', hint: 'f.rr.minAge.hint', required: true, min: 0, max: 720 },
+    { name: 'noteRequired', type: 'bool', inline: true, label: 'f.rr.note', hint: 'f.rr.note.hint' }
+  ] },
+  { type: 'heading', label: 'rr.trusted' },
+  { name: 'trustedTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.rr.trustedTags', hint: 'f.rr.trustedTags.hint', optional: true, empty: [] },
+  { name: 'trustedPerHour', type: 'number', label: 'f.rr.trustedPerHour', hint: 'f.rr.trustedPerHour.hint', required: true, min: 0, max: 1000 }
+];
+
+function reportRulesPage(container) {
+  var frame = tabFrame(t('desc.report-rules'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(baseApi, '/report-rules', null, REPORT_RULE_FIELDS, { id: 'report-rules', fixPayload: function (p) {
+    return { perHour: Number(p.perHour) || 0, duplicateHours: Number(p.duplicateHours) || 0, minAccountHours: Number(p.minAccountHours) || 0, noteRequired: !!p.noteRequired, trustedTagIds: p.trustedTagIds || [], trustedPerHour: Number(p.trustedPerHour) || 0 };
+  } });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
 function wordTry() {
   var input = textInput('', { multiline: true, rows: 2, label: t('cw.try.label'), placeholder: t('cw.try.ph') });
   input.setAttribute('data-word-try', '');
