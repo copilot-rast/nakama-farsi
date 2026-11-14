@@ -533,6 +533,223 @@ function reportDetail(container, id) {
   load();
 }
 
+var PR_STATUS_COLOR = { open: 'warning', reviewing: 'primary', resolved: 'success', dismissed: 'secondary' };
+var PR_ACTIONS = ['dismiss', 'warn', 'mute', 'suspend'];
+var pendingPlayerReports = null;
+var playerReportBadgeAt = 0;
+
+function refreshPlayerReportBadge(force) {
+  var now = Date.now();
+  if (!force && now - playerReportBadgeAt < 60000) return;
+  playerReportBadgeAt = now;
+  if (!aclCan('CHANNEL_MESSAGE', 0)) return;
+  quietBase('GET', '/player-reports/summary').then(function (res) {
+    var n = res && typeof res.active === 'number' ? res.active : null;
+    if (n !== pendingPlayerReports) {
+      pendingPlayerReports = n;
+      schedule();
+    }
+  });
+}
+
+function prContext(it) {
+  var chips = [];
+  if (it.gameKey) chips.push(tag(t('prp.ctx.game', { v: it.gameKey }), 'secondary'));
+  if (it.matchId) chips.push(tag(t('prp.ctx.match', { v: String(it.matchId).slice(0, 12) }), 'secondary'));
+  if (it.contentId) chips.push(tag(t('prp.ctx.content', { v: String(it.contentId).slice(0, 12) }), 'secondary'));
+  return chips.length ? h('div', { class: 'flex flex-wrap gap-1', 'data-pr-context': '' }, chips) : null;
+}
+
+function prStatus(it) {
+  return h('div', { class: 'flex flex-col items-start gap-0.5' }, tag(t('prp.status.' + it.status), PR_STATUS_COLOR[it.status]),
+    it.status === 'reviewing' && it.reviewer ? h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: t('prp.by', { who: it.reviewer }) }) : null);
+}
+
+LISTS['player-reports'] = {
+  api: 'base',
+  filters: [
+    { name: 'status', label: 'filter.status', options: function () { return ['active', 'open', 'reviewing', 'resolved', 'dismissed'].map(function (s) { return { value: s, label: t('prp.status.' + s) }; }); } },
+    { name: 'titleId', label: 'filter.reportTitle', type: 'ref', resource: 'report-titles', api: baseApi },
+    { name: 'targetId', label: 'filter.playerId', type: 'text' }
+  ],
+  columns: [
+    { label: 'col.reported', render: function (it) {
+      return h('div', { class: 'min-w-0' },
+        playerLink(it.targetId, it.targetName || it.targetUsername || t('rp.gone'), 'font-medium'),
+        it.note ? h('div', { class: 'eco-clamp text-xs text-secondary-500', dir: 'auto', text: it.note }) : null,
+        prContext(it));
+    }, skeleton: '60%' },
+    { label: 'col.reason', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, tag(i18nText(it.title) || it.titleKey || t('rp.noTitle'), 'primary'), it.against > 1 ? h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: t('prp.againstN', { n: it.against }) }) : null); }, width: 200 },
+    { label: 'col.reporter', render: function (it) { return playerLink(it.reporterId, it.reporterName || it.reporterUsername || t('rp.gone')); }, width: 160 },
+    { label: 'col.status', render: prStatus, width: 130 },
+    { label: 'col.created', render: function (it) { return dateCell(it.createdAt); }, width: 170 }
+  ]
+};
+
+function playerReportsPage(container, query, ctx) {
+  var list = listPage(container, 'player-reports', query, ctx);
+  listReloads['player-reports'] = list.reload;
+  return list;
+}
+
+function playerReportDetail(container, id) {
+  var backBtn = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('back'), onclick: function () { go('player-reports', null, lastQuery['player-reports'] || {}); } });
+  var frame = pageFrame(t('prp.title'), null, null);
+  frame.actions.appendChild(backBtn);
+  clear(container).appendChild(frame.el);
+  var grid = h('div', { class: 'eco-detail-grid', 'data-player-report': id });
+  frame.content.appendChild(grid);
+
+  function skeleton() {
+    clear(grid);
+    [5, 5, 4].forEach(function (n) {
+      var rows = [];
+      for (var j = 0; j < n; j++) rows.push(h('div', { class: 'py-1.5' }, bar(['70%', '50%', '40%'][j % 3])));
+      grid.appendChild(card(h('div', { class: 'p-4' }, h('div', { class: 'mb-4' }, bar('8rem', 'h-4')), rows)));
+    });
+  }
+
+  function post(path, body, okKey) {
+    return baseApi('POST', '/player-reports/' + encodeURIComponent(id) + path, body).then(function () {
+      if (okKey) toast('success', t(okKey));
+      refreshPlayerReportBadge(true);
+      load();
+    });
+  }
+
+  function notesCard(r) {
+    var list = h('ol', { class: 'flex flex-col gap-2', 'data-pr-notes': '' });
+    (r.notes || []).forEach(function (n) {
+      list.appendChild(h('li', { class: 'eco-chat-line' },
+        h('div', { class: 'flex items-center gap-2 text-xs text-secondary-500 mb-0.5' }, h('span', { class: 'font-medium', text: n.by || t('none') }), h('span', { text: fmtDate(n.at, true) })),
+        h('div', { class: 'text-sm break-words', dir: 'auto', text: n.text })));
+    });
+    if (!list.childNodes.length) list.appendChild(h('li', { class: 'text-sm text-secondary-500', text: t('prp.noNotes') }));
+    var input = textInput('', { multiline: true, rows: 2, label: t('prp.note.add'), placeholder: t('prp.note.ph') });
+    var err = h('div', {});
+    var addBtn = button({ variant: 'secondary', size: 'sm', label: t('prp.note.add'), onclick: function () {
+      clear(err);
+      var text = input.value.trim();
+      if (!text) { err.appendChild(h('p', { class: 'text-sm text-error-600 mt-1', text: t('code.TEXT_REQUIRED') })); return; }
+      setBusy(addBtn, true, t('saving'));
+      post('/notes', { text: text }, 'prp.note.saved').catch(function (e) { setBusy(addBtn, false); err.appendChild(notice('error', errorText(e))); });
+    } });
+    addBtn.setAttribute('data-pr-note-add', '');
+    return section('prp.notes', h('div', {}, list, h('div', { class: 'mt-3' }, input, err, h('div', { class: 'flex justify-end mt-2' }, addBtn))));
+  }
+
+  function decision(r) {
+    if (r.status === 'resolved' || r.status === 'dismissed') {
+      return section('rp.decision', dl([
+        ['col.status', tag(t('prp.status.' + r.status), PR_STATUS_COLOR[r.status])],
+        ['rp.action', r.action ? tag(t('rp.action.' + r.action), r.action === 'dismiss' ? 'secondary' : 'primary') : null],
+        ['rp.restriction', r.restrictionId ? h('a', { href: hashFor('restrictions', null, { userId: r.targetId }), class: 'eco-link', text: t('rp.seeRestriction') }) : null],
+        ['rp.resolvedBy', r.resolvedBy ? h('span', { text: r.resolvedBy }) : null],
+        ['rp.resolvedAt', r.resolvedAt ? dateCell(r.resolvedAt) : null],
+        ['rs.note', r.resolutionNote ? h('span', { class: 'break-words', text: r.resolutionNote }) : null]
+      ]));
+    }
+    var current = 'dismiss';
+    var formBox = h('div', { class: 'mt-4' });
+    var form = null;
+    var note = null;
+    var closeOthers = false;
+    var seg = segmented(PR_ACTIONS.map(function (a) { return { value: a, label: t('rp.action.' + a) }; }), current, function (a) { current = a; paintForm(); }, t('rp.action'), 'md');
+    seg.setAttribute('data-pr-actions', '');
+    var hint = h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 mt-2' });
+    var top = h('div', {});
+    var submitBtn = button({ variant: 'primary', size: 'footer', label: t('rp.submit'), onclick: function () { submit(); } });
+    submitBtn.setAttribute('data-pr-submit', '');
+    var reviewBtn = r.status === 'open'
+      ? button({ variant: 'secondary', size: 'sm', label: t('prp.take'), onclick: function () { setBusy(reviewBtn, true, t('saving')); post('/status', { status: 'reviewing' }, 'prp.taken').catch(function (e) { setBusy(reviewBtn, false); top.appendChild(notice('error', errorText(e))); }); } })
+      : button({ variant: 'ghost', size: 'sm', label: t('prp.release'), onclick: function () { setBusy(reviewBtn, true, t('saving')); post('/status', { status: 'open' }, 'prp.released').catch(function (e) { setBusy(reviewBtn, false); top.appendChild(notice('error', errorText(e))); }); } });
+    reviewBtn.setAttribute('data-pr-review', r.status);
+    var others = h('div', { class: 'mb-4' }, checkbox(false, t('prp.closeOthers'), function (on) { closeOthers = on; }));
+    function paintForm() {
+      clear(formBox);
+      clear(top);
+      hint.textContent = t('prp.action.' + current + '.hint');
+      form = null;
+      note = null;
+      if (current !== 'dismiss') {
+        form = restrictionForm(current, {});
+        formBox.appendChild(form.el);
+      } else {
+        note = textInput('', { multiline: true, rows: 2, label: t('rs.note'), placeholder: t('rs.note.ph') });
+        formBox.appendChild(field(t('rs.note'), note, t('rp.note.hint'), { optional: true }));
+      }
+      submitBtn.querySelector('span').textContent = t('rp.submit.' + current);
+    }
+    function submit() {
+      clear(top);
+      if (form && !form.validate()) return;
+      var body = form ? form.payload() : { note: note.value.trim() };
+      body.action = current;
+      body.closeOthers = closeOthers;
+      delete body.kind;
+      setBusy(submitBtn, true, t('saving'));
+      baseApi('POST', '/player-reports/' + encodeURIComponent(id) + '/resolve', body).then(function () {
+        toast('success', t('prp.done.' + current));
+        refreshPlayerReportBadge(true);
+        load();
+      }, function (err) {
+        setBusy(submitBtn, false);
+        if (!form || !form.showError(err)) top.appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err))));
+      });
+    }
+    paintForm();
+    return card(h('div', { class: 'p-4', 'data-pr-decide': '' },
+      h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-3' }, h('h2', { class: 'text-lg font-medium', text: t('rp.decide') }), reviewBtn),
+      top, seg, hint, formBox, others,
+      h('div', { class: 'flex justify-end' }, submitBtn)), 'eco-span-all');
+  }
+
+  function render(r) {
+    clear(grid);
+    var others = r.others || [];
+    grid.appendChild(section('rp.report', dl([
+      ['col.status', prStatus(r)],
+      ['rp.reason', tag(i18nText(r.title) || r.titleKey || t('rp.noTitle'), 'primary')],
+      ['col.reporter', playerLink(r.reporterId, r.reporterName || r.reporterUsername || t('rp.gone'))],
+      ['rp.playerNote', r.note ? h('span', { class: 'break-words', dir: 'auto', 'data-pr-note': '', text: r.note }) : null],
+      ['prp.context', prContext(r)],
+      ['col.created', dateCell(r.createdAt)],
+      ['prp.others', others.length ? h('div', { class: 'flex flex-col gap-1' }, others.slice(0, 8).map(function (o) {
+        return h('div', { class: 'text-sm flex flex-wrap items-center gap-1' }, h('a', { href: hashFor('player-reports', o.id), class: 'eco-link', text: i18nText(o.title) || o.titleKey }), h('span', { class: 'text-secondary-500', text: '· ' + (o.reporterName || o.reporterUsername || '') }), tag(t('prp.status.' + o.status), PR_STATUS_COLOR[o.status]));
+      })) : null]
+    ])));
+    var s = r.target;
+    grid.appendChild(section('prp.target', s ? dl([
+      ['col.player', playerLink(s.id, s.displayName || s.username, 'font-medium')],
+      ['col.tags', playerTags(s.tags)],
+      ['col.status', playerStatus(s)],
+      ['rp.history', h('div', { class: 'flex flex-wrap gap-1', 'data-pr-counts': '' },
+        tag(t('prp.count.reports', { n: s.counts.reports }), 'secondary'),
+        tag(t('rp.count.reports', { n: s.counts.chatReports }), 'secondary'),
+        tag(t('rp.count.warn', { n: s.counts.warn }), 'primary'),
+        tag(t('rp.count.mute', { n: s.counts.mute }), 'warning'),
+        tag(t('rp.count.suspend', { n: s.counts.suspend }), 'error'))],
+      ['rp.links', h('div', { class: 'flex flex-wrap gap-3' },
+        h('a', { href: hashFor('restrictions', null, { userId: s.id }), class: 'eco-link text-sm', text: t('rp.seeHistory') }),
+        h('a', { href: hashFor('player-reports', null, { targetId: s.id, status: '' }), class: 'eco-link text-sm', text: t('prp.seeReports') }),
+        h('a', { href: hashFor('reports', null, { senderId: s.id }), class: 'eco-link text-sm', text: t('rp.seeReports') }))]
+    ]) : notice('secondary', t('rp.gone'))));
+    grid.appendChild(notesCard(r));
+    grid.appendChild(decision(r));
+  }
+
+  function load() {
+    skeleton();
+    baseApi('GET', '/player-reports/' + encodeURIComponent(id)).then(function (r) {
+      if (!grid.isConnected) return;
+      Promise.resolve(freshLanguages()).then(function () { render(r); });
+    }, function (err) {
+      clear(grid).appendChild(errorBlock(err, load));
+    });
+  }
+  load();
+}
+
 function wordTry() {
   var input = textInput('', { multiline: true, rows: 2, label: t('cw.try.label'), placeholder: t('cw.try.ph') });
   input.setAttribute('data-word-try', '');
@@ -720,7 +937,8 @@ function playerModCard() {
       h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('pc.history') }),
       h('div', { class: 'flex flex-wrap gap-3 text-sm' },
         h('a', { href: hashFor('restrictions', null, { userId: id }), class: 'eco-link', 'data-player-history': '', text: t('pc.historyN', { n: (p.history || []).length }) }),
-        h('a', { href: hashFor('reports', null, { senderId: id }), class: 'eco-link', text: t('pc.reportsN', { n: p.reports ? p.reports.against : 0 }) })),
+        h('a', { href: hashFor('reports', null, { senderId: id }), class: 'eco-link', text: t('pc.reportsN', { n: p.reports ? p.reports.against : 0 }) }),
+        h('a', { href: hashFor('player-reports', null, { targetId: id, status: '' }), class: 'eco-link', 'data-player-reports-link': '', text: t('pc.playerReportsN', { n: p.playerReports ? p.playerReports.against : 0 }) })),
       lastWarn ? h('p', { class: 'text-xs text-secondary-500 mt-1', text: t('pc.lastWarn', { date: fmtDate(lastWarn.createdAt, true) }) }) : null)));
   grid.insertBefore(cardEl, grid.firstChild);
 }

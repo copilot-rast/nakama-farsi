@@ -108,7 +108,7 @@ function parseRoute(hash) {
 
 function keyOf(r) {
   if (!r) return '';
-  var detail = (r.page === 'payments' || r.page === 'notifications' || r.page === 'reports' || r.page === 'tickets' || r.page === 'live-chat' || r.page === 'remote-config' || r.page === 'referrals') && r.id ? '/' + r.id : '';
+  var detail = (r.page === 'payments' || r.page === 'notifications' || r.page === 'reports' || r.page === 'player-reports' || r.page === 'tickets' || r.page === 'live-chat' || r.page === 'remote-config' || r.page === 'referrals') && r.id ? '/' + r.id : '';
   return lang() + '|' + r.page + detail + '|' + JSON.stringify(r.query);
 }
 
@@ -180,6 +180,7 @@ function syncSidebar(route, psOn) {
     if (psNav) keep.push(psNav);
     refreshBadge(false);
     refreshReportBadge(false);
+    refreshPlayerReportBadge(false);
     refreshSupportBadge(false);
     refreshUpdatesBadge(false);
     var vueActive = group.parentElement.querySelectorAll('a[aria-current="page"]:not([data-economy-page])');
@@ -214,6 +215,7 @@ function mountPage(root, route, ctl) {
   if (ps2) { ctl.list = ps2.render(root, route, ctx) || null; return; }
   if (route.page === 'comments') refreshBadge(true);
   if (route.page === 'reports') refreshReportBadge(true);
+  if (route.page === 'player-reports') refreshPlayerReportBadge(true);
   if (route.page === 'tickets' || route.page === 'live-chat') { refreshSupportBadge(true); supportBeat(); }
   if (route.page === 'updates') { refreshUpdatesBadge(true); updatesPage(root); }
   else if (route.page === 'overview') overviewPage(root);
@@ -225,6 +227,8 @@ function mountPage(root, route, ctl) {
   else if (route.page === 'remote-config' && route.id) configEditor(root, route.id, route.query);
   else if (route.page === 'remote-config') ctl.list = configPage(root, route.query, ctx);
   else if (route.page === 'reports' && route.id) reportDetail(root, route.id);
+  else if (route.page === 'player-reports' && route.id) playerReportDetail(root, route.id);
+  else if (route.page === 'player-reports') ctl.list = playerReportsPage(root, route.query, ctx);
   else if (route.page === 'players') ctl.list = playersPage(root, route.query, ctx);
   else if (route.page === 'restrictions') ctl.list = restrictionsPage(root, route.query, ctx);
   else if (route.page === 'chat-words') ctl.list = chatWordsPage(root, route.query, ctx);
@@ -412,7 +416,7 @@ function consoleSections() {
     return {
       id: sec,
       label: t(SECTION_LABEL[sec]),
-      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : p === 'updates' ? updatesBadge() : supportBadge(p) }; })
+      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : p === 'player-reports' ? pendingPlayerReports || 0 : p === 'updates' ? updatesBadge() : supportBadge(p) }; })
     };
   });
 }
@@ -423,7 +427,7 @@ window.NakamaConsole = {
   lang: function () { return lang(); },
   t: function (key, vars) { return t(key, vars); },
   sections: consoleSections,
-  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0, tickets: supportBadge('tickets'), chats: supportBadge('live-chat'), updates: updatesBadge() }; },
+  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0, playerReports: pendingPlayerReports || 0, tickets: supportBadge('tickets'), chats: supportBadge('live-chat'), updates: updatesBadge() }; },
   updates: function () { var s = UPDATES.summary; return s ? { newCommits: updatesBadge(), status: s.status, latestRelease: s.latestRelease || '', href: hashFor('updates') } : null; },
   onRoute: function (fn) {
     if (typeof fn !== 'function') return function () {};

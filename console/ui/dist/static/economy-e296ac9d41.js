@@ -965,6 +965,49 @@ var MESSAGES = {
     'section.mod': 'بازیکنان و گفتگو',
     'section.mod.short': 'گفتگو',
     'nav.players': 'مدیریت بازیکنان',
+    'nav.player-reports': 'گزارش بازیکن‌ها',
+    'desc.player-reports': 'بازیکن‌هایی که دیگران گزارش کرده‌اند، جدا از پیام گفتگو؛ از هر بازی و هر صفحه.',
+    'search.player-reports': 'جست‌وجوی نام بازیکن، توضیح یا شناسهٔ بازی',
+    'col.reported': 'بازیکن گزارش‌شده',
+    'prp.title': 'بررسی گزارش بازیکن',
+    'prp.activeN': '{n} گزارش بازیکن در انتظار',
+    'prp.status.active': 'باز یا در حال بررسی',
+    'prp.status.open': 'باز',
+    'prp.status.reviewing': 'در حال بررسی',
+    'prp.status.resolved': 'رسیدگی شد',
+    'prp.status.dismissed': 'رد شد',
+    'prp.by': 'به دست {who}',
+    'prp.againstN': '{n} گزارش علیه او',
+    'prp.ctx.game': 'بازی: {v}',
+    'prp.ctx.match': 'مسابقه: {v}',
+    'prp.ctx.content': 'محتوا: {v}',
+    'prp.context': 'جای گزارش',
+    'prp.others': 'گزارش‌های دیگر علیه او',
+    'prp.target': 'بازیکن گزارش‌شده',
+    'prp.count.reports': '{n} گزارش بازیکن',
+    'prp.seeReports': 'همهٔ گزارش‌های بازیکن علیه او',
+    'prp.notes': 'یادداشت‌های داخلی',
+    'prp.noNotes': 'هنوز یادداشتی نیست. بازیکن یادداشت‌ها را نمی‌بیند.',
+    'prp.note.add': 'افزودن یادداشت',
+    'prp.note.ph': 'چه دیدید یا چه کردید',
+    'prp.note.saved': 'یادداشت ذخیره شد',
+    'prp.done.dismiss': 'گزارش رد شد.',
+    'prp.done.warn': 'به بازیکن اخطار داده شد.',
+    'prp.done.mute': 'بازیکن بی‌صدا شد.',
+    'prp.done.suspend': 'بازیکن تعلیق شد.',
+    'prp.take': 'برمی‌دارم برای بررسی',
+    'prp.taken': 'گزارش در حال بررسی شما است',
+    'prp.release': 'برگرداندن به صف',
+    'prp.released': 'گزارش به صف برگشت',
+    'prp.closeOthers': 'گزارش‌های باز دیگر علیه این بازیکن هم با همین تصمیم بسته شوند',
+    'prp.action.dismiss.hint': 'گزارش بدون اقدام بسته می‌شود.',
+    'prp.action.warn.hint': 'بازیکن اخطار می‌گیرد و متن آن را در بازی می‌بیند.',
+    'prp.action.mute.hint': 'بازیکن تا پایان مدت نمی‌تواند در گفتگو پیام بفرستد.',
+    'prp.action.suspend.hint': 'بازیکن تا پایان مدت نمی‌تواند وارد بازی شود و همین حالا بیرون می‌رود.',
+    'pc.playerReportsN': '{n} گزارش بازیکن علیه او',
+    'code.TEXT_REQUIRED': 'متنی بنویسید.',
+    'code.INVALID_REPORT_STATUS': 'این وضعیت را این‌جا نمی‌شود گذاشت.',
+    'code.TOO_MANY_NOTES': 'هر گزارش حداکثر پنجاه یادداشت دارد.',
     'nav.reports': 'گزارش‌ها',
     'nav.restrictions': 'تعلیق و سکوت',
     'nav.chat-words': 'فیلتر کلمات',
@@ -4166,6 +4209,49 @@ var MESSAGES = {
     'section.mod': 'Players & chat',
     'section.mod.short': 'Chat',
     'nav.players': 'Player tags',
+    'nav.player-reports': 'Player reports',
+    'desc.player-reports': 'Players reported by others, not tied to a chat message; from any game or screen.',
+    'search.player-reports': 'Search player, note or game id',
+    'col.reported': 'Reported player',
+    'prp.title': 'Review player report',
+    'prp.activeN': '{n} player reports waiting',
+    'prp.status.active': 'Open or in review',
+    'prp.status.open': 'Open',
+    'prp.status.reviewing': 'In review',
+    'prp.status.resolved': 'Resolved',
+    'prp.status.dismissed': 'Dismissed',
+    'prp.by': 'by {who}',
+    'prp.againstN': '{n} reports against them',
+    'prp.ctx.game': 'Game: {v}',
+    'prp.ctx.match': 'Match: {v}',
+    'prp.ctx.content': 'Content: {v}',
+    'prp.context': 'Where',
+    'prp.others': 'Other reports against them',
+    'prp.target': 'Reported player',
+    'prp.count.reports': '{n} player reports',
+    'prp.seeReports': 'All player reports against them',
+    'prp.notes': 'Internal notes',
+    'prp.noNotes': 'No notes yet. Players never see notes.',
+    'prp.note.add': 'Add note',
+    'prp.note.ph': 'What you saw or did',
+    'prp.note.saved': 'Note saved',
+    'prp.done.dismiss': 'Report dismissed.',
+    'prp.done.warn': 'The player was warned.',
+    'prp.done.mute': 'The player was muted.',
+    'prp.done.suspend': 'The player was suspended.',
+    'prp.take': 'Take for review',
+    'prp.taken': 'You are reviewing this report',
+    'prp.release': 'Back to the queue',
+    'prp.released': 'Report is back in the queue',
+    'prp.closeOthers': 'Close the other open reports against this player with the same decision',
+    'prp.action.dismiss.hint': 'The report is closed with no action.',
+    'prp.action.warn.hint': 'The player gets a warning and sees its text in the game.',
+    'prp.action.mute.hint': 'The player cannot send chat messages until the end.',
+    'prp.action.suspend.hint': 'The player cannot sign in until the end and is signed out now.',
+    'pc.playerReportsN': '{n} player reports against them',
+    'code.TEXT_REQUIRED': 'Write some text.',
+    'code.INVALID_REPORT_STATUS': 'This status cannot be set here.',
+    'code.TOO_MANY_NOTES': 'A report keeps at most fifty notes.',
     'nav.reports': 'Reports',
     'nav.restrictions': 'Suspensions & mutes',
     'nav.chat-words': 'Word filter',
@@ -6820,6 +6906,8 @@ var PH_ICONS = {
   'task-groups': '<path d="M230.91,172A8,8,0,0,1,228,182.91l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,36,169.09l92,53.65,92-53.65A8,8,0,0,1,230.91,172ZM220,121.09l-92,53.65L36,121.09A8,8,0,0,0,28,134.91l96,56a8,8,0,0,0,8.06,0l96-56A8,8,0,1,0,220,121.09ZM24,80a8,8,0,0,1,4-6.91l96-56a8,8,0,0,1,8.06,0l96,56a8,8,0,0,1,0,13.82l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,24,80Zm23.88,0L128,126.74,208.12,80,128,33.26Z"/>'
 };
 
+PH_ICONS['player-reports'] = PH_ICONS.users;
+
 function icon(name, cls) {
   var el = document.createElementNS(SVG_NS, 'svg');
   el.setAttribute('xmlns', SVG_NS);
@@ -8714,16 +8802,16 @@ var RESOURCES = {
 var SECTIONS = {
   economy: ['overview', 'currencies', 'metas', 'prizes', 'products', 'items', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
-  moderation: ['players', 'reports', 'restrictions', 'chat-words', 'activity'],
+  moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'activity'],
   support: ['tickets', 'live-chat'],
   system: ['updates']
 };
 var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'];
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
-var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
+var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
 var LIMIT = 20;
-var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' }, tickets: { status: 'waiting' } };
+var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' }, 'player-reports': { status: 'active' }, tickets: { status: 'waiting' } };
 
 function sectionOf(page) {
   if (psSection(page)) return PS_ROUTE;
@@ -9399,9 +9487,9 @@ function refreshBadge(force) {
 }
 
 function navBadge(page, collapsed) {
-  var n = page === 'comments' ? pendingComments : page === 'reports' ? pendingReports : page === 'updates' ? updatesBadge() : supportBadge(page);
+  var n = page === 'comments' ? pendingComments : page === 'reports' ? pendingReports : page === 'player-reports' ? pendingPlayerReports : page === 'updates' ? updatesBadge() : supportBadge(page);
   if (!n) return null;
-  var label = t(page === 'comments' ? 'cm.pendingN' : page === 'reports' ? 'rp.openN' : page === 'tickets' ? 'tk.waitingN' : page === 'updates' ? 'up.newN' : 'lc.waitingN', { n: n });
+  var label = t(page === 'comments' ? 'cm.pendingN' : page === 'reports' ? 'rp.openN' : page === 'player-reports' ? 'prp.activeN' : page === 'tickets' ? 'tk.waitingN' : page === 'updates' ? 'up.newN' : 'lc.waitingN', { n: n });
   if (collapsed) return h('span', { class: 'eco-nav-dot', 'aria-label': label });
   return h('span', { class: 'eco-nav-badge tabular-nums', 'aria-label': label, text: fmtNum(n) });
 }
@@ -11391,6 +11479,223 @@ function reportDetail(container, id) {
   load();
 }
 
+var PR_STATUS_COLOR = { open: 'warning', reviewing: 'primary', resolved: 'success', dismissed: 'secondary' };
+var PR_ACTIONS = ['dismiss', 'warn', 'mute', 'suspend'];
+var pendingPlayerReports = null;
+var playerReportBadgeAt = 0;
+
+function refreshPlayerReportBadge(force) {
+  var now = Date.now();
+  if (!force && now - playerReportBadgeAt < 60000) return;
+  playerReportBadgeAt = now;
+  if (!aclCan('CHANNEL_MESSAGE', 0)) return;
+  quietBase('GET', '/player-reports/summary').then(function (res) {
+    var n = res && typeof res.active === 'number' ? res.active : null;
+    if (n !== pendingPlayerReports) {
+      pendingPlayerReports = n;
+      schedule();
+    }
+  });
+}
+
+function prContext(it) {
+  var chips = [];
+  if (it.gameKey) chips.push(tag(t('prp.ctx.game', { v: it.gameKey }), 'secondary'));
+  if (it.matchId) chips.push(tag(t('prp.ctx.match', { v: String(it.matchId).slice(0, 12) }), 'secondary'));
+  if (it.contentId) chips.push(tag(t('prp.ctx.content', { v: String(it.contentId).slice(0, 12) }), 'secondary'));
+  return chips.length ? h('div', { class: 'flex flex-wrap gap-1', 'data-pr-context': '' }, chips) : null;
+}
+
+function prStatus(it) {
+  return h('div', { class: 'flex flex-col items-start gap-0.5' }, tag(t('prp.status.' + it.status), PR_STATUS_COLOR[it.status]),
+    it.status === 'reviewing' && it.reviewer ? h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: t('prp.by', { who: it.reviewer }) }) : null);
+}
+
+LISTS['player-reports'] = {
+  api: 'base',
+  filters: [
+    { name: 'status', label: 'filter.status', options: function () { return ['active', 'open', 'reviewing', 'resolved', 'dismissed'].map(function (s) { return { value: s, label: t('prp.status.' + s) }; }); } },
+    { name: 'titleId', label: 'filter.reportTitle', type: 'ref', resource: 'report-titles', api: baseApi },
+    { name: 'targetId', label: 'filter.playerId', type: 'text' }
+  ],
+  columns: [
+    { label: 'col.reported', render: function (it) {
+      return h('div', { class: 'min-w-0' },
+        playerLink(it.targetId, it.targetName || it.targetUsername || t('rp.gone'), 'font-medium'),
+        it.note ? h('div', { class: 'eco-clamp text-xs text-secondary-500', dir: 'auto', text: it.note }) : null,
+        prContext(it));
+    }, skeleton: '60%' },
+    { label: 'col.reason', render: function (it) { return h('div', { class: 'flex flex-wrap gap-1' }, tag(i18nText(it.title) || it.titleKey || t('rp.noTitle'), 'primary'), it.against > 1 ? h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: t('prp.againstN', { n: it.against }) }) : null); }, width: 200 },
+    { label: 'col.reporter', render: function (it) { return playerLink(it.reporterId, it.reporterName || it.reporterUsername || t('rp.gone')); }, width: 160 },
+    { label: 'col.status', render: prStatus, width: 130 },
+    { label: 'col.created', render: function (it) { return dateCell(it.createdAt); }, width: 170 }
+  ]
+};
+
+function playerReportsPage(container, query, ctx) {
+  var list = listPage(container, 'player-reports', query, ctx);
+  listReloads['player-reports'] = list.reload;
+  return list;
+}
+
+function playerReportDetail(container, id) {
+  var backBtn = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('back'), onclick: function () { go('player-reports', null, lastQuery['player-reports'] || {}); } });
+  var frame = pageFrame(t('prp.title'), null, null);
+  frame.actions.appendChild(backBtn);
+  clear(container).appendChild(frame.el);
+  var grid = h('div', { class: 'eco-detail-grid', 'data-player-report': id });
+  frame.content.appendChild(grid);
+
+  function skeleton() {
+    clear(grid);
+    [5, 5, 4].forEach(function (n) {
+      var rows = [];
+      for (var j = 0; j < n; j++) rows.push(h('div', { class: 'py-1.5' }, bar(['70%', '50%', '40%'][j % 3])));
+      grid.appendChild(card(h('div', { class: 'p-4' }, h('div', { class: 'mb-4' }, bar('8rem', 'h-4')), rows)));
+    });
+  }
+
+  function post(path, body, okKey) {
+    return baseApi('POST', '/player-reports/' + encodeURIComponent(id) + path, body).then(function () {
+      if (okKey) toast('success', t(okKey));
+      refreshPlayerReportBadge(true);
+      load();
+    });
+  }
+
+  function notesCard(r) {
+    var list = h('ol', { class: 'flex flex-col gap-2', 'data-pr-notes': '' });
+    (r.notes || []).forEach(function (n) {
+      list.appendChild(h('li', { class: 'eco-chat-line' },
+        h('div', { class: 'flex items-center gap-2 text-xs text-secondary-500 mb-0.5' }, h('span', { class: 'font-medium', text: n.by || t('none') }), h('span', { text: fmtDate(n.at, true) })),
+        h('div', { class: 'text-sm break-words', dir: 'auto', text: n.text })));
+    });
+    if (!list.childNodes.length) list.appendChild(h('li', { class: 'text-sm text-secondary-500', text: t('prp.noNotes') }));
+    var input = textInput('', { multiline: true, rows: 2, label: t('prp.note.add'), placeholder: t('prp.note.ph') });
+    var err = h('div', {});
+    var addBtn = button({ variant: 'secondary', size: 'sm', label: t('prp.note.add'), onclick: function () {
+      clear(err);
+      var text = input.value.trim();
+      if (!text) { err.appendChild(h('p', { class: 'text-sm text-error-600 mt-1', text: t('code.TEXT_REQUIRED') })); return; }
+      setBusy(addBtn, true, t('saving'));
+      post('/notes', { text: text }, 'prp.note.saved').catch(function (e) { setBusy(addBtn, false); err.appendChild(notice('error', errorText(e))); });
+    } });
+    addBtn.setAttribute('data-pr-note-add', '');
+    return section('prp.notes', h('div', {}, list, h('div', { class: 'mt-3' }, input, err, h('div', { class: 'flex justify-end mt-2' }, addBtn))));
+  }
+
+  function decision(r) {
+    if (r.status === 'resolved' || r.status === 'dismissed') {
+      return section('rp.decision', dl([
+        ['col.status', tag(t('prp.status.' + r.status), PR_STATUS_COLOR[r.status])],
+        ['rp.action', r.action ? tag(t('rp.action.' + r.action), r.action === 'dismiss' ? 'secondary' : 'primary') : null],
+        ['rp.restriction', r.restrictionId ? h('a', { href: hashFor('restrictions', null, { userId: r.targetId }), class: 'eco-link', text: t('rp.seeRestriction') }) : null],
+        ['rp.resolvedBy', r.resolvedBy ? h('span', { text: r.resolvedBy }) : null],
+        ['rp.resolvedAt', r.resolvedAt ? dateCell(r.resolvedAt) : null],
+        ['rs.note', r.resolutionNote ? h('span', { class: 'break-words', text: r.resolutionNote }) : null]
+      ]));
+    }
+    var current = 'dismiss';
+    var formBox = h('div', { class: 'mt-4' });
+    var form = null;
+    var note = null;
+    var closeOthers = false;
+    var seg = segmented(PR_ACTIONS.map(function (a) { return { value: a, label: t('rp.action.' + a) }; }), current, function (a) { current = a; paintForm(); }, t('rp.action'), 'md');
+    seg.setAttribute('data-pr-actions', '');
+    var hint = h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 mt-2' });
+    var top = h('div', {});
+    var submitBtn = button({ variant: 'primary', size: 'footer', label: t('rp.submit'), onclick: function () { submit(); } });
+    submitBtn.setAttribute('data-pr-submit', '');
+    var reviewBtn = r.status === 'open'
+      ? button({ variant: 'secondary', size: 'sm', label: t('prp.take'), onclick: function () { setBusy(reviewBtn, true, t('saving')); post('/status', { status: 'reviewing' }, 'prp.taken').catch(function (e) { setBusy(reviewBtn, false); top.appendChild(notice('error', errorText(e))); }); } })
+      : button({ variant: 'ghost', size: 'sm', label: t('prp.release'), onclick: function () { setBusy(reviewBtn, true, t('saving')); post('/status', { status: 'open' }, 'prp.released').catch(function (e) { setBusy(reviewBtn, false); top.appendChild(notice('error', errorText(e))); }); } });
+    reviewBtn.setAttribute('data-pr-review', r.status);
+    var others = h('div', { class: 'mb-4' }, checkbox(false, t('prp.closeOthers'), function (on) { closeOthers = on; }));
+    function paintForm() {
+      clear(formBox);
+      clear(top);
+      hint.textContent = t('prp.action.' + current + '.hint');
+      form = null;
+      note = null;
+      if (current !== 'dismiss') {
+        form = restrictionForm(current, {});
+        formBox.appendChild(form.el);
+      } else {
+        note = textInput('', { multiline: true, rows: 2, label: t('rs.note'), placeholder: t('rs.note.ph') });
+        formBox.appendChild(field(t('rs.note'), note, t('rp.note.hint'), { optional: true }));
+      }
+      submitBtn.querySelector('span').textContent = t('rp.submit.' + current);
+    }
+    function submit() {
+      clear(top);
+      if (form && !form.validate()) return;
+      var body = form ? form.payload() : { note: note.value.trim() };
+      body.action = current;
+      body.closeOthers = closeOthers;
+      delete body.kind;
+      setBusy(submitBtn, true, t('saving'));
+      baseApi('POST', '/player-reports/' + encodeURIComponent(id) + '/resolve', body).then(function () {
+        toast('success', t('prp.done.' + current));
+        refreshPlayerReportBadge(true);
+        load();
+      }, function (err) {
+        setBusy(submitBtn, false);
+        if (!form || !form.showError(err)) top.appendChild(h('div', { class: 'mb-4' }, notice('error', errorText(err))));
+      });
+    }
+    paintForm();
+    return card(h('div', { class: 'p-4', 'data-pr-decide': '' },
+      h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-3' }, h('h2', { class: 'text-lg font-medium', text: t('rp.decide') }), reviewBtn),
+      top, seg, hint, formBox, others,
+      h('div', { class: 'flex justify-end' }, submitBtn)), 'eco-span-all');
+  }
+
+  function render(r) {
+    clear(grid);
+    var others = r.others || [];
+    grid.appendChild(section('rp.report', dl([
+      ['col.status', prStatus(r)],
+      ['rp.reason', tag(i18nText(r.title) || r.titleKey || t('rp.noTitle'), 'primary')],
+      ['col.reporter', playerLink(r.reporterId, r.reporterName || r.reporterUsername || t('rp.gone'))],
+      ['rp.playerNote', r.note ? h('span', { class: 'break-words', dir: 'auto', 'data-pr-note': '', text: r.note }) : null],
+      ['prp.context', prContext(r)],
+      ['col.created', dateCell(r.createdAt)],
+      ['prp.others', others.length ? h('div', { class: 'flex flex-col gap-1' }, others.slice(0, 8).map(function (o) {
+        return h('div', { class: 'text-sm flex flex-wrap items-center gap-1' }, h('a', { href: hashFor('player-reports', o.id), class: 'eco-link', text: i18nText(o.title) || o.titleKey }), h('span', { class: 'text-secondary-500', text: '· ' + (o.reporterName || o.reporterUsername || '') }), tag(t('prp.status.' + o.status), PR_STATUS_COLOR[o.status]));
+      })) : null]
+    ])));
+    var s = r.target;
+    grid.appendChild(section('prp.target', s ? dl([
+      ['col.player', playerLink(s.id, s.displayName || s.username, 'font-medium')],
+      ['col.tags', playerTags(s.tags)],
+      ['col.status', playerStatus(s)],
+      ['rp.history', h('div', { class: 'flex flex-wrap gap-1', 'data-pr-counts': '' },
+        tag(t('prp.count.reports', { n: s.counts.reports }), 'secondary'),
+        tag(t('rp.count.reports', { n: s.counts.chatReports }), 'secondary'),
+        tag(t('rp.count.warn', { n: s.counts.warn }), 'primary'),
+        tag(t('rp.count.mute', { n: s.counts.mute }), 'warning'),
+        tag(t('rp.count.suspend', { n: s.counts.suspend }), 'error'))],
+      ['rp.links', h('div', { class: 'flex flex-wrap gap-3' },
+        h('a', { href: hashFor('restrictions', null, { userId: s.id }), class: 'eco-link text-sm', text: t('rp.seeHistory') }),
+        h('a', { href: hashFor('player-reports', null, { targetId: s.id, status: '' }), class: 'eco-link text-sm', text: t('prp.seeReports') }),
+        h('a', { href: hashFor('reports', null, { senderId: s.id }), class: 'eco-link text-sm', text: t('rp.seeReports') }))]
+    ]) : notice('secondary', t('rp.gone'))));
+    grid.appendChild(notesCard(r));
+    grid.appendChild(decision(r));
+  }
+
+  function load() {
+    skeleton();
+    baseApi('GET', '/player-reports/' + encodeURIComponent(id)).then(function (r) {
+      if (!grid.isConnected) return;
+      Promise.resolve(freshLanguages()).then(function () { render(r); });
+    }, function (err) {
+      clear(grid).appendChild(errorBlock(err, load));
+    });
+  }
+  load();
+}
+
 function wordTry() {
   var input = textInput('', { multiline: true, rows: 2, label: t('cw.try.label'), placeholder: t('cw.try.ph') });
   input.setAttribute('data-word-try', '');
@@ -11578,7 +11883,8 @@ function playerModCard() {
       h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('pc.history') }),
       h('div', { class: 'flex flex-wrap gap-3 text-sm' },
         h('a', { href: hashFor('restrictions', null, { userId: id }), class: 'eco-link', 'data-player-history': '', text: t('pc.historyN', { n: (p.history || []).length }) }),
-        h('a', { href: hashFor('reports', null, { senderId: id }), class: 'eco-link', text: t('pc.reportsN', { n: p.reports ? p.reports.against : 0 }) })),
+        h('a', { href: hashFor('reports', null, { senderId: id }), class: 'eco-link', text: t('pc.reportsN', { n: p.reports ? p.reports.against : 0 }) }),
+        h('a', { href: hashFor('player-reports', null, { targetId: id, status: '' }), class: 'eco-link', 'data-player-reports-link': '', text: t('pc.playerReportsN', { n: p.playerReports ? p.playerReports.against : 0 }) })),
       lastWarn ? h('p', { class: 'text-xs text-secondary-500 mt-1', text: t('pc.lastWarn', { date: fmtDate(lastWarn.createdAt, true) }) }) : null)));
   grid.insertBefore(cardEl, grid.firstChild);
 }
@@ -18764,7 +19070,7 @@ function parseRoute(hash) {
 
 function keyOf(r) {
   if (!r) return '';
-  var detail = (r.page === 'payments' || r.page === 'notifications' || r.page === 'reports' || r.page === 'tickets' || r.page === 'live-chat' || r.page === 'remote-config' || r.page === 'referrals') && r.id ? '/' + r.id : '';
+  var detail = (r.page === 'payments' || r.page === 'notifications' || r.page === 'reports' || r.page === 'player-reports' || r.page === 'tickets' || r.page === 'live-chat' || r.page === 'remote-config' || r.page === 'referrals') && r.id ? '/' + r.id : '';
   return lang() + '|' + r.page + detail + '|' + JSON.stringify(r.query);
 }
 
@@ -18836,6 +19142,7 @@ function syncSidebar(route, psOn) {
     if (psNav) keep.push(psNav);
     refreshBadge(false);
     refreshReportBadge(false);
+    refreshPlayerReportBadge(false);
     refreshSupportBadge(false);
     refreshUpdatesBadge(false);
     var vueActive = group.parentElement.querySelectorAll('a[aria-current="page"]:not([data-economy-page])');
@@ -18870,6 +19177,7 @@ function mountPage(root, route, ctl) {
   if (ps2) { ctl.list = ps2.render(root, route, ctx) || null; return; }
   if (route.page === 'comments') refreshBadge(true);
   if (route.page === 'reports') refreshReportBadge(true);
+  if (route.page === 'player-reports') refreshPlayerReportBadge(true);
   if (route.page === 'tickets' || route.page === 'live-chat') { refreshSupportBadge(true); supportBeat(); }
   if (route.page === 'updates') { refreshUpdatesBadge(true); updatesPage(root); }
   else if (route.page === 'overview') overviewPage(root);
@@ -18881,6 +19189,8 @@ function mountPage(root, route, ctl) {
   else if (route.page === 'remote-config' && route.id) configEditor(root, route.id, route.query);
   else if (route.page === 'remote-config') ctl.list = configPage(root, route.query, ctx);
   else if (route.page === 'reports' && route.id) reportDetail(root, route.id);
+  else if (route.page === 'player-reports' && route.id) playerReportDetail(root, route.id);
+  else if (route.page === 'player-reports') ctl.list = playerReportsPage(root, route.query, ctx);
   else if (route.page === 'players') ctl.list = playersPage(root, route.query, ctx);
   else if (route.page === 'restrictions') ctl.list = restrictionsPage(root, route.query, ctx);
   else if (route.page === 'chat-words') ctl.list = chatWordsPage(root, route.query, ctx);
@@ -19068,7 +19378,7 @@ function consoleSections() {
     return {
       id: sec,
       label: t(SECTION_LABEL[sec]),
-      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : p === 'updates' ? updatesBadge() : supportBadge(p) }; })
+      pages: navPages(sec).map(function (p) { return { id: p, href: hashFor(p), label: t('nav.' + p), badge: p === 'comments' ? pendingComments || 0 : p === 'reports' ? pendingReports || 0 : p === 'player-reports' ? pendingPlayerReports || 0 : p === 'updates' ? updatesBadge() : supportBadge(p) }; })
     };
   });
 }
@@ -19079,7 +19389,7 @@ window.NakamaConsole = {
   lang: function () { return lang(); },
   t: function (key, vars) { return t(key, vars); },
   sections: consoleSections,
-  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0, tickets: supportBadge('tickets'), chats: supportBadge('live-chat'), updates: updatesBadge() }; },
+  badges: function () { return { comments: pendingComments || 0, reports: pendingReports || 0, playerReports: pendingPlayerReports || 0, tickets: supportBadge('tickets'), chats: supportBadge('live-chat'), updates: updatesBadge() }; },
   updates: function () { var s = UPDATES.summary; return s ? { newCommits: updatesBadge(), status: s.status, latestRelease: s.latestRelease || '', href: hashFor('updates') } : null; },
   onRoute: function (fn) {
     if (typeof fn !== 'function') return function () {};
