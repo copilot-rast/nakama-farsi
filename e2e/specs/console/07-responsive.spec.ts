@@ -49,6 +49,7 @@ const PAGES = [
   '#/project-settings/app-versions',
   '#/project-settings/app-versions/new',
   '#/project-settings/report-titles',
+  '#/project-settings/report-rules',
   '#/moderation/players',
   '#/moderation/reports',
   '#/moderation/player-reports',

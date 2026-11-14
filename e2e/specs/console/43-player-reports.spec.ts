@@ -1,7 +1,7 @@
 import { expect, test } from '../../lib/fixtures';
 import { base, deleteUser, devicePlayer, rpc, uid, updateAccount, type Player } from '../../lib/api';
 import { sql } from '../../lib/db';
-import { open, root, rows, settle, toasts } from '../../lib/console';
+import { field, open, openSettings, root, rows, settle, toasts } from '../../lib/console';
 
 const k = uid();
 const users: string[] = [];
@@ -126,5 +126,33 @@ test.describe('player reports: console review', () => {
     await page.goto(page.url().split('#')[0] + '#/players/' + B.id);
     const link = page.locator('[data-player-mod] [data-player-reports-link]');
     await expect(link).toContainText('۲ گزارش بازیکن علیه او');
+  });
+});
+
+test.describe('player reports: rules', () => {
+  test('report rules section: per hour, note required, trusted tag; limits in base_my_reports', async ({ page }) => {
+    const before = await base.get('/report-rules');
+    try {
+      await openSettings(page, 'report-rules');
+      const form = root(page).locator('[data-settings-form="report-rules"]');
+      await expect(form.locator('form')).toBeVisible();
+      await expect(field(form, 'گزارش در ساعت').locator('input')).toHaveValue(/^(10|۱۰)$/);
+      await field(form, 'گزارش در ساعت').locator('input').fill('1');
+      await form.getByText('توضیح بازیکن لازم است').click();
+      await form.locator('[data-settings-save]').click();
+      await expect(toasts(page).last()).toContainText('ذخیره');
+      expect(await base.get('/report-rules')).toMatchObject({ perHour: 1, noteRequired: true });
+      sql(`DELETE FROM cluster_rate_limit WHERE key LIKE 'player-report:%'`);
+      const R = await player('r');
+      const noNote = await rpc(R, 'base_report_player', { userId: C.id, titleKey: title.key });
+      expect(JSON.stringify(noNote.data)).toContain('NOTE_REQUIRED');
+      expect((await rpc(R, 'base_report_player', { userId: C.id, titleKey: title.key, note: 'تقلب' })).status).toBe(200);
+      const over = await rpc(R, 'base_report_player', { userId: A.id, titleKey: title.key, note: 'باز هم' });
+      expect(over.status).toBe(429);
+      expect((await rpc(R, 'base_my_reports', {})).data.limits).toMatchObject({ perHour: 1, remaining: 0, noteRequired: true, trusted: false });
+    } finally {
+      await base.put('/report-rules', { perHour: before.perHour, duplicateHours: before.duplicateHours, minAccountHours: before.minAccountHours, noteRequired: before.noteRequired, trustedTagIds: before.trustedTagIds || [], trustedPerHour: before.trustedPerHour });
+      sql(`UPDATE base_report_rules SET updated_by='${String(before.updatedBy || '').replace(/'/g, "''")}', updated_at='${before.updatedAt}' WHERE id=1`);
+    }
   });
 });

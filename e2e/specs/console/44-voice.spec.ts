@@ -71,6 +71,8 @@ test.describe('voice: server settings', () => {
     await expect(form.locator('[data-voice-state]')).toContainText('چت صوتی خاموش است');
     await form.locator('select').first().selectOption('livekit');
     await expect(form).toContainText('توکن لایوکیت همین‌جا با کلید و رمز API امضا می‌شود');
+    await expect(form).toContainText('فقط این برچسب‌ها ویس بگیرند');
+    await expect(form).toContainText('بیشترین بازیکن در اتاق ویس');
     await form.locator('[data-settings-save]').click();
     await expect(field(form, 'نشانی سرور لایوکیت')).toContainText('این فیلد لازم است');
     await field(form, 'نشانی سرور لایوکیت').locator('input').fill(fakeUrl.replace('http://', 'ws://'));
@@ -124,6 +126,23 @@ test.describe('voice: tokens', () => {
     expect((await rpc(P, 'voice_token', { room: 'lobby', gameKey })).data).toEqual({ enabled: false, reason: 'GAME_VOICE_DISABLED', gameKey });
     expect((await eco.get('/games/' + gameId)).voiceEnabled).toBe(false);
     sql(`UPDATE economy_game SET voice_enabled=true WHERE id='${gameId}'`);
+
+    const quiet = await base.post('/tags', { key: 'e2e_' + k + '_vquiet', keyType: 'user', name: { fa: 'فقط شنونده ' + k.slice(-4) }, description: {}, isPublic: false, metadata: {}, sort: 0 });
+    try {
+      await base.put('/players/' + P.id + '/tags', { tagIds: [quiet.id] });
+      const lk = await base.get('/voice/settings');
+      await base.put('/voice/settings', { enabled: true, provider: 'livekit', ttlSeconds: 600, openRooms: true, canPublish: true, config: lk.config, secrets: { apiSecret: '********' }, listenOnlyTagIds: [quiet.id], tokensPerMinute: 30, maxRoomPlayers: 0 });
+      const listen = (await rpc(P, 'voice_token', { room: 'lobby', gameKey })).data;
+      expect(listen.canPublish).toBe(false);
+      expect(jwt(listen.token).body.video.canPublish).toBe(false);
+      await base.put('/voice/settings', { enabled: true, provider: 'livekit', ttlSeconds: 600, openRooms: true, canPublish: true, config: lk.config, secrets: { apiSecret: '********' }, allowedTagIds: [quiet.id], tokensPerMinute: 30 });
+      await base.put('/players/' + P.id + '/tags', { tagIds: [] });
+      expect((await rpc(P, 'voice_token', { room: 'lobby', gameKey })).data).toEqual({ enabled: false, reason: 'VOICE_NOT_FOR_PLAYER' });
+    } finally {
+      await base.put('/players/' + P.id + '/tags', { tagIds: [] });
+      await base.put('/voice/settings', { enabled: false, ttlSeconds: 600 });
+      await base.del('/tags/' + quiet.id);
+    }
 
     await base.put('/voice/settings', { enabled: true, provider: 'comms', ttlSeconds: 900, openRooms: true, canPublish: true, config: { url: fakeUrl, publicUrl: 'https://comms.example.com' }, secrets: { serverKey: CK } });
     const comms = await rpc(P, 'voice_token', { room: 'lobby', gameKey });

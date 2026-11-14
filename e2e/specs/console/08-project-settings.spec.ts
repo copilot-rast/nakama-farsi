@@ -24,6 +24,7 @@ const SECTIONS: [string, string, string][] = [
   ['categories', 'دسته‌بندی‌ها', 'table.eco-table'],
   ['tags', 'تگ‌ها', 'table.eco-table'],
   ['report-titles', 'عنوان‌های گزارش', 'table.eco-table'],
+  ['report-rules', 'قوانین گزارش بازیکن', '[data-settings-form="report-rules"] form'],
   ['payment-methods', 'درگاه‌های پرداخت', '[data-method]'],
   ['sms', 'پیامک', '[data-channel="sms"]'],
   ['email', 'ایمیل', '[data-channel="email"]'],

@@ -1,11 +1,12 @@
 import { expect, test } from '../../lib/fixtures';
 import { API_URL } from '../../lib/env';
-import { base, deleteUser, devicePlayer, rpc, uid, updateAccount, type Player } from '../../lib/api';
+import { base, deleteUser, devicePlayer, eco, rpc, uid, updateAccount, type Player } from '../../lib/api';
 import { sql } from '../../lib/db';
-import { field, openSettings, root, settle, toasts } from '../../lib/console';
+import { field, openSettings, panel, pickRef, root, rows, savePanel, settle, settlePanel, toasts } from '../../lib/console';
 
 const k = uid();
 const users: string[] = [];
+const made = { tags: [] as string[], metas: [] as string[], tiers: [] as string[] };
 let before: any;
 
 test.describe.configure({ mode: 'serial' });
@@ -35,9 +36,13 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
-  await base.put('/friend-rules', { dailyRequests: before.dailyRequests, maxFriends: before.maxFriends, expiryDays: before.expiryDays, rejectCooldownHours: before.rejectCooldownHours });
+  for (const id of made.tiers) await base.del('/friend-rules/tiers/' + id);
+  sql(`DELETE FROM base_friend_rule WHERE name LIKE 'e2e%'`);
+  await base.put('/friend-rules', { dailyRequests: before.dailyRequests, maxFriends: before.maxFriends, expiryDays: before.expiryDays, rejectCooldownHours: before.rejectCooldownHours, requestsBonusMeta: before.requestsBonusMeta || '', friendsBonusMeta: before.friendsBonusMeta || '', matchPolicy: before.matchPolicy || 'priority', overLimit: before.overLimit || 'refuse' });
   sql(`UPDATE base_friend_rules SET updated_by='${String(before.updatedBy || '').replace(/'/g, "''")}', updated_at='${before.updatedAt}' WHERE id=1`);
   for (const id of users) await deleteUser(id);
+  for (const id of made.metas) await eco.del('/metas/' + id);
+  for (const id of made.tags) await base.del('/tags/' + id);
 });
 
 test.describe('friends: rules in project settings', () => {
@@ -143,5 +148,60 @@ test.describe('friends: rules on the server', () => {
     const list = await r.json();
     expect(list.friends || []).toHaveLength(0);
     expect(sql(`SELECT count(*) FROM user_edge WHERE source_id IN ('${x.id}','${y.id}')`)).toBe('0');
+  });
+});
+
+test.describe('friends: limits by player tag and from metas', () => {
+  test('a tag rule made in the console, bonus metas picked in the form, trim mode, and the effective limits in base_friend_rules', async ({ page }) => {
+    await base.put('/friend-rules', { dailyRequests: 2, maxFriends: 3, expiryDays: 0, rejectCooldownHours: 0, matchPolicy: 'priority', overLimit: 'refuse' });
+    const tag = await base.post('/tags', { key: 'e2e_' + k + '_fvip', keyType: 'user', name: { fa: 'ویژهٔ دوستی ' + k.slice(-4) }, description: {}, isPublic: false, metadata: {}, sort: 0 });
+    made.tags.push(tag.id);
+    const reqMeta = await eco.post('/metas', { key: 'e2e_' + k + '_freq', name: { fa: 'درخواست اضافه ' + k.slice(-4) }, defaultValue: 0, serverOnly: false, settings: {} });
+    const slotMeta = await eco.post('/metas', { key: 'e2e_' + k + '_fslot', name: { fa: 'جای دوست ' + k.slice(-4) }, defaultValue: 0, serverOnly: false, settings: {} });
+    made.metas.push(reqMeta.id, slotMeta.id);
+    const vip = await player('v');
+    const plain = await player('p');
+    await base.put('/players/' + vip.id + '/tags', { tagIds: [tag.id] });
+
+    await openSettings(page, 'friends');
+    const form = root(page).locator('[data-settings-form="friends"]');
+    await expect(form.locator('form')).toBeVisible();
+    await pickRef(form, 'متای درخواست اضافه در روز', 'e2e_' + k + '_freq', 'درخواست اضافه ' + k.slice(-4));
+    await pickRef(form, 'متای جای دوست اضافه', 'e2e_' + k + '_fslot', 'جای دوست ' + k.slice(-4));
+    await form.locator('select').filter({ has: page.locator('option[value="trim"]') }).selectOption('trim');
+    await expect(form.locator('[data-friend-summary]')).toContainText('درخواست اضافه از متای e2e_' + k + '_freq');
+    await form.locator('[data-settings-save]').click();
+    await expect(toasts(page).last()).toContainText('ذخیره');
+    expect(await base.get('/friend-rules')).toMatchObject({ requestsBonusMeta: 'e2e_' + k + '_freq', friendsBonusMeta: 'e2e_' + k + '_fslot', overLimit: 'trim' });
+
+    await root(page).getByRole('button', { name: 'قانون تازه' }).first().click();
+    await settlePanel(page);
+    const p = panel(page);
+    await field(p, 'نام قانون').locator('input').fill('e2e ' + k + ' VIP');
+    await pickRef(p, 'برچسب‌های بازیکن', 'e2e_' + k + '_fvip', 'ویژهٔ دوستی ' + k.slice(-4));
+    await field(p, 'اولویت').locator('input').fill('10');
+    await field(p, 'درخواست در روز').locator('input').fill('5');
+    await field(p, 'بیشترین تعداد دوست').locator('input').fill('0');
+    await savePanel(page);
+    const row = rows(page).filter({ hasText: 'e2e ' + k + ' VIP' });
+    await expect(row).toContainText('ویژهٔ دوستی ' + k.slice(-4));
+    await expect(row).toContainText('بی‌حد');
+    await expect(row).toContainText('۱ بازیکن');
+    const tiers = await base.get('/friend-rules/tiers?q=' + encodeURIComponent('e2e ' + k));
+    made.tiers.push(tiers.items[0].id);
+    expect(tiers.items[0]).toMatchObject({ dailyRequests: 5, maxFriends: 0, priority: 10, rejectCooldownHours: null });
+
+    sql(`INSERT INTO economy_user_meta (user_id, meta_id, value) VALUES ('${vip.id}', '${reqMeta.id}', 4), ('${plain.id}', '${reqMeta.id}', 1), ('${plain.id}', '${slotMeta.id}', 7)`);
+    const v = (await rpc(vip, 'base_friend_rules', {})).data;
+    expect(v).toMatchObject({ dailyRequests: 9, maxFriends: 0, friendSlotsLeft: null, tier: { name: 'e2e ' + k + ' VIP' }, base: { dailyRequests: 5, maxFriends: 0 }, bonus: { dailyRequests: 4, maxFriends: 0 }, overLimit: 'trim' });
+    const pl = (await rpc(plain, 'base_friend_rules', {})).data;
+    expect(pl).toMatchObject({ dailyRequests: 3, maxFriends: 10, friendSlotsLeft: 10, tier: null, bonus: { dailyRequests: 1, maxFriends: 7 } });
+
+    const others = [await player('o1'), await player('o2'), await player('o3'), await player('o4')];
+    const trimmed = await add(plain, ...others.map((o) => o.id));
+    expect(trimmed.status).toBe(200);
+    expect(sql(`SELECT count(*) FROM user_edge WHERE source_id='${plain.id}' AND state=1`)).toBe('3');
+    expect((await rpc(plain, 'base_friend_rules', {})).data).toMatchObject({ sentToday: 3, remainingToday: 0 });
+    sql(`DELETE FROM economy_user_meta WHERE meta_id IN ('${reqMeta.id}', '${slotMeta.id}')`);
   });
 });
