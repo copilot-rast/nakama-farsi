@@ -17,7 +17,7 @@ import (
 
 const wordJSON = `jsonb_build_object('id',w.id,'word',w.word,'action',w.action,'match',w.match,'isActive',w.is_active,'note',w.note,'createdBy',w.created_by,'createdAt',w.created_at,'updatedAt',w.updated_at)`
 
-const reportTitleJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'isActive',t.is_active,'sort',t.sort,'used',(SELECT count(*) FROM base_chat_report c WHERE c.title_id=t.id),'createdAt',t.created_at,'updatedAt',t.updated_at)`
+const reportTitleJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'isActive',t.is_active,'sort',t.sort,'used',(SELECT count(*) FROM base_chat_report c WHERE c.title_id=t.id)+(SELECT count(*) FROM base_player_report p WHERE p.title_id=t.id),'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
 const reportJSON = `jsonb_build_object('id',c.id,'source',c.source,'status',c.status,'messageId',c.message_id,'channelId',c.channel_id,'channelLabel',c.channel_label,
 	'senderId',c.sender_id,'senderUsername',c.sender_username,'senderName',COALESCE(su.display_name,''),'content',c.content,'messageAt',c.message_at,

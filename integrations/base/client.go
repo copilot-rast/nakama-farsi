@@ -23,6 +23,8 @@ func (s *service) clientRPCs() map[string]clientRPC {
 		"base_report_titles":  s.rpcReportTitles,
 		"base_report_message": s.rpcReportMessage,
 		"base_friend_rules":   s.rpcFriendRules,
+		"base_report_player":  s.rpcReportPlayer,
+		"base_my_reports":     s.rpcMyReports,
 
 		"base_support_info":           s.rpcSupportInfo,
 		"base_support_tickets":        s.rpcTicketList,

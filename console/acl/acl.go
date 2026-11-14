@@ -227,7 +227,7 @@ func basePlayersPath(path string) bool {
 }
 
 func baseChatPath(path string) bool {
-	for _, prefix := range []string{"/v2/console/base/chat-words", "/v2/console/base/report-titles", "/v2/console/base/reports"} {
+	for _, prefix := range []string{"/v2/console/base/chat-words", "/v2/console/base/report-titles", "/v2/console/base/reports", "/v2/console/base/player-reports"} {
 		if strings.HasPrefix(path, prefix) {
 			return true
 		}

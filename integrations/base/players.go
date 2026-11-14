@@ -132,8 +132,14 @@ func (s *service) playerGet(w http.ResponseWriter, r *http.Request) {
 		s.writeError(w, err)
 		return
 	}
+	var pAgainst, pBy, pOpen int64
+	if err := s.db.QueryRowContext(r.Context(), `SELECT count(*) FILTER (WHERE target_id=$1), count(*) FILTER (WHERE reporter_id=$1), count(*) FILTER (WHERE target_id=$1 AND status IN ('open','reviewing')) FROM base_player_report WHERE target_id=$1 OR reporter_id=$1`, id).Scan(&pAgainst, &pBy, &pOpen); err != nil {
+		s.writeError(w, err)
+		return
+	}
 	out["history"] = history
 	out["reports"] = map[string]int64{"against": against, "by": by, "open": open}
+	out["playerReports"] = map[string]int64{"against": pAgainst, "by": pBy, "open": pOpen}
 	writeJSON(w, http.StatusOK, out)
 }
 
