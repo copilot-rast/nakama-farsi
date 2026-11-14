@@ -102,7 +102,7 @@ Language: every RPC that returns text accepts `lang` and returns resolved string
 |---|---|---|
 | `economy_catalog` | `{categoryKey?, lang?}` | `{lang, currencies:[{key,name,type,iconUrl,categoryKey,tags}], categories:[{key,name,description,iconUrl,sort}], products:[{id,key,name,description,iconUrl,coverUrl,priceToman,finalToman,coinPrice,discountPercent,paymentMethods,sku,isSubscription,categoryKey,tags}]}` (active only, methods filtered to active methods) |
 | `economy_balances` | `{}` | `{wallet:{key:amount}, metas:{key:value} (non server_only), items:[…storage economy_items]}` |
-| `economy_purchase_start` | `{productId, method, giftCode?}` | gateway: `{paymentId, status:"redirect", redirectUrl}`; store: `{paymentId, status:"store", sku, developerPayload}`; in_app or free: `{paymentId, status:"success", rewards}` |
+| `economy_purchase_start` | `{productId, method, giftCode?, offerId?}` (with `offerId` the player's personal offer is sold at its frozen price, see «Personal offers») | gateway: `{paymentId, status:"redirect", redirectUrl}`; store: `{paymentId, status:"store", sku, developerPayload}`; in_app or free: `{paymentId, status:"success", rewards}` |
 | `economy_purchase_submit` | `{paymentId, token}` | `{paymentId, status, rewards?}` |
 | `economy_purchase_review` | `{method, sku, token}` | same as submit |
 | `economy_purchase_status` | `{paymentId}` | `{paymentId, status, rewardGranted, error?}` (own payments only) |
@@ -248,6 +248,79 @@ CRUD `meta-relations` (filters `metaId`, `targetMetaId`, `isActive`, `prizeId`; 
 ### Differences from the legacy module
 
 Five comparators instead of three (`more`, `less`, `equal`); repeat modes and a cap (legacy fired once per player only); prize groups; window, audience, order and visibility (legacy ordered by creation); chain depth and the empty-group policy in the settings instead of a hard-coded 25; all targets and the claim in one transaction (legacy applied targets best effort, each committing on its own); prizes through the shared claims table so they pay once on any node; a client view of active relations with progress and claims, not only completions.
+
+## Personal offers: daily offers and entry offers (phase 21)
+
+Owner's request 2026-11-14 (Ludo-style games). Before this phase the shop had a product discount (`discount_percent`), product audience tags, level limits and one-time products, and gift codes; there was no per-player offer, no time-limited offer and no timer. Offers are built on top of the shop instead of beside it: an offer is a template over an existing product (the product keeps its prize, its rules and its payment methods), and buying an offer is a normal shop purchase with the offer's frozen price. Migration `20261126000000-economy-offers.sql` (Up re-runnable, Down raises) adds the tables below, `economy_payment.user_offer_id` and the built-in server event `Offer:Bought`.
+
+### Tables
+
+| Table | What |
+|---|---|
+| `economy_offer` | the admin pool. `key` (immutable), `kind` (`daily` or `entry`), translated `name` (empty = the product name), `description`, `badge`; `product_id`; price: `price_mode` `discount` (`discount_percent` 0–100 on the product's Toman and coin price; 0 keeps the product price and its own discount) or `price` (special `price_toman` 0 or ≥ 100, and/or special `coin_price`; an empty one keeps the product's), `sku` (offer SKUs for Bazaar and Myket); `purchase_limit` per player and copy (default 1); `weight` (daily draw, default 10, 0 = never drawn); audience: `audience_tag_ids` (any of), `exclude_tag_ids`, `min_level`/`max_level` on `level_table_id` (empty = main table), `meta_conditions` (`[{metaId, operator, value}]`, up to 10, same comparators as meta relations), `min_account_days`/`max_account_days`; entry only: `trigger_type` (`first_entry`, `level`, `meta`, `tag`, `account_days`, `lapsed`) with `trigger_value` and `trigger_ref` (level table, meta or player tag), `duration_minutes` (default 1440), `repeat` (`once` default, `cooldown`), `cooldown_hours` (default 168), `max_triggers` (empty = no cap); `starts_at`/`ends_at`, `is_active`, `sort` (for entry offers: priority) |
+| `economy_offer_settings` | one JSON row with the policies below; a missing row or field means the default |
+| `economy_user_offer` | a personal copy: player, template, kind, `period_start` and `slot` (daily), status (`active`, `replaced` by a reroll, `closed` by an admin), the price frozen when the copy was made (`original_toman`, `final_toman`, `coin_currency`, `coin_amount`, `coin_original`, `discount_percent`, `sku`), `purchase_limit`, `bought`, `reroll` number, `forgotten` (admin reset of an entry offer), `triggered_at`, `shown_at`, `expires_at`, `last_bought_at` |
+| `economy_user_offer_period` | one row per player and daily period: the reroll count and whether the set was drawn; its row lock keeps two parallel calls from drawing twice |
+| `economy_user_offer_state` | the player's last two login times (written by the login hook) for the lapsed-return trigger |
+
+### Settings (`GET/PUT /offer-settings`, partial body)
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `dailyEnabled` | true | daily offers on |
+| `timezone`, `resetHour`, `resetMinute` | Asia/Tehran, 0, 0 | when a period starts |
+| `periodDays` | 1 | period length 1–30 days; periods are aligned on 1970-01-01 in the zone so every node and player agrees |
+| `count`, `countByTag` | 3, [] | offers per player and period; a player tag in `countByTag` raises it (largest wins) |
+| `weighting` | `weighted` | `weighted` (by weight, without replacement), `uniform` (weight ignored), `priority` (heaviest first, ties at random) |
+| `noRepeatDays` | 1 | a template the player got in the last N days (before this period) is drawn only after the fresh ones; 0 = off |
+| `fillWithRepeats` | true | when fresh templates run out, fill the slots with recent ones |
+| `boughtCooldownDays` | 7 | a template the player bought is not drawn for N days; −1 = never again; 0 = off |
+| `excludeOwned` | true | skip a template whose product only gives items the player owns |
+| `respectProductRules` | true | skip a template whose product the player cannot buy now (level, one-time bought, owned contents, missing required item, non-repeatable prize received) |
+| `inactiveProducts` | `allow` | `allow`: products switched off in the shop can still be sold as offers (offer-only packs); `skip` |
+| `showSoldOut` | true | a bought-out offer stays listed with `soldOut` until it ends |
+| `giftCodes` | false | gateway discount codes also apply on top of an offer price |
+| `rerollEnabled`, `rerollLimit` | true, 1 | rerolls per period (0 = no limit) |
+| `rerollCost`, `rerollCostStep` | null, 0 | `{currencyKey, amount}` or null for free; each reroll costs `step` more |
+| `rerollAvoidCurrent` | true | the new draw leaves out the offers it replaces |
+| `entryEnabled` | true | entry offers on |
+| `entryMaxActive` | 1 | entry offers open at once per player; the rest wait, highest priority (`sort`) first |
+| `entryTimerStart` | `list` | when a player's countdown starts: `list` (the first `economy_offers` that returns it), `seen` (the game calls `economy_offer_seen`), `trigger` (the moment the trigger held) |
+
+### Selection (daily)
+
+The first `economy_offers` call of a period draws the player's set once: active templates in their window, minus the ones the player's tags, levels, metas or account age rule out, the product checks above and templates no active payment method can sell (`no_method`), the bought cooldown and weight 0. The draw is seeded with the player, the period and the reroll number, so a preview made by the admin shows exactly what the player will get; fresh templates first, then (with `fillWithRepeats`) the recent ones. The copies keep their price for the whole period even if the admin edits the template; switching a template off hides its copies at once. Settings changes apply from the next period (or after «قرعهٔ دوباره» on the player card).
+
+A reroll (`economy_offers_reroll`) checks the limit, takes the cost from the wallet, then in one transaction replaces every unbought copy of the period (status `replaced`) with a new draw (bought ones stay and keep their slot; the replaced templates are left out when `rerollAvoidCurrent`); when the draw is empty (`NO_OFFERS_LEFT`) or anything fails the cost is refunded.
+
+### Entry offers and timers
+
+On every `economy_offers` call (entry offers on) the player's entry templates are judged in `sort` order: the template rules, the product checks and the trigger (`first_entry` always; `level` ≥ value on the chosen table; `meta` ≥ value; `tag` held; `account_days` ≥ value; `lapsed`: the previous login is at least value days before the latest one). A template opens a copy when its trigger holds, no copy is open, `max_triggers` is not reached, and either it never opened or `repeat` is `cooldown`, the cooldown since the previous copy ended (expired, bought out or closed) has passed and, for `lapsed`, the return is newer than the previous copy. At most `entryMaxActive` copies are open; the state row lock serialises parallel calls. The countdown is the player's own: `expires_at = start + duration_minutes`, where start follows `entryTimerStart`; an expired copy is gone for good. A copy bought out stays listed (with `showSoldOut`) until its timer ends.
+
+### Buying
+
+`economy_offer_buy {offerId, method, giftCode?, lang?}` (same as `economy_purchase_start` with `offerId`) checks that the copy is the caller's, active, its template live, not expired (`OFFER_EXPIRED`) and not bought out (`OFFER_SOLD_OUT`); a not yet started entry timer starts. The product is then sold through the normal flow with the frozen price: the method must be one of the product's methods the offer can sell (`in_app` needs a coin price, gateways a Toman price of 0 or ≥ 100, stores an offer SKU, or the product SKU when the Toman price did not change), the product rules and non-repeatable prizes still apply, and the offer's own audience replaces the product audience (and, with `inactiveProducts: allow`, the product's shop switch). The payment row carries `user_offer_id` and the offer price; coin purchases reserve the limit before the coins move (released when the purchase fails), gateway and store purchases count when their prize is delivered (so two gateway payments started in parallel for a limit of one can both be delivered after payment). Store checks (`economy_purchase_submit`, `economy_purchase_review`) use the offer SKU. A delivered offer records `Offer:Bought` (value = Toman paid; metadata `key`, `kind`, `offerId`, `paymentId`) besides `purchase_completed`.
+
+Behaviour of the existing shop: unchanged. `economy_catalog` lists products at their own price, `economy_purchase_start` without `offerId` works as before, and purchase counts of offers count as purchases of their product (so one-time products stay one-time).
+
+### Client RPCs
+
+| RPC | Input | Output |
+|---|---|---|
+| `economy_offers` | `{lang?}` | `{lang, now, daily:{enabled, periodStart, periodEnd, secondsLeft, items:[offer], reroll:{enabled, used, limit, left?, cost:{currencyKey, amount}\|null}}, entry:{enabled, timerStart, items:[offer]}}`; `offer` = `{offerId, key, kind, name, description, badge, product:{id, key, name, iconUrl, coverUrl, items}, originalToman, finalToman, coinPrice:{currencyKey, amount}\|null, coinOriginal, discountPercent, paymentMethods, sku, purchaseLimit, bought, remaining, soldOut, started, expiresAt, secondsLeft, shownAt?, slot, durationMinutes? (entry)}` |
+| `economy_offer_buy` | `{offerId, method, giftCode?, lang?}` | as `economy_purchase_start` |
+| `economy_offers_reroll` | `{lang?}` | the `economy_offers` answer plus `paid` (`{currencyKey, amount}` or null); errors `REROLL_DISABLED`, `REROLL_LIMIT`, `NOTHING_TO_REROLL`, `NO_OFFERS_LEFT`, `INSUFFICIENT_BALANCE`, `REROLL_BUSY` |
+| `economy_offer_seen` | `{offerId}` | `{offerId, expiresAt, secondsLeft}`; starts an entry countdown in timer mode `seen` (marks a daily copy shown) |
+
+`economy_purchase_start` takes an optional `offerId` (then `productId` may be left out; a different one is `OFFER_PRODUCT_MISMATCH`).
+
+### Console API (`/v2/console/economy/`, `HIRO_ECONOMY`)
+
+CRUD `offers` (daily) and `entry-offers` (entry), same fields; list rows carry `productKey`, `productName`, `productActive`, `made` and `bought`; filters `isActive`, `productId`; delete refused once a copy was bought (`IN_USE`; switch it off instead). `GET/PUT /offer-settings` (`{settings, periodStart, periodEnd}`; errors `INVALID_TIMEZONE`, `INVALID_SETTING`, `INVALID_POLICY`, `TAG_NOT_FOUND`, `DUPLICATE_TAG`, `CURRENCY_NOT_FOUND`). `GET /offer-preview?userId=` (current copies of the period, the draw with `reason` per template: `picked`, `recent`, `bought_recently`, `weight_zero`, `inactive`, `audience`, `excluded_tag`, `level_low`, `level_high`, `meta`, `account_new`, `account_old`, `product_inactive`, `owned`, `product_level`, `product_bought`, `product_requires`, `no_method`; entry templates with `holds`, `due`, `open`, `count`). `GET /offer-report?days=30&kind=` (per template: made, shown, players, buyers, purchases, conversion = buyers / shown, Toman revenue, coins by currency; totals with rerolls). Player: `GET /users/{id}/offers`, `POST /users/{id}/offers/reset-daily` (close this period's copies and draw again on the next open), `POST /users/{id}/offers/{copyId}/expire`, `POST /users/{id}/entry-offers/{offerId}/reset` (forget the history so the trigger can open it again; purchases stay in the report). Admin actions go to the activity log. Template errors: `PRODUCT_NOT_FOUND`, `INVALID_PRICE_MODE`, `INVALID_DISCOUNT`, `INVALID_PRICE`, `PRICE_REQUIRED`, `CURRENCY_NOT_FOUND`, `INVALID_SKU`, `INVALID_LIMIT`, `INVALID_WEIGHT`, `INVALID_LEVEL`, `LEVEL_TABLE_NOT_FOUND`, `TOO_MANY_CONDITIONS`, `META_NOT_FOUND`, `INVALID_OPERATOR`, `INVALID_DAYS`, `INVALID_TRIGGER`, `TAG_NOT_FOUND`, `INVALID_DURATION`, `INVALID_REPEAT`, `INVALID_COOLDOWN`, `INVALID_MAX_TRIGGERS`, `INVALID_WINDOW`.
+
+### Console pages
+
+Sidebar «فروش» gets «پیشنهادهای ویژه» (`#/economy/offers`) with tabs «روزانه» (pool list with price, weight, bought/made and status; editor with product and price, offer SKUs, limit, weight, audience, level, meta conditions, account age and window), «پیشنهاد ورود» (`/entry`; the editor adds the trigger with a live sentence such as «وقتی بازیکن بعد از دست‌کم ۷ روز غیبت برگردد. بعد از آن ۲ ساعت ۳۰ دقیقه فرصت دارد.», duration and repeat), «پیش‌نمایش» (`/preview?userId=`: pick a player or paste an ID; current copies with their countdown, the draw with the reason for every template, entry offers with their state), «گزارش» (`/report`: range and kind filters, totals and per-offer shown, buyers, purchases, conversion and revenue) and «تنظیمات» (`/settings`, every setting above with the current period). The player page gets an «پیشنهادهای ویژه» card: today's copies and the entry offers with price, state and time left, «قرعهٔ دوباره», «بستن» per copy, «از نو» per entry offer and a link to the preview.
 
 ## Referral codes (phase 5)
 
