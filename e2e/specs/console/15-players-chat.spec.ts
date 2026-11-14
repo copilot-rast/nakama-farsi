@@ -354,6 +354,8 @@ test.describe('players and chat: access', () => {
       await settle(p);
       const pages = await p.locator('.x-drawer [data-economy-nav="moderation"] a[data-economy-page]').evaluateAll((els) => els.map((e) => e.getAttribute('data-economy-page')));
       expect(pages).toEqual(['reports', 'player-reports', 'chat-words']);
+      await expect(p.locator('.pl-side .pl-group-label')).toHaveText(['گزارش و گفتگو']);
+      await expect(p.locator('.x-drawer [data-economy-nav="moderation"] [data-economy-group="people"]')).toHaveCount(0);
       await p.goto(CONSOLE_URL + '/#/project-settings/report-titles');
       await expect(psWindow(p)).toBeVisible();
       const ids = await psWindow(p).locator('.ps-list [role="tab"]').evaluateAll((els) => els.map((e) => e.getAttribute('data-ps-section')));

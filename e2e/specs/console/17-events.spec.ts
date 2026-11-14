@@ -270,7 +270,7 @@ test.describe('events: settings, log and the player card', () => {
     expect(progress.streaks.find((x: any) => x.key === 'e2e_' + k + '_sk')).toMatchObject({ count: 0, run: 2 });
 
     await card.getByRole('link', { name: 'گزارش رویدادها' }).click();
-    await expect(page).toHaveURL(new RegExp('#/economy/event-log\\?userId=' + P.id));
+    await expect(page).toHaveURL(new RegExp('#/economy/events/report\\?userId=' + P.id));
     await expect(rows(page).first()).toBeVisible();
     await expect(rows(page).filter({ hasText: 'کنسول' }).first()).toContainText(key);
     await expect(rows(page).filter({ hasText: 'بازی' }).first()).toBeVisible();
@@ -294,6 +294,6 @@ test.describe('events: settings, log and the player card', () => {
     await page.locator('.pl-side-search').click();
     await page.locator('.pl-pal-input').fill('جدول سطح');
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/#\/economy\/level-tables/);
+    await expect(page).toHaveURL(/#\/economy\/metas\/levels/);
   });
 });

@@ -4,7 +4,7 @@ import type { Locator } from '@playwright/test';
 import { FIXTURES } from '../../lib/env';
 import { base, consoleApi, deleteUser, devicePlayer, pub, rpc, uid, updateAccount, type Player } from '../../lib/api';
 import { sql } from '../../lib/db';
-import { field, fillTranslated, go, noHorizontalScroll, open, panel, rows, savePanel, search, settlePanel, toasts } from '../../lib/console';
+import { field, fillTranslated, go, noHorizontalScroll, open, panel, root, rows, savePanel, search, settlePanel, toasts } from '../../lib/console';
 
 const k = uid();
 const place = 'e2e_' + k + '_place';
@@ -203,12 +203,12 @@ test.describe('banners: console', () => {
   test('sidebar, page search, English and 390px cards in dark mode without sideways scroll', async ({ page, spawn }) => {
     await open(page, '#/publication/banners');
     await expect(page.locator('.pl-side a.pl-nav[href^="#/publication/banners"] svg')).toHaveCount(1);
-    await expect(page.locator('.pl-side a.pl-nav[href^="#/publication/banner-lists"]')).toContainText('جایگاه‌های بنر');
+    await expect(root(page).locator('[data-economy-tabs="banners"] a[data-economy-tab="banner-lists"]')).toContainText('جایگاه‌های بنر');
     await page.keyboard.press('Control+k');
     await page.locator('.pl-pal-input').fill('جایگاه‌های بنر');
     await expect(page.locator('.pl-pal-row').first()).toContainText('جایگاه‌های بنر');
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/#\/publication\/banner-lists/);
+    await expect(page).toHaveURL(/#\/publication\/banners\/placements/);
     await page.locator('.pl-seg-lang [data-locale="en"]').click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     await go(page, '#/publication/banners?q=' + bkey);

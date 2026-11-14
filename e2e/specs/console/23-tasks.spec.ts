@@ -188,7 +188,7 @@ test.describe('tasks: console', () => {
     await page.locator('.pl-pal-input').fill('گروه‌های تسک');
     await expect(page.locator('.pl-pal-row').first()).toContainText('گروه‌های تسک');
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/#\/economy\/task-groups/);
+    await expect(page).toHaveURL(/#\/economy\/tasks\/groups/);
     await page.locator('.pl-seg-lang [data-locale="en"]').click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     await go(page, '#/economy/tasks?q=e2e_' + k + '_daily');

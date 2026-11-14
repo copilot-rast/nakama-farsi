@@ -229,7 +229,8 @@ test.describe('notifications: console', () => {
   test('sidebar, page search, English and 390px in dark mode without sideways scroll', async ({ page, spawn }) => {
     await open(page, '#/publication/auto-rules');
     await expect(page.locator('.pl-side a.pl-nav[href^="#/publication/auto-rules"] svg')).toHaveCount(1);
-    await expect(page.locator('.pl-side a.pl-nav[href^="#/publication/notify-categories"]')).toContainText('دسته‌های اعلان');
+    await go(page, '#/publication/notifications');
+    await expect(root(page).locator('[data-economy-tabs="notifications"] a[data-economy-tab="notify-categories"]')).toContainText('دسته‌های اعلان');
     await page.keyboard.press('Control+k');
     await page.locator('.pl-pal-input').fill('اعلان‌های خودکار');
     await expect(page.locator('.pl-pal-row').first()).toContainText('اعلان‌های خودکار');

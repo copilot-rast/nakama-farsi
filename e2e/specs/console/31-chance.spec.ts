@@ -227,7 +227,7 @@ test.describe('chance games: console', () => {
     await page.locator('.pl-pal-input').fill('گروه‌های جایزه');
     await expect(page.locator('.pl-pal-row').first()).toContainText('گروه‌های جایزه');
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/#\/economy\/prize-groups/);
+    await expect(page).toHaveURL(/#\/economy\/prizes\/groups/);
     await page.locator('.pl-seg-lang [data-locale="en"]').click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     await go(page, '#/economy/chance-games?q=' + gameKey);
