@@ -329,3 +329,40 @@ ACL: `support/*` → `ACCOUNT_NOTES` read/write (so a support agent needs no eco
 - Project settings: «بخش‌های پشتیبانی», «پاسخ‌های آماده», «تنظیمات پشتیبانی» (`ACCOUNT_NOTES`).
 - Native player page: «فعالیت اخیر» card (last eight items, kind chips, links to the full log and the player's tickets).
 - Economy and publication pages now need `HIRO_ECONOMY` / `NOTIFICATION` read to show in the sidebar (they were shown to everyone and answered 403), so a support agent sees only «پشتیبانی».
+
+## Friends and player reports (phase 17)
+
+### Friend request rules (17a)
+
+Nakama core keeps friends in `user_edge` (state 0 friend, 1 invite sent, 2 invite received, 3 blocked). The base plugin adds rules on top through hooks composed with `internal/hookchain` (a game plugin that adds its own friend hooks through `hookchain` runs after these). Migration `20261124000000-base-friend-rules.sql` (Up re-runnable, Down raises) creates the tables and the single settings row, so a deploy needs no manual step.
+
+| Table | What |
+|---|---|
+| `base_friend_rules` (row 1) | `daily_requests` (20; 0 = no limit, ≤1000), `max_friends` (0 = no limit, ≤10000), `expiry_days` (0 = never, ≤365), `reject_cooldown_hours` (0 = off, ≤8760), `updated_by/at`. Only the daily limit is on by default. |
+| `base_friend_request_day(user_id, day, count)` | new requests per player per day; `day` is the date in the project time zone (`economy_event_settings.timezone`, UTC when missing), so the count restarts at local midnight |
+| `base_friend_rejection(requester_id, rejecter_id, rejected_at)` | written when a player deletes a friend edge that was an invite they received (state 2), i.e. declines it |
+
+Hooks (`integrations/base/friends.go`):
+
+| Hook | What |
+|---|---|
+| before `AddFriends` | resolves `ids` and `usernames` (at most 100, `FRIEND_TOO_MANY_USERS`) and sorts them into new invites (no edge yet, not blocked by the other side), accepts (the caller holds a received invite) and no-ops (already friends, already invited, blocked). Expires the caller's old invites first. Then: max friends (the caller cannot send while full or accept past the limit; accepting also checks the sender's list, `FRIEND_TARGET_LIMIT_REACHED`), the cooldown after a rejection by any new target, and the daily limit as one atomic `INSERT … ON CONFLICT DO UPDATE … WHERE count + n <= limit` on the day row, so parallel calls on many nodes can never pass the limit. A request with more new invites than are left is refused whole. Accepting an invite and no-ops never count. |
+| after `AddFriends` | clears rejections the caller made of these players (reaching out lifts the other side's cooldown) |
+| before `DeleteFriends` | records a rejection for every received invite being deleted |
+| before `ListFriends` | expires the caller's sent and received invites older than `expiry_days` |
+
+Expiry is lazy on read and also swept: every node runs `friendsLoop` (1 min), the node that holds the `base.friends.expire` lease (`internal/clusterkit`) removes up to 500 expired invites through `nk.FriendsDelete` (so Nakama keeps its edge counts right), day rows older than three days and rejections older than the cooldown (at least 30 days). Removing an expired invite is not a rejection. Known limit: max friends is read before Nakama writes the edge, so two accepts by the same player at the same instant could pass it by one.
+
+Errors are runtime errors whose message is JSON the client can show as is: `{"code", "message" (in the player's language: fa, en or ar built in, with Persian digits in fa), "lang", "limit"?, "remaining"?, "resetsAt"?, "retryAt"?, "userId"?}`.
+
+| Code | gRPC / HTTP | Extra fields |
+|---|---|---|
+| `FRIEND_DAILY_LIMIT` | 8 / 429 | `limit`, `remaining`, `resetsAt` (next local midnight, RFC 3339) |
+| `FRIEND_LIMIT_REACHED` | 9 / 400 | `limit` |
+| `FRIEND_TARGET_LIMIT_REACHED` | 9 / 400 | `limit`, `userId` |
+| `FRIEND_REQUEST_COOLDOWN` | 9 / 400 | `retryAt`, `userId` |
+| `FRIEND_TOO_MANY_USERS` | 3 / 400 | `limit` (100) |
+
+Console: `GET/PUT /v2/console/base/friend-rules` (`SETTINGS` read/write, audit-logged, full replace, `INVALID_RULE` with `field`). Client RPC `base_friend_rules {lang?}` → `{dailyRequests, sentToday, remainingToday (null when unlimited), resetsAt, maxFriends, friends, expiryDays, rejectCooldownHours, timeZone}`.
+
+Project settings section «قوانین دوستی» (`#/project-settings/friends`, `SETTINGS`), after «قوانین حساب»: requests per day, most friends, request expiry in days, wait after a rejection in hours, each with «صفر یعنی بی‌حد» hints, and a live summary sentence under the form.
