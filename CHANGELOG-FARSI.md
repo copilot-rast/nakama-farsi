@@ -24,6 +24,7 @@ Releases are tagged on `main` as `v3.42-fa.N`: the upstream version this fork is
 - Friend request rules: requests per day, most friends, invite expiry and a wait after a rejection, per player tag, with extra requests and slots from economy metas, refuse or trim over the limit, translated JSON errors and `base_friend_rules`.
 - Player reports not tied to a chat message, with a review page, internal notes and the same decisions as chat reports, admin-set report rules; `base_report_player`, `base_my_reports`.
 - Voice chat tokens: `voice_token` for matches, parties and open rooms, LiveKit and Rastaar comms providers chosen in «سرور ویس» with sealed secrets and a connection test, per-game switch and room size, allowed and listen-only player tags.
+- Console navigation: sidebar groups that fold and remember their state, and tabbed pages (metas, tasks, prizes, events, banners, notifications) with one address per tab; the old addresses such as `#/economy/prize-groups` redirect to the matching tab, and Ctrl K finds tabs too.
 - Cluster mode on Redis (off by default).
 - Updates page: this server's version and the parent repo's new commits, releases, changed files and warnings, with a copy-only update guide; build info is embedded by `build/buildinfo.sh` and the base commit is recorded in `build/upstream.json` by `build/upstream-sync.sh record`.
 
