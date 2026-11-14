@@ -61,7 +61,7 @@ func eventResources() []resource {
 			table:   "economy_level_table",
 			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'metaId',t.meta_id,'levelMetaId',t.level_meta_id,'isActive',t.is_active,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at,'steps',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',s.id,'level',s.level,'threshold',s.threshold,'name',s.name,'prizeId',s.prize_id,'grantMode',s.grant_mode) ORDER BY s.level),'[]'::jsonb) FROM economy_level_step s WHERE s.table_id=t.id),'players',(SELECT count(*) FROM economy_user_level u WHERE u.table_id=t.id AND u.level > 0))`,
 			search:  []string{"t.key", translatedSearch("t.name")},
-			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "metaId": "t.meta_id::text = ?"},
+			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "metaId": "t.meta_id::text = ?", "levelMetaId": "t.level_meta_id::text = ?"},
 			save:    saveLevelTable,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
 				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_reward_claim WHERE kind='level' AND owner_id=$1)`)
@@ -664,7 +664,11 @@ func (s *service) consoleEventSettingsGet(w http.ResponseWriter, r *http.Request
 }
 
 func (s *service) consoleEventSettingsPut(w http.ResponseWriter, r *http.Request) {
-	var in eventSettings
+	in, err := loadEventSettings(r.Context(), s.db)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
 	if err := readBody(r, &in); err != nil {
 		s.writeError(w, err)
 		return
@@ -686,9 +690,18 @@ func (s *service) consoleEventSettingsPut(w http.ResponseWriter, r *http.Request
 		s.writeError(w, badRequest("INVALID_RATE_LIMIT", "playerRateLimit", "between 1 and 100000 per minute"))
 		return
 	}
-	if _, err := s.db.ExecContext(r.Context(), `INSERT INTO economy_event_settings (id, timezone, week_start, retention_days, player_rate_limit, updated_at) VALUES (1,$1,$2,$3,$4,now())
-		ON CONFLICT (id) DO UPDATE SET timezone=EXCLUDED.timezone, week_start=EXCLUDED.week_start, retention_days=EXCLUDED.retention_days, player_rate_limit=EXCLUDED.player_rate_limit, updated_at=now()`,
-		in.Timezone, in.WeekStart, in.RetentionDays, in.PlayerRateLimit); err != nil {
+	if in.RelationChainDepth < 0 || in.RelationChainDepth > 25 {
+		s.writeError(w, badRequest("INVALID_CHAIN_DEPTH", "relationChainDepth", "between 0 and 25"))
+		return
+	}
+	if err := oneOf("relationPrizeMissing", "INVALID_POLICY", in.RelationPrizeMissing, "complete", "wait"); err != nil {
+		s.writeError(w, err)
+		return
+	}
+	if _, err := s.db.ExecContext(r.Context(), `INSERT INTO economy_event_settings (id, timezone, week_start, retention_days, player_rate_limit, relation_chain_depth, relation_prize_missing, updated_at) VALUES (1,$1,$2,$3,$4,$5,$6,now())
+		ON CONFLICT (id) DO UPDATE SET timezone=EXCLUDED.timezone, week_start=EXCLUDED.week_start, retention_days=EXCLUDED.retention_days, player_rate_limit=EXCLUDED.player_rate_limit,
+			relation_chain_depth=EXCLUDED.relation_chain_depth, relation_prize_missing=EXCLUDED.relation_prize_missing, updated_at=now()`,
+		in.Timezone, in.WeekStart, in.RetentionDays, in.PlayerRateLimit, in.RelationChainDepth, in.RelationPrizeMissing); err != nil {
 		s.writeError(w, err)
 		return
 	}

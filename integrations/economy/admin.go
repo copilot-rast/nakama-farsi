@@ -38,8 +38,9 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 	routes = append(routes, s.achievementConsoleRoutes()...)
 	routes = append(routes, s.chanceConsoleRoutes()...)
 	routes = append(routes, s.gameConsoleRoutes()...)
+	routes = append(routes, s.metaRelationConsoleRoutes()...)
 	all := resources()
-	for _, more := range [][]resource{eventResources(), taskResources(), itemResources(), achievementResources(), chanceResources(), gameResources()} {
+	for _, more := range [][]resource{eventResources(), metaRelationResources(), taskResources(), itemResources(), achievementResources(), chanceResources(), gameResources()} {
 		all = append(all, more...)
 	}
 	for _, res := range all {
@@ -327,6 +328,7 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 		"event-types":          `SELECT count(*) FROM economy_event_type`,
 		"event-rules":          `SELECT count(*) FROM economy_event_rule`,
 		"level-tables":         `SELECT count(*) FROM economy_level_table`,
+		"meta-relations":       `SELECT count(*) FROM economy_meta_relation`,
 		"streaks":              `SELECT count(*) FROM economy_streak`,
 		"tasks":                `SELECT count(*) FROM economy_task`,
 		"task-groups":          `SELECT count(*) FROM economy_task_group`,

@@ -76,6 +76,9 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	for name, fn := range svc.referralRPCs() {
 		rpcs[name] = fn
 	}
+	for name, fn := range svc.metaRelationRPCs() {
+		rpcs[name] = fn
+	}
 	for name, fn := range rpcs {
 		if err := initializer.RegisterRpc(name, svc.rpc(fn)); err != nil {
 			return err

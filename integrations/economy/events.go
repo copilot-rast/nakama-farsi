@@ -38,15 +38,21 @@ type eventSettings struct {
 	WeekStart       int    `json:"weekStart"`
 	RetentionDays   int    `json:"retentionDays"`
 	PlayerRateLimit int    `json:"playerRateLimit"`
-	UpdatedAt       string `json:"updatedAt,omitempty"`
-	loc             *time.Location
+	// RelationChainDepth is how many meta relations may trigger one another
+	// in a row; 0 means a relation's targets never fire further relations.
+	RelationChainDepth int `json:"relationChainDepth"`
+	// RelationPrizeMissing decides what a relation does when its prize group
+	// has nothing to draw: complete without a prize, or wait and retry.
+	RelationPrizeMissing string `json:"relationPrizeMissing"`
+	UpdatedAt            string `json:"updatedAt,omitempty"`
+	loc                  *time.Location
 }
 
 func loadEventSettings(ctx context.Context, q queryer) (eventSettings, error) {
-	st := eventSettings{Timezone: defaultTimezone, WeekStart: 6, RetentionDays: 30, PlayerRateLimit: 120}
+	st := eventSettings{Timezone: defaultTimezone, WeekStart: 6, RetentionDays: 30, PlayerRateLimit: 120, RelationChainDepth: 8, RelationPrizeMissing: "complete"}
 	var updated time.Time
-	err := q.QueryRowContext(ctx, `SELECT timezone, week_start, retention_days, player_rate_limit, updated_at FROM economy_event_settings WHERE id=1`).
-		Scan(&st.Timezone, &st.WeekStart, &st.RetentionDays, &st.PlayerRateLimit, &updated)
+	err := q.QueryRowContext(ctx, `SELECT timezone, week_start, retention_days, player_rate_limit, relation_chain_depth, relation_prize_missing, updated_at FROM economy_event_settings WHERE id=1`).
+		Scan(&st.Timezone, &st.WeekStart, &st.RetentionDays, &st.PlayerRateLimit, &st.RelationChainDepth, &st.RelationPrizeMissing, &updated)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return st, err
 	}
@@ -230,13 +236,14 @@ type eventOutcome struct {
 	Claims       []claimRef          `json:"claims"`
 	Tasks        []taskChange        `json:"tasks"`
 	Achievements []achievementChange `json:"achievements"`
+	Relations    []relationChange    `json:"relations"`
 	metaIDs      []string
 	referrals    []string
 	achPending   []achievementChange
 }
 
 func newOutcome() *eventOutcome {
-	return &eventOutcome{Rules: []ruleProgress{}, Metas: map[string]float64{}, Streaks: []streakChange{}, Levels: []levelChange{}, Claims: []claimRef{}, Tasks: []taskChange{}, Achievements: []achievementChange{}}
+	return &eventOutcome{Rules: []ruleProgress{}, Metas: map[string]float64{}, Streaks: []streakChange{}, Levels: []levelChange{}, Claims: []claimRef{}, Tasks: []taskChange{}, Achievements: []achievementChange{}, Relations: []relationChange{}}
 }
 
 func (o *eventOutcome) merge(other *eventOutcome) {
@@ -252,6 +259,7 @@ func (o *eventOutcome) merge(other *eventOutcome) {
 	o.Claims = append(o.Claims, other.Claims...)
 	o.Tasks = append(o.Tasks, other.Tasks...)
 	o.Achievements = append(o.Achievements, other.Achievements...)
+	o.Relations = append(o.Relations, other.Relations...)
 	o.referrals = append(o.referrals, other.referrals...)
 }
 

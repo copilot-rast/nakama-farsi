@@ -93,7 +93,19 @@ func levelFor(steps []levelStep, value float64) int {
 	return level
 }
 
+// evaluateLevels is the meta-change hook: it runs the meta relations on the
+// changed metas, then their level tables.
 func (s *service) evaluateLevels(ctx context.Context, userID string, metaIDs []string, depth int) (*eventOutcome, error) {
+	out := s.applyMetaRelations(ctx, userID, metaIDs, depth)
+	if len(metaIDs) == 0 || depth > maxEventDepth {
+		return out, nil
+	}
+	lv, err := s.evaluateLevelTables(ctx, userID, metaIDs, depth)
+	out.merge(lv)
+	return out, err
+}
+
+func (s *service) evaluateLevelTables(ctx context.Context, userID string, metaIDs []string, depth int) (*eventOutcome, error) {
 	out := newOutcome()
 	if len(metaIDs) == 0 || depth > maxEventDepth {
 		return out, nil

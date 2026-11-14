@@ -46,7 +46,7 @@ func chanceResources() []resource {
 			save:    savePrizeGroup,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
 				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_chance_game g WHERE g.prize @> jsonb_build_array(jsonb_build_object('prizeGroupId',$1::text)))
-					OR EXISTS (SELECT 1 FROM economy_chance_play WHERE prize_group_id::text=$1::text)`)
+					OR EXISTS (SELECT 1 FROM economy_chance_play WHERE prize_group_id::text=$1::text) OR EXISTS (SELECT 1 FROM economy_meta_relation WHERE prize_group_id::text=$1::text)`)
 			},
 		},
 	}

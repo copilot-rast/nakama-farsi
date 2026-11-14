@@ -197,7 +197,7 @@ func (s *service) grantClaim(ctx context.Context, claimID string, depth int) (*e
 			metaKeys = append(metaKeys, item.Key)
 		}
 	}
-	if len(metaKeys) > 0 && depth <= maxEventDepth {
+	if len(metaKeys) > 0 {
 		ids, err := s.metaIDsByKey(ctx, metaKeys)
 		if err != nil {
 			return out, nil

@@ -45,7 +45,8 @@ func resources() []resource {
 			filters: map[string]string{},
 			save:    saveMeta,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
-				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_meta m JOIN economy_prize z ON z.items @> jsonb_build_array(jsonb_build_object('type','meta','key',m.key)) WHERE m.id=$1)`)
+				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_meta m JOIN economy_prize z ON z.items @> jsonb_build_array(jsonb_build_object('type','meta','key',m.key)) WHERE m.id=$1)
+					OR EXISTS (SELECT 1 FROM economy_meta_relation r WHERE r.meta_id=$1 OR r.targets @> jsonb_build_array(jsonb_build_object('metaId',$1::uuid::text)))`)
 			},
 		},
 		{
@@ -53,11 +54,11 @@ func resources() []resource {
 			table:   "economy_prize",
 			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'message',t.message,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'isRepeatable',t.is_repeatable,'items',t.items,'metadata',t.metadata,'createdAt',t.created_at,'updatedAt',t.updated_at)`,
 			search:  []string{"t.key", translatedSearch("t.name")},
-			filters: map[string]string{"categoryId": "t.category_id::text = ?"},
+			filters: map[string]string{"categoryId": "t.category_id::text = ?", "metaKey": "t.items @> jsonb_build_array(jsonb_build_object('type','meta','key',?::text))"},
 			save:    savePrize,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
 				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_product WHERE prize_id=$1) OR EXISTS (SELECT 1 FROM economy_gift WHERE prize_id=$1) OR EXISTS (SELECT 1 FROM economy_user_prize WHERE prize_id=$1)
-					OR EXISTS (SELECT 1 FROM economy_prize_group_member WHERE prize_id=$1) OR EXISTS (SELECT 1 FROM economy_chance_game g WHERE g.prize @> jsonb_build_array(jsonb_build_object('prizeId',$1::uuid::text)))`)
+					OR EXISTS (SELECT 1 FROM economy_prize_group_member WHERE prize_id=$1) OR EXISTS (SELECT 1 FROM economy_meta_relation WHERE prize_id=$1) OR EXISTS (SELECT 1 FROM economy_chance_game g WHERE g.prize @> jsonb_build_array(jsonb_build_object('prizeId',$1::uuid::text)))`)
 			},
 		},
 		{

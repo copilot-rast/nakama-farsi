@@ -223,6 +223,21 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 	if granted && len(unlocked) > 0 {
 		s.settleAchievements(ctx, req.UserID, unlocked, eventDepth(ctx), nil)
 	}
+	if granted && !grantEvaluatesMetas[req.SourceType] {
+		var keys []string
+		for _, item := range rewards {
+			if item.Type == "meta" {
+				keys = append(keys, item.Key)
+			}
+		}
+		if len(keys) > 0 {
+			if ids, err := s.metaIDsByKey(ctx, keys); err == nil {
+				if _, err := s.evaluateLevels(ctx, req.UserID, ids, eventDepth(ctx)+1); err != nil {
+					s.logger.Warn("Economy meta checks after %s grant for %s failed: %v", req.SourceType, req.UserID, err)
+				}
+			}
+		}
+	}
 	if granted && req.SourceType != "payment" {
 		activity.Safe(ctx, s.db, s.logger, activity.Entry{UserID: req.UserID, Kind: activity.KindPrize, Action: "granted", RefID: rowID, Actor: "system", Data: map[string]any{"prize": prize.Key, "source": req.SourceType, "reason": req.Reason}})
 	}
