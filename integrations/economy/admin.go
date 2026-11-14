@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -346,6 +347,26 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 		"claimsReady":          `SELECT count(*) FROM economy_reward_claim WHERE status='ready'`,
 		"claimsFailed":         `SELECT count(*) FROM economy_reward_claim WHERE status='failed'`,
 		"revenueToman30":       `SELECT COALESCE(sum(final_toman),0) FROM economy_payment WHERE status='success' AND NOT sandbox AND method IN ('zarinpal','zibal','bazaar','myket') AND created_at >= now() - interval '30 days'`,
+		"revenueTomanPrev30":   `SELECT COALESCE(sum(final_toman),0) FROM economy_payment WHERE status='success' AND NOT sandbox AND method IN ('zarinpal','zibal','bazaar','myket') AND created_at >= now() - interval '60 days' AND created_at < now() - interval '30 days'`,
+		"paymentsPrevDay":      `SELECT count(*) FROM economy_payment WHERE created_at >= now() - interval '48 hours' AND created_at < now() - interval '24 hours'`,
+		"eventsPrevDay":        `SELECT count(*) FROM economy_player_event WHERE created_at >= now() - interval '48 hours' AND created_at < now() - interval '24 hours'`,
+		"meta-rules":           `SELECT count(*) FROM economy_meta_rule`,
+		"activeEventTypes":     `SELECT count(*) FROM economy_event_type WHERE is_active`,
+		"activeEventRules":     `SELECT count(*) FROM economy_event_rule WHERE is_active`,
+		"activeLevelTables":    `SELECT count(*) FROM economy_level_table WHERE is_active`,
+		"activeMetaRelations":  `SELECT count(*) FROM economy_meta_relation WHERE is_active`,
+		"activeOffers":         `SELECT count(*) FROM economy_offer WHERE is_active`,
+		"activeStreaks":        `SELECT count(*) FROM economy_streak WHERE is_active`,
+		"activeTasks":          `SELECT count(*) FROM economy_task WHERE is_active`,
+		"activeItems":          `SELECT count(*) FROM economy_item WHERE is_active`,
+		"activeAchievements":   `SELECT count(*) FROM economy_achievement WHERE is_active`,
+		"activeChanceGames":    `SELECT count(*) FROM economy_chance_game WHERE is_active`,
+		"games":                `SELECT count(*) FROM economy_game`,
+		"activeGames":          `SELECT count(*) FROM economy_game WHERE is_active`,
+		"friend-gifts":         `SELECT count(*) FROM economy_friend_gift`,
+		"friendGiftsPending":   `SELECT count(*) FROM economy_friend_gift WHERE status='pending'`,
+		"referrals":            `SELECT count(*) FROM economy_referral`,
+		"referralsCompleted":   `SELECT count(*) FROM economy_referral WHERE status='completed'`,
 	} {
 		var n int64
 		if err := s.db.QueryRowContext(ctx, query).Scan(&n); err != nil {
@@ -380,5 +401,35 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 		methods = append(methods, map[string]any{"method": m, "isActive": pm.Active, "configured": methodConfigured(m, pm.Config), "sandbox": pm.Config.flag("sandbox")})
 	}
 	counts["payments"] = byStatus["pending"] + byStatus["success"] + byStatus["failed"] + byStatus["expired"]
-	writeJSON(w, http.StatusOK, map[string]any{"counts": counts, "paymentsByStatus": byStatus, "paymentMethods": methods})
+	daily, err := s.revenueDaily(ctx)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"counts": counts, "paymentsByStatus": byStatus, "paymentMethods": methods, "revenueDaily": daily})
+}
+
+// revenueDaily returns the last 30 calendar days, oldest first: live gateway and store revenue in toman,
+// successful live payments and every payment that day.
+func (s *service) revenueDaily(ctx context.Context) ([]map[string]any, error) {
+	rows, err := s.db.QueryContext(ctx, `SELECT to_char(d, 'YYYY-MM-DD'),
+		COALESCE(sum(p.final_toman) FILTER (WHERE p.status='success' AND NOT p.sandbox AND p.method IN ('zarinpal','zibal','bazaar','myket')),0),
+		count(p.id) FILTER (WHERE p.status='success'), count(p.id)
+		FROM generate_series(date_trunc('day', now()) - interval '29 days', date_trunc('day', now()), interval '1 day') d
+		LEFT JOIN economy_payment p ON p.created_at >= d AND p.created_at < d + interval '1 day'
+		GROUP BY d ORDER BY d`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := []map[string]any{}
+	for rows.Next() {
+		var day string
+		var toman, success, total int64
+		if err := rows.Scan(&day, &toman, &success, &total); err != nil {
+			return nil, err
+		}
+		out = append(out, map[string]any{"day": day, "toman": toman, "success": success, "payments": total})
+	}
+	return out, rows.Err()
 }
