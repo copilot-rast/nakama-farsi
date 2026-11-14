@@ -910,7 +910,12 @@ func (s *service) consoleUserProgress(w http.ResponseWriter, r *http.Request) {
 		s.writeError(w, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"lang": lang, "totals": totals, "streaks": streaks, "levels": levels, "claims": claims, "readyClaims": ready})
+	relations, err := s.userRelationRows(ctx, userID)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"lang": lang, "totals": totals, "streaks": streaks, "levels": levels, "claims": claims, "readyClaims": ready, "relations": relations})
 }
 
 func (s *service) consoleUserEvent(w http.ResponseWriter, r *http.Request) {

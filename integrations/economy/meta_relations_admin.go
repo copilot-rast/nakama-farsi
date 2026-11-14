@@ -295,36 +295,38 @@ func applyMetaByID(ctx context.Context, tx *sql.Tx, userID, metaID, action, amou
 }
 
 func (s *service) consoleUserRelations(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
 	userID, err := s.consoleUser(r)
 	if err != nil {
 		s.writeError(w, err)
 		return
 	}
+	items, err := s.userRelationRows(r.Context(), userID)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"items": items})
+}
+
+func (s *service) userRelationRows(ctx context.Context, userID string) ([]json.RawMessage, error) {
 	rows, err := s.db.QueryContext(ctx, `SELECT jsonb_build_object('relationId',r.id,'key',r.key,'name',r.name,'metaId',r.meta_id,'operator',r.operator,'value',r.value,'repeat',r.repeat,
 			'fires',u.fires,'armed',u.armed,'firstDoneAt',u.first_done_at,'lastDoneAt',u.last_done_at,
 			'claims',(SELECT COALESCE(jsonb_agg(jsonb_build_object('claimId',c.id,'status',c.status,'grantMode',c.grant_mode,'prizeId',c.prize_id) ORDER BY c.created_at),'[]'::jsonb)
 				FROM economy_reward_claim c WHERE c.kind='relation' AND c.owner_id=r.id AND c.user_id=u.user_id))::text
 		FROM economy_user_meta_relation u JOIN economy_meta_relation r ON r.id=u.relation_id WHERE u.user_id=$1 AND u.fires > 0 ORDER BY u.last_done_at DESC LIMIT 100`, userID)
 	if err != nil {
-		s.writeError(w, err)
-		return
+		return nil, err
 	}
 	defer rows.Close()
 	items := []json.RawMessage{}
 	for rows.Next() {
 		var raw string
 		if err := rows.Scan(&raw); err != nil {
-			s.writeError(w, err)
-			return
+			return nil, err
 		}
 		items = append(items, json.RawMessage(raw))
 	}
-	if err := rows.Err(); err != nil {
-		s.writeError(w, err)
-		return
-	}
-	writeJSON(w, http.StatusOK, map[string]any{"items": items})
+	return items, rows.Err()
 }
 
 // consoleUserRelationReset forgets that a player completed a relation so it
