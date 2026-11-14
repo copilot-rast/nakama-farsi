@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/gofrs/uuid/v5"
 	"github.com/heroiclabs/nakama-common/api"
 	"github.com/heroiclabs/nakama-common/runtime"
 )
@@ -86,13 +88,14 @@ func (h *harness) mustAllow(user string, ids ...string) {
 }
 
 func resetFriendTables(h *harness) {
-	for _, q := range []string{`DELETE FROM base_friend_request_day`, `DELETE FROM base_friend_rejection`, `DELETE FROM cluster_lease WHERE name='` + friendsLease + `'`} {
+	for _, q := range []string{`DELETE FROM base_friend_rule`, `DELETE FROM base_friend_request_day`, `DELETE FROM base_friend_rejection`, `DELETE FROM cluster_lease WHERE name='` + friendsLease + `'`} {
 		if _, err := h.s.db.Exec(q); err != nil {
 			h.t.Fatal(err)
 		}
 	}
 	h.t.Cleanup(func() {
-		h.s.db.Exec(`UPDATE base_friend_rules SET daily_requests=20, max_friends=0, expiry_days=0, reject_cooldown_hours=0, updated_by='' WHERE id=1`)
+		h.s.db.Exec(`UPDATE base_friend_rules SET daily_requests=20, max_friends=0, expiry_days=0, reject_cooldown_hours=0, requests_bonus_meta='', friends_bonus_meta='', match_policy='priority', over_limit='refuse', updated_by='' WHERE id=1`)
+		h.s.db.Exec(`DELETE FROM base_friend_rule`)
 	})
 }
 
@@ -288,5 +291,88 @@ func TestFriendInviteExpiry(t *testing.T) {
 	h.s.db.QueryRow(`SELECT count(*) FROM base_friend_request_day WHERE user_id=$1`, x).Scan(&old)
 	if count(x) != 0 || old != 0 {
 		t.Fatalf("holder sweep edges=%d counters=%d", count(x), old)
+	}
+}
+
+func (h *harness) userTag(key string, users ...string) string {
+	h.t.Helper()
+	tag := h.mustAPI(201, "POST", "/tags", map[string]any{"key": key, "keyType": "user", "name": map[string]string{"fa": key}})
+	id := tag["id"].(string)
+	for _, u := range users {
+		if _, err := h.s.db.Exec(`INSERT INTO base_user_tag (user_id, tag_id) VALUES ($1,$2)`, u, id); err != nil {
+			h.t.Fatal(err)
+		}
+	}
+	return id
+}
+
+func (h *harness) meta(key string) string {
+	h.t.Helper()
+	id := uuid.Must(uuid.NewV4()).String()
+	if _, err := h.s.db.Exec(`INSERT INTO economy_meta (id, key, name) VALUES ($1,$2,'{"fa":"x"}')`, id, key); err != nil {
+		h.t.Fatal(err)
+	}
+	h.t.Cleanup(func() { h.s.db.Exec(`DELETE FROM economy_meta WHERE id=$1`, id) })
+	return id
+}
+
+func TestFriendTiersBonusesAndPolicies(t *testing.T) {
+	h := newHarness(t)
+	resetFriendTables(h)
+	h.setFriendRules(2, 3, 0, 0)
+	suffix := strings.ReplaceAll(uuid.Must(uuid.NewV4()).String()[:8], "-", "")
+	vip, plain, both := h.user("fa"), h.user("fa"), h.user("fa")
+	vipTag := h.userTag("vip"+suffix, vip, both)
+	proTag := h.userTag("pro"+suffix, both)
+	general := h.mustAPI(201, "POST", "/tags", map[string]any{"key": "gen" + suffix, "keyType": "general", "name": map[string]string{"fa": "g"}})["id"].(string)
+
+	h.expectError(400, "TAGS_REQUIRED", "POST", "/friend-rules/tiers", map[string]any{"name": "x", "dailyRequests": 5})
+	h.expectError(400, "TAG_KIND_MISMATCH", "POST", "/friend-rules/tiers", map[string]any{"name": "x", "tagIds": []string{general}, "dailyRequests": 5})
+	h.expectError(400, "LIMIT_REQUIRED", "POST", "/friend-rules/tiers", map[string]any{"name": "x", "tagIds": []string{vipTag}})
+	h.expectError(400, "INVALID_RULE", "POST", "/friend-rules/tiers", map[string]any{"name": "x", "tagIds": []string{vipTag}, "maxFriends": 20000})
+	vipRule := h.mustAPI(201, "POST", "/friend-rules/tiers", map[string]any{"name": "VIP", "tagIds": []string{vipTag}, "priority": 10, "dailyRequests": 5, "maxFriends": 0})
+	if vipRule["players"].(float64) != 2 || vipRule["rejectCooldownHours"] != nil || len(vipRule["tags"].([]any)) != 1 {
+		t.Fatalf("tier %v", vipRule)
+	}
+	h.mustAPI(201, "POST", "/friend-rules/tiers", map[string]any{"name": "Pro", "tagIds": []string{proTag}, "priority": 20, "dailyRequests": 3, "maxFriends": 50})
+
+	out := h.mustRPC(vip, "base_friend_rules", map[string]any{})
+	if out["dailyRequests"].(float64) != 5 || out["maxFriends"].(float64) != 0 || out["tier"].(map[string]any)["name"] != "VIP" || out["friendSlotsLeft"] != nil {
+		t.Fatalf("vip %v", out)
+	}
+	out = h.mustRPC(both, "base_friend_rules", map[string]any{})
+	if out["dailyRequests"].(float64) != 3 || out["maxFriends"].(float64) != 50 || out["tier"].(map[string]any)["name"] != "Pro" {
+		t.Fatalf("priority policy %v", out)
+	}
+	h.s.db.Exec(`UPDATE base_friend_rules SET match_policy='generous' WHERE id=1`)
+	out = h.mustRPC(both, "base_friend_rules", map[string]any{})
+	if out["dailyRequests"].(float64) != 5 || out["maxFriends"].(float64) != 0 {
+		t.Fatalf("generous policy %v", out)
+	}
+	h.s.db.Exec(`UPDATE base_friend_rules SET match_policy='priority' WHERE id=1`)
+
+	h.expectError(400, "META_NOT_FOUND", "PUT", "/friend-rules", map[string]any{"dailyRequests": 2, "maxFriends": 3, "requestsBonusMeta": "nope" + suffix})
+	reqMeta := h.meta("freq" + suffix)
+	slotMeta := h.meta("fslot" + suffix)
+	h.mustAPI(200, "PUT", "/friend-rules", map[string]any{"dailyRequests": 2, "maxFriends": 3, "requestsBonusMeta": "freq" + suffix, "friendsBonusMeta": "fslot" + suffix})
+	h.s.db.Exec(`INSERT INTO economy_user_meta (user_id, meta_id, value) VALUES ($1,$2,3.7), ($1,$3,10), ($4,$2,100)`, plain, reqMeta, slotMeta, vip)
+	out = h.mustRPC(plain, "base_friend_rules", map[string]any{})
+	if out["dailyRequests"].(float64) != 5 || out["maxFriends"].(float64) != 13 || out["bonus"].(map[string]any)["dailyRequests"].(float64) != 3 || out["base"].(map[string]any)["maxFriends"].(float64) != 3 || out["tier"] != nil || out["friendSlotsLeft"].(float64) != 13 {
+		t.Fatalf("bonus %v", out)
+	}
+	if out = h.mustRPC(vip, "base_friend_rules", map[string]any{}); out["maxFriends"].(float64) != 0 || out["dailyRequests"].(float64) != 105 {
+		t.Fatalf("unlimited stays unlimited, bonus adds to a limit: %v", out)
+	}
+
+	targets := []string{h.user("fa"), h.user("fa"), h.user("fa"), h.user("fa"), h.user("fa"), h.user("fa"), h.user("fa")}
+	h.mustRefuse(CodeFriendDailyLimit, plain, targets[:6]...)
+	h.s.db.Exec(`UPDATE base_friend_rules SET over_limit='trim' WHERE id=1`)
+	got, err := h.s.beforeAddFriends(asUser(plain), nil, nil, nil, &api.AddFriendsRequest{Ids: targets[:7]})
+	if err != nil || len(got.Ids) != 5 || got.Ids[0] != targets[0] || got.Ids[4] != targets[4] {
+		t.Fatalf("trim kept %v %v", got, err)
+	}
+	fe := h.mustRefuse(CodeFriendDailyLimit, plain, targets[6])
+	if *fe.Remaining != 0 || fe.Limit != 5 {
+		t.Fatalf("after trim %+v", fe)
 	}
 }

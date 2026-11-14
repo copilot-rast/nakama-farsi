@@ -277,3 +277,63 @@ func TestVoiceTestAndCommsToken(t *testing.T) {
 	}
 	h.expectError(429, "TOO_MANY_TESTS", "POST", "/voice/test", map[string]any{})
 }
+
+func TestVoicePolicies(t *testing.T) {
+	h, vn := voiceHarness(t)
+	t.Cleanup(func() {
+		h.s.db.Exec(`UPDATE base_voice_settings SET allowed_tag_ids='{}', listen_only_tag_ids='{}', tokens_per_minute=30, max_room_players=0 WHERE id=1`)
+	})
+	suffix := strings.ReplaceAll(uuid.Must(uuid.NewV4()).String()[:8], "-", "")
+	a, b, c := h.user("fa"), h.user("fa"), h.user("fa")
+	vipTag := h.userTag("vvip"+suffix, a, b)
+	quiet := h.userTag("vquiet"+suffix, b)
+	base := map[string]any{"enabled": true, "provider": "livekit", "ttlSeconds": 600, "canPublish": true, "openRooms": true,
+		"config": map[string]string{"url": "wss://lk.example.com", "apiKey": "APIk"}, "secrets": map[string]string{"apiSecret": lkSecret}}
+	with := func(extra map[string]any) map[string]any {
+		out := map[string]any{}
+		for k, v := range base {
+			out[k] = v
+		}
+		for k, v := range extra {
+			out[k] = v
+		}
+		return out
+	}
+	h.expectError(400, "INVALID_RULE", "PUT", "/voice/settings", with(map[string]any{"tokensPerMinute": 0}))
+	h.expectError(400, "INVALID_RULE", "PUT", "/voice/settings", with(map[string]any{"maxRoomPlayers": 5000}))
+	saved := h.mustAPI(200, "PUT", "/voice/settings", with(map[string]any{"allowedTagIds": []string{vipTag}, "listenOnlyTagIds": []string{quiet}, "tokensPerMinute": 2, "maxRoomPlayers": 2}))
+	if len(saved["allowedTagIds"].([]any)) != 1 || saved["tokensPerMinute"].(float64) != 2 || saved["maxRoomPlayers"].(float64) != 2 {
+		t.Fatalf("saved %v", saved)
+	}
+	key := "vp" + suffix
+	h.game(key, true)
+	if out := h.mustRPC(c, "voice_token", map[string]any{"room": "lobby", "gameKey": key}); out["enabled"] != false || out["reason"] != "VOICE_NOT_FOR_PLAYER" {
+		t.Fatalf("not allowed %v", out)
+	}
+	if out := h.mustRPC(b, "voice_token", map[string]any{"room": "lobby", "gameKey": key}); out["canPublish"] != false {
+		t.Fatalf("listen only %v", out)
+	}
+	h.mustRPC(a, "voice_token", map[string]any{"room": "lobby", "gameKey": key})
+	h.mustRPC(a, "voice_token", map[string]any{"room": "lobby", "gameKey": key})
+	if code := h.rpcCode(a, "voice_token", map[string]any{"room": "lobby", "gameKey": key}); code != "VOICE_RATE_LIMITED" {
+		t.Fatalf("per minute from settings: %s", code)
+	}
+	h.s.db.Exec(`DELETE FROM cluster_rate_limit WHERE key LIKE 'voice-%'`)
+	h.s.db.Exec(`UPDATE base_voice_settings SET allowed_tag_ids='{}', tokens_per_minute=30 WHERE id=1`)
+
+	match := uuid.Must(uuid.NewV4()).String() + ".node1"
+	h.s.db.Exec(`INSERT INTO economy_game_match (id, game_key, status) VALUES ($1,$2,'started')`, match, key)
+	t.Cleanup(func() { h.s.db.Exec(`DELETE FROM economy_game_match WHERE id=$1`, match) })
+	h.s.db.Exec(`INSERT INTO economy_game_entry (match_id, user_id, status, created_at) VALUES ($1,$2,'paid',now()-interval '3 minutes'), ($1,$3,'paid',now()-interval '2 minutes'), ($1,$4,'paid',now()-interval '1 minute')`, match, a, b, c)
+	h.mustRPC(a, "voice_token", map[string]any{"matchId": match})
+	if code := h.rpcCode(c, "voice_token", map[string]any{"matchId": match}); code != "VOICE_ROOM_FULL" {
+		t.Fatalf("third player: %s", code)
+	}
+	h.s.db.Exec(`UPDATE economy_game SET voice_max_players=0 WHERE key=$1`, key)
+	h.mustRPC(c, "voice_token", map[string]any{"matchId": match})
+	h.s.db.Exec(`UPDATE economy_game SET voice_max_players=1 WHERE key=$1`, key)
+	if code := h.rpcCode(b, "voice_token", map[string]any{"matchId": match}); code != "VOICE_ROOM_FULL" {
+		t.Fatalf("per-game size: %s", code)
+	}
+	_ = vn
+}

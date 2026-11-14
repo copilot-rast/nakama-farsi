@@ -75,6 +75,26 @@ func (s *service) rpcReportPlayer(ctx context.Context, userID, payload string) (
 	if len([]rune(note)) > playerReportNoteMax {
 		return nil, badRequest("TEXT_TOO_LONG", "note", "at most 1000 letters")
 	}
+	rules, err := loadReportRules(ctx, s.db)
+	if err != nil {
+		return nil, err
+	}
+	if rules.NoteRequired && note == "" {
+		return nil, badRequest("NOTE_REQUIRED", "note", "describe what happened")
+	}
+	if rules.MinAccountHours > 0 {
+		var young bool
+		if err := s.db.QueryRowContext(ctx, `SELECT create_time > now() - $2::INT * INTERVAL '1 hour' FROM users WHERE id=$1`, userID, rules.MinAccountHours).Scan(&young); err != nil {
+			return nil, err
+		}
+		if young {
+			return nil, fail(http.StatusForbidden, "ACCOUNT_TOO_NEW", "", "this account is too new to report players")
+		}
+	}
+	limit, _, err := s.reportLimitFor(ctx, rules, userID)
+	if err != nil {
+		return nil, err
+	}
 	matchID, err := cleanContext("matchId", in.MatchID, 128)
 	if err != nil {
 		return nil, err
@@ -101,21 +121,25 @@ func (s *service) rpcReportPlayer(ctx context.Context, userID, payload string) (
 		if _, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtext('base-player-report:' || $1 || ':' || $2 || ':' || $3))`, userID, target, titleID); err != nil {
 			return err
 		}
-		err := tx.QueryRowContext(ctx, `SELECT id::text FROM base_player_report WHERE reporter_id=$1 AND target_id=$2 AND title_id=$3 AND status IN ('open','reviewing')
-			AND created_at > now() - $4::INT8 * INTERVAL '1 second' ORDER BY created_at DESC LIMIT 1`, userID, target, titleID, int64(playerReportDupWindow.Seconds())).Scan(&id)
-		if err == nil {
-			dup = true
-			return nil
+		if rules.DuplicateHours > 0 {
+			err := tx.QueryRowContext(ctx, `SELECT id::text FROM base_player_report WHERE reporter_id=$1 AND target_id=$2 AND title_id=$3 AND status IN ('open','reviewing')
+				AND created_at > now() - $4::INT * INTERVAL '1 hour' ORDER BY created_at DESC LIMIT 1`, userID, target, titleID, rules.DuplicateHours).Scan(&id)
+			if err == nil {
+				dup = true
+				return nil
+			}
+			if !errors.Is(err, sql.ErrNoRows) {
+				return err
+			}
 		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			return err
-		}
-		d, err := clusterkit.Allow(ctx, tx, "player-report:"+userID, playerReportLimit, playerReportWindow)
-		if err != nil {
-			return err
-		}
-		if !d.Allowed {
-			return fail(http.StatusTooManyRequests, "TOO_MANY_REPORTS", "", "too many reports, try again later")
+		if limit > 0 {
+			d, err := clusterkit.Allow(ctx, tx, "player-report:"+userID, int64(limit), playerReportWindow)
+			if err != nil {
+				return err
+			}
+			if !d.Allowed {
+				return fail(http.StatusTooManyRequests, "TOO_MANY_REPORTS", "", "too many reports, try again later")
+			}
 		}
 		id = uuid.Must(uuid.NewV4()).String()
 		_, err = tx.ExecContext(ctx, `INSERT INTO base_player_report (id, reporter_id, reporter_username, target_id, target_username, title_id, title_key, title, note, match_id, content_id, game_key)
@@ -183,7 +207,23 @@ func (s *service) rpcMyReports(ctx context.Context, userID, payload string) (any
 		}
 		items = append(items, item)
 	}
-	return map[string]any{"lang": lang, "items": items, "total": total, "page": in.Page, "limit": in.Limit}, rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	rules, err := loadReportRules(ctx, s.db)
+	if err != nil {
+		return nil, err
+	}
+	perHour, trusted, err := s.reportLimitFor(ctx, rules, userID)
+	if err != nil {
+		return nil, err
+	}
+	left, err := s.reportsLeft(ctx, userID, perHour)
+	if err != nil {
+		return nil, err
+	}
+	limits := map[string]any{"perHour": perHour, "remaining": left, "trusted": trusted, "noteRequired": rules.NoteRequired, "minAccountHours": rules.MinAccountHours, "duplicateHours": rules.DuplicateHours, "noteMax": playerReportNoteMax}
+	return map[string]any{"lang": lang, "items": items, "total": total, "page": in.Page, "limit": in.Limit, "limits": limits}, nil
 }
 
 func (s *service) playerReportList(w http.ResponseWriter, r *http.Request) {

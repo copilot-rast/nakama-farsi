@@ -227,3 +227,42 @@ func TestPlayerReportReview(t *testing.T) {
 		t.Fatalf("activity rows %d", acts)
 	}
 }
+
+func TestPlayerReportRules(t *testing.T) {
+	h := newHarness(t)
+	resetPlayerReports(h)
+	t.Cleanup(func() {
+		h.s.db.Exec(`UPDATE base_report_rules SET per_hour=10, duplicate_hours=24, min_account_hours=0, note_required=false, trusted_tag_ids='{}', trusted_per_hour=30 WHERE id=1`)
+	})
+	key := "pr_rule_" + strings.ReplaceAll(uuid.Must(uuid.NewV4()).String()[:8], "-", "")
+	h.reportTitle(key)
+	got := h.mustAPI(200, "GET", "/report-rules", nil)
+	if got["perHour"].(float64) != 10 || got["duplicateHours"].(float64) != 24 || got["noteRequired"] != false {
+		t.Fatalf("defaults %v", got)
+	}
+	h.expectError(400, "INVALID_RULE", "PUT", "/report-rules", map[string]any{"perHour": -1})
+	a, b, c := h.user("fa"), h.user("fa"), h.user("fa")
+	trustedTag := h.userTag("trusted"+key, c)
+	h.mustAPI(200, "PUT", "/report-rules", map[string]any{"perHour": 1, "duplicateHours": 0, "minAccountHours": 0, "noteRequired": true, "trustedTagIds": []string{trustedTag}, "trustedPerHour": 0})
+	if code := h.rpcCode(a, "base_report_player", map[string]any{"userId": b, "titleKey": key}); code != "NOTE_REQUIRED" {
+		t.Fatal(code)
+	}
+	first := h.mustRPC(a, "base_report_player", map[string]any{"userId": b, "titleKey": key, "note": "x"})
+	if code := h.rpcCode(a, "base_report_player", map[string]any{"userId": b, "titleKey": key, "note": "x"}); code != "TOO_MANY_REPORTS" {
+		t.Fatalf("no duplicate window: the repeat is a new report and hits the limit: %s %v", code, first)
+	}
+	mine := h.mustRPC(a, "base_my_reports", map[string]any{})
+	if l := mine["limits"].(map[string]any); l["perHour"].(float64) != 1 || l["remaining"].(float64) != 0 || l["noteRequired"] != true || l["trusted"] != false {
+		t.Fatalf("limits %v", l)
+	}
+	for i := 0; i < 5; i++ {
+		h.mustRPC(c, "base_report_player", map[string]any{"userId": b, "titleKey": key, "note": "x"})
+	}
+	if l := h.mustRPC(c, "base_my_reports", map[string]any{})["limits"].(map[string]any); l["trusted"] != true || l["remaining"] != nil {
+		t.Fatalf("trusted unlimited %v", l)
+	}
+	h.mustAPI(200, "PUT", "/report-rules", map[string]any{"perHour": 10, "duplicateHours": 24, "minAccountHours": 48, "trustedPerHour": 30})
+	if code := h.rpcCode(h.user("fa"), "base_report_player", map[string]any{"userId": b, "titleKey": key}); code != "ACCOUNT_TOO_NEW" {
+		t.Fatal(code)
+	}
+}

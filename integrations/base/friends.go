@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -43,18 +44,27 @@ type friendRules struct {
 	MaxFriends          int       `json:"maxFriends"`
 	ExpiryDays          int       `json:"expiryDays"`
 	RejectCooldownHours int       `json:"rejectCooldownHours"`
+	RequestsBonusMeta   string    `json:"requestsBonusMeta"`
+	FriendsBonusMeta    string    `json:"friendsBonusMeta"`
+	MatchPolicy         string    `json:"matchPolicy"`
+	OverLimit           string    `json:"overLimit"`
 	UpdatedBy           string    `json:"updatedBy,omitempty"`
 	UpdatedAt           time.Time `json:"updatedAt"`
 }
 
+var (
+	friendMatchPolicies = []string{"priority", "generous"}
+	friendOverLimits    = []string{"refuse", "trim"}
+)
+
 func defaultFriendRules() friendRules {
-	return friendRules{DailyRequests: 20}
+	return friendRules{DailyRequests: 20, MatchPolicy: "priority", OverLimit: "refuse"}
 }
 
 func loadFriendRules(ctx context.Context, q queryer) (friendRules, error) {
 	r := defaultFriendRules()
-	err := q.QueryRowContext(ctx, `SELECT daily_requests, max_friends, expiry_days, reject_cooldown_hours, updated_by, updated_at FROM base_friend_rules WHERE id=1`).
-		Scan(&r.DailyRequests, &r.MaxFriends, &r.ExpiryDays, &r.RejectCooldownHours, &r.UpdatedBy, &r.UpdatedAt)
+	err := q.QueryRowContext(ctx, `SELECT daily_requests, max_friends, expiry_days, reject_cooldown_hours, requests_bonus_meta, friends_bonus_meta, match_policy, over_limit, updated_by, updated_at FROM base_friend_rules WHERE id=1`).
+		Scan(&r.DailyRequests, &r.MaxFriends, &r.ExpiryDays, &r.RejectCooldownHours, &r.RequestsBonusMeta, &r.FriendsBonusMeta, &r.MatchPolicy, &r.OverLimit, &r.UpdatedBy, &r.UpdatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
 		return defaultFriendRules(), nil
 	}
@@ -62,6 +72,14 @@ func loadFriendRules(ctx context.Context, q queryer) (friendRules, error) {
 }
 
 func (r friendRules) clean() (friendRules, error) {
+	r.RequestsBonusMeta = strings.TrimSpace(r.RequestsBonusMeta)
+	r.FriendsBonusMeta = strings.TrimSpace(r.FriendsBonusMeta)
+	if r.MatchPolicy == "" {
+		r.MatchPolicy = "priority"
+	}
+	if r.OverLimit == "" {
+		r.OverLimit = "refuse"
+	}
 	switch {
 	case r.DailyRequests < 0 || r.DailyRequests > 1000:
 		return r, badRequest("INVALID_RULE", "dailyRequests", "between 0 and 1000")
@@ -71,8 +89,26 @@ func (r friendRules) clean() (friendRules, error) {
 		return r, badRequest("INVALID_RULE", "expiryDays", "between 0 and 365")
 	case r.RejectCooldownHours < 0 || r.RejectCooldownHours > 8760:
 		return r, badRequest("INVALID_RULE", "rejectCooldownHours", "between 0 and 8760")
+	case !validKeyType(friendMatchPolicies, r.MatchPolicy):
+		return r, badRequest("INVALID_RULE", "matchPolicy", "priority or generous")
+	case !validKeyType(friendOverLimits, r.OverLimit):
+		return r, badRequest("INVALID_RULE", "overLimit", "refuse or trim")
 	}
 	return r, nil
+}
+
+func (s *service) checkMetaKey(ctx context.Context, field, key string) error {
+	if key == "" {
+		return nil
+	}
+	var ok bool
+	if err := s.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_meta WHERE key=$1)`, key).Scan(&ok); err != nil {
+		return err
+	}
+	if !ok {
+		return badRequest("META_NOT_FOUND", field, "no meta with this key")
+	}
+	return nil
 }
 
 func (s *service) friendRulesGet(w http.ResponseWriter, r *http.Request) {
@@ -91,15 +127,22 @@ func (s *service) friendRulesPut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rules, err := in.clean()
+	if err == nil {
+		err = s.checkMetaKey(r.Context(), "requestsBonusMeta", rules.RequestsBonusMeta)
+	}
+	if err == nil {
+		err = s.checkMetaKey(r.Context(), "friendsBonusMeta", rules.FriendsBonusMeta)
+	}
 	if err != nil {
 		s.writeError(w, err)
 		return
 	}
-	_, err = s.db.ExecContext(r.Context(), `INSERT INTO base_friend_rules (id, daily_requests, max_friends, expiry_days, reject_cooldown_hours, updated_by, updated_at)
-		VALUES (1,$1,$2,$3,$4,$5,now())
+	_, err = s.db.ExecContext(r.Context(), `INSERT INTO base_friend_rules (id, daily_requests, max_friends, expiry_days, reject_cooldown_hours, requests_bonus_meta, friends_bonus_meta, match_policy, over_limit, updated_by, updated_at)
+		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$9,now())
 		ON CONFLICT (id) DO UPDATE SET daily_requests=EXCLUDED.daily_requests, max_friends=EXCLUDED.max_friends, expiry_days=EXCLUDED.expiry_days,
-		reject_cooldown_hours=EXCLUDED.reject_cooldown_hours, updated_by=EXCLUDED.updated_by, updated_at=now()`,
-		rules.DailyRequests, rules.MaxFriends, rules.ExpiryDays, rules.RejectCooldownHours, consoleUser(r))
+		reject_cooldown_hours=EXCLUDED.reject_cooldown_hours, requests_bonus_meta=EXCLUDED.requests_bonus_meta, friends_bonus_meta=EXCLUDED.friends_bonus_meta,
+		match_policy=EXCLUDED.match_policy, over_limit=EXCLUDED.over_limit, updated_by=EXCLUDED.updated_by, updated_at=now()`,
+		rules.DailyRequests, rules.MaxFriends, rules.ExpiryDays, rules.RejectCooldownHours, rules.RequestsBonusMeta, rules.FriendsBonusMeta, rules.MatchPolicy, rules.OverLimit, consoleUser(r))
 	if err != nil {
 		s.writeError(w, err)
 		return
@@ -213,9 +256,10 @@ func (s *service) friendFailure(ctx context.Context, userID string, e *friendErr
 }
 
 type friendTarget struct {
-	ID     string
-	Mine   int
-	Theirs int
+	ID       string
+	Username string
+	Mine     int
+	Theirs   int
 }
 
 func (s *service) friendTargets(ctx context.Context, userID string, ids, usernames []string) ([]friendTarget, error) {
@@ -228,7 +272,7 @@ func (s *service) friendTargets(ctx context.Context, userID string, ids, usernam
 	if usernames == nil {
 		usernames = []string{}
 	}
-	rows, err := s.db.QueryContext(ctx, `SELECT u.id::text, COALESCE(mine.state, -1), COALESCE(theirs.state, -1) FROM users u
+	rows, err := s.db.QueryContext(ctx, `SELECT u.id::text, u.username, COALESCE(mine.state, -1), COALESCE(theirs.state, -1) FROM users u
 		LEFT JOIN user_edge mine ON mine.source_id=$1::uuid AND mine.destination_id=u.id
 		LEFT JOIN user_edge theirs ON theirs.source_id=u.id AND theirs.destination_id=$1::uuid
 		WHERE (u.id = ANY($2::uuid[]) OR u.username = ANY($3::text[])) AND u.id <> $1::uuid AND u.id <> '00000000-0000-0000-0000-000000000000'::uuid`, userID, valid, usernames)
@@ -239,7 +283,7 @@ func (s *service) friendTargets(ctx context.Context, userID string, ids, usernam
 	out := []friendTarget{}
 	for rows.Next() {
 		var t friendTarget
-		if err := rows.Scan(&t.ID, &t.Mine, &t.Theirs); err != nil {
+		if err := rows.Scan(&t.ID, &t.Username, &t.Mine, &t.Theirs); err != nil {
 			return nil, err
 		}
 		out = append(out, t)
@@ -259,23 +303,75 @@ func (s *service) sentToday(ctx context.Context, userID, day string) (int, error
 	return n, err
 }
 
-func (s *service) checkFriendAdd(ctx context.Context, userID string, in *api.AddFriendsRequest) error {
+func (s *service) reserveRequests(ctx context.Context, userID, day string, want, limit int, trim bool) (int, error) {
+	took := 0
+	err := s.inTx(ctx, func(tx *sql.Tx) error {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO base_friend_request_day (user_id, day, count) VALUES ($1::uuid, $2::date, 0) ON CONFLICT (user_id, day) DO NOTHING`, userID, day); err != nil {
+			return err
+		}
+		var count int
+		if err := tx.QueryRowContext(ctx, `SELECT count FROM base_friend_request_day WHERE user_id=$1::uuid AND day=$2::date FOR UPDATE`, userID, day).Scan(&count); err != nil {
+			return err
+		}
+		took = want
+		if limit > 0 && count+want > limit {
+			if !trim {
+				took = 0
+				return nil
+			}
+			took = max(limit-count, 0)
+		}
+		if took == 0 {
+			return nil
+		}
+		_, err := tx.ExecContext(ctx, `UPDATE base_friend_request_day SET count = count + $3, updated_at = now() WHERE user_id=$1::uuid AND day=$2::date`, userID, day, took)
+		return err
+	})
+	return took, err
+}
+
+func orderTargets(targets []friendTarget, in *api.AddFriendsRequest) {
+	rank := map[string]int{}
+	for i, id := range in.GetIds() {
+		if _, ok := rank[strings.TrimSpace(id)]; !ok {
+			rank[strings.TrimSpace(id)] = i
+		}
+	}
+	for i, name := range in.GetUsernames() {
+		if _, ok := rank["u:"+name]; !ok {
+			rank["u:"+name] = len(in.GetIds()) + i
+		}
+	}
+	pos := func(t friendTarget) int {
+		if v, ok := rank[t.ID]; ok {
+			return v
+		}
+		if v, ok := rank["u:"+t.Username]; ok {
+			return v
+		}
+		return 1 << 30
+	}
+	sort.SliceStable(targets, func(i, j int) bool { return pos(targets[i]) < pos(targets[j]) })
+}
+
+func (s *service) checkFriendAdd(ctx context.Context, userID string, in *api.AddFriendsRequest) (*api.AddFriendsRequest, error) {
 	if len(in.GetIds())+len(in.GetUsernames()) > friendLookupMax {
-		return &friendError{Code: CodeFriendTooManyNames, Limit: friendLookupMax, grpc: codes.InvalidArgument}
+		return nil, &friendError{Code: CodeFriendTooManyNames, Limit: friendLookupMax, grpc: codes.InvalidArgument}
 	}
 	rules, err := loadFriendRules(ctx, s.db)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if rules.ExpiryDays > 0 {
 		if _, err := s.expireInvites(ctx, userID, rules.ExpiryDays, friendLookupMax); err != nil {
-			return err
+			return nil, err
 		}
 	}
 	targets, err := s.friendTargets(ctx, userID, in.GetIds(), in.GetUsernames())
 	if err != nil {
-		return err
+		return nil, err
 	}
+	orderTargets(targets, in)
 	invites := []string{}
 	accepts := []string{}
 	for _, t := range targets {
@@ -287,69 +383,72 @@ func (s *service) checkFriendAdd(ctx context.Context, userID string, in *api.Add
 		}
 	}
 	if len(invites) == 0 && len(accepts) == 0 {
-		return nil
+		return in, nil
 	}
-	if rules.MaxFriends > 0 {
+	eff, err := s.effectiveFriendLimits(ctx, rules, userID)
+	if err != nil {
+		return nil, err
+	}
+	if eff.MaxFriends > 0 {
 		n, err := s.friendCount(ctx, userID)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		if n+len(accepts) > rules.MaxFriends || (len(invites) > 0 && n >= rules.MaxFriends) {
-			return &friendError{Code: CodeFriendLimit, Limit: rules.MaxFriends, grpc: codes.FailedPrecondition}
+		if n+len(accepts) > eff.MaxFriends || (len(invites) > 0 && n >= eff.MaxFriends) {
+			return nil, &friendError{Code: CodeFriendLimit, Limit: eff.MaxFriends, grpc: codes.FailedPrecondition}
 		}
-		for _, id := range accepts {
-			other, err := s.friendCount(ctx, id)
-			if err != nil {
-				return err
-			}
-			if other >= rules.MaxFriends {
-				return &friendError{Code: CodeFriendTargetLimit, Limit: rules.MaxFriends, UserID: id, grpc: codes.FailedPrecondition}
-			}
+	}
+	for _, id := range accepts {
+		other, err := s.effectiveFriendLimits(ctx, rules, id)
+		if err != nil {
+			return nil, err
+		}
+		if other.MaxFriends == 0 {
+			continue
+		}
+		n, err := s.friendCount(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		if n >= other.MaxFriends {
+			return nil, &friendError{Code: CodeFriendTargetLimit, Limit: other.MaxFriends, UserID: id, grpc: codes.FailedPrecondition}
 		}
 	}
 	if len(invites) == 0 {
-		return nil
+		return in, nil
 	}
-	if rules.RejectCooldownHours > 0 {
+	if eff.RejectCooldownHours > 0 {
 		var rejecter string
 		var at time.Time
 		err := s.db.QueryRowContext(ctx, `SELECT rejecter_id::text, rejected_at FROM base_friend_rejection WHERE requester_id=$1::uuid AND rejecter_id = ANY($2::uuid[])
-			AND rejected_at > now() - $3::INT * INTERVAL '1 hour' ORDER BY rejected_at DESC LIMIT 1`, userID, invites, rules.RejectCooldownHours).Scan(&rejecter, &at)
+			AND rejected_at > now() - $3::INT * INTERVAL '1 hour' ORDER BY rejected_at DESC LIMIT 1`, userID, invites, eff.RejectCooldownHours).Scan(&rejecter, &at)
 		if err == nil {
-			retry := at.Add(time.Duration(rules.RejectCooldownHours) * time.Hour).UTC().Format(time.RFC3339)
-			return &friendError{Code: CodeFriendCooldown, RetryAt: retry, UserID: rejecter, grpc: codes.FailedPrecondition}
+			retry := at.Add(time.Duration(eff.RejectCooldownHours) * time.Hour).UTC().Format(time.RFC3339)
+			return nil, &friendError{Code: CodeFriendCooldown, RetryAt: retry, UserID: rejecter, grpc: codes.FailedPrecondition}
 		}
 		if !errors.Is(err, sql.ErrNoRows) {
-			return err
+			return nil, err
 		}
 	}
 	zone := projectZone(ctx, s.db)
 	day, reset := dayBounds(s.now(), zone)
-	limit := rules.DailyRequests
-	if limit == 0 {
-		limit = 1 << 30
+	took, err := s.reserveRequests(ctx, userID, day, len(invites), eff.DailyRequests, rules.OverLimit == "trim")
+	if err != nil {
+		return nil, err
 	}
-	resetISO := reset.UTC().Format(time.RFC3339)
-	refuse := func() error {
+	if took == 0 {
 		sent, err := s.sentToday(ctx, userID, day)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		left := max(rules.DailyRequests-sent, 0)
-		return &friendError{Code: CodeFriendDailyLimit, Limit: rules.DailyRequests, Remaining: &left, ResetsAt: resetISO, grpc: codes.ResourceExhausted}
+		left := max(eff.DailyRequests-sent, 0)
+		return nil, &friendError{Code: CodeFriendDailyLimit, Limit: eff.DailyRequests, Remaining: &left, ResetsAt: reset.UTC().Format(time.RFC3339), grpc: codes.ResourceExhausted}
 	}
-	if len(invites) > limit {
-		return refuse()
+	if took == len(invites) {
+		return in, nil
 	}
-	var count int
-	err = s.db.QueryRowContext(ctx, `INSERT INTO base_friend_request_day (user_id, day, count) VALUES ($1::uuid, $2::date, $3)
-		ON CONFLICT (user_id, day) DO UPDATE SET count = base_friend_request_day.count + EXCLUDED.count, updated_at = now()
-		WHERE base_friend_request_day.count + EXCLUDED.count <= $4
-		RETURNING count`, userID, day, len(invites), limit).Scan(&count)
-	if errors.Is(err, sql.ErrNoRows) {
-		return refuse()
-	}
-	return err
+	ids := append(append([]string{}, accepts...), invites[:took]...)
+	return &api.AddFriendsRequest{Ids: ids, Metadata: in.GetMetadata()}, nil
 }
 
 func (s *service) beforeAddFriends(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AddFriendsRequest) (*api.AddFriendsRequest, error) {
@@ -357,14 +456,15 @@ func (s *service) beforeAddFriends(ctx context.Context, _ runtime.Logger, _ *sql
 	if userID == "" || in == nil {
 		return in, nil
 	}
-	if err := s.checkFriendAdd(ctx, userID, in); err != nil {
+	out, err := s.checkFriendAdd(ctx, userID, in)
+	if err != nil {
 		var fe *friendError
 		if errors.As(err, &fe) {
 			return nil, s.friendFailure(ctx, userID, fe, projectZone(ctx, s.db))
 		}
 		return nil, s.hookFailure(err)
 	}
-	return in, nil
+	return out, nil
 }
 
 func (s *service) afterAddFriends(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AddFriendsRequest) error {
@@ -515,6 +615,10 @@ func (s *service) rpcFriendRules(ctx context.Context, userID, payload string) (a
 	if err != nil {
 		return nil, err
 	}
+	eff, err := s.effectiveFriendLimits(ctx, rules, userID)
+	if err != nil {
+		return nil, err
+	}
 	zone := projectZone(ctx, s.db)
 	day, reset := dayBounds(s.now(), zone)
 	sent, err := s.sentToday(ctx, userID, day)
@@ -525,19 +629,31 @@ func (s *service) rpcFriendRules(ctx context.Context, userID, payload string) (a
 	if err != nil {
 		return nil, err
 	}
-	var remaining any
-	if rules.DailyRequests > 0 {
-		remaining = max(rules.DailyRequests-sent, 0)
+	var remaining, slotsLeft any
+	if eff.DailyRequests > 0 {
+		remaining = max(eff.DailyRequests-sent, 0)
+	}
+	if eff.MaxFriends > 0 {
+		slotsLeft = max(eff.MaxFriends-friends, 0)
+	}
+	var tier any
+	if eff.TierID != "" {
+		tier = map[string]any{"id": eff.TierID, "name": eff.TierName}
 	}
 	return map[string]any{
-		"dailyRequests":       rules.DailyRequests,
+		"dailyRequests":       eff.DailyRequests,
 		"sentToday":           sent,
 		"remainingToday":      remaining,
 		"resetsAt":            reset.UTC().Format(time.RFC3339),
-		"maxFriends":          rules.MaxFriends,
+		"maxFriends":          eff.MaxFriends,
 		"friends":             friends,
+		"friendSlotsLeft":     slotsLeft,
 		"expiryDays":          rules.ExpiryDays,
-		"rejectCooldownHours": rules.RejectCooldownHours,
+		"rejectCooldownHours": eff.RejectCooldownHours,
+		"base":                map[string]any{"dailyRequests": eff.BaseDaily, "maxFriends": eff.BaseMax},
+		"bonus":               map[string]any{"dailyRequests": eff.BonusDaily, "maxFriends": eff.BonusMax},
+		"tier":                tier,
+		"overLimit":           rules.OverLimit,
 		"timeZone":            zone.String(),
 	}, nil
 }

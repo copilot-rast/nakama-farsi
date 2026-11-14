@@ -44,12 +44,16 @@ type voiceSettings struct {
 	TTLSeconds int               `json:"ttlSeconds"`
 	OpenRooms  bool              `json:"openRooms"`
 	CanPublish bool              `json:"canPublish"`
+	Allowed    []string          `json:"allowedTagIds"`
+	ListenOnly []string          `json:"listenOnlyTagIds"`
+	PerMinute  int               `json:"tokensPerMinute"`
+	MaxPlayers int               `json:"maxRoomPlayers"`
 	UpdatedBy  string            `json:"updatedBy"`
 	UpdatedAt  time.Time         `json:"updatedAt"`
 }
 
 func defaultVoiceSettings() voiceSettings {
-	return voiceSettings{Config: map[string]string{}, Secrets: map[string]string{}, TTLSeconds: 600, CanPublish: true}
+	return voiceSettings{Config: map[string]string{}, Secrets: map[string]string{}, TTLSeconds: 600, CanPublish: true, Allowed: []string{}, ListenOnly: []string{}, PerMinute: voiceTokenLimit}
 }
 
 func (s *service) configureVoice(env map[string]string) {
@@ -63,9 +67,9 @@ func (s *service) configureVoice(env map[string]string) {
 
 func (s *service) loadVoiceSettings(ctx context.Context, q queryer) (voiceSettings, error) {
 	out := defaultVoiceSettings()
-	var cfg, sealed string
-	err := q.QueryRowContext(ctx, `SELECT enabled, provider, config::text, secrets_sealed, ttl_seconds, open_rooms, can_publish, updated_by, updated_at FROM base_voice_settings WHERE id=1`).
-		Scan(&out.Enabled, &out.Provider, &cfg, &sealed, &out.TTLSeconds, &out.OpenRooms, &out.CanPublish, &out.UpdatedBy, &out.UpdatedAt)
+	var cfg, sealed, allowed, listen string
+	err := q.QueryRowContext(ctx, `SELECT enabled, provider, config::text, secrets_sealed, ttl_seconds, open_rooms, can_publish, to_jsonb(allowed_tag_ids)::text, to_jsonb(listen_only_tag_ids)::text, tokens_per_minute, max_room_players, updated_by, updated_at FROM base_voice_settings WHERE id=1`).
+		Scan(&out.Enabled, &out.Provider, &cfg, &sealed, &out.TTLSeconds, &out.OpenRooms, &out.CanPublish, &allowed, &listen, &out.PerMinute, &out.MaxPlayers, &out.UpdatedBy, &out.UpdatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
 		return out, nil
 	}
@@ -73,6 +77,14 @@ func (s *service) loadVoiceSettings(ctx context.Context, q queryer) (voiceSettin
 		return out, err
 	}
 	_ = json.Unmarshal([]byte(cfg), &out.Config)
+	_ = json.Unmarshal([]byte(allowed), &out.Allowed)
+	_ = json.Unmarshal([]byte(listen), &out.ListenOnly)
+	if out.Allowed == nil {
+		out.Allowed = []string{}
+	}
+	if out.ListenOnly == nil {
+		out.ListenOnly = []string{}
+	}
 	if out.Config == nil {
 		out.Config = map[string]string{}
 	}
@@ -102,7 +114,8 @@ func (v voiceSettings) view() map[string]any {
 		}
 	}
 	return map[string]any{"enabled": v.Enabled, "provider": v.Provider, "config": v.Config, "secrets": masked, "ttlSeconds": v.TTLSeconds,
-		"openRooms": v.OpenRooms, "canPublish": v.CanPublish, "updatedBy": v.UpdatedBy, "updatedAt": v.UpdatedAt}
+		"openRooms": v.OpenRooms, "canPublish": v.CanPublish, "allowedTagIds": v.Allowed, "listenOnlyTagIds": v.ListenOnly, "tokensPerMinute": v.PerMinute, "maxRoomPlayers": v.MaxPlayers,
+		"updatedBy": v.UpdatedBy, "updatedAt": v.UpdatedAt}
 }
 
 func voiceProviders() []map[string]any {
@@ -127,9 +140,33 @@ func (s *service) voiceSettingsGet(w http.ResponseWriter, r *http.Request) {
 
 func (s *service) voiceMerge(old voiceSettings, in voiceSettings) (voiceSettings, error) {
 	in.Provider = strings.TrimSpace(in.Provider)
-	out := voiceSettings{Enabled: in.Enabled, Provider: in.Provider, Config: map[string]string{}, Secrets: map[string]string{}, TTLSeconds: in.TTLSeconds, OpenRooms: in.OpenRooms, CanPublish: in.CanPublish}
+	out := voiceSettings{Enabled: in.Enabled, Provider: in.Provider, Config: map[string]string{}, Secrets: map[string]string{}, TTLSeconds: in.TTLSeconds, OpenRooms: in.OpenRooms, CanPublish: in.CanPublish,
+		Allowed: []string{}, ListenOnly: []string{}, PerMinute: in.PerMinute, MaxPlayers: in.MaxPlayers}
 	if out.TTLSeconds < 60 || out.TTLSeconds > 86400 {
 		return out, badRequest("INVALID_RULE", "ttlSeconds", "between 60 and 86400 seconds")
+	}
+	if out.PerMinute < 1 || out.PerMinute > 600 {
+		return out, badRequest("INVALID_RULE", "tokensPerMinute", "between 1 and 600")
+	}
+	if out.MaxPlayers < 0 || out.MaxPlayers > 1000 {
+		return out, badRequest("INVALID_RULE", "maxRoomPlayers", "between 0 and 1000")
+	}
+	for _, list := range []struct {
+		field string
+		in    []string
+		out   *[]string
+	}{{"allowedTagIds", in.Allowed, &out.Allowed}, {"listenOnlyTagIds", in.ListenOnly, &out.ListenOnly}} {
+		if len(list.in) == 0 {
+			continue
+		}
+		tags, err := s.userTagIDs(context.Background(), s.db, list.in)
+		if err != nil {
+			if app, ok := asApp(err); ok {
+				app.Field = list.field
+			}
+			return out, err
+		}
+		*list.out = tags
 	}
 	if out.Provider == "" {
 		if out.Enabled {
@@ -212,11 +249,12 @@ func (s *service) voiceSettingsPut(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	cfg, _ := json.Marshal(next.Config)
-	_, err = s.db.ExecContext(r.Context(), `INSERT INTO base_voice_settings (id, enabled, provider, config, secrets_sealed, ttl_seconds, open_rooms, can_publish, updated_by, updated_at)
-		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,now())
+	_, err = s.db.ExecContext(r.Context(), `INSERT INTO base_voice_settings (id, enabled, provider, config, secrets_sealed, ttl_seconds, open_rooms, can_publish, allowed_tag_ids, listen_only_tag_ids, tokens_per_minute, max_room_players, updated_by, updated_at)
+		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,now())
 		ON CONFLICT (id) DO UPDATE SET enabled=EXCLUDED.enabled, provider=EXCLUDED.provider, config=EXCLUDED.config, secrets_sealed=EXCLUDED.secrets_sealed,
-		ttl_seconds=EXCLUDED.ttl_seconds, open_rooms=EXCLUDED.open_rooms, can_publish=EXCLUDED.can_publish, updated_by=EXCLUDED.updated_by, updated_at=now()`,
-		next.Enabled, next.Provider, string(cfg), sealed, next.TTLSeconds, next.OpenRooms, next.CanPublish, consoleUser(r))
+		ttl_seconds=EXCLUDED.ttl_seconds, open_rooms=EXCLUDED.open_rooms, can_publish=EXCLUDED.can_publish, allowed_tag_ids=EXCLUDED.allowed_tag_ids,
+		listen_only_tag_ids=EXCLUDED.listen_only_tag_ids, tokens_per_minute=EXCLUDED.tokens_per_minute, max_room_players=EXCLUDED.max_room_players, updated_by=EXCLUDED.updated_by, updated_at=now()`,
+		next.Enabled, next.Provider, string(cfg), sealed, next.TTLSeconds, next.OpenRooms, next.CanPublish, next.Allowed, next.ListenOnly, next.PerMinute, next.MaxPlayers, consoleUser(r))
 	if err != nil {
 		s.writeError(w, err)
 		return
@@ -419,7 +457,16 @@ func (s *service) rpcVoiceToken(ctx context.Context, userID, payload string) (an
 	if !settings.Enabled || settings.Provider == "" {
 		return map[string]any{"enabled": false, "reason": "VOICE_DISABLED"}, nil
 	}
-	d, err := clusterkit.Allow(ctx, s.db, "voice-token:"+userID, voiceTokenLimit, voiceTokenWindow)
+	if len(settings.Allowed) > 0 {
+		ok, err := s.hasAnyTag(ctx, userID, settings.Allowed)
+		if err != nil {
+			return nil, err
+		}
+		if !ok {
+			return map[string]any{"enabled": false, "reason": "VOICE_NOT_FOR_PLAYER"}, nil
+		}
+	}
+	d, err := clusterkit.Allow(ctx, s.db, "voice-token:"+userID, int64(settings.PerMinute), voiceTokenWindow)
 	if err != nil {
 		return nil, err
 	}
@@ -460,9 +507,14 @@ func (s *service) rpcVoiceToken(ctx context.Context, userID, payload string) (an
 		}
 		target = voiceTarget{room: "room." + in.GameKey + "." + in.Room, gameKey: in.GameKey}
 	}
+	roomMax := settings.MaxPlayers
 	if target.gameKey != "" {
 		var voiceOn, active bool
-		err := s.db.QueryRowContext(ctx, `SELECT voice_enabled, is_active FROM economy_game WHERE key=$1`, target.gameKey).Scan(&voiceOn, &active)
+		var gameMax sql.NullInt64
+		err := s.db.QueryRowContext(ctx, `SELECT voice_enabled, is_active, voice_max_players FROM economy_game WHERE key=$1`, target.gameKey).Scan(&voiceOn, &active, &gameMax)
+		if err == nil && gameMax.Valid {
+			roomMax = int(gameMax.Int64)
+		}
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
 			if in.Room != "" {
@@ -479,9 +531,24 @@ func (s *service) rpcVoiceToken(ctx context.Context, userID, payload string) (an
 	if !voice.ValidRoom(target.room) {
 		return nil, badRequest("INVALID_ROOM", "room", "room name is not valid")
 	}
+	if roomMax > 0 && len(target.players) > roomMax {
+		inside := false
+		for _, p := range target.players[:roomMax] {
+			inside = inside || p.ID == userID
+		}
+		if !inside {
+			return nil, fail(http.StatusConflict, "VOICE_ROOM_FULL", "", "the voice room is full")
+		}
+		target.players = target.players[:roomMax]
+	}
 	canPublish := settings.CanPublish
 	if mute, err := restrict.Active(ctx, s.db, userID, restrict.KindMute); err == nil && mute != nil {
 		canPublish = false
+	}
+	if canPublish && len(settings.ListenOnly) > 0 {
+		if listen, err := s.hasAnyTag(ctx, userID, settings.ListenOnly); err == nil && listen {
+			canPublish = false
+		}
 	}
 	var name string
 	_ = s.db.QueryRowContext(ctx, `SELECT COALESCE(NULLIF(display_name,''), username) FROM users WHERE id=$1`, userID).Scan(&name)

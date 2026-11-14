@@ -102,7 +102,7 @@ func consoleBaseAuditLog(ctx context.Context, logger *zap.Logger, db *sql.DB, me
 	if strings.HasPrefix(pattern, "/v2/console/base/players") || strings.HasPrefix(pattern, "/v2/console/base/restrictions") || strings.HasPrefix(pattern, "/v2/console/base/activity") {
 		mod = basePlayersAudit
 	}
-	for _, prefix := range []string{"/v2/console/base/chat-words", "/v2/console/base/report-titles", "/v2/console/base/reports", "/v2/console/base/player-reports"} {
+	for _, prefix := range []string{"/v2/console/base/chat-words", "/v2/console/base/report-titles", "/v2/console/base/reports", "/v2/console/base/player-reports", "/v2/console/base/report-rules"} {
 		if strings.HasPrefix(pattern, prefix) {
 			mod = baseChatAudit
 		}
