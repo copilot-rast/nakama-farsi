@@ -396,3 +396,46 @@ Console API (`/v2/console/base/player-reports`, `CHANNEL_MESSAGE` like chat repo
 `GET /players/{id}` adds `playerReports {against, by, open}`.
 
 Console: page «گزارش بازیکن‌ها» (`#/moderation/player-reports[/<id>]`, `CHANNEL_MESSAGE`, badge with open and reviewing reports) after «گزارش‌ها» in «بازیکنان و گفتگو»: filters (status with «باز یا در حال بررسی» by default, reason, player id), rows with the reported player, the player's note, context chips (game, match, content), reason with the count against the player, reporter and status; the review page shows the report, the reported player (tags, status, counts, links to restrictions, player reports and chat reports), the internal notes with «افزودن یادداشت», «برمی‌دارم برای بررسی» / «برگرداندن به صف», and the decision (dismiss, warn, mute or suspend with the duration chips and translated message used for chat reports, «گزارش‌های باز دیگر علیه این بازیکن هم با همین تصمیم بسته شوند»). The native player page card links to the player reports against the player.
+
+## Voice chat (phase 18)
+
+Generic voice chat tokens for any game, with the voice service chosen in the console, not in the environment. Code: `internal/voice` (provider registry, LiveKit and comms providers) and `integrations/base/voice.go` (settings, console API, `voice_token`). Migration `20261124000002-base-voice.sql` (Up re-runnable, Down raises) creates `base_voice_settings` (row 1, voice off) and adds `economy_game.voice_enabled` (default true).
+
+### Providers (`internal/voice`)
+
+A provider is one file that calls `voice.Register(voice.Spec{Kind, Fields, New})` in `init`. `Fields` (`name`, `kind` `text|url|wsurl`, `secret`, `required`) drive the console form, `voice.Validate` and which values are sealed; `New(cfg, httpClient)` returns a `Provider` with `Token(ctx, Request) (Grant, error)` and `Test(ctx) error`. Adding a third provider is one new file plus its labels (`vc.provider.<kind>`, `vc.about.<kind>`, `f.vc.<kind>.<field>` and `.hint` in `console/ui/economy/src/i18n.js`); nothing else changes.
+
+| Kind | Fields | Token | Test connection |
+|---|---|---|---|
+| `livekit` | `url` (ws/wss/http/https), `apiKey`, `apiSecret` (secret) | signed here: HS256 JWT with `iss` = API key, `sub` = Nakama user id, `name` = display name, `nbf` (−10 s), `iat`, `exp` = now + lifetime, `jti`, `video {roomJoin: true, room, canPublish, canSubscribe: true, canPublishData: false}`, `metadata` `{"gameKey"}`; `url` is returned as ws/wss | `POST <http url>/twirp/livekit.RoomService/ListRooms` with a one-minute `roomList` token: 200 ok, 401/403 `VOICE_BAD_CREDENTIALS` |
+| `comms` (Rastaar comms) | `url` (server to server), `publicUrl` (for games, defaults to `url`), `serverKey` (secret, the app's `ck_…` key) | `POST /v1/server/game-rooms/{room}/players/{userId}/token` with `Authorization: Bearer <serverKey>` → `{token, expires_at}`; on 404 or `room_closed` it opens the room (`POST /v1/server/game-rooms {match_id, players:[{id,name}], video:false, ttl_seconds}`, retried without `ttl_seconds` when comms refuses it) and asks again; on `not_listed` it adds the player (`PUT …/players/{userId} {name}`) and asks again. The token is comms' one-time join token; the game exchanges it at `POST <publicUrl>/v1/game/join` (the comms SDK does this) | `GET /healthz`, then `GET /v1/server/game-rooms/<random>` with the key: 404 ok, 401/403 `VOICE_BAD_CREDENTIALS` |
+
+Provider errors map to `VOICE_BAD_CREDENTIALS`, `VOICE_ROOM_FULL`, `VOICE_PROVIDER_BUSY`, `VOICE_PROVIDER_UNAVAILABLE`, `VOICE_PROVIDER_TIMEOUT`, `VOICE_PROVIDER_ERROR`. HTTP calls use a 5 s client.
+
+### Settings (`base_voice_settings`, row 1)
+
+`enabled` (false), `provider` (`''`, `livekit`, `comms`), `config` (the provider's non-secret fields), `secrets_sealed` (the secret fields as JSON sealed with `internal/secretbox` box `BaseVoice`, HKDF info `base-voice-secrets` from `ECONOMY_SECRET_KEY`), `ttl_seconds` (600, 60–86400), `open_rooms` (false), `can_publish` (true), `updated_by/at`. Secrets are never returned: the console gets `********` for a saved secret, sends it back unchanged to keep it (only while the provider stays the same) and an empty value to clear it. Without `ECONOMY_SECRET_KEY` a secret cannot be saved (`VOICE_SEAL_UNAVAILABLE`).
+
+Console API (`SETTINGS`, audit-logged with secrets masked; the test as invoke):
+
+| Route | Notes |
+|---|---|
+| `GET /v2/console/base/voice/settings` | settings with masked `secrets`, `providers` (kind and fields from the registry), `canSeal` |
+| `PUT /v2/console/base/voice/settings` | `{enabled, provider, config, secrets, ttlSeconds, openRooms, canPublish}`; unknown fields of a provider are dropped; `VOICE_PROVIDER_REQUIRED` (on without a provider), `INVALID_VOICE_PROVIDER`, `VOICE_FIELD_REQUIRED`, `INVALID_URL`, `VOICE_FIELD_TOO_LONG` (with `field` = the provider field), `INVALID_RULE` (`ttlSeconds`) |
+| `POST /v2/console/base/voice/test` | empty body tests the saved settings; a body like PUT tests those values (masked secrets are taken from the saved ones). Answers 200 `{ok, provider, ms, code?, status?}`; 10 tests a minute per console user (`TOO_MANY_TESTS`) |
+
+### Client RPC `voice_token`
+
+Input: exactly one of `matchId`, `partyId` or `room` (`VOICE_ROOM_REQUIRED`), and an optional `gameKey`. Output: `{enabled: true, provider, url, token, room, identity, expiresAt, canPublish, gameKey}`, or `{enabled: false, reason}` with no error when voice is off (`VOICE_DISABLED`), not usable (`VOICE_NOT_CONFIGURED`, e.g. sealed secrets without the key), off for the game (`GAME_VOICE_DISABLED`) or the game is off for an open room (`GAME_DISABLED`). `enabled` and `token` keep the shape the Rakhtkan client already reads (`{enabled, token}` from the legacy `voice.go`).
+
+Who may join:
+
+- `matchId` (`<uuid>.<node>`): a player of a games-registry match (`economy_game_match` open or started, with an `economy_game_entry` that is pending, paid or free; read from the database, so it works on any node), else a presence in the match stream (`MatchGet` then the authoritative or relayed match stream). The room is the match id; the game key comes from the registry match or the authoritative handler name, never from the client. `NOT_IN_MATCH` (403), `MATCH_NOT_FOUND` (404).
+- `partyId`: a presence in the party stream; room `party.<partyId>`; `NOT_IN_PARTY`.
+- `room` + `gameKey`: only when «اتاق‌های باز هر بازی» is on (`ROOM_NOT_ALLOWED`), room key `^[a-z0-9_-]{1,48}$` (`INVALID_ROOM`), the game must exist (`GAME_NOT_FOUND`, `GAME_KEY_REQUIRED`); room `room.<gameKey>.<room>`.
+
+Then the game's `voice_enabled` is checked, a muted player (`base_restriction`) gets `canPublish: false` (listen only), and 30 tokens a minute per player are allowed (`clusterkit.Allow`, `VOICE_RATE_LIMITED`, 429). The identity is the Nakama user id and the name the display name (or username). Stream presence checks read this node's tracker; in cluster mode use registry matches (database) for reliable checks across nodes.
+
+### Console
+
+Project settings section «سرور ویس» (`#/project-settings/voice`, `SETTINGS`), before «ریپوی بالایی»: state line, «چت صوتی روشن باشد», provider select (fields of the chosen provider with a short note, secrets as password fields shown as `********` once saved), token lifetime, «بازیکن بتواند حرف بزند», «اتاق‌های باز هر بازی», «امتحان اتصال» (result with the time in ms or the translated error) and save. Games editor: «چت صوتی» switch; games list chip «بی‌ویس».

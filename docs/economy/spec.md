@@ -511,6 +511,8 @@ Owner's idea (2026-11-13): one Nakama hosts many games (for example a «Hot Boar
 
 `economy_game` (key, on/off, name, description, maintenance message per language, icon, `game` category and tags, sort, min/max players, turn seconds, match seconds, bots allowed, rooms JSON `[{key, name, entryFee: {currencyKey, amount}, prizeId | prizeGroupId, minLevel}]` up to 20, leaderboard id, platforms, min/max app version, settings), `economy_game_version`, `economy_game_match` (match id, game, room, `open` → `started` → `finished`, or `cancelled`, players, winners), `economy_game_entry` (match, player, `pending`/`paid`/`free`/`refunded`/`left`, fee, attempt, prize, prize status). No foreign key from player rows to `users`; entries of deleted players are swept after the match ends. New key type `game` for categories and tags; `economy_user_prize.source_type` gets `game`.
 
+Since phase 18 `economy_game.voice_enabled` (default true, added by `20261124000002-base-voice.sql`) switches voice chat for one game; the base plugin's `voice_token` reads it (`docs/base/spec.md` «Voice chat»). The editor shows it as «چت صوتی», the list as «بی‌ویس» when off, admin rows carry `voiceEnabled` and `economy_games`/`economy_game` items carry `voice`.
+
 ### Client RPCs (errors are the chance-game JSON `{code, status, meta}`)
 
 - `economy_games {lang, platform, version}` → `{items, level}`: games for this platform and version in lobby order, names in the player's language, rooms with `entryFee.currencyName`, `prize` (`prize` or `prizeGroup` with its name), `minLevel` and `locked`, `settings`, `realtime`, `multiplayer`. A switched-off game is listed with `isActive: false` and `maintenance` only when it has a message; otherwise it is hidden.
