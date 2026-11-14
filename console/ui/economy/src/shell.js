@@ -336,6 +336,7 @@ function mountRoute(root, route, ctl, ctx) {
   else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
   else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
   else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
+  else if (CUSTOM_PAGES[route.page]) CUSTOM_PAGES[route.page](root, route, ctl, ctx);
   else ctl.list = listPage(root, route.page, route.query, ctx);
 }
 

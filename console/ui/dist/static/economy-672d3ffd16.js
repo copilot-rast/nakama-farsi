@@ -3485,7 +3485,252 @@ var MESSAGES = {
     'f.es.prizeMissing': "وقتی گروه جایزه خالی است",
     'f.es.prizeMissing.hint': "رابطه بدون جایزه انجام شود، یا صبر کند تا تغییر بعدی.",
     'es.prizeMissing.complete': "بدون جایزه انجام شود",
-    'es.prizeMissing.wait': "صبر کند"
+    'es.prizeMissing.wait': "صبر کند",
+    'nav.offers': "پیشنهادهای ویژه",
+    'tab.offers': "روزانه",
+    'desc.offers': "هر بازیکن هر روز چند پیشنهاد شخصی از این فهرست می‌گیرد، با تخفیف یا قیمت ویژه.",
+    'new.offers': "پیشنهاد روزانهٔ تازه",
+    'edit.offers': "ویرایش پیشنهاد روزانه",
+    'empty.hint.offers': "مثلاً: بستهٔ ۵۰۰ سکه با ۴۰٪ تخفیف، فقط یک بار در روز.",
+    'nav.entry-offers': "پیشنهاد ورود",
+    'desc.entry-offers': "پیشنهادی که با ورود اول، رسیدن به سطح، برچسب یا بازگشت بعد از غیبت باز می‌شود و زمان‌سنج شخصی دارد.",
+    'new.entry-offers': "پیشنهاد ورود تازه",
+    'edit.entry-offers': "ویرایش پیشنهاد ورود",
+    'empty.hint.entry-offers': "مثلاً: بستهٔ خوش‌آمد با ۷۰٪ تخفیف که تا ۲۴ ساعت بعد از اولین دیدن بازیکن می‌ماند.",
+    'nav.offer-preview': "پیش‌نمایش",
+    'desc.offer-preview': "ببین یک بازیکن الان چه پیشنهادهایی می‌گیرد و هر پیشنهاد چرا انتخاب شد یا نشد.",
+    'nav.offer-report': "گزارش",
+    'desc.offer-report': "چند بار هر پیشنهاد دیده شد، چند بازیکن خریدند و نرخ تبدیل.",
+    'nav.offer-settings': "تنظیمات",
+    'desc.offer-settings': "زمان شروع روز، تعداد پیشنهادها، قانون‌های انتخاب، عوض کردن پیشنهادها و زمان‌سنج پیشنهاد ورود.",
+    'col.of.product': "محصول",
+    'col.of.weight': "وزن",
+    'col.of.trigger': "شرط شروع",
+    'col.of.sold': "خرید / ساخته",
+    'col.of.limitUse': "خرید / سقف",
+    'col.of.reason': "نتیجه",
+    'col.of.time': "زمان",
+    'col.of.kind': "نوع",
+    'col.of.shown': "دیده‌شده",
+    'col.of.buyers': "خریدار",
+    'col.of.purchases': "خرید",
+    'col.of.conversion': "نرخ تبدیل",
+    'col.of.revenue': "درآمد",
+    'filter.of.product': "محصول",
+    'filter.of.days': "بازه",
+    'filter.of.kind': "نوع پیشنهاد",
+    'of.kind.daily': "روزانه",
+    'of.kind.entry': "ورود",
+    'of.h.product': "محصول و قیمت",
+    'of.h.draw': "قرعه",
+    'of.h.trigger': "کی باز شود",
+    'of.h.timer': "زمان‌سنج و تکرار",
+    'f.of.name': "نام پیشنهاد",
+    'f.of.name.hint': "خالی بماند، نام محصول نشان داده می‌شود.",
+    'f.of.description': "توضیح",
+    'f.of.badge': "برچسب روی پیشنهاد",
+    'f.of.badge.hint': "متن کوتاه مثل «ویژهٔ امروز».",
+    'f.of.product': "محصول",
+    'f.of.product.hint': "همان محصول فروشگاه با همان جایزه فروخته می‌شود؛ فقط قیمت و سقف خرید از پیشنهاد می‌آید.",
+    'f.of.priceMode': "قیمت",
+    'of.mode.discount': "تخفیف درصدی",
+    'of.mode.price': "قیمت ویژه",
+    'f.of.discount': "درصد تخفیف",
+    'f.of.discount.hint': "روی قیمت تومانی و سکه‌ای محصول. صفر یعنی قیمت خود محصول.",
+    'f.of.priceToman': "قیمت ویژهٔ تومانی",
+    'f.of.priceToman.hint': "صفر یعنی رایگان. خالی بماند، قیمت تومانی محصول می‌ماند.",
+    'f.of.sku.hint': "اگر قیمت تومانی عوض شده، کافه‌بازار و مایکت فقط با SKU جداگانه این پیشنهاد را می‌فروشند.",
+    'f.of.limit': "سقف خرید",
+    'f.of.limit.hint': "هر بازیکن چند بار می‌تواند همین پیشنهاد را بخرد.",
+    'f.of.weight': "وزن",
+    'f.of.weight.hint': "شانس انتخاب نسبت به بقیه. صفر یعنی هیچ‌وقت در قرعه نیاید.",
+    'f.of.sort.entry.hint': "اگر چند پیشنهاد ورود هم‌زمان آماده باشند، عدد کمتر زودتر باز می‌شود.",
+    'f.of.exclude': "به جز برچسب‌ها",
+    'f.of.exclude.hint': "بازیکنانی که یکی از این برچسب‌ها را دارند این پیشنهاد را نمی‌گیرند.",
+    'f.of.maxLevel': "حداکثر سطح",
+    'f.of.levelTable': "جدول سطح",
+    'f.of.levelTable.hint': "خالی یعنی جدول سطح اصلی.",
+    'of.cond.add': "افزودن شرط متا",
+    'of.cond.empty': "بدون شرط متا.",
+    'f.of.minDays': "کمینهٔ عمر حساب (روز)",
+    'f.of.minDays.hint': "چند روز از ساخت حساب بازیکن گذشته باشد.",
+    'f.of.maxDays': "بیشینهٔ عمر حساب (روز)",
+    'f.of.trigger': "شرط شروع",
+    'f.of.trigger.hint': "پیشنهاد برای هر بازیکن وقتی باز می‌شود که این شرط و شرط‌های مخاطب برقرار باشد.",
+    'of.trigger.first_entry': "اولین ورود",
+    'of.trigger.level': "رسیدن به سطح",
+    'of.trigger.meta': "رسیدن متا به عدد",
+    'of.trigger.tag': "داشتن برچسب",
+    'of.trigger.account_days': "چند روز بعد از نصب",
+    'of.trigger.lapsed': "بازگشت بعد از غیبت",
+    'of.trigger.first_entry.say': "وقتی بازیکن اولین بار پیشنهادها را باز می‌کند.",
+    'of.trigger.level.say': "وقتی بازیکن به سطح {n} برسد.",
+    'of.trigger.meta.say': "وقتی متا به {n} برسد.",
+    'of.trigger.tag.say': "وقتی بازیکن این برچسب را بگیرد.",
+    'of.trigger.account_days.say': "وقتی {n} روز از ساخت حساب بگذرد.",
+    'of.trigger.lapsed.say': "وقتی بازیکن بعد از دست‌کم {n} روز غیبت برگردد.",
+    'f.of.triggerValue': "عدد شرط",
+    'f.of.triggerTag': "برچسب بازیکن",
+    'of.timer.say': "بعد از آن {time} فرصت دارد.",
+    'f.of.duration': "مدت (دقیقه)",
+    'f.of.duration.hint': "از وقتی بازیکن اولین بار پیشنهاد را می‌بیند شمرده می‌شود (در تنظیمات قابل تغییر است).",
+    'f.of.repeat': "دوباره باز شود",
+    'f.of.repeat.hint': "«بعد از وقفه» یعنی پس از تمام شدن یا خریده شدن و گذشتن وقفه، اگر شرط باز برقرار باشد دوباره باز شود.",
+    'of.repeat.once': "یک بار",
+    'of.repeat.cooldown': "بعد از وقفه",
+    'f.of.cooldown': "وقفه (ساعت)",
+    'f.of.cooldown.hint': "از پایان نوبت قبل.",
+    'f.of.maxTriggers': "سقف دفعه‌ها",
+    'of.dur.d': "{n} روز",
+    'of.dur.h': "{n} ساعت",
+    'of.dur.m': "{n} دقیقه",
+    'of.off': "{n}٪ تخفیف",
+    'of.productPrice': "قیمت محصول",
+    'of.offerOnly': "فقط در پیشنهاد",
+    'of.left': "{time} مانده",
+    'of.ended': "تمام شد",
+    'of.notStarted': "هنوز دیده نشده",
+    'os.h.daily': "پیشنهادهای روزانه",
+    'f.os.dailyEnabled': "پیشنهاد روزانه روشن باشد",
+    'f.os.dailyEnabled.hint': "خاموش باشد، بازیکنان پیشنهاد روزانه نمی‌گیرند.",
+    'f.os.resetHour': "ساعت شروع روز",
+    'f.os.resetHour.hint': "در منطقهٔ زمانی بالا. صفر یعنی نیمه‌شب.",
+    'f.os.resetMinute': "دقیقه",
+    'f.os.periodDays': "طول هر دوره (روز)",
+    'f.os.periodDays.hint': "یک یعنی هر روز پیشنهاد تازه. دوره‌ها برای همه هم‌زمان عوض می‌شوند.",
+    'f.os.count': "تعداد پیشنهاد",
+    'f.os.count.hint': "برای هر بازیکن در هر دوره.",
+    'os.period': "دورهٔ فعلی: از {from} تا {to}",
+    'f.os.countByTag': "تعداد بر اساس برچسب",
+    'os.countByTag.add': "افزودن برچسب",
+    'os.countByTag.empty': "همه همان تعداد بالا را می‌گیرند.",
+    'f.os.tag': "برچسب بازیکن",
+    'f.os.weighting': "روش انتخاب",
+    'f.os.weighting.hint': "وزنی: به نسبت وزن. یکسان: همه هم‌شانس. اولویت: سنگین‌ترها اول.",
+    'os.weighting.weighted': "وزنی",
+    'os.weighting.uniform': "یکسان",
+    'os.weighting.priority': "اولویت",
+    'f.os.noRepeatDays': "تکرار نشود تا (روز)",
+    'f.os.noRepeatDays.hint': "پیشنهادی که بازیکن در این چند روز گرفته دوباره انتخاب نمی‌شود. صفر یعنی بدون محدودیت.",
+    'f.os.fillWithRepeats': "اگر کم آمد، تکراری هم بیاید",
+    'f.os.fillWithRepeats.hint': "وقتی پیشنهاد تازهٔ کافی نیست، جای خالی با پیشنهادهای روزهای قبل پر شود.",
+    'f.os.boughtCooldown': "فاصله بعد از خرید (روز)",
+    'f.os.boughtCooldown.hint': "پیشنهاد خریده‌شده تا این چند روز دوباره انتخاب نمی‌شود. منفی یک یعنی هرگز.",
+    'f.os.excludeOwned': "بدون آیتم‌های داشته",
+    'f.os.excludeOwned.hint': "پیشنهادی که همهٔ آیتم‌هایش را بازیکن دارد انتخاب نشود.",
+    'f.os.productRules': "قانون‌های محصول رعایت شود",
+    'f.os.productRules.hint': "سطح، یک‌بار خرید و پیش‌نیاز محصول هم بررسی شود.",
+    'f.os.inactive': "محصول غیرفعال در فروشگاه",
+    'f.os.inactive.hint': "با «فروخته شود» می‌توان بسته‌هایی ساخت که فقط در پیشنهاد دیده شوند.",
+    'os.inactive.allow': "در پیشنهاد فروخته شود",
+    'os.inactive.skip': "کنار گذاشته شود",
+    'f.os.showSoldOut': "پیشنهاد خریده‌شده دیده شود",
+    'f.os.showSoldOut.hint': "تا پایان زمانش با نشان «خریده شد» در فهرست بماند.",
+    'f.os.giftCodes': "کد تخفیف روی پیشنهاد",
+    'f.os.giftCodes.hint': "کد تخفیف درگاه روی قیمت پیشنهاد هم اعمال شود.",
+    'os.h.reroll': "عوض کردن پیشنهادها",
+    'f.os.rerollEnabled': "بازیکن بتواند پیشنهادها را عوض کند",
+    'f.os.rerollEnabled.hint': "پیشنهادهای خریده‌نشدهٔ امروز با قرعهٔ تازه عوض می‌شوند و خریده‌ها می‌مانند.",
+    'f.os.rerollLimit': "دفعه در هر دوره",
+    'f.os.rerollLimit.hint': "صفر یعنی بی‌سقف.",
+    'f.os.rerollCurrency': "ارز هزینه",
+    'f.os.rerollCurrency.hint': "خالی یعنی رایگان.",
+    'f.os.rerollAmount': "هزینه",
+    'f.os.rerollStep': "افزایش هزینه در هر بار",
+    'f.os.rerollStep.hint': "مثلاً ۵ یعنی بار دوم ۵ تا گران‌تر.",
+    'f.os.rerollAvoid': "پیشنهادهای قبلی دوباره نیایند",
+    'f.os.rerollAvoid.hint': "قرعهٔ تازه از پیشنهادهای عوض‌شده نمی‌آید.",
+    'os.h.entry': "پیشنهاد ورود",
+    'f.os.entryEnabled': "پیشنهاد ورود روشن باشد",
+    'f.os.entryEnabled.hint': "خاموش باشد، پیشنهاد ورود تازه‌ای باز نمی‌شود.",
+    'f.os.entryMax': "هم‌زمان باز",
+    'f.os.entryMax.hint': "بیشترین تعداد پیشنهاد ورود باز برای هر بازیکن. بقیه منتظر می‌مانند.",
+    'f.os.timerStart': "شروع زمان‌سنج",
+    'f.os.timerStart.hint': "زمان‌سنج هر بازیکن از کی شروع شود.",
+    'os.timer.list': "اولین بار که در فهرست بیاید",
+    'os.timer.seen': "وقتی بازی بگوید دیده شد",
+    'os.timer.trigger': "همان لحظهٔ برقراری شرط",
+    'of.pickPlayer': "انتخاب بازیکن",
+    'of.userId': "شناسهٔ بازیکن",
+    'of.countN': "{n} پیشنهاد در روز",
+    'of.dailyOff': "پیشنهاد روزانه خاموش است",
+    'of.entryOff': "پیشنهاد ورود خاموش است",
+    'of.pv.current': "پیشنهادهای فعلی این دوره",
+    'of.pv.noCurrent': "بازیکن هنوز در این دوره پیشنهادی نگرفته؛ با اولین باز کردن، همان قرعهٔ پایین را می‌گیرد.",
+    'of.pv.draw': "قرعهٔ این دوره",
+    'of.pv.draw.hint': "اگر پیشنهادهای این دوره همین حالا ساخته می‌شد. هر پیشنهاد کنار گذاشته دلیلش را نشان می‌دهد.",
+    'of.pv.noPool': "هنوز پیشنهاد روزانه‌ای تعریف نشده.",
+    'of.pv.entry': "پیشنهادهای ورود",
+    'of.pv.noEntry': "هنوز پیشنهاد ورودی تعریف نشده.",
+    'of.pv.pick': "یک بازیکن انتخاب کن",
+    'of.pv.pick.hint': "از فهرست یا با شناسهٔ بازیکن.",
+    'of.slotN': "جای {n}",
+    'of.timesN': "{n} بار",
+    'of.entry.open': "باز است",
+    'of.entry.due': "باز می‌شود",
+    'of.entry.done': "تمام‌شده",
+    'of.entry.waiting': "منتظر شرط",
+    'of.reason.ok': "مجاز",
+    'of.reason.picked': "انتخاب شد",
+    'of.reason.recent': "اخیراً گرفته",
+    'of.reason.kept': "خریده و مانده",
+    'of.reason.replaced': "عوض‌شده",
+    'of.reason.bought_recently': "اخیراً خریده",
+    'of.reason.weight_zero': "وزن صفر",
+    'of.reason.inactive': "غیرفعال یا خارج از بازه",
+    'of.reason.audience': "برچسب لازم را ندارد",
+    'of.reason.excluded_tag': "برچسب کنارگذاشته دارد",
+    'of.reason.account_new': "حساب تازه است",
+    'of.reason.account_old': "حساب قدیمی است",
+    'of.reason.level_low': "سطح پایین",
+    'of.reason.level_high': "سطح بالا",
+    'of.reason.meta': "شرط متا برقرار نیست",
+    'of.reason.product_inactive': "محصول غیرفعال",
+    'of.reason.owned': "همه را دارد",
+    'of.reason.product_level': "سطح محصول",
+    'of.reason.product_bought': "قبلاً خریده",
+    'of.reason.product_requires': "پیش‌نیاز ندارد",
+    'of.reason.no_method': "روش پرداخت فعالی ندارد",
+    'of.state.active': "فعال",
+    'of.state.sold_out': "خریده شد",
+    'of.state.expired': "تمام شد",
+    'of.state.waiting': "منتظر دیدن",
+    'of.state.closed': "بسته شد",
+    'of.state.replaced': "عوض شد",
+    'of.rerollN': "عوض‌شدهٔ {n}",
+    'of.daysN': "{n} روز اخیر",
+    'of.madeN': "ساخته‌شده: {n}",
+    'of.rerolls': "عوض کردن‌ها",
+    'of.report.empty': "هنوز پیشنهادی تعریف نشده.",
+    'of.card': "پیشنهادهای ویژه",
+    'of.cardCounts': "دیده {shown} · خریده {bought}",
+    'of.card.daily': "پیشنهادهای امروز",
+    'of.card.entry': "پیشنهادهای ورود",
+    'of.card.noDaily': "بازیکن امروز هنوز پیشنهادها را باز نکرده.",
+    'of.card.noEntry': "هنوز پیشنهاد ورودی برای این بازیکن باز نشده.",
+    'of.rerollsUsed': "{n} بار عوض کرده",
+    'of.redraw': "قرعهٔ دوباره",
+    'of.redraw.title': "پیشنهادهای امروز دوباره قرعه بخورند؟",
+    'of.redraw.text': "پیشنهادهای این دوره بسته می‌شوند و بازیکن با باز کردن بعدی، قرعهٔ تازه با فهرست و تنظیمات فعلی می‌گیرد.",
+    'of.redraw.done': "پیشنهادهای امروز بسته شد.",
+    'of.previewLink': "پیش‌نمایش",
+    'of.close': "بستن",
+    'of.close.title': "این پیشنهاد بسته شود؟",
+    'of.close.text': "«{name}» همین حالا برای این بازیکن تمام می‌شود.",
+    'of.close.done': "پیشنهاد بسته شد.",
+    'of.entryReset': "از نو",
+    'of.entryReset.title': "سابقهٔ این پیشنهاد فراموش شود؟",
+    'of.entryReset.text': "بازیکن «{name}» را فراموش می‌کند و با برقراری شرط دوباره می‌گیرد. خریدها در گزارش می‌مانند.",
+    'of.entryReset.done': "سابقهٔ پیشنهاد پاک شد.",
+    'code.INVALID_DURATION': "مدت باید از ۱ دقیقه تا ۳۶۵ روز باشد.",
+    'code.INVALID_MAX_TRIGGERS': "سقف دفعه‌ها باید از ۱ تا ۱٬۰۰۰٬۰۰۰ باشد.",
+    'code.TOO_MANY_CONDITIONS': "حداکثر ۱۰ شرط متا.",
+    'code.INVALID_PRICE_MODE': "نوع قیمت درست نیست.",
+    'code.DUPLICATE_TAG': "هر برچسب فقط یک بار.",
+    'code.PRODUCT_NOT_FOUND': "محصول پیدا نشد.",
+    'code.OFFER_NOT_FOUND': "پیشنهاد پیدا نشد.",
+    'code.OFFER_SOLD_OUT': "سقف خرید این پیشنهاد پر شده.",
+    'code.OFFER_EXPIRED': "زمان این پیشنهاد تمام شده."
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -6971,7 +7216,252 @@ var MESSAGES = {
     'f.es.prizeMissing': "When a prize group is empty",
     'f.es.prizeMissing.hint': "Fire the relation without a prize, or wait for the next change.",
     'es.prizeMissing.complete': "Fire without a prize",
-    'es.prizeMissing.wait': "Wait"
+    'es.prizeMissing.wait': "Wait",
+    'nav.offers': "Offers",
+    'tab.offers': "Daily",
+    'desc.offers': "Each player gets a few personal offers from this pool every day, with a discount or a special price.",
+    'new.offers': "New daily offer",
+    'edit.offers': "Edit daily offer",
+    'empty.hint.offers': "For example: the 500-coin pack at 40% off, once a day.",
+    'nav.entry-offers': "Entry offers",
+    'desc.entry-offers': "An offer that opens on first entry, a level, a tag or a return after a break, with a personal timer.",
+    'new.entry-offers': "New entry offer",
+    'edit.entry-offers': "Edit entry offer",
+    'empty.hint.entry-offers': "For example: a welcome pack at 70% off that lasts 24 hours from the moment the player first sees it.",
+    'nav.offer-preview': "Preview",
+    'desc.offer-preview': "See which offers a player gets right now and why each one was picked or left out.",
+    'nav.offer-report': "Report",
+    'desc.offer-report': "How often each offer was shown, how many players bought it and the conversion.",
+    'nav.offer-settings': "Settings",
+    'desc.offer-settings': "Day start, offer count, selection rules, rerolls and the entry offer timer.",
+    'col.of.product': "Product",
+    'col.of.weight': "Weight",
+    'col.of.trigger': "Starts when",
+    'col.of.sold': "Bought / made",
+    'col.of.limitUse': "Bought / limit",
+    'col.of.reason': "Result",
+    'col.of.time': "Time",
+    'col.of.kind': "Kind",
+    'col.of.shown': "Shown",
+    'col.of.buyers': "Buyers",
+    'col.of.purchases': "Purchases",
+    'col.of.conversion': "Conversion",
+    'col.of.revenue': "Revenue",
+    'filter.of.product': "Product",
+    'filter.of.days': "Range",
+    'filter.of.kind': "Offer kind",
+    'of.kind.daily': "Daily",
+    'of.kind.entry': "Entry",
+    'of.h.product': "Product and price",
+    'of.h.draw': "Draw",
+    'of.h.trigger': "When it opens",
+    'of.h.timer': "Timer and repeat",
+    'f.of.name': "Offer name",
+    'f.of.name.hint': "Leave empty to show the product name.",
+    'f.of.description': "Description",
+    'f.of.badge': "Badge",
+    'f.of.badge.hint': "Short text such as \"Today only\".",
+    'f.of.product': "Product",
+    'f.of.product.hint': "The shop product is sold with its own prize; only the price and the purchase limit come from the offer.",
+    'f.of.priceMode': "Price",
+    'of.mode.discount': "Percent off",
+    'of.mode.price': "Special price",
+    'f.of.discount': "Discount percent",
+    'f.of.discount.hint': "On the product Toman and coin price. Zero keeps the product price.",
+    'f.of.priceToman': "Special Toman price",
+    'f.of.priceToman.hint': "Zero means free. Empty keeps the product Toman price.",
+    'f.of.sku.hint': "When the Toman price changes, Bazaar and Myket can sell the offer only with its own SKU.",
+    'f.of.limit': "Purchase limit",
+    'f.of.limit.hint': "How many times one player can buy this offer.",
+    'f.of.weight': "Weight",
+    'f.of.weight.hint': "Chance against the others. Zero never draws it.",
+    'f.of.sort.entry.hint': "When several entry offers are ready, the lower number opens first.",
+    'f.of.exclude': "Except tags",
+    'f.of.exclude.hint': "Players with any of these tags do not get this offer.",
+    'f.of.maxLevel': "Max level",
+    'f.of.levelTable': "Level table",
+    'f.of.levelTable.hint': "Empty means the main level table.",
+    'of.cond.add': "Add a meta condition",
+    'of.cond.empty': "No meta condition.",
+    'f.of.minDays': "Min account age (days)",
+    'f.of.minDays.hint': "Days since the player account was created.",
+    'f.of.maxDays': "Max account age (days)",
+    'f.of.trigger': "Starts when",
+    'f.of.trigger.hint': "The offer opens for a player when this and the audience rules hold.",
+    'of.trigger.first_entry': "First entry",
+    'of.trigger.level': "Level reached",
+    'of.trigger.meta': "Meta reached",
+    'of.trigger.tag': "Has a tag",
+    'of.trigger.account_days': "Days since install",
+    'of.trigger.lapsed': "Return after a break",
+    'of.trigger.first_entry.say': "When the player opens the offers for the first time.",
+    'of.trigger.level.say': "When the player reaches level {n}.",
+    'of.trigger.meta.say': "When the meta reaches {n}.",
+    'of.trigger.tag.say': "When the player gets this tag.",
+    'of.trigger.account_days.say': "When the account is {n} days old.",
+    'of.trigger.lapsed.say': "When the player comes back after at least {n} days away.",
+    'f.of.triggerValue': "Number",
+    'f.of.triggerTag': "Player tag",
+    'of.timer.say': "Then it lasts {time}.",
+    'f.of.duration': "Duration (minutes)",
+    'f.of.duration.hint': "Counted from when the player first sees the offer (changeable in settings).",
+    'f.of.repeat': "Opens again",
+    'f.of.repeat.hint': "\"After a cooldown\" opens it again once it ended or sold out, the cooldown passed and the condition still holds.",
+    'of.repeat.once': "Once",
+    'of.repeat.cooldown': "After a cooldown",
+    'f.of.cooldown': "Cooldown (hours)",
+    'f.of.cooldown.hint': "From the end of the previous one.",
+    'f.of.maxTriggers': "At most",
+    'of.dur.d': "{n} d",
+    'of.dur.h': "{n} h",
+    'of.dur.m': "{n} min",
+    'of.off': "{n}% off",
+    'of.productPrice': "Product price",
+    'of.offerOnly': "Offer only",
+    'of.left': "{time} left",
+    'of.ended': "Ended",
+    'of.notStarted': "Not seen yet",
+    'os.h.daily': "Daily offers",
+    'f.os.dailyEnabled': "Daily offers on",
+    'f.os.dailyEnabled.hint': "When off, players get no daily offers.",
+    'f.os.resetHour': "Day starts at (hour)",
+    'f.os.resetHour.hint': "In the time zone above. Zero is midnight.",
+    'f.os.resetMinute': "Minute",
+    'f.os.periodDays': "Period length (days)",
+    'f.os.periodDays.hint': "One means new offers every day. Periods change for everyone at the same time.",
+    'f.os.count': "Offers",
+    'f.os.count.hint': "Per player and period.",
+    'os.period': "Current period: {from} to {to}",
+    'f.os.countByTag': "Count by tag",
+    'os.countByTag.add': "Add a tag",
+    'os.countByTag.empty': "Everyone gets the count above.",
+    'f.os.tag': "Player tag",
+    'f.os.weighting': "Selection",
+    'f.os.weighting.hint': "Weighted: by weight. Uniform: equal chance. Priority: heaviest first.",
+    'os.weighting.weighted': "Weighted",
+    'os.weighting.uniform': "Uniform",
+    'os.weighting.priority': "Priority",
+    'f.os.noRepeatDays': "No repeat for (days)",
+    'f.os.noRepeatDays.hint': "An offer the player got in these days is not drawn again. Zero turns it off.",
+    'f.os.fillWithRepeats': "Fill with repeats when short",
+    'f.os.fillWithRepeats.hint': "When there are not enough fresh offers, fill the gap with recent ones.",
+    'f.os.boughtCooldown': "Wait after a purchase (days)",
+    'f.os.boughtCooldown.hint': "A bought offer is not drawn again for these days. Minus one means never.",
+    'f.os.excludeOwned': "Skip owned items",
+    'f.os.excludeOwned.hint': "Do not draw an offer whose items the player already owns.",
+    'f.os.productRules': "Follow product rules",
+    'f.os.productRules.hint': "Also check the product level, one-time purchase and required item.",
+    'f.os.inactive': "Products hidden from the shop",
+    'f.os.inactive.hint': "With \"Sell in offers\" you can make packs that only appear as offers.",
+    'os.inactive.allow': "Sell in offers",
+    'os.inactive.skip': "Leave out",
+    'f.os.showSoldOut': "Keep bought offers visible",
+    'f.os.showSoldOut.hint': "They stay in the list marked as bought until their time ends.",
+    'f.os.giftCodes': "Discount codes on offers",
+    'f.os.giftCodes.hint': "Gateway discount codes also apply to the offer price.",
+    'os.h.reroll': "Rerolls",
+    'f.os.rerollEnabled': "Players can reroll offers",
+    'f.os.rerollEnabled.hint': "Unbought offers of the day are replaced by a new draw; bought ones stay.",
+    'f.os.rerollLimit': "Per period",
+    'f.os.rerollLimit.hint': "Zero means no limit.",
+    'f.os.rerollCurrency': "Cost currency",
+    'f.os.rerollCurrency.hint': "Empty means free.",
+    'f.os.rerollAmount': "Cost",
+    'f.os.rerollStep': "Cost increase per reroll",
+    'f.os.rerollStep.hint': "For example 5 makes the second reroll cost 5 more.",
+    'f.os.rerollAvoid': "Do not bring replaced offers back",
+    'f.os.rerollAvoid.hint': "The new draw leaves out the offers it replaces.",
+    'os.h.entry': "Entry offers",
+    'f.os.entryEnabled': "Entry offers on",
+    'f.os.entryEnabled.hint': "When off, no new entry offer opens.",
+    'f.os.entryMax': "Open at once",
+    'f.os.entryMax.hint': "Most entry offers open for one player. Others wait.",
+    'f.os.timerStart': "Timer starts",
+    'f.os.timerStart.hint': "When each player timer starts.",
+    'os.timer.list': "First time it is listed",
+    'os.timer.seen': "When the game reports it seen",
+    'os.timer.trigger': "When the condition holds",
+    'of.pickPlayer': "Pick a player",
+    'of.userId': "Player ID",
+    'of.countN': "{n} offers a day",
+    'of.dailyOff': "Daily offers are off",
+    'of.entryOff': "Entry offers are off",
+    'of.pv.current': "Offers of this period",
+    'of.pv.noCurrent': "The player has no offers this period yet; on the next open they get the draw below.",
+    'of.pv.draw': "Draw for this period",
+    'of.pv.draw.hint': "As if this period offers were made right now. Each left-out offer shows why.",
+    'of.pv.noPool': "No daily offers yet.",
+    'of.pv.entry': "Entry offers",
+    'of.pv.noEntry': "No entry offers yet.",
+    'of.pv.pick': "Pick a player",
+    'of.pv.pick.hint': "From the list or by player ID.",
+    'of.slotN': "Slot {n}",
+    'of.timesN': "{n} times",
+    'of.entry.open': "Open",
+    'of.entry.due': "Opens next",
+    'of.entry.done': "Done",
+    'of.entry.waiting': "Waiting for the condition",
+    'of.reason.ok': "Allowed",
+    'of.reason.picked': "Picked",
+    'of.reason.recent': "Recently shown",
+    'of.reason.kept': "Bought and kept",
+    'of.reason.replaced': "Replaced",
+    'of.reason.bought_recently': "Bought recently",
+    'of.reason.weight_zero': "Weight zero",
+    'of.reason.inactive': "Inactive or outside its window",
+    'of.reason.audience': "Missing the tag",
+    'of.reason.excluded_tag': "Has an excluded tag",
+    'of.reason.account_new': "Account too new",
+    'of.reason.account_old': "Account too old",
+    'of.reason.level_low': "Level too low",
+    'of.reason.level_high': "Level too high",
+    'of.reason.meta': "Meta condition not met",
+    'of.reason.product_inactive': "Product inactive",
+    'of.reason.owned': "Owns it all",
+    'of.reason.product_level': "Product level",
+    'of.reason.product_bought': "Already bought",
+    'of.reason.product_requires': "Missing a required item",
+    'of.reason.no_method': "No active payment method",
+    'of.state.active': "Active",
+    'of.state.sold_out': "Bought",
+    'of.state.expired': "Ended",
+    'of.state.waiting': "Not seen yet",
+    'of.state.closed': "Closed",
+    'of.state.replaced': "Replaced",
+    'of.rerollN': "Reroll {n}",
+    'of.daysN': "Last {n} days",
+    'of.madeN': "Made: {n}",
+    'of.rerolls': "Rerolls",
+    'of.report.empty': "No offers yet.",
+    'of.card': "Offers",
+    'of.cardCounts': "Shown {shown} · bought {bought}",
+    'of.card.daily': "Today offers",
+    'of.card.entry': "Entry offers",
+    'of.card.noDaily': "The player has not opened the offers today.",
+    'of.card.noEntry': "No entry offer opened for this player yet.",
+    'of.rerollsUsed': "Rerolled {n} times",
+    'of.redraw': "Draw again",
+    'of.redraw.title': "Draw today offers again?",
+    'of.redraw.text': "This period offers close and the player gets a new draw with the current pool and settings on the next open.",
+    'of.redraw.done': "Today offers closed.",
+    'of.previewLink': "Preview",
+    'of.close': "Close",
+    'of.close.title': "Close this offer?",
+    'of.close.text': "\"{name}\" ends for this player right now.",
+    'of.close.done': "Offer closed.",
+    'of.entryReset': "Reset",
+    'of.entryReset.title': "Forget this offer history?",
+    'of.entryReset.text': "The player forgets \"{name}\" and gets it again when the condition holds. Purchases stay in the report.",
+    'of.entryReset.done': "Offer history cleared.",
+    'code.INVALID_DURATION': "The duration must be between 1 minute and 365 days.",
+    'code.INVALID_MAX_TRIGGERS': "At most must be between 1 and 1,000,000.",
+    'code.TOO_MANY_CONDITIONS': "At most 10 meta conditions.",
+    'code.INVALID_PRICE_MODE': "Unknown price kind.",
+    'code.DUPLICATE_TAG': "Each tag once.",
+    'code.PRODUCT_NOT_FOUND': "Product not found.",
+    'code.OFFER_NOT_FOUND': "Offer not found.",
+    'code.OFFER_SOLD_OUT': "This offer reached its purchase limit.",
+    'code.OFFER_EXPIRED': "This offer has ended."
   }
 };
 
@@ -9291,7 +9781,7 @@ var RESOURCES = {
 };
 
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'items', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
+  economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'offers', 'entry-offers', 'offer-preview', 'offer-report', 'offer-settings', 'items', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'activity'],
   support: ['tickets', 'live-chat'],
@@ -9304,13 +9794,14 @@ var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system
 var HUBS = {
   metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['meta-relations', 'relations'], ['level-tables', 'levels']] },
   tasks: { section: 'economy', tabs: [['tasks', ''], ['task-groups', 'groups']] },
+  offers: { section: 'economy', tabs: [['offers', ''], ['entry-offers', 'entry'], ['offer-preview', 'preview'], ['offer-report', 'report'], ['offer-settings', 'settings']] },
   prizes: { section: 'economy', tabs: [['prizes', ''], ['prize-groups', 'groups']] },
   events: { section: 'economy', tabs: [['event-types', ''], ['event-rules', 'prizes'], ['event-log', 'report']] },
   banners: { section: 'publication', tabs: [['banners', ''], ['banner-lists', 'placements']] },
   notifications: { section: 'publication', tabs: [['notifications', ''], ['notify-categories', 'categories']] }
 };
 var NAV = {
-  economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'items', 'gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
+  economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'offers', 'items', 'gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
   moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words'] }],
   support: ['tickets', 'live-chat'],
@@ -9319,6 +9810,7 @@ var NAV = {
 var HUB_OF = {};
 Object.keys(HUBS).forEach(function (hub) { HUBS[hub].tabs.forEach(function (tab) { HUB_OF[tab[0]] = hub; }); });
 var hubLast = {};
+var CUSTOM_PAGES = {};
 var LIMIT = 20;
 var lastQuery = { comments: { status: 'pending' }, reports: { status: 'open' }, 'player-reports': { status: 'active' }, tickets: { status: 'waiting' } };
 
@@ -13636,6 +14128,554 @@ function relationsProgressSection(p, id, write, reload) {
 }
 
 OVERVIEW_CATALOG.push('meta-relations');
+
+ICONS.offers = '<path d="M9 15l6-6"/><circle cx="9.5" cy="9.5" r=".5"/><circle cx="14.5" cy="14.5" r=".5"/><path d="M5 7.2A2.2 2.2 0 0 1 7.2 5h1a2.2 2.2 0 0 0 1.55-.64l.7-.7a2.2 2.2 0 0 1 3.12 0l.7.7c.42.41.98.64 1.55.64h1a2.2 2.2 0 0 1 2.2 2.2v1c0 .58.23 1.13.64 1.55l.7.7a2.2 2.2 0 0 1 0 3.12l-.7.7a2.2 2.2 0 0 0-.64 1.55v1a2.2 2.2 0 0 1-2.2 2.2h-1a2.2 2.2 0 0 0-1.55.64l-.7.7a2.2 2.2 0 0 1-3.12 0l-.7-.7a2.2 2.2 0 0 0-1.55-.64h-1a2.2 2.2 0 0 1-2.2-2.2v-1a2.2 2.2 0 0 0-.64-1.55l-.7-.7a2.2 2.2 0 0 1 0-3.12l.7-.7A2.2 2.2 0 0 0 5 8.2z"/>';
+PH_ICONS.offers = '<path d="M243.31,136,144,36.69A15.86,15.86,0,0,0,132.69,32H40a8,8,0,0,0-8,8v92.69A15.86,15.86,0,0,0,36.69,144L136,243.31a16,16,0,0,0,22.63,0l84.68-84.68a16,16,0,0,0,0-22.63Zm-96,96L48,132.69V48h84.69L232,147.31ZM96,84A12,12,0,1,1,84,72,12,12,0,0,1,96,84Z"/>';
+ICONS['entry-offers'] = '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6M22 6l-3-3"/>';
+ICONS['offer-settings'] = '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>';
+ICONS['offer-preview'] = '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>';
+ICONS['offer-report'] = '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>';
+
+var OFFER_TRIGGERS = ['first_entry', 'level', 'meta', 'tag', 'account_days', 'lapsed'];
+var OFFER_TRIGGER_VALUE = { level: 1, meta: 1, account_days: 1, lapsed: 1 };
+var OFFER_REASON_COLOR = { picked: 'success', recent: 'warning', kept: 'primary' };
+
+function offerMinutes(n) {
+  n = Number(n) || 0;
+  var d = Math.floor(n / 1440), hr = Math.floor((n % 1440) / 60), m = n % 60;
+  var parts = [];
+  if (d) parts.push(t('of.dur.d', { n: d }));
+  if (hr) parts.push(t('of.dur.h', { n: hr }));
+  if (m || !parts.length) parts.push(t('of.dur.m', { n: m }));
+  return parts.join(' ');
+}
+
+function offerLeft(seconds) {
+  if (!seconds || seconds <= 0) return t('of.ended');
+  return t('of.left', { time: offerMinutes(Math.ceil(seconds / 60)) });
+}
+
+function offerPriceCell(it) {
+  var box = h('div', { class: 'flex flex-col tabular-nums whitespace-nowrap text-sm', 'data-offer-price': it.priceMode || 'discount' });
+  if (it.priceMode === 'price') {
+    if (it.priceToman != null) box.appendChild(h('span', { text: t('toman', { n: it.priceToman }) }));
+    if (it.coinPrice && it.coinPrice.currencyKey) box.appendChild(withKeyNames(function () { return h('span', { text: t('amount.of', { n: fmtNum(it.coinPrice.amount), name: keyName('currency', it.coinPrice.currencyKey) }) }); }));
+    box.appendChild(h('span', { class: 'text-xs text-secondary-500', text: t('of.mode.price') }));
+  } else {
+    box.appendChild(h('span', { class: 'eco-text-success font-medium', text: it.discountPercent ? t('of.off', { n: it.discountPercent }) : t('of.productPrice') }));
+  }
+  return box;
+}
+
+function offerStatusCell(it) {
+  var ended = it.endsAt && new Date(it.endsAt) < new Date();
+  return h('div', { class: 'flex flex-wrap gap-1' }, activeTag(it.isActive),
+    (it.audienceTagIds || []).length ? tag(t('audience.only'), 'primary') : null,
+    it.productActive === false ? tag(t('of.offerOnly'), 'secondary') : null,
+    ended ? tag(t('ev.ended'), 'secondary') : null);
+}
+
+function offerTriggerText(it) {
+  var tt = it.triggerType || 'first_entry';
+  var v = it.triggerValue == null ? '' : numLocal(it.triggerValue);
+  return t('of.trigger.' + tt + '.say', { n: v });
+}
+
+function offerSharedColumns(kind) {
+  var cols = [
+    { label: 'col.name', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.name) || i18nText(it.productName) || it.key }), h('div', { class: 'text-secondary-500' }, mono(it.key))); }, skeleton: '30%' },
+    { label: 'col.of.product', render: function (it) { return h('div', { class: 'min-w-0' }, h('div', { class: 'truncate', text: i18nText(it.productName) || '' }), it.productKey ? h('div', { class: 'text-secondary-500' }, mono(it.productKey)) : null); }, skeleton: '25%' },
+    { label: 'col.price', render: offerPriceCell, width: 140 }
+  ];
+  if (kind === 'daily') cols.push({ label: 'col.of.weight', render: function (it) { return h('span', { class: 'tabular-nums', text: fmtNum(it.weight) }); }, width: 80 });
+  else cols.push({ label: 'col.of.trigger', render: function (it) { return h('div', { class: 'flex flex-col text-sm min-w-0' }, h('span', { class: 'truncate', text: offerTriggerText(it) }), h('span', { class: 'text-xs text-secondary-500', text: offerMinutes(it.durationMinutes) })); }, skeleton: '25%' });
+  cols.push({ label: 'col.of.sold', render: function (it) { return h('span', { class: 'tabular-nums whitespace-nowrap', text: fmtNum(it.bought || 0) + ' / ' + fmtNum(it.made || 0) }); }, width: 90 });
+  cols.push({ label: 'col.status', render: offerStatusCell, width: 150 });
+  return cols;
+}
+
+function offerPriceFields() {
+  return [
+    { type: 'heading', label: 'of.h.product' },
+    { name: 'productId', type: 'ref', resource: 'products', label: 'f.of.product', hint: 'f.of.product.hint', required: true },
+    { type: 'row', fields: [
+      { name: 'priceMode', type: 'select', label: 'f.of.priceMode', required: true, noPlaceholder: true, options: opts('of.mode.', ['discount', 'price']) },
+      { name: 'discountPercent', type: 'number', label: 'f.of.discount', hint: 'f.of.discount.hint', min: 0, max: 100, empty: 0, when: function (v) { return v.priceMode !== 'price'; } }
+    ] },
+    { name: 'priceToman', type: 'number', label: 'f.of.priceToman', hint: 'f.of.priceToman.hint', min: 0, optional: true, when: function (v) { return v.priceMode === 'price'; },
+      check: function (n) { return n != null && n !== '' && Number(n) > 0 && Number(n) < 100 ? t('code.INVALID_PRICE') : null; } },
+    { type: 'row', when: function (v) { return v.priceMode === 'price'; }, fields: [
+      { name: 'coinPrice.currencyKey', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.coinPrice.currency', optional: true, when: function (v) { return v.priceMode === 'price'; } },
+      { name: 'coinPrice.amount', type: 'number', label: 'f.coinPrice.amount', min: 0, optional: true, when: function (v) { return v.priceMode === 'price'; } }
+    ] },
+    { type: 'row', fields: [
+      { name: 'sku.bazaar', type: 'text', ltr: true, label: 'f.sku.bazaar', hint: 'f.of.sku.hint', optional: true },
+      { name: 'sku.myket', type: 'text', ltr: true, label: 'f.sku.myket', optional: true }
+    ] },
+    { name: 'purchaseLimit', type: 'number', label: 'f.of.limit', hint: 'f.of.limit.hint', required: true, min: 1, max: 1000 }
+  ];
+}
+
+function offerAudienceFields() {
+  return [
+    { type: 'heading', label: 'ev.h.who' },
+    playerTagsField(),
+    { name: 'excludeTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.of.exclude', hint: 'f.of.exclude.hint', optional: true, empty: [] },
+    { type: 'row', fields: [
+      { name: 'minLevel', type: 'number', label: 'f.minLevel', min: 0, empty: 0 },
+      { name: 'maxLevel', type: 'number', label: 'f.of.maxLevel', min: 0, optional: true, check: function (v, vals) { return v != null && v !== '' && Number(v) < Number(vals.minLevel || 0) ? t('code.INVALID_LEVEL') : null; } }
+    ] },
+    { name: 'levelTableId', type: 'ref', resource: 'level-tables', label: 'f.of.levelTable', hint: 'f.of.levelTable.hint', optional: true },
+    { name: 'metaConditions', type: 'rows', addLabel: 'of.cond.add', emptyText: 'of.cond.empty', max: 10, empty: [],
+      newRow: function () { return { metaId: null, operator: 'gte', value: 1 }; },
+      columns: [
+        { name: 'metaId', type: 'ref', resource: 'metas', label: 'f.rel.meta', required: true },
+        { name: 'operator', type: 'select', label: 'f.rel.operator', options: opts('rel.op.', REL_OPS) },
+        { name: 'value', type: 'number', int: false, label: 'f.rel.value', required: true }
+      ] },
+    { type: 'row', fields: [
+      { name: 'minAccountDays', type: 'number', label: 'f.of.minDays', hint: 'f.of.minDays.hint', min: 0, optional: true },
+      { name: 'maxAccountDays', type: 'number', label: 'f.of.maxDays', min: 0, optional: true }
+    ] },
+    windowRow()
+  ];
+}
+
+function offerHeadFields(kind) {
+  return [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, lockOnEdit: true },
+      { name: 'sort', type: 'number', label: 'f.sort', hint: kind === 'entry' ? 'f.of.sort.entry.hint' : 'f.sort.hint' }
+    ] },
+    tr('name', { label: 'f.of.name', hint: 'f.of.name.hint', optional: true, max: 128 }),
+    tr('description', { label: 'f.of.description', multiline: true, max: 1000, optional: true }),
+    tr('badge', { label: 'f.of.badge', hint: 'f.of.badge.hint', optional: true, max: 32 })
+  ];
+}
+
+function offerDefaults(kind) {
+  return function (query) {
+    var v = { key: '', name: {}, description: {}, badge: {}, productId: (query && query.productId) || null, priceMode: 'discount', discountPercent: 20, priceToman: null, coinPrice: null, sku: {},
+      purchaseLimit: 1, weight: 10, audienceTagIds: [], excludeTagIds: [], minLevel: 0, maxLevel: null, levelTableId: null, metaConditions: [], minAccountDays: null, maxAccountDays: null,
+      startsAt: null, endsAt: null, isActive: true, sort: 0, metadata: {} };
+    if (kind === 'entry') Object.assign(v, { triggerType: 'first_entry', triggerValue: null, triggerLevelTable: null, triggerMetaId: null, triggerTagId: null, durationMinutes: 1440, repeat: 'once', cooldownHours: 168, maxTriggers: null });
+    return v;
+  };
+}
+
+function offerToForm(v) {
+  v.coinPrice = v.coinPrice || null;
+  v.sku = v.sku || {};
+  v.metaConditions = (v.metaConditions || []).map(function (c) { return { metaId: c.metaId, operator: c.operator || 'gte', value: c.value }; });
+  if (v.kind === 'entry') {
+    v.triggerLevelTable = v.triggerType === 'level' ? v.triggerRef || null : null;
+    v.triggerMetaId = v.triggerType === 'meta' ? v.triggerRef || null : null;
+    v.triggerTagId = v.triggerType === 'tag' ? v.triggerRef || null : null;
+  }
+  return v;
+}
+
+function offerFixPayload(kind) {
+  return function (p) {
+    if (p.sort == null) p.sort = 0;
+    if (p.coinPrice && !p.coinPrice.currencyKey && (p.coinPrice.amount == null || p.coinPrice.amount === '')) p.coinPrice = null;
+    if (p.priceMode !== 'price') { p.priceToman = null; p.coinPrice = null; }
+    var sku = {};
+    if (p.sku && p.sku.bazaar) sku.bazaar = p.sku.bazaar;
+    if (p.sku && p.sku.myket) sku.myket = p.sku.myket;
+    p.sku = sku;
+    p.metaConditions = (p.metaConditions || []).map(function (c) { return { metaId: c.metaId, operator: c.operator || 'gte', value: c.value }; });
+    if (kind === 'entry') {
+      p.triggerRef = p.triggerType === 'level' ? p.triggerLevelTable || '' : p.triggerType === 'meta' ? p.triggerMetaId || '' : p.triggerType === 'tag' ? p.triggerTagId || '' : '';
+      if (!OFFER_TRIGGER_VALUE[p.triggerType]) p.triggerValue = null;
+      if (p.repeat !== 'cooldown') p.maxTriggers = null;
+      delete p.triggerLevelTable;
+      delete p.triggerMetaId;
+      delete p.triggerTagId;
+    }
+    return p;
+  };
+}
+
+RESOURCES.offers = {
+  filters: [{ name: 'productId', label: 'filter.of.product', type: 'ref', resource: 'products' }, activeFilter()],
+  columns: offerSharedColumns('daily'),
+  fields: offerHeadFields('daily').concat(offerPriceFields(), [
+    { type: 'heading', label: 'of.h.draw' },
+    { name: 'weight', type: 'number', label: 'f.of.weight', hint: 'f.of.weight.hint', required: true, min: 0, max: 1000000 }
+  ], offerAudienceFields(), [{ name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }]),
+  defaults: offerDefaults('daily'),
+  toForm: offerToForm,
+  fixPayload: offerFixPayload('daily'),
+  afterSave: function () { forgetRefs('offers'); }
+};
+
+RESOURCES['entry-offers'] = {
+  filters: [{ name: 'productId', label: 'filter.of.product', type: 'ref', resource: 'products' }, activeFilter()],
+  columns: offerSharedColumns('entry'),
+  fields: offerHeadFields('entry').concat(offerPriceFields(), [
+    { type: 'heading', label: 'of.h.trigger' },
+    { type: 'row', fields: [
+      { name: 'triggerType', type: 'select', label: 'f.of.trigger', hint: 'f.of.trigger.hint', required: true, noPlaceholder: true, options: opts('of.trigger.', OFFER_TRIGGERS) },
+      { name: 'triggerValue', type: 'number', int: false, label: 'f.of.triggerValue', required: true, when: function (v) { return !!OFFER_TRIGGER_VALUE[v.triggerType]; } }
+    ] },
+    { name: 'triggerLevelTable', type: 'ref', resource: 'level-tables', label: 'f.of.levelTable', hint: 'f.of.levelTable.hint', optional: true, when: function (v) { return v.triggerType === 'level'; } },
+    { name: 'triggerMetaId', type: 'ref', resource: 'metas', label: 'f.rel.meta', required: true, when: function (v) { return v.triggerType === 'meta'; } },
+    { name: 'triggerTagId', type: 'ref', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.of.triggerTag', required: true, when: function (v) { return v.triggerType === 'tag'; } },
+    { name: 'triggerSay', type: 'static', readonly: true, live: true, render: function (v) {
+      return h('p', { class: 'eco-rule-preview text-sm rounded-md px-3 py-2', 'data-offer-trigger-say': v.triggerType || '', text: offerTriggerText(v) + ' ' + t('of.timer.say', { time: offerMinutes(v.durationMinutes) }) });
+    } },
+    { type: 'heading', label: 'of.h.timer' },
+    { name: 'durationMinutes', type: 'number', label: 'f.of.duration', hint: 'f.of.duration.hint', required: true, min: 1, max: 525600 },
+    { type: 'row', fields: [
+      { name: 'repeat', type: 'select', label: 'f.of.repeat', hint: 'f.of.repeat.hint', required: true, noPlaceholder: true, options: opts('of.repeat.', ['once', 'cooldown']) },
+      { name: 'cooldownHours', type: 'number', label: 'f.of.cooldown', hint: 'f.of.cooldown.hint', min: 0, max: 87600, empty: 0, when: function (v) { return v.repeat === 'cooldown'; } }
+    ] },
+    { name: 'maxTriggers', type: 'number', label: 'f.of.maxTriggers', hint: 'f.rel.maxFires.hint', min: 1, max: 1000000, optional: true, when: function (v) { return v.repeat === 'cooldown'; } }
+  ], offerAudienceFields(), [{ name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }]),
+  defaults: offerDefaults('entry'),
+  toForm: offerToForm,
+  fixPayload: offerFixPayload('entry'),
+  afterSave: function () { forgetRefs('entry-offers'); }
+};
+
+var OFFER_SETTINGS_FIELDS = [
+  { type: 'heading', label: 'os.h.daily' },
+  { name: 'dailyEnabled', type: 'bool', inline: true, label: 'f.os.dailyEnabled', hint: 'f.os.dailyEnabled.hint' },
+  { type: 'row', fields: [
+    { name: 'timezone', type: 'select', label: 'f.es.timezone', required: true, options: function () { return TIMEZONES.map(function (z) { return { value: z, label: z === 'UTC' ? 'UTC' : z.replace('_', ' ') }; }); } },
+    { name: 'periodDays', type: 'number', label: 'f.os.periodDays', hint: 'f.os.periodDays.hint', required: true, min: 1, max: 30 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'resetHour', type: 'number', label: 'f.os.resetHour', hint: 'f.os.resetHour.hint', required: true, min: 0, max: 23 },
+    { name: 'resetMinute', type: 'number', label: 'f.os.resetMinute', required: true, min: 0, max: 59 }
+  ] },
+  { name: 'periodSay', type: 'static', readonly: true, live: true, render: function (v) {
+    if (!v.periodEnd) return h('span', {});
+    return h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300 -mt-2 mb-4', 'data-offer-period': '' }, t('os.period', { from: fmtDate(v.periodStart), to: fmtDate(v.periodEnd) }));
+  } },
+  { name: 'count', type: 'number', label: 'f.os.count', hint: 'f.os.count.hint', required: true, min: 0, max: 20 },
+  { name: 'countByTag', type: 'rows', label: 'f.os.countByTag', addLabel: 'os.countByTag.add', emptyText: 'os.countByTag.empty', max: 20, empty: [],
+    newRow: function () { return { tagId: null, count: 4 }; },
+    columns: [
+      { name: 'tagId', type: 'ref', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, label: 'f.os.tag', required: true },
+      { name: 'count', type: 'number', label: 'f.os.count', required: true, min: 0, max: 20 }
+    ] },
+  { type: 'row', fields: [
+    { name: 'weighting', type: 'select', label: 'f.os.weighting', hint: 'f.os.weighting.hint', required: true, noPlaceholder: true, options: opts('os.weighting.', ['weighted', 'uniform', 'priority']) },
+    { name: 'noRepeatDays', type: 'number', label: 'f.os.noRepeatDays', hint: 'f.os.noRepeatDays.hint', required: true, min: 0, max: 365 }
+  ] },
+  { name: 'fillWithRepeats', type: 'bool', inline: true, label: 'f.os.fillWithRepeats', hint: 'f.os.fillWithRepeats.hint' },
+  { name: 'boughtCooldownDays', type: 'number', label: 'f.os.boughtCooldown', hint: 'f.os.boughtCooldown.hint', required: true, min: -1, max: 3650 },
+  { name: 'excludeOwned', type: 'bool', inline: true, label: 'f.os.excludeOwned', hint: 'f.os.excludeOwned.hint' },
+  { name: 'respectProductRules', type: 'bool', inline: true, label: 'f.os.productRules', hint: 'f.os.productRules.hint' },
+  { name: 'inactiveProducts', type: 'select', label: 'f.os.inactive', hint: 'f.os.inactive.hint', required: true, noPlaceholder: true, options: opts('os.inactive.', ['allow', 'skip']) },
+  { name: 'showSoldOut', type: 'bool', inline: true, label: 'f.os.showSoldOut', hint: 'f.os.showSoldOut.hint' },
+  { name: 'giftCodes', type: 'bool', inline: true, label: 'f.os.giftCodes', hint: 'f.os.giftCodes.hint' },
+  { type: 'heading', label: 'os.h.reroll' },
+  { name: 'rerollEnabled', type: 'bool', inline: true, label: 'f.os.rerollEnabled', hint: 'f.os.rerollEnabled.hint' },
+  { type: 'row', fields: [
+    { name: 'rerollLimit', type: 'number', label: 'f.os.rerollLimit', hint: 'f.os.rerollLimit.hint', required: true, min: 0, max: 100 },
+    { name: 'rerollCostStep', type: 'number', label: 'f.os.rerollStep', hint: 'f.os.rerollStep.hint', required: true, min: 0 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'rerollCost.currencyKey', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.os.rerollCurrency', hint: 'f.os.rerollCurrency.hint', optional: true },
+    { name: 'rerollCost.amount', type: 'number', label: 'f.os.rerollAmount', min: 1, optional: true }
+  ] },
+  { name: 'rerollAvoidCurrent', type: 'bool', inline: true, label: 'f.os.rerollAvoid', hint: 'f.os.rerollAvoid.hint' },
+  { type: 'heading', label: 'os.h.entry' },
+  { name: 'entryEnabled', type: 'bool', inline: true, label: 'f.os.entryEnabled', hint: 'f.os.entryEnabled.hint' },
+  { type: 'row', fields: [
+    { name: 'entryMaxActive', type: 'number', label: 'f.os.entryMax', hint: 'f.os.entryMax.hint', required: true, min: 1, max: 20 },
+    { name: 'entryTimerStart', type: 'select', label: 'f.os.timerStart', hint: 'f.os.timerStart.hint', required: true, noPlaceholder: true, options: opts('os.timer.', ['list', 'seen', 'trigger']) }
+  ] }
+];
+
+function offerSettingsCall(method, path, body) {
+  return api(method, path, body).then(function (res) {
+    var st = Object.assign({}, (res && res.settings) || {});
+    st.periodStart = res && res.periodStart;
+    st.periodEnd = res && res.periodEnd;
+    if (!st.rerollCost) st.rerollCost = { currencyKey: null, amount: null };
+    return st;
+  });
+}
+
+function offerSettingsPage(container) {
+  var frame = pageFrame(t('nav.offer-settings'), t('desc.offer-settings'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(offerSettingsCall, '/offer-settings', null, OFFER_SETTINGS_FIELDS, { id: 'offers', fixPayload: function (p) {
+    delete p.periodStart;
+    delete p.periodEnd;
+    delete p.updatedAt;
+    delete p.periodSay;
+    if (!p.rerollCost || !p.rerollCost.currencyKey) p.rerollCost = null;
+    p.countByTag = (p.countByTag || []).map(function (r) { return { tagId: r.tagId, count: Number(r.count) }; });
+    return p;
+  } });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
+function offerReasonTag(reason) {
+  if (!reason) return tag(t('of.reason.ok'), 'success');
+  return tag(t('of.reason.' + reason), OFFER_REASON_COLOR[reason] || 'secondary');
+}
+
+function offerStateTag(r) {
+  var color = r.state === 'active' ? 'success' : r.state === 'sold_out' ? 'primary' : r.state === 'waiting' ? 'warning' : 'secondary';
+  return tag(t('of.state.' + r.state), color);
+}
+
+function offerRowPrice(r) {
+  var parts = [];
+  if (r.finalToman != null) parts.push(t('toman', { n: r.finalToman }));
+  if (r.coinAmount != null && r.coinCurrency) parts.push(t('amount.of', { n: fmtNum(r.coinAmount), name: keyName('currency', r.coinCurrency) }));
+  return h('span', { class: 'tabular-nums whitespace-nowrap text-sm', text: parts.join(' · ') + (r.discountPercent ? ' (' + t('of.off', { n: r.discountPercent }) + ')' : '') });
+}
+
+function offerCopyColumns() {
+  return [
+    { label: 'col.name', render: function (r) { return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(r.name) || r.key }), h('div', { class: 'text-secondary-500' }, mono(r.key))); }, skeleton: '30%' },
+    { label: 'col.price', render: function (r) { return withKeyNames(function () { return offerRowPrice(r); }); }, skeleton: '20%' },
+    { label: 'col.of.limitUse', render: function (r) { return h('span', { class: 'tabular-nums', text: fmtNum(r.bought) + ' / ' + fmtNum(r.purchaseLimit) }); }, width: 90 },
+    { label: 'col.status', render: function (r) { return h('div', { class: 'flex flex-wrap gap-1' }, offerStateTag(r), r.reroll ? tag(t('of.rerollN', { n: r.reroll }), 'secondary') : null); }, width: 150 },
+    { label: 'col.of.time', render: function (r) { return h('span', { class: 'text-sm whitespace-nowrap', text: r.state === 'active' ? offerLeft(r.secondsLeft) : r.expiresAt ? fmtDate(r.expiresAt) : '' }); }, width: 170 }
+  ];
+}
+
+function offerPreviewPage(container, query) {
+  var frame = pageFrame(t('nav.offer-preview'), t('desc.offer-preview'));
+  clear(container).appendChild(frame.el);
+  var userId = query.userId || '';
+  var body = h('div', { class: 'flex flex-col gap-6', 'data-offer-preview': '' });
+  var picker = refPicker({ resource: 'support/players', api: baseApi, value: userId, label: t('col.player'), placeholder: t('of.pickPlayer'), onchange: function (v) {
+    userId = v || '';
+    replaceHash(hashFor('offer-preview', null, userId ? { userId: userId } : {}));
+    load();
+  } });
+  var idInput = h('input', { class: INPUT_SM + ' font-mono', dir: 'ltr', 'data-ltr': '', type: 'text', value: userId, placeholder: t('of.userId'), 'aria-label': t('of.userId'), 'data-offer-user': '' });
+  idInput.addEventListener('change', function () {
+    userId = toLatinDigits(idInput.value).trim();
+    replaceHash(hashFor('offer-preview', null, userId ? { userId: userId } : {}));
+    load();
+  });
+  frame.content.appendChild(h('div', { class: 'flex flex-col sm:flex-row gap-2 mb-4 eco-offer-pick' },
+    h('div', { class: 'x-label x-input eco-filter-ref min-w-0 flex-1', style: INPUT_VARS }, picker),
+    h('label', { class: 'x-label block relative x-input flex-1', style: INPUT_VARS }, idInput)));
+  frame.content.appendChild(body);
+
+  function render(res) {
+    clear(body);
+    body.appendChild(h('div', { class: 'flex flex-wrap items-center gap-2 text-sm', 'data-offer-summary': '' },
+      h('a', { href: '#/players/' + encodeURIComponent(res.userId), class: 'eco-link font-medium', text: res.username || res.userId }),
+      tag(t('of.countN', { n: res.count }), 'primary'),
+      !res.dailyEnabled ? tag(t('of.dailyOff'), 'warning') : null,
+      !res.entryEnabled ? tag(t('of.entryOff'), 'warning') : null,
+      h('span', { class: 'text-secondary-500', text: t('os.period', { from: fmtDate(res.periodStart), to: fmtDate(res.periodEnd) }) })));
+    var cur = res.current || [];
+    body.appendChild(section('of.pv.current', cur.length ? table(offerCopyColumns().map(function (c) { return { label: t(c.label), width: c.width }; }), cur.map(function (r) { return { item: r, cells: offerCopyColumns().map(function (c) { return c.render(r); }) }; })) : h('p', { class: 'text-sm text-secondary-500 py-2', text: t('of.pv.noCurrent') })));
+    var drawCols = [{ label: t('col.name'), skeleton: '40%' }, { label: t('col.of.weight'), width: 90 }, { label: t('col.of.reason'), width: 200 }];
+    body.appendChild(section('of.pv.draw', h('div', {},
+      h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400 mb-3', text: t('of.pv.draw.hint') }),
+      (res.draw || []).length ? table(drawCols, (res.draw || []).map(function (r) {
+        return { item: r, cells: [
+          h('div', { class: 'min-w-0', 'data-offer-draw': r.key }, h('div', { class: 'font-medium truncate', text: i18nText(r.name) || r.key }), h('div', { class: 'text-secondary-500' }, mono(r.key))),
+          h('span', { class: 'tabular-nums', text: fmtNum(r.weight) }),
+          h('div', { class: 'flex flex-wrap gap-1', 'data-offer-reason': r.reason || 'ok' }, offerReasonTag(r.reason), r.picked ? tag(t('of.slotN', { n: (r.slot || 0) + 1 }), 'secondary') : null)
+        ] };
+      })) : h('p', { class: 'text-sm text-secondary-500 py-2', text: t('of.pv.noPool') }))));
+    var entryCols = [{ label: t('col.name'), skeleton: '40%' }, { label: t('col.of.trigger'), width: 180 }, { label: t('col.of.reason'), width: 220 }];
+    body.appendChild(section('of.pv.entry', (res.entry || []).length ? table(entryCols, res.entry.map(function (e) {
+      return { item: e, cells: [
+        h('div', { class: 'min-w-0', 'data-offer-entry': e.key }, h('div', { class: 'font-medium truncate', text: i18nText(e.name) || e.key }), h('div', { class: 'text-secondary-500' }, mono(e.key))),
+        h('span', { class: 'text-sm', text: t('of.trigger.' + (e.triggerType || 'first_entry')) }),
+        h('div', { class: 'flex flex-wrap gap-1', 'data-offer-entry-state': e.due ? 'due' : e.open ? 'open' : e.reason || (e.holds ? 'done' : 'waiting') },
+          e.open ? tag(t('of.entry.open'), 'success') : e.due ? tag(t('of.entry.due'), 'primary') : e.reason ? offerReasonTag(e.reason) : tag(t(e.holds ? 'of.entry.done' : 'of.entry.waiting'), 'secondary'),
+          e.count ? tag(t('of.timesN', { n: e.count }), 'secondary') : null)
+      ] };
+    })) : h('p', { class: 'text-sm text-secondary-500 py-2', text: t('of.pv.noEntry') })));
+  }
+
+  function load() {
+    if (!userId) { clear(body).appendChild(card(emptyBlock(t('of.pv.pick'), t('of.pv.pick.hint')))); return; }
+    idInput.value = userId;
+    clear(body).appendChild(h('div', { class: 'flex flex-col gap-2' }, bar('40%'), bar('70%'), bar('55%')));
+    api('GET', '/offer-preview' + qs({ userId: userId })).then(render, function (err) { clear(body).appendChild(errorBlock(err, load)); });
+  }
+  load();
+}
+
+function offerReportPage(container, query) {
+  var frame = pageFrame(t('nav.offer-report'), t('desc.offer-report'));
+  clear(container).appendChild(frame.el);
+  var state = { days: query.days || '30', kind: query.kind || '' };
+  var stats = h('div', { class: 'eco-stat-grid mb-4', 'data-offer-stats': '' });
+  var box = h('div', {});
+  function sync() {
+    var q = {};
+    if (state.days !== '30') q.days = state.days;
+    if (state.kind) q.kind = state.kind;
+    replaceHash(hashFor('offer-report', null, q));
+  }
+  var days = filterSelect(t('filter.of.days'), state.days, [7, 30, 90, 365].map(function (n) { return { value: String(n), label: t('of.daysN', { n: n }) }; }), function (v) { state.days = v || '30'; sync(); load(); });
+  var kind = filterSelect(t('filter.of.kind'), state.kind, opts('of.kind.', ['daily', 'entry'])(), function (v) { state.kind = v || ''; sync(); load(); });
+  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2' }, days, kind));
+  frame.content.appendChild(stats);
+  frame.content.appendChild(box);
+  var cols = [
+    { label: t('col.name'), skeleton: '30%' }, { label: t('col.of.kind'), width: 100 }, { label: t('col.of.shown'), width: 90 }, { label: t('col.of.buyers'), width: 90 },
+    { label: t('col.of.purchases'), width: 90 }, { label: t('col.of.conversion'), width: 100 }, { label: t('col.of.revenue'), width: 150 }
+  ];
+  function pct(x) { return t('percent', { n: Math.round((x || 0) * 1000) / 10 }); }
+  function load() {
+    clear(stats);
+    for (var i = 0; i < 5; i++) stats.appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('6rem'), bar('3rem', 'h-7'))));
+    clear(box).appendChild(table(cols, skeletonRows(cols, 5)));
+    api('GET', '/offer-report' + qs({ days: state.days, kind: state.kind })).then(function (res) {
+      var tt = res.totals || {};
+      clear(stats);
+      stats.appendChild(statCard(t('col.of.shown'), tt.shown, t('of.madeN', { n: fmtNum(tt.made || 0) }), null));
+      stats.appendChild(statCard(t('col.of.buyers'), tt.buyers, null, null));
+      stats.appendChild(statCard(t('col.of.purchases'), tt.purchases, null, null));
+      var conv = statCard(t('col.of.conversion'), 0, null, null);
+      var num = conv.querySelector('.text-3xl');
+      if (num) num.textContent = pct(tt.conversion);
+      stats.appendChild(conv);
+      stats.appendChild(statCard(t('col.of.revenue'), tt.revenueToman, t('toman', { n: '' }).trim(), null));
+      stats.appendChild(statCard(t('of.rerolls'), tt.rerolls, null, null));
+      var items = res.items || [];
+      clear(box);
+      if (!items.length) { box.appendChild(card(emptyBlock(t('empty.title'), t('of.report.empty')))); return; }
+      box.appendChild(table(cols, items.map(function (r) {
+        var coins = Object.keys(r.coins || {}).map(function (k) { return fmtNum(r.coins[k]) + ' ' + k; });
+        return { item: r, cells: [
+          h('a', { href: hashFor(r.kind === 'entry' ? 'entry-offers' : 'offers', r.id), class: 'eco-link min-w-0', 'data-offer-report': r.key }, h('div', { class: 'font-medium truncate', text: i18nText(r.name) || r.key }), h('div', { class: 'text-secondary-500' }, mono(r.key))),
+          tag(t('of.kind.' + r.kind), r.kind === 'entry' ? 'warning' : 'primary'),
+          h('span', { class: 'tabular-nums', text: fmtNum(r.shown) }),
+          h('span', { class: 'tabular-nums', text: fmtNum(r.buyers) }),
+          h('span', { class: 'tabular-nums', text: fmtNum(r.purchases) }),
+          h('span', { class: 'tabular-nums', 'data-offer-conv': r.key, text: pct(r.conversion) }),
+          h('div', { class: 'flex flex-col tabular-nums text-sm' }, r.revenueToman ? h('span', { text: t('toman', { n: r.revenueToman }) }) : null, coins.length ? h('span', { class: 'text-xs text-secondary-500', dir: 'ltr', text: coins.join(' · ') }) : null, !r.revenueToman && !coins.length ? h('span', { class: 'text-secondary-400', text: t('none') }) : null)
+        ] };
+      })));
+    }, function (err) { clear(stats); clear(box).appendChild(errorBlock(err, load)); });
+  }
+  load();
+}
+
+CUSTOM_PAGES['offer-settings'] = function (root) { offerSettingsPage(root); };
+CUSTOM_PAGES['offer-preview'] = function (root, route) { offerPreviewPage(root, route.query || {}); };
+CUSTOM_PAGES['offer-report'] = function (root, route) { offerReportPage(root, route.query || {}); };
+
+var OFFER_CARD = { id: null, data: null, loading: false, at: 0, err: null };
+
+function loadOfferCard(id) {
+  OFFER_CARD.loading = true;
+  return api('GET', '/users/' + encodeURIComponent(id) + '/offers').then(function (res) {
+    OFFER_CARD.loading = false;
+    OFFER_CARD.at = Date.now();
+    OFFER_CARD.data = res;
+    OFFER_CARD.err = null;
+    var old = document.querySelector('[data-player-offers]');
+    if (old) old.removeAttribute('data-key');
+    schedule();
+  }, function (err) {
+    OFFER_CARD.loading = false;
+    OFFER_CARD.at = Date.now();
+    OFFER_CARD.err = err;
+    schedule();
+  });
+}
+
+function reloadOfferCard(id) { OFFER_CARD.at = 0; loadOfferCard(id); }
+
+function offerCardLine(userId, r, write) {
+  var line = h('div', { class: 'flex flex-wrap items-center gap-2 py-1.5 text-sm', 'data-pp-offer': r.key, 'data-offer-state': r.state },
+    h('span', { class: 'font-medium truncate min-w-0', text: i18nText(r.name) || r.key }),
+    offerStateTag(r),
+    withKeyNames(function () { return offerRowPrice(r); }),
+    h('span', { class: 'flex-1' }),
+    h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap tabular-nums', text: r.state === 'active' ? offerLeft(r.secondsLeft) : r.expiresAt ? fmtDate(r.expiresAt) : r.state === 'waiting' ? t('of.notStarted') : '' }));
+  if (write && (r.state === 'active' || r.state === 'waiting')) {
+    var close = button({ variant: 'link', size: 'sm', label: t('of.close'), onclick: function () {
+      confirmModal({ title: t('of.close.title'), text: t('of.close.text', { name: i18nText(r.name) || r.key }), ok: t('of.close'), danger: true }).then(function (yes) {
+        if (!yes) return;
+        api('POST', '/users/' + encodeURIComponent(userId) + '/offers/' + encodeURIComponent(r.id) + '/expire', {}).then(function () { toast('success', t('of.close.done')); reloadOfferCard(userId); }, function (err) { toast('error', errorText(err)); });
+      });
+    } });
+    close.setAttribute('data-offer-close', r.key);
+    line.appendChild(close);
+  }
+  if (write && r.kind === 'entry' && !r.forgotten) {
+    var reset = button({ variant: 'link', size: 'sm', label: t('of.entryReset'), onclick: function () {
+      confirmModal({ title: t('of.entryReset.title'), text: t('of.entryReset.text', { name: i18nText(r.name) || r.key }), ok: t('of.entryReset'), danger: true }).then(function (yes) {
+        if (!yes) return;
+        api('POST', '/users/' + encodeURIComponent(userId) + '/entry-offers/' + encodeURIComponent(r.offerId) + '/reset', {}).then(function () { toast('success', t('of.entryReset.done')); reloadOfferCard(userId); }, function (err) { toast('error', errorText(err)); });
+      });
+    } });
+    reset.setAttribute('data-offer-entry-reset', r.key);
+    line.appendChild(reset);
+  }
+  return line;
+}
+
+function playerOffersCard() {
+  var id = playerCardRoute();
+  var existing = document.querySelector('[data-player-offers]');
+  if (!id || !token() || !aclCan('HIRO_ECONOMY', 0)) { if (existing) existing.remove(); return; }
+  var main = null;
+  var mains = document.querySelectorAll('#main > main');
+  for (var i = 0; i < mains.length; i++) if (mains[i].style.display !== 'none') main = mains[i];
+  var grid = main && main.querySelector('div.flex.flex-col.flex-1.min-w-0 > div.grid.grid-cols-1.gap-4');
+  if (!grid) return;
+  if (OFFER_CARD.id !== id) { OFFER_CARD.id = id; OFFER_CARD.data = null; OFFER_CARD.err = null; OFFER_CARD.at = 0; }
+  if (!OFFER_CARD.loading && Date.now() - OFFER_CARD.at > 20000) loadOfferCard(id);
+  var p = OFFER_CARD.data;
+  var anchor = grid.querySelector('[data-player-chance]') || grid.querySelector('[data-player-achievements]') || grid.querySelector('[data-player-items]') || grid.querySelector('[data-player-tasks]') || grid.querySelector('[data-player-activity]') || grid.querySelector('[data-player-progress]') || grid.querySelector('[data-player-mod]');
+  var key = lang() + '|' + id + '|' + (p ? JSON.stringify([p.daily, p.entry, p.rerolls]) : OFFER_CARD.err ? 'err' : 'loading');
+  var placed = existing && existing.parentNode === grid && (anchor ? existing.previousElementSibling === anchor : grid.firstChild === existing);
+  if (existing && existing.getAttribute('data-key') === key && placed) return;
+  if (existing) existing.remove();
+  var body = h('div', { class: 'px-4 py-3' });
+  var cardEl = h('section', { class: 'flex flex-col dark:bg-secondary-800 rounded-md shadow bg-white', 'data-player-offers': '', 'data-key': key, 'data-economy': 'player-offers', 'data-l10n-skip': '', 'aria-labelledby': 'player-offers-title', dir: document.documentElement.getAttribute('dir') || 'ltr' }, body);
+  var title = h('h2', { id: 'player-offers-title', class: 'font-medium flex items-center gap-2' }, icon('offers', 'h-4 w-4'), h('span', { text: t('of.card') }));
+  var place = function () { if (anchor) anchor.after(cardEl); else grid.insertBefore(cardEl, grid.firstChild); };
+  if (!p) {
+    body.appendChild(h('div', { class: 'flex items-center justify-between gap-2 mb-3' }, title));
+    body.appendChild(OFFER_CARD.err ? notice('error', errorText(OFFER_CARD.err), button({ variant: 'link', size: 'sm', label: t('try.again'), onclick: function () { reloadOfferCard(id); } })) : h('div', { class: 'flex flex-col gap-2' }, bar('40%'), bar('60%')));
+    place();
+    return;
+  }
+  var write = aclCan('HIRO_ECONOMY', 1);
+  var actions = h('div', { class: 'flex flex-wrap items-center gap-2' });
+  if (write) {
+    var redraw = button({ variant: 'ghost', size: 'sm', icon: 'refresh', label: t('of.redraw'), onclick: function () {
+      confirmModal({ title: t('of.redraw.title'), text: t('of.redraw.text'), ok: t('of.redraw') }).then(function (yes) {
+        if (!yes) return;
+        api('POST', '/users/' + encodeURIComponent(id) + '/offers/reset-daily', {}).then(function () { toast('success', t('of.redraw.done')); reloadOfferCard(id); }, function (err) { toast('error', errorText(err)); });
+      });
+    } });
+    redraw.setAttribute('data-offer-redraw', '');
+    actions.appendChild(redraw);
+  }
+  actions.appendChild(h('a', { href: hashFor('offer-preview', null, { userId: id }), class: 'eco-link text-sm', 'data-offer-preview-link': '', text: t('of.previewLink') }));
+  body.appendChild(h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-2' }, title,
+    h('span', { class: 'text-sm text-secondary-600 dark:text-secondary-300 tabular-nums', 'data-offer-counts': '', text: t('of.cardCounts', { shown: fmtNum(p.shown || 0), bought: fmtNum(p.bought || 0) }) }),
+    actions));
+  var daily = (p.daily || []).filter(function (r) { return r.status !== 'replaced'; });
+  var dailyBox = h('div', { class: 'flex flex-col', 'data-pp-offers-daily': '' });
+  daily.forEach(function (r) { dailyBox.appendChild(offerCardLine(id, r, write)); });
+  if (!daily.length) dailyBox.appendChild(h('span', { class: 'text-sm text-secondary-500 dark:text-secondary-400 py-1', text: p.dailyEnabled ? t('of.card.noDaily') : t('of.dailyOff') }));
+  body.appendChild(progressSection('of.card.daily', dailyBox, p.rerolls ? tag(t('of.rerollsUsed', { n: p.rerolls }), 'secondary') : null));
+  var entryBox = h('div', { class: 'flex flex-col', 'data-pp-offers-entry': '' });
+  (p.entry || []).slice(0, 10).forEach(function (r) { entryBox.appendChild(offerCardLine(id, r, write)); });
+  if (!(p.entry || []).length) entryBox.appendChild(h('span', { class: 'text-sm text-secondary-500 dark:text-secondary-400 py-1', text: t('of.card.noEntry') }));
+  body.appendChild(h('div', { class: 'mt-3 border-t border-secondary-200 dark:border-secondary-700 pt-4' }, progressSection('of.card.entry', entryBox)));
+  place();
+}
+
+OVERVIEW_CATALOG.push('offers');
 
 ICONS.tasks = '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>';
 ICONS['task-groups'] = '<rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="11" width="18" height="5" rx="1"/><path d="M7 20h10"/>';
@@ -20168,6 +21208,7 @@ function nativeTweaks() {
   playerItemsCard();
   playerAchievementsCard();
   playerChanceCard();
+  playerOffersCard();
 }
 
 var ROOT_ID = 'economy-root';
@@ -20508,6 +21549,7 @@ function mountRoute(root, route, ctl, ctx) {
   else if (route.page === 'payments' && route.id) paymentDetail(root, route.id);
   else if (route.page === 'notifications' && route.id === 'new') composePage(root, route.query);
   else if (route.page === 'notifications' && route.id) notificationDetail(root, route.id);
+  else if (CUSTOM_PAGES[route.page]) CUSTOM_PAGES[route.page](root, route, ctl, ctx);
   else ctl.list = listPage(root, route.page, route.query, ctx);
 }
 
