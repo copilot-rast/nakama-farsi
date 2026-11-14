@@ -18,6 +18,9 @@ type Message struct {
 	Body      map[string]string
 	Action    *Action
 	CreatedBy string
+	// Channel is "in_app" (the default) or "push_in_app" for an inbox
+	// message that also goes out as a push.
+	Channel string
 }
 
 type Sender func(ctx context.Context, m Message) (string, error)

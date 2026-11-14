@@ -330,6 +330,7 @@ func (s *service) eventLoop(ctx context.Context) {
 			s.retryAutoClaims(ctx, 20)
 			s.recoverChancePlays(ctx, 20)
 			s.expireGameMatches(ctx, 20)
+			s.expireFriendGifts(ctx, 20)
 			if tick%20 == 0 {
 				if n, err := s.sweepEvents(ctx); err != nil {
 					s.logger.Warn("Economy event sweep failed: %v", err)

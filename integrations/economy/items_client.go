@@ -159,7 +159,7 @@ func (s *service) rpcItemUse(ctx context.Context, userID, payload string) (any, 
 
 func (s *service) purchaseCounts(ctx context.Context, userID string) (map[string]purchaseCount, error) {
 	rows, err := s.db.QueryContext(ctx, `SELECT p.product_id::text, pr.key, count(*), max(COALESCE(p.verified_at, p.updated_at)) FROM economy_payment p JOIN economy_product pr ON pr.id=p.product_id
-		WHERE p.user_id=$1 AND p.status='success' AND COALESCE(p.outcome,'') <> 'duplicate' GROUP BY p.product_id, pr.key`, userID)
+		WHERE p.user_id=$1 AND p.status='success' AND COALESCE(p.outcome,'') <> 'duplicate' AND p.friend_gift_id IS NULL GROUP BY p.product_id, pr.key`, userID)
 	if err != nil {
 		return nil, err
 	}

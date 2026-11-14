@@ -89,7 +89,7 @@ func resources() []resource {
 	}
 }
 
-const productJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'isActive',t.is_active,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'audienceTagIds',to_jsonb(t.audience_tag_ids),'priceToman',t.price_toman,'coinPrice',t.coin_price,'discountPercent',t.discount_percent,'paymentMethods',to_jsonb(t.payment_methods),'sku',t.sku,'isSubscription',t.is_subscription,'prizeId',t.prize_id,'iconUrl',t.icon_url,'coverUrl',t.cover_url,'minLevel',t.min_level,'maxLevel',t.max_level,'levelTableId',t.level_table_id,'isOneTime',t.is_one_time,'checkContents',t.check_contents,'purchaseMessage',t.purchase_message,'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
+const productJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'isActive',t.is_active,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'audienceTagIds',to_jsonb(t.audience_tag_ids),'priceToman',t.price_toman,'coinPrice',t.coin_price,'discountPercent',t.discount_percent,'paymentMethods',to_jsonb(t.payment_methods),'sku',t.sku,'isSubscription',t.is_subscription,'prizeId',t.prize_id,'iconUrl',t.icon_url,'coverUrl',t.cover_url,'minLevel',t.min_level,'maxLevel',t.max_level,'levelTableId',t.level_table_id,'isOneTime',t.is_one_time,'checkContents',t.check_contents,'giftable',t.giftable,'purchaseMessage',t.purchase_message,'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
 func refuseIfUsed(ctx context.Context, tx *sql.Tx, id, query string) error {
 	var used bool
@@ -675,6 +675,7 @@ type productInput struct {
 	LevelTableID    string            `json:"levelTableId"`
 	IsOneTime       bool              `json:"isOneTime"`
 	CheckContents   *bool             `json:"checkContents"`
+	Giftable        *bool             `json:"giftable"`
 	PurchaseMessage i18n              `json:"purchaseMessage"`
 	Metadata        json.RawMessage   `json:"metadata"`
 	Sort            int               `json:"sort"`
@@ -852,8 +853,8 @@ func saveProduct(s *service, ctx context.Context, tx *sql.Tx, id string, create 
 	}
 	skuJSON, _ := json.Marshal(in.SKU)
 	return execSave(ctx, tx, "economy_product", id, create,
-		[]string{"key", "name", "description", "is_active", "category_id", "tag_ids", "audience_tag_ids", "price_toman", "coin_price", "discount_percent", "payment_methods", "sku", "is_subscription", "prize_id", "icon_url", "cover_url", "min_level", "max_level", "level_table_id", "is_one_time", "check_contents", "purchase_message", "metadata", "sort"},
-		[]any{key, i18nJSON(name), i18nJSON(desc), in.IsActive, category, tags, audience, in.PriceToman, coin, in.DiscountPercent, in.PaymentMethods, string(skuJSON), in.IsSubscription, *prize, icon, cover, in.MinLevel, in.MaxLevel, table, in.IsOneTime, check, i18nJSON(message), meta, in.Sort})
+		[]string{"key", "name", "description", "is_active", "category_id", "tag_ids", "audience_tag_ids", "price_toman", "coin_price", "discount_percent", "payment_methods", "sku", "is_subscription", "prize_id", "icon_url", "cover_url", "min_level", "max_level", "level_table_id", "is_one_time", "check_contents", "giftable", "purchase_message", "metadata", "sort"},
+		[]any{key, i18nJSON(name), i18nJSON(desc), in.IsActive, category, tags, audience, in.PriceToman, coin, in.DiscountPercent, in.PaymentMethods, string(skuJSON), in.IsSubscription, *prize, icon, cover, in.MinLevel, in.MaxLevel, table, in.IsOneTime, check, in.Giftable, i18nJSON(message), meta, in.Sort})
 }
 
 func saveGift(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {

@@ -59,6 +59,7 @@ type itemDef struct {
 	Metadata     json.RawMessage `json:"metadata"`
 	Sort         int             `json:"sort"`
 	IsActive     bool            `json:"isActive"`
+	Giftable     *bool           `json:"giftable"`
 }
 
 func (d itemDef) needs() string {
@@ -86,7 +87,7 @@ const itemJSON = `jsonb_build_object('id',t.id,'key',t.key,'typeId',t.type_id,'t
 	'name',t.name,'description',t.description,'iconUrl',t.icon_url,'imageUrl',t.image_url,'categoryId',t.category_id,'categoryKey',COALESCE((SELECT c.key FROM base_category c WHERE c.id=t.category_id),''),
 	'tagIds',to_jsonb(t.tag_ids),'tags',COALESCE((SELECT jsonb_agg(g.key ORDER BY g.sort, g.key) FROM base_tag g WHERE g.id::text = ANY(t.tag_ids)),'[]'::jsonb),
 	'rarity',t.rarity,'parentKey',COALESCE(t.parent_key,''),'requiresKey',COALESCE(t.requires_key,''),'isStarter',t.is_starter,'levelTableId',t.level_table_id,'unlockLevel',t.unlock_level,
-	'price',t.price,'upgrades',t.upgrades,'services',t.services,'metadata',t.metadata,'sort',t.sort,'isActive',t.is_active,'createdAt',t.created_at,'updatedAt',t.updated_at,
+	'price',t.price,'upgrades',t.upgrades,'services',t.services,'metadata',t.metadata,'sort',t.sort,'isActive',t.is_active,'giftable',t.giftable,'createdAt',t.created_at,'updatedAt',t.updated_at,
 	'owners',(SELECT count(*) FROM economy_user_item u WHERE u.item_id=t.id),'equippedBy',(SELECT count(*) FROM economy_user_item u WHERE u.item_id=t.id AND u.equipped))`
 
 func itemResources() []resource {
@@ -152,6 +153,7 @@ func saveItem(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 		Metadata     json.RawMessage `json:"metadata"`
 		Sort         int             `json:"sort"`
 		IsActive     *bool           `json:"isActive"`
+		Giftable     *bool           `json:"giftable"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -333,8 +335,8 @@ func saveItem(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	upJSON, _ := json.Marshal(upgrades)
 	svJSON, _ := json.Marshal(services)
 	return execSave(ctx, tx, "economy_item", id, create,
-		[]string{"key", "type_id", "name", "description", "icon_url", "image_url", "category_id", "tag_ids", "rarity", "parent_key", "requires_key", "is_starter", "level_table_id", "unlock_level", "price", "upgrades", "services", "metadata", "sort", "is_active"},
-		[]any{key, *typeID, i18nJSON(name), i18nJSON(desc), iconURL, imageURL, category, tags, rarity, parent, requires, in.IsStarter, table, in.UnlockLevel, priceJSON, string(upJSON), string(svJSON), meta, in.Sort, active})
+		[]string{"key", "type_id", "name", "description", "icon_url", "image_url", "category_id", "tag_ids", "rarity", "parent_key", "requires_key", "is_starter", "level_table_id", "unlock_level", "price", "upgrades", "services", "metadata", "sort", "is_active", "giftable"},
+		[]any{key, *typeID, i18nJSON(name), i18nJSON(desc), iconURL, imageURL, category, tags, rarity, parent, requires, in.IsStarter, table, in.UnlockLevel, priceJSON, string(upJSON), string(svJSON), meta, in.Sort, active, in.Giftable})
 }
 
 type rowsQueryer interface {

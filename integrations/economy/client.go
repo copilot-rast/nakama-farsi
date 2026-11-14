@@ -569,8 +569,8 @@ func (s *service) startStore(ctx context.Context, userID string, product product
 	if product.offer != nil && product.offer.Final != nil {
 		final = *product.offer.Final
 	}
-	if _, err := s.db.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial, discount_percent, user_offer_id)
-		VALUES ($1,$2,$3,$4,$5,'pending',$6,$7,$8,$9,$10)`, id, userID, product.ID, pm.Method, pm.Config.flag("sandbox"), price, final, final*10, product.DiscountPercent, product.offerID()); err != nil {
+	if _, err := s.db.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial, discount_percent, user_offer_id, friend_gift_id)
+		VALUES ($1,$2,$3,$4,$5,'pending',$6,$7,$8,$9,$10,$11)`, id, userID, product.ID, pm.Method, pm.Config.flag("sandbox"), price, final, final*10, product.DiscountPercent, product.offerID(), product.friendGiftID()); err != nil {
 		return nil, err
 	}
 	return map[string]any{"paymentId": id, "status": "store", "sku": sku, "developerPayload": id}, nil
@@ -605,8 +605,8 @@ func (s *service) startGateway(ctx context.Context, userID string, product produ
 		if final != 0 && final < 100 {
 			return badRequest("PRICE_TOO_LOW", "giftCode", "the final price must be 0 or at least 100 Toman")
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial, gift_id, discount_percent, user_offer_id)
-			VALUES ($1,$2,$3,$4,$5,'pending',$6,$7,$8,$9,$10,$11)`, id, userID, product.ID, pm.Method, sandbox, original, final, final*10, giftID, percent, product.offerID()); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial, gift_id, discount_percent, user_offer_id, friend_gift_id)
+			VALUES ($1,$2,$3,$4,$5,'pending',$6,$7,$8,$9,$10,$11,$12)`, id, userID, product.ID, pm.Method, sandbox, original, final, final*10, giftID, percent, product.offerID(), product.friendGiftID()); err != nil {
 			return err
 		}
 		if giftID != nil {
@@ -935,6 +935,11 @@ func (s *service) rpcPurchaseStatus(ctx context.Context, userID, payload string)
 	} else if p.RewardError.Valid && p.RewardError.String != "" {
 		out["error"] = p.RewardError.String
 	}
+	if giftID := s.paymentGiftID(ctx, p.ID); giftID != "" {
+		var gs string
+		_ = s.db.QueryRowContext(ctx, `SELECT status FROM economy_friend_gift WHERE id=$1`, giftID).Scan(&gs)
+		out["friendGiftId"], out["friendGiftStatus"] = giftID, gs
+	}
 	if p.Status == "success" && p.RewardGranted {
 		if product, err := s.loadProduct(ctx, s.db, p.ProductID); err == nil {
 			if msg := s.purchaseMessage(ctx, userID, product, in.Lang); msg != "" {
@@ -1007,7 +1012,7 @@ func (s *service) rpcPaymentsMine(ctx context.Context, userID, payload string) (
 		before, beforeID = t, parts[1]
 	}
 	rows, err := s.db.QueryContext(ctx, `SELECT jsonb_build_object('paymentId',p.id,'productId',p.product_id,'productKey',pr.key,'productName',pr.name,'method',p.method,'status',p.status,
-		'finalToman',p.final_toman,'coinCurrency',p.coin_currency,'coinAmount',p.coin_amount,'rewardGranted',p.reward_granted,'refId',p.ref_id,'createdAt',p.created_at)::text, p.created_at, p.id::text
+		'finalToman',p.final_toman,'coinCurrency',p.coin_currency,'coinAmount',p.coin_amount,'rewardGranted',p.reward_granted,'refId',p.ref_id,'friendGiftId',p.friend_gift_id,'createdAt',p.created_at)::text, p.created_at, p.id::text
 		FROM economy_payment p JOIN economy_product pr ON pr.id=p.product_id
 		WHERE p.user_id=$1 AND (p.created_at < $2 OR (p.created_at = $2 AND p.id < $3::uuid)) ORDER BY p.created_at DESC, p.id DESC LIMIT $4`, userID, before, beforeID, in.Limit+1)
 	if err != nil {

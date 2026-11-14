@@ -76,8 +76,18 @@ type productView struct {
 	LevelTableID    *string           `json:"levelTableId"`
 	IsOneTime       bool              `json:"isOneTime"`
 	CheckContents   bool              `json:"checkContents"`
+	Giftable        *bool             `json:"giftable"`
 	PurchaseMessage i18n              `json:"purchaseMessage"`
 	offer           *offerRef
+	giftID          string
+}
+
+// friendGiftID is the friend gift a purchase pays for, or nil.
+func (p productView) friendGiftID() any {
+	if p.giftID == "" {
+		return nil
+	}
+	return p.giftID
 }
 
 func (p productView) allows(method string) bool {
@@ -137,7 +147,7 @@ func (s *service) markSuccess(ctx context.Context, p payment, f successFields) (
 	update := func(duplicate bool) error {
 		won = false
 		return s.inTx(ctx, func(tx *sql.Tx) error {
-			once := `CASE WHEN (SELECT pr.is_one_time FROM economy_product pr WHERE pr.id=product_id) THEN user_id::text||':'||product_id::text ELSE NULL END`
+			once := `CASE WHEN friend_gift_id IS NULL AND (SELECT pr.is_one_time FROM economy_product pr WHERE pr.id=product_id) THEN user_id::text||':'||product_id::text ELSE NULL END`
 			outcome, rewardErr := f.Outcome, ""
 			if duplicate {
 				once, outcome, rewardErr = `NULL`, "duplicate", "PRODUCT_ALREADY_BOUGHT"
@@ -192,6 +202,10 @@ func (s *service) closePayment(ctx context.Context, id, status, code string) (bo
 			return nil
 		}
 		closed = true
+		if _, err := tx.ExecContext(ctx, `UPDATE economy_friend_gift SET status='failed', error=$2, updated_at=now()
+			WHERE id=(SELECT friend_gift_id FROM economy_payment WHERE id=$1) AND status='paying'`, id, truncate(code, 500)); err != nil {
+			return err
+		}
 		_, err = tx.ExecContext(ctx, `UPDATE economy_gift_use SET status='released', updated_at=now() WHERE payment_id=$1 AND status='reserved'`, id)
 		return err
 	})
@@ -216,6 +230,9 @@ func (s *service) grantPayment(ctx context.Context, id string) ([]prizeItem, err
 	product, err := s.loadProduct(ctx, s.db, p.ProductID)
 	if err != nil {
 		return nil, err
+	}
+	if giftID := s.paymentGiftID(ctx, p.ID); giftID != "" {
+		return s.friendGiftPaid(ctx, p, product, giftID)
 	}
 	first := false
 	rewards, err := s.grant(ctx, grantRequest{
