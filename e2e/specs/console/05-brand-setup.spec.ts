@@ -49,6 +49,7 @@ test.describe('brand and setup wizard', () => {
     await name.locator('[role="tabpanel"][data-lang="fa"] input').fill('ستاره‌چین ' + k);
     await name.locator('[role="tab"][data-lang="en"]').click();
     await name.locator('[role="tabpanel"][data-lang="en"] input').fill('Starpicker ' + k);
+    await page.locator(`${W} [data-setup-more] > summary`).click();
     await page.locator(`${W} input[aria-label="نام کوتاه"]`).fill('ستاره');
     const files = page.locator(`${W} input[type="file"]`);
     for (const [i, f] of ['logo.svg', 'logo-dark.svg', 'mark.svg'].entries()) {
@@ -89,6 +90,7 @@ test.describe('brand and setup wizard', () => {
 
     const zibal = page.locator(`${W} [data-method="zibal"]`);
     if (!(await zibal.evaluate((el) => el.classList.contains('setup-method--on')))) await zibal.locator('[data-pick-method="zibal"]').click();
+    if ((await zibal.locator('[data-method-edit]').getAttribute('aria-expanded')) !== 'true') await zibal.locator('[data-method-edit]').click();
     await expect(zibal.locator('[data-sandbox-box]')).toHaveClass(/eco-sandbox-note/);
     await zibal.locator('input[aria-label="کد مرچنت"]').fill('zibal');
     await next(page);

@@ -200,16 +200,19 @@ test.describe('plane visual: our pages', () => {
     }
   }
 
-  test('list pages put their header inside one window; overview is three KPI strips', async ({ page }) => {
+  test('list pages put their header inside one window; overview is a KPI row, catalog groups and payments', async ({ page }) => {
     await show(page, '#/economy/products', '#economy-root table');
     const win = page.locator('#economy-root div.max-w-\\[1600px\\][data-pl-list]');
     await expect(win).toHaveCount(1);
     await expect(win.locator('h1')).toHaveText('فروشگاه');
     expect(await win.evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('8px');
-    await show(page, '#/economy/overview', '#economy-root .eco-stat-grid');
-    const strips = page.locator('#economy-root .eco-stat-grid');
-    await expect(strips).toHaveCount(3);
-    expect(await strips.first().evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('8px');
+    await show(page, '#/economy/overview', '#economy-root [data-ov-kpis]');
+    await expect(page.locator('#economy-root [data-ov-kpis] > .eco-ov-kpi')).toHaveCount(4);
+    await expect(page.locator('#economy-root [data-ov-group]')).toHaveCount(4);
+    await expect(page.locator('#economy-root [data-ov-payments]')).toHaveCount(1);
+    for (const sel of ['[data-ov-kpis] > .eco-ov-kpi', '[data-ov-group]', '[data-ov-payments]']) {
+      expect(await page.locator('#economy-root ' + sel).first().evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('8px');
+    }
   });
 
   test('product editor: language tabs as a full-width segment, payment methods as chips, docked panel', async ({ page }) => {
@@ -233,16 +236,18 @@ test.describe('plane visual: our pages', () => {
     expect(await chip.evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe('6px');
   });
 
-  test('setup wizard sits on the canvas with one centered window and a segmented step bar', async ({ page }, testInfo) => {
+  test('setup wizard sits on the canvas with one centered window and a side stepper', async ({ page }, testInfo) => {
     await show(page, '#/project-settings/setup', '#project-settings-body');
     try {
       await page.locator('#project-settings-body button', { hasText: 'باز کردن راهنما' }).click();
-      const inner = page.locator('.setup-overlay .setup-inner');
-      await expect(inner).toBeVisible();
+      const win = page.locator('.setup-overlay .setup-window');
+      await expect(win).toBeVisible();
+      await page.waitForFunction(() => !document.querySelector('.setup-overlay .animate-pulse'));
       await still(page);
-      const r = await inner.evaluate((e) => ({ radius: getComputedStyle(e).borderTopLeftRadius, w: e.getBoundingClientRect().width }));
+      const r = await win.evaluate((e) => ({ radius: getComputedStyle(e).borderTopLeftRadius, w: e.getBoundingClientRect().width }));
       expect(r.radius).toBe('12px');
-      expect(r.w).toBeLessThanOrEqual(762);
+      expect(r.w).toBeLessThanOrEqual(1090);
+      await expect(page.locator('.setup-side .setup-step')).toHaveCount(7);
       await expect(page.locator('.setup-step--on')).toHaveCount(1);
       await check(page, testInfo, 'wizard', 'light');
     } finally {
