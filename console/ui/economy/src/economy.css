@@ -102,6 +102,7 @@ html[data-economy-active] .dark a[data-economy-dimmed][aria-current='page']{colo
 .eco-nav-dot{position:absolute;inset-block-start:.45rem;inset-inline-end:.45rem;width:.5rem;height:.5rem;border-radius:9999px;background-color:rgb(var(--warning-color-500))}
 a[data-economy-page]{position:relative}
 .eco-nav-grp{padding-top:.5rem}
+.eco-nav-grp + li{margin-top:.5rem}
 .eco-nav-group{display:flex;align-items:center;gap:.375rem;width:100%;height:1.75rem;padding:0 .75rem;border-radius:.375rem;font-size:.75rem;font-weight:600;color:rgb(var(--secondary-color-500));text-align:start}
 .eco-nav-group:hover{color:rgb(var(--secondary-color-800));background-color:rgb(var(--secondary-color-100))}
 .dark .eco-nav-group:hover{color:#fff;background-color:rgb(var(--secondary-color-800))}

@@ -3575,6 +3575,21 @@ html.pl .pl-tb-end .pl-search {
   display: none;
 }
 
+.pl-group + .pl-nav {
+  margin-top: 8px;
+  padding-top: 0;
+  border-top: 0;
+  position: relative;
+}
+
+.pl-group + .pl-nav::before {
+  content: "";
+  position: absolute;
+  inset-inline: 8px;
+  top: -5px;
+  border-top: 1px solid var(--line);
+}
+
 .pl-nav {
   display: flex;
   align-items: center;
