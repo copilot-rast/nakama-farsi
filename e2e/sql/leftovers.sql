@@ -38,5 +38,6 @@ select 'games', count(*) from economy_game where key like 'e2e%';
 select 'automatic notification rules', count(*) from publication_auto_rule where key like 'e2e%';
 select 'notification categories', count(*) from publication_notify_category where key like 'e2e%';
 select 'friend tiers', count(*) from base_friend_rule where name like 'e2e%';
+select 'chat quota rules', count(*) from base_chat_quota_rule where name like 'e2e%';
 select 'offers', count(*) from economy_offer where key like 'e2e%';
 select 'friend gift rules', count(*) from economy_friend_gift_rule where name like 'e2e%';

@@ -25,6 +25,7 @@ const PAGES: [string, string][] = [
   ['#/moderation/reports', 'گزارش‌ها'],
   ['#/moderation/player-reports', 'گزارش بازیکن‌ها'],
   ['#/moderation/chat-words', 'فیلتر کلمات'],
+  ['#/moderation/chat-quota', 'سهمیهٔ پیام خصوصی'],
   ['#/system/updates', 'به‌روزرسانی‌ها'],
 ];
 const NATIVE_TABS = ['users', 'general', 'config', 'data-management', 'audit-log'];

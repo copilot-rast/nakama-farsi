@@ -22,3 +22,4 @@ select 'H-vset', md5(coalesce(string_agg(enabled::text||provider||config::text||
 select 'H-rrules', md5(coalesce(string_agg(per_hour||'/'||duplicate_hours||'/'||min_account_hours||note_required::text||trusted_tag_ids::text||trusted_per_hour, '|'),'')) from base_report_rules;
 select 'H-offset', md5(coalesce(string_agg(settings::text, '|'),'')) from economy_offer_settings;
 select 'H-fgset', md5(coalesce(string_agg(settings::text, '|'),'')) from economy_friend_gift_settings;
+select 'H-cqset', md5(coalesce(string_agg(settings::text, '|'),'')) from base_chat_quota_settings;

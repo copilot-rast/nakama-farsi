@@ -51,6 +51,13 @@ export class Chat {
     return this.channelId;
   }
 
+  async joinDirect(userId: string): Promise<string> {
+    const r = await this.call({ channel_join: { target: userId, type: 2, persistence: true, hidden: false } });
+    if (r.error) throw new Error('join failed: ' + r.error.message);
+    this.channelId = r.channel.id;
+    return this.channelId;
+  }
+
   async send(text: string): Promise<{ ok: true; id: string } | { ok: false; message: string }> {
     const r = await this.call({ channel_message_send: { channel_id: this.channelId, content: JSON.stringify({ text }) } });
     if (r.error) return { ok: false, message: r.error.message };
