@@ -330,6 +330,7 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 		"event-rules":          `SELECT count(*) FROM economy_event_rule`,
 		"level-tables":         `SELECT count(*) FROM economy_level_table`,
 		"meta-relations":       `SELECT count(*) FROM economy_meta_relation`,
+		"offers":               `SELECT count(*) FROM economy_offer`,
 		"streaks":              `SELECT count(*) FROM economy_streak`,
 		"tasks":                `SELECT count(*) FROM economy_task`,
 		"task-groups":          `SELECT count(*) FROM economy_task_group`,

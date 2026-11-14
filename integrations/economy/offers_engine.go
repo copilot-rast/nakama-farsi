@@ -482,13 +482,14 @@ type userOffer struct {
 	ExpiresAt       *time.Time        `json:"expiresAt"`
 	LastBoughtAt    *time.Time        `json:"lastBoughtAt"`
 	CreatedAt       time.Time         `json:"createdAt"`
+	ProductName     i18n              `json:"productName"`
 	Tpl             offerTemplate     `json:"offer"`
 }
 
 const userOfferJSON = `jsonb_build_object('id',u.id,'userId',u.user_id,'offerId',u.offer_id,'kind',u.kind,'periodStart',u.period_start,'slot',u.slot,'status',u.status,
 	'originalToman',u.original_toman,'finalToman',u.final_toman,'coinCurrency',u.coin_currency,'coinAmount',u.coin_amount,'coinOriginal',u.coin_original,'discountPercent',u.discount_percent,
 	'sku',u.sku,'purchaseLimit',u.purchase_limit,'bought',u.bought,'reroll',u.reroll,'forgotten',u.forgotten,'triggeredAt',u.triggered_at,'shownAt',u.shown_at,'expiresAt',u.expires_at,
-	'lastBoughtAt',u.last_bought_at,'createdAt',u.created_at,'offer',` + offerJSON + `)`
+	'lastBoughtAt',u.last_bought_at,'createdAt',u.created_at,'productName',(SELECT p.name FROM economy_product p WHERE p.id=t.product_id),'offer',` + offerJSON + `)`
 
 func loadUserOffers(ctx context.Context, q rowsQueryer, where string, args ...any) ([]userOffer, error) {
 	rows, err := q.QueryContext(ctx, `SELECT `+userOfferJSON+`::text FROM economy_user_offer u JOIN economy_offer t ON t.id=u.offer_id `+where, args...)
@@ -560,4 +561,12 @@ func sortOffersBySlot(list []userOffer) {
 		}
 		return list[i].CreatedAt.Before(list[j].CreatedAt)
 	})
+}
+
+// displayName is the offer name, or the product name when the offer has none.
+func (u userOffer) displayName() i18n {
+	if len(u.Tpl.Name) > 0 {
+		return u.Tpl.Name
+	}
+	return u.ProductName
 }

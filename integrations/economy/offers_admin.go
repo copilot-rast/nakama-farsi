@@ -491,7 +491,13 @@ func (s *service) consoleOfferPreview(w http.ResponseWriter, r *http.Request) {
 	draw := []map[string]any{}
 	for id, o := range d.Pool {
 		reason := d.Reasons[id]
-		row := map[string]any{"id": id, "key": o.Key, "name": o.Name, "weight": o.Weight, "reason": reason, "picked": reason == "picked", "isActive": o.IsActive}
+		name := o.Name
+		if len(name) == 0 {
+			if p, ok := oc.products[o.ProductID]; ok {
+				name = p.Name
+			}
+		}
+		row := map[string]any{"id": id, "key": o.Key, "name": name, "weight": o.Weight, "reason": reason, "picked": reason == "picked", "isActive": o.IsActive}
 		if i, ok := pickIdx[id]; ok {
 			row["slot"] = i
 		}
@@ -522,7 +528,13 @@ func (s *service) consoleOfferPreview(w http.ResponseWriter, r *http.Request) {
 	}
 	entry := []map[string]any{}
 	for _, e := range entries {
-		entry = append(entry, map[string]any{"id": e.tpl.ID, "key": e.tpl.Key, "name": e.tpl.Name, "triggerType": e.tpl.TriggerType, "holds": e.holds, "due": e.due && st.EntryEnabled,
+		name := e.tpl.Name
+		if len(name) == 0 {
+			if p, ok := oc.products[e.tpl.ProductID]; ok {
+				name = p.Name
+			}
+		}
+		entry = append(entry, map[string]any{"id": e.tpl.ID, "key": e.tpl.Key, "name": name, "triggerType": e.tpl.TriggerType, "holds": e.holds, "due": e.due && st.EntryEnabled,
 			"reason": e.reason, "count": e.hist.Count, "open": e.hist.Open, "repeat": e.tpl.Repeat, "isActive": e.tpl.IsActive})
 	}
 	current, err := loadUserOffers(ctx, s.db, `WHERE u.user_id=$1 AND u.kind='daily' AND u.period_start=$2 ORDER BY u.slot, u.created_at`, userID, start)
@@ -557,7 +569,7 @@ func adminOfferRows(list []userOffer, now time.Time) []map[string]any {
 		case u.ExpiresAt == nil:
 			state = "waiting"
 		}
-		out = append(out, map[string]any{"id": u.ID, "offerId": u.OfferID, "key": u.Tpl.Key, "name": u.Tpl.Name, "kind": u.Kind, "slot": u.Slot, "status": u.Status, "state": state,
+		out = append(out, map[string]any{"id": u.ID, "offerId": u.OfferID, "key": u.Tpl.Key, "name": u.displayName(), "kind": u.Kind, "slot": u.Slot, "status": u.Status, "state": state,
 			"periodStart": u.PeriodStart, "originalToman": u.OriginalToman, "finalToman": u.FinalToman, "coinCurrency": u.CoinCurrency, "coinAmount": u.CoinAmount,
 			"discountPercent": u.DiscountPercent, "purchaseLimit": u.PurchaseLimit, "bought": u.Bought, "reroll": u.Reroll, "forgotten": u.Forgotten,
 			"triggeredAt": u.TriggeredAt, "shownAt": u.ShownAt, "expiresAt": u.ExpiresAt, "secondsLeft": secondsLeft(now, u.ExpiresAt), "lastBoughtAt": u.LastBoughtAt})
@@ -585,7 +597,7 @@ func (s *service) consoleOfferReport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	from := s.now().Add(-time.Duration(days) * 24 * time.Hour)
-	rows, err := s.db.QueryContext(ctx, `SELECT t.id::text, t.key, t.kind, t.name::text, t.is_active,
+	rows, err := s.db.QueryContext(ctx, `SELECT t.id::text, t.key, t.kind, (CASE WHEN t.name = '{}'::jsonb THEN (SELECT p.name FROM economy_product p WHERE p.id=t.product_id) ELSE t.name END)::text, t.is_active,
 			count(u.id), count(u.shown_at), count(*) FILTER (WHERE u.bought > 0), COALESCE(sum(u.bought),0), count(DISTINCT u.user_id) FILTER (WHERE u.shown_at IS NOT NULL),
 			COALESCE((SELECT sum(p.final_toman) FROM economy_payment p JOIN economy_user_offer x ON x.id=p.user_offer_id WHERE x.offer_id=t.id AND p.status='success' AND p.method<>'in_app' AND x.created_at >= $1),0),
 			COALESCE((SELECT jsonb_object_agg(c, a) FROM (SELECT p.coin_currency c, sum(p.coin_amount) a FROM economy_payment p JOIN economy_user_offer x ON x.id=p.user_offer_id
