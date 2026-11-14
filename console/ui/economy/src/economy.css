@@ -730,6 +730,8 @@ html.dark .monaco-editor :is(.minimap canvas,canvas.decorationsOverviewRuler){fi
 .eco-text-start{text-align:start}
 .eco-fg-bar{background:rgb(var(--primary-color-500));min-height:2px;border-radius:.25rem .25rem 0 0}
 .dark .eco-fg-bar{background:rgb(var(--primary-color-300))}
+.eco-cq-bar-blocked{background:rgb(var(--error-color-500, 220 38 38));min-height:0;border-radius:.25rem .25rem 0 0}
+.dark .eco-cq-bar-blocked{background:rgb(var(--error-color-400, 248 113 113))}
 [dir=rtl] .eco-fg-arrow{transform:scaleX(-1)}
 .eco-fg-row{border-radius:.375rem}
 .eco-fg-row:hover{background:rgb(var(--secondary-color-100))}
