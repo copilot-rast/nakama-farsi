@@ -95,3 +95,21 @@ func TestAfterRunsEveryPluginHookAndFitsTheNakamaSignature(t *testing.T) {
 		t.Fatalf("err=%v calls=%v", err, calls)
 	}
 }
+
+func TestAfterInRunsEveryHookForInputOnlyMessages(t *testing.T) {
+	name := t.Name()
+	var calls []string
+	AfterIn(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AddFriendsRequest) error {
+		calls = append(calls, "base:"+in.Ids[0])
+		return errors.New("first")
+	})
+	chain := AfterIn(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AddFriendsRequest) error {
+		calls = append(calls, "game:"+in.Ids[0])
+		return nil
+	})
+	var register func(context.Context, runtime.Logger, *sql.DB, runtime.NakamaModule, *api.AddFriendsRequest) error = chain
+	err := register(context.Background(), nil, nil, nil, &api.AddFriendsRequest{Ids: []string{"x"}})
+	if err == nil || err.Error() != "first" || len(calls) != 2 || calls[0] != "base:x" || calls[1] != "game:x" {
+		t.Fatalf("err=%v calls=%v", err, calls)
+	}
+}

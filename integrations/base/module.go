@@ -55,9 +55,13 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := svc.registerActivityHooks(initializer); err != nil {
 		return err
 	}
+	if err := svc.registerFriendHooks(initializer); err != nil {
+		return err
+	}
 	go svc.restrictionLoop(ctx)
 	go svc.supportLoop(ctx)
 	go svc.updatesLoop(ctx)
+	go svc.friendsLoop(ctx)
 	logger.Info("Base module registered")
 	return nil
 }

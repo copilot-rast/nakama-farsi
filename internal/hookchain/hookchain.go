@@ -87,3 +87,22 @@ func After[O, I any](name string, fn AfterFn[O, I]) AfterFn[O, I] {
 		return first
 	}
 }
+
+type AfterInFn[I any] func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, in I) error
+
+func AfterIn[I any](name string, fn AfterInFn[I]) AfterInFn[I] {
+	mu.Lock()
+	defer mu.Unlock()
+	list, _ := chains["after-in:"+name].([]AfterInFn[I])
+	list = append(append([]AfterInFn[I]{}, list...), fn)
+	chains["after-in:"+name] = list
+	return func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, in I) error {
+		var first error
+		for _, f := range list {
+			if err := f(ctx, logger, db, nk, in); err != nil && first == nil {
+				first = err
+			}
+		}
+		return first
+	}
+}

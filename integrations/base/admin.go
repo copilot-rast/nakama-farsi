@@ -30,6 +30,8 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/setup/claim", http.MethodPost, s.setupClaim},
 		{consolePrefix + "/account-rules", http.MethodGet, s.rulesGet},
 		{consolePrefix + "/account-rules", http.MethodPut, s.rulesPut},
+		{consolePrefix + "/friend-rules", http.MethodGet, s.friendRulesGet},
+		{consolePrefix + "/friend-rules", http.MethodPut, s.friendRulesPut},
 		{consolePrefix + "/app-versions", http.MethodGet, s.appVersionList},
 		{consolePrefix + "/app-versions", http.MethodPost, s.appVersionWrite(true)},
 		{consolePrefix + "/app-versions/catalog", http.MethodGet, s.appVersionCatalog},
