@@ -466,3 +466,83 @@ Then the game's `voice_enabled` is checked, a muted player (`base_restriction`) 
 ### Console
 
 Project settings section «سرور ویس» (`#/project-settings/voice`, `SETTINGS`), before «ریپوی بالایی»: state line, «چت صوتی روشن باشد», provider select (fields of the chosen provider with a short note, secrets as password fields shown as `********` once saved), token lifetime, «بازیکن بتواند حرف بزند», «اتاق‌های باز هر بازی», «امتحان اتصال» (result with the time in ms or the translated error) and save. The section also has «توکن در دقیقه برای هر بازیکن», «بیشترین بازیکن در اتاق ویس», «فقط این برچسب‌ها ویس بگیرند» and «این برچسب‌ها فقط بشنوند». Games editor: «چت صوتی» switch with «بیشترین بازیکن در ویس»; games list chip «بی‌ویس».
+
+## Private chat quota (phase 23)
+
+A daily quota on private (direct) messages, with message packs sold in the shop and unlimited players. Off by default: until an admin turns it on nothing is counted or stored and direct messages behave as before. Migration `20261128000000-base-chat-quota.sql` (Up re-runnable, Down raises). Code: `integrations/base/chatquota.go` (engine, hook, RPC, sweep) and `chatquota_admin.go` (console).
+
+### Where it hooks
+
+Nakama sends chat only over the realtime socket (`ChannelMessageSend` in `server/pipeline_channel.go`); there is no REST send. The base plugin's existing before hook `rt:ChannelMessageSend` (composed with `internal/hookchain`) first runs moderation (suspension, mute, word filter) and then `chatQuotaGate`, so a refused or masked message never costs quota. The gate:
+
+1. loads the settings (`base_chat_quota_settings`, row 1); off → pass;
+2. parses the channel id: `4.<a>.<b>.` is a direct message (the peer is the other id), `3.<group>..` a group, `2...<label>` a room; groups and rooms are counted only when the admin turns them on;
+3. leaves anything Nakama will refuse anyway to Nakama: a bad channel id, content that is not a JSON object, or a session that has not joined the channel (`nk.StreamUserGet` on the caller's session) — those never cost quota;
+4. decides and records the message in one transaction that locks the player's day row (`SELECT … FOR UPDATE`), so parallel sends on any node never pass the quota.
+
+Messages sent by server code (`nk.ChannelMessageSend` from a runtime module) are not counted. `ChannelMessageUpdate` (editing) is not counted.
+
+### Data
+
+| Table | What |
+|---|---|
+| `base_chat_quota_settings` (row 1) | `settings` JSONB (below), `updated_by/at` |
+| `base_chat_quota_rule` | tag rules: `name`, `tag_ids` (player tags, 1–20), `priority` (−1000…1000), `unlimited`, optional `daily_messages`, `daily_conversations`, `friend_daily_messages`, `friend_daily_conversations` (NULL keeps the settings value, 0 = no free quota), `is_active` |
+| `base_chat_quota_day(user_id, day)` | per player and quota day: `messages`, `conversations`, `friend_messages`, `friend_conversations` (free units used), `pack_used`, `free_sent` (free replies or friend messages), `unlimited_sent`, `total`, `blocked`, `notified`; kept 400 days |
+| `base_chat_quota_target(user_id, target)` | `first_at`, `last_at` of the player's messages to a target (`u:<peer>`, `g:<group>`, `r:<label>`); used for new chats and free replies |
+| `base_chat_quota_lot` | message packs: `amount`, `remaining`, `source` (`meta` = bought or won, `admin` = console), `note`, `expires_at` (NULL = never), `created_by/at`; spent oldest-expiry first; used or expired lots are deleted after 180 days |
+
+### Settings (all admin choices, defaults in brackets)
+
+| Field | Values |
+|---|---|
+| `enabled` | [false] |
+| `countMode` | [`messages`] each message costs one unit; `conversations` only the first message of a new chat costs a unit; `both` messages cost units and new chats also count against a hard daily cap (packs add messages only) |
+| `dailyMessages`, `dailyConversations` | free units a day [20, 5], 0…100000; 0 = no free quota, packs only |
+| `conversationScope` | [`day`] a new chat is the first message today to that target; `ever` the first message ever |
+| `resetTime`, `timeZone` | [`00:00`, `Asia/Tehran`] start of the quota day (`INVALID_SETTING`, `INVALID_TIMEZONE`) |
+| `countGroups`, `countRooms` | [false, false] also count group or room chat (same quota) |
+| `replyFree` | [`off`]; `started` messages in a chat the other player started are free; `reply` one free reply after each of their messages |
+| `friendPolicy` | [`same`]; `separate` accepted friends use `friendDailyMessages` / `friendDailyConversations` [50, 10]; `free` messages to friends are free |
+| `packMeta` | economy meta key [none]; whole units of the player's value move into a pack lot (the meta keeps only the fraction), on the next send, status call or the 1-minute sweep; the lot's start is the meta's `updated_at` (the purchase) |
+| `packExpiryDays` | [0 = never] 0…3650, from the purchase |
+| `order` | [`free_first`] or `packs_first` |
+| `packProducts` | product keys sent to the client when the quota runs out [empty = every active product whose prize adds to `packMeta`] |
+| `bonusMeta` | meta whose value is added to the free daily quota every day and not spent [none] |
+| `matchPolicy` | [`priority`] the highest-priority matching tag rule wins field by field; `generous` takes the largest value of each field and unlimited if any rule is unlimited |
+| `unlimitedItems` | item keys; owning any → unlimited [none] |
+| `unlimitedMeta`, `unlimitedMetaMode` | meta that makes the player unlimited: [`positive`] value > 0, or `until` value is a Unix time in the future (a subscription end) |
+| `message` | translated text that replaces the built-in refusal text (`{reset}`, `{limit}`) [built-in fa/en/ar] |
+| `notice` | [`none`]; `inbox` also sends a persistent notification (code 1120) on the first refusal of the day |
+
+The pack meta cannot also be the bonus or unlimited meta (`SAME_META`). Unknown metas, items or products are refused (`META_NOT_FOUND`, `ITEM_NOT_FOUND`, `PRODUCT_NOT_FOUND`).
+
+Selling packs needs no new purchase code: the admin makes a meta (for example `dm_pack`), a prize that adds to it (`+50`) and a product with that prize; coins, gateways and stores work as for any product, and gift codes, event prizes or meta relations that add to the meta give messages the same way.
+
+### Refusal
+
+A refused send is a runtime error on the socket whose message is JSON (gRPC 8, `RESOURCE_EXHAUSTED`):
+
+`{"code": "DM_QUOTA_EXCEEDED" | "DM_CONVERSATION_LIMIT", "message" (player's saved language, fa/en/ar built in or the admin text, Persian digits in fa), "lang", "unit": "messages" | "conversations", "limit", "used", "remaining": 0, "packsLeft", "resetsAt" (RFC 3339), "friend", "rule": {id, name} | null, "products": [{id, key, name, amount}], "productIds": [...]}`
+
+`DM_CONVERSATION_LIMIT` is only used in `both` mode (the new chat cap is reached; packs do not help). The refusal increments `blocked` for the report.
+
+### Client RPC `base_chat_quota {lang?}`
+
+`{enabled, countMode, unlimited, unlimitedBy ("rule" | "item" | "meta" | ""), rule, freeLeft (free units left today in the main pool), packsLeft, packsExpireAt, order, day, resetsAt, timeZone, messages: {limit, used, left}, conversations: {…}, friends?: {messages, conversations} (when separate), friendPolicy, replyFree, bonus, today: {sent, fromPacks, free, unlimited, blocked}, products, productIds, counts: {direct, groups, rooms}}`.
+
+### Console API (`/v2/console/base/`, `CHANNEL_MESSAGE` read/write, audit-logged)
+
+| Route | What |
+|---|---|
+| `GET/PUT /chat-quota/settings` | settings (full replace); GET adds `detectedProducts` |
+| `GET/POST /chat-quota/rules`, `GET/PUT/DELETE /chat-quota/rules/{id}` | tag rules (`LIMIT_REQUIRED` unless unlimited or a limit is set, `TAGS_REQUIRED`, `TAG_KIND_MISMATCH`); deleting a tag removes it from the rules |
+| `GET /players/{id}/chat-quota` | the RPC answer plus `lots` (20) and `days` (14) |
+| `POST /players/{id}/chat-quota/grant {amount, expiresInDays?, note?}` | an admin pack; `expiresInDays` missing → settings expiry, 0 → never |
+| `POST /players/{id}/chat-quota/reset` | today's free counters back to 0 (packs untouched) |
+| `POST /players/{id}/chat-quota/lots/{lot}/revoke` | a pack's remaining messages to 0 |
+| `GET /chat-quota/report?days=` | totals (sent, blocked, blocked players, from packs, free, unlimited), daily series, top refused players, pack sales from `economy_payment` (count, Toman, coins, per product) and packs given by purchase/prize vs console |
+
+### Console pages
+
+«سهمیهٔ پیام خصوصی» in «بازیکنان و گفتگو» › «گزارش و گفتگو» with tabs «قانون‌ها» (`#/moderation/chat-quota`, tag rules), «تنظیمات» (with a summary line and the products that sell packs) and «آمار». The player page gets a «سهمیهٔ پیام خصوصی» card: free left, packs left and next expiry, today's sends, unlimited and rule chips, «پیام اضافه» (grant dialog), «صفر کردن امروز», packs with «پس گرفتن», and the last days.
