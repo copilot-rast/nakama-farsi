@@ -49,7 +49,8 @@ func resources() []resource {
 			save:    saveMeta,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
 				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_meta m JOIN economy_prize z ON z.items @> jsonb_build_array(jsonb_build_object('type','meta','key',m.key)) WHERE m.id=$1)
-					OR EXISTS (SELECT 1 FROM economy_meta_relation r WHERE r.meta_id=$1 OR r.targets @> jsonb_build_array(jsonb_build_object('metaId',$1::uuid::text)))`)
+					OR EXISTS (SELECT 1 FROM economy_meta_relation r WHERE r.meta_id=$1 OR r.targets @> jsonb_build_array(jsonb_build_object('metaId',$1::uuid::text)))
+					OR `+gameReqUsed("metas"))
 			},
 		},
 		{
@@ -72,7 +73,7 @@ func resources() []resource {
 			filters: map[string]string{"categoryId": "t.category_id::text = ?", "isActive": "t.is_active = ?::boolean", "method": "? = ANY(t.payment_methods)"},
 			save:    saveProduct,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
-				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_payment WHERE product_id=$1)`)
+				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_payment WHERE product_id=$1) OR `+gameReqUsed("productIds"))
 			},
 		},
 		{

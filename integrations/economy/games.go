@@ -37,30 +37,31 @@ var (
 )
 
 type gameRecord struct {
-	ID            string             `json:"id"`
-	Key           string             `json:"key"`
-	Active        bool               `json:"isActive"`
-	Name          i18n               `json:"name"`
-	Description   i18n               `json:"description"`
-	Maintenance   i18n               `json:"maintenance"`
-	IconURL       string             `json:"iconUrl"`
-	CategoryID    string             `json:"categoryId"`
-	CategoryKey   string             `json:"categoryKey"`
-	CategoryName  i18n               `json:"categoryName"`
-	Tags          []string           `json:"tags"`
-	MinPlayers    int                `json:"minPlayers"`
-	MaxPlayers    int                `json:"maxPlayers"`
-	TurnSeconds   int                `json:"turnSeconds"`
-	MatchSeconds  int                `json:"matchSeconds"`
-	BotsAllowed   bool               `json:"botsAllowed"`
-	Rooms         []gamecatalog.Room `json:"rooms"`
-	LeaderboardID string             `json:"leaderboardId"`
-	Platforms     []string           `json:"platforms"`
-	MinVersion    string             `json:"minVersion"`
-	MaxVersion    string             `json:"maxVersion"`
-	Settings      map[string]any     `json:"settings"`
-	Sort          int                `json:"sort"`
-	Voice         bool               `json:"voiceEnabled"`
+	ID            string                    `json:"id"`
+	Key           string                    `json:"key"`
+	Active        bool                      `json:"isActive"`
+	Name          i18n                      `json:"name"`
+	Description   i18n                      `json:"description"`
+	Maintenance   i18n                      `json:"maintenance"`
+	IconURL       string                    `json:"iconUrl"`
+	CategoryID    string                    `json:"categoryId"`
+	CategoryKey   string                    `json:"categoryKey"`
+	CategoryName  i18n                      `json:"categoryName"`
+	Tags          []string                  `json:"tags"`
+	MinPlayers    int                       `json:"minPlayers"`
+	MaxPlayers    int                       `json:"maxPlayers"`
+	TurnSeconds   int                       `json:"turnSeconds"`
+	MatchSeconds  int                       `json:"matchSeconds"`
+	BotsAllowed   bool                      `json:"botsAllowed"`
+	Rooms         []gamecatalog.Room        `json:"rooms"`
+	LeaderboardID string                    `json:"leaderboardId"`
+	Platforms     []string                  `json:"platforms"`
+	MinVersion    string                    `json:"minVersion"`
+	MaxVersion    string                    `json:"maxVersion"`
+	Settings      map[string]any            `json:"settings"`
+	Sort          int                       `json:"sort"`
+	Voice         bool                      `json:"voiceEnabled"`
+	Requirements  *gamecatalog.Requirements `json:"requirements"`
 }
 
 const gameRecordJSON = `jsonb_build_object('id',t.id,'key',t.key,'isActive',t.is_active,'name',t.name,'description',t.description,'maintenance',t.maintenance,'iconUrl',t.icon_url,
@@ -69,7 +70,7 @@ const gameRecordJSON = `jsonb_build_object('id',t.id,'key',t.key,'isActive',t.is
 	'tags',(SELECT COALESCE(jsonb_agg(g.key ORDER BY g.key),'[]'::jsonb) FROM base_tag g WHERE g.id::text = ANY(t.tag_ids)),
 	'minPlayers',t.min_players,'maxPlayers',t.max_players,'turnSeconds',COALESCE(t.turn_seconds,0),'matchSeconds',COALESCE(t.match_seconds,0),'botsAllowed',t.bots_allowed,
 	'rooms',t.rooms,'leaderboardId',COALESCE(t.leaderboard_id,''),'platforms',to_jsonb(t.platforms),'minVersion',COALESCE(t.min_version,''),'maxVersion',COALESCE(t.max_version,''),
-	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled)`
+	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled,'requirements',t.requirements)`
 
 type gameCache struct {
 	mu      sync.Mutex
@@ -122,6 +123,9 @@ func (s *service) gameRecords(ctx context.Context) ([]*gameRecord, map[string]*g
 		if g.Rooms == nil {
 			g.Rooms = []gamecatalog.Room{}
 		}
+		if g.Requirements.Empty() {
+			g.Requirements = nil
+		}
 		byKey[g.Key] = g
 		order = append(order, g)
 	}
@@ -152,7 +156,7 @@ func (g *gameRecord) public() *gamecatalog.Game {
 	rooms := make([]gamecatalog.Room, len(g.Rooms))
 	copy(rooms, g.Rooms)
 	return &gamecatalog.Game{ID: g.ID, Key: g.Key, Active: g.Active, Name: map[string]string(g.Name), MinPlayers: g.MinPlayers, MaxPlayers: g.MaxPlayers,
-		TurnSeconds: g.TurnSeconds, MatchSeconds: g.MatchSeconds, BotsAllowed: g.BotsAllowed, LeaderboardID: g.LeaderboardID, Rooms: rooms, Settings: settings}
+		TurnSeconds: g.TurnSeconds, MatchSeconds: g.MatchSeconds, BotsAllowed: g.BotsAllowed, LeaderboardID: g.LeaderboardID, Rooms: rooms, Settings: settings, Requirements: g.Requirements}
 }
 
 func (g *gameRecord) room(key string) (*gamecatalog.Room, error) {
@@ -292,6 +296,8 @@ type gameTicket struct {
 	EntryFee          *gamecatalog.Fee   `json:"entryFee"`
 	Realtime          bool               `json:"realtime"`
 	Level             int                `json:"level"`
+	Path              string             `json:"path"`
+	Consumes          bool               `json:"consumes"`
 }
 
 func ticketQuery(game, room string) string {
@@ -306,7 +312,11 @@ func (s *service) playerLevel(ctx context.Context, userID string) (int, error) {
 	return newLevelCache(s.db, userID).level(ctx, "")
 }
 
-func (s *service) gameJoinCheck(ctx context.Context, userID, key, roomKey, platform, version, lang string) (*gameTicket, error) {
+func (s *service) gameJoinCheck(ctx context.Context, userID, key, roomKey, platform, version, lang, path string) (*gameTicket, error) {
+	path, err := cleanPath(path)
+	if err != nil {
+		return nil, err
+	}
 	g, err := s.gameByKey(ctx, key)
 	if err != nil {
 		return nil, err
@@ -333,6 +343,13 @@ func (s *service) gameJoinCheck(ctx context.Context, userID, key, roomKey, platf
 		e.Meta = map[string]any{"minLevel": room.MinLevel, "level": level}
 		return nil, e
 	}
+	rc, err := s.checkRoomRequirements(ctx, userID, g, room, path, level)
+	if err != nil {
+		return nil, err
+	}
+	if len(rc.Missing) > 0 {
+		return nil, s.requirementsError(ctx, userID, lang, g, room, path, rc)
+	}
 	if room.EntryFee != nil && room.EntryFee.Amount > 0 {
 		if err := s.ensureDefaults(ctx, userID); err != nil {
 			return nil, err
@@ -349,7 +366,10 @@ func (s *service) gameJoinCheck(ctx context.Context, userID, key, roomKey, platf
 	}
 	def, _ := gamecatalog.Lookup(g.Key)
 	t := &gameTicket{Game: g.Key, Room: room.Key, Query: ticketQuery(g.Key, room.Key), MinCount: g.MinPlayers, MaxCount: g.MaxPlayers,
-		StringProperties: map[string]string{"game": g.Key}, NumericProperties: map[string]float64{"level": float64(level)}, EntryFee: room.EntryFee, Realtime: def.Realtime, Level: level}
+		StringProperties: map[string]string{"game": g.Key}, NumericProperties: map[string]float64{"level": float64(level)}, EntryFee: room.EntryFee, Realtime: def.Realtime, Level: level, Path: path}
+	for _, r := range rc.Sets {
+		t.Consumes = t.Consumes || r.Consumes()
+	}
 	if t.MinCount < 2 {
 		t.MinCount = 2
 	}
@@ -391,6 +411,10 @@ func (s *service) gameEnter(ctx context.Context, e gamecatalog.Entry) (gamecatal
 	if _, err := uuid.FromString(e.UserID); err != nil {
 		return res, badRequest("INVALID_ID", "userId", "must be a UUID")
 	}
+	path, err := cleanPath(e.Path)
+	if err != nil {
+		return res, err
+	}
 	g, err := s.gameByKey(ctx, e.Game)
 	if err != nil {
 		return res, err
@@ -399,17 +423,32 @@ func (s *service) gameEnter(ctx context.Context, e gamecatalog.Entry) (gamecatal
 	if err != nil {
 		return res, err
 	}
-	if room.MinLevel > 0 {
+	sets := reqSets(g.Requirements, room, path)
+	if room.MinLevel > 0 || len(sets) > 0 {
 		level, err := s.playerLevel(ctx, e.UserID)
 		if err != nil {
 			return res, err
 		}
-		if level < room.MinLevel {
+		if room.MinLevel > 0 && level < room.MinLevel {
 			app := fail(http.StatusForbidden, "LEVEL_TOO_LOW", "room", "this room needs a higher level")
 			app.Meta = map[string]any{"minLevel": room.MinLevel, "level": level}
 			return res, app
 		}
+		if len(sets) > 0 {
+			var rejoin bool
+			_ = s.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_game_entry WHERE match_id=$1 AND user_id=$2 AND status IN ('paid','free'))`, matchID, e.UserID).Scan(&rejoin)
+			if !rejoin {
+				rc, err := s.checkRoomRequirements(ctx, e.UserID, g, room, path, level)
+				if err != nil {
+					return res, err
+				}
+				if len(rc.Missing) > 0 {
+					return res, s.requirementsError(ctx, e.UserID, "", g, room, path, rc)
+				}
+			}
+		}
 	}
+	var tickets *gameTickets
 	if room.EntryFee != nil && room.EntryFee.Amount > 0 {
 		if err := s.ensureDefaults(ctx, e.UserID); err != nil {
 			return res, err
@@ -467,8 +506,24 @@ func (s *service) gameEnter(ctx context.Context, e gamecatalog.Entry) (gamecatal
 			res.Charged = true
 			res.Fee = &gamecatalog.Fee{CurrencyKey: fee.CurrencyKey, Amount: fee.Amount}
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE economy_game_entry SET status=$3, fee=$4::jsonb, attempt=$5, error=NULL, updated_at=now() WHERE match_id=$1 AND user_id=$2`,
-			matchID, e.UserID, next, feeJSON, attempt); err != nil {
+		var ticketsJSON any
+		for _, r := range sets {
+			if r.Consumes() {
+				t, err := consumeTickets(ctx, tx, e.UserID, sets)
+				if err != nil {
+					return err
+				}
+				if !t.empty() {
+					tickets = t
+					raw, _ := json.Marshal(t)
+					ticketsJSON = string(raw)
+					res.Tickets = t.public()
+				}
+				break
+			}
+		}
+		if _, err := tx.ExecContext(ctx, `UPDATE economy_game_entry SET status=$3, fee=$4::jsonb, attempt=$5, path=$6, tickets=$7::jsonb, error=NULL, updated_at=now() WHERE match_id=$1 AND user_id=$2`,
+			matchID, e.UserID, next, feeJSON, attempt, path, ticketsJSON); err != nil {
 			return err
 		}
 		res.Status = next
@@ -481,8 +536,16 @@ func (s *service) gameEnter(ctx context.Context, e gamecatalog.Entry) (gamecatal
 			wallet, _ := s.userWallet(ctx, e.UserID)
 			app.Meta = map[string]any{"currencyKey": room.EntryFee.CurrencyKey, "amount": room.EntryFee.Amount, "balance": wallet[room.EntryFee.CurrencyKey]}
 		}
+		if app, ok := asApp(err); ok && app.Code == codeRequirementsNotMet && app.Meta == nil {
+			if level, lerr := s.playerLevel(ctx, e.UserID); lerr == nil {
+				if rc, cerr := s.checkRoomRequirements(ctx, e.UserID, g, room, path, level); cerr == nil && len(rc.Missing) > 0 {
+					return res, s.requirementsError(ctx, e.UserID, "", g, room, path, rc)
+				}
+			}
+		}
 		return res, err
 	}
+	s.logTickets(ctx, e.UserID, matchID, g.Key, room.Key, "game_ticket", tickets)
 	if res.Charged {
 		activity.Safe(ctx, s.db, s.logger, activity.Entry{UserID: e.UserID, Kind: activity.KindPrize, Action: "game_entry", RefID: matchID, Actor: "system",
 			Data: map[string]any{"game": g.Key, "room": room.Key, "currency": res.Fee.CurrencyKey, "amount": res.Fee.Amount}})
@@ -516,6 +579,8 @@ func (s *service) gameLeave(ctx context.Context, matchID, userID string) (bool, 
 		return false, err
 	}
 	refunded := false
+	var returned *gameTickets
+	var leftGame string
 	err = s.inTx(ctx, func(tx *sql.Tx) error {
 		var status, gameKey string
 		err := tx.QueryRowContext(ctx, `SELECT status, game_key FROM economy_game_match WHERE id=$1 FOR UPDATE`, matchID).Scan(&status, &gameKey)
@@ -528,15 +593,25 @@ func (s *service) gameLeave(ctx context.Context, matchID, userID string) (bool, 
 		if status != "open" {
 			return nil
 		}
+		leftGame = gameKey
 		var entryStatus string
 		var attempt int
-		var fee sql.NullString
-		err = tx.QueryRowContext(ctx, `SELECT status, attempt, fee::text FROM economy_game_entry WHERE match_id=$1 AND user_id=$2 FOR UPDATE`, matchID, userID).Scan(&entryStatus, &attempt, &fee)
+		var fee, ticketsRaw sql.NullString
+		err = tx.QueryRowContext(ctx, `SELECT status, attempt, fee::text, tickets::text FROM economy_game_entry WHERE match_id=$1 AND user_id=$2 FOR UPDATE`, matchID, userID).Scan(&entryStatus, &attempt, &fee, &ticketsRaw)
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil
 		}
 		if err != nil {
 			return err
+		}
+		if entryStatus == "paid" || entryStatus == "free" {
+			t, err := returnTickets(ctx, tx, matchID, userID, ticketsRaw)
+			if err != nil {
+				return err
+			}
+			if t != nil {
+				returned = t
+			}
 		}
 		switch entryStatus {
 		case "paid":
@@ -553,6 +628,9 @@ func (s *service) gameLeave(ctx context.Context, matchID, userID string) (bool, 
 		_, err = s.refreshPlayers(ctx, tx, matchID)
 		return err
 	})
+	if err == nil && returned != nil {
+		s.logTickets(ctx, userID, matchID, leftGame, "", "game_ticket_returned", returned)
+	}
 	return refunded, err
 }
 
@@ -582,6 +660,8 @@ func (s *service) gameCancel(ctx context.Context, matchID string) (int, error) {
 		return 0, err
 	}
 	refunded := 0
+	returnedTo := map[string]*gameTickets{}
+	cancelledGame := ""
 	err = s.inTx(ctx, func(tx *sql.Tx) error {
 		var status, gameKey string
 		err := tx.QueryRowContext(ctx, `SELECT status, game_key FROM economy_game_match WHERE id=$1 FOR UPDATE`, matchID).Scan(&status, &gameKey)
@@ -591,6 +671,7 @@ func (s *service) gameCancel(ctx context.Context, matchID string) (int, error) {
 		if err != nil {
 			return err
 		}
+		cancelledGame = gameKey
 		switch status {
 		case "cancelled":
 			return nil
@@ -600,16 +681,16 @@ func (s *service) gameCancel(ctx context.Context, matchID string) (int, error) {
 		type row struct {
 			user, status string
 			attempt      int
-			fee          sql.NullString
+			fee, tickets sql.NullString
 		}
-		rows, err := tx.QueryContext(ctx, `SELECT user_id::text, status, attempt, fee::text FROM economy_game_entry WHERE match_id=$1 ORDER BY user_id FOR UPDATE`, matchID)
+		rows, err := tx.QueryContext(ctx, `SELECT user_id::text, status, attempt, fee::text, tickets::text FROM economy_game_entry WHERE match_id=$1 ORDER BY user_id FOR UPDATE`, matchID)
 		if err != nil {
 			return err
 		}
 		var entries []row
 		for rows.Next() {
 			var r row
-			if err := rows.Scan(&r.user, &r.status, &r.attempt, &r.fee); err != nil {
+			if err := rows.Scan(&r.user, &r.status, &r.attempt, &r.fee, &r.tickets); err != nil {
 				rows.Close()
 				return err
 			}
@@ -617,6 +698,15 @@ func (s *service) gameCancel(ctx context.Context, matchID string) (int, error) {
 		}
 		rows.Close()
 		for _, r := range entries {
+			if r.status == "paid" || r.status == "free" {
+				t, err := returnTickets(ctx, tx, matchID, r.user, r.tickets)
+				if err != nil {
+					return err
+				}
+				if t != nil {
+					returnedTo[r.user] = t
+				}
+			}
 			ok, err := s.refundEntry(ctx, tx, matchID, r.user, r.status, r.attempt, r.fee, gameKey)
 			if err != nil {
 				return err
@@ -631,6 +721,11 @@ func (s *service) gameCancel(ctx context.Context, matchID string) (int, error) {
 		_, err = s.refreshPlayers(ctx, tx, matchID)
 		return err
 	})
+	if err == nil {
+		for user, t := range returnedTo {
+			s.logTickets(ctx, user, matchID, cancelledGame, "", "game_ticket_returned", t)
+		}
+	}
 	return refunded, err
 }
 

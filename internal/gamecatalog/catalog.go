@@ -31,6 +31,97 @@ type Room struct {
 	PrizeID      string            `json:"prizeId,omitempty"`
 	PrizeGroupID string            `json:"prizeGroupId,omitempty"`
 	MinLevel     int               `json:"minLevel,omitempty"`
+	Requirements *Requirements     `json:"requirements,omitempty"`
+}
+
+// Entry paths. A requirement set applies to the paths it lists (none listed = every path).
+const (
+	PathMatchmaking = "matchmaking"
+	PathBot         = "bot"
+	PathFriend      = "friend"
+)
+
+// Paths lists the entry paths in their display order.
+var Paths = []string{PathMatchmaking, PathBot, PathFriend}
+
+// ValidPath reports whether p is a known entry path ("" means matchmaking).
+func ValidPath(p string) bool {
+	return p == "" || p == PathMatchmaking || p == PathBot || p == PathFriend
+}
+
+// MetaCondition compares a player meta with a value; Consume > 0 takes that amount on entry (a ticket meta).
+type MetaCondition struct {
+	MetaID   string  `json:"metaId"`
+	Operator string  `json:"operator"`
+	Value    float64 `json:"value"`
+	Consume  float64 `json:"consume,omitempty"`
+}
+
+// Requirements are what a player needs to enter a game or a room. IDs are economy item, player tag,
+// meta and product ids. Modes: ItemsMode/TagsMode "any" (default) or "all"; Refund "return" (default:
+// consumed tickets come back when the player leaves before the start or the match is cancelled) or
+// "keep"; Lock "show" (default: the client sees the locked room and why) or "hide"; Inherit (rooms
+// only, default true) also applies the game's own requirements.
+type Requirements struct {
+	ItemIDs       []string          `json:"itemIds,omitempty"`
+	ItemsMode     string            `json:"itemsMode,omitempty"`
+	ConsumeItems  bool              `json:"consumeItems,omitempty"`
+	TagIDs        []string          `json:"tagIds,omitempty"`
+	TagsMode      string            `json:"tagsMode,omitempty"`
+	ExcludeTagIDs []string          `json:"excludeTagIds,omitempty"`
+	MinLevel      int               `json:"minLevel,omitempty"`
+	Metas         []MetaCondition   `json:"metas,omitempty"`
+	ProductIDs    []string          `json:"productIds,omitempty"`
+	Paths         []string          `json:"paths,omitempty"`
+	Refund        string            `json:"refund,omitempty"`
+	Lock          string            `json:"lock,omitempty"`
+	Inherit       *bool             `json:"inherit,omitempty"`
+	Message       map[string]string `json:"message,omitempty"`
+}
+
+// Empty reports whether the set asks for nothing.
+func (r *Requirements) Empty() bool {
+	return r == nil || (len(r.ItemIDs) == 0 && len(r.TagIDs) == 0 && len(r.ExcludeTagIDs) == 0 && r.MinLevel <= 0 && len(r.Metas) == 0)
+}
+
+// AppliesTo reports whether the set is checked on this entry path.
+func (r *Requirements) AppliesTo(path string) bool {
+	if r.Empty() {
+		return false
+	}
+	if path == "" {
+		path = PathMatchmaking
+	}
+	if len(r.Paths) == 0 {
+		return true
+	}
+	for _, p := range r.Paths {
+		if p == path {
+			return true
+		}
+	}
+	return false
+}
+
+// Inherits reports whether a room set also applies the game's set.
+func (r *Requirements) Inherits() bool {
+	return r == nil || r.Inherit == nil || *r.Inherit
+}
+
+// Consumes reports whether entering takes anything from the player.
+func (r *Requirements) Consumes() bool {
+	if r.Empty() {
+		return false
+	}
+	if r.ConsumeItems && len(r.ItemIDs) > 0 {
+		return true
+	}
+	for _, m := range r.Metas {
+		if m.Consume > 0 {
+			return true
+		}
+	}
+	return false
 }
 
 type Game struct {
@@ -45,6 +136,7 @@ type Game struct {
 	BotsAllowed   bool              `json:"botsAllowed"`
 	LeaderboardID string            `json:"leaderboardId,omitempty"`
 	Rooms         []Room            `json:"rooms"`
+	Requirements  *Requirements     `json:"requirements,omitempty"`
 	Settings      map[string]any    `json:"settings"`
 	Version       int64             `json:"version"`
 }
@@ -100,19 +192,23 @@ func (g *Game) String(name, fallback string) string {
 	return fallback
 }
 
+// Entry is one player entering a match. Path is matchmaking (default), bot or friend; the game or
+// room requirements that list other paths are not checked.
 type Entry struct {
 	MatchID string
 	Game    string
 	Room    string
 	UserID  string
+	Path    string
 }
 
 type EntryResult struct {
-	Status   string `json:"status"`
-	Charged  bool   `json:"charged"`
-	Fee      *Fee   `json:"fee,omitempty"`
-	Players  int    `json:"players"`
-	Rejoined bool   `json:"rejoined"`
+	Status   string         `json:"status"`
+	Charged  bool           `json:"charged"`
+	Fee      *Fee           `json:"fee,omitempty"`
+	Players  int            `json:"players"`
+	Rejoined bool           `json:"rejoined"`
+	Tickets  map[string]any `json:"tickets,omitempty"`
 }
 
 type Payout struct {
@@ -150,6 +246,12 @@ type Provider interface {
 	Start(ctx context.Context, matchID string) error
 	Cancel(ctx context.Context, matchID string) (int, error)
 	Finish(ctx context.Context, matchID string, winners []string) ([]Payout, error)
+}
+
+// Checker is implemented by providers that can tell whether a player may enter a room without
+// entering (bot and friend room RPCs call Check before they create a match).
+type Checker interface {
+	Check(ctx context.Context, e Entry) error
 }
 
 var (
@@ -228,6 +330,21 @@ func Settings(ctx context.Context, key string) (*Game, error) {
 		return nil, err
 	}
 	return p.Game(ctx, key)
+}
+
+// Check answers nil when the player meets the game and room requirements for e.Path, or an *Error
+// (REQUIREMENTS_NOT_MET, LEVEL_TOO_LOW, ...) with the missing requirements and products in Meta.
+// MatchID is not needed.
+func Check(ctx context.Context, e Entry) error {
+	p, err := current()
+	if err != nil {
+		return err
+	}
+	c, ok := p.(Checker)
+	if !ok {
+		return nil
+	}
+	return c.Check(ctx, e)
 }
 
 func Enter(ctx context.Context, e Entry) (EntryResult, error) {

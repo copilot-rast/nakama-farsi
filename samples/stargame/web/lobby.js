@@ -12,6 +12,10 @@ Object.assign(STRINGS.fa, {
   gameFee: (n, name) => `ورودی ${num(n)} ${name}`,
   gamePrize: (name) => `جایزه: ${name}`,
   gameMinLevel: (n) => `از سطح ${num(n)}`,
+  gameNeeds: (list) => `لازم: ${list}`,
+  gameTicket: "یک بلیت مصرف می‌شود",
+  gameSep: "، ",
+  gameNotFor: "این اتاق برای تو نیست",
   gameEnter: "ورود",
   gameSearching: "دنبال حریف می‌گردیم…",
   gameCancel: "لغو",
@@ -45,6 +49,10 @@ Object.assign(STRINGS.en, {
   gameFee: (n, name) => `Entry ${num(n)} ${name}`,
   gamePrize: (name) => `Prize: ${name}`,
   gameMinLevel: (n) => `From level ${num(n)}`,
+  gameNeeds: (list) => `Needs: ${list}`,
+  gameTicket: "Uses a ticket",
+  gameSep: ", ",
+  gameNotFor: "This room is not for you",
   gameEnter: "Enter",
   gameSearching: "Looking for an opponent…",
   gameCancel: "Cancel",
@@ -70,6 +78,7 @@ Object.assign(STRINGS.fa.errors, {
   ROOM_NOT_FOUND: "این اتاق پیدا نشد.",
   ROOM_REQUIRED: "یک اتاق انتخاب کن.",
   LEVEL_TOO_LOW: "سطحت برای این اتاق کم است.",
+  REQUIREMENTS_NOT_MET: "برای ورود به این اتاق شرط‌هایش را نداری.",
   PLATFORM_NOT_SUPPORTED: "این بازی روی این دستگاه نیست.",
   UPDATE_REQUIRED: "برای این بازی باید بازی را به‌روز کنی.",
   MATCH_STARTED: "این بازی شروع شده است.",
@@ -84,6 +93,7 @@ Object.assign(STRINGS.en.errors, {
   ROOM_NOT_FOUND: "This room was not found.",
   ROOM_REQUIRED: "Pick a room.",
   LEVEL_TOO_LOW: "Your level is too low for this room.",
+  REQUIREMENTS_NOT_MET: "You do not meet the requirements to enter this room.",
   PLATFORM_NOT_SUPPORTED: "This game is not on this device.",
   UPDATE_REQUIRED: "Update the game to play this.",
   MATCH_STARTED: "This match has already started.",
@@ -100,6 +110,20 @@ function lobbyLabel(text, cls) {
   return el("span", { class: "chip" + (cls ? " " + cls : ""), text });
 }
 
+function lobbyNeeds(missing) {
+  const names = [];
+  let excluded = false;
+  for (const m of missing || []) {
+    if (m.type === "item") names.push(m.items.map((x) => x.name).join(m.mode === "all" ? " + " : " / "));
+    else if (m.type === "tag") names.push(m.tags.map((x) => x.name).join(m.mode === "all" ? " + " : " / "));
+    else if (m.type === "meta") names.push(`${m.name} ${num(m.consume > m.value ? m.consume : m.value)}`);
+    else if (m.type === "level") names.push(t("gameMinLevel", m.minLevel));
+    else if (m.type === "excludedTag") excluded = true;
+  }
+  if (excluded && !names.length) return t("gameNotFor");
+  return names.length ? t("gameNeeds", names.join(t("gameSep"))) : "";
+}
+
 function lobbyRoomCard(g, r) {
   const fee = r.entryFee ? t("gameFee", r.entryFee.amount, r.entryFee.currencyName || r.entryFee.currencyKey) : t("gameFree");
   const btn = el("button", { class: "btn btn-primary", type: "button", "data-room": r.key, text: t("gameEnter"), disabled: !g.isActive || r.locked, onclick: () => lobbyJoin(g, r) });
@@ -108,6 +132,8 @@ function lobbyRoomCard(g, r) {
     el("span", { class: "room-fee", "data-fee": r.entryFee ? String(r.entryFee.amount) : "0", text: fee }),
     r.prize ? el("span", { class: "muted small room-prize", text: t("gamePrize", r.prize.name) }) : null,
     r.minLevel ? el("span", { class: "muted small", "data-min-level": String(r.minLevel), text: t("gameMinLevel", r.minLevel) }) : null,
+    r.eligible === false ? el("span", { class: "muted small room-needs", "data-needs": "", text: lobbyNeeds(r.missing) }) : null,
+    r.consumes ? el("span", { class: "muted small", "data-ticket": "", text: t("gameTicket") }) : null,
     btn,
   ]);
 }

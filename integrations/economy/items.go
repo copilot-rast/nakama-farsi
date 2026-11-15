@@ -105,7 +105,8 @@ func itemResources() []resource {
 		remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
 			return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_user_item WHERE item_id=$1)
 				OR EXISTS (SELECT 1 FROM economy_item i JOIN economy_prize z ON z.items @> jsonb_build_array(jsonb_build_object('type','item','key',i.key)) WHERE i.id=$1)
-				OR EXISTS (SELECT 1 FROM economy_item i JOIN economy_item o ON o.parent_key=i.key OR o.requires_key=i.key WHERE i.id=$1 AND o.id<>i.id)`)
+				OR EXISTS (SELECT 1 FROM economy_item i JOIN economy_item o ON o.parent_key=i.key OR o.requires_key=i.key WHERE i.id=$1 AND o.id<>i.id)
+				OR `+gameReqUsed("itemIds"))
 		},
 	}}
 }

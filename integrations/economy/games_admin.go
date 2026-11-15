@@ -17,7 +17,7 @@ import (
 const gameAdminJSON = `jsonb_build_object('id',t.id,'key',t.key,'isActive',t.is_active,'name',t.name,'description',t.description,'maintenance',t.maintenance,'iconUrl',t.icon_url,
 	'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'minPlayers',t.min_players,'maxPlayers',t.max_players,'turnSeconds',t.turn_seconds,'matchSeconds',t.match_seconds,
 	'botsAllowed',t.bots_allowed,'rooms',t.rooms,'leaderboardId',t.leaderboard_id,'platforms',to_jsonb(t.platforms),'minVersion',t.min_version,'maxVersion',t.max_version,
-	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled,'voiceMaxPlayers',t.voice_max_players,'createdAt',t.created_at,'updatedAt',t.updated_at,
+	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled,'voiceMaxPlayers',t.voice_max_players,'requirements',t.requirements,'createdAt',t.created_at,'updatedAt',t.updated_at,
 	'matches',(SELECT count(*) FROM economy_game_match m WHERE m.game_key=t.key),
 	'finished',(SELECT count(*) FROM economy_game_match m WHERE m.game_key=t.key AND m.status='finished'),
 	'cancelled',(SELECT count(*) FROM economy_game_match m WHERE m.game_key=t.key AND m.status='cancelled'),
@@ -50,6 +50,7 @@ type gameRoomInput struct {
 	PrizeID      string          `json:"prizeId"`
 	PrizeGroupID string          `json:"prizeGroupId"`
 	MinLevel     json.RawMessage `json:"minLevel"`
+	Requirements *gameReqInput   `json:"requirements"`
 }
 
 func optionalInt(raw json.RawMessage, field, code, msg string, min, max int) (*int, error) {
@@ -135,6 +136,9 @@ func cleanGameRooms(ctx context.Context, tx *sql.Tx, langs *localized.Set, in []
 		if lvl != nil {
 			room.MinLevel = *lvl
 		}
+		if room.Requirements, err = cleanGameRequirements(ctx, tx, langs, field+".requirements", r.Requirements, true); err != nil {
+			return nil, err
+		}
 		out = append(out, room)
 	}
 	return out, nil
@@ -164,6 +168,7 @@ func saveGame(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 		Sort          int             `json:"sort"`
 		VoiceEnabled  *bool           `json:"voiceEnabled"`
 		VoiceMax      *int            `json:"voiceMaxPlayers"`
+		Requirements  *gameReqInput   `json:"requirements"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -299,6 +304,15 @@ func saveGame(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 		settingsRaw = string(b)
 	}
 	roomsJSON, _ := json.Marshal(rooms)
+	reqs, err := cleanGameRequirements(ctx, tx, langs, "requirements", in.Requirements, false)
+	if err != nil {
+		return err
+	}
+	reqJSON := "{}"
+	if reqs != nil {
+		b, _ := json.Marshal(reqs)
+		reqJSON = string(b)
+	}
 	var voiceMax any
 	if in.VoiceMax != nil {
 		if *in.VoiceMax < 0 || *in.VoiceMax > 1000 {
@@ -308,9 +322,9 @@ func saveGame(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	}
 	return execSave(ctx, tx, "economy_game", id, create,
 		[]string{"key", "is_active", "name", "description", "maintenance", "icon_url", "category_id", "tag_ids", "min_players", "max_players", "turn_seconds", "match_seconds",
-			"bots_allowed", "rooms", "leaderboard_id", "platforms", "min_version", "max_version", "settings", "sort", "voice_enabled", "voice_max_players"},
+			"bots_allowed", "rooms", "leaderboard_id", "platforms", "min_version", "max_version", "settings", "sort", "voice_enabled", "voice_max_players", "requirements"},
 		[]any{key, in.IsActive, i18nJSON(name), i18nJSON(desc), i18nJSON(maint), icon, cat, tags, lo, hi, turn, limit,
-			in.BotsAllowed, string(roomsJSON), board, platforms, minV, maxV, settingsRaw, in.Sort, in.VoiceEnabled == nil || *in.VoiceEnabled, voiceMax})
+			in.BotsAllowed, string(roomsJSON), board, platforms, minV, maxV, settingsRaw, in.Sort, in.VoiceEnabled == nil || *in.VoiceEnabled, voiceMax, reqJSON})
 }
 
 func (s *service) gameConsoleRoutes() []consoleRoute {
@@ -422,7 +436,7 @@ func (s *service) consoleGameMatch(w http.ResponseWriter, r *http.Request) {
 	out := map[string]any{}
 	_ = json.Unmarshal([]byte(raw), &out)
 	rows, err := s.db.QueryContext(r.Context(), `SELECT jsonb_build_object('userId',e.user_id,'username',u.username,'status',e.status,'fee',e.fee,'prizeId',e.prize_id,'prizeStatus',e.prize_status,
-		'error',e.error,'createdAt',e.created_at,'updatedAt',e.updated_at)::text FROM economy_game_entry e LEFT JOIN users u ON u.id=e.user_id WHERE e.match_id=$1 ORDER BY e.created_at, e.user_id`, id)
+		'path',e.path,'tickets',e.tickets,'error',e.error,'createdAt',e.created_at,'updatedAt',e.updated_at)::text FROM economy_game_entry e LEFT JOIN users u ON u.id=e.user_id WHERE e.match_id=$1 ORDER BY e.created_at, e.user_id`, id)
 	if err != nil {
 		s.writeError(w, err)
 		return
