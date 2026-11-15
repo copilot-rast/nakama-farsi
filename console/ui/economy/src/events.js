@@ -106,6 +106,11 @@ function rowsEditor(value, f, onchange) {
     if (c.type === 'number') return numberInput(row[c.name], { int: c.int !== false, label: label, oninput: function (v) { row[c.name] = v === '' ? null : parseNumber(v, c.int !== false); emit(); } });
     if (c.type === 'ref') return refPicker({ resource: c.resource, api: c.api, filter: c.filter, valueKey: c.valueKey, value: row[c.name], required: c.required, label: label, onchange: function (v) { row[c.name] = v; emit(); } });
     if (c.type === 'text') return textInput(row[c.name] || '', { ltr: c.ltr, mono: c.mono, label: label, oninput: function (v) { row[c.name] = v.trim(); emit(); } });
+    if (c.type === 'custom') {
+      var ctl = c.build(row[c.name], function (v) { row[c.name] = v; emit(); }, row);
+      row['_c_' + c.name] = ctl;
+      return ctl;
+    }
     if (c.type === 'select') {
       if (row[c.name] == null) row[c.name] = c.options()[0].value;
       return selectInput(row[c.name], c.options(), function (v) { row[c.name] = v; emit(); }, { placeholder: false, label: label });
@@ -150,6 +155,12 @@ function rowsEditor(value, f, onchange) {
       f.columns.forEach(function (c) {
         if (msg) return;
         var v = e.row[c.name];
+        if (c.type === 'custom') {
+          var cc = e.row['_c_' + c.name];
+          var bad2 = cc && cc.validate ? cc.validate() : null;
+          if (bad2) msg = t(c.label) + ': ' + bad2;
+          return;
+        }
         if (c.type === 'i18n') {
           var hit = trCheck(v, { max: c.max });
           if (hit) msg = t(c.label) + ': ' + t('code.' + hit.code, { lang: langName(hit.lang) });
@@ -173,6 +184,9 @@ function rowsEditor(value, f, onchange) {
     if (!m) return false;
     show(Number(m[1]), errorText(err));
     var e = errors[Number(m[1])];
+    var rest = String(err.field).split('].').slice(1).join('].');
+    var sub = e && rest ? e.row['_c_' + rest.split('.')[0]] : null;
+    if (sub && sub.showError) sub.showError(rest.split('.').slice(1).join('.'), errorText(err));
     if (e) e.el.scrollIntoView({ block: 'center', behavior: 'smooth' });
     return !!e;
   };

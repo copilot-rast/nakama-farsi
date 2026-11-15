@@ -40,7 +40,8 @@ function gamePlayers(it) {
 function gameRoomChip(r) {
   var fee = r.entryFee && r.entryFee.amount ? t('gm.room.fee', { name: r.key, n: fmtNum(r.entryFee.amount), cur: keyName('currency', r.entryFee.currencyKey) }) : t('gm.room.free', { name: r.key });
   return h('span', { class: 'eco-tag eco-tag--secondary inline-flex items-center gap-1 leading-tight max-w-full px-2 py-0.5 text-xs rounded-md whitespace-nowrap tabular-nums', 'data-gm-room': r.key }, fee,
-    r.minLevel ? h('span', { class: 'opacity-80', text: '· ' + t('gm.room.level', { n: fmtNum(r.minLevel) }) }) : null);
+    r.minLevel ? h('span', { class: 'opacity-80', text: '· ' + t('gm.room.level', { n: fmtNum(r.minLevel) }) }) : null,
+    r.requirements && !reqEmpty(r.requirements) ? h('span', { class: 'opacity-80', 'data-gm-room-req': '', title: reqSummary(r.requirements, 'room'), text: '· ' + t('gm.req.chip') }) : null);
 }
 
 function gameRegTagFor(key) {
@@ -83,6 +84,134 @@ function gameWarnings() {
     }
   });
   return box;
+}
+
+var GAME_REQ_PATHS = ['matchmaking', 'bot', 'friend'];
+
+function reqEmpty(v) {
+  return !v || (!(v.itemIds || []).length && !(v.tagIds || []).length && !(v.excludeTagIds || []).length && !(Number(v.minLevel) > 0) && !(v.metas || []).length);
+}
+
+function reqConsumes(v) {
+  if (!v) return false;
+  if (v.consumeItems && (v.itemIds || []).length) return true;
+  return (v.metas || []).some(function (m) { return Number(m.consume) > 0; });
+}
+
+function reqSummary(v, scope) {
+  var parts = [];
+  if (!reqEmpty(v)) {
+    var items = (v.itemIds || []).length, tags = (v.tagIds || []).length, ex = (v.excludeTagIds || []).length, metas = (v.metas || []).length;
+    if (items) parts.push(t(items > 1 && v.itemsMode === 'all' ? 'gm.req.sum.itemsAll' : 'gm.req.sum.items', { n: fmtNum(items) }));
+    if (tags) parts.push(t(tags > 1 && v.tagsMode === 'all' ? 'gm.req.sum.tagsAll' : 'gm.req.sum.tags', { n: fmtNum(tags) }));
+    if (ex) parts.push(t('gm.req.sum.exclude', { n: fmtNum(ex) }));
+    if (Number(v.minLevel) > 0) parts.push(t('gm.room.level', { n: fmtNum(v.minLevel) }));
+    if (metas) parts.push(t('gm.req.sum.metas', { n: fmtNum(metas) }));
+    if (reqConsumes(v)) parts.push(t('gm.req.sum.consume'));
+    if (v.paths && v.paths.length && v.paths.length < GAME_REQ_PATHS.length) parts.push(v.paths.map(function (p) { return t('gm.req.path.' + p); }).join('، '));
+    if (v.lock === 'hide') parts.push(t('gm.req.sum.hidden'));
+  }
+  if (scope === 'room' && v && v.inherit === false) parts.push(t('gm.req.sum.noInherit'));
+  return parts.length ? parts.join(' · ') : t(scope === 'room' ? 'gm.req.none.room' : 'gm.req.none');
+}
+
+function reqFields(scope) {
+  var hasItems = function (v) { return (v.itemIds || []).length > 0; };
+  var hasTags = function (v) { return (v.tagIds || []).length > 1; };
+  var fields = [
+    { name: 'itemIds', type: 'refMulti', resource: 'items', label: 'f.gm.req.items', hint: 'f.gm.req.items.hint', optional: true, empty: [] },
+    { type: 'row', fields: [
+      { name: 'itemsMode', type: 'select', noPlaceholder: true, label: 'f.gm.req.itemsMode', options: opts('gm.req.mode.', ['any', 'all']), when: function (v) { return (v.itemIds || []).length > 1; } },
+      { name: 'consumeItems', type: 'bool', inline: true, label: 'f.gm.req.consumeItems', hint: 'f.gm.req.consumeItems.hint', when: hasItems }
+    ] },
+    { name: 'tagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.gm.req.tags', hint: 'f.gm.req.tags.hint', optional: true, empty: [] },
+    { name: 'tagsMode', type: 'select', noPlaceholder: true, label: 'f.gm.req.tagsMode', options: opts('gm.req.mode.', ['any', 'all']), when: hasTags },
+    { name: 'excludeTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.gm.req.exclude', hint: 'f.gm.req.exclude.hint', optional: true, empty: [],
+      check: function (v, vals) { return (v || []).some(function (id) { return (vals.tagIds || []).indexOf(id) !== -1; }) ? t('gm.req.bothWays') : null; } }
+  ];
+  if (scope === 'game') fields.push({ name: 'minLevel', type: 'number', label: 'f.gm.req.minLevel', hint: 'f.gm.req.minLevel.hint', optional: true, min: 0, max: 1000 });
+  fields.push(
+    { name: 'metas', type: 'rows', label: 'f.gm.req.metas', hint: 'f.gm.req.metas.hint', addLabel: 'gm.req.meta.add', emptyText: 'gm.req.meta.empty', max: 10, empty: [], refresh: true,
+      newRow: function () { return { metaId: null, operator: 'gte', value: 1, consume: null }; },
+      columns: [
+        { name: 'metaId', type: 'ref', resource: 'metas', label: 'f.rel.meta', required: true },
+        { name: 'operator', type: 'select', label: 'f.rel.operator', options: opts('rel.op.', REL_OPS) },
+        { name: 'value', type: 'number', int: false, label: 'f.rel.value', required: true },
+        { name: 'consume', type: 'number', int: false, label: 'f.gm.req.consume', optional: true, min: 0, max: 1000000000 }
+      ] },
+    { name: 'productIds', type: 'refMulti', resource: 'products', label: 'f.gm.req.products', hint: 'f.gm.req.products.hint', optional: true, empty: [] },
+    { name: 'paths', type: 'multi', label: 'f.gm.req.paths', hint: 'f.gm.req.paths.hint', options: opts('gm.req.path.', GAME_REQ_PATHS) },
+    { type: 'row', fields: [
+      { name: 'lock', type: 'select', noPlaceholder: true, label: 'f.gm.req.lock', options: opts('gm.req.lock.', ['show', 'hide']) },
+      { name: 'refund', type: 'select', noPlaceholder: true, label: 'f.gm.req.refund', options: opts('gm.req.refund.', ['return', 'keep']), when: reqConsumes }
+    ] }
+  );
+  if (scope === 'room') fields.push({ name: 'inherit', type: 'bool', inline: true, label: 'f.gm.req.inherit', hint: 'f.gm.req.inherit.hint' });
+  fields.push(tr('message', { label: 'f.gm.req.message', hint: 'f.gm.req.message.hint', multiline: true, rows: 2, max: 300, optional: true }));
+  return fields;
+}
+
+function reqToForm(v, scope) {
+  v = v || {};
+  return { itemIds: (v.itemIds || []).slice(), itemsMode: v.itemsMode || 'any', consumeItems: !!v.consumeItems, tagIds: (v.tagIds || []).slice(), tagsMode: v.tagsMode || 'any',
+    excludeTagIds: (v.excludeTagIds || []).slice(), minLevel: scope === 'game' ? (v.minLevel || null) : null,
+    metas: (v.metas || []).map(function (m) { return { metaId: m.metaId, operator: m.operator || 'gte', value: m.value, consume: m.consume || null }; }),
+    productIds: (v.productIds || []).slice(), paths: v.paths && v.paths.length ? v.paths.slice() : GAME_REQ_PATHS.slice(), lock: v.lock || 'show', refund: v.refund || 'return',
+    inherit: v.inherit !== false, message: v.message || {} };
+}
+
+function reqPayload(v, scope) {
+  if (!v) return null;
+  var out = { itemIds: v.itemIds || [], itemsMode: v.itemsMode || 'any', consumeItems: !!v.consumeItems && (v.itemIds || []).length > 0, tagIds: v.tagIds || [], tagsMode: v.tagsMode || 'any',
+    excludeTagIds: v.excludeTagIds || [], metas: (v.metas || []).map(function (m) { return { metaId: m.metaId, operator: m.operator || 'gte', value: m.value, consume: m.consume == null || m.consume === '' ? null : m.consume }; }),
+    productIds: v.productIds || [], paths: (v.paths || []).length === GAME_REQ_PATHS.length ? [] : (v.paths || []), lock: v.lock || 'show', refund: v.refund || 'return', message: trClean(v.message) || {} };
+  if (scope === 'game') out.minLevel = v.minLevel == null || v.minLevel === '' ? 0 : Number(v.minLevel);
+  if (scope === 'room') out.inherit = v.inherit !== false;
+  return out;
+}
+
+// requirementsEditor is a folded panel: a summary line with an edit button, and the nested form under it.
+function requirementsEditor(scope) {
+  return function (cur, change) {
+    var vals = reqToForm(cur, scope);
+    var summary = h('span', { class: 'text-sm text-secondary-700 dark:text-secondary-200 min-w-0', 'data-gm-req-summary': '' });
+    var err = h('p', { class: 'text-xs text-error-600 dark:text-error-400', hidden: true, 'data-gm-req-error': '' });
+    var panel = h('div', { class: 'mt-3 pt-3 border-t border-secondary-200 dark:border-secondary-700', hidden: true, 'data-gm-req-panel': '' });
+    var form = null;
+    function paint() {
+      summary.textContent = reqSummary(vals, scope);
+      toggleBtn.setAttribute('aria-expanded', panel.hidden ? 'false' : 'true');
+      toggleBtn.querySelector('[data-label]').textContent = t(panel.hidden ? 'gm.req.edit' : 'gm.req.close');
+    }
+    function emit() { change(reqPayload(vals, scope)); paint(); }
+    function open() {
+      if (!form) {
+        form = buildForm(reqFields(scope), vals, { onchange: function () { err.hidden = true; emit(); } });
+        panel.appendChild(form.el);
+      }
+      panel.hidden = false;
+      paint();
+    }
+    var toggleBtn = h('button', { type: 'button', class: 'inline-flex items-center gap-1 text-sm font-medium text-primary-700 dark:text-primary-300 hover:underline shrink-0 min-h-9 px-1', 'data-gm-req-toggle': scope,
+      onclick: function () { if (panel.hidden) open(); else { panel.hidden = true; paint(); } } }, icon('gear', 'h-4 w-4'), h('span', { 'data-label': '' }));
+    var box = h('div', { class: 'border border-dashed border-secondary-300 dark:border-secondary-600 rounded-md px-3 py-2 eco-gm-req', 'data-gm-req': scope },
+      h('div', { class: 'flex flex-wrap items-center justify-between gap-2' }, h('div', { class: 'flex items-center gap-2 min-w-0' }, icon('lockDuo', 'h-4 w-4 shrink-0 text-secondary-500'), summary), toggleBtn),
+      err, panel);
+    paint();
+    box.validate = function () {
+      if (!form) return null;
+      if (!form.validate()) { open(); return t('err.form'); }
+      return null;
+    };
+    box.showError = function (field, text) {
+      open();
+      if (form && form.showServerError({ field: field, message: text, code: '' })) return true;
+      err.textContent = text;
+      err.hidden = false;
+      return true;
+    };
+    return box;
+  };
 }
 
 function schemaForm(cur, change, values) {
@@ -243,7 +372,7 @@ RESOURCES.games = {
         var keys = ['bronze', 'silver', 'gold', 'diamond'];
         var used = rows.map(function (r) { return r.key; });
         var key = keys.filter(function (k) { return used.indexOf(k) === -1; })[0] || '';
-        return { key: key, name: {}, feeCurrency: null, feeAmount: null, prizeId: null, prizeGroupId: null, minLevel: 0 };
+        return { key: key, name: {}, feeCurrency: null, feeAmount: null, prizeId: null, prizeGroupId: null, minLevel: 0, requirements: null };
       },
       check: function (rows) {
         var dup = duplicateCheck('key', 'DUPLICATE_ROOM')(rows);
@@ -263,9 +392,12 @@ RESOURCES.games = {
         { name: 'minLevel', type: 'number', label: 'f.gm.room.level', optional: true, min: 0, max: 1000 },
         { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.gm.room.prize', optional: true },
         { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.gm.room.group', optional: true },
-        { name: 'name', type: 'i18n', label: 'f.gm.room.name', max: 64, wide: true }
+        { name: 'name', type: 'i18n', label: 'f.gm.room.name', max: 64, wide: true },
+        { name: 'requirements', type: 'custom', label: 'f.gm.room.req', optional: true, wide: true, build: requirementsEditor('room') }
       ] },
     { name: 'roomsHint', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('gm.rooms.hint') }); } },
+    { type: 'heading', label: 'gm.h.req' },
+    { name: 'requirements', type: 'custom', label: 'f.gm.req', hint: 'f.gm.req.hint', build: requirementsEditor('game') },
     { type: 'heading', label: 'gm.h.where' },
     { name: 'platforms', type: 'multi', label: 'f.gm.platforms', hint: 'f.gm.platforms.hint', options: opts('gm.platform.', GAME_PLATFORMS) },
     { type: 'row', fields: [
@@ -282,12 +414,13 @@ RESOURCES.games = {
     var name = {};
     if (def && def.name) name = Object.assign({}, def.name);
     return { key: key, isActive: true, name: name, description: {}, maintenance: {}, iconUrl: '', categoryId: null, tagIds: [], minPlayers: def && def.realtime ? 2 : 1, maxPlayers: def && def.realtime ? 2 : 1,
-      turnSeconds: null, matchSeconds: null, botsAllowed: false, rooms: [], platforms: [], minVersion: '', maxVersion: '', leaderboardId: '', settings: {}, sort: 0, voiceEnabled: true, voiceMaxPlayers: null };
+      turnSeconds: null, matchSeconds: null, botsAllowed: false, rooms: [], platforms: [], minVersion: '', maxVersion: '', leaderboardId: '', settings: {}, sort: 0, voiceEnabled: true, voiceMaxPlayers: null, requirements: null };
   },
   toForm: function (v) {
     v.rooms = (v.rooms || []).map(function (r) {
-      return { key: r.key, name: r.name || {}, feeCurrency: r.entryFee ? r.entryFee.currencyKey : null, feeAmount: r.entryFee ? r.entryFee.amount : null, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null, minLevel: r.minLevel || 0 };
+      return { key: r.key, name: r.name || {}, feeCurrency: r.entryFee ? r.entryFee.currencyKey : null, feeAmount: r.entryFee ? r.entryFee.amount : null, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null, minLevel: r.minLevel || 0, requirements: r.requirements || null };
     });
+    if (v.requirements && !Object.keys(v.requirements).length) v.requirements = null;
     ['minVersion', 'maxVersion', 'leaderboardId'].forEach(function (k) { if (v[k] == null) v[k] = ''; });
     if (!v.settings) v.settings = {};
     if (!v.platforms) v.platforms = [];
@@ -295,8 +428,9 @@ RESOURCES.games = {
   },
   fixPayload: function (p) {
     p.rooms = (p.rooms || []).map(function (r) {
-      return { key: r.key, name: r.name || {}, entryFee: r.feeCurrency ? { currencyKey: r.feeCurrency, amount: r.feeAmount } : null, prizeId: r.prizeId || '', prizeGroupId: r.prizeGroupId || '', minLevel: r.minLevel || 0 };
+      return { key: r.key, name: r.name || {}, entryFee: r.feeCurrency ? { currencyKey: r.feeCurrency, amount: r.feeAmount } : null, prizeId: r.prizeId || '', prizeGroupId: r.prizeGroupId || '', minLevel: r.minLevel || 0, requirements: r.requirements || null };
     });
+    if (!p.requirements) p.requirements = null;
     p.categoryId = p.categoryId || '';
     if (!p.iconUrl) p.iconUrl = '';
     if (p.sort == null) p.sort = 0;
