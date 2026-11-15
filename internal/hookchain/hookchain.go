@@ -106,3 +106,52 @@ func AfterIn[I any](name string, fn AfterInFn[I]) AfterInFn[I] {
 		return first
 	}
 }
+
+// RunBefore runs the before hooks registered so far under name, as the server
+// would for the matching API call. With none registered it returns in. An RPC
+// that does the work of a built-in API call uses it so the same rules apply.
+func RunBefore[T any](ctx context.Context, name string, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, in T) (T, error) {
+	mu.Lock()
+	list, _ := chains["before:"+name].([]BeforeFn[T])
+	mu.Unlock()
+	for _, f := range list {
+		out, err := f(ctx, logger, db, nk, in)
+		if err != nil {
+			return out, err
+		}
+		if isNil(out) {
+			return out, nil
+		}
+		in = out
+	}
+	return in, nil
+}
+
+// RunAfter runs the after hooks registered so far under name and returns the
+// first error after running all of them.
+func RunAfter[O, I any](ctx context.Context, name string, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, out O, in I) error {
+	mu.Lock()
+	list, _ := chains["after:"+name].([]AfterFn[O, I])
+	mu.Unlock()
+	var first error
+	for _, f := range list {
+		if err := f(ctx, logger, db, nk, out, in); err != nil && first == nil {
+			first = err
+		}
+	}
+	return first
+}
+
+// RunAfterIn is RunAfter for hooks that only receive the request.
+func RunAfterIn[I any](ctx context.Context, name string, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, in I) error {
+	mu.Lock()
+	list, _ := chains["after-in:"+name].([]AfterInFn[I])
+	mu.Unlock()
+	var first error
+	for _, f := range list {
+		if err := f(ctx, logger, db, nk, in); err != nil && first == nil {
+			first = err
+		}
+	}
+	return first
+}

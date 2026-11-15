@@ -113,3 +113,52 @@ func TestAfterInRunsEveryHookForInputOnlyMessages(t *testing.T) {
 		t.Fatalf("err=%v calls=%v", err, calls)
 	}
 }
+
+func TestRunBeforeAndAfterUseTheRegisteredChain(t *testing.T) {
+	name := t.Name()
+	if out, err := RunBefore(context.Background(), name, nil, nil, nil, &api.AddFriendsRequest{Ids: []string{"x"}}); err != nil || len(out.Ids) != 1 {
+		t.Fatalf("empty chain must pass the input through: %v %v", out, err)
+	}
+	Before(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AddFriendsRequest) (*api.AddFriendsRequest, error) {
+		return &api.AddFriendsRequest{Ids: append(in.Ids, "a")}, nil
+	})
+	Before(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AddFriendsRequest) (*api.AddFriendsRequest, error) {
+		return &api.AddFriendsRequest{Ids: append(in.Ids, "b")}, nil
+	})
+	out, err := RunBefore(context.Background(), name, nil, nil, nil, &api.AddFriendsRequest{})
+	if err != nil || len(out.Ids) != 2 || out.Ids[0] != "a" || out.Ids[1] != "b" {
+		t.Fatalf("out=%v err=%v", out, err)
+	}
+	boom := errors.New("refused")
+	Before(name+"-err", func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AddFriendsRequest) (*api.AddFriendsRequest, error) {
+		return nil, boom
+	})
+	if _, err := RunBefore(context.Background(), name+"-err", nil, nil, nil, &api.AddFriendsRequest{}); !errors.Is(err, boom) {
+		t.Fatalf("err=%v", err)
+	}
+	Before(name+"-nil", func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AddFriendsRequest) (*api.AddFriendsRequest, error) {
+		return nil, nil
+	})
+	if out, err := RunBefore(context.Background(), name+"-nil", nil, nil, nil, &api.AddFriendsRequest{}); err != nil || out != nil {
+		t.Fatalf("nil must stop the chain: %v %v", out, err)
+	}
+	var seen []string
+	AfterIn(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AddFriendsRequest) error {
+		seen = append(seen, "x")
+		return boom
+	})
+	AfterIn(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, in *api.AddFriendsRequest) error {
+		seen = append(seen, "y")
+		return nil
+	})
+	if err := RunAfterIn(context.Background(), name, nil, nil, nil, &api.AddFriendsRequest{}); !errors.Is(err, boom) || len(seen) != 2 {
+		t.Fatalf("err=%v seen=%v", err, seen)
+	}
+	After(name, func(_ context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, in *api.AuthenticateDeviceRequest) error {
+		seen = append(seen, out.Token)
+		return nil
+	})
+	if err := RunAfter(context.Background(), name, nil, nil, nil, &api.Session{Token: "t"}, &api.AuthenticateDeviceRequest{}); err != nil || seen[len(seen)-1] != "t" {
+		t.Fatalf("err=%v seen=%v", err, seen)
+	}
+}

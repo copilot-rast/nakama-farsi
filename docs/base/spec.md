@@ -390,6 +390,22 @@ Console: `GET/PUT /v2/console/base/friend-rules` (`SETTINGS` read/write, audit-l
 
 Project settings section «قوانین دوستی» (`#/project-settings/friends`, `SETTINGS`), after «قوانین حساب»: requests per day, most friends, request expiry in days, wait after a rejection in hours, each with «صفر یعنی بی‌حد» hints, and a live summary sentence under the form.
 
+### Friends and profile as RPCs (socket transport)
+
+Nakama has friends, own account and user lookup only as HTTP API calls; the realtime socket has no messages for them. So that a client can send everything over the socket, `integrations/base/social_rpc.go` adds RPCs that do the same work through the runtime (`nk.Friends*`, `nk.Account*`, `nk.Users*`). Runtime calls skip API hooks, so each RPC runs the before/after hooks registered through `internal/hookchain` for the matching API call (`hookchain.RunBefore`, `RunAfter`, `RunAfterIn`): friend limits, invite expiry, rejection cooldown, account rules. Hooks registered only in Lua or JavaScript are not run. Answers use Nakama's own JSON (`protojson`, proto names, enum numbers), the same as the HTTP API. An optional `lang` in any body sets the language of error texts (a socket opened without `lang` is English).
+
+| RPC | Input | Output |
+|---|---|---|
+| `base_friends_list` | `{state? (0-3), limit? (1-100, default 100), cursor?}` | `{friends: [Friend], cursor}` |
+| `base_friends_add` | `{ids?, usernames?}` (1-100 together) | `{friends: [Friend]}`: the targets' edges after the call (no row: nothing changed, e.g. the target blocked the caller) |
+| `base_friends_remove` | same | same (also declines, cancels, unfriends and unblocks) |
+| `base_friends_block` | same | same |
+| `base_account_get` | `{}` | `Account` without `disable_time` |
+| `base_account_update` | `{username?, display_name?, avatar_url?, lang_tag?, location?, timezone?}`; empty or missing = unchanged | `Account` after the update |
+| `base_users_get` | `{ids?, usernames?}` (≤100) | `{users: [User]}` (no `users` when nothing matched) |
+
+Errors besides the friend and account-rule codes: `NO_USERS`, `INVALID_USER_ID`, `INVALID_USERNAME`, `CANNOT_TARGET_SELF`, `USER_NOT_FOUND` (no given username exists), `INVALID_LIMIT`, `INVALID_STATE`, `INVALID_CURSOR`, `USERNAME_TAKEN` (gRPC 6), `USERNAME_TOO_LONG`. Bodies stay far below the 16 KB RPC limit and the 32 KB socket read limit (100 ids ≈ 4 KB); answers are not limited by the socket read limit.
+
 ### Player reports (17b)
 
 A player can report another player, not tied to a chat message, from any game or screen. The reasons are the same report titles as chat reports (`base_report_title`, «عنوان‌های گزارش»; the title's `used` count adds both kinds). Migration `20261124000001-base-player-reports.sql` (Up re-runnable, Down raises).

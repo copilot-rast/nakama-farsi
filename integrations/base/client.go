@@ -8,7 +8,7 @@ import (
 )
 
 func (s *service) clientRPCs() map[string]clientRPC {
-	return map[string]clientRPC{
+	rpcs := map[string]clientRPC{
 		"base_languages":      s.rpcLanguages,
 		"base_set_language":   s.rpcSetLanguage,
 		"base_categories":     s.rpcCategories,
@@ -47,6 +47,10 @@ func (s *service) clientRPCs() map[string]clientRPC {
 		"base_remote_config":          s.rpcRemoteConfig,
 		"base_my_activity":            s.rpcMyActivity,
 	}
+	for name, fn := range s.socialRPCs() {
+		rpcs[name] = fn
+	}
+	return rpcs
 }
 
 func (s *service) rpcLanguages(ctx context.Context, userID, payload string) (any, error) {

@@ -60,8 +60,9 @@ func (n *fakeNakama) ChannelMessageRemove(ctx context.Context, channelID, messag
 	return &rtapi.ChannelMessageAck{MessageId: messageID}, err
 }
 
-func (n *fakeNakama) AccountUpdateId(ctx context.Context, userID, _ string, _ map[string]any, _, _, _, langTag, _ string) error {
-	_, err := n.db.ExecContext(ctx, `UPDATE users SET lang_tag=$2 WHERE id=$1`, userID, langTag)
+func (n *fakeNakama) AccountUpdateId(ctx context.Context, userID, username string, _ map[string]any, displayName, _, _, langTag, avatarURL string) error {
+	_, err := n.db.ExecContext(ctx, `UPDATE users SET lang_tag=COALESCE(NULLIF($2,''), lang_tag), username=COALESCE(NULLIF($3,''), username),
+		display_name=COALESCE(NULLIF($4,''), display_name), avatar_url=COALESCE(NULLIF($5,''), avatar_url) WHERE id=$1`, userID, langTag, username, displayName, avatarURL)
 	return err
 }
 
