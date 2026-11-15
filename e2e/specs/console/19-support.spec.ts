@@ -61,7 +61,9 @@ test.describe('support: settings sections', () => {
     await openSettings(page, 'support-settings');
     const form = psWindow(page).locator('[data-settings-form="support-settings"]');
     await field(form, 'حداکثر پیوست هر پیام').locator('input').fill('۳');
+    const saved = page.waitForResponse((r) => r.url().includes('/support/settings') && r.request().method() !== 'GET');
     await form.locator('[data-settings-save]').click();
+    expect((await saved).ok()).toBe(true);
     await expect(toasts(page).last()).toContainText('ذخیره');
     expect((await base.get('/support/settings')).maxAttachments).toBe(3);
     restoreConfig();

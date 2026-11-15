@@ -157,6 +157,9 @@ function inventoryCard(it, byKey) {
   ]);
 }
 
+// The project can hold other games' items too (their own item types); this screen lists only Star Catcher's.
+const INV_TYPES = ["skin", "frame"];
+
 let invSeq = 0;
 async function loadInventory() {
   const box = $("#inventory-list");
@@ -169,9 +172,9 @@ async function loadInventory() {
     syncInventorySkin();
     if (!state.catalog) state.catalog = await rpc("economy_catalog", { lang: i18n.lang }).catch(() => null);
     box.textContent = "";
-    const items = res.items || [];
+    const items = (res.items || []).filter((x) => INV_TYPES.includes(x.type));
     const byKey = Object.fromEntries(items.map((x) => [x.key, x]));
-    $("#inventory-count").textContent = t("invCount", res.counts ? res.counts.owned : 0, items.length);
+    $("#inventory-count").textContent = t("invCount", items.filter((x) => x.owned).length, items.length);
     if (!items.length) {
       box.append(el("p", { class: "muted center", text: t("invEmpty") }));
       return;

@@ -89,7 +89,10 @@ test.describe('stargame: inventory and product rules', () => {
     await expect(inv.locator('[data-inv-item="star_basket_ruby"]')).toHaveAttribute('data-equipped', '');
     await expect(inv.locator('[data-inv-item="star_basket_ruby"]')).toContainText('جایزه');
     await expect(inv.locator('[data-inv-equipped]')).toContainText('سبد یاقوتی');
-    await expect(inv.locator('[data-inv-counts]')).toHaveText('۲ از ۴ آیتم');
+    // The card counts every item in the project (other games may seed their own), so the total comes from the API.
+    const held = (await eco.get('/users/' + me.id + '/items')).items as any[];
+    expect(held.filter((x) => x.owned && x.key.startsWith('star_')).map((x) => x.key).sort()).toEqual(['star_basket_classic', 'star_basket_ruby']);
+    await expect(inv.locator('[data-inv-counts]')).toHaveText(`${persian(held.filter((x) => x.owned).length)} از ${persian(held.length)} آیتم`);
   });
 
   test('buy an item straight from the inventory, a second buy is refused, the round uses the equipped basket', async ({ page }) => {
