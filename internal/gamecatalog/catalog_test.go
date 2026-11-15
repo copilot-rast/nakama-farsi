@@ -89,3 +89,56 @@ func TestHelpersNeedTheProvider(t *testing.T) {
 		t.Fatal("setting readers")
 	}
 }
+
+func TestRequirementsPathsAndFlags(t *testing.T) {
+	var none *Requirements
+	if !none.Empty() || none.AppliesTo(PathBot) || !none.Inherits() || none.Consumes() {
+		t.Fatal("a nil set asks for nothing and inherits")
+	}
+	r := &Requirements{ItemIDs: []string{"a"}}
+	if r.Empty() || !r.AppliesTo("") || !r.AppliesTo(PathFriend) || r.Consumes() {
+		t.Fatal("a set without paths applies everywhere and only owning is not consuming")
+	}
+	r.Paths = []string{PathBot}
+	if r.AppliesTo("") || r.AppliesTo(PathMatchmaking) || !r.AppliesTo(PathBot) {
+		t.Fatal("paths limit where the set applies")
+	}
+	r.ConsumeItems = true
+	if !r.Consumes() {
+		t.Fatal("consume items")
+	}
+	off := false
+	r2 := &Requirements{Metas: []MetaCondition{{MetaID: "m", Operator: "gte", Value: 1, Consume: 1}}, Inherit: &off}
+	if !r2.Consumes() || r2.Inherits() {
+		t.Fatal("ticket meta consumes and inherit off is kept")
+	}
+	if (&Requirements{Paths: []string{PathBot}}).AppliesTo(PathBot) {
+		t.Fatal("an empty set never applies")
+	}
+	for _, p := range []string{"", PathMatchmaking, PathBot, PathFriend} {
+		if !ValidPath(p) {
+			t.Fatal(p)
+		}
+	}
+	if ValidPath("arena") {
+		t.Fatal("unknown path")
+	}
+}
+
+type checkProvider struct{ Provider }
+
+func (checkProvider) Check(context.Context, Entry) error {
+	return &Error{Code: "REQUIREMENTS_NOT_MET"}
+}
+
+func TestCheckUsesOptionalChecker(t *testing.T) {
+	SetProvider(nil)
+	if err := Check(context.Background(), Entry{}); !errors.Is(err, ErrUnavailable) {
+		t.Fatal(err)
+	}
+	SetProvider(checkProvider{})
+	defer SetProvider(nil)
+	if Code(Check(context.Background(), Entry{Game: "g"})) != "REQUIREMENTS_NOT_MET" {
+		t.Fatal("checker not used")
+	}
+}
