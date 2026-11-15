@@ -88,17 +88,24 @@ test.describe('publication', () => {
     await expect(game.locator('#faq-tabs [data-cat="' + k + 'f"]')).toContainText('راهنمای ' + k);
   });
 
-  test('news with cover, markdown body and actions; comment moderation round trip with the game', async ({ page, spawn }) => {
+  test('news with cover, rich body and actions; comment moderation round trip with the game', async ({ page, spawn }) => {
     await open(page, '#/publication/news/new');
     await settlePanel(page);
     const p = panel(page);
     await fillTranslated(p, 'title', { fa: 'خبر تازه ' + k, en: 'Fresh news ' + k });
     await fillTranslated(p, 'summary', { fa: 'خلاصهٔ خبر' });
-    await fillTranslated(p, 'body', { fa: '## رویداد\n\nامروز **دو برابر** سکه بگیر.' });
-    const body = translated(p, 'body');
-    await body.locator('[role="tabpanel"][data-lang="fa"] button[data-value="preview"]').click();
-    await expect(body.locator('[role="tabpanel"][data-lang="fa"] .eco-md h2')).toHaveText('رویداد');
-    await expect(body.locator('[role="tabpanel"][data-lang="fa"] .eco-md strong')).toHaveText('دو برابر');
+    const body = translated(p, 'body').locator('[role="tabpanel"][data-lang="fa"]');
+    await body.locator('.eco-rt-body').click();
+    await body.locator('[data-rt="h2"]').click();
+    await page.keyboard.type('رویداد');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('امروز ');
+    await body.locator('[data-rt="bold"]').click();
+    await page.keyboard.type('دو برابر');
+    await body.locator('[data-rt="bold"]').click();
+    await page.keyboard.type(' سکه بگیر.');
+    await expect(body.locator('.eco-rt-body h2')).toHaveText('رویداد');
+    await expect(body.locator('.eco-rt-body strong')).toHaveText('دو برابر');
     const cover = field(p, /^تصویر کاور$/);
     const upload = page.waitForResponse((r) => r.url().includes('/v2/console/economy/uploads') && r.request().method() === 'POST');
     await cover.locator('input[type="file"]').setInputFiles(path.join(FIXTURES, 'logo.svg'));

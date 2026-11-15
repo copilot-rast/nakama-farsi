@@ -124,14 +124,14 @@ test.describe('console shell', () => {
 
   test('reload and back keep our routes and their query', async ({ page }) => {
     await open(page, '#/economy/products');
-    await go(page, '#/publication/news?isActive=true');
+    await go(page, '#/publication/news?status=published');
     await expect(root(page).locator('h1')).toHaveText('اخبار');
     await page.reload();
     await page.locator('#economy-root').waitFor();
     await settle(page);
-    await expect(page).toHaveURL(/#\/publication\/news\?isActive=true/);
+    await expect(page).toHaveURL(/#\/publication\/news\?status=published/);
     await expect(root(page).locator('h1')).toHaveText('اخبار');
-    await expect(root(page).locator('.eco-filters select').first()).toHaveValue('true');
+    await expect(root(page).locator('.eco-filters select').first()).toHaveValue('published');
     await page.goBack();
     await expect(page).toHaveURL(/#\/economy\/products/);
     await expect(root(page).locator('h1')).toHaveText('فروشگاه');
