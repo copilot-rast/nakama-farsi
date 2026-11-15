@@ -830,3 +830,58 @@ a.eco-ov-kpi:focus-visible,.eco-ov-tile:focus-visible,.eco-ov-legend-row:focus-v
 @media (max-width:767px){.eco-ov{gap:1.25rem}.eco-ov-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}.eco-ov-kpi{padding:.75rem}.eco-ov-kpi-value{font-size:1.375rem}.eco-ov-spark{display:none}.eco-ov-group{padding:.75rem}.eco-ov-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.eco-ov-tile{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:'ic num' 'tx tx';align-items:center;gap:.375rem .5rem;padding:.625rem}.eco-ov-tile>.eco-ov-ic{grid-area:ic}.eco-ov-tile-num{grid-area:num;text-align:end}.eco-ov-tile-text{grid-area:tx}.eco-ov-tile:last-child:nth-child(odd){grid-column:span 2}.eco-ov-kpi-label{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.eco-ov-payments{grid-template-columns:1fr}.eco-ov-pane+.eco-ov-pane{border-inline-start:0;border-top:1px solid var(--ov-line)}}
 @media (min-width:768px) and (max-width:1023px){.eco-ov-payments{grid-template-columns:1fr}.eco-ov-pane+.eco-ov-pane{border-inline-start:0;border-top:1px solid var(--ov-line)}}
 @media (prefers-reduced-motion:reduce){.eco-ov-kpi,.eco-ov-tile{transition:none}}
+.eco-rt{border:1px solid rgb(var(--secondary-color-300));border-radius:.375rem;background:#fff;overflow:hidden}
+.dark .eco-rt{border-color:rgb(var(--secondary-color-600));background:rgb(var(--secondary-color-900))}
+.eco-rt-top{display:flex;align-items:center;justify-content:space-between;gap:.5rem;border-bottom:1px solid rgb(var(--secondary-color-200));background:rgb(var(--secondary-color-50));padding:.25rem .375rem}
+.dark .eco-rt-top{border-color:rgb(var(--secondary-color-700));background:rgb(var(--secondary-color-800))}
+.eco-rt-bar{display:flex;flex-wrap:wrap;align-items:center;gap:.125rem}
+.eco-rt-btn{min-width:1.9rem;height:1.9rem;padding:0 .35rem;border-radius:.25rem;font-size:.8rem;font-weight:600;color:rgb(var(--secondary-color-700));line-height:1}
+.dark .eco-rt-btn{color:rgb(var(--secondary-color-200))}
+.eco-rt-btn:hover{background:rgb(var(--secondary-color-200))}
+.dark .eco-rt-btn:hover{background:rgb(var(--secondary-color-700))}
+.eco-rt-btn.eco-rt-on{background:rgb(var(--primary-color-100));color:rgb(var(--primary-color-800))}
+.dark .eco-rt-btn.eco-rt-on{background:rgb(var(--primary-color-700));color:#fff}
+.eco-rt-btn:disabled{opacity:.4;cursor:default}
+.eco-rt-btn[data-rt="italic"]{font-style:italic}
+.eco-rt-btn[data-rt="underline"]{text-decoration:underline}
+.eco-rt-btn[data-rt="strike"]{text-decoration:line-through}
+.eco-rt-sep{width:1px;height:1.25rem;background:rgb(var(--secondary-color-300));margin:0 .25rem}
+.dark .eco-rt-sep{background:rgb(var(--secondary-color-600))}
+.eco-rt-link{display:flex;flex-wrap:wrap;align-items:center;gap:.375rem;padding:.375rem;border-bottom:1px solid rgb(var(--secondary-color-200))}
+.dark .eco-rt-link{border-color:rgb(var(--secondary-color-700))}
+.eco-rt-link-input{flex:1;min-width:12rem;border:1px solid rgb(var(--secondary-color-300));border-radius:.25rem;padding:.25rem .5rem;font-size:.875rem;background:transparent;color:inherit}
+.eco-rt-link-input.eco-invalid{border-color:rgb(var(--error-color-500))}
+.eco-rt-host .eco-rt-body{min-height:12rem;max-height:32rem;overflow-y:auto;padding:.75rem 1rem;outline:none;line-height:1.8;overflow-wrap:anywhere}
+.eco-rt-body > * + *{margin-top:.6em}
+.eco-rt-body h1{font-size:1.4rem;font-weight:700}
+.eco-rt-body h2{font-size:1.2rem;font-weight:600}
+.eco-rt-body h3{font-size:1.05rem;font-weight:600}
+.eco-rt-body ul{list-style:disc;padding-inline-start:1.25rem}
+.eco-rt-body ol{list-style:decimal;padding-inline-start:1.25rem}
+.eco-rt-body ul[data-type="taskList"],.eco-md ul[data-type="taskList"]{list-style:none;padding-inline-start:0}
+.eco-rt-body li[data-type="taskItem"],.eco-md li[data-type="taskItem"]{display:flex;gap:.5rem;align-items:flex-start}
+.eco-rt-body li[data-type="taskItem"] > label{margin-top:.3em}
+.eco-rt-body a,.eco-md a{color:rgb(var(--primary-color-700));text-decoration:underline}
+.dark .eco-rt-body a{color:rgb(var(--primary-color-300))}
+.eco-rt-body blockquote,.eco-md blockquote{border-inline-start:3px solid rgb(var(--secondary-color-300));padding-inline-start:.75rem;color:rgb(var(--secondary-color-600))}
+.eco-rt-body table,.eco-md table{border-collapse:collapse;width:100%;table-layout:fixed}
+.eco-rt-body td,.eco-rt-body th,.eco-md td,.eco-md th{border:1px solid rgb(var(--secondary-color-300));padding:.25rem .5rem;vertical-align:top}
+.eco-rt-body th,.eco-md th{background:rgb(var(--secondary-color-100));font-weight:600}
+.dark .eco-rt-body th,.dark .eco-md th{background:rgb(var(--secondary-color-700))}
+.eco-rt-body .selectedCell{background:rgb(var(--primary-color-100))}
+.eco-rt-body p.is-editor-empty:first-child::before{content:attr(data-placeholder);color:rgb(var(--secondary-color-400));float:inline-start;height:0;pointer-events:none}
+.eco-rt-body pre{background:rgb(var(--secondary-color-100));padding:.5rem;border-radius:.25rem;direction:ltr}
+.dark .eco-rt-body pre{background:rgb(var(--secondary-color-800))}
+.eco-serp{border:1px solid rgb(var(--secondary-color-200));background:#fff;max-width:40rem}
+.dark .eco-serp{border-color:rgb(var(--secondary-color-700));background:rgb(var(--secondary-color-900))}
+.eco-serp-url{font-size:.8rem;color:#1e6e3c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dark .eco-serp-url{color:#7ed49a}
+.eco-serp-title{font-size:1.1rem;color:#1a0dab;line-height:1.4;margin-top:.15rem}
+.dark .eco-serp-title{color:#9db8ff}
+.eco-serp-desc{font-size:.85rem;color:rgb(var(--secondary-color-700));line-height:1.6}
+.dark .eco-serp-desc{color:rgb(var(--secondary-color-200))}
+.eco-code-sample{background:rgb(var(--secondary-color-100));color:rgb(var(--secondary-color-800))}
+.dark .eco-code-sample{background:rgb(var(--secondary-color-800));color:rgb(var(--secondary-color-100))}
+.eco-secret-out{background:rgb(var(--secondary-color-100));overflow-wrap:anywhere}
+.dark .eco-secret-out{background:rgb(var(--secondary-color-800))}
+.eco-check{width:1rem;height:1rem;accent-color:rgb(var(--primary-color-600))}

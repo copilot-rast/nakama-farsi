@@ -475,59 +475,5 @@ var RESOURCES = {
       { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.faq.active.hint' }
     ],
     defaults: function (query) { return { question: {}, answer: {}, categoryId: (query && query.categoryId) || null, isActive: true, sort: 0 }; }
-  },
-  news: {
-    api: 'publication',
-    filters: [
-      { name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'news' } },
-      { name: 'isActive', label: 'filter.active', options: function () { return [{ value: 'true', label: t('active') }, { value: 'false', label: t('inactive') }]; } },
-      { name: 'isPinned', label: 'filter.pinned', options: function () { return [{ value: 'true', label: t('news.pinned') }, { value: 'false', label: t('news.notPinned') }]; } }
-    ],
-    columns: [
-      { label: 'col.title', render: function (it) {
-        var pic = h('div', { class: 'h-10 w-16 shrink-0 rounded-md bg-secondary-100 dark:bg-secondary-700 overflow-hidden flex items-center justify-center text-secondary-400' });
-        pic.appendChild(it.coverUrl ? img(it.coverUrl) : icon('image', 'h-4 w-4'));
-        return h('div', { class: 'flex items-center gap-3 min-w-0' }, pic,
-          h('div', { class: 'min-w-0' },
-            h('div', { class: 'font-medium flex items-center gap-1.5 min-w-0' }, it.isPinned ? h('span', { class: 'eco-text-warning', title: t('news.pinned') }, icon('pin', 'h-3.5 w-3.5')) : null, h('span', { class: 'eco-clamp', text: i18nText(it.title) })),
-            i18nText(it.summary) ? h('div', { class: 'text-xs text-secondary-500 eco-clamp', text: i18nText(it.summary) }) : null));
-      }, skeleton: '70%' },
-      { label: 'col.category', render: function (it) { return it.categoryName ? tag(i18nText(it.categoryName), 'secondary') : h('span', { class: 'text-secondary-400', text: t('none') }); }, width: 130 },
-      { label: 'col.comments', render: function (it) {
-        if (!it.allowComment) return tag(t('news.commentsOff'), 'secondary');
-        return h('div', { class: 'flex flex-wrap gap-1' },
-          h('span', { class: 'tabular-nums text-sm', text: fmtNum(it.commentCount || 0) }),
-          it.pendingComments ? h('a', { href: hashFor('comments', null, { status: 'pending', newsId: it.id }), class: 'eco-tag eco-tag--warning inline-flex leading-tight px-2 py-0.5 text-xs rounded-md whitespace-nowrap', text: t('cm.pendingN', { n: it.pendingComments }) }) : null);
-      }, width: 130 },
-      { label: 'col.published', render: function (it) {
-        var future = it.publishedAt && new Date(it.publishedAt).getTime() > Date.now();
-        return h('div', { class: 'flex flex-col items-start gap-0.5' }, dateCell(it.publishedAt), future ? tag(t('news.scheduled'), 'primary') : null);
-      }, width: 190 },
-      { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
-    ],
-    fields: [
-      tr('title', { required: true, max: 200 }),
-      tr('summary', { multiline: true, max: 1000, optional: true }),
-      tr('body', { markdown: true, required: true, max: 50000, rows: 8 }),
-      { name: 'coverUrl', type: 'image', label: 'f.cover', optional: true },
-      { type: 'row', fields: [
-        categoryField('news'),
-        { name: 'publishedAt', type: 'datetime', label: 'f.publishedAt', hint: 'f.publishedAt.hint', optional: true }
-      ] },
-      { type: 'row', fields: [
-        { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive', hint: 'f.news.active.hint' },
-        { name: 'isPinned', type: 'bool', inline: true, label: 'f.isPinned', hint: 'f.isPinned.hint' }
-      ] },
-      { type: 'heading', label: 'f.comments' },
-      { type: 'row', fields: [
-        { name: 'allowComment', type: 'bool', inline: true, label: 'f.allowComment', hint: 'f.allowComment.hint' },
-        { name: 'freeComment', type: 'bool', inline: true, label: 'f.freeComment', hint: 'f.freeComment.hint', empty: false, when: function (v) { return !!v.allowComment; } }
-      ] },
-      { type: 'heading', label: 'f.actions' },
-      { name: 'actions', type: 'actions', empty: [] },
-      { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
-    ],
-    defaults: function (query) { return { title: {}, summary: {}, body: {}, coverUrl: '', categoryId: (query && query.categoryId) || null, publishedAt: null, isActive: true, isPinned: false, allowComment: true, freeComment: false, actions: [], metadata: {} }; },
-    fixPayload: function (p) { if (!p.coverUrl) p.coverUrl = ''; if (!p.publishedAt) delete p.publishedAt; return p; }
   }
 };

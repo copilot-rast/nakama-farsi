@@ -425,7 +425,9 @@ function translatedInput(value, opts) {
       tab.classList.remove('eco-tr-bad');
       if (opts.oninput) opts.oninput(Object.assign({}, values));
     };
-    if (opts.markdown) {
+    if (opts.rich) {
+      ctl = richInput(values[code] || '', { ltr: dir === 'ltr', max: opts.max, label: label, oninput: onin });
+    } else if (opts.markdown) {
       ctl = markdownInput(values[code] || '', { ltr: dir === 'ltr', rows: opts.rows, max: opts.max, label: label, oninput: onin });
       var ta = ctl.querySelector('textarea');
       if (ta) ta.setAttribute('dir', dir);
@@ -589,6 +591,126 @@ function markdownInput(value, opts) {
     h('div', { class: 'flex flex-wrap items-center gap-1 text-xs text-secondary-500 dark:text-secondary-400 mt-1' },
       h('span', { text: t('md.hint') }),
       ['**bold**', '*italic*', '[text](https://…)', '## heading', '- list', '![](https://…)'].map(function (s) { return h('code', { class: 'eco-md-token', dir: 'ltr', text: s }); })));
+}
+
+var RT_TOOLS = [
+  ['undo', '↶', function (c) { return c.undo(); }, null],
+  ['redo', '↷', function (c) { return c.redo(); }, null],
+  '|',
+  ['bold', 'B', function (c) { return c.toggleBold(); }, 'bold'],
+  ['italic', 'I', function (c) { return c.toggleItalic(); }, 'italic'],
+  ['underline', 'U', function (c) { return c.toggleUnderline(); }, 'underline'],
+  ['strike', 'S', function (c) { return c.toggleStrike(); }, 'strike'],
+  '|',
+  ['paragraph', '¶', function (c) { return c.setParagraph(); }, 'paragraph'],
+  ['h2', 'H2', function (c) { return c.toggleHeading({ level: 2 }); }, ['heading', { level: 2 }]],
+  ['h3', 'H3', function (c) { return c.toggleHeading({ level: 3 }); }, ['heading', { level: 3 }]],
+  '|',
+  ['bulletList', '•', function (c) { return c.toggleBulletList(); }, 'bulletList'],
+  ['orderedList', '1.', function (c) { return c.toggleOrderedList(); }, 'orderedList'],
+  ['taskList', '☑', function (c) { return c.toggleTaskList(); }, 'taskList'],
+  ['link', '🔗', null, 'link'],
+  '|',
+  ['alignRight', '⇥', function (c) { return c.setTextAlign('right'); }, [{ textAlign: 'right' }]],
+  ['alignCenter', '↔', function (c) { return c.setTextAlign('center'); }, [{ textAlign: 'center' }]],
+  ['alignLeft', '⇤', function (c) { return c.setTextAlign('left'); }, [{ textAlign: 'left' }]],
+  ['alignJustify', '≡', function (c) { return c.setTextAlign('justify'); }, [{ textAlign: 'justify' }]],
+  '|',
+  ['table', '▦', function (c) { return c.insertTable({ rows: 3, cols: 3, withHeaderRow: true }); }, null],
+  ['rowAfter', '+≡', function (c) { return c.addRowAfter(); }, null, true],
+  ['colAfter', '+‖', function (c) { return c.addColumnAfter(); }, null, true],
+  ['rowDelete', '−≡', function (c) { return c.deleteRow(); }, null, true],
+  ['colDelete', '−‖', function (c) { return c.deleteColumn(); }, null, true],
+  ['headerRow', 'TH', function (c) { return c.toggleHeaderRow(); }, null, true],
+  ['tableDelete', '✕▦', function (c) { return c.deleteTable(); }, null, true]
+];
+
+function richEmpty(html) {
+  var s = String(html || '').trim();
+  return !s || s === '<p></p>';
+}
+
+function richInput(value, opts) {
+  var TT = window.NakamaTiptap;
+  if (!TT) return markdownInput(value, opts);
+  var dir = opts.ltr ? 'ltr' : 'rtl';
+  var host = h('div', { class: 'eco-rt-host', dir: dir });
+  var bar = h('div', { class: 'eco-rt-bar', role: 'toolbar', 'aria-label': t('rt.toolbar') });
+  var linkBox = h('div', { class: 'eco-rt-link', hidden: true });
+  var linkInput = h('input', { type: 'url', dir: 'ltr', class: 'eco-rt-link-input', placeholder: 'https://…', 'aria-label': t('rt.link.url') });
+  var counter = opts.max ? h('span', { class: 'text-xs tabular-nums text-secondary-500' }) : null;
+  var buttons = [];
+  var editor;
+  RT_TOOLS.forEach(function (tool) {
+    if (tool === '|') { bar.appendChild(h('span', { class: 'eco-rt-sep', 'aria-hidden': 'true' })); return; }
+    var b = h('button', { type: 'button', class: 'eco-rt-btn', 'data-rt': tool[0], title: t('rt.' + tool[0]), 'aria-label': t('rt.' + tool[0]), text: tool[1],
+      onmousedown: function (e) { e.preventDefault(); },
+      onclick: function () {
+        if (!editor) return;
+        if (tool[0] === 'link') { toggleLink(); return; }
+        tool[2](editor.chain().focus()).run();
+      } });
+    buttons.push({ el: b, tool: tool });
+    bar.appendChild(b);
+  });
+  function paint() {
+    if (!editor) return;
+    var inTable = editor.isActive('table');
+    buttons.forEach(function (x) {
+      var mark = x.tool[3];
+      var on = false;
+      if (typeof mark === 'string') on = editor.isActive(mark);
+      else if (mark && typeof mark[0] === 'string') on = editor.isActive(mark[0], mark[1]);
+      else if (mark) on = editor.isActive(mark[0]);
+      x.el.classList.toggle('eco-rt-on', on);
+      x.el.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (x.tool[4]) x.el.hidden = !inTable;
+      if (x.tool[0] === 'undo') x.el.disabled = !editor.can().undo();
+      if (x.tool[0] === 'redo') x.el.disabled = !editor.can().redo();
+    });
+  }
+  function toggleLink() {
+    if (!linkBox.hidden) { linkBox.hidden = true; return; }
+    linkInput.value = editor.getAttributes('link').href || '';
+    linkBox.hidden = false;
+    linkInput.focus();
+  }
+  function applyLink() {
+    var url = linkInput.value.trim();
+    var chain = editor.chain().focus().extendMarkRange('link');
+    if (!url) chain.unsetLink().run();
+    else if (/^(https?:\/\/|mailto:|tel:|\/)[^\s"'<>`]+$/i.test(url)) chain.setLink({ href: url }).run();
+    else { linkInput.classList.add('eco-invalid'); return; }
+    linkInput.classList.remove('eco-invalid');
+    linkBox.hidden = true;
+  }
+  linkInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); applyLink(); } if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); linkBox.hidden = true; } });
+  linkBox.appendChild(linkInput);
+  linkBox.appendChild(button({ variant: 'primary', size: 'sm', label: t('rt.link.apply'), onclick: applyLink }));
+  linkBox.appendChild(button({ variant: 'ghost', size: 'sm', label: t('rt.link.remove'), onclick: function () { linkInput.value = ''; applyLink(); } }));
+  function paintCount(html) {
+    if (!counter) return;
+    var n = Array.from(html).length;
+    counter.textContent = t('chars', { n: n, max: opts.max });
+    counter.classList.toggle('text-error-600', n > opts.max);
+  }
+  var initial = value == null ? '' : String(value);
+  setTimeout(function () {
+    editor = TT.create({ element: host, content: initial, dir: dir, label: opts.label, placeholder: t('rt.placeholder'),
+      onUpdate: function () {
+        var html = editor.isEmpty ? '' : editor.getHTML();
+        paintCount(html);
+        opts.oninput(richEmpty(html) ? '' : html);
+      } });
+    editor.on('selectionUpdate', paint);
+    editor.on('transaction', paint);
+    wrap.editor = editor;
+    paint();
+  }, 0);
+  paintCount(initial);
+  var wrap = h('div', { class: 'eco-rt', 'data-rich': '' },
+    h('div', { class: 'eco-rt-top' }, bar, counter), linkBox, host);
+  return wrap;
 }
 
 var GOTO_SCREENS = ['home', 'play', 'shop', 'gift', 'payments', 'news', 'faq', 'inbox'];
@@ -814,7 +936,7 @@ function buildForm(fields, values, ctx) {
         }));
       });
     } else if (t2 === 'i18n') {
-      control = translatedInput(cur, { name: f.name, label: label, multiline: f.multiline, markdown: f.markdown, rows: f.rows, max: f.max, oninput: function (v) {
+      control = translatedInput(cur, { name: f.name, label: label, multiline: f.multiline, markdown: f.markdown, rich: f.rich, counter: f.counter, rows: f.rows, max: f.max, oninput: function (v) {
         setPath(values, f.name, v);
         if (entry.wrap.setError) entry.wrap.setError('');
         control.markLang(null);
