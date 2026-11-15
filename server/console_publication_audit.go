@@ -11,6 +11,8 @@ import (
 
 var publicationPlainConfigFields = map[string]bool{
 	"sender": true, "lineNumber": true, "accountSid": true, "from": true, "fromName": true,
+	"otpTemplate": true, "otpToken2": true, "otpToken3": true, "otpToken10": true,
+	"otpTemplateId": true, "otpCodeParam": true, "otpMinutesParam": true, "otpAppParam": true,
 	"host": true, "port": true, "security": true, "username": true,
 }
 

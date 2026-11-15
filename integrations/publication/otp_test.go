@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"regexp"
 	"strings"
 	"sync"
@@ -360,5 +361,46 @@ func TestOTPLiveSendUsesProviderPostgres(t *testing.T) {
 	}
 	if strings.Contains(fmt.Sprint(list), strings.TrimPrefix(got, "09121230000|کد شما ")) {
 		t.Fatal("the console must never show the code")
+	}
+}
+
+func TestOTPPatternSendAndProviderTestPostgres(t *testing.T) {
+	h, _ := otpHarness(t)
+	var path string
+	var form url.Values
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = r.ParseForm()
+		path, form = r.URL.Path, r.PostForm
+		_, _ = w.Write([]byte(`{"return":{"status":200,"message":"ok"},"entries":[{"messageid":9,"status":5,"statustext":"sent"}]}`))
+	}))
+	defer srv.Close()
+	h.s.baseURLs["kavenegar"] = srv.URL
+	created := h.mustAPI(http.StatusCreated, http.MethodPost, "/providers", map[string]any{"channel": "sms", "kind": "kavenegar", "isActive": true, "isDefault": true, "sandbox": true,
+		"config": map[string]any{"apiKey": "k", "otpTemplate": "login", "otpToken2": "minutes"}})
+	id := created["id"].(string)
+	if created["config"].(map[string]any)["otpTemplate"] != "login" {
+		t.Fatalf("created = %v", created)
+	}
+	code, out := h.api(http.MethodPost, "/providers/"+id+"/test", map[string]any{"to": "09121230001", "otp": true})
+	if code != http.StatusOK || out["sandbox"] != true || out["mode"] != "pattern (kavenegar template login)" || path != "" {
+		t.Fatalf("sandbox otp test = %d %v (path %q)", code, out, path)
+	}
+	h.mustAPI(http.StatusOK, http.MethodPut, "/providers/"+id, map[string]any{"sandbox": false})
+	code, out = h.api(http.MethodPost, "/providers/"+id+"/test", map[string]any{"to": "09121230001", "otp": true})
+	if code != http.StatusOK || out["ok"] != true || path != "/v1/k/verify/lookup.json" || form.Get("template") != "login" || form.Get("token") != out["code"] || form.Get("token2") != "2" {
+		t.Fatalf("live otp test = %d %v %s %v", code, out, path, form)
+	}
+	code, out = h.api(http.MethodPost, "/providers/"+id+"/test", map[string]any{"to": "09121230001", "message": "سلام"})
+	if code != http.StatusOK || out["ok"] != true || path != "/v1/k/sms/send.json" || form.Get("message") != "سلام" {
+		t.Fatalf("plain test = %d %v %s %v", code, out, path, form)
+	}
+	h.mustAPI(http.StatusOK, http.MethodPut, "/otp/settings", map[string]any{"isEnabled": true, "sandbox": false, "codeLength": 5, "ttlSeconds": 120, "maxAttempts": 3, "resendSeconds": 30,
+		"phoneHourly": 5, "phoneDaily": 10, "ipHourly": 30, "message": map[string]any{"fa": "کد شما {code}"}})
+	guest := h.user(nil, "", "fa")
+	if _, err := h.s.rpcOTPRequest(callerCtx(guest, "10.0.0.5"), guest, `{"phone":"09121230002"}`); err != nil {
+		t.Fatal(err)
+	}
+	if path != "/v1/k/verify/lookup.json" || form.Get("receptor") != "09121230002" || len(form.Get("token")) != 5 || form.Has("message") {
+		t.Fatalf("login code = %s %v", path, form)
 	}
 }

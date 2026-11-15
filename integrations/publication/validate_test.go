@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/heroiclabs/nakama/v3/internal/localized"
@@ -205,5 +206,41 @@ func TestProviderConfigMerge(t *testing.T) {
 	}
 	if providerConfigured(provider{Channel: "sms", Kind: "smsir", Config: providerConfig{"lineNumber": "3000"}}) {
 		t.Error("live provider needs its api key")
+	}
+}
+
+func TestProviderOTPFields(t *testing.T) {
+	kv, _ := catalogFor("sms", "kavenegar")
+	cfg, err := mergeProviderConfig(kv, providerConfig{}, map[string]any{"apiKey": "k", "otpTemplate": "login-code", "otpToken2": "minutes"})
+	if err != nil || cfg["otpTemplate"] != "login-code" || cfg["otpToken2"] != "minutes" || cfg["otpToken3"] != "skip" {
+		t.Fatalf("kavenegar otp fields = %v %v", cfg, err)
+	}
+	for field, bad := range map[string]any{"otpTemplate": "my template", "otpToken2": "code", "otpToken10": "phone"} {
+		if _, err := mergeProviderConfig(kv, cfg, map[string]any{field: bad}); err == nil {
+			t.Errorf("%s=%v must be refused", field, bad)
+		}
+	}
+	cleared, err := mergeProviderConfig(kv, cfg, map[string]any{"otpTemplate": ""})
+	if err != nil || cleared["otpTemplate"] != "" {
+		t.Fatalf("clearing the template = %v %v", cleared, err)
+	}
+	ir, _ := catalogFor("sms", "smsir")
+	sc, err := mergeProviderConfig(ir, providerConfig{}, map[string]any{"apiKey": "k", "lineNumber": float64(3000), "otpTemplateId": float64(123456), "otpAppParam": "#APP#"})
+	if err != nil || sc["otpTemplateId"] != "123456" || sc["otpCodeParam"] != "CODE" || sc["otpAppParam"] != "APP" {
+		t.Fatalf("sms.ir otp fields = %v %v", sc, err)
+	}
+	for field, bad := range map[string]any{"otpTemplateId": "abc", "otpCodeParam": "MY CODE", "otpMinutesParam": "##"} {
+		if _, err := mergeProviderConfig(ir, sc, map[string]any{field: bad}); err == nil {
+			t.Errorf("%s=%v must be refused", field, bad)
+		}
+	}
+	view := providerView(provider{Channel: "sms", Kind: "smsir", Config: sc})
+	if view["config"].(map[string]any)["otpTemplateId"] != "123456" {
+		t.Fatalf("view = %v", view["config"])
+	}
+	for _, f := range view["fields"].([]providerField) {
+		if strings.HasPrefix(f.Name, "otp") && f.Group != "otp" {
+			t.Errorf("%s must be in the otp group", f.Name)
+		}
 	}
 }

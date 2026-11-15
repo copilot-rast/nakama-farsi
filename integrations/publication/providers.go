@@ -22,7 +22,11 @@ type providerField struct {
 	Required bool     `json:"required"`
 	Options  []string `json:"options,omitempty"`
 	Default  string   `json:"default,omitempty"`
+	Group    string   `json:"group,omitempty"`
 }
+
+// otpTokenOptions are the OTP values a Kavenegar lookup token can carry besides the code.
+var otpTokenOptions = []string{"skip", "minutes", "app"}
 
 type providerKind struct {
 	Channel string          `json:"channel"`
@@ -31,8 +35,18 @@ type providerKind struct {
 }
 
 var providerCatalog = []providerKind{
-	{"sms", "kavenegar", []providerField{{Name: "apiKey", Type: "secret", Required: true}, {Name: "sender", Type: "text"}}},
-	{"sms", "smsir", []providerField{{Name: "apiKey", Type: "secret", Required: true}, {Name: "lineNumber", Type: "number", Required: true}}},
+	{"sms", "kavenegar", []providerField{{Name: "apiKey", Type: "secret", Required: true}, {Name: "sender", Type: "text"},
+		{Name: "otpTemplate", Type: "text", Group: "otp"},
+		{Name: "otpToken2", Type: "select", Options: otpTokenOptions, Default: "skip", Group: "otp"},
+		{Name: "otpToken3", Type: "select", Options: otpTokenOptions, Default: "skip", Group: "otp"},
+		{Name: "otpToken10", Type: "select", Options: otpTokenOptions, Default: "skip", Group: "otp"},
+	}},
+	{"sms", "smsir", []providerField{{Name: "apiKey", Type: "secret", Required: true}, {Name: "lineNumber", Type: "number", Required: true},
+		{Name: "otpTemplateId", Type: "number", Group: "otp"},
+		{Name: "otpCodeParam", Type: "text", Default: "CODE", Group: "otp"},
+		{Name: "otpMinutesParam", Type: "text", Group: "otp"},
+		{Name: "otpAppParam", Type: "text", Group: "otp"},
+	}},
 	{"sms", "twilio", []providerField{{Name: "accountSid", Type: "text", Required: true}, {Name: "authToken", Type: "secret", Required: true}, {Name: "from", Type: "text", Required: true}}},
 	{"email", "smtp", []providerField{
 		{Name: "host", Type: "text", Required: true},
@@ -242,6 +256,15 @@ func mergeProviderConfig(def providerKind, old providerConfig, in map[string]any
 				return nil, badRequest("INVALID_VALUE", f.Name, "must be one of "+strings.Join(f.Options, ", "))
 			}
 		}
+		if f.Name == "otpTemplate" && (len(text) > 100 || strings.ContainsAny(text, " \t")) {
+			return nil, badRequest("INVALID_VALUE", f.Name, "use the template name exactly as in the Kavenegar panel, without spaces")
+		}
+		if strings.HasSuffix(f.Name, "Param") {
+			text = strings.Trim(text, "#")
+			if text == "" || len(text) > 50 || strings.ContainsAny(text, " \t") {
+				return nil, badRequest("INVALID_VALUE", f.Name, "use the variable name from the sms.ir template, without # or spaces")
+			}
+		}
 		if f.Name == "host" && strings.ContainsAny(text, " /:") {
 			return nil, badRequest("INVALID_VALUE", f.Name, "must be a host name without scheme or port")
 		}
@@ -414,6 +437,7 @@ func (s *service) consoleProviderTest(w http.ResponseWriter, r *http.Request) {
 		To      string `json:"to"`
 		Message string `json:"message"`
 		Subject string `json:"subject"`
+		OTP     bool   `json:"otp"`
 	}
 	if err := readBody(r, &in); err != nil {
 		s.writeError(w, err)
@@ -422,6 +446,10 @@ func (s *service) consoleProviderTest(w http.ResponseWriter, r *http.Request) {
 	p, err := s.loadProvider(r.Context(), s.db, pathVar(r, "id"), false)
 	if err != nil {
 		s.writeError(w, err)
+		return
+	}
+	if in.OTP && p.Channel == "sms" {
+		s.providerOTPTest(w, r, p, in.To)
 		return
 	}
 	in.Message = strings.TrimSpace(in.Message)
@@ -476,6 +504,50 @@ func (s *service) consoleProviderTest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "sandbox": false, "reply": reply})
+}
+
+// providerOTPTest sends a made-up login code the way SMS login would: through the
+// provider's OTP template when it has one, otherwise as the SMS login text.
+func (s *service) providerOTPTest(w http.ResponseWriter, r *http.Request, p provider, to string) {
+	addr, ok := normalizePhone(to)
+	if !ok {
+		s.writeError(w, badRequest("INVALID_PHONE", "to", "use 09xxxxxxxxx, +989… or an E.164 number"))
+		return
+	}
+	if !providerConfigured(p) {
+		s.writeError(w, badRequest("PROVIDER_NOT_CONFIGURED", "config", "fill the required fields first"))
+		return
+	}
+	st, err := loadOTPSettings(r.Context(), s.db)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	langs, err := localized.Load(r.Context(), s.db)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	code, err := randomDigits(st.CodeLength)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	app := s.appName(r.Context(), langs, langs.Default)
+	values := newOTPValues(code, app, st.TTLSeconds)
+	msg := outMessage{To: addr, Lang: langs.Default, Text: otpText(langs.Resolve(st.Message, langs.Default), code, app, st.TTLSeconds), OTP: &values}
+	mode := otpMode(p)
+	if p.Sandbox {
+		s.logger.Info("Publication sandbox OTP test via %s/%s to %s with code %s; live would send %s", p.Channel, p.Kind, maskAddress(addr), code, mode)
+		writeJSON(w, http.StatusOK, map[string]any{"ok": true, "sandbox": true, "otp": true, "mode": mode, "code": code, "reply": "sandbox: nothing was sent; live would send " + mode})
+		return
+	}
+	reply, err := s.deliver(r.Context(), p, msg)
+	if err != nil {
+		writeJSON(w, http.StatusOK, map[string]any{"ok": false, "sandbox": false, "otp": true, "mode": mode, "error": err.Error()})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "sandbox": false, "otp": true, "mode": mode, "code": code, "reply": reply})
 }
 
 func maskAddress(a string) string {

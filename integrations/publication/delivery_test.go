@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -188,5 +189,170 @@ func TestResend(t *testing.T) {
 	s.baseURLs["resend"] = srv3.URL
 	if _, err := s.deliver(context.Background(), provider{Kind: "resend", Config: cfg}, msg); err == nil || isPermanent(err) {
 		t.Fatalf("429 must be retried: %v", err)
+	}
+}
+
+func TestKavenegarOTPPattern(t *testing.T) {
+	s := testService()
+	cfg := providerConfig{"apiKey": "KEY", "sender": "10004346", "otpTemplate": "rakhtkan-login", "otpToken2": "minutes", "otpToken3": "skip", "otpToken10": "app"}
+	otp := &otpValues{Code: "48213", Minutes: "2", App: "رخت کن بازی"}
+	msg := outMessage{To: "+989121234567", Text: "کد ورود شما: 48213", OTP: otp}
+	srv, c := fakeAPI(t, 200, `{"return":{"status":200,"message":"تایید شد"},"entries":[{"messageid":8792343,"message":"کد: 48213","status":5,"statustext":"ارسال به مخابرات","sender":"10004346","receptor":"09121234567","date":1356619709,"cost":120}]}`)
+	s.baseURLs["kavenegar"] = srv.URL
+	reply, err := s.deliver(context.Background(), provider{Kind: "kavenegar", Config: cfg}, msg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.method != http.MethodPost || c.path != "/v1/KEY/verify/lookup.json" {
+		t.Fatalf("request = %s %s", c.method, c.path)
+	}
+	want := url.Values{"receptor": {"09121234567"}, "template": {"rakhtkan-login"}, "token": {"48213"}, "token2": {"2"}, "token10": {"رخت کن بازی"}}
+	if c.form.Encode() != want.Encode() {
+		t.Fatalf("form = %v, want %v", c.form, want)
+	}
+	if !strings.Contains(reply, "8792343") {
+		t.Fatalf("reply = %s", reply)
+	}
+
+	// app in token2 cannot carry spaces: words are joined with a zero-width non-joiner.
+	cfg2 := providerConfig{"apiKey": "KEY", "otpTemplate": "login", "otpToken2": "app"}
+	if _, err := s.deliver(context.Background(), provider{Kind: "kavenegar", Config: cfg2}, msg); err != nil {
+		t.Fatal(err)
+	}
+	if got := c.form.Get("token2"); got != "رخت‌کن‌بازی" || c.form.Has("token3") || c.form.Has("token10") {
+		t.Fatalf("token2 = %q form = %v", got, c.form)
+	}
+
+	// Without OTP values (campaigns) the template is ignored and plain send is used.
+	if _, err := s.deliver(context.Background(), provider{Kind: "kavenegar", Config: cfg}, outMessage{To: msg.To, Text: "خبر تازه"}); err != nil {
+		t.Fatal(err)
+	}
+	if c.path != "/v1/KEY/sms/send.json" || c.form.Get("message") != "خبر تازه" || c.form.Has("template") {
+		t.Fatalf("plain send = %s %v", c.path, c.form)
+	}
+	// Without a template an OTP goes out as plain text, as before.
+	if _, err := s.deliver(context.Background(), provider{Kind: "kavenegar", Config: providerConfig{"apiKey": "KEY"}}, msg); err != nil {
+		t.Fatal(err)
+	}
+	if c.path != "/v1/KEY/sms/send.json" || c.form.Get("message") != msg.Text {
+		t.Fatalf("otp without template = %s %v", c.path, c.form)
+	}
+
+	for _, tc := range []struct {
+		status, ret int
+		permanent   bool
+	}{
+		{200, 424, true}, // template not found or not approved
+		{200, 431, true}, // invalid token
+		{200, 418, true}, // no credit
+		{200, 409, false},
+		{200, 451, false},
+		{502, 0, false},
+	} {
+		body := `{"return":{"status":` + strconv.Itoa(tc.ret) + `,"message":"x"},"entries":null}`
+		if tc.ret == 0 {
+			body = `bad gateway`
+		}
+		srv, _ := fakeAPI(t, tc.status, body)
+		s.baseURLs["kavenegar"] = srv.URL
+		_, err := s.deliver(context.Background(), provider{Kind: "kavenegar", Config: cfg}, msg)
+		if err == nil || isPermanent(err) != tc.permanent {
+			t.Errorf("%d/%d: err=%v permanent=%v", tc.status, tc.ret, err, isPermanent(err))
+		}
+	}
+	if _, err := s.deliver(context.Background(), provider{Kind: "kavenegar", Config: cfg}, outMessage{To: "+14155550100", OTP: otp}); err == nil || !isPermanent(err) {
+		t.Fatalf("foreign number must fail permanently: %v", err)
+	}
+}
+
+func TestKavenegarToken(t *testing.T) {
+	if got := kavenegarToken("token10", "a b c d e f g"); strings.Count(got, " ") != 5 {
+		t.Fatalf("token10 = %q", got)
+	}
+	if got := kavenegarToken("token", strings.Repeat("۱", 150)); len([]rune(got)) != 100 {
+		t.Fatalf("token length = %d", len([]rune(got)))
+	}
+}
+
+func TestSmsirOTPPattern(t *testing.T) {
+	s := testService()
+	cfg := providerConfig{"apiKey": "smsir-key", "lineNumber": "30007732", "otpTemplateId": "123456", "otpCodeParam": "Code", "otpAppParam": "APP"}
+	otp := &otpValues{Code: "48213", Minutes: "2", App: "یک نام خیلی خیلی بلند برای این بازی"}
+	msg := outMessage{To: "+989121234567", Text: "code 48213", OTP: otp}
+	srv, c := fakeAPI(t, 200, `{"status":1,"message":"موفق","data":{"messageId":89545112,"cost":1.0}}`)
+	s.baseURLs["smsir"] = srv.URL
+	reply, err := s.deliver(context.Background(), provider{Kind: "smsir", Config: cfg}, msg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.method != http.MethodPost || c.path != "/v1/send/verify" || c.apiKey != "smsir-key" || c.body["mobile"] != "09121234567" || c.body["templateId"] != float64(123456) {
+		t.Fatalf("request = %+v", c)
+	}
+	params, _ := c.body["parameters"].([]any)
+	if len(params) != 2 {
+		t.Fatalf("parameters = %v", c.body["parameters"])
+	}
+	p0, _ := params[0].(map[string]any)
+	p1, _ := params[1].(map[string]any)
+	if p0["name"] != "Code" || p0["value"] != "48213" || p1["name"] != "APP" || len([]rune(p1["value"].(string))) != 25 {
+		t.Fatalf("parameters = %v", params)
+	}
+	if !strings.Contains(reply, "89545112") {
+		t.Fatalf("reply = %s", reply)
+	}
+
+	// Default code variable is CODE; the minutes variable is sent when named.
+	if _, err := s.deliver(context.Background(), provider{Kind: "smsir", Config: providerConfig{"apiKey": "k", "lineNumber": "1", "otpTemplateId": "7", "otpMinutesParam": "MIN"}}, msg); err != nil {
+		t.Fatal(err)
+	}
+	params, _ = c.body["parameters"].([]any)
+	if len(params) != 2 || params[0].(map[string]any)["name"] != "CODE" || params[1].(map[string]any)["value"] != "2" {
+		t.Fatalf("parameters = %v", params)
+	}
+
+	// Without OTP values or without a template, the plain bulk send is used.
+	srvBulk, cb := fakeAPI(t, 200, `{"status":1,"message":"موفق","data":{"packId":"p","messageIds":[1],"cost":1.0}}`)
+	s.baseURLs["smsir"] = srvBulk.URL
+	if _, err := s.deliver(context.Background(), provider{Kind: "smsir", Config: cfg}, outMessage{To: msg.To, Text: "news"}); err != nil || cb.path != "/v1/send/bulk" {
+		t.Fatalf("campaign send = %s %v", cb.path, err)
+	}
+	if _, err := s.deliver(context.Background(), provider{Kind: "smsir", Config: providerConfig{"apiKey": "k", "lineNumber": "1"}}, msg); err != nil || cb.path != "/v1/send/bulk" || cb.body["messageText"] != msg.Text {
+		t.Fatalf("otp without template = %s %v %v", cb.path, cb.body, err)
+	}
+
+	for _, tc := range []struct {
+		status    int
+		body      string
+		permanent bool
+	}{
+		{400, `{"status":113,"message":"قالب یافت نشد","data":null}`, true},
+		{400, `{"status":114,"message":"طول مقدار پارامتر بیش از 25 کاراکتر","data":null}`, true},
+		{401, `{"status":10,"message":"کلید وب سرویس نامعتبر است","data":null}`, true},
+		{200, `{"status":1,"message":"موفق","data":null}`, true},
+		{429, `{"status":20,"message":"limit","data":null}`, false},
+		{500, `{"status":0,"message":"system error","data":null}`, false},
+	} {
+		srv, _ := fakeAPI(t, tc.status, tc.body)
+		s.baseURLs["smsir"] = srv.URL
+		_, err := s.deliver(context.Background(), provider{Kind: "smsir", Config: cfg}, msg)
+		if err == nil || isPermanent(err) != tc.permanent {
+			t.Errorf("%d %s: err=%v permanent=%v", tc.status, tc.body, err, isPermanent(err))
+		}
+	}
+}
+
+func TestOTPMode(t *testing.T) {
+	cases := map[string]provider{
+		"pattern (kavenegar template login)": {Kind: "kavenegar", Config: providerConfig{"otpTemplate": "login"}},
+		"pattern (sms.ir template 77)":       {Kind: "smsir", Config: providerConfig{"otpTemplateId": "77"}},
+		"plain text":                         {Kind: "twilio", Config: providerConfig{"otpTemplate": "x"}},
+	}
+	for want, p := range cases {
+		if got := otpMode(p); got != want {
+			t.Errorf("%s: %s", p.Kind, got)
+		}
+	}
+	if got := otpMode(provider{Kind: "kavenegar", Config: providerConfig{}}); got != "plain text" {
+		t.Errorf("kavenegar without template: %s", got)
 	}
 }

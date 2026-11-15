@@ -330,8 +330,12 @@ func (s *service) appName(ctx context.Context, langs *localized.Set, lang string
 }
 
 func otpText(template, code, app string, ttl int) string {
-	minutes := (ttl + 59) / 60
-	return strings.NewReplacer("{code}", code, "{minutes}", strconv.Itoa(minutes), "{app}", app).Replace(template)
+	v := newOTPValues(code, app, ttl)
+	return strings.NewReplacer("{code}", v.Code, "{minutes}", v.Minutes, "{app}", v.App).Replace(template)
+}
+
+func newOTPValues(code, app string, ttl int) otpValues {
+	return otpValues{Code: code, Minutes: strconv.Itoa((ttl + 59) / 60), App: app}
 }
 
 func (s *service) rpcOTPRequest(ctx context.Context, userID, payload string) (any, error) {
@@ -411,19 +415,25 @@ func (s *service) rpcOTPRequest(ctx context.Context, userID, payload string) (an
 	if err != nil {
 		return nil, err
 	}
-	text := otpText(langs.Resolve(st.Message, lang), code, s.appName(ctx, langs, lang), st.TTLSeconds)
+	app := s.appName(ctx, langs, lang)
+	text := otpText(langs.Resolve(st.Message, lang), code, app, st.TTLSeconds)
+	values := newOTPValues(code, app, st.TTLSeconds)
 	if sandbox {
-		s.logger.Info("Publication OTP sandbox code %s for %s (request %s, %s)", code, phone, id, lang)
+		mode := "no SMS service"
+		if haveProvider {
+			mode = p.Kind + " " + otpMode(p)
+		}
+		s.logger.Info("Publication OTP sandbox code %s for %s (request %s, %s; live would send via %s)", code, phone, id, lang, mode)
 	} else {
 		sendCtx, cancel := context.WithTimeout(ctx, 25*time.Second)
-		reply, err := s.deliver(sendCtx, p, outMessage{To: phone, Text: text, Lang: lang, IdempotencyKey: "otp-" + id})
+		reply, err := s.deliver(sendCtx, p, outMessage{To: phone, Text: text, Lang: lang, IdempotencyKey: "otp-" + id, OTP: &values})
 		cancel()
 		if err != nil {
 			_, _ = s.db.ExecContext(ctx, `UPDATE publication_otp_code SET status='send_failed', error=$2 WHERE id=$1`, id, truncate(err.Error(), 500))
 			s.logger.Warn("Publication OTP send via %s to %s failed: %v", p.Kind, maskAddress(phone), err)
 			return nil, fail(http.StatusBadGateway, "OTP_SEND_FAILED", "", "the code could not be sent; try again")
 		}
-		s.logger.Info("Publication OTP sent via %s to %s: %s", p.Kind, maskAddress(phone), truncate(reply, 200))
+		s.logger.Info("Publication OTP sent via %s %s to %s: %s", p.Kind, otpMode(p), maskAddress(phone), truncate(reply, 200))
 	}
 	return map[string]any{"requestId": id, "phone": phone, "expiresIn": st.TTLSeconds, "resendAfter": st.ResendSeconds, "codeLength": st.CodeLength, "sandbox": sandbox}, nil
 }
