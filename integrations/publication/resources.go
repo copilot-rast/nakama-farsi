@@ -28,6 +28,7 @@ type resource struct {
 const faqJSON = `jsonb_build_object('id',t.id,'categoryId',t.category_id,'categoryKey',c.key,'categoryName',c.name,'question',t.question,'answer',t.answer,'isActive',t.is_active,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
 const newsJSON = `jsonb_build_object('id',t.id,'title',t.title,'summary',t.summary,'body',t.body,'bodyFormat',t.body_format,'coverUrl',t.cover_url,'categoryId',t.category_id,'categoryKey',c.key,'categoryName',c.name,
+	'slug',t.slug,'metaTitle',t.meta_title,'metaDescription',t.meta_description,'keywords',to_jsonb(t.keywords),'canonicalUrl',t.canonical_url,'ogImage',t.og_image,'noindex',t.noindex,
 	'tagIds',to_jsonb(t.tag_ids),'status',t.status,'expiresAt',t.expires_at,'expired',(t.expires_at IS NOT NULL AND t.expires_at <= now()),
 	'source',t.source,'sourceId',t.source_id,'externalId',t.external_id,'sourceUrl',t.source_url,'lang',t.lang,
 	'isActive',t.is_active,'isPinned',t.is_pinned,'publishedAt',t.published_at,'allowComment',t.allow_comment,'freeComment',t.free_comment,'allowReaction',t.allow_reaction,
@@ -58,8 +59,8 @@ func resources() []resource {
 			table:  "publication_news",
 			json:   newsJSON,
 			from:   ` FROM publication_news t LEFT JOIN base_category c ON c.id=t.category_id`,
-			search: []string{translatedSearch("t.title"), translatedSearch("t.summary")},
-			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "categoryId": "t.category_id = ?::uuid", "isPinned": "t.is_pinned = ?::boolean",
+			search: []string{translatedSearch("t.title"), translatedSearch("t.summary"), "t.slug", "COALESCE(t.external_id,'')"},
+			filters: map[string]string{"slug": "t.slug = ?", "isActive": "t.is_active = ?::boolean", "categoryId": "t.category_id = ?::uuid", "isPinned": "t.is_pinned = ?::boolean",
 				"status": "t.status = ?", "source": "t.source = ?", "sourceId": "t.source_id = ?::uuid", "tagId": "?::text = ANY(t.tag_ids)",
 				"expired": "(t.expires_at IS NOT NULL AND t.expires_at <= now()) = ?::boolean"},
 			order: "t.is_pinned DESC, t.published_at DESC, t.id DESC",

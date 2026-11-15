@@ -40,19 +40,30 @@ type newsSettings struct {
 	NotifyCategoryKey  string     `json:"notifyCategoryKey"`
 	LogRetentionDays   int        `json:"logRetentionDays"`
 	LogPayloadBytes    int        `json:"logPayloadBytes"`
+	SlugStyle          string     `json:"slugStyle"`
+	PublicEnabled      bool       `json:"publicEnabled"`
+	PublicBaseURL      string     `json:"publicBaseUrl"`
+	PublicPath         string     `json:"publicPath"`
+	RSSEnabled         bool       `json:"rssEnabled"`
+	PublicCacheSeconds int        `json:"publicCacheSeconds"`
+	SiteTitle          i18n       `json:"siteTitle"`
 	UpdatedBy          string     `json:"updatedBy"`
 	UpdatedAt          *time.Time `json:"updatedAt,omitempty"`
 }
 
 func defaultNewsSettings() newsSettings {
-	return newsSettings{CommentsPerMinute: commentsPerMinute, ReactionsPerMinute: 30, UnreadScope: "signup", FillDefaultLang: true, RealtimeOnPublish: true, NotifyCategoryKey: "news", LogRetentionDays: 30, LogPayloadBytes: 16384}
+	return newsSettings{CommentsPerMinute: commentsPerMinute, ReactionsPerMinute: 30, UnreadScope: "signup", FillDefaultLang: true, RealtimeOnPublish: true, NotifyCategoryKey: "news", LogRetentionDays: 30, LogPayloadBytes: 16384,
+		SlugStyle: "native", PublicPath: "/news/{slug}", PublicCacheSeconds: 300, SiteTitle: i18n{}}
 }
 
 func loadNewsSettings(ctx context.Context, q queryer) (newsSettings, error) {
 	st := defaultNewsSettings()
 	var at time.Time
-	err := q.QueryRowContext(ctx, `SELECT comments_per_minute, reactions_per_minute, unread_scope, show_expired, fill_default_lang, realtime_on_publish, notify_category_key, log_retention_days, log_payload_bytes, updated_by, updated_at
-		FROM publication_news_settings WHERE id=1`).Scan(&st.CommentsPerMinute, &st.ReactionsPerMinute, &st.UnreadScope, &st.ShowExpired, &st.FillDefaultLang, &st.RealtimeOnPublish, &st.NotifyCategoryKey, &st.LogRetentionDays, &st.LogPayloadBytes, &st.UpdatedBy, &at)
+	var siteTitle string
+	err := q.QueryRowContext(ctx, `SELECT comments_per_minute, reactions_per_minute, unread_scope, show_expired, fill_default_lang, realtime_on_publish, notify_category_key, log_retention_days, log_payload_bytes, updated_by, updated_at,
+		slug_style, public_enabled, public_base_url, public_path, rss_enabled, public_cache_seconds, site_title::text
+		FROM publication_news_settings WHERE id=1`).Scan(&st.CommentsPerMinute, &st.ReactionsPerMinute, &st.UnreadScope, &st.ShowExpired, &st.FillDefaultLang, &st.RealtimeOnPublish, &st.NotifyCategoryKey, &st.LogRetentionDays, &st.LogPayloadBytes, &st.UpdatedBy, &at,
+		&st.SlugStyle, &st.PublicEnabled, &st.PublicBaseURL, &st.PublicPath, &st.RSSEnabled, &st.PublicCacheSeconds, &siteTitle)
 	if errors.Is(err, sql.ErrNoRows) {
 		return defaultNewsSettings(), nil
 	}
@@ -60,6 +71,7 @@ func loadNewsSettings(ctx context.Context, q queryer) (newsSettings, error) {
 		return st, err
 	}
 	st.UpdatedAt = &at
+	st.SiteTitle = parseI18n(siteTitle)
 	return st, nil
 }
 
@@ -91,6 +103,41 @@ func (s *service) consoleNewsSettingsPut(w http.ResponseWriter, r *http.Request)
 		s.writeError(w, badRequest("INVALID_VALUE", "unreadScope", "must be signup or all"))
 		return
 	}
+	if !containsStr([]string{"native", "latin", "id"}, in.SlugStyle) {
+		s.writeError(w, badRequest("INVALID_VALUE", "slugStyle", "must be native, latin or id"))
+		return
+	}
+	if in.PublicCacheSeconds < 0 || in.PublicCacheSeconds > 86400 {
+		s.writeError(w, badRequest("OUT_OF_RANGE", "publicCacheSeconds", "between 0 and 86400"))
+		return
+	}
+	base, err := cleanAbsURL("publicBaseUrl", in.PublicBaseURL)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	in.PublicBaseURL = strings.TrimRight(base, "/")
+	in.PublicPath = strings.TrimSpace(in.PublicPath)
+	if in.PublicPath == "" {
+		in.PublicPath = "/news/{slug}"
+	}
+	if !strings.HasPrefix(in.PublicPath, "/") || !strings.Contains(in.PublicPath, "{slug}") || len(in.PublicPath) > 200 || strings.ContainsAny(in.PublicPath, " \t\"'<>`") {
+		s.writeError(w, badRequest("INVALID_PATH", "publicPath", "start with / and include {slug}"))
+		return
+	}
+	if (in.PublicEnabled || in.RSSEnabled) && in.PublicBaseURL == "" {
+		s.writeError(w, badRequest("PUBLIC_BASE_URL_REQUIRED", "publicBaseUrl", "the website address is required for public news"))
+		return
+	}
+	langs, err := localized.Load(r.Context(), s.db)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	if in.SiteTitle, err = cleanI18n(langs, "siteTitle", in.SiteTitle, false, 120); err != nil {
+		s.writeError(w, err)
+		return
+	}
 	in.NotifyCategoryKey = strings.TrimSpace(in.NotifyCategoryKey)
 	var ok bool
 	if err := s.db.QueryRowContext(r.Context(), `SELECT EXISTS (SELECT 1 FROM publication_notify_category WHERE key=$1)`, in.NotifyCategoryKey).Scan(&ok); err != nil {
@@ -101,11 +148,14 @@ func (s *service) consoleNewsSettingsPut(w http.ResponseWriter, r *http.Request)
 		s.writeError(w, badRequest("CATEGORY_NOT_FOUND", "notifyCategoryKey", "notification category does not exist"))
 		return
 	}
-	_, err := s.db.ExecContext(r.Context(), `INSERT INTO publication_news_settings (id, comments_per_minute, reactions_per_minute, unread_scope, show_expired, fill_default_lang, realtime_on_publish, notify_category_key, log_retention_days, log_payload_bytes, updated_by, updated_at)
-		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,now()) ON CONFLICT (id) DO UPDATE SET comments_per_minute=EXCLUDED.comments_per_minute, reactions_per_minute=EXCLUDED.reactions_per_minute,
+	_, err = s.db.ExecContext(r.Context(), `INSERT INTO publication_news_settings (id, comments_per_minute, reactions_per_minute, unread_scope, show_expired, fill_default_lang, realtime_on_publish, notify_category_key, log_retention_days, log_payload_bytes, updated_by, updated_at,
+		slug_style, public_enabled, public_base_url, public_path, rss_enabled, public_cache_seconds, site_title)
+		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,now(),$11,$12,$13,$14,$15,$16,$17) ON CONFLICT (id) DO UPDATE SET slug_style=EXCLUDED.slug_style, public_enabled=EXCLUDED.public_enabled,
+		public_base_url=EXCLUDED.public_base_url, public_path=EXCLUDED.public_path, rss_enabled=EXCLUDED.rss_enabled, public_cache_seconds=EXCLUDED.public_cache_seconds, site_title=EXCLUDED.site_title, comments_per_minute=EXCLUDED.comments_per_minute, reactions_per_minute=EXCLUDED.reactions_per_minute,
 		unread_scope=EXCLUDED.unread_scope, show_expired=EXCLUDED.show_expired, fill_default_lang=EXCLUDED.fill_default_lang, realtime_on_publish=EXCLUDED.realtime_on_publish,
 		notify_category_key=EXCLUDED.notify_category_key, log_retention_days=EXCLUDED.log_retention_days, log_payload_bytes=EXCLUDED.log_payload_bytes, updated_by=EXCLUDED.updated_by, updated_at=now()`,
-		in.CommentsPerMinute, in.ReactionsPerMinute, in.UnreadScope, in.ShowExpired, in.FillDefaultLang, in.RealtimeOnPublish, in.NotifyCategoryKey, in.LogRetentionDays, in.LogPayloadBytes, consoleUser(r))
+		in.CommentsPerMinute, in.ReactionsPerMinute, in.UnreadScope, in.ShowExpired, in.FillDefaultLang, in.RealtimeOnPublish, in.NotifyCategoryKey, in.LogRetentionDays, in.LogPayloadBytes, consoleUser(r),
+		in.SlugStyle, in.PublicEnabled, in.PublicBaseURL, in.PublicPath, in.RSSEnabled, in.PublicCacheSeconds, i18nJSON(in.SiteTitle))
 	if err != nil {
 		s.writeError(w, err)
 		return
@@ -149,6 +199,13 @@ func saveNews(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 		NotifyMode     string          `json:"notifyMode"`
 		NotifyAudience *audienceInput  `json:"notifyAudience"`
 		RejectReason   string          `json:"rejectReason"`
+		Slug           string          `json:"slug"`
+		MetaTitle      i18n            `json:"metaTitle"`
+		MetaDesc       i18n            `json:"metaDescription"`
+		Keywords       []string        `json:"keywords"`
+		CanonicalURL   string          `json:"canonicalUrl"`
+		OgImage        string          `json:"ogImage"`
+		Noindex        bool            `json:"noindex"`
 		Actions        []action        `json:"actions"`
 		Metadata       json.RawMessage `json:"metadata"`
 	}
@@ -159,10 +216,10 @@ func saveNews(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	if err != nil {
 		return err
 	}
-	var oldStatus string
+	var oldStatus, oldSlug string
 	var oldPublished time.Time
 	if !create {
-		err := tx.QueryRowContext(ctx, `SELECT status, published_at FROM publication_news WHERE id=$1 FOR UPDATE`, id).Scan(&oldStatus, &oldPublished)
+		err := tx.QueryRowContext(ctx, `SELECT status, published_at, slug FROM publication_news WHERE id=$1 FOR UPDATE`, id).Scan(&oldStatus, &oldPublished, &oldSlug)
 		if errors.Is(err, sql.ErrNoRows) {
 			return notFound("NOT_FOUND")
 		}
@@ -279,10 +336,53 @@ func saveNews(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	if status != "rejected" {
 		reason = ""
 	}
+	slug, err := cleanSlug(in.Slug)
+	if err != nil {
+		return err
+	}
+	if slug != "" {
+		taken, err := slugTaken(ctx, tx, slug, id)
+		if err != nil {
+			return err
+		}
+		if taken {
+			return fail(http.StatusConflict, "SLUG_EXISTS", "slug", "another news uses this slug")
+		}
+	} else if oldSlug != "" {
+		slug = oldSlug
+	} else {
+		st, err := loadNewsSettings(ctx, tx)
+		if err != nil {
+			return err
+		}
+		if slug, err = uniqueSlug(ctx, tx, slugify(title[langs.Default], st.SlugStyle), id); err != nil {
+			return err
+		}
+	}
+	metaTitle, err := cleanI18n(langs, "metaTitle", in.MetaTitle, false, 200)
+	if err != nil {
+		return err
+	}
+	metaDesc, err := cleanI18n(langs, "metaDescription", in.MetaDesc, false, 400)
+	if err != nil {
+		return err
+	}
+	keywords, err := cleanKeywords(in.Keywords)
+	if err != nil {
+		return err
+	}
+	canonical, err := cleanAbsURL("canonicalUrl", in.CanonicalURL)
+	if err != nil {
+		return err
+	}
+	ogImage, err := cleanURL("ogImage", in.OgImage)
+	if err != nil {
+		return err
+	}
 	who := ctxConsoleUser(ctx)
-	cols := []string{"title", "summary", "body", "body_format", "cover_url", "category_id", "tag_ids", "status", "is_active", "is_pinned", "published_at", "expires_at", "allow_comment", "free_comment",
+	cols := []string{"slug", "meta_title", "meta_description", "keywords", "canonical_url", "og_image", "noindex", "title", "summary", "body", "body_format", "cover_url", "category_id", "tag_ids", "status", "is_active", "is_pinned", "published_at", "expires_at", "allow_comment", "free_comment",
 		"allow_reaction", "notify_mode", "notify_audience", "reject_reason", "actions", "metadata", "updated_by"}
-	vals := []any{i18nJSON(title), i18nJSON(summary), i18nJSON(body), format, cover, cat, "{" + strings.Join(tags, ",") + "}", status, status == "published", in.IsPinned, *published, expires,
+	vals := []any{slug, i18nJSON(metaTitle), i18nJSON(metaDesc), "{" + quoteArray(keywords) + "}", canonical, ogImage, in.Noindex, i18nJSON(title), i18nJSON(summary), i18nJSON(body), format, cover, cat, "{" + strings.Join(tags, ",") + "}", status, status == "published", in.IsPinned, *published, expires,
 		boolOr(in.AllowComment, true), in.FreeComment, boolOr(in.AllowReaction, true), mode, audJSON, reason, string(actionsJSON), metadata, who}
 	if create {
 		cols = append(cols, "created_by", "notified_at")

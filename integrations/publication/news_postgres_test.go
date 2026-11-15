@@ -420,3 +420,98 @@ func toStrings(v any) []string {
 	}
 	return out
 }
+
+func (h *harness) public(path string) (int, string, http.Header) {
+	h.t.Helper()
+	r := mux.NewRouter()
+	r.HandleFunc(publicPrefix+"news", h.s.publicNewsList)
+	r.HandleFunc(publicPrefix+"news/{slug}", h.s.publicNewsGet)
+	r.HandleFunc(publicPrefix+"sitemap.xml", h.s.publicSitemap)
+	r.HandleFunc(publicPrefix+"rss.xml", h.s.publicRSS)
+	req := httptest.NewRequest(http.MethodGet, publicPrefix+path, nil)
+	rec := httptest.NewRecorder()
+	r.ServeHTTP(rec, req)
+	return rec.Code, rec.Body.String(), rec.Header()
+}
+
+func TestNewsSEOSlugsPublicSitemap(t *testing.T) {
+	h := newsHarness(t)
+	u := h.user(nil, "", "fa")
+	a := h.news(map[string]any{"title": map[string]string{"fa": "شب یلدا"}, "summary": map[string]string{"fa": "خلاصهٔ کوتاه"}, "body": map[string]string{"fa": "x"}, "coverUrl": "https://e.com/c.png"})
+	b := h.news(map[string]any{"title": map[string]string{"fa": "شب یلدا"}, "body": map[string]string{"fa": "متن **بلند** خبر"}, "metaTitle": map[string]string{"fa": "عنوان سئو"},
+		"keywords": []string{"یلدا", "یلدا", " انار "}, "ogImage": "https://e.com/og.png", "canonicalUrl": "https://site.example/yalda"})
+	hidden := h.news(map[string]any{"title": map[string]string{"fa": "پنهان"}, "body": map[string]string{"fa": "x"}, "noindex": true})
+	if s := h.mustAPI(200, http.MethodGet, "/news/"+a, nil)["slug"]; s != "شب-یلدا" {
+		t.Fatalf("slug a = %v", s)
+	}
+	if s := h.mustAPI(200, http.MethodGet, "/news/"+b, nil)["slug"]; s != "شب-یلدا-2" {
+		t.Fatalf("slug b = %v", s)
+	}
+	if code, out := h.api(http.MethodPut, "/news/"+b, map[string]any{"title": map[string]string{"fa": "x"}, "body": map[string]string{"fa": "x"}, "slug": "شب-یلدا"}); code != 409 || out["error"] != "SLUG_EXISTS" {
+		t.Fatalf("dup slug = %d %v", code, out)
+	}
+	if code, out := h.api(http.MethodPut, "/news/"+b, map[string]any{"title": map[string]string{"fa": "x"}, "body": map[string]string{"fa": "x"}, "slug": "bad slug"}); code != 400 || out["error"] != "INVALID_SLUG" {
+		t.Fatalf("bad slug = %d %v", code, out)
+	}
+	h.mustAPI(200, http.MethodPut, "/news/"+b, map[string]any{"title": map[string]string{"fa": "شب یلدا"}, "body": map[string]string{"fa": "متن **بلند** خبر"}, "slug": "Yalda-2026",
+		"metaTitle": map[string]string{"fa": "عنوان سئو"}, "keywords": []string{"یلدا", "یلدا", " انار "}, "ogImage": "https://e.com/og.png", "canonicalUrl": "https://site.example/yalda"})
+	got := h.mustRPC(u, "publication_news_by_slug", map[string]any{"slug": "yalda-2026"})
+	seo := got["seo"].(map[string]any)
+	if got["id"] != b || seo["metaTitle"] != "عنوان سئو" || seo["metaDescription"] != "متن بلند خبر" || seo["ogImage"] != "https://e.com/og.png" || len(seo["keywords"].([]any)) != 2 {
+		t.Fatalf("seo b = %v", got)
+	}
+	seoA := h.mustRPC(u, "publication_news_get", map[string]any{"slug": "شب-یلدا"})["seo"].(map[string]any)
+	if seoA["metaTitle"] != "شب یلدا" || seoA["metaDescription"] != "خلاصهٔ کوتاه" || seoA["ogImage"] != "https://e.com/c.png" || seoA["canonicalUrl"] != nil {
+		t.Fatalf("fallbacks = %v", seoA)
+	}
+	if l := items(h.mustRPC(u, "publication_news_list", map[string]any{"includeSeo": true})); l[0].(map[string]any)["seo"] == nil {
+		t.Fatalf("list seo = %v", l)
+	}
+
+	if code, _, _ := h.public("news"); code != 404 {
+		t.Fatalf("public off = %d", code)
+	}
+	if code, out := h.api(http.MethodPut, "/news-settings", map[string]any{"commentsPerMinute": 5, "reactionsPerMinute": 30, "unreadScope": "signup", "notifyCategoryKey": "news",
+		"logRetentionDays": 30, "logPayloadBytes": 100, "slugStyle": "native", "publicEnabled": true, "publicCacheSeconds": 60}); code != 400 || out["error"] != "PUBLIC_BASE_URL_REQUIRED" {
+		t.Fatalf("base required = %d %v", code, out)
+	}
+	h.mustAPI(200, http.MethodPut, "/news-settings", map[string]any{"commentsPerMinute": 5, "reactionsPerMinute": 30, "unreadScope": "signup", "notifyCategoryKey": "news",
+		"logRetentionDays": 30, "logPayloadBytes": 100, "slugStyle": "latin", "publicEnabled": true, "publicBaseUrl": "https://site.example/", "publicPath": "/n/{slug}",
+		"publicCacheSeconds": 60, "rssEnabled": false, "siteTitle": map[string]string{"fa": "اخبار بازی"}})
+	code, body, hdr := h.public("news")
+	if code != 200 || strings.Contains(body, hidden) || !strings.Contains(body, `"url":"https://site.example/n/yalda-2026"`) || hdr.Get("Cache-Control") != "public, max-age=60" {
+		t.Fatalf("public list = %d %s %v", code, body, hdr)
+	}
+	if code, body, _ := h.public("news/" + "%D8%B4%D8%A8-%DB%8C%D9%84%D8%AF%D8%A7"); code != 200 || !strings.Contains(body, `"bodyHtml"`) {
+		t.Fatalf("public get = %d %s", code, body)
+	}
+	if code, _, _ := h.public("news/پنهان"); code != 404 {
+		t.Fatalf("noindex get = %d", code)
+	}
+	code, body, hdr = h.public("sitemap.xml")
+	if code != 200 || !strings.Contains(body, "<loc>https://site.example/yalda</loc>") || !strings.Contains(body, "https://site.example/n/") || strings.Count(body, "<url>") != 2 || !strings.HasPrefix(hdr.Get("Content-Type"), "application/xml") {
+		t.Fatalf("sitemap = %d %s", code, body)
+	}
+	if code, _, _ := h.public("rss.xml"); code != 404 {
+		t.Fatalf("rss off = %d", code)
+	}
+	h.s.db.ExecContext(h.ctx, `UPDATE publication_news_settings SET rss_enabled=true`)
+	if code, body, _ := h.public("rss.xml"); code != 200 || !strings.Contains(body, "<title>اخبار بازی</title>") || strings.Count(body, "<item>") != 2 {
+		t.Fatalf("rss = %d %s", code, body)
+	}
+
+	src := h.mustAPI(http.StatusCreated, http.MethodPost, "/news-sources", map[string]any{"key": "seo", "publishMode": "auto"})
+	secret := h.mustAPI(http.StatusOK, http.MethodPost, "/news-sources/"+src["id"].(string)+"/secret/reveal", nil)["secret"].(string)
+	_, out := h.ingest("seo", map[string]string{"X-News-Token": secret}, `[{"id":"s1","title":"Night of Yalda","seo":{"title":"Meta","description":"Desc","image":"https://e.com/i.png"},"keywords":"a, b","noindex":true},
+		{"id":"s2","title":"Other","slug":"yalda-2026"}]`)
+	r1 := out["results"].([]any)
+	var slug1, mt string
+	var noindex bool
+	h.s.db.QueryRowContext(h.ctx, `SELECT slug, meta_title->>'fa', noindex FROM publication_news WHERE external_id='s1'`).Scan(&slug1, &mt, &noindex)
+	if slug1 != "night-of-yalda" || mt != "Meta" || !noindex {
+		t.Fatalf("ingest seo = %s %s %v %v", slug1, mt, noindex, r1)
+	}
+	if !strings.Contains(strings.Join(toStrings(r1[1].(map[string]any)["notes"]), ","), "SLUG_TAKEN") {
+		t.Fatalf("slug taken note = %v", r1[1])
+	}
+}

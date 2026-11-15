@@ -88,6 +88,14 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := initializer.RegisterHttp(ingestPrefix+"{source}", svc.ingestHTTP, http.MethodPost); err != nil {
 		return err
 	}
+	for _, h := range []struct {
+		path string
+		fn   http.HandlerFunc
+	}{{publicPrefix + "news", svc.publicNewsList}, {publicPrefix + "news/{slug}", svc.publicNewsGet}, {publicPrefix + "sitemap.xml", svc.publicSitemap}, {publicPrefix + "rss.xml", svc.publicRSS}} {
+		if err := initializer.RegisterHttp(h.path, h.fn, http.MethodGet, http.MethodHead); err != nil {
+			return err
+		}
+	}
 	svc.setupImageStore(env)
 	inapp.SetSender(svc.inappSender())
 	go svc.workerLoop(ctx)

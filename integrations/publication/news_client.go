@@ -26,6 +26,7 @@ type newsRow struct {
 	Expires                                                                  *time.Time
 	Pinned, AllowComment, FreeComment, AllowReaction, Seen                   bool
 	Comments                                                                 int64
+	Seo                                                                      seoRow
 }
 
 func (r newsRow) expired(now time.Time) bool {
@@ -36,18 +37,21 @@ func newsRowCols(u string) string {
 	return `n.id::text, n.title::text, n.summary::text, n.body::text, n.body_format, n.cover_url, COALESCE(c.key,''), n.actions::text, n.source_url, to_jsonb(n.tag_ids)::text,
 	n.published_at, n.expires_at, n.is_pinned, n.allow_comment, n.free_comment, n.allow_reaction,
 	EXISTS (SELECT 1 FROM publication_news_seen ns WHERE ns.news_id=n.id AND ns.user_id=` + u + `::uuid),
-	(SELECT count(*) FROM publication_news_comment nc WHERE nc.news_id=n.id AND nc.is_accepted)`
+	(SELECT count(*) FROM publication_news_comment nc WHERE nc.news_id=n.id AND nc.is_accepted),
+	n.slug, n.meta_title::text, n.meta_description::text, to_jsonb(n.keywords)::text, n.canonical_url, n.og_image, n.noindex`
 }
 
 func scanNewsRow(row interface{ Scan(...any) error }) (newsRow, error) {
 	var r newsRow
-	var tags string
+	var tags, mt, md, kw string
 	var exp sql.NullTime
 	err := row.Scan(&r.ID, &r.Title, &r.Summary, &r.Body, &r.Format, &r.Cover, &r.CategoryKey, &r.Actions, &r.SourceURL, &tags, &r.Published, &exp, &r.Pinned, &r.AllowComment,
-		&r.FreeComment, &r.AllowReaction, &r.Seen, &r.Comments)
+		&r.FreeComment, &r.AllowReaction, &r.Seen, &r.Comments, &r.Seo.Slug, &mt, &md, &kw, &r.Seo.Canonical, &r.Seo.OgImage, &r.Seo.Noindex)
 	if err != nil {
 		return r, err
 	}
+	r.Seo.MetaTitle, r.Seo.MetaDesc = parseI18n(mt), parseI18n(md)
+	_ = json.Unmarshal([]byte(kw), &r.Seo.Keywords)
 	_ = json.Unmarshal([]byte(tags), &r.Tags)
 	if exp.Valid {
 		t := exp.Time
@@ -61,7 +65,11 @@ func (s *service) visibleNews(ctx context.Context, q queryer, userID, id string,
 	if _, err := uuid.FromString(id); err != nil {
 		return row, notFound("NEWS_NOT_FOUND")
 	}
-	row, err := scanNewsRow(q.QueryRowContext(ctx, `SELECT `+newsRowCols("$2")+` FROM publication_news n LEFT JOIN base_category c ON c.id=n.category_id WHERE n.id=$1 AND `+newsLiveSQL, id, userID))
+	return s.visibleNewsWhere(ctx, q, userID, "n.id=$1", id, allowExpired)
+}
+
+func (s *service) visibleNewsWhere(ctx context.Context, q queryer, userID, cond, arg string, allowExpired bool) (newsRow, error) {
+	row, err := scanNewsRow(q.QueryRowContext(ctx, `SELECT `+newsRowCols("$2")+` FROM publication_news n LEFT JOIN base_category c ON c.id=n.category_id WHERE `+cond+` AND `+newsLiveSQL, arg, userID))
 	if errors.Is(err, sql.ErrNoRows) {
 		return row, notFound("NEWS_NOT_FOUND")
 	}
@@ -269,6 +277,7 @@ func (s *service) rpcNewsList(ctx context.Context, userID, payload string) (any,
 		UnreadOnly       bool   `json:"unreadOnly"`
 		IncludeTags      *bool  `json:"includeTags"`
 		IncludeReactions *bool  `json:"includeReactions"`
+		IncludeSeo       bool   `json:"includeSeo"`
 	}
 	if err := decodeStrict(payload, &in); err != nil {
 		return nil, err
@@ -341,7 +350,11 @@ func (s *service) rpcNewsList(ctx context.Context, userID, payload string) (any,
 	for _, r := range list {
 		item := map[string]any{"id": r.ID, "title": langs.Resolve(parseI18n(r.Title), lang), "summary": langs.Resolve(parseI18n(r.Summary), lang), "coverUrl": r.Cover,
 			"publishedAt": r.Published.UTC(), "expiresAt": r.Expires, "expired": r.expired(now), "isPinned": r.Pinned, "categoryKey": nullable(r.CategoryKey), "seen": r.Seen,
-			"commentCount": r.Comments, "allowComment": r.AllowComment, "sourceUrl": nullable(r.SourceURL)}
+			"commentCount": r.Comments, "allowComment": r.AllowComment, "sourceUrl": nullable(r.SourceURL), "slug": r.Seo.Slug}
+		if in.IncludeSeo {
+			title, summary := item["title"].(string), item["summary"].(string)
+			item["seo"] = seoView(langs, lang, r.Seo, title, summary, newsBodyText(r.Format, langs.Resolve(parseI18n(r.Body), lang)), r.Cover)
+		}
 		ex.fill(item, r, withTags, withReactions)
 		items = append(items, item)
 	}
@@ -355,6 +368,7 @@ func (s *service) rpcNewsList(ctx context.Context, userID, payload string) (any,
 func (s *service) rpcNewsGet(ctx context.Context, userID, payload string) (any, error) {
 	var in struct {
 		ID   string `json:"id"`
+		Slug string `json:"slug"`
 		Lang string `json:"lang"`
 	}
 	if err := decodeStrict(payload, &in); err != nil {
@@ -364,7 +378,16 @@ func (s *service) rpcNewsGet(ctx context.Context, userID, payload string) (any, 
 	if err != nil {
 		return nil, err
 	}
-	row, err := s.visibleNews(ctx, s.db, userID, in.ID, true)
+	var row newsRow
+	if strings.TrimSpace(in.ID) == "" && strings.TrimSpace(in.Slug) != "" {
+		slug, _ := cleanSlug(in.Slug)
+		if slug == "" {
+			return nil, notFound("NEWS_NOT_FOUND")
+		}
+		row, err = s.visibleNewsWhere(ctx, s.db, userID, "n.slug=$1", slug, true)
+	} else {
+		row, err = s.visibleNews(ctx, s.db, userID, in.ID, true)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -382,7 +405,8 @@ func (s *service) rpcNewsGet(ctx context.Context, userID, payload string) (any, 
 	out := map[string]any{"lang": lang, "id": row.ID, "title": langs.Resolve(parseI18n(row.Title), lang), "summary": langs.Resolve(parseI18n(row.Summary), lang), "body": body,
 		"bodyFormat": row.Format, "bodyHtml": newsBodyHTML(row.Format, body), "coverUrl": row.Cover, "categoryKey": nullable(row.CategoryKey), "publishedAt": row.Published.UTC(),
 		"expiresAt": row.Expires, "expired": row.expired(time.Now()), "isPinned": row.Pinned, "allowComment": row.AllowComment, "actions": outActions, "seen": row.Seen,
-		"commentCount": row.Comments, "sourceUrl": nullable(row.SourceURL), "reactionTypes": ex.types}
+		"commentCount": row.Comments, "sourceUrl": nullable(row.SourceURL), "reactionTypes": ex.types, "slug": row.Seo.Slug}
+	out["seo"] = seoView(langs, lang, row.Seo, out["title"].(string), out["summary"].(string), newsBodyText(row.Format, body), row.Cover)
 	ex.fill(out, row, true, true)
 	return out, nil
 }

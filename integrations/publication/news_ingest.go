@@ -35,9 +35,11 @@ const (
 var (
 	newsSourceKeyPattern = regexp.MustCompile(`^[a-z][a-z0-9_-]{1,39}$`)
 	headerNamePattern    = regexp.MustCompile(`^[A-Za-z0-9-]{1,64}$`)
-	mappingFields        = []string{"title", "summary", "body", "cover", "category", "tags", "lang", "publishedAt", "expiresAt", "externalId", "url"}
-	defaultMapping       = map[string]string{"title": "title", "summary": "summary", "body": "body", "cover": "image", "category": "category", "tags": "tags", "lang": "lang",
-		"publishedAt": "publishedAt", "expiresAt": "expiresAt", "externalId": "id", "url": "url"}
+	mappingFields        = []string{"title", "summary", "body", "cover", "category", "tags", "lang", "publishedAt", "expiresAt", "externalId", "url",
+		"slug", "metaTitle", "metaDescription", "keywords", "canonicalUrl", "ogImage", "noindex"}
+	defaultMapping = map[string]string{"title": "title", "summary": "summary", "body": "body", "cover": "image", "category": "category", "tags": "tags", "lang": "lang",
+		"publishedAt": "publishedAt", "expiresAt": "expiresAt", "externalId": "id", "url": "url",
+		"slug": "slug", "metaTitle": "seo.title", "metaDescription": "seo.description", "keywords": "keywords", "canonicalUrl": "canonicalUrl", "ogImage": "seo.image", "noindex": "noindex"}
 )
 
 type newsSource struct {
@@ -605,6 +607,32 @@ type mappedItem struct {
 	Title, Summary, Body, Cover, CategoryKey, Lang, ExternalID, URL string
 	Tags                                                            []string
 	PublishedAt, ExpiresAt                                          *time.Time
+	Slug, MetaTitle, MetaDescription, Canonical, OgImage            string
+	Keywords                                                        []string
+	Noindex                                                         bool
+}
+
+func stringList(v any) []string {
+	var out []string
+	switch x := v.(type) {
+	case []any:
+		for _, e := range x {
+			if k := scalarString(e); k != "" {
+				out = append(out, k)
+			} else if obj, ok := e.(map[string]any); ok {
+				if k := scalarString(obj["key"]); k != "" {
+					out = append(out, k)
+				}
+			}
+		}
+	case string:
+		for _, k := range strings.Split(x, ",") {
+			if k = strings.TrimSpace(k); k != "" {
+				out = append(out, k)
+			}
+		}
+	}
+	return out
 }
 
 func mapIngestItem(src newsSource, item any) (mappedItem, []string, error) {
@@ -671,24 +699,7 @@ func mapIngestItem(src newsSource, item any) (mappedItem, []string, error) {
 	if obj, ok := get("category").(map[string]any); ok {
 		m.CategoryKey = scalarString(obj["key"])
 	}
-	switch v := get("tags").(type) {
-	case []any:
-		for _, x := range v {
-			if k := scalarString(x); k != "" {
-				m.Tags = append(m.Tags, k)
-			} else if obj, ok := x.(map[string]any); ok {
-				if k := scalarString(obj["key"]); k != "" {
-					m.Tags = append(m.Tags, k)
-				}
-			}
-		}
-	case string:
-		for _, k := range strings.Split(v, ",") {
-			if k = strings.TrimSpace(k); k != "" {
-				m.Tags = append(m.Tags, k)
-			}
-		}
-	}
+	m.Tags = stringList(get("tags"))
 	if len(m.Tags) > 50 {
 		m.Tags = m.Tags[:50]
 	}
@@ -701,6 +712,37 @@ func mapIngestItem(src newsSource, item any) (mappedItem, []string, error) {
 		notes = append(notes, "EXPIRES_AT_IGNORED")
 	}
 	m.ExternalID = truncRunes(scalarString(get("externalId")), 200)
+	if raw := scalarString(get("slug")); raw != "" {
+		if slug, err := cleanSlug(raw); err == nil {
+			m.Slug = slug
+		} else {
+			notes = append(notes, "SLUG_IGNORED")
+		}
+	}
+	m.MetaTitle = truncRunes(plainLine(scalarString(get("metaTitle"))), 200)
+	m.MetaDescription = truncRunes(plainLine(scalarString(get("metaDescription"))), 400)
+	if kw, err := cleanKeywords(stringList(get("keywords"))); err == nil {
+		m.Keywords = kw
+	} else {
+		notes = append(notes, "KEYWORDS_IGNORED")
+	}
+	if c := scalarString(get("canonicalUrl")); c != "" {
+		if v, err := cleanAbsURL("canonicalUrl", c); err == nil {
+			m.Canonical = v
+		} else {
+			notes = append(notes, "CANONICAL_URL_IGNORED")
+		}
+	}
+	if o := scalarString(get("ogImage")); o != "" {
+		if safeURL(o) && len(o) <= 1024 {
+			m.OgImage = o
+		} else {
+			notes = append(notes, "OG_IMAGE_IGNORED")
+		}
+	}
+	if b, ok := get("noindex").(bool); ok {
+		m.Noindex = b
+	}
 	return m, notes, nil
 }
 
@@ -831,7 +873,32 @@ func (s *service) ingestItem(ctx context.Context, src newsSource, st newsSetting
 			}
 		}
 		tagArr := "{" + strings.Join(tags, ",") + "}"
+		kwArr := "{" + quoteArray(m.Keywords) + "}"
+		slug := m.Slug
+		if slug != "" {
+			self := id
+			if self == "" {
+				self = systemUserID
+			}
+			taken, err := slugTaken(ctx, tx, slug, self)
+			if err != nil {
+				return err
+			}
+			if taken {
+				res.Notes = append(res.Notes, "SLUG_TAKEN")
+				slug = ""
+			}
+		}
 		if exists {
+			if slug != "" {
+				if _, err := tx.ExecContext(ctx, `UPDATE publication_news SET slug=$2 WHERE id=$1`, id, slug); err != nil {
+					return err
+				}
+			}
+			if _, err := tx.ExecContext(ctx, `UPDATE publication_news SET meta_title=$2, meta_description=$3, keywords=$4, canonical_url=$5, og_image=$6, noindex=$7 WHERE id=$1`,
+				id, i18nJSON(text(m.MetaTitle)), i18nJSON(text(m.MetaDescription)), kwArr, m.Canonical, m.OgImage, m.Noindex); err != nil {
+				return err
+			}
 			_, err := tx.ExecContext(ctx, `UPDATE publication_news SET title=$2, summary=$3, body=$4, body_format='html', cover_url=$5, category_id=$6, tag_ids=$7, published_at=$8, expires_at=$9,
 				source_url=$10, lang=$11, content_hash=$12, source_id=$13, updated_by=$14, updated_at=now() WHERE id=$1`,
 				id, i18nJSON(text(m.Title)), i18nJSON(text(m.Summary)), i18nJSON(text(m.Body)), cover, cat, tagArr, published, expires, m.URL, lang, hash, src.ID, src.sourceName())
@@ -842,11 +909,17 @@ func (s *service) ingestItem(ctx context.Context, src newsSource, st newsSetting
 			return nil
 		}
 		id = uuid.Must(uuid.NewV4()).String()
-		_, err = tx.ExecContext(ctx, `INSERT INTO publication_news (id, title, summary, body, body_format, cover_url, category_id, tag_ids, status, is_active, published_at, expires_at,
+		if slug == "" {
+			if slug, err = uniqueSlug(ctx, tx, slugify(m.Title, st.SlugStyle), id); err != nil {
+				return err
+			}
+		}
+		_, err = tx.ExecContext(ctx, `INSERT INTO publication_news (slug, meta_title, meta_description, keywords, canonical_url, og_image, noindex, id, title, summary, body, body_format, cover_url, category_id, tag_ids, status, is_active, published_at, expires_at,
 			allow_comment, allow_reaction, notify_mode, source, source_id, external_id, source_url, content_hash, lang, created_by, updated_by, approved_by, approved_at)
-			VALUES ($1,$2,$3,$4,'html',$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$15,$15,$21,$22)`,
+			VALUES ($23,$24,$25,$26,$27,$28,$29,$1,$2,$3,$4,'html',$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$15,$15,$21,$22)`,
 			id, i18nJSON(text(m.Title)), i18nJSON(text(m.Summary)), i18nJSON(text(m.Body)), cover, cat, tagArr, status, status == "published", published, expires,
-			src.AllowComment, src.AllowReaction, src.NotifyMode, src.sourceName(), src.ID, ext, m.URL, hash, lang, nullIf(status == "published", src.sourceName()), nullTime(status == "published", now))
+			src.AllowComment, src.AllowReaction, src.NotifyMode, src.sourceName(), src.ID, ext, m.URL, hash, lang, nullIf(status == "published", src.sourceName()), nullTime(status == "published", now),
+			slug, i18nJSON(text(m.MetaTitle)), i18nJSON(text(m.MetaDescription)), kwArr, m.Canonical, m.OgImage, m.Noindex)
 		if err != nil {
 			return err
 		}

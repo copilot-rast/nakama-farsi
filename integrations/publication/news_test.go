@@ -119,3 +119,29 @@ func TestSignIngestMatchesDocumentedFormat(t *testing.T) {
 		t.Fatal("timestamp must be signed")
 	}
 }
+
+func TestSlugify(t *testing.T) {
+	for _, tc := range []struct{ in, style, want string }{
+		{"خبر  مهم: به‌روزرسانی ۲!", "native", "خبر-مهم-به-روزرسانی-2"},
+		{"Hello, World — 2026", "native", "hello-world-2026"},
+		{"خبر مهم شب یلدا", "latin", "khbr-mhm-shb-ilda"},
+		{"Big NEWS!", "latin", "big-news"},
+		{"anything", "id", ""},
+		{"!!!", "native", ""},
+	} {
+		if got := slugify(tc.in, tc.style); got != tc.want {
+			t.Errorf("slugify(%q,%s) = %q want %q", tc.in, tc.style, got, tc.want)
+		}
+	}
+	if got := slugify(strings.Repeat("کلمه ", 40), "native"); len([]rune(got)) > 80 || strings.HasSuffix(got, "-") {
+		t.Fatalf("long slug = %q", got)
+	}
+	if s, err := cleanSlug("  Yalda-شب "); err != nil || s != "yalda-شب" {
+		t.Fatalf("cleanSlug = %q %v", s, err)
+	}
+	for _, bad := range []string{"a b", "a--b", "-a", "a/b", "<x>"} {
+		if _, err := cleanSlug(bad); err == nil {
+			t.Errorf("%q should be refused", bad)
+		}
+	}
+}

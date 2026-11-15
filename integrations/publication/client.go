@@ -21,6 +21,7 @@ func (s *service) clientRPCs() map[string]clientRPC {
 		"publication_faq_list":            s.rpcFaqList,
 		"publication_news_list":           s.rpcNewsList,
 		"publication_news_get":            s.rpcNewsGet,
+		"publication_news_by_slug":        s.rpcNewsGet,
 		"publication_news_seen":           s.rpcNewsSeen,
 		"publication_news_comments":       s.rpcNewsComments,
 		"publication_news_comment":        s.rpcNewsComment,
