@@ -649,6 +649,31 @@ var MESSAGES = {
     'pv.test.sandbox': 'حالت آزمایشی: چیزی ارسال نشد. پاسخ:',
     'pv.test.ok': 'ارسال شد.',
     'pv.test.failed': 'ارسال نشد:',
+    'pv.test.otp': 'ارسال کد آزمایشی با پترن',
+    'pv.test.otp.hint': 'یک کد ساختگی همان‌طور فرستاده می‌شود که ورود با پیامک می‌فرستد: با پترن اگر تنظیم شده باشد، وگرنه با متن پیامک ورود.',
+    'pv.test.otp.mode': 'روش ارسال:',
+    'pv.test.otp.code': 'کد:',
+    'pv.otp.title': 'پیامک کد ورود (پترن)',
+    'pv.otp.hint': 'اپراتورها کد ورود را معمولاً فقط با پترن تأییدشده می‌رسانند. اگر خالی بماند، کد با متن معمولی فرستاده می‌شود. پیامک‌های دیگر همیشه متن معمولی‌اند.',
+    'pv.otp.hint.kavenegar': 'پترن را در پنل کاوه‌نگار › ارسال سریع (لوک‌آپ) بسازید و صبر کنید تأیید شود. کد همیشه در %token می‌نشیند. اگر خالی بماند، کد با متن معمولی فرستاده می‌شود.',
+    'pv.otp.hint.smsir': 'قالب را در پنل sms.ir › ارسال سریع (وریفای) بسازید و صبر کنید تأیید شود. اگر شناسه خالی بماند، کد با متن معمولی فرستاده می‌شود.',
+    'pv.field.otpTemplate': 'نام پترن کد ورود',
+    'pv.hint.otpTemplate': 'نام پترن تأییدشده در پنل کاوه‌نگار، دقیقاً همان‌طور که آن‌جا نوشته شده (انگلیسی، بدون فاصله).',
+    'pv.field.otpToken2': 'مقدار ‎%token2',
+    'pv.field.otpToken3': 'مقدار ‎%token3',
+    'pv.field.otpToken10': 'مقدار ‎%token10',
+    'pv.hint.otpToken10': '‎%token10 می‌تواند فاصله داشته باشد؛ برای نام بازی بهتر است. در ‎%token2 و ‎%token3 فاصله‌ها به نیم‌فاصله تبدیل می‌شوند.',
+    'pv.opt.skip': 'استفاده نشود',
+    'pv.opt.minutes': 'دقیقه‌های اعتبار کد',
+    'pv.opt.app': 'نام بازی',
+    'pv.field.otpTemplateId': 'شناسهٔ قالب sms.ir',
+    'pv.hint.otpTemplateId': 'شناسهٔ عددی قالب تأییدشده در پنل sms.ir › ارسال سریع.',
+    'pv.field.otpCodeParam': 'نام متغیر کد',
+    'pv.hint.otpCodeParam': 'نام متغیر کد در قالب، بدون # (مثلاً CODE برای #CODE#).',
+    'pv.field.otpMinutesParam': 'نام متغیر دقیقه',
+    'pv.hint.otpMinutesParam': 'اگر قالب مدت اعتبار را نشان می‌دهد، نام متغیرش را بنویسید.',
+    'pv.field.otpAppParam': 'نام متغیر نام بازی',
+    'pv.hint.otpAppParam': 'اگر قالب نام بازی را نشان می‌دهد، نام متغیرش را بنویسید (حداکثر ۲۵ نویسه فرستاده می‌شود).',
 
     'code.TARGET_USERS_REQUIRED': 'دست‌کم یک کاربر انتخاب کنید.',
     'code.USERS_NOT_FOUND': 'بعضی از کاربران انتخاب‌شده وجود ندارند.',
@@ -854,11 +879,13 @@ var MESSAGES = {
     'setup.email.no': 'باشد. هر وقت لازم شد، از تنظیمات پروژه › ایمیل اضافه‌اش کنید.',
     'setup.pv.kind': 'سرویس',
     'setup.pv.kind.hint': 'همین سرویس، سرویس پیش‌فرض این کانال می‌شود.',
-    'setup.pv.new': 'این سرویس هنوز ساخته نشده است. با ذخیره، در حالت آزمایشی ساخته می‌شود.',
+    'setup.pv.new': 'این سرویس هنوز ساخته نشده است. با «ذخیره» یا دکمهٔ «ذخیره و ارسال آزمایشی» همین‌جا ساخته و سرویس پیش‌فرض می‌شود.',
     'setup.test': 'ارسال آزمایشی',
     'setup.test.hint': 'اول تنظیمات را ذخیره می‌کند، بعد پیام آزمایشی را می‌فرستد. در حالت آزمایشی چیزی واقعاً ارسال نمی‌شود.',
     'setup.test.send': 'ذخیره و ارسال آزمایشی',
-    'setup.test.liveBlocked': 'در راهنما فقط در حالت آزمایشی می‌شود پیام آزمایشی فرستاد.',
+    'setup.test.sendLive': 'ذخیره و ارسال واقعی',
+    'setup.test.live': 'حالت آزمایشی خاموش است: اول تنظیمات ذخیره می‌شود، بعد پیام واقعی فرستاده می‌شود و هزینه دارد.',
+    'setup.test.saveFirst': 'تنظیمات ذخیره نشد؛ خطای فرم را درست کنید و دوباره بزنید.',
     'setup.lang.list': 'زبان‌های فعلی',
     'setup.lang.active': 'فعال بودن {name}',
     'setup.lang.makeDefault': 'پیش‌فرض شود',
@@ -5269,6 +5296,31 @@ var MESSAGES = {
     'pv.test.sandbox': 'Sandbox: nothing was sent. Reply:',
     'pv.test.ok': 'Sent.',
     'pv.test.failed': 'Not sent:',
+    'pv.test.otp': 'Send a test code with the pattern',
+    'pv.test.otp.hint': 'Sends a made-up code the way SMS login does: through the pattern when one is set, otherwise as the SMS login text.',
+    'pv.test.otp.mode': 'Sent as:',
+    'pv.test.otp.code': 'code:',
+    'pv.otp.title': 'Login code SMS (pattern)',
+    'pv.otp.hint': 'Operators usually deliver login codes only through an approved pattern. Left empty, the code goes out as plain text. Other SMS always use plain text.',
+    'pv.otp.hint.kavenegar': 'Create the pattern in the Kavenegar panel › fast send (lookup) and wait for approval. The code always goes in %token. Left empty, the code goes out as plain text.',
+    'pv.otp.hint.smsir': 'Create the template in the sms.ir panel › fast send (verify) and wait for approval. Left empty, the code goes out as plain text.',
+    'pv.field.otpTemplate': 'Login code pattern name',
+    'pv.hint.otpTemplate': 'The approved pattern name in the Kavenegar panel, exactly as written there (English, no spaces).',
+    'pv.field.otpToken2': '%token2 value',
+    'pv.field.otpToken3': '%token3 value',
+    'pv.field.otpToken10': '%token10 value',
+    'pv.hint.otpToken10': '%token10 may hold spaces, so it suits the game name. In %token2 and %token3 spaces become zero-width non-joiners.',
+    'pv.opt.skip': 'Not used',
+    'pv.opt.minutes': 'Minutes the code is valid',
+    'pv.opt.app': 'Game name',
+    'pv.field.otpTemplateId': 'sms.ir template ID',
+    'pv.hint.otpTemplateId': 'The numeric ID of the approved template in the sms.ir panel › fast send.',
+    'pv.field.otpCodeParam': 'Code variable name',
+    'pv.hint.otpCodeParam': 'The code variable in the template, without # (e.g. CODE for #CODE#).',
+    'pv.field.otpMinutesParam': 'Minutes variable name',
+    'pv.hint.otpMinutesParam': 'If the template shows how long the code is valid, name its variable.',
+    'pv.field.otpAppParam': 'Game name variable name',
+    'pv.hint.otpAppParam': 'If the template shows the game name, name its variable (at most 25 characters are sent).',
 
     'code.TARGET_USERS_REQUIRED': 'Pick at least one user.',
     'code.USERS_NOT_FOUND': 'Some chosen users do not exist.',
@@ -5474,11 +5526,13 @@ var MESSAGES = {
     'setup.email.no': 'OK. Add it any time from Project settings › Email.',
     'setup.pv.kind': 'Service',
     'setup.pv.kind.hint': 'This service becomes the default for the channel.',
-    'setup.pv.new': 'This service does not exist yet. Saving creates it in test mode.',
+    'setup.pv.new': 'This service does not exist yet. «Save» or «Save and send test» creates it here and makes it the default.',
     'setup.test': 'Test send',
     'setup.test.hint': 'Saves the settings first, then sends a test message. Nothing is really sent in test mode.',
     'setup.test.send': 'Save and send a test',
-    'setup.test.liveBlocked': 'The setup guide only sends tests in test mode.',
+    'setup.test.sendLive': 'Save and send for real',
+    'setup.test.live': 'Test mode is off: the settings are saved first, then a real message is sent and charged.',
+    'setup.test.saveFirst': 'The settings were not saved; fix the form error and try again.',
     'setup.lang.list': 'Current languages',
     'setup.lang.active': '{name} is active',
     'setup.lang.makeDefault': 'Make default',
@@ -13495,6 +13549,33 @@ function providerField(f, cfg, onchange) {
   return field(label, ctl, hintKey ? t(hintKey) : null, { optional: !f.required });
 }
 
+function providerFieldsBoxes(kind, fields, cfg, fieldEls, onchange) {
+  var main = [];
+  var otp = [];
+  (fields || []).forEach(function (f) {
+    var w = providerField(f, cfg, function () { onchange(f); });
+    fieldEls[f.name] = w;
+    (f.group === 'otp' ? otp : main).push({ f: f, el: w });
+  });
+  var otpBox = otp.length ? h('div', { class: 'eco-otp-box', 'data-otp-fields': kind },
+    h('div', { class: 'flex items-center gap-2 font-medium text-sm mb-1' }, icon('phone', 'h-4 w-4 shrink-0'), h('span', { text: t('pv.otp.title') })),
+    h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: has('pv.otp.hint.' + kind) ? t('pv.otp.hint.' + kind) : t('pv.otp.hint') }),
+    otp.map(function (x) { return x.el; })) : null;
+  return { main: main, otp: otpBox };
+}
+
+function otpTestResult(r) {
+  if (!r || !r.otp) return null;
+  return h('div', { class: 'text-xs mt-1', 'data-test-mode': r.mode || '' }, h('span', { text: t('pv.test.otp.mode') + ' ' }), mono(r.mode || ''), r.code ? h('span', { text: ' · ' + t('pv.test.otp.code') + ' ' }) : null, r.code ? mono(r.code) : null);
+}
+
+function otpTestToggle(msgField, state) {
+  var hint = h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1', text: t('pv.test.otp.hint'), hidden: true });
+  var sw = toggle(false, t('pv.test.otp'), function (on) { state.otp = on; msgField.hidden = on; hint.hidden = !on; }, 'sm');
+  sw.setAttribute('data-test-otp', '');
+  return h('div', { class: 'mb-4' }, sw, hint);
+}
+
 function providersPage(container, channel) {
   var frame = tabFrame(t('desc.' + channel));
   clear(container).appendChild(frame.el);
@@ -13525,16 +13606,19 @@ function providersPage(container, channel) {
     var msg = textInput(t('pv.test.message.default'), { multiline: true, rows: 2, label: t('pv.test.message') });
     msg.classList.add('text-sm');
     var out = h('div', { 'aria-live': 'polite' });
+    var state = { otp: false };
+    var msgField = field(t('pv.test.message'), msg);
     var sendBtn = button({ variant: 'link', size: 'sm', icon: 'send', label: t('pv.test.send'), onclick: function () {
       clear(out);
       setBusy(sendBtn, true, t('nt.sending'));
       var payload = { to: toLatinDigits(to.value).trim(), message: msg.value };
       if (subject) payload.subject = subject.value;
+      if (state.otp) payload = { to: payload.to, otp: true };
       pubApi('POST', '/providers/' + encodeURIComponent(p.id) + '/test', payload).then(function (r) {
         setBusy(sendBtn, false);
-        if (r && r.ok && r.sandbox) out.appendChild(h('div', { class: 'eco-sandbox-note rounded-md px-3 py-2 text-sm flex items-start gap-2', 'data-test-result': 'sandbox' }, icon('flask', 'h-4 w-4 shrink-0 mt-0.5'), h('span', {}, h('span', { text: t('pv.test.sandbox') + ' ' }), r.reply ? mono(r.reply) : null)));
-        else if (r && r.ok) out.appendChild(h('div', { 'data-test-result': 'ok' }, notice('success', t('pv.test.ok') + (r.reply ? ' ' + r.reply : ''))));
-        else out.appendChild(h('div', { 'data-test-result': 'error' }, notice('error', t('pv.test.failed') + ' ' + ((r && r.error) || ''))));
+        if (r && r.ok && r.sandbox) out.appendChild(h('div', { class: 'eco-sandbox-note rounded-md px-3 py-2 text-sm flex items-start gap-2', 'data-test-result': 'sandbox' }, icon('flask', 'h-4 w-4 shrink-0 mt-0.5'), h('span', {}, h('span', { text: t('pv.test.sandbox') + ' ' }), r.reply ? mono(r.reply) : null, otpTestResult(r))));
+        else if (r && r.ok) out.appendChild(h('div', { 'data-test-result': 'ok' }, notice('success', t('pv.test.ok') + (r.reply ? ' ' + r.reply : '')), otpTestResult(r)));
+        else out.appendChild(h('div', { 'data-test-result': 'error' }, notice('error', t('pv.test.failed') + ' ' + ((r && r.error) || '')), otpTestResult(r)));
       }, function (err) {
         setBusy(sendBtn, false);
         out.appendChild(notice('error', errorText(err)));
@@ -13546,7 +13630,8 @@ function providersPage(container, channel) {
         h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: t('pv.test.hint') }),
         field(push ? t('pv.test.player') : t('pv.test.to'), to),
         subject ? field(t('pv.test.subject'), subject, null, { optional: true }) : null,
-        field(t('pv.test.message'), msg),
+        p.channel === 'sms' ? otpTestToggle(msgField, state) : null,
+        msgField,
         h('div', { class: 'flex justify-end -mt-2 mb-2' }, sendBtn),
         out));
     return details;
@@ -13558,11 +13643,9 @@ function providersPage(container, channel) {
     var errTop = h('div', {});
     var fieldEls = {};
     var fieldsBox = h('div', {});
-    (p.fields || []).forEach(function (f) {
-      var w = providerField(f, cfg, function () { if (fieldEls[f.name]) fieldEls[f.name].setError(''); });
-      fieldEls[f.name] = w;
-      fieldsBox.appendChild(w);
-    });
+    var boxes = providerFieldsBoxes(p.kind, p.fields, cfg, fieldEls, function (f) { if (fieldEls[f.name]) fieldEls[f.name].setError(''); });
+    boxes.main.forEach(function (x) { fieldsBox.appendChild(x.el); });
+    if (boxes.otp) fieldsBox.appendChild(boxes.otp);
     var sandboxText = h('p', { class: 'text-xs mt-1.5' });
     var sandboxBox = h('div', { class: 'rounded-md px-3 py-2.5 mb-4', 'data-sandbox-box': '' });
     var sandboxToggle = p.kind === 'log' ? h('span', { class: 'text-sm font-medium', text: t('pv.log.note') }) : toggle(st.sandbox, t('pv.sandbox'), function (on) { st.sandbox = on; paintSandbox(); });
@@ -24150,7 +24233,7 @@ function stepProvider(channel) {
     var testBoxEl = h('div', { class: 'setup-test' });
     box.appendChild(questionSkeleton(1));
     function current() { return items.filter(function (p) { return p.kind === kind; })[0] || null; }
-    function buildForm2() {
+    function buildForm2(keepTest) {
       var p = current();
       var def = catalog.filter(function (k) { return k.channel === channel && k.kind === kind; })[0] || { fields: [] };
       cfg = p ? clone(p.config || {}) || {} : {};
@@ -24161,16 +24244,15 @@ function stepProvider(channel) {
       sb.classList.add('eco-span-all');
       formBox.appendChild(sb);
       var extra = [];
-      (def.fields || []).forEach(function (f) {
-        var w = providerField(f, cfg, function () { dirty = true; if (fieldEls[f.name]) fieldEls[f.name].setError(''); });
-        fieldEls[f.name] = w;
-        if (f.required) formBox.appendChild(w); else extra.push(w);
-      });
+      var boxes = providerFieldsBoxes(kind, def.fields, cfg, fieldEls, function (f) { dirty = true; if (fieldEls[f.name]) fieldEls[f.name].setError(''); });
+      boxes.main.forEach(function (x) { if (x.f.required) formBox.appendChild(x.el); else extra.push(x.el); });
       if (extra.length) formBox.appendChild(h('div', { class: 'eco-span-all' }, setupMore(t('setup.pv.more.hint'), h('div', { class: 'setup-fields2' }, extra))));
-      if (!p) formBox.appendChild(h('p', { class: 'eco-span-all text-xs text-secondary-500 dark:text-secondary-400 -mt-2 mb-2', text: t('setup.pv.new') }));
-      paintTest();
+      if (boxes.otp) { boxes.otp.classList.add('eco-span-all'); formBox.appendChild(boxes.otp); }
+      if (!p) formBox.appendChild(h('p', { class: 'eco-span-all text-xs text-secondary-500 dark:text-secondary-400 -mt-2 mb-2', 'data-pv-new': '', text: t('setup.pv.new') }));
+      if (keepTest && p) testBoxEl.setAttribute('data-provider-id', p.id);
+      else paintTest();
     }
-    function saveProvider() {
+    function saveProvider(keepTest) {
       clear(top);
       Object.keys(fieldEls).forEach(function (k) { fieldEls[k].setError(''); });
       var p = current();
@@ -24184,7 +24266,7 @@ function stepProvider(channel) {
         if (idx === -1) items.push(saved); else items[idx] = saved;
         items.forEach(function (x) { if (x.id !== saved.id) x.isDefault = false; });
         dirty = false;
-        buildForm2();
+        buildForm2(keepTest);
         return true;
       }, function (err) {
         if (err.field && fieldEls[err.field]) { fieldEls[err.field].setError(errorText(err)); revealInvalid(formBox); }
@@ -24204,21 +24286,23 @@ function stepProvider(channel) {
       msg.classList.add('text-sm');
       var out = h('div', { 'aria-live': 'polite' });
       var live = !st.sandbox;
-      var sendBtn = button({ variant: 'link', size: 'sm', icon: 'send', label: t('setup.test.send'), disabled: live, onclick: function () {
+      var state = { otp: false };
+      var msgField = field(t('pv.test.message'), msg);
+      var sendBtn = button({ variant: 'link', size: 'sm', icon: 'send', label: t(live ? 'setup.test.sendLive' : 'setup.test.send'), onclick: function () {
         clear(out);
         setBusy(sendBtn, true, t('nt.sending'));
-        var before = dirty || !current() ? saveProvider() : Promise.resolve(true);
+        var before = dirty || !current() ? saveProvider(true) : Promise.resolve(true);
         before.then(function (ok) {
           var cur = current();
-          if (!ok || !cur) { setBusy(sendBtn, false); return; }
-          if (!cur.sandbox) { setBusy(sendBtn, false); out.appendChild(notice('error', t('setup.test.liveBlocked'))); return; }
+          if (!ok || !cur) { setBusy(sendBtn, false); out.appendChild(h('div', { 'data-test-result': 'error' }, notice('error', t('setup.test.saveFirst')))); return; }
           var payload = { to: toLatinDigits(to.value).trim(), message: msg.value };
           if (subject) payload.subject = subject.value;
+          if (state.otp) payload = { to: payload.to, otp: true };
           return pubApi('POST', '/providers/' + encodeURIComponent(cur.id) + '/test', payload).then(function (r) {
             setBusy(sendBtn, false);
-            if (r && r.ok && r.sandbox) out.appendChild(h('div', { class: 'eco-sandbox-note rounded-md px-3 py-2 text-sm flex items-start gap-2', 'data-test-result': 'sandbox' }, icon('flask', 'h-4 w-4 shrink-0 mt-0.5'), h('span', {}, h('span', { text: t('pv.test.sandbox') + ' ' }), r.reply ? mono(r.reply) : null)));
-            else if (r && r.ok) out.appendChild(h('div', { 'data-test-result': 'ok' }, notice('success', t('pv.test.ok'))));
-            else out.appendChild(h('div', { 'data-test-result': 'error' }, notice('error', t('pv.test.failed') + ' ' + ((r && r.error) || ''))));
+            if (r && r.ok && r.sandbox) out.appendChild(h('div', { class: 'eco-sandbox-note rounded-md px-3 py-2 text-sm flex items-start gap-2', 'data-test-result': 'sandbox' }, icon('flask', 'h-4 w-4 shrink-0 mt-0.5'), h('span', {}, h('span', { text: t('pv.test.sandbox') + ' ' }), r.reply ? mono(r.reply) : null, otpTestResult(r))));
+            else if (r && r.ok) out.appendChild(h('div', { 'data-test-result': 'ok' }, notice('success', t('pv.test.ok')), otpTestResult(r)));
+            else out.appendChild(h('div', { 'data-test-result': 'error' }, notice('error', t('pv.test.failed') + ' ' + ((r && r.error) || '')), otpTestResult(r)));
           }, function (err) {
             setBusy(sendBtn, false);
             var bad = err.field === 'to';
@@ -24229,10 +24313,11 @@ function stepProvider(channel) {
       } });
       testBoxEl.appendChild(card2([
         h('div', { class: 'flex items-center gap-2 font-medium mb-1' }, icon('send', 'h-4 w-4'), h('span', { text: t('setup.test') })),
-        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: live ? t('setup.test.liveBlocked') : t('setup.test.short') }),
+        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', 'data-test-hint': live ? 'live' : 'sandbox', text: t(live ? 'setup.test.live' : 'setup.test.short') }),
         field(t('pv.test.to'), to),
         subject ? field(t('pv.test.subject'), subject, null, { optional: true }) : null,
-        field(t('pv.test.message'), msg),
+        channel === 'sms' ? otpTestToggle(msgField, state) : null,
+        msgField,
         h('div', { class: 'flex justify-end -mt-2' }, sendBtn),
         out
       ]));

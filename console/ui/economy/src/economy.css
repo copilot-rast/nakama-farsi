@@ -885,3 +885,5 @@ a.eco-ov-kpi:focus-visible,.eco-ov-tile:focus-visible,.eco-ov-legend-row:focus-v
 .eco-secret-out{background:rgb(var(--secondary-color-100));overflow-wrap:anywhere}
 .dark .eco-secret-out{background:rgb(var(--secondary-color-800))}
 .eco-check{width:1rem;height:1rem;accent-color:rgb(var(--primary-color-600))}
+.eco-otp-box{border:1px solid rgb(var(--secondary-color-200));border-radius:.375rem;padding:.75rem .75rem 0;margin:.25rem 0 1rem}
+.dark .eco-otp-box{border-color:rgb(var(--secondary-color-700))}

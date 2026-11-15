@@ -619,7 +619,7 @@ function stepProvider(channel) {
     var testBoxEl = h('div', { class: 'setup-test' });
     box.appendChild(questionSkeleton(1));
     function current() { return items.filter(function (p) { return p.kind === kind; })[0] || null; }
-    function buildForm2() {
+    function buildForm2(keepTest) {
       var p = current();
       var def = catalog.filter(function (k) { return k.channel === channel && k.kind === kind; })[0] || { fields: [] };
       cfg = p ? clone(p.config || {}) || {} : {};
@@ -630,16 +630,15 @@ function stepProvider(channel) {
       sb.classList.add('eco-span-all');
       formBox.appendChild(sb);
       var extra = [];
-      (def.fields || []).forEach(function (f) {
-        var w = providerField(f, cfg, function () { dirty = true; if (fieldEls[f.name]) fieldEls[f.name].setError(''); });
-        fieldEls[f.name] = w;
-        if (f.required) formBox.appendChild(w); else extra.push(w);
-      });
+      var boxes = providerFieldsBoxes(kind, def.fields, cfg, fieldEls, function (f) { dirty = true; if (fieldEls[f.name]) fieldEls[f.name].setError(''); });
+      boxes.main.forEach(function (x) { if (x.f.required) formBox.appendChild(x.el); else extra.push(x.el); });
       if (extra.length) formBox.appendChild(h('div', { class: 'eco-span-all' }, setupMore(t('setup.pv.more.hint'), h('div', { class: 'setup-fields2' }, extra))));
-      if (!p) formBox.appendChild(h('p', { class: 'eco-span-all text-xs text-secondary-500 dark:text-secondary-400 -mt-2 mb-2', text: t('setup.pv.new') }));
-      paintTest();
+      if (boxes.otp) { boxes.otp.classList.add('eco-span-all'); formBox.appendChild(boxes.otp); }
+      if (!p) formBox.appendChild(h('p', { class: 'eco-span-all text-xs text-secondary-500 dark:text-secondary-400 -mt-2 mb-2', 'data-pv-new': '', text: t('setup.pv.new') }));
+      if (keepTest && p) testBoxEl.setAttribute('data-provider-id', p.id);
+      else paintTest();
     }
-    function saveProvider() {
+    function saveProvider(keepTest) {
       clear(top);
       Object.keys(fieldEls).forEach(function (k) { fieldEls[k].setError(''); });
       var p = current();
@@ -653,7 +652,7 @@ function stepProvider(channel) {
         if (idx === -1) items.push(saved); else items[idx] = saved;
         items.forEach(function (x) { if (x.id !== saved.id) x.isDefault = false; });
         dirty = false;
-        buildForm2();
+        buildForm2(keepTest);
         return true;
       }, function (err) {
         if (err.field && fieldEls[err.field]) { fieldEls[err.field].setError(errorText(err)); revealInvalid(formBox); }
@@ -673,21 +672,23 @@ function stepProvider(channel) {
       msg.classList.add('text-sm');
       var out = h('div', { 'aria-live': 'polite' });
       var live = !st.sandbox;
-      var sendBtn = button({ variant: 'link', size: 'sm', icon: 'send', label: t('setup.test.send'), disabled: live, onclick: function () {
+      var state = { otp: false };
+      var msgField = field(t('pv.test.message'), msg);
+      var sendBtn = button({ variant: 'link', size: 'sm', icon: 'send', label: t(live ? 'setup.test.sendLive' : 'setup.test.send'), onclick: function () {
         clear(out);
         setBusy(sendBtn, true, t('nt.sending'));
-        var before = dirty || !current() ? saveProvider() : Promise.resolve(true);
+        var before = dirty || !current() ? saveProvider(true) : Promise.resolve(true);
         before.then(function (ok) {
           var cur = current();
-          if (!ok || !cur) { setBusy(sendBtn, false); return; }
-          if (!cur.sandbox) { setBusy(sendBtn, false); out.appendChild(notice('error', t('setup.test.liveBlocked'))); return; }
+          if (!ok || !cur) { setBusy(sendBtn, false); out.appendChild(h('div', { 'data-test-result': 'error' }, notice('error', t('setup.test.saveFirst')))); return; }
           var payload = { to: toLatinDigits(to.value).trim(), message: msg.value };
           if (subject) payload.subject = subject.value;
+          if (state.otp) payload = { to: payload.to, otp: true };
           return pubApi('POST', '/providers/' + encodeURIComponent(cur.id) + '/test', payload).then(function (r) {
             setBusy(sendBtn, false);
-            if (r && r.ok && r.sandbox) out.appendChild(h('div', { class: 'eco-sandbox-note rounded-md px-3 py-2 text-sm flex items-start gap-2', 'data-test-result': 'sandbox' }, icon('flask', 'h-4 w-4 shrink-0 mt-0.5'), h('span', {}, h('span', { text: t('pv.test.sandbox') + ' ' }), r.reply ? mono(r.reply) : null)));
-            else if (r && r.ok) out.appendChild(h('div', { 'data-test-result': 'ok' }, notice('success', t('pv.test.ok'))));
-            else out.appendChild(h('div', { 'data-test-result': 'error' }, notice('error', t('pv.test.failed') + ' ' + ((r && r.error) || ''))));
+            if (r && r.ok && r.sandbox) out.appendChild(h('div', { class: 'eco-sandbox-note rounded-md px-3 py-2 text-sm flex items-start gap-2', 'data-test-result': 'sandbox' }, icon('flask', 'h-4 w-4 shrink-0 mt-0.5'), h('span', {}, h('span', { text: t('pv.test.sandbox') + ' ' }), r.reply ? mono(r.reply) : null, otpTestResult(r))));
+            else if (r && r.ok) out.appendChild(h('div', { 'data-test-result': 'ok' }, notice('success', t('pv.test.ok')), otpTestResult(r)));
+            else out.appendChild(h('div', { 'data-test-result': 'error' }, notice('error', t('pv.test.failed') + ' ' + ((r && r.error) || '')), otpTestResult(r)));
           }, function (err) {
             setBusy(sendBtn, false);
             var bad = err.field === 'to';
@@ -698,10 +699,11 @@ function stepProvider(channel) {
       } });
       testBoxEl.appendChild(card2([
         h('div', { class: 'flex items-center gap-2 font-medium mb-1' }, icon('send', 'h-4 w-4'), h('span', { text: t('setup.test') })),
-        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: live ? t('setup.test.liveBlocked') : t('setup.test.short') }),
+        h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', 'data-test-hint': live ? 'live' : 'sandbox', text: t(live ? 'setup.test.live' : 'setup.test.short') }),
         field(t('pv.test.to'), to),
         subject ? field(t('pv.test.subject'), subject, null, { optional: true }) : null,
-        field(t('pv.test.message'), msg),
+        channel === 'sms' ? otpTestToggle(msgField, state) : null,
+        msgField,
         h('div', { class: 'flex justify-end -mt-2' }, sendBtn),
         out
       ]));
