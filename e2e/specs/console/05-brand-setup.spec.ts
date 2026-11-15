@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { expect, test } from '../../lib/fixtures';
-import { base, consoleApi, devicePlayer, deleteUser, eco, must, rpc, uid } from '../../lib/api';
+import { base, consoleApi, devicePlayer, deleteUser, eco, must, pub, rpc, uid } from '../../lib/api';
 import { restoreConfig } from '../../lib/db';
 import { ADMIN, loginAs, open, root, settle, toasts } from '../../lib/console';
 import { CONSOLE_URL, FIXTURES } from '../../lib/env';
@@ -131,6 +131,11 @@ test.describe('brand and setup wizard', () => {
     const kind = await page.locator(`${W} [data-kind] [aria-checked="true"]`).getAttribute('data-value').catch(() => null);
     if (kind !== 'smtp') await page.locator(`${W} [data-kind] [data-value="smtp"]`).click();
     await expect(page.locator(`${W} [data-sandbox-box]`).first()).toHaveClass(/eco-sandbox-note/);
+    const host = page.locator(`${W} input[aria-label="میزبان"]`);
+    if (!(await host.inputValue())) {
+      await host.fill('smtp.example.com');
+      await page.locator(`${W} input[aria-label="فرستنده"]`).fill('noreply@example.com');
+    }
     await page.locator(`${W} input[aria-label="گیرنده"]`).fill('qa@example.com');
     await page.locator(`${W} button`, { hasText: 'ذخیره و ارسال آزمایشی' }).click();
     await expect(page.locator(`${W} [data-test-result]`)).toHaveAttribute('data-test-result', 'sandbox');
@@ -142,6 +147,46 @@ test.describe('brand and setup wizard', () => {
     st = await base.get('/setup');
     expect(st.status).toBe('completed');
     expect(st.completedBy).toBe(ADMIN.user);
+  });
+
+  test('SMS step: a new service is created by save and send test, the pattern fields are in view, and live mode keeps the button usable', async ({ page }) => {
+    await open(page, '#/project-settings/setup');
+    await page.locator('[data-setup-open]').click();
+    await page.locator(`${W} .setup-step[data-step="sms"]`).click();
+    await waitStep(page, 'sms');
+    if (await page.locator(`${W} [data-need] [data-value="yes"]`).isVisible()) await page.locator(`${W} [data-need] [data-value="yes"]`).click();
+    await page.locator(`${W} [data-kind] [data-value="smsir"]`).click();
+    const otp = page.locator(`${W} [data-otp-fields="smsir"]`);
+    await expect(otp).toBeVisible();
+    await expect(otp.locator('input[aria-label="شناسهٔ قالب sms.ir"]')).toBeVisible();
+    await page.locator(`${W} [data-kind] [data-value="kavenegar"]`).click();
+    await expect(page.locator(`${W} [data-otp-fields="kavenegar"] input[aria-label="نام پترن کد ورود"]`)).toBeVisible();
+    const fresh = !(await pub.get('/providers')).items.some((p: any) => p.kind === 'kavenegar');
+    if (fresh) await expect(page.locator(`${W} [data-pv-new]`)).toContainText('ذخیره و ارسال آزمایشی');
+
+    const sandbox = page.locator(`${W} [data-sandbox-box] [role="switch"]`).first();
+    await page.locator(`${W} [data-sandbox-box] label.x-toggle`).first().click();
+    const ask = page.locator('[data-economy="dialog"] [role="alertdialog"]');
+    await ask.locator('button', { hasText: 'بله، خاموش شود' }).click();
+    await expect(sandbox).toHaveAttribute('aria-checked', 'false');
+    await expect(page.locator(`${W} [data-test-hint]`)).toHaveAttribute('data-test-hint', 'live');
+    await expect(page.locator(`${W} button`, { hasText: 'ذخیره و ارسال واقعی' })).toBeEnabled();
+    await page.locator(`${W} [data-sandbox-box] label.x-toggle`).first().click();
+    await expect(sandbox).toHaveAttribute('aria-checked', 'true');
+
+    await page.locator(`${W} [data-otp-fields="kavenegar"] input[aria-label="نام پترن کد ورود"]`).fill('e2e-wizard');
+    await page.locator(`${W} input[aria-label="گیرنده"]`).fill('09120000000');
+    await page.locator(`${W} [data-test-otp]`).click();
+    const send = page.locator(`${W} button`, { hasText: 'ذخیره و ارسال آزمایشی' });
+    await expect(send).toBeEnabled();
+    await send.click();
+    await expect(page.locator(`${W} [data-test-result]`)).toHaveAttribute('data-test-result', 'sandbox');
+    await expect(page.locator(`${W} [data-test-mode]`)).toHaveAttribute('data-test-mode', 'pattern (kavenegar template e2e-wizard)');
+    const kv = (await pub.get('/providers')).items.find((p: any) => p.kind === 'kavenegar');
+    expect(kv).toMatchObject({ isActive: true, isDefault: true, sandbox: true });
+    expect(kv.config.otpTemplate).toBe('e2e-wizard');
+    await expect(page.locator(`${W} [data-pv-new]`)).toHaveCount(0);
+    await later(page);
   });
 
   test('step bar opens every step, skip marks a step, Esc asks first, focus stays inside', async ({ page }) => {

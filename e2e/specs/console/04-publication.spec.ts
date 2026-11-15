@@ -1,8 +1,10 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test } from '../../lib/fixtures';
 import { base, consoleApi, deleteUser, devicePlayer, must, pub, rpc, uid, type Player } from '../../lib/api';
 import { field, fillTranslated, go, open, panel, root, rows, savePanel, settle, settlePanel, toasts, translated } from '../../lib/console';
-import { FIXTURES } from '../../lib/env';
+import { restoreConfig } from '../../lib/db';
+import { FIXTURES, SERVER_LOG } from '../../lib/env';
 import { openGame, persian, screen, toast } from '../../lib/game';
 
 const k = uid();
@@ -295,6 +297,49 @@ test.describe('publication', () => {
       await card.locator('details.eco-test button', { hasText: 'ارسال آزمایشی' }).click();
       await expect(card.locator('[data-test-result="sandbox"]')).toBeVisible();
       await expect(card.locator('[data-test-result="sandbox"]')).toContainText('حالت آزمایشی: چیزی ارسال نشد.');
+    }
+  });
+
+  test('SMS providers take a login code pattern and test a code through it', async ({ page }) => {
+    try {
+      const have = (await pub.get('/providers')).items.map((p: any) => p.kind);
+      for (const kind of ['kavenegar', 'smsir']) {
+        if (!have.includes(kind)) await pub.post('/providers', { channel: 'sms', kind, sandbox: true, isActive: false, isDefault: false, config: {} });
+      }
+      await open(page, '#/project-settings/sms');
+      const kv = root(page).locator('[data-provider="kavenegar"]');
+      const box = kv.locator('[data-otp-fields="kavenegar"]');
+      await expect(box).toBeVisible();
+      await expect(box).toContainText('پیامک کد ورود (پترن)');
+      await expect(box).toContainText('نام پترن تأییدشده در پنل کاوه‌نگار');
+      const ir = root(page).locator('[data-provider="smsir"] [data-otp-fields="smsir"]');
+      await expect(ir).toBeVisible();
+      await expect(ir.locator('input[aria-label="نام متغیر کد"]')).toHaveAttribute('placeholder', 'CODE');
+      await expect(ir).toContainText('شناسهٔ قالب sms.ir');
+
+      await box.locator('input[aria-label="نام پترن کد ورود"]').fill('e2e login');
+      await kv.locator('button', { hasText: /^ذخیره$/ }).click();
+      await expect(box.locator('.eco-invalid')).toBeVisible();
+      await box.locator('input[aria-label="نام پترن کد ورود"]').fill('e2e-login');
+      await box.locator('select[aria-label*="token2"]').selectOption('minutes');
+      await kv.locator('button', { hasText: /^ذخیره$/ }).click();
+      await expect.poll(async () => (await pub.get('/providers')).items.find((p: any) => p.kind === 'kavenegar').config).toMatchObject({ otpTemplate: 'e2e-login', otpToken2: 'minutes', otpToken3: 'skip' });
+
+      const card = root(page).locator('[data-provider="kavenegar"]');
+      await card.locator('details.eco-test > summary').click();
+      await card.locator('details.eco-test input[aria-label="گیرنده"]').fill('09120000000');
+      const msg = card.locator('details.eco-test textarea[aria-label="متن"]');
+      await expect(msg).toBeVisible();
+      await card.locator('[data-test-otp]').click();
+      await expect(msg).toBeHidden();
+      const logSize = fs.statSync(SERVER_LOG).size;
+      await card.locator('details.eco-test button', { hasText: 'ارسال آزمایشی' }).click();
+      const result = card.locator('[data-test-result="sandbox"]');
+      await expect(result).toContainText('حالت آزمایشی: چیزی ارسال نشد.');
+      await expect(result.locator('[data-test-mode]')).toHaveAttribute('data-test-mode', 'pattern (kavenegar template e2e-login)');
+      await expect.poll(() => fs.readFileSync(SERVER_LOG, 'utf8').slice(logSize)).toContain('live would send pattern (kavenegar template e2e-login)');
+    } finally {
+      restoreConfig();
     }
   });
 });
