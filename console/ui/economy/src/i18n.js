@@ -4642,7 +4642,7 @@ var MESSAGES = {
     'code.SOURCE_SECRET_MISSING': "این منبع رمز ندارد.",
     'code.SOURCE_NOT_FOUND': "منبع پیدا نشد.",
     'code.PAYLOAD_REQUIRED': "یک نمونه JSON بچسبانید.",
-    'code.PAYLOAD_TOO_LARGE': "بدنه بزرگ‌تر از یک مگابایت است.",
+    'code.PAYLOAD_TOO_LARGE': "بدنه بزرگ‌تر از ۲۵۶ کیلوبایت است.",
     'code.INVALID_BODY_FORMAT': "قالب متن نامعتبر است.",
     'code.INVALID_NOTIFY_MODE': "نوع اعلان نامعتبر است."
   },
@@ -9289,7 +9289,7 @@ var MESSAGES = {
     'code.SOURCE_SECRET_MISSING': "This source has no secret.",
     'code.SOURCE_NOT_FOUND': "Source not found.",
     'code.PAYLOAD_REQUIRED': "Paste a sample payload.",
-    'code.PAYLOAD_TOO_LARGE': "The body is larger than 1 MB.",
+    'code.PAYLOAD_TOO_LARGE': "The body is larger than 256 KB.",
     'code.INVALID_BODY_FORMAT': "Invalid body format.",
     'code.INVALID_NOTIFY_MODE': "Invalid notice mode."
   }

@@ -111,6 +111,41 @@ func TestMapIngestItem(t *testing.T) {
 	}
 }
 
+func TestMapIngestItemCoverShapes(t *testing.T) {
+	src := newsSource{BodyFormat: "auto", Mapping: map[string]string{}}
+	for k, v := range defaultMapping {
+		src.Mapping[k] = v
+	}
+	for _, c := range []struct{ name, image, want string }{
+		{"string", `" https://e.com/a.png "`, "https://e.com/a.png"},
+		{"url", `{"url":"https://e.com/a.png","width":800}`, "https://e.com/a.png"},
+		{"src", `{"src":"https://e.com/b.png"}`, "https://e.com/b.png"},
+		{"href", `{"href":"https://e.com/c.png"}`, "https://e.com/c.png"},
+		{"rss", `{"@url":"https://e.com/d.png"}`, "https://e.com/d.png"},
+		{"nested", `{"original":{"url":"https://e.com/e.png"}}`, "https://e.com/e.png"},
+		{"list", `[{"alt":"x"},{"url":"https://e.com/f.png"}]`, "https://e.com/f.png"},
+		{"empty object", `{"alt":"x"}`, ""},
+	} {
+		var item any
+		dec := json.NewDecoder(strings.NewReader(`{"title":"T","body":"b","image":` + c.image + `,"seo":{"image":` + c.image + `}}`))
+		dec.UseNumber()
+		if err := dec.Decode(&item); err != nil {
+			t.Fatal(err)
+		}
+		m, notes, err := mapIngestItem(src, item)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if m.Cover != c.want || m.OgImage != c.want || len(notes) != 0 {
+			t.Fatalf("%s: cover=%q og=%q notes=%v", c.name, m.Cover, m.OgImage, notes)
+		}
+	}
+	m, notes, _ := mapIngestItem(src, map[string]any{"title": "T", "body": "b", "image": map[string]any{"url": "javascript:x"}})
+	if m.Cover != "" || strings.Join(notes, ",") != "COVER_URL_IGNORED" {
+		t.Fatalf("unsafe object cover = %q %v", m.Cover, notes)
+	}
+}
+
 func TestSignIngestMatchesDocumentedFormat(t *testing.T) {
 	if got := signIngest("secret", "1700000000", []byte(`{"a":1}`)); got != "49f24e537407743fa4a0242bb63b94b9a47ee99cbbe071ccd8a22550ae411686" {
 		t.Fatalf("sign = %q", got)

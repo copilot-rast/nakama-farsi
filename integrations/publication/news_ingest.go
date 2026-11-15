@@ -27,7 +27,7 @@ import (
 
 const (
 	ingestPrefix     = "/v2/publication/news/ingest/"
-	ingestMaxBody    = 1 << 20
+	ingestMaxBody    = 256 << 10 // the same as the server's default socket.max_request_size_bytes, which also caps this route
 	ingestMaxItems   = 50
 	newsSourcePrefix = "webhook:"
 )
@@ -357,12 +357,13 @@ func (s *service) ingestHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	body, err := io.ReadAll(io.LimitReader(r.Body, ingestMaxBody+1))
-	if err != nil {
-		s.writeError(w, badRequest("INVALID_BODY", "", "cannot read body"))
+	var tooLarge *http.MaxBytesError
+	if errors.As(err, &tooLarge) || len(body) > ingestMaxBody {
+		s.writeError(w, fail(http.StatusRequestEntityTooLarge, "PAYLOAD_TOO_LARGE", "", "the body is larger than 256 KB"))
 		return
 	}
-	if len(body) > ingestMaxBody {
-		s.writeError(w, fail(http.StatusRequestEntityTooLarge, "PAYLOAD_TOO_LARGE", "", "the body is larger than 1 MB"))
+	if err != nil {
+		s.writeError(w, badRequest("INVALID_BODY", "", "cannot read body"))
 		return
 	}
 	if src.RateLimit > 0 {
@@ -552,6 +553,40 @@ func scalarString(v any) string {
 	return ""
 }
 
+// imageURL reads an image address given as a string, an object such as {"url": …}, {"src": …}, {"href": …} or {"@url": …}
+// (also one level deeper, as in {"image": {"url": …}}), or a list of those, where the first usable entry wins.
+func imageURL(v any) string {
+	return imageURLDepth(v, 0)
+}
+
+func imageURLDepth(v any, depth int) string {
+	if depth > 2 {
+		return ""
+	}
+	switch x := v.(type) {
+	case string:
+		return strings.TrimSpace(x)
+	case map[string]any:
+		for _, k := range []string{"url", "src", "href", "@url", "link", "uri"} {
+			if s := scalarString(x[k]); s != "" {
+				return s
+			}
+		}
+		for _, k := range []string{"image", "original", "large", "full"} {
+			if s := imageURLDepth(x[k], depth+1); s != "" {
+				return s
+			}
+		}
+	case []any:
+		for _, e := range x {
+			if s := imageURLDepth(e, depth+1); s != "" {
+				return s
+			}
+		}
+	}
+	return ""
+}
+
 func parseIngestTime(v any) (*time.Time, bool) {
 	switch x := v.(type) {
 	case nil:
@@ -678,10 +713,7 @@ func mapIngestItem(src newsSource, item any) (mappedItem, []string, error) {
 		m.Body = textToRich(fallback)
 		notes = append(notes, "BODY_EMPTY_USED_SUMMARY")
 	}
-	if c := scalarString(get("cover")); c != "" {
-		if obj, ok := get("cover").(map[string]any); ok {
-			c = scalarString(obj["url"])
-		}
+	if c := imageURL(get("cover")); c != "" {
 		if safeURL(c) && len(c) <= 1024 {
 			m.Cover = c
 		} else {
@@ -733,7 +765,7 @@ func mapIngestItem(src newsSource, item any) (mappedItem, []string, error) {
 			notes = append(notes, "CANONICAL_URL_IGNORED")
 		}
 	}
-	if o := scalarString(get("ogImage")); o != "" {
+	if o := imageURL(get("ogImage")); o != "" {
 		if safeURL(o) && len(o) <= 1024 {
 			m.OgImage = o
 		} else {
@@ -1013,7 +1045,7 @@ func (s *service) consoleNewsSourceTest(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	if len(body) > ingestMaxBody {
-		s.writeError(w, badRequest("PAYLOAD_TOO_LARGE", "payload", "the body is larger than 1 MB"))
+		s.writeError(w, badRequest("PAYLOAD_TOO_LARGE", "payload", "the body is larger than 256 KB"))
 		return
 	}
 	st, err := loadNewsSettings(r.Context(), s.db)

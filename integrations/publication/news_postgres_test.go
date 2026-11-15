@@ -359,6 +359,18 @@ func TestNewsIngestTokenHMACDedupeAndNotifyOnce(t *testing.T) {
 	if code, _ := h.ingest("nosuch", nil, "{}"); code != 404 {
 		t.Fatalf("unknown source = %d", code)
 	}
+	if code, out := h.ingest("wire", nil, strings.Repeat(" ", ingestMaxBody+1)); code != http.StatusRequestEntityTooLarge || out["error"] != "PAYLOAD_TOO_LARGE" {
+		t.Fatalf("too large = %d %v", code, out)
+	}
+	capped := httptest.NewRequest(http.MethodPost, ingestPrefix+"wire", strings.NewReader(strings.Repeat(" ", 2048)))
+	capRec := httptest.NewRecorder()
+	capped.Body = http.MaxBytesReader(capRec, capped.Body, 1024) // the API port's socket.max_request_size_bytes
+	capRouter := mux.NewRouter()
+	capRouter.HandleFunc(ingestPrefix+"{source}", h.s.ingestHTTP).Methods(http.MethodPost)
+	capRouter.ServeHTTP(capRec, capped)
+	if capRec.Code != http.StatusRequestEntityTooLarge || !strings.Contains(capRec.Body.String(), "PAYLOAD_TOO_LARGE") {
+		t.Fatalf("server cap = %d %s", capRec.Code, capRec.Body.String())
+	}
 	h.mustAPI(http.StatusOK, http.MethodPut, "/news-sources/"+srcID, map[string]any{"key": "wire", "rateLimitPerMinute": 1, "itemsPath": "items"})
 	h.s.db.ExecContext(h.ctx, `DELETE FROM cluster_rate_limit WHERE key LIKE 'news-%'`)
 	h.ingest("wire", nil, "{}")
