@@ -63,7 +63,7 @@ Text fields that users see are `jsonb` maps keyed by any existing language code 
 | RPC | Input | Output |
 |---|---|---|
 | `publication_faq_list` | `{categoryKey?, q?, lang?}` | `{lang, categories:[{key,name}], items:[{id,question,answer,answerHtml,categoryKey}]}` |
-| `publication_news_list` | `{limit?, cursor?, categoryKey?, lang?}` | `{lang, items:[{id,title,summary,coverUrl,publishedAt,isPinned,seen,commentCount}], cursor}` pinned first |
+| `publication_news_list` | `{limit?, cursor?, categoryKey?, lang?}` (phase 25 adds tags, expiry, unread, reactions and SEO; see below) | `{lang, items:[{id,title,summary,coverUrl,publishedAt,isPinned,seen,commentCount}], cursor}` pinned first |
 | `publication_news_get` | `{id, lang?}` | full news incl. `bodyHtml`, `actions`, `allowComment`, `seen` |
 | `publication_news_seen` | `{id}` | `{}` idempotent |
 | `publication_news_comments` | `{newsId, limit?, cursor?}` | `{items:[{id,userId,username,message,parentId,isAccepted,mine,createdAt,replies:[…]}], cursor}` |
@@ -231,3 +231,58 @@ Every trigger also fills `{player}`. One node at a time (lease `publication-auto
 - «اعلان‌های خودکار»: list with the rule sentence, channel, category, repeat gap and quiet hours, 7-day numbers; the docked editor has the trigger fields with a live sentence, the message with the values hint, picture and action, limits, the numbers, the latest fires with their reasons and the test send.
 - «دسته‌های اعلان»: categories with the player choice, opted-out count and use.
 - Project settings section «پوش» (`#/project-settings/push`, `NOTIFICATION`): provider cards like SMS and email; the FCM card takes the JSON in a text area and shows only the project id afterwards.
+
+## News: workflow, webhooks, reactions and SEO (phase 25)
+
+The news section is generic: admins write articles in the console and other services push them through per-source webhooks. Code in `integrations/publication/news*.go`, migrations `20261130000000-publication-news-ingest.sql` and `20261130000001-publication-news-seo.sql` (Up re-runnable, Down raises). Every policy below is an admin setting with the default in brackets.
+
+### Data
+
+- `publication_news` gains `status` (`draft` | `pending_review` | `published` | `archived` | `rejected`; old inactive rows became `draft`, `is_active` stays as `status='published'` for old readers), `expires_at`, `source` (`console` or `webhook:<key>`), `source_id`, `external_id` (unique with `source`), `source_url`, `content_hash`, `lang` (language the item arrived in), `body_format` (`markdown` for old rows, `html` for the rich editor and webhooks), `tag_ids` (news and general tags; `tagUsedSQL` counts them), `allow_reaction`, `notify_mode` (`none` | `in_app` | `push` | `both`), `notify_audience` (the campaign audience: player tags in and out), `notified_at` / `notify_claimed_until` / `notification_id`, `approved_by` / `approved_at`, `reject_reason`, `created_by` / `updated_by`, and SEO: `slug` (unique), `meta_title`, `meta_description` (translated), `keywords`, `canonical_url`, `og_image`, `noindex`.
+- Visible to players: `status='published' AND published_at <= now()` and not expired (expired ones only when «خبر تمام‌شده قابل دیدن» is on).
+- Rich bodies: the console editor is Tiptap 2.27.2 (`@tiptap/core` directly, the overlay is vanilla JS, no React; bundled once by `console/ui/tiptap` with esbuild into `console/ui/economy/vendor/tiptap.js`, no CDN). Bodies are stored as HTML per language and cleaned on the server (`news_html.go`) to exactly the editor's allowlist: `p`, `h1`–`h6` (only `style="text-align: left|right|center|justify"`), `strong`, `em`, `u`, `s`, `code`, `pre`, `blockquote`, `hr`, `br`, lists (`ol start`), task lists (`ul data-type="taskList"`, `li data-type="taskItem" data-checked`, a disabled checkbox), tables (`table`, `thead`, `tbody`, `tr`, `th`/`td` with `colspan`, `rowspan`, `colwidth`), links (`http`, `https`, `mailto`, `tel`, `/…`, always `target="_blank" rel="noopener noreferrer nofollow"`). Scripts, styles, frames, images, forms and every other attribute are removed; unknown wrappers keep their text. Old markdown bodies render as before and open in the editor converted to HTML.
+- `publication_news_source`: `key` (in the address, locked), `name`, `is_active`, `auth_mode` [`token`], header names [`X-News-Token`, `X-News-Signature`, `X-News-Timestamp`], `skew_seconds` [300], `secret` (sealed with the publication key, generated when empty, only a hint is listed), `items_path`, `mapping` (JSON paths per field: title, summary, body, cover, category key, tag keys, lang, publishedAt, expiresAt, externalId, url, slug, metaTitle, metaDescription, keywords, canonicalUrl, ogImage, noindex), `body_format` [`auto`], default category, language and tags, `publish_mode` [`review`], `update_mode` [`update`], `published_at_mode` [`source`], `rate_limit_per_minute` [60], `copy_images` [off], `notify_mode` [`none`], `allow_comment`, `allow_reaction`.
+- `publication_news_ingest_log` (every request and console test with per-item results and the body up to the configured size), `publication_news_replay` (HMAC signatures for twice the skew), `publication_news_reaction_type` (seeded `like` 👍, `love` ❤️, `haha` 😂, `wow` 😮, `sad` 😢), `publication_news_reaction` (one per player and article), `publication_news_settings` (single row).
+
+### Webhook ingest
+
+`POST /v2/publication/news/ingest/{key}` on the client API port (no session). Order: active source (else 404) → body ≤ 1 MB (413) → per-source rate limit in `cluster_rate_limit` (429 with `Retry-After`, not logged) → auth (401, logged without the body) → JSON → items (`items_path`, or the body itself, or its array; at most 50) → each item in its own transaction.
+
+- `token`: the secret in the token header (`Authorization: Bearer …` when the header is `Authorization`), constant-time compare. `INVALID_TOKEN`.
+- `hmac`: `hex(HMAC-SHA256(secret, timestamp + "." + body))` in the signature header (optional `sha256=` prefix), unix seconds (or ms) in the timestamp header within ±skew (`TIMESTAMP_OUT_OF_WINDOW`), each signature accepted once (`REPLAYED`, 409).
+- Mapping: title required (`ITEM_TITLE_REQUIRED`); HTML bodies are cleaned to the allowlist, markdown is rendered then cleaned, text becomes paragraphs; the incoming language maps to an active `base_language` (`fa-IR` → `fa`) or the source default; with «پر کردن زبان پیش‌فرض» [on] the default language gets the same text so admins can edit it. Unknown category or tag keys are noted (`CATEGORY_UNKNOWN`, `TAGS_UNKNOWN`), never created.
+- Dedupe: `(source, external_id)`; without an id the content hash is the id. Same hash → `unchanged`; new content → `updated` (status kept) or `ignored` by `update_mode`; new → `created` as `pending_review` or `published` by `publish_mode`. An advisory lock per item makes parallel deliveries safe.
+- Remote cover copy (per source, off): only http(s), public addresses (private, loopback and link-local refused), at most 2 MB, png/jpg/webp, stored through `internal/objectstore` in the economy upload space and served from `/v2/economy/files/`. A failure keeps the original URL and notes `COVER_COPY_FAILED`.
+- Answer: `{results:[{index, externalId, status, newsId, code, notes}], created, updated, unchanged, ignored, failed}`.
+
+### Notify on publish
+
+A loop on every node (every 5 s) claims up to 20 visible, not yet notified articles with `FOR UPDATE SKIP LOCKED` and a two-minute `notify_claimed_until` lease, then per article locks the row, re-checks `notified_at`, creates one notification (kind `news`, `news_id`, target all players with the article's audience, channel from `notify_mode`, the category from settings [`news`], title and summary or body text, action `goto news/<id>`, cover as push picture) and sets `notified_at` in the same transaction. So the notice goes out exactly once, when the publish time passes or on approval; a refused campaign (for example no push provider) is logged and the article is still marked. After commit, with «پیام زنده هنگام انتشار» [on], `NotificationSendAll` sends a non-persistent socket notice (code `1320`, subject `news`, `{event:"news_published", newsId, title}`) so online clients refresh. The same loop sweeps the ingest log [30 days] and old replay rows under the lease `publication-news-sweep`.
+
+### Client RPCs (user session, all plain RPCs)
+
+| RPC | Payload | Answer |
+|---|---|---|
+| `publication_news_list` | `limit`, `cursor`, `lang`, `categoryKey`, `tagKey` / `tagKeys` + `tagMode` (`any`/`all`), `expired` (`exclude`/`include`/`only`, the last two only when the admin allows), `unreadOnly`, `includeTags` [true], `includeReactions` [true], `includeSeo` [false] | items with `expiresAt`, `expired`, `slug`, `tags:[{key,name,iconUrl}]`, `reactions:{key:n}`, `reactionCount`, `myReaction`, `allowReaction`, `allowComment`, `sourceUrl`, optional `seo`; `reactionTypes` |
+| `publication_news_get` / `publication_news_by_slug` | `id` or `slug`, `lang` | the article with `bodyFormat`, `bodyHtml`, tags, reactions, `seo` |
+| `publication_news_unread` | `categoryKey`, `tagKeys` | `unread` (from sign-up or all, by setting) |
+| `publication_news_seen` | `id`, `ids` (≤ 200) or `all:true` | `unread` |
+| `publication_news_react` | `newsId`, `reaction` (key; empty removes) | `reactions`, `reactionCount`, `myReaction`; `REACTION_NOT_FOUND`, `REACTION_NOT_ALLOWED`, `NEWS_EXPIRED`, `REACTION_RATE_LIMITED` [30/min per player on all nodes] |
+| `publication_news_reaction_types` | `lang` | active reaction types |
+| `publication_news_comment_delete` | `id` | deletes the caller's own comment |
+
+Comments keep their behaviour; the per-minute limit is now a setting [5].
+
+`seo` = `{slug, metaTitle (falls back to the title), metaDescription (summary, then the first 160 characters of the body), keywords, canonicalUrl, ogImage (falls back to the cover), noindex}`.
+
+### Public pages (off by default)
+
+With «صفحه‌های عمومی اخبار» on and a website address set: `GET /v2/publication/public/news?lang&limit&cursor&categoryKey&tagKey`, `GET /v2/publication/public/news/{slug}?lang` (body HTML), `GET /v2/publication/public/sitemap.xml` (`<loc>` = canonical or base + path template [`/news/{slug}`], `<lastmod>`) and, when RSS is on, `GET /v2/publication/public/rss.xml` (latest 50, site title from settings). Only published, running, indexable (`noindex` off) articles; `Cache-Control: public, max-age=<cache>` [300]; 404 while off. Slugs are made from the default-language title on create when empty, in the admin style [`native`: Persian letters kept, Arabic ي/ك normalized, Persian digits to Latin; `latin`: Persian transliterated; `id`: short id], made unique with `-2`, `-3`; a manual slug must be letters and digits joined by `-` (`INVALID_SLUG`) and unique (`SLUG_EXISTS`, 409).
+
+### Console API (`/v2/console/publication/`)
+
+`news` CRUD gains the fields above and the filters `status`, `source`, `sourceId`, `tagId`, `expired`, `slug` (search covers slug and external id); `POST /news-review {ids, action: approve|reject|archive, reason}`; `GET|PUT /news-settings`; `news-sources` CRUD, `POST /news-sources/{id}/test {payload, save}` (preview without saving, or a real ingest marked as a test), `POST /news-sources/{id}/secret/reveal`, `POST /news-sources/{id}/secret/rotate` (both logged); `GET /news-ingest-log?sourceId&status&isTest`, `GET /news-ingest-log/{id}` (with body); `news-reactions` CRUD (`IN_USE` once players used one; switch it off instead).
+
+### Console pages
+
+«اخبار» is a tabbed page: خبرها (status, source, tags, expiry, reactions and comments in the list; filters for status, category, tag, ending and pinned; the editor with the Tiptap toolbar (bold, italic, underline, strike, headings, lists, task list, link, alignment, table and its row/column/header tools, undo/redo, fa/en labels, RTL or LTR per language tab), status and reject reason, publish and end time, comments and reactions switches, the publish notice with player tags, an SEO section with a Google-style result preview, slug, meta title and description with counters, keywords, canonical, share image and noindex, and the origin of webhook items), صف بررسی (checkboxes, bulk approve and reject with a reason), منبع‌ها (endpoint and a curl sample per auth mode, secret reveal and rotate, mapping, defaults, publishing, rate limit, image copy, test payload with per-item preview), گزارش دریافت (filters, counts, side panel with results and body), واکنش‌ها, تنظیمات.
