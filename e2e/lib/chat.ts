@@ -64,6 +64,13 @@ export class Chat {
     return { ok: true, id: r.channel_message_ack.message_id };
   }
 
+  // RPC over this socket, as the app's callRpc sends it. Returns the parsed answer or {error}.
+  async rpc<T = any>(id: string, payload: unknown = {}): Promise<{ data?: T; error?: { code?: number; message: string } }> {
+    const r = await this.call({ rpc: { id, payload: JSON.stringify(payload) } });
+    if (r.error) return { error: r.error };
+    return { data: (r.rpc?.payload ? JSON.parse(r.rpc.payload) : {}) as T };
+  }
+
   close() {
     try { this.ws.close(); } catch { return; }
   }
