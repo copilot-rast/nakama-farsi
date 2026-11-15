@@ -24,6 +24,10 @@ func (s *service) clientRPCs() map[string]clientRPC {
 		"publication_news_seen":           s.rpcNewsSeen,
 		"publication_news_comments":       s.rpcNewsComments,
 		"publication_news_comment":        s.rpcNewsComment,
+		"publication_news_comment_delete": s.rpcNewsCommentDelete,
+		"publication_news_unread":         s.rpcNewsUnread,
+		"publication_news_react":          s.rpcNewsReact,
+		"publication_news_reaction_types": s.rpcNewsReactionTypes,
 		"publication_inbox":               s.rpcInbox,
 		"publication_inbox_seen":          s.rpcInboxSeen,
 		"publication_otp_request":         s.rpcOTPRequest,
@@ -144,135 +148,6 @@ func (s *service) rpcFaqList(ctx context.Context, userID, payload string) (any, 
 	return map[string]any{"lang": lang, "categories": categories, "items": items}, rows.Err()
 }
 
-const newsVisible = `n.is_active AND n.published_at <= now()`
-
-func (s *service) rpcNewsList(ctx context.Context, userID, payload string) (any, error) {
-	var in struct {
-		Limit       int    `json:"limit"`
-		Cursor      string `json:"cursor"`
-		CategoryKey string `json:"categoryKey"`
-		Lang        string `json:"lang"`
-	}
-	if err := decodeStrict(payload, &in); err != nil {
-		return nil, err
-	}
-	langs, lang, err := s.clientLang(ctx, userID, in.Lang)
-	if err != nil {
-		return nil, err
-	}
-	limit := clampLimit(in.Limit, 20, 50)
-	offset, err := readCursor(in.Cursor)
-	if err != nil {
-		return nil, err
-	}
-	where := &sqlWhere{args: []any{userID}}
-	where.add(newsVisible)
-	if k := strings.TrimSpace(in.CategoryKey); k != "" {
-		where.add("n.category_id IN (SELECT id FROM base_category WHERE key_type='news' AND key = ?)", k)
-	}
-	n := len(where.args)
-	rows, err := s.db.QueryContext(ctx, `SELECT n.id::text, n.title::text, n.summary::text, n.cover_url, n.published_at, n.is_pinned, COALESCE(c.key,''),
-		EXISTS (SELECT 1 FROM publication_news_seen ns WHERE ns.news_id=n.id AND ns.user_id=$1::uuid),
-		(SELECT count(*) FROM publication_news_comment nc WHERE nc.news_id=n.id AND nc.is_accepted)
-		FROM publication_news n LEFT JOIN base_category c ON c.id=n.category_id`+where.sql()+`
-		ORDER BY n.is_pinned DESC, n.published_at DESC, n.id DESC LIMIT $`+itoa(n+1)+` OFFSET $`+itoa(n+2), append(where.args, limit, offset)...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []map[string]any{}
-	for rows.Next() {
-		var id, title, summary, cover, key string
-		var published time.Time
-		var pinned, seen bool
-		var comments int64
-		if err := rows.Scan(&id, &title, &summary, &cover, &published, &pinned, &key, &seen, &comments); err != nil {
-			return nil, err
-		}
-		items = append(items, map[string]any{"id": id, "title": langs.Resolve(parseI18n(title), lang), "summary": langs.Resolve(parseI18n(summary), lang), "coverUrl": cover,
-			"publishedAt": published.UTC(), "isPinned": pinned, "categoryKey": nullable(key), "seen": seen, "commentCount": comments})
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return map[string]any{"lang": lang, "items": items, "cursor": nextCursor(offset, limit, len(items))}, nil
-}
-
-func nullable(s string) any {
-	if s == "" {
-		return nil
-	}
-	return s
-}
-
-type newsRow struct {
-	ID, Title, Summary, Body, Cover, CategoryKey, Actions string
-	Published                                             time.Time
-	Pinned, AllowComment, FreeComment, Seen               bool
-	Comments                                              int64
-}
-
-func (s *service) visibleNews(ctx context.Context, q queryer, userID, id string) (newsRow, error) {
-	var row newsRow
-	if _, err := uuid.FromString(id); err != nil {
-		return row, notFound("NEWS_NOT_FOUND")
-	}
-	err := q.QueryRowContext(ctx, `SELECT n.id::text, n.title::text, n.summary::text, n.body::text, n.cover_url, COALESCE(c.key,''), n.actions::text, n.published_at,
-		n.is_pinned, n.allow_comment, n.free_comment,
-		EXISTS (SELECT 1 FROM publication_news_seen ns WHERE ns.news_id=n.id AND ns.user_id=$2::uuid),
-		(SELECT count(*) FROM publication_news_comment nc WHERE nc.news_id=n.id AND nc.is_accepted)
-		FROM publication_news n LEFT JOIN base_category c ON c.id=n.category_id WHERE n.id=$1 AND `+newsVisible, id, userID).
-		Scan(&row.ID, &row.Title, &row.Summary, &row.Body, &row.Cover, &row.CategoryKey, &row.Actions, &row.Published, &row.Pinned, &row.AllowComment, &row.FreeComment, &row.Seen, &row.Comments)
-	if errors.Is(err, sql.ErrNoRows) {
-		return row, notFound("NEWS_NOT_FOUND")
-	}
-	return row, err
-}
-
-func (s *service) rpcNewsGet(ctx context.Context, userID, payload string) (any, error) {
-	var in struct {
-		ID   string `json:"id"`
-		Lang string `json:"lang"`
-	}
-	if err := decodeStrict(payload, &in); err != nil {
-		return nil, err
-	}
-	langs, lang, err := s.clientLang(ctx, userID, in.Lang)
-	if err != nil {
-		return nil, err
-	}
-	row, err := s.visibleNews(ctx, s.db, userID, in.ID)
-	if err != nil {
-		return nil, err
-	}
-	var actions []action
-	_ = json.Unmarshal([]byte(row.Actions), &actions)
-	outActions := []map[string]any{}
-	for _, a := range actions {
-		outActions = append(outActions, map[string]any{"type": a.Type, "label": langs.Resolve(a.Label, lang), "value": a.Value})
-	}
-	body := langs.Resolve(parseI18n(row.Body), lang)
-	return map[string]any{"lang": lang, "id": row.ID, "title": langs.Resolve(parseI18n(row.Title), lang), "summary": langs.Resolve(parseI18n(row.Summary), lang), "body": body, "bodyHtml": renderMarkdown(body),
-		"coverUrl": row.Cover, "categoryKey": nullable(row.CategoryKey), "publishedAt": row.Published.UTC(), "isPinned": row.Pinned, "allowComment": row.AllowComment,
-		"actions": outActions, "seen": row.Seen, "commentCount": row.Comments}, nil
-}
-
-func (s *service) rpcNewsSeen(ctx context.Context, userID, payload string) (any, error) {
-	var in struct {
-		ID string `json:"id"`
-	}
-	if err := decodeStrict(payload, &in); err != nil {
-		return nil, err
-	}
-	if _, err := s.visibleNews(ctx, s.db, userID, in.ID); err != nil {
-		return nil, err
-	}
-	if _, err := s.db.ExecContext(ctx, `INSERT INTO publication_news_seen (news_id, user_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`, in.ID, userID); err != nil {
-		return nil, err
-	}
-	return map[string]any{}, nil
-}
-
 const commentClientJSON = `jsonb_build_object('id',m.id,'userId',m.user_id,'username',u.username,'displayName',u.display_name,'avatarUrl',u.avatar_url,'message',m.message,
 	'parentId',m.parent_id,'isAccepted',m.is_accepted,'mine',m.user_id=$2::uuid,'createdAt',m.created_at)`
 
@@ -285,7 +160,7 @@ func (s *service) rpcNewsComments(ctx context.Context, userID, payload string) (
 	if err := decodeStrict(payload, &in); err != nil {
 		return nil, err
 	}
-	if _, err := s.visibleNews(ctx, s.db, userID, in.NewsID); err != nil {
+	if _, err := s.visibleNews(ctx, s.db, userID, in.NewsID, true); err != nil {
 		return nil, err
 	}
 	limit := clampLimit(in.Limit, 20, 50)
@@ -362,7 +237,7 @@ func (s *service) rpcNewsComment(ctx context.Context, userID, payload string) (a
 	}
 	var out map[string]any
 	err = s.inTx(ctx, func(tx *sql.Tx) error {
-		row, err := s.visibleNews(ctx, tx, userID, in.NewsID)
+		row, err := s.visibleNews(ctx, tx, userID, in.NewsID, false)
 		if err != nil {
 			return err
 		}
@@ -376,7 +251,11 @@ func (s *service) rpcNewsComment(ctx context.Context, userID, payload string) (a
 		if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM publication_news_comment WHERE user_id=$1 AND created_at > now() - interval '1 minute'`, userID).Scan(&recent); err != nil {
 			return err
 		}
-		if recent >= commentsPerMinute {
+		st, err := loadNewsSettings(ctx, tx)
+		if err != nil {
+			return err
+		}
+		if recent >= st.CommentsPerMinute {
 			return fail(http.StatusTooManyRequests, "COMMENT_RATE_LIMITED", "", "too many comments; wait a minute")
 		}
 		var parent *string

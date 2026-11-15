@@ -7,7 +7,6 @@ import (
 	"errors"
 	"net/http"
 	"strings"
-	"time"
 	"unicode/utf8"
 
 	"github.com/gofrs/uuid/v5"
@@ -28,11 +27,18 @@ type resource struct {
 
 const faqJSON = `jsonb_build_object('id',t.id,'categoryId',t.category_id,'categoryKey',c.key,'categoryName',c.name,'question',t.question,'answer',t.answer,'isActive',t.is_active,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
-const newsJSON = `jsonb_build_object('id',t.id,'title',t.title,'summary',t.summary,'body',t.body,'coverUrl',t.cover_url,'categoryId',t.category_id,'categoryKey',c.key,'categoryName',c.name,
-	'isActive',t.is_active,'isPinned',t.is_pinned,'publishedAt',t.published_at,'allowComment',t.allow_comment,'freeComment',t.free_comment,'actions',t.actions,'metadata',t.metadata,
+const newsJSON = `jsonb_build_object('id',t.id,'title',t.title,'summary',t.summary,'body',t.body,'bodyFormat',t.body_format,'coverUrl',t.cover_url,'categoryId',t.category_id,'categoryKey',c.key,'categoryName',c.name,
+	'tagIds',to_jsonb(t.tag_ids),'status',t.status,'expiresAt',t.expires_at,'expired',(t.expires_at IS NOT NULL AND t.expires_at <= now()),
+	'source',t.source,'sourceId',t.source_id,'externalId',t.external_id,'sourceUrl',t.source_url,'lang',t.lang,
+	'isActive',t.is_active,'isPinned',t.is_pinned,'publishedAt',t.published_at,'allowComment',t.allow_comment,'freeComment',t.free_comment,'allowReaction',t.allow_reaction,
+	'notifyMode',t.notify_mode,'notifyAudience',t.notify_audience,'notifiedAt',t.notified_at,'notificationId',t.notification_id,
+	'approvedBy',t.approved_by,'approvedAt',t.approved_at,'rejectReason',t.reject_reason,'createdBy',t.created_by,'updatedBy',t.updated_by,
+	'actions',t.actions,'metadata',t.metadata,
 	'commentCount',(SELECT count(*) FROM publication_news_comment nc WHERE nc.news_id=t.id),
 	'pendingComments',(SELECT count(*) FROM publication_news_comment nc WHERE nc.news_id=t.id AND NOT nc.is_accepted),
 	'seenCount',(SELECT count(*) FROM publication_news_seen ns WHERE ns.news_id=t.id),
+	'reactionCount',(SELECT count(*) FROM publication_news_reaction nr WHERE nr.news_id=t.id),
+	'reactions',COALESCE((SELECT jsonb_object_agg(x.reaction, x.n) FROM (SELECT reaction, count(*) n FROM publication_news_reaction nr WHERE nr.news_id=t.id GROUP BY reaction) x),'{}'::jsonb),
 	'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
 func resources() []resource {
@@ -48,16 +54,18 @@ func resources() []resource {
 			save:    saveFaq,
 		},
 		{
-			name:    "news",
-			table:   "publication_news",
-			json:    newsJSON,
-			from:    ` FROM publication_news t LEFT JOIN base_category c ON c.id=t.category_id`,
-			search:  []string{translatedSearch("t.title"), translatedSearch("t.summary")},
-			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "categoryId": "t.category_id = ?::uuid", "isPinned": "t.is_pinned = ?::boolean"},
-			order:   "t.is_pinned DESC, t.published_at DESC, t.id DESC",
-			save:    saveNews,
+			name:   "news",
+			table:  "publication_news",
+			json:   newsJSON,
+			from:   ` FROM publication_news t LEFT JOIN base_category c ON c.id=t.category_id`,
+			search: []string{translatedSearch("t.title"), translatedSearch("t.summary")},
+			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "categoryId": "t.category_id = ?::uuid", "isPinned": "t.is_pinned = ?::boolean",
+				"status": "t.status = ?", "source": "t.source = ?", "sourceId": "t.source_id = ?::uuid", "tagId": "?::text = ANY(t.tag_ids)",
+				"expired": "(t.expires_at IS NOT NULL AND t.expires_at <= now()) = ?::boolean"},
+			order: "t.is_pinned DESC, t.published_at DESC, t.id DESC",
+			save:  saveNews,
 		},
-	}, append(bannerResources(), sponsorResource(), notifyCategoryResource(), autoRuleResource())...)
+	}, append(bannerResources(), sponsorResource(), notifyCategoryResource(), autoRuleResource(), reactionTypeResource(), newsSourceResource())...)
 }
 
 func (s *service) resourceList(res resource) http.HandlerFunc {
@@ -167,8 +175,9 @@ func (s *service) resourceWrite(res resource, create bool) http.HandlerFunc {
 			return
 		}
 		var out json.RawMessage
-		err := s.inTx(r.Context(), func(tx *sql.Tx) error {
-			if err := res.save(s, r.Context(), tx, id, create, body); err != nil {
+		ctx := withConsoleUser(r.Context(), r)
+		err := s.inTx(ctx, func(tx *sql.Tx) error {
+			if err := res.save(s, ctx, tx, id, create, body); err != nil {
 				return err
 			}
 			var err error
@@ -312,86 +321,6 @@ func saveFaq(s *service, ctx context.Context, tx *sql.Tx, id string, create bool
 	}
 	return execSave(ctx, tx, "publication_faq", id, create, []string{"category_id", "question", "answer", "is_active", "sort"},
 		[]any{cat, i18nJSON(question), i18nJSON(answer), boolOr(in.IsActive, true), in.Sort})
-}
-
-func saveNews(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
-	var in struct {
-		Title        i18n            `json:"title"`
-		Summary      i18n            `json:"summary"`
-		Body         i18n            `json:"body"`
-		CoverURL     string          `json:"coverUrl"`
-		CategoryID   string          `json:"categoryId"`
-		IsActive     *bool           `json:"isActive"`
-		IsPinned     bool            `json:"isPinned"`
-		PublishedAt  string          `json:"publishedAt"`
-		AllowComment *bool           `json:"allowComment"`
-		FreeComment  bool            `json:"freeComment"`
-		Actions      []action        `json:"actions"`
-		Metadata     json.RawMessage `json:"metadata"`
-	}
-	if err := decodeInto(raw, &in); err != nil {
-		return err
-	}
-	langs, err := localized.Load(ctx, tx)
-	if err != nil {
-		return err
-	}
-	title, err := cleanI18n(langs, "title", in.Title, true, 200)
-	if err != nil {
-		return err
-	}
-	summary, err := cleanI18n(langs, "summary", in.Summary, false, 1000)
-	if err != nil {
-		return err
-	}
-	body, err := cleanI18n(langs, "body", in.Body, true, 50000)
-	if err != nil {
-		return err
-	}
-	cover, err := cleanURL("coverUrl", in.CoverURL)
-	if err != nil {
-		return err
-	}
-	cat, err := cleanUUID("categoryId", in.CategoryID, false)
-	if err != nil {
-		return err
-	}
-	if err := checkCategory(ctx, tx, cat, "news"); err != nil {
-		return err
-	}
-	published, err := cleanTime("publishedAt", in.PublishedAt)
-	if err != nil {
-		return err
-	}
-	if published == nil {
-		now := time.Now().UTC()
-		if !create {
-			var old time.Time
-			if err := tx.QueryRowContext(ctx, `SELECT published_at FROM publication_news WHERE id=$1`, id).Scan(&old); err == nil {
-				now = old
-			}
-		}
-		published = &now
-	}
-	if len(in.Actions) > 5 {
-		return badRequest("TOO_MANY_ACTIONS", "actions", "at most 5 actions")
-	}
-	actions := make([]action, 0, len(in.Actions))
-	for _, a := range in.Actions {
-		clean, err := cleanAction(langs, "actions", a, true)
-		if err != nil {
-			return err
-		}
-		actions = append(actions, clean)
-	}
-	actionsJSON, _ := json.Marshal(actions)
-	metadata, err := cleanObject("metadata", in.Metadata)
-	if err != nil {
-		return err
-	}
-	return execSave(ctx, tx, "publication_news", id, create,
-		[]string{"title", "summary", "body", "cover_url", "category_id", "is_active", "is_pinned", "published_at", "allow_comment", "free_comment", "actions", "metadata"},
-		[]any{i18nJSON(title), i18nJSON(summary), i18nJSON(body), cover, cat, boolOr(in.IsActive, true), in.IsPinned, *published, boolOr(in.AllowComment, true), in.FreeComment, string(actionsJSON), metadata})
 }
 
 func cleanMessage(raw string) (string, error) {

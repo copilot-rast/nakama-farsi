@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/heroiclabs/nakama-common/runtime"
+	"github.com/heroiclabs/nakama/v3/internal/objectstore"
 	"github.com/heroiclabs/nakama/v3/internal/secretbox"
 )
 
@@ -38,6 +39,10 @@ type service struct {
 	baseURLs map[string]string
 	now      func() time.Time
 	timeScan *timeScanGate
+
+	imageStore   objectstore.Store
+	imageBase    string
+	fetchPrivate bool
 }
 
 type timeScanGate struct {
@@ -80,11 +85,16 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := svc.registerConsoleHTTP(initializer); err != nil {
 		return err
 	}
+	if err := initializer.RegisterHttp(ingestPrefix+"{source}", svc.ingestHTTP, http.MethodPost); err != nil {
+		return err
+	}
+	svc.setupImageStore(env)
 	inapp.SetSender(svc.inappSender())
 	go svc.workerLoop(ctx)
 	go svc.otpSweepLoop(ctx)
 	go svc.bannerSweepLoop(ctx)
 	go svc.autoLoop(ctx)
+	go svc.newsLoop(ctx)
 	logger.Info("Publication module registered")
 	return nil
 }

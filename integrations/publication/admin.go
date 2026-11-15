@@ -47,6 +47,14 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/auto-rules/{id}/fires", http.MethodGet, s.consoleAutoFires},
 		{consolePrefix + "/auto-rules/{id}/test", http.MethodPost, s.consoleAutoTest},
 		{consolePrefix + "/push-devices", http.MethodGet, s.consolePushDevices},
+		{consolePrefix + "/news-settings", http.MethodGet, s.consoleNewsSettingsGet},
+		{consolePrefix + "/news-settings", http.MethodPut, s.consoleNewsSettingsPut},
+		{consolePrefix + "/news-review", http.MethodPost, s.consoleNewsReview},
+		{consolePrefix + "/news-sources/{id}/test", http.MethodPost, s.consoleNewsSourceTest},
+		{consolePrefix + "/news-sources/{id}/secret/reveal", http.MethodPost, s.consoleNewsSourceSecret(true)},
+		{consolePrefix + "/news-sources/{id}/secret/rotate", http.MethodPost, s.consoleNewsSourceSecret(false)},
+		{consolePrefix + "/news-ingest-log", http.MethodGet, s.consoleIngestLogList},
+		{consolePrefix + "/news-ingest-log/{id}", http.MethodGet, s.consoleIngestLogGet},
 	}
 	for _, res := range resources() {
 		base := consolePrefix + "/" + res.name
@@ -207,8 +215,10 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 		"faqs":            `SELECT count(*) FROM publication_faq`,
 		"activeFaqs":      `SELECT count(*) FROM publication_faq WHERE is_active`,
 		"news":            `SELECT count(*) FROM publication_news`,
-		"publishedNews":   `SELECT count(*) FROM publication_news WHERE is_active AND published_at <= now()`,
-		"scheduledNews":   `SELECT count(*) FROM publication_news WHERE is_active AND published_at > now()`,
+		"publishedNews":   `SELECT count(*) FROM publication_news WHERE status='published' AND published_at <= now() AND (expires_at IS NULL OR expires_at > now())`,
+		"scheduledNews":   `SELECT count(*) FROM publication_news WHERE status='published' AND published_at > now()`,
+		"pendingNews":     `SELECT count(*) FROM publication_news WHERE status='pending_review'`,
+		"newsSources":     `SELECT count(*) FROM publication_news_source WHERE is_active`,
 		"comments":        `SELECT count(*) FROM publication_news_comment`,
 		"pendingComments": `SELECT count(*) FROM publication_news_comment WHERE NOT is_accepted`,
 		"notifications":   `SELECT count(*) FROM publication_notification`,
