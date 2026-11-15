@@ -44,6 +44,7 @@ args=(
     --session.token_expiry_sec "${NAKAMA_SESSION_TOKEN_EXPIRY_SEC:-7200}"
     --metrics.prometheus_port "${NAKAMA_METRICS_PORT:-9100}"
     --socket.server_key "${NAKAMA_SERVER_KEY:?NAKAMA_SERVER_KEY is required}"
+    --socket.max_message_size_bytes "${NAKAMA_SOCKET_MAX_MESSAGE_SIZE_BYTES:-32768}"
     --session.encryption_key "${NAKAMA_SESSION_ENCRYPTION_KEY:?NAKAMA_SESSION_ENCRYPTION_KEY is required}"
     --runtime.http_key "${NAKAMA_RUNTIME_HTTP_KEY:?NAKAMA_RUNTIME_HTTP_KEY is required}"
     --console.username "${NAKAMA_CONSOLE_USERNAME:?NAKAMA_CONSOLE_USERNAME is required}"
