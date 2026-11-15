@@ -12,7 +12,9 @@ const MANIFEST = path.join(ROOT, 'dist-manifest.json');
 export const START = '<!-- nakama-economy:start -->';
 export const END = '<!-- nakama-economy:end -->';
 const L10N_START = '<!-- nakama-l10n:start -->';
-export const SOURCES = ['i18n.js', 'core.js', 'ui.js', 'form.js', 'resources.js', 'pages.js', 'publication.js', 'accounts.js', 'moderation.js', 'events.js', 'relations.js', 'offers.js', 'tasks.js', 'support.js', 'growth.js', 'items.js', 'friendgifts.js', 'chatquota.js', 'achievements.js', 'banners.js', 'sponsors.js', 'notify.js', 'chance.js', 'games.js', 'updates.js', 'voice.js', 'brand.js', 'setup.js', 'settings.js', 'native.js', 'shell.js'];
+export const SOURCES = ['i18n.js', 'core.js', 'ui.js', 'form.js', 'resources.js', 'pages.js', 'publication.js', 'accounts.js', 'moderation.js', 'events.js', 'relations.js', 'offers.js', 'tasks.js', 'support.js', 'growth.js', 'items.js', 'friendgifts.js', 'chatquota.js', 'achievements.js', 'banners.js', 'sponsors.js', 'notify.js', 'news.js', 'chance.js', 'games.js', 'updates.js', 'voice.js', 'brand.js', 'setup.js', 'settings.js', 'native.js', 'shell.js'];
+
+export const VENDOR = ['tiptap.js'];
 
 function hash(content) {
   return crypto.createHash('sha256').update(content).digest('hex').slice(0, 10);
@@ -35,7 +37,8 @@ export function injectIndex(html, cssHref, jsHref) {
 
 export function bundle() {
   const parts = SOURCES.map((f) => fs.readFileSync(path.join(ROOT, 'src', f), 'utf8').trimEnd());
-  const js = `(function () {\n'use strict';\n${parts.join('\n\n')}\n})();\n`;
+  const vendor = VENDOR.map((f) => fs.readFileSync(path.join(ROOT, 'vendor', f), 'utf8').trimEnd()).join('\n');
+  const js = `${vendor}\n(function () {\n'use strict';\n${parts.join('\n\n')}\n})();\n`;
   const css = fs.readFileSync(path.join(ROOT, 'src', 'economy.css'), 'utf8');
   return { js, css };
 }
