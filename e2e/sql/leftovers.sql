@@ -41,3 +41,5 @@ select 'friend tiers', count(*) from base_friend_rule where name like 'e2e%';
 select 'chat quota rules', count(*) from base_chat_quota_rule where name like 'e2e%';
 select 'offers', count(*) from economy_offer where key like 'e2e%';
 select 'friend gift rules', count(*) from economy_friend_gift_rule where name like 'e2e%';
+select 'news sources', count(*) from publication_news_source where key like 'e2e%';
+select 'news reactions', count(*) from publication_news_reaction_type where key like 'e2e%';

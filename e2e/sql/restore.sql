@@ -60,4 +60,5 @@ DO $$ BEGIN IF to_regclass('zz_e2e_backup.rrules') IS NOT NULL THEN DELETE FROM 
 DO $$ BEGIN IF to_regclass('zz_e2e_backup.offerset') IS NOT NULL THEN DELETE FROM economy_offer_settings; INSERT INTO economy_offer_settings SELECT * FROM zz_e2e_backup.offerset; END IF; END $$;
 DO $$ BEGIN IF to_regclass('zz_e2e_backup.fgset') IS NOT NULL THEN DELETE FROM economy_friend_gift_settings; INSERT INTO economy_friend_gift_settings SELECT * FROM zz_e2e_backup.fgset; END IF; END $$;
 DO $$ BEGIN IF to_regclass('zz_e2e_backup.cqset') IS NOT NULL THEN DELETE FROM base_chat_quota_settings; INSERT INTO base_chat_quota_settings SELECT * FROM zz_e2e_backup.cqset; END IF; END $$;
+DO $$ BEGIN IF to_regclass('zz_e2e_backup.newsset') IS NOT NULL THEN DELETE FROM publication_news_settings; INSERT INTO publication_news_settings SELECT * FROM zz_e2e_backup.newsset; END IF; END $$;
 COMMIT;

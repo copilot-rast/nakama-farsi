@@ -79,3 +79,5 @@ DELETE FROM publication_notify_pref p WHERE NOT EXISTS (SELECT 1 FROM users x WH
 DELETE FROM publication_auto_fire f WHERE NOT EXISTS (SELECT 1 FROM users x WHERE x.id = f.user_id);
 DELETE FROM base_friend_rule WHERE name LIKE 'e2e%';
 DELETE FROM base_chat_quota_rule WHERE name LIKE 'e2e%';
+DELETE FROM publication_news_source WHERE key LIKE 'e2e%';
+DELETE FROM publication_news_reaction_type WHERE key LIKE 'e2e%';
