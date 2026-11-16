@@ -70,6 +70,7 @@ var CQ_SETTINGS_FIELDS = [
   ] },
   { type: 'heading', label: 'cq.h.scope' },
   { type: 'row', fields: [
+    { name: 'countDirect', type: 'bool', inline: true, label: 'f.cq.direct', hint: 'f.cq.direct.hint' },
     { name: 'countGroups', type: 'bool', inline: true, label: 'f.cq.groups', hint: 'f.cq.groups.hint' },
     { name: 'countRooms', type: 'bool', inline: true, label: 'f.cq.rooms', hint: 'f.cq.rooms.hint' }
   ] },

@@ -39,7 +39,6 @@ var (
 	chatNoticeModes    = []string{"none", "inbox"}
 )
 
-// chatQuotaSettings is the single admin row (base_chat_quota_settings.settings).
 type chatQuotaSettings struct {
 	Enabled                  bool           `json:"enabled"`
 	CountMode                string         `json:"countMode"`
@@ -50,6 +49,7 @@ type chatQuotaSettings struct {
 	FriendDailyMessages      int            `json:"friendDailyMessages"`
 	FriendDailyConversations int            `json:"friendDailyConversations"`
 	ReplyFree                string         `json:"replyFree"`
+	CountDirect              bool           `json:"countDirect"`
 	CountGroups              bool           `json:"countGroups"`
 	CountRooms               bool           `json:"countRooms"`
 	ResetTime                string         `json:"resetTime"`
@@ -71,7 +71,7 @@ type chatQuotaSettings struct {
 
 func defaultChatQuotaSettings() chatQuotaSettings {
 	return chatQuotaSettings{
-		CountMode: "messages", DailyMessages: 20, DailyConversations: 5, ConversationScope: "day",
+		CountMode: "messages", CountDirect: true, DailyMessages: 20, DailyConversations: 5, ConversationScope: "day",
 		FriendPolicy: "same", FriendDailyMessages: 50, FriendDailyConversations: 10, ReplyFree: "off",
 		ResetTime: "00:00", TimeZone: "Asia/Tehran", Order: "free_first", MatchPolicy: "priority",
 		UnlimitedMetaMode: "positive", Notice: "none", PackProducts: []string{}, UnlimitedItems: []string{}, Message: localized.Text{},
@@ -213,7 +213,6 @@ func (st chatQuotaSettings) zone() (*time.Location, int, int) {
 	return loc, h, m
 }
 
-// quotaPeriod returns the day key, start and end of the quota period that holds now.
 func quotaPeriod(now time.Time, zone *time.Location, hh, mm int) (string, time.Time, time.Time) {
 	local := now.In(zone)
 	start := time.Date(local.Year(), local.Month(), local.Day(), hh, mm, 0, 0, zone)
@@ -231,7 +230,6 @@ func (s *service) chatPeriod(st chatQuotaSettings) (string, time.Time, time.Time
 	return quotaPeriod(s.now(), zone, h, m)
 }
 
-// chatTarget is a parsed Nakama channel id: 2.<>.<>.<label>, 3.<group>.., 4.<userA>.<userB>.
 type chatTarget struct {
 	Kind       string
 	Key        string
@@ -293,7 +291,7 @@ func parseChatChannel(id, userID string) (chatTarget, bool) {
 func (st chatQuotaSettings) counts(t chatTarget) bool {
 	switch t.Kind {
 	case "dm":
-		return true
+		return st.CountDirect
 	case "group":
 		return st.CountGroups
 	case "room":
@@ -302,7 +300,6 @@ func (st chatQuotaSettings) counts(t chatTarget) bool {
 	return false
 }
 
-// chatLimits is what applies to one player after tag rules, bonus meta and unlimited sources.
 type chatLimits struct {
 	Unlimited           bool
 	UnlimitedBy         string
@@ -448,7 +445,6 @@ func metaUnlimited(mode string, v float64, now time.Time) bool {
 	return v > 0
 }
 
-// quotaInput / quotaResult are the pure decision for one message.
 type quotaInput struct {
 	Mode       string
 	PacksFirst bool
@@ -533,8 +529,6 @@ type execQueryer interface {
 	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
 }
 
-// absorbPacks moves whole units of the pack meta into pack lots (one lot per absorbed balance) so
-// they can expire and be spent in order. userID "" absorbs for every player.
 func absorbPacks(ctx context.Context, q execQueryer, st chatQuotaSettings, userID string) error {
 	if st.PackMeta == "" {
 		return nil
@@ -617,7 +611,6 @@ func (s *service) areFriends(ctx context.Context, a, b string) (bool, error) {
 	return ok, err
 }
 
-// spendChatQuota decides one message and records it. It serialises a player's sends on the day row.
 func (s *service) spendChatQuota(ctx context.Context, st chatQuotaSettings, userID string, t chatTarget) (chatSpend, error) {
 	out := chatSpend{Settings: st}
 	lim, err := s.effectiveChatLimits(ctx, st, userID)
@@ -844,7 +837,6 @@ func validChatContent(content string) bool {
 	return len(b) > 0 && b[0] == '{' && json.Valid(b)
 }
 
-// chatQuotaGate runs in the ChannelMessageSend before hook after moderation.
 func (s *service) chatQuotaGate(ctx context.Context, userID, channelID, content string) error {
 	if userID == "" {
 		return nil
@@ -922,7 +914,6 @@ func pool(limit, used int) map[string]any {
 	return map[string]any{"limit": limit, "used": used, "left": max(limit-used, 0)}
 }
 
-// chatQuotaStatus is the player's own view (RPC) and the console card.
 func (s *service) chatQuotaStatus(ctx context.Context, userID, lang string, lots int) (map[string]any, error) {
 	st, err := loadChatQuotaSettings(ctx, s.db)
 	if err != nil {
@@ -995,7 +986,7 @@ func (s *service) chatQuotaStatus(ctx context.Context, userID, lang string, lots
 		"today":         map[string]any{"sent": d.Total, "fromPacks": d.PackUsed, "free": d.FreeSent, "unlimited": d.UnlimitedSent, "blocked": d.Blocked},
 		"products":      products,
 		"productIds":    ids,
-		"counts":        map[string]bool{"direct": true, "groups": st.CountGroups, "rooms": st.CountRooms},
+		"counts":        map[string]bool{"direct": st.CountDirect, "groups": st.CountGroups, "rooms": st.CountRooms},
 	}
 	if st.FriendPolicy == "separate" {
 		out["friends"] = map[string]any{"messages": pool(lim.FriendMessages, d.FriendMessages), "conversations": pool(lim.FriendConversations, d.FriendConversations)}

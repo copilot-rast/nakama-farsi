@@ -59,12 +59,15 @@ export class Chat {
   }
 
   async send(text: string): Promise<{ ok: true; id: string } | { ok: false; message: string }> {
-    const r = await this.call({ channel_message_send: { channel_id: this.channelId, content: JSON.stringify({ text }) } });
+    return this.sendContent({ text });
+  }
+
+  async sendContent(content: Record<string, unknown>): Promise<{ ok: true; id: string } | { ok: false; message: string }> {
+    const r = await this.call({ channel_message_send: { channel_id: this.channelId, content: JSON.stringify(content) } });
     if (r.error) return { ok: false, message: r.error.message };
     return { ok: true, id: r.channel_message_ack.message_id };
   }
 
-  // RPC over this socket, as the app's callRpc sends it. Returns the parsed answer or {error}.
   async rpc<T = any>(id: string, payload: unknown = {}): Promise<{ data?: T; error?: { code?: number; message: string } }> {
     const r = await this.call({ rpc: { id, payload: JSON.stringify(payload) } });
     if (r.error) return { error: r.error };

@@ -517,6 +517,7 @@ Messages sent by server code (`nk.ChannelMessageSend` from a runtime module) are
 | `dailyMessages`, `dailyConversations` | free units a day [20, 5], 0…100000; 0 = no free quota, packs only |
 | `conversationScope` | [`day`] a new chat is the first message today to that target; `ever` the first message ever |
 | `resetTime`, `timeZone` | [`00:00`, `Asia/Tehran`] start of the quota day (`INVALID_SETTING`, `INVALID_TIMEZONE`) |
+| `countDirect` | [true] count private (direct) messages; off counts only the groups or rooms turned on below |
 | `countGroups`, `countRooms` | [false, false] also count group or room chat (same quota) |
 | `replyFree` | [`off`]; `started` messages in a chat the other player started are free; `reply` one free reply after each of their messages |
 | `friendPolicy` | [`same`]; `separate` accepted friends use `friendDailyMessages` / `friendDailyConversations` [50, 10]; `free` messages to friends are free |
@@ -562,3 +563,32 @@ A refused send is a runtime error on the socket whose message is JSON (gRPC 8, `
 ### Console pages
 
 «سهمیهٔ پیام خصوصی» in «بازیکنان و گفتگو» › «گزارش و گفتگو» with tabs «قانون‌ها» (`#/moderation/chat-quota`, tag rules), «تنظیمات» (with a summary line and the products that sell packs) and «آمار». The player page gets a «سهمیهٔ پیام خصوصی» card: free left, packs left and next expiry, today's sends, unlimited and rule chips, «پیام اضافه» (grant dialog), «صفر کردن امروز», packs with «پس گرفتن», and the last days.
+
+## Chat stickers
+
+Sticker packs for chat. Migration `20261209000000-base-stickers.sql`, code `integrations/base/stickers.go`.
+
+### Data
+
+| Table | What |
+|---|---|
+| `base_sticker_settings` (row 1) | `settings` JSONB: `enabled` [true], `direct`, `groups`, `rooms` [true, true, true] (chats where stickers are allowed), `countQuota` [true] (a sticker costs one chat quota unit like a text message) |
+| `base_sticker_pack` | `key` (immutable), translated `name`/`description`, `icon_url`, `access` (`free` or `item`), `item_key` (an `economy_item` key; owning it opens the pack), `sort`, `is_active` |
+| `base_sticker` | `pack_id`, `key` (unique in the pack), translated `name`, `image_url`, `sort`, `is_active`; 1 to 200 per pack, replaced as a list when the pack is saved |
+
+### Sending
+
+A sticker is a chat message whose content has `sticker: "<pack>/<sticker>"`. The `rt:ChannelMessageSend` before hook runs moderation, then the sticker check, then the chat quota (skipped for stickers when `countQuota` is off). The check refuses with a runtime error whose message is JSON `{code, message, lang, meta}` (message in the player's language, fa/en/ar): `STICKERS_DISABLED` (7), `STICKER_NOT_ALLOWED_HERE` (7, `meta.chat` dm/group/room), `STICKER_NOT_FOUND` (5, unknown, inactive or malformed), `STICKER_LOCKED` (7, `meta.pack`, `meta.itemKey`). An accepted sticker is stored with `sticker`, `stickerPack` and `stickerUrl` (the image at send time). Messages without `sticker` are not touched.
+
+### Client RPC `base_stickers {lang?}`
+
+`{lang, enabled, chats: {direct, groups, rooms}, countQuota, packs: [{key, name, description, iconUrl, access, owned, itemKey?, item?: {key, name, iconUrl, price}, stickers: [{key, ref, name, imageUrl}]}]}`; active packs and stickers only; an empty list when stickers are off.
+
+### Console API (`/v2/console/base/`, `CHANNEL_MESSAGE`, audit-logged)
+
+`GET/PUT /stickers/settings`; `GET/POST /stickers/packs` (`q`, `isActive`, `access` filters), `GET/PUT/DELETE /stickers/packs/{id}`. Errors: `INVALID_KEY`, `KEY_EXISTS`, `INVALID_ACCESS`, `ITEM_REQUIRED`, `ITEM_NOT_FOUND`, `INVALID_STICKERS`, `DUPLICATE_KEY`, `IMAGE_REQUIRED`, `INVALID_URL`.
+
+### Console
+
+«استیکرها» hub in the moderation chat group (`#/moderation/stickers`): «بسته‌ها» (list with a preview of the first stickers, access and status; editor with key, name, description, icon, order, access and the item picker, and a sticker row list with an image upload or link, key and name) and «تنظیمات» (on/off, allowed chats, quota). The chat quota settings get «پیام خصوصی شمرده شود».
+

@@ -4743,7 +4743,50 @@ var MESSAGES = {
     'code.PAYLOAD_REQUIRED': "یک نمونه JSON بچسبانید.",
     'code.PAYLOAD_TOO_LARGE': "بدنه بزرگ‌تر از ۲۵۶ کیلوبایت است.",
     'code.INVALID_BODY_FORMAT': "قالب متن نامعتبر است.",
-    'code.INVALID_NOTIFY_MODE': "نوع اعلان نامعتبر است."
+    'code.INVALID_NOTIFY_MODE': "نوع اعلان نامعتبر است.",
+    'nav.stickers': "استیکرها",
+    'nav.sticker-packs': "بسته‌های استیکر",
+    'tab.sticker-packs': "بسته‌ها",
+    'desc.sticker-packs': "بسته‌های استیکر چت. هر بسته یا برای همه رایگان است یا با داشتن یک آیتم فروشگاه باز می‌شود.",
+    'new.sticker-packs': "بستهٔ تازه",
+    'edit.sticker-packs': "ویرایش بسته",
+    'empty.hint.sticker-packs': "مثلاً یک بستهٔ رایگان برای همه بسازید و یک بستهٔ ویژه که با آیتم فروشگاه باز شود.",
+    'search.sticker-packs': "جست‌وجوی کلید یا نام بسته",
+    'nav.sticker-settings': "تنظیمات",
+    'desc.sticker-settings': "استیکر در کدام گفتگوها مجاز باشد و آیا از سهمیهٔ پیام کم کند.",
+    'filter.sp.access': "دسترسی",
+    'sp.access.free': "رایگان برای همه",
+    'sp.access.item': "با آیتم فروشگاه",
+    'col.sp.stickers': "استیکرها",
+    'col.sp.access': "دسترسی",
+    'sp.countN': "{n} استیکر",
+    'f.stk.key.hint': "کلید در پیام استیکر می‌آید (بسته/استیکر)؛ بعداً عوضش نکنید.",
+    'sp.h.access': "چه کسی می‌تواند استفاده کند",
+    'f.sp.access': "دسترسی",
+    'f.sp.access.hint': "بستهٔ آیتمی فقط برای بازیکنی باز است که آن آیتم را دارد. آیتم را در «آیتم‌ها» قیمت‌گذاری کنید.",
+    'f.sp.item': "آیتمی که بسته را باز می‌کند",
+    'f.sp.item.hint': "بازیکن با خرید یا گرفتن این آیتم به بسته دسترسی پیدا می‌کند.",
+    'sp.h.stickers': "استیکرها",
+    'sp.add': "افزودن استیکر",
+    'sp.empty': "هنوز استیکری اضافه نشده است.",
+    'f.sp.image': "تصویر",
+    'sp.err.image': "تصویر این استیکر را بارگذاری کنید.",
+    'f.sp.enabled': "ارسال استیکر روشن باشد",
+    'f.sp.enabled.hint': "خاموش: هیچ استیکری فرستاده نمی‌شود و فهرست بسته‌ها برای بازیکن خالی است.",
+    'sp.h.chats': "گفتگوهای مجاز",
+    'f.sp.direct': "پیام خصوصی",
+    'f.sp.groups': "گروه‌ها",
+    'f.sp.rooms': "اتاق‌ها",
+    'f.sp.rooms.hint': "اتاق‌های با نام، مثل چت داخل بازی.",
+    'sp.h.quota': "سهمیهٔ پیام",
+    'f.sp.countQuota': "هر استیکر یک پیام از سهمیه کم کند",
+    'f.sp.countQuota.hint': "خاموش: استیکر بیرون از سهمیهٔ پیام روزانه است.",
+    'f.cq.direct': "پیام خصوصی شمرده شود",
+    'f.cq.direct.hint': "خاموش: فقط گروه‌ها یا اتاق‌هایی که روشن کرده‌اید شمرده می‌شوند.",
+    'code.INVALID_STICKERS': "بسته باید ۱ تا ۲۰۰ استیکر داشته باشد.",
+    'code.IMAGE_REQUIRED': "تصویر استیکر را بارگذاری کنید.",
+    'code.ITEM_REQUIRED': "آیتمی را که بسته را باز می‌کند انتخاب کنید.",
+    'code.INVALID_ACCESS': "دسترسی نامعتبر است."
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -9390,7 +9433,50 @@ var MESSAGES = {
     'code.PAYLOAD_REQUIRED': "Paste a sample payload.",
     'code.PAYLOAD_TOO_LARGE': "The body is larger than 256 KB.",
     'code.INVALID_BODY_FORMAT': "Invalid body format.",
-    'code.INVALID_NOTIFY_MODE': "Invalid notice mode."
+    'code.INVALID_NOTIFY_MODE': "Invalid notice mode.",
+    'nav.stickers': "Stickers",
+    'nav.sticker-packs': "Sticker packs",
+    'tab.sticker-packs': "Packs",
+    'desc.sticker-packs': "Chat sticker packs. A pack is either free for everyone or opened by owning a shop item.",
+    'new.sticker-packs': "New pack",
+    'edit.sticker-packs': "Edit pack",
+    'empty.hint.sticker-packs': "For example, make a free pack for everyone and a special pack that a shop item opens.",
+    'search.sticker-packs': "Search pack key or name",
+    'nav.sticker-settings': "Settings",
+    'desc.sticker-settings': "Which chats allow stickers and whether a sticker costs a chat quota message.",
+    'filter.sp.access': "Access",
+    'sp.access.free': "Free for everyone",
+    'sp.access.item': "With a shop item",
+    'col.sp.stickers': "Stickers",
+    'col.sp.access': "Access",
+    'sp.countN': "{n} stickers",
+    'f.stk.key.hint': "The key is used in the sticker message (pack/sticker); do not change it later.",
+    'sp.h.access': "Who can use it",
+    'f.sp.access': "Access",
+    'f.sp.access.hint': "An item pack is open only to players who own that item. Price the item under Items.",
+    'f.sp.item': "Item that opens the pack",
+    'f.sp.item.hint': "Buying or getting this item gives the player the pack.",
+    'sp.h.stickers': "Stickers",
+    'sp.add': "Add sticker",
+    'sp.empty': "No stickers yet.",
+    'f.sp.image': "Image",
+    'sp.err.image': "Upload the image of this sticker.",
+    'f.sp.enabled': "Stickers are on",
+    'f.sp.enabled.hint': "Off: no sticker can be sent and players see no packs.",
+    'sp.h.chats': "Allowed chats",
+    'f.sp.direct': "Private messages",
+    'f.sp.groups': "Groups",
+    'f.sp.rooms': "Rooms",
+    'f.sp.rooms.hint': "Named rooms, such as in-game chat.",
+    'sp.h.quota': "Chat quota",
+    'f.sp.countQuota': "Each sticker costs one quota message",
+    'f.sp.countQuota.hint': "Off: stickers are outside the daily message quota.",
+    'f.cq.direct': "Count private messages",
+    'f.cq.direct.hint': "Off: only the groups or rooms you turn on are counted.",
+    'code.INVALID_STICKERS': "A pack needs 1 to 200 stickers.",
+    'code.IMAGE_REQUIRED': "Upload the sticker image.",
+    'code.ITEM_REQUIRED': "Pick the item that opens the pack.",
+    'code.INVALID_ACCESS': "Invalid access."
   }
 };
 
@@ -11780,13 +11866,13 @@ var RESOURCES = {
 var SECTIONS = {
   economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'offers', 'entry-offers', 'offer-preview', 'offer-report', 'offer-settings', 'friend-gifts', 'friend-gift-rules', 'friend-gift-settings', 'friend-gift-report', 'items', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'news-review', 'news-sources', 'news-ingest', 'news-reactions', 'news-settings', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
-  moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'activity'],
+  moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'activity'],
   support: ['tickets', 'live-chat'],
   system: ['updates']
 };
 var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'];
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
-var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
+var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
 var HUBS = {
   metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['meta-relations', 'relations'], ['level-tables', 'levels']] },
@@ -11795,6 +11881,7 @@ var HUBS = {
   'friend-gifts': { section: 'economy', tabs: [['friend-gifts', ''], ['friend-gift-rules', 'rules'], ['friend-gift-settings', 'settings'], ['friend-gift-report', 'report']] },
   prizes: { section: 'economy', tabs: [['prizes', ''], ['prize-groups', 'groups']] },
   'chat-quota': { section: 'moderation', tabs: [['chat-quota', ''], ['chat-quota-settings', 'settings'], ['chat-quota-report', 'report']] },
+  stickers: { section: 'moderation', tabs: [['sticker-packs', ''], ['sticker-settings', 'settings']] },
   events: { section: 'economy', tabs: [['event-types', ''], ['event-rules', 'prizes'], ['event-log', 'report']] },
   news: { section: 'publication', tabs: [['news', ''], ['news-review', 'review'], ['news-sources', 'sources'], ['news-ingest', 'log'], ['news-reactions', 'reactions'], ['news-settings', 'settings']] },
   banners: { section: 'publication', tabs: [['banners', ''], ['banner-lists', 'placements']] },
@@ -11803,7 +11890,7 @@ var HUBS = {
 var NAV = {
   economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'offers', 'items', 'gifts', 'friend-gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
-  moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota'] }],
+  moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers'] }],
   support: ['tickets', 'live-chat'],
   system: ['updates']
 };
@@ -19438,6 +19525,7 @@ var CQ_SETTINGS_FIELDS = [
   ] },
   { type: 'heading', label: 'cq.h.scope' },
   { type: 'row', fields: [
+    { name: 'countDirect', type: 'bool', inline: true, label: 'f.cq.direct', hint: 'f.cq.direct.hint' },
     { name: 'countGroups', type: 'bool', inline: true, label: 'f.cq.groups', hint: 'f.cq.groups.hint' },
     { name: 'countRooms', type: 'bool', inline: true, label: 'f.cq.rooms', hint: 'f.cq.rooms.hint' }
   ] },
@@ -19764,6 +19852,109 @@ function playerChatQuotaCard() {
   }
   place();
 }
+
+ICONS['stickers'] = '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1 2.2 1.5 3.5 1.5s2.5-.5 3.5-1.5M9 9.5h.01M15 9.5h.01"/>';
+PH_ICONS['stickers'] = '<path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216ZM80,108a12,12,0,1,1,12,12A12,12,0,0,1,80,108Zm96,0a12,12,0,1,1-12-12A12,12,0,0,1,176,108Zm-1.07,48c-10.29,17.79-27.4,28-46.93,28s-36.63-10.2-46.92-28a8,8,0,1,1,13.84-8c7.47,12.91,19.21,20,33.08,20s25.61-7.1,33.07-20a8,8,0,0,1,13.86,8Z"/>';
+ICONS['sticker-packs'] = ICONS['stickers'];
+PH_ICONS['sticker-packs'] = PH_ICONS['stickers'];
+ICONS['sticker-settings'] = '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>';
+
+function spPreview(it) {
+  var box = h('div', { class: 'flex items-center gap-1', 'data-sp-preview': '' });
+  (it.stickers || []).slice(0, 5).forEach(function (s) {
+    var cell = h('div', { class: 'h-8 w-8 shrink-0 rounded-md bg-secondary-100 dark:bg-secondary-700 overflow-hidden flex items-center justify-center' });
+    if (s.imageUrl) cell.appendChild(img(s.imageUrl));
+    box.appendChild(cell);
+  });
+  if ((it.count || 0) > 5) box.appendChild(h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: '+' + fmtNum(it.count - 5) }));
+  return box;
+}
+
+RESOURCES['sticker-packs'] = {
+  api: 'base',
+  path: 'stickers/packs',
+  filters: [activeFilter(), { name: 'access', label: 'filter.sp.access', options: function () { return [{ value: 'free', label: t('sp.access.free') }, { value: 'item', label: t('sp.access.item') }]; } }],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it, true); } },
+    { label: 'col.sp.stickers', render: function (it) { return h('div', { class: 'flex flex-col gap-1' }, spPreview(it), h('span', { class: 'text-xs text-secondary-500', text: t('sp.countN', { n: fmtNum(it.count || 0) }) })); }, skeleton: '30%' },
+    { label: 'col.sp.access', render: function (it) {
+      if (it.access !== 'item') return h('span', { 'data-sp-access': 'free' }, tag(t('sp.access.free'), 'success'));
+      var name = it.item ? (i18nText(it.item.name) || it.item.key) : it.itemKey;
+      return h('div', { class: 'flex flex-col', 'data-sp-access': 'item' }, tag(t('sp.access.item'), 'warning'), h('span', { class: 'text-xs text-secondary-500 truncate', text: name }));
+    }, width: 170 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.stk.key.hint', required: true, lockOnEdit: true },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
+    ] },
+    tr('name', { label: 'f.name', required: true, max: 100 }),
+    tr('description', { multiline: true, max: 500, optional: true }),
+    { type: 'row', fields: [
+      { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
+      { name: 'sort', type: 'number', label: 'f.sort', min: -100000, max: 100000, empty: 0 }
+    ] },
+    { type: 'heading', label: 'sp.h.access' },
+    { name: 'access', type: 'select', label: 'f.sp.access', hint: 'f.sp.access.hint', required: true, noPlaceholder: true, options: function () { return [{ value: 'free', label: t('sp.access.free') }, { value: 'item', label: t('sp.access.item') }]; }, refresh: true },
+    { name: 'itemKey', type: 'ref', resource: 'items', valueKey: 'key', label: 'f.sp.item', hint: 'f.sp.item.hint', required: true, when: function (v) { return v.access === 'item'; } },
+    { type: 'heading', label: 'sp.h.stickers' },
+    { name: 'stickers', type: 'rows', addLabel: 'sp.add', emptyText: 'sp.empty', min: 1, max: 200, empty: [],
+      newRow: function (rows) { return { key: 's' + (rows.length + 1), name: {}, imageUrl: '', isActive: true }; },
+      check: function (rows) {
+        var seen = {};
+        for (var i = 0; i < rows.length; i++) {
+          if (!rows[i].imageUrl) return { index: i, message: t('sp.err.image') };
+          if (seen[rows[i].key]) return { index: i, message: t('code.DUPLICATE_KEY') };
+          seen[rows[i].key] = true;
+        }
+        return null;
+      },
+      columns: [
+        { name: 'imageUrl', type: 'custom', label: 'f.sp.image', build: function (cur, change) { return imageInput(cur || '', function (v) { change(v || ''); }); } },
+        { name: 'key', type: 'text', ltr: true, mono: true, label: 'f.key', required: true },
+        { name: 'name', type: 'i18n', label: 'f.name', max: 100 }
+      ] }
+  ],
+  defaults: function () { return { key: '', name: {}, description: {}, iconUrl: '', sort: 0, access: 'free', itemKey: null, isActive: true, stickers: [] }; },
+  fixPayload: function (p) {
+    if (p.access !== 'item') p.itemKey = '';
+    p.itemKey = p.itemKey || '';
+    p.sort = p.sort || 0;
+    p.stickers = (p.stickers || []).map(function (s) { return { key: s.key, name: s.name || {}, imageUrl: s.imageUrl || '', isActive: s.isActive !== false }; });
+    ['id', 'count', 'item', 'createdAt', 'createdBy', 'updatedAt'].forEach(function (k) { delete p[k]; });
+    return p;
+  }
+};
+
+var SP_SETTINGS_FIELDS = [
+  { name: 'enabled', type: 'bool', inline: true, label: 'f.sp.enabled', hint: 'f.sp.enabled.hint' },
+  { type: 'heading', label: 'sp.h.chats' },
+  { type: 'row', fields: [
+    { name: 'direct', type: 'bool', inline: true, label: 'f.sp.direct' },
+    { name: 'groups', type: 'bool', inline: true, label: 'f.sp.groups' },
+    { name: 'rooms', type: 'bool', inline: true, label: 'f.sp.rooms', hint: 'f.sp.rooms.hint' }
+  ] },
+  { type: 'heading', label: 'sp.h.quota' },
+  { name: 'countQuota', type: 'bool', inline: true, label: 'f.sp.countQuota', hint: 'f.sp.countQuota.hint' }
+];
+
+function stickerSettingsPage(container) {
+  var frame = pageFrame(t('nav.sticker-settings'), t('desc.sticker-settings'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(baseApi, '/stickers/settings', null, SP_SETTINGS_FIELDS, {
+    id: 'stickers',
+    fixPayload: function (p) {
+      delete p.updatedAt;
+      delete p.updatedBy;
+      return p;
+    }
+  });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
+CUSTOM_PAGES['sticker-settings'] = function (root) { stickerSettingsPage(root); };
 
 PH_ICONS.achievements = '<path d="M216,96A88,88,0,1,0,72,163.83V240a8,8,0,0,0,11.58,7.16L128,225l44.43,22.21A8.07,8.07,0,0,0,176,248a8,8,0,0,0,8-8V163.83A87.85,87.85,0,0,0,216,96ZM56,96a72,72,0,1,1,72,72A72.08,72.08,0,0,1,56,96ZM168,227.06l-36.43-18.21a8,8,0,0,0-7.16,0L88,227.06V174.37a87.89,87.89,0,0,0,80,0ZM128,152A56,56,0,1,0,72,96,56.06,56.06,0,0,0,128,152Zm0-96A40,40,0,1,1,88,96,40,40,0,0,1,128,56Z"/>';
 PH_ICONS.medalDuo = '<path d="M176,96a48,48,0,1,1-48-48A48,48,0,0,1,176,96Z" opacity="0.2"/>' + PH_ICONS.achievements;

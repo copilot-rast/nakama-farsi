@@ -23,7 +23,6 @@ import (
 	"github.com/heroiclabs/nakama/v3/console"
 )
 
-// ATTENTION: These values cannot be changed as they represent the bit positions in the ACL bitmap.
 const (
 	PermissionRead   = PermissionLevel(0)
 	PermissionWrite  = PermissionLevel(1)
@@ -63,7 +62,6 @@ func (p Permission) String() string {
 	}
 
 	if bitCount == resourceBitCount {
-		// Admin equivalent. Return all bits set to 1 including padding.
 		p.bitmap = Admin().bitmap
 	}
 
@@ -106,7 +104,6 @@ func (p Permission) HasAccess(permission Permission) bool {
 	return true
 }
 
-// For debug, returns a human-readable string representation of the permissions bitmap.
 func (p Permission) bitmapString() string {
 	sb := &strings.Builder{}
 
@@ -235,7 +232,7 @@ func baseChatQuotaPath(path string) bool {
 }
 
 func baseChatPath(path string) bool {
-	for _, prefix := range []string{"/v2/console/base/chat-words", "/v2/console/base/report-titles", "/v2/console/base/reports", "/v2/console/base/player-reports", "/v2/console/base/report-rules"} {
+	for _, prefix := range []string{"/v2/console/base/chat-words", "/v2/console/base/report-titles", "/v2/console/base/reports", "/v2/console/base/player-reports", "/v2/console/base/report-rules", "/v2/console/base/stickers"} {
 		if strings.HasPrefix(path, prefix) {
 			return true
 		}
@@ -439,7 +436,6 @@ func CheckACL(path string, userPermissions Permission) bool {
 	case "/nakama.console.Console/SendNotificationRequest":
 		requiredPermissions = NewPermission(console.AclResources_NOTIFICATION, PermissionWrite)
 	case "/v2/console/storage/import":
-		// Special case for non-grpc gateway endpoint.
 		requiredPermissions = NewPermission(console.AclResources_STORAGE_DATA_IMPORT, PermissionWrite)
 	default:
 		requiredPermissions = Admin()
@@ -459,7 +455,6 @@ func New(acl map[string]*console.Permissions) Permission {
 		}
 
 		if _, ok := console.AclResources_value[resource]; !ok {
-			// Unknown resource value, skip.
 			continue
 		}
 
@@ -486,14 +481,7 @@ func New(acl map[string]*console.Permissions) Permission {
 	return acc
 }
 
-// Create Permission from raw bitmap bytes.
-// Do not use for JSON deserialization. Use NewFromJson instead.
 func NewFromBytes(b []byte) Permission {
-	// Tokens issued before resources were appended carry a shorter bitmap: zero-extend it so new
-	// resources start without access, except admin (every bit set), which must stay admin.
-	// Tokens issued by a newer version, after a rollback or during a rolling deploy, carry a longer
-	// one: truncate it to the resources this version knows and clear the padding bits, which a
-	// limited user's bitmap never sets here.
 	if (Permission{bitmap: b}).IsAdmin() {
 		return Admin()
 	}
@@ -528,7 +516,6 @@ func (p Permission) ACL() map[string]*console.Permissions {
 	return acl
 }
 
-// Create new type to ensure json output contains all keys
 type dbAclEntry struct {
 	Read   bool `json:"read"`
 	Write  bool `json:"write"`
