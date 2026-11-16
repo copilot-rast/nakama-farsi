@@ -41,8 +41,15 @@
     display: none;
   }
 
-  html.pl .pl-up-label {
+  html.pl .pl-up-label,
+  html.pl .pl-sdk-label {
     display: none;
+  }
+
+  html.pl .pl-sdk {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
   }
 
   html.pl .pl-up {

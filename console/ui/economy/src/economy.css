@@ -887,3 +887,6 @@ a.eco-ov-kpi:focus-visible,.eco-ov-tile:focus-visible,.eco-ov-legend-row:focus-v
 .eco-check{width:1rem;height:1rem;accent-color:rgb(var(--primary-color-600))}
 .eco-otp-box{border:1px solid rgb(var(--secondary-color-200));border-radius:.375rem;padding:.75rem .75rem 0;margin:.25rem 0 1rem}
 .dark .eco-otp-box{border-color:rgb(var(--secondary-color-700))}
+.eco-sdk-n{display:inline-flex;align-items:center;justify-content:center;width:1.5rem;height:1.5rem;border-radius:9999px;font-size:.75rem;font-weight:600;background:rgb(var(--secondary-color-100));color:rgb(var(--secondary-color-700))}
+.dark .eco-sdk-n{background:rgb(var(--secondary-color-800));color:rgb(var(--secondary-color-200))}
+.eco-sdk-list{display:flex;flex-direction:column;gap:.35rem;padding-inline-start:1.1rem;list-style:disc}

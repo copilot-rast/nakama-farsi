@@ -649,6 +649,31 @@ html[dir="rtl"] .pl-seg-ind {
   transition: background-color var(--d1) var(--ease);
 }
 
+.pl-sdk {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--r-pill);
+  background: var(--well);
+  color: var(--ink-2);
+  font-size: 12px;
+  text-decoration: none;
+  transition: background-color var(--d1) var(--ease);
+}
+
+.pl-sdk .pl-ic {
+  width: 14px;
+  height: 14px;
+}
+
+.pl-sdk:hover,
+.pl-sdk[aria-current="page"] {
+  background: var(--capsule-hi);
+  color: var(--ink-1);
+}
+
 .pl-status:hover,
 .pl-status[aria-expanded="true"] {
   background: var(--capsule-hi);
@@ -2821,8 +2846,15 @@ html.pl .eco-tab:focus-visible {
     display: none;
   }
 
-  html.pl .pl-up-label {
+  html.pl .pl-up-label,
+  html.pl .pl-sdk-label {
     display: none;
+  }
+
+  html.pl .pl-sdk {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
   }
 
   html.pl .pl-up {

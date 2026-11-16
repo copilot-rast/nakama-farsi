@@ -111,6 +111,7 @@ Read from the environment first, then from `~/.config/nakama-farsi/mac-dev.env` 
 | `game/60-stickers.spec.ts` | `base_stickers` (free pack open, item pack locked with its item, names per language), a sticker sent over the socket stored with its picture, `STICKER_LOCKED` until the item is owned, `STICKER_NOT_FOUND`, `STICKER_NOT_ALLOWED_HERE` in private chat while rooms stay open, `STICKERS_DISABLED`, stickers outside or inside the quota, private chat not counted with `countDirect` off |
 | `console/61-item-sound.spec.ts` | an item gets an uploaded wav in the «صدا» field with a player preview, the file is served as audio, `economy_inventory` carries `soundUrl`, an image picked as a sound is refused, phone screen |
 | `console/62-avatar.spec.ts` | «آواتارساز» hub in the sales group, a required skin part with colour values and a hat part with an uploaded free hat and an item hat from the editor, `base_avatar` (owned and locked options, default look), `base_avatar_save` (`AVATAR_OPTION_LOCKED` until the item is owned, layers in order, `AVATAR_PART_REQUIRED`), `base_avatar_get` for another player and a bot, the builder turned off, English tabs, phone screen |
+| `console/60-sdk.spec.ts` | header «پکیج یونیتی» button opens the Unity SDK guide (install line with copy, eight steps, repo link, store menus, quick start), the System menu entry and Ctrl K reach it, English dark 390px icon-only button without sideways scroll |
 
 ## Multi-node cluster suite (phase 6)
 

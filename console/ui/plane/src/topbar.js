@@ -223,10 +223,12 @@ function buildEnd() {
   status.setAttribute('aria-controls', 'pl-stats');
   tb.stats = el('div', { class: 'pl-stats', id: 'pl-stats', role: 'region', 'aria-label': pst('top.status'), 'data-l10n-skip': '' });
   tb.up = el('a', { class: 'pl-up', href: '#/system/updates', hidden: true, 'data-pl-updates': '' });
+  tb.sdk = el('a', { class: 'pl-sdk', href: '#/system/sdk', 'data-pl-sdk': '' });
   tb.seg = buildLangSeg();
   tb.theme = el('button', { type: 'button', class: 'pl-round pl-theme', onclick: themeClick });
   paintTheme();
   box.appendChild(tb.up);
+  box.appendChild(tb.sdk);
   box.appendChild(search);
   box.appendChild(status);
   box.appendChild(tb.stats);
@@ -253,6 +255,20 @@ function paintUpdates() {
   a.innerHTML = plIconD('cloudDown');
   a.appendChild(el('span', { class: 'pl-up-label', text: pst('top.updates') }));
   a.appendChild(el('em', { class: 'pl-up-n', text: plNum(n) }));
+}
+
+function paintSdk() {
+  var a = tb.sdk;
+  if (!a) return;
+  var key = plLang() + '|' + (location.hash.indexOf('#/system/sdk') === 0 ? 'on' : '');
+  if (a.getAttribute('data-key') === key) return;
+  a.setAttribute('data-key', key);
+  var label = pst('top.sdkLabel');
+  a.setAttribute('aria-label', label);
+  a.setAttribute('title', label);
+  if (key.slice(-2) === 'on') a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  a.innerHTML = plIcon('code');
+  a.appendChild(el('span', { class: 'pl-sdk-label', text: pst('top.sdk') }));
 }
 
 function paintTopbar() {
@@ -282,6 +298,7 @@ function paintTopbar() {
   paintTabs(tb.start.querySelector('.pl-tabs'), info);
   paintTheme();
   paintUpdates();
+  paintSdk();
   var lseg = tb.seg;
   if (lseg && !lseg.__spInit && lseg.offsetWidth) { lseg.__spInit = true; segIndicator(lseg); }
 }

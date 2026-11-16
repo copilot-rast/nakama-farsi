@@ -3346,6 +3346,42 @@ var MESSAGES = {
     'section.sys.short': "سامانه",
     'nav.updates': "به‌روزرسانی‌ها",
     'desc.updates': "نسخهٔ همین سرور و تغییرهای تازهٔ ریپوی بالایی. این صفحه فقط نشان می‌دهد و هیچ دستوری اجرا نمی‌کند.",
+    'nav.sdk': "پکیج یونیتی",
+    'desc.sdk': "پکیج یونیتی این سرور: چه چیزهایی دارد، چطور نصب می‌شود و اولین کدها.",
+    'sdk.what': "این پکیج چیست؟",
+    'sdk.what.text': "یک پکیج یونیتی که بازی را به همین سرور وصل می‌کند. نسخهٔ گسترش‌یافتهٔ کلاینت رسمی Nakama است و همه‌چیز در همین یک پکیج است؛ پکیج رسمی Nakama را جدا نصب نکنید.",
+    'sdk.f.login': "ورود مهمان با شناسهٔ دستگاه و ورود پیامکی، با حفظ پیشرفت مهمان",
+    'sdk.f.rpc': "فراخوانی آمادهٔ همهٔ RPCهای سرور؛ اول روی سوکت و اگر سوکت قطع بود روی HTTP",
+    'sdk.f.pay': "پرداخت با سکه، زرین‌پال و زیبال، و برگشت خودکار به بازی",
+    'sdk.f.store': "کافه‌بازار و مایکت: نصب خودکار، خرید، ثبت در سرور و مصرف خرید بعد از تأیید سرور",
+    'sdk.f.chat': "چت متنی و استیکر، اعلان زنده و صندوق اعلان",
+    'sdk.f.game': "جدول امتیاز، وظایف، آیتم‌ها، فروشگاه و آواتار",
+    'sdk.repo': "ریپو:",
+    'sdk.need': "پیش‌نیازها",
+    'sdk.need.unity': "یونیتی ۲۰۲۱.۳ یا تازه‌تر",
+    'sdk.need.access': "دسترسی خواندن به ریپوی پکیج در گیت‌هاب (ریپو خصوصی است)",
+    'sdk.need.key': "کلید SSH ثبت‌شده در گیت‌هاب روی سیستم توسعه‌دهنده",
+    'sdk.install': "نصب",
+    'sdk.install.text': "این خط را در فایل Packages/manifest.json پروژه، داخل dependencies اضافه کنید. یونیتی پکیج را خودش دانلود می‌کند.",
+    'sdk.install.warn': "اگر پکیج رسمی com.heroiclabs.nakama-unity نصب است، حذفش کنید؛ دو نسخه با هم کار نمی‌کنند.",
+    'sdk.config': "تنظیم",
+    'sdk.config.text': "از منوی Tools › Nakama Farsi › Create SDK Config فایل تنظیمات را بسازید و این‌ها را پر کنید:",
+    'sdk.config.url': "آدرس سرور: آدرس API بازی، همان که بازی به آن وصل می‌شود (نه آدرس این کنسول)",
+    'sdk.config.key': "کلید سرور (server key): از مدیر سرور بگیرید",
+    'sdk.config.lang': "زبان: fa",
+    'sdk.config.link': "لینک برگشت پرداخت: فقط اگر زرین‌پال یا زیبال دارید، مثل mygame://payment",
+    'sdk.start': "شروع سریع",
+    'sdk.start.text': "بعد از ورود، نشست ذخیره و خودکار تمدید می‌شود و سوکت خودش وصل می‌شود.",
+    'sdk.phone.text': "ورود پیامکی:",
+    'sdk.pay': "پرداخت",
+    'sdk.pay.text': "برای کافه‌بازار و مایکت فقط این دو خط لازم است؛ بقیه را پکیج انجام می‌دهد.",
+    'sdk.pay.bazaar': "بار اول، پکیج پیشنهاد نصب Poolakey (کافه‌بازار) را می‌دهد؛ از منوی Tools › Nakama Farsi › Store هم می‌شود.",
+    'sdk.pay.switch': "برای عوض کردن استور بیلد: Tools › Nakama Farsi › Store › Build for Bazaar یا Build for Myket",
+    'sdk.pay.test': "وقتی پرداخت سرور در حالت آزمایشی است یا بازی روی گوشی اندروید اجرا نمی‌شود، یک استور آزمایشی جایش کار می‌کند.",
+    'sdk.chat': "چت و استیکر",
+    'sdk.chat.text': "پیام‌ها زنده می‌رسند. اگر سقف پیام روزانه پر شده باشد یا استیکر قفل باشد، سرور خطا می‌دهد.",
+    'sdk.errors': "خطاها",
+    'sdk.errors.text': "هر خطای سرور یک ApiException است با Code، Status، Message (اگر سرور متن فرستاده باشد ترجمه‌شده) و Meta. بعد از هر خطا، وضعیت را دوباره از سرور بخوانید.",
     'tab.voice': 'سرور ویس',
     'desc.voice': 'سرویسی که برای چت صوتی بازی‌ها توکن می‌دهد. سرور فقط به بازیکنی توکن می‌دهد که در همان مسابقه، پارتی یا اتاق باز باشد.',
     'f.vc.enabled': 'چت صوتی روشن باشد',
@@ -8074,6 +8110,42 @@ var MESSAGES = {
     'section.sys.short': "System",
     'nav.updates': "Updates",
     'desc.updates': "This server's version and the new changes in the parent repo. This page only shows; it never runs a command.",
+    'nav.sdk': "Unity SDK",
+    'desc.sdk': "This server's Unity package: what it has, how to install it and the first lines of code.",
+    'sdk.what': "What is it?",
+    'sdk.what.text': "A Unity package that connects a game to this server. It extends the official Nakama client and holds everything in one package; do not install the official Nakama package next to it.",
+    'sdk.f.login': "Guest sign-in with the device id and phone (SMS) sign-in that keeps the guest progress",
+    'sdk.f.rpc': "Ready calls for every server RPC; over the socket first, over HTTP when the socket is down",
+    'sdk.f.pay': "Coins, ZarinPal and Zibal, with the automatic return to the game",
+    'sdk.f.store': "Cafe Bazaar and Myket: automatic install, purchase, server check and consume after the server accepts",
+    'sdk.f.chat': "Text chat and stickers, live notifications and the inbox",
+    'sdk.f.game': "Leaderboards, tasks, items, the shop and avatars",
+    'sdk.repo': "Repository:",
+    'sdk.need': "Requirements",
+    'sdk.need.unity': "Unity 2021.3 or newer",
+    'sdk.need.access': "Read access to the package repository on GitHub (it is private)",
+    'sdk.need.key': "An SSH key registered on GitHub on the developer's machine",
+    'sdk.install': "Install",
+    'sdk.install.text': "Add this line to the project's Packages/manifest.json, inside dependencies. Unity downloads the package itself.",
+    'sdk.install.warn': "If the official com.heroiclabs.nakama-unity package is installed, remove it; the two do not work together.",
+    'sdk.config': "Set up",
+    'sdk.config.text': "Create the settings file with Tools › Nakama Farsi › Create SDK Config and fill in:",
+    'sdk.config.url': "Server URL: the game API address the game connects to (not this console)",
+    'sdk.config.key': "Server key: ask the server admin",
+    'sdk.config.lang': "Language: fa",
+    'sdk.config.link': "Payment return link: only with ZarinPal or Zibal, for example mygame://payment",
+    'sdk.start': "Quick start",
+    'sdk.start.text': "After sign-in the session is saved and refreshed by itself, and the socket connects on its own.",
+    'sdk.phone.text': "Phone sign-in:",
+    'sdk.pay': "Payments",
+    'sdk.pay.text': "Cafe Bazaar and Myket need only these two lines; the package does the rest.",
+    'sdk.pay.bazaar': "The first time, the package offers to install Poolakey (Cafe Bazaar); Tools › Nakama Farsi › Store does it too.",
+    'sdk.pay.switch': "To switch the store of a build: Tools › Nakama Farsi › Store › Build for Bazaar or Build for Myket",
+    'sdk.pay.test': "When the server payments are in sandbox or the game is not running on an Android phone, a test store is used instead.",
+    'sdk.chat': "Chat and stickers",
+    'sdk.chat.text': "Messages arrive live. When the daily message quota is used up or a sticker is locked, the server answers with an error.",
+    'sdk.errors': "Errors",
+    'sdk.errors.text': "Every server error is an ApiException with Code, Status, Message (translated when the server sends text) and Meta. After an error, read the state from the server again.",
     'tab.voice': 'Voice server',
     'desc.voice': 'The service that gives voice chat tokens to games. The server only gives a token to a player who is in that match, party or open room.',
     'f.vc.enabled': 'Voice chat on',
@@ -11986,7 +12058,7 @@ var SECTIONS = {
   publication: ['faqs', 'news', 'news-review', 'news-sources', 'news-ingest', 'news-reactions', 'news-settings', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'activity'],
   support: ['tickets', 'live-chat'],
-  system: ['updates']
+  system: ['updates', 'sdk']
 };
 var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'];
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
@@ -12011,7 +12083,7 @@ var NAV = {
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
   moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers'] }],
   support: ['tickets', 'live-chat'],
-  system: ['updates']
+  system: ['updates', 'sdk']
 };
 var HUB_OF = {};
 Object.keys(HUBS).forEach(function (hub) { HUBS[hub].tabs.forEach(function (tab) { HUB_OF[tab[0]] = hub; }); });
@@ -23305,6 +23377,55 @@ function updatesSourcePage(container) {
   frame.content.appendChild(page.el);
   page.load();
 }
+
+ICONS['sdk'] = '<path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/>';
+PH_ICONS['sdk'] = '<path d="M69.12,94.15,28.5,128l40.62,33.85a8,8,0,1,1-10.24,12.29l-48-40a8,8,0,0,1,0-12.29l48-40a8,8,0,0,1,10.24,12.3Zm176,27.7-48-40a8,8,0,1,0-10.24,12.3L227.5,128l-40.62,33.85a8,8,0,1,0,10.24,12.29l48-40a8,8,0,0,0,0-12.29ZM162.73,32.48a8,8,0,0,0-10.25,4.79l-64,176a8,8,0,0,0,4.79,10.26A8.14,8.14,0,0,0,96,224a8,8,0,0,0,7.52-5.27l64-176A8,8,0,0,0,162.73,32.48Z"/>';
+
+var SDK_REPO = 'git@github.com:copilot-rast/nakama-farsi-unity.git';
+var SDK_WEB = 'https://github.com/copilot-rast/nakama-farsi-unity';
+var SDK_PACKAGE = 'com.nakamafarsi.unity';
+
+function sdkSection(n, title, body) {
+  return card(h('div', { class: 'p-4 flex flex-col gap-3', 'data-sdk-step': String(n) },
+    h('div', { class: 'flex items-center gap-2' },
+      h('span', { class: 'eco-sdk-n', text: fmtNum(n) }),
+      h('h2', { class: 'font-semibold', text: title })),
+    body));
+}
+
+function sdkText(key) {
+  return h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300 eco-pre-line', text: t(key) });
+}
+
+function sdkList(keys) {
+  return h('ul', { class: 'eco-sdk-list text-sm text-secondary-700 dark:text-secondary-200' }, keys.map(function (k) { return h('li', { text: t(k) }); }));
+}
+
+function sdkPage(container) {
+  var frame = pageFrame(t('nav.sdk'), t('desc.sdk'));
+  clear(container).appendChild(frame.el);
+  var manifest = '"' + SDK_PACKAGE + '": "' + SDK_REPO + '?path=/Packages/Nakama#dev"';
+  var setup = 'var client = NakamaFarsiRunner.Initialize(NakamaFarsiConfig.Load());\nawait client.LoginWithDeviceAsync(SystemInfo.deviceUniqueIdentifier);\n\nvar boards = await client.Rpcs.Leaderboardx.ListAsync();\nvar tasks  = await client.Rpcs.Economy.TasksListAsync();';
+  var phone = 'var sent   = await client.Phone.RequestCodeAsync("09121234567");\nvar result = await client.Phone.VerifyAsync(sent.Phone, code);';
+  var pay = 'await NakamaFarsiStore.SetupAsync(client);\nvar store = await NakamaFarsiStore.BuyAsync(productId);\n\nvar web = await NakamaFarsiGateway.BuyAsync(productId, PaymentMethods.ZarinPal);\nvar coins = await client.Payments.BuyAsync(productId, PaymentMethods.Coins);';
+  var chat = 'var room = await client.Chat.JoinRoomAsync("lobby");\nawait client.Chat.SendTextAsync(room.Id, "salam");\nawait client.Chat.SendStickerAsync(room.Id, "happy/smile");';
+  var repoLink = h('a', { href: SDK_WEB, target: '_blank', rel: 'noopener', class: 'eco-link font-mono text-sm', dir: 'ltr', text: SDK_WEB });
+  var box = h('div', { class: 'flex flex-col gap-4 eco-sdk', 'data-sdk-page': '' },
+    sdkSection(1, t('sdk.what'), h('div', { class: 'flex flex-col gap-3' },
+      sdkText('sdk.what.text'),
+      sdkList(['sdk.f.login', 'sdk.f.rpc', 'sdk.f.pay', 'sdk.f.store', 'sdk.f.chat', 'sdk.f.game']),
+      h('div', { class: 'flex flex-wrap items-center gap-2 text-sm' }, h('span', { class: 'text-secondary-500', text: t('sdk.repo') }), repoLink))),
+    sdkSection(2, t('sdk.need'), sdkList(['sdk.need.unity', 'sdk.need.access', 'sdk.need.key'])),
+    sdkSection(3, t('sdk.install'), h('div', { class: 'flex flex-col gap-3' }, sdkText('sdk.install.text'), codeBlock(manifest), notice('warning', t('sdk.install.warn'))))
+    , sdkSection(4, t('sdk.config'), h('div', { class: 'flex flex-col gap-3' }, sdkText('sdk.config.text'), sdkList(['sdk.config.url', 'sdk.config.key', 'sdk.config.lang', 'sdk.config.link'])))
+    , sdkSection(5, t('sdk.start'), h('div', { class: 'flex flex-col gap-3' }, sdkText('sdk.start.text'), codeBlock(setup), sdkText('sdk.phone.text'), codeBlock(phone)))
+    , sdkSection(6, t('sdk.pay'), h('div', { class: 'flex flex-col gap-3' }, sdkText('sdk.pay.text'), codeBlock(pay), sdkList(['sdk.pay.bazaar', 'sdk.pay.switch', 'sdk.pay.test'])))
+    , sdkSection(7, t('sdk.chat'), h('div', { class: 'flex flex-col gap-3' }, sdkText('sdk.chat.text'), codeBlock(chat)))
+    , sdkSection(8, t('sdk.errors'), sdkText('sdk.errors.text')));
+  frame.content.appendChild(box);
+}
+
+CUSTOM_PAGES['sdk'] = function (root) { sdkPage(root); };
 
 function voiceSecretInput(cur, change, label, id) {
   var inp = textInput(cur || '', { ltr: true, mono: true, label: label, oninput: function (v) { change(v.trim()); } });
