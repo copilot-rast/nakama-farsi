@@ -28,3 +28,15 @@ func TestRecordGoesToTheRegisteredRecorder(t *testing.T) {
 		t.Fatalf("out=%v err=%v got=%+v", out, err, got)
 	}
 }
+
+func TestNotifyReachesObservers(t *testing.T) {
+	var got []string
+	Observe("a", func(_ context.Context, ev Recorded) { got = append(got, ev.ID+":"+ev.Key) })
+	defer Observe("a", nil)
+	Notify(context.Background(), Recorded{ID: "e1", UserID: "u", Key: "xp", Value: 3, Source: "client"})
+	Observe("a", nil)
+	Notify(context.Background(), Recorded{ID: "e2", UserID: "u", Key: "xp"})
+	if len(got) != 1 || got[0] != "e1:xp" {
+		t.Fatalf("got=%v", got)
+	}
+}

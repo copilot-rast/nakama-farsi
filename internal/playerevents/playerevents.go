@@ -51,3 +51,41 @@ func Record(ctx context.Context, ev Event) (Result, error) {
 	}
 	return r(ctx, ev)
 }
+
+type Recorded struct {
+	ID       string
+	UserID   string
+	Key      string
+	Value    float64
+	Source   string
+	Metadata map[string]any
+}
+
+type Observer func(ctx context.Context, ev Recorded)
+
+var (
+	obsMu     sync.RWMutex
+	observers = map[string]Observer{}
+)
+
+func Observe(owner string, fn Observer) {
+	obsMu.Lock()
+	defer obsMu.Unlock()
+	if fn == nil {
+		delete(observers, owner)
+		return
+	}
+	observers[owner] = fn
+}
+
+func Notify(ctx context.Context, ev Recorded) {
+	obsMu.RLock()
+	list := make([]Observer, 0, len(observers))
+	for _, fn := range observers {
+		list = append(list, fn)
+	}
+	obsMu.RUnlock()
+	for _, fn := range list {
+		fn(ctx, ev)
+	}
+}

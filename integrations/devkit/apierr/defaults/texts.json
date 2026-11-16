@@ -1,0 +1,2902 @@
+{
+  "ACCOUNT_DISABLED": {
+    "en": "This account has been disabled.",
+    "fa": "این حساب غیرفعال شده است."
+  },
+  "ACCOUNT_HAS_PHONE": {
+    "en": "This account already has a phone number.",
+    "fa": "این حساب از قبل شماره موبایل دارد."
+  },
+  "ACCOUNT_NOT_FOUND": {
+    "en": "Account not found.",
+    "fa": "حساب پیدا نشد."
+  },
+  "ACCOUNT_SUSPENDED": {
+    "en": "This account is suspended.",
+    "fa": "این حساب موقتاً مسدود شده است."
+  },
+  "ACCOUNT_TOO_NEW": {
+    "en": "Your account is too new for this.",
+    "fa": "حساب شما برای این کار هنوز خیلی تازه است."
+  },
+  "ACCOUNT_TOO_OLD": {
+    "en": "This is only for new accounts.",
+    "fa": "این مورد فقط برای حساب‌های تازه است."
+  },
+  "ACHIEVEMENT_LOCKED": {
+    "en": "This achievement is still locked.",
+    "fa": "این دستاورد هنوز قفل است."
+  },
+  "ACHIEVEMENT_NOT_FOUND": {
+    "en": "Achievement not found.",
+    "fa": "دستاورد پیدا نشد."
+  },
+  "ACTION_TARGET_NOT_FOUND": {
+    "en": "The target of this action was not found.",
+    "fa": "مقصد این کار پیدا نشد."
+  },
+  "ALREADY_CLAIMED": {
+    "en": "You have already claimed this.",
+    "fa": "این را قبلاً دریافت کرده‌اید."
+  },
+  "ALREADY_EXISTS": {
+    "en": "This already exists.",
+    "fa": "این مورد از قبل وجود دارد."
+  },
+  "ALREADY_OWNED": {
+    "en": "You already own this.",
+    "fa": "این را از قبل دارید."
+  },
+  "ALREADY_RATED": {
+    "en": "You have already rated this.",
+    "fa": "قبلاً به این امتیاز داده‌اید."
+  },
+  "ALREADY_REFERRED": {
+    "en": "You already have a referrer.",
+    "fa": "شما از قبل معرف دارید."
+  },
+  "ALREADY_TAKEN": {
+    "en": "This is already taken.",
+    "fa": "این مورد قبلاً گرفته شده است."
+  },
+  "ALREADY_UNLOCKED": {
+    "en": "This is already unlocked.",
+    "fa": "این مورد از قبل باز شده است."
+  },
+  "ANALYTICS_ALREADY_CLAIMED": {
+    "en": "The prize of this step has already been collected.",
+    "fa": "جایزهٔ این مرحله قبلاً گرفته شده است."
+  },
+  "ANALYTICS_BATCH_EMPTY": {
+    "en": "The event batch is empty.",
+    "fa": "بستهٔ رویدادها خالی است."
+  },
+  "ANALYTICS_BATCH_ID_REQUIRED": {
+    "en": "A batch id (batchId) is required.",
+    "fa": "شناسهٔ بسته (batchId) لازم است."
+  },
+  "ANALYTICS_BATCH_TOO_LARGE": {
+    "en": "A batch can hold at most {max} events.",
+    "fa": "هر بسته حداکثر {max} رویداد می‌تواند داشته باشد."
+  },
+  "ANALYTICS_BUSY": {
+    "en": "The server is still saving earlier events; send again in a moment.",
+    "fa": "سرور مشغول ثبت رویدادهای قبلی است؛ چند لحظه بعد دوباره بفرستید."
+  },
+  "ANALYTICS_CARDS_EMPTY": {
+    "en": "No cards were sent.",
+    "fa": "هیچ کارتی برای بارگذاری فرستاده نشده است."
+  },
+  "ANALYTICS_CLIENT_TIME_OUT_OF_RANGE": {
+    "en": "The device time is far from the server time; the server time was used.",
+    "fa": "زمان دستگاه با زمان سرور فاصلهٔ زیادی دارد؛ زمان سرور ثبت شد."
+  },
+  "ANALYTICS_EVENT_DISABLED": {
+    "en": "Recording of this event is turned off.",
+    "fa": "ثبت این رویداد خاموش است."
+  },
+  "ANALYTICS_EVENT_ID_TOO_DEEP": {
+    "en": "An event id can have at most 5 parts.",
+    "fa": "شناسهٔ رویداد حداکثر ۵ بخش می‌تواند داشته باشد."
+  },
+  "ANALYTICS_FIELD_MISMATCH": {
+    "en": "The event fields do not match its definition.",
+    "fa": "فیلدهای رویداد با تعریف آن جور نیست."
+  },
+  "ANALYTICS_FIELD_TOO_LONG": {
+    "en": "A text field of the event is too long.",
+    "fa": "متن یکی از فیلدهای رویداد بیش از حد بلند است."
+  },
+  "ANALYTICS_GROUP_NOT_FOUND": {
+    "en": "Trophy group \"{group}\" was not found.",
+    "fa": "گروه دستاورد «{group}» پیدا نشد."
+  },
+  "ANALYTICS_INVALID_AMOUNT": {
+    "en": "The amount is not valid.",
+    "fa": "مقدار درست نیست."
+  },
+  "ANALYTICS_INVALID_APP_INFO": {
+    "en": "The app version or platform is not valid.",
+    "fa": "نسخهٔ برنامه یا سکوی فرستاده‌شده معتبر نیست."
+  },
+  "ANALYTICS_INVALID_BATCH_ID": {
+    "en": "The batch id must be 1-64 Latin letters, digits or . _ : -",
+    "fa": "شناسهٔ بسته باید ۱ تا ۶۴ نویسهٔ لاتین، رقم یا . _ : - باشد."
+  },
+  "ANALYTICS_INVALID_CONTEXT": {
+    "en": "The context key can be at most 64 characters.",
+    "fa": "کلید زمینه (context) حداکثر ۶۴ نویسه است."
+  },
+  "ANALYTICS_INVALID_CURRENCY": {
+    "en": "The currency is not valid.",
+    "fa": "ارز درست نیست."
+  },
+  "ANALYTICS_INVALID_DIMENSION": {
+    "en": "A custom dimension name or value is not valid.",
+    "fa": "نام یا مقدار یکی از بُعدهای سفارشی درست نیست."
+  },
+  "ANALYTICS_INVALID_EVENT_ID": {
+    "en": "The event id is not valid: 1 to 5 parts split by «:», each 1–64 English letters, digits or - _ . ( ) ! ?",
+    "fa": "شناسهٔ رویداد درست نیست: ۱ تا ۵ بخش که با «:» جدا می‌شوند و هر بخش ۱ تا ۶۴ حرف و عدد انگلیسی یا - _ . ( ) ! ? است."
+  },
+  "ANALYTICS_INVALID_EVENT_NAME": {
+    "en": "The event name is not valid (lower-case Latin letters, digits, _ and .).",
+    "fa": "نام رویداد معتبر نیست (حروف کوچک لاتین، رقم، _ و .)."
+  },
+  "ANALYTICS_INVALID_EVENT_TYPE": {
+    "en": "Unknown event type.",
+    "fa": "نوع رویداد شناخته‌شده نیست."
+  },
+  "ANALYTICS_INVALID_FIELD": {
+    "en": "A field of the event has an invalid name or value.",
+    "fa": "یکی از فیلدهای رویداد نام یا مقدار نامعتبر دارد."
+  },
+  "ANALYTICS_INVALID_FLOW": {
+    "en": "The resource flow must be Source or Sink.",
+    "fa": "جهت منبع باید Source یا Sink باشد."
+  },
+  "ANALYTICS_INVALID_ITEM": {
+    "en": "The item type or item is not valid.",
+    "fa": "نوع آیتم یا آیتم درست نیست."
+  },
+  "ANALYTICS_INVALID_PROGRESSION": {
+    "en": "Progression levels are not valid: p1 is required and p3 needs p2.",
+    "fa": "سطح‌های پیشرفت درست نیست: p1 لازم است و p3 بدون p2 نمی‌آید."
+  },
+  "ANALYTICS_INVALID_SESSION": {
+    "en": "The session id or number is not valid.",
+    "fa": "شناسه یا شمارهٔ نشست درست نیست."
+  },
+  "ANALYTICS_INVALID_SEVERITY": {
+    "en": "The error severity is not valid.",
+    "fa": "شدت خطا درست نیست."
+  },
+  "ANALYTICS_INVALID_STATUS": {
+    "en": "The event status is not valid.",
+    "fa": "وضعیت رویداد درست نیست."
+  },
+  "ANALYTICS_INVALID_VALUE": {
+    "en": "The event number is not valid.",
+    "fa": "عدد رویداد درست نیست."
+  },
+  "ANALYTICS_NOTHING_TO_CLAIM": {
+    "en": "This step has no prize.",
+    "fa": "این مرحله جایزه‌ای ندارد."
+  },
+  "ANALYTICS_RATE_LIMITED": {
+    "en": "Events are being sent too fast; try again in {retryAfter} seconds.",
+    "fa": "رویدادها زیادی سریع فرستاده شده‌اند؛ {retryAfter} ثانیهٔ دیگر دوباره بفرستید."
+  },
+  "ANALYTICS_REWARD_FAILED": {
+    "en": "The prize could not be paid; try again shortly.",
+    "fa": "پرداخت جایزه انجام نشد؛ کمی بعد دوباره تلاش کنید."
+  },
+  "ANALYTICS_STEP_LOCKED": {
+    "en": "Step {step} of this trophy is not unlocked yet.",
+    "fa": "مرحلهٔ {step} این دستاورد هنوز باز نشده است."
+  },
+  "ANALYTICS_STEP_NOT_FOUND": {
+    "en": "This trophy step was not found.",
+    "fa": "این مرحلهٔ دستاورد پیدا نشد."
+  },
+  "ANALYTICS_TOO_MANY_CARDS": {
+    "en": "At most {max} cards of each type per upload.",
+    "fa": "هر نوع کارت حداکثر {max} مورد در یک بارگذاری."
+  },
+  "ANALYTICS_TOO_MANY_CONTEXT_KEYS": {
+    "en": "At most {max} context keys can be sent.",
+    "fa": "حداکثر {max} کلید زمینه می‌شود فرستاد."
+  },
+  "ANALYTICS_TOO_MANY_DIMENSIONS": {
+    "en": "At most {max} custom dimensions can be sent.",
+    "fa": "حداکثر {max} بُعد سفارشی می‌شود فرستاد."
+  },
+  "ANALYTICS_TOO_MANY_FIELDS": {
+    "en": "The event has too many fields.",
+    "fa": "رویداد فیلدهای بیش از حد مجاز دارد."
+  },
+  "ANALYTICS_TOO_MANY_KEYS": {
+    "en": "At most {max} stats per request.",
+    "fa": "حداکثر {max} آمار در یک درخواست."
+  },
+  "ANALYTICS_TYPED_DISABLED": {
+    "en": "Typed events are turned off.",
+    "fa": "ثبت رویدادهای نوع‌دار خاموش است."
+  },
+  "ANALYTICS_UNKNOWN_CONTEXT": {
+    "en": "This context key or value is not in the registry.",
+    "fa": "این کلید زمینه یا مقدارش در فهرست مدل‌ها نیست."
+  },
+  "ANALYTICS_UNKNOWN_DESIGN": {
+    "en": "This event id is not in the registry.",
+    "fa": "این شناسهٔ رویداد در فهرست مدل‌ها نیست."
+  },
+  "ANALYTICS_UNKNOWN_DIMENSION": {
+    "en": "This custom dimension or value is not in the registry.",
+    "fa": "این بُعد سفارشی یا مقدارش در فهرست مدل‌ها نیست."
+  },
+  "ANALYTICS_UNKNOWN_EVENT": {
+    "en": "This event is not in the event registry.",
+    "fa": "این رویداد در فهرست رویدادها تعریف نشده است."
+  },
+  "ANALYTICS_UNKNOWN_RESOURCE": {
+    "en": "This currency or item type is not in the registry.",
+    "fa": "این ارز یا نوع آیتم در فهرست مدل‌ها نیست."
+  },
+  "API_KEY_EXPIRED": {
+    "en": "This API key has expired.",
+    "fa": "این کلید API منقضی شده است."
+  },
+  "API_KEY_INVALID": {
+    "en": "The API key is not valid.",
+    "fa": "کلید API معتبر نیست."
+  },
+  "API_KEY_IP_DENIED": {
+    "en": "This API key cannot be used from this address.",
+    "fa": "این کلید API از این نشانی قابل استفاده نیست."
+  },
+  "API_KEY_REQUIRED": {
+    "en": "An API key is required.",
+    "fa": "کلید API لازم است."
+  },
+  "API_KEY_REVOKED": {
+    "en": "This API key has been revoked.",
+    "fa": "این کلید API باطل شده است."
+  },
+  "API_KEY_SCOPE_DENIED": {
+    "en": "This API key does not have the {scope} permission.",
+    "fa": "این کلید API دسترسی {scope} را ندارد."
+  },
+  "ASSETS_PRIVATE": {
+    "en": "Game data can only be read with a player session.",
+    "fa": "خواندن داده‌ها بدون ورود بازیکن بسته است."
+  },
+  "ASSET_DELETE_NOT_ALLOWED": {
+    "en": "This key may not delete data entries.",
+    "fa": "این کلید اجازهٔ حذف داده ندارد."
+  },
+  "ASSET_EXISTS": {
+    "en": "An entry with this id already exists.",
+    "fa": "داده‌ای با این شناسه از قبل هست."
+  },
+  "ASSET_FETCH_TOO_MANY": {
+    "en": "At most {max} entries can be fetched at once.",
+    "fa": "در هر درخواست حداکثر {max} داده را می‌توان گرفت."
+  },
+  "ASSET_FORCE_NOT_ALLOWED": {
+    "en": "Forced overwrites are turned off in the settings.",
+    "fa": "بازنویسی اجباری در تنظیمات بسته است."
+  },
+  "ASSET_HISTORY_NOT_FOUND": {
+    "en": "This version is not in the history.",
+    "fa": "این نسخه در تاریخچه پیدا نشد."
+  },
+  "ASSET_ID_DUPLICATED": {
+    "en": "The entry id is used more than once.",
+    "fa": "شناسهٔ داده تکراری است."
+  },
+  "ASSET_INVALID": {
+    "en": "The entry is not valid.",
+    "fa": "دادهٔ فرستاده‌شده درست نیست."
+  },
+  "ASSET_LIMIT_REACHED": {
+    "en": "The entry limit ({max}) is reached.",
+    "fa": "سقف تعداد داده‌ها ({max}) پر شده است."
+  },
+  "ASSET_NOT_FOUND": {
+    "en": "Entry not found.",
+    "fa": "داده پیدا نشد."
+  },
+  "ASSET_PUSH_EMPTY": {
+    "en": "There is nothing to push.",
+    "fa": "چیزی برای فرستادن نیست."
+  },
+  "ASSET_PUSH_TOO_MANY": {
+    "en": "At most {max} items can be pushed at once.",
+    "fa": "در هر بار حداکثر {max} مورد را می‌توان فرستاد."
+  },
+  "ASSET_SOURCE_DUPLICATED": {
+    "en": "One source file was sent under two ids.",
+    "fa": "یک فایل با دو شناسه فرستاده شده است."
+  },
+  "ASSET_SOURCE_ID_CHANGED": {
+    "en": "A file changed its id; delete the old entry first.",
+    "fa": "شناسهٔ یک فایل عوض شده است؛ اول نسخهٔ قبلی را حذف کنید."
+  },
+  "ASSET_TOO_LARGE": {
+    "en": "This entry is larger than {max} bytes.",
+    "fa": "این داده از {max} بایت بزرگ‌تر است."
+  },
+  "ASSET_VERSION_CONFLICT": {
+    "en": "The entry changed after you read it; pull again and merge.",
+    "fa": "این داده بعد از دریافت شما تغییر کرده است؛ دوباره بگیرید و ادغام کنید."
+  },
+  "ATTACHMENTS_UNAVAILABLE": {
+    "en": "Attachments are not available right now.",
+    "fa": "ارسال پیوست فعلاً ممکن نیست."
+  },
+  "ATTACHMENT_NOT_FOUND": {
+    "en": "Attachment not found.",
+    "fa": "پیوست پیدا نشد."
+  },
+  "ATTACHMENT_TOO_LARGE": {
+    "en": "The attachment is too large.",
+    "fa": "حجم پیوست زیاد است."
+  },
+  "ATTACHMENT_TYPE": {
+    "en": "This file type cannot be attached.",
+    "fa": "این نوع فایل را نمی‌شود پیوست کرد."
+  },
+  "ATTEMPT_CLOSED": {
+    "en": "This attempt is closed because a newer one was started.",
+    "fa": "این تلاش بسته شده، چون تلاش تازه‌تری شروع شده است."
+  },
+  "ATTEMPT_EXPIRED": {
+    "en": "This attempt is too old to send a result.",
+    "fa": "مهلت ارسال نتیجهٔ این تلاش تمام شده است."
+  },
+  "ATTEMPT_NOT_FOUND": {
+    "en": "This attempt was not found.",
+    "fa": "این تلاش پیدا نشد."
+  },
+  "ATTEMPT_REQUIRED": {
+    "en": "Start the stage first and send its attempt id.",
+    "fa": "اول مرحله را شروع کنید و شناسهٔ تلاش را بفرستید."
+  },
+  "AUDIENCE_NOT_ALLOWED": {
+    "en": "This audience is not allowed.",
+    "fa": "این گروه مخاطب مجاز نیست."
+  },
+  "AUTH_INVALID_CREDENTIALS": {
+    "en": "The phone number or password is wrong.",
+    "fa": "شماره یا رمز عبور درست نیست."
+  },
+  "AUTH_INVALID_CURRENT_PASSWORD": {
+    "en": "The current password is wrong.",
+    "fa": "رمز عبور فعلی درست نیست."
+  },
+  "AUTH_USER_ALREADY_HAS_A_PASSWORD": {
+    "en": "This account already has a password; change it instead.",
+    "fa": "این حساب رمز عبور دارد؛ به‌جای آن رمز را عوض کنید."
+  },
+  "AUTH_USER_HAS_NO_PASSWORD": {
+    "en": "This account has no password yet; set one first.",
+    "fa": "این حساب هنوز رمز عبور ندارد؛ اول رمز بگذارید."
+  },
+  "BANNER_LIST_NOT_FOUND": {
+    "en": "Banner placement not found.",
+    "fa": "جایگاه بنر پیدا نشد."
+  },
+  "BANNER_NOT_AVAILABLE": {
+    "en": "This banner is not available.",
+    "fa": "این بنر در دسترس نیست."
+  },
+  "BODY_REQUIRED": {
+    "en": "Please write the message.",
+    "fa": "لطفاً متن پیام را بنویسید."
+  },
+  "BODY_TOO_LONG": {
+    "en": "The message is too long.",
+    "fa": "متن پیام خیلی طولانی است."
+  },
+  "CANCELED": {
+    "en": "The request was cancelled.",
+    "fa": "درخواست لغو شد."
+  },
+  "CANNOT_RATE": {
+    "en": "You cannot rate this.",
+    "fa": "امکان امتیاز دادن به این مورد نیست."
+  },
+  "CANNOT_REPORT_OWN": {
+    "en": "You cannot report your own message.",
+    "fa": "نمی‌توانید پیام خودتان را گزارش کنید."
+  },
+  "CANNOT_REPORT_SELF": {
+    "en": "You cannot report yourself.",
+    "fa": "نمی‌توانید خودتان را گزارش کنید."
+  },
+  "CATEGORY_ALWAYS_ON": {
+    "en": "This category cannot be turned off.",
+    "fa": "این دسته را نمی‌شود خاموش کرد."
+  },
+  "CATEGORY_KIND_MISMATCH": {
+    "en": "This category does not fit here.",
+    "fa": "این دسته برای این بخش مناسب نیست."
+  },
+  "CATEGORY_LOCKED": {
+    "en": "This category is locked.",
+    "fa": "این دسته قفل است."
+  },
+  "CATEGORY_NOT_FOUND": {
+    "en": "Category not found.",
+    "fa": "دسته پیدا نشد."
+  },
+  "CATEGORY_REQUIRED": {
+    "en": "Please choose a category.",
+    "fa": "لطفاً یک دسته انتخاب کنید."
+  },
+  "CHANCE_GAME_NOT_FOUND": {
+    "en": "Game not found.",
+    "fa": "بازی شانس پیدا نشد."
+  },
+  "CHAT_CLOSED": {
+    "en": "This chat has been closed.",
+    "fa": "این گفتگو بسته شده است."
+  },
+  "CHAT_DISABLED": {
+    "en": "Chat is not available right now.",
+    "fa": "گفتگو فعلاً در دسترس نیست."
+  },
+  "CHAT_EMPTY": {
+    "en": "The chat has no messages.",
+    "fa": "این گفتگو پیامی ندارد."
+  },
+  "CHAT_NOT_FOUND": {
+    "en": "Chat not found.",
+    "fa": "گفتگو پیدا نشد."
+  },
+  "CLAIM_NOT_FOUND": {
+    "en": "Nothing to claim was found.",
+    "fa": "موردی برای دریافت پیدا نشد."
+  },
+  "CODE_NOT_FOUND": {
+    "en": "This code is not valid.",
+    "fa": "این کد معتبر نیست."
+  },
+  "CODE_REQUIRED": {
+    "en": "Please enter the code.",
+    "fa": "لطفاً کد را وارد کنید."
+  },
+  "COIN_PRICE_REQUIRED": {
+    "en": "A coin price is required.",
+    "fa": "قیمت سکه‌ای لازم است."
+  },
+  "COMMENT_MESSAGE_REQUIRED": {
+    "en": "Please write your comment.",
+    "fa": "لطفاً نظرتان را بنویسید."
+  },
+  "COMMENT_NOT_ALLOWED": {
+    "en": "Comments are not allowed here.",
+    "fa": "برای این مورد نمی‌شود نظر گذاشت."
+  },
+  "COMMENT_NOT_FOUND": {
+    "en": "Comment not found.",
+    "fa": "نظر پیدا نشد."
+  },
+  "COMMENT_RATE_LIMITED": {
+    "en": "You are commenting too fast. Please wait a little.",
+    "fa": "خیلی سریع نظر می‌دهید. کمی صبر کنید."
+  },
+  "COMMENT_TOO_LONG": {
+    "en": "Your comment is too long.",
+    "fa": "نظر شما خیلی طولانی است."
+  },
+  "CONTENT_INDEX_PRIVATE": {
+    "en": "The content index needs a player session.",
+    "fa": "فهرست محتوا بدون ورود بازیکن بسته است."
+  },
+  "COUNTRY_NOT_AVAILABLE": {
+    "en": "This country is not available.",
+    "fa": "این کشور در دسترس نیست."
+  },
+  "COUNTRY_NOT_FOUND": {
+    "en": "Country not found.",
+    "fa": "کشور پیدا نشد."
+  },
+  "CURRENCY_IS_NOT_ENOUGH": {
+    "en": "You do not have enough coins.",
+    "fa": "سکه کافی ندارید."
+  },
+  "CURRENCY_NOT_ACCEPTED": {
+    "en": "This currency is not accepted here.",
+    "fa": "این ارز اینجا پذیرفته نمی‌شود."
+  },
+  "CURRENCY_NOT_FOUND": {
+    "en": "Currency not found.",
+    "fa": "ارز پیدا نشد."
+  },
+  "CURRENCY_REQUIRED": {
+    "en": "Choose the currency to pay with.",
+    "fa": "ارز پرداخت را انتخاب کنید."
+  },
+  "CURRENT_TASK_MUST_BE_DONE": {
+    "en": "Finish the current task first.",
+    "fa": "اول تسک فعلی را تمام کنید."
+  },
+  "DAY_OUTSIDE_CYCLE": {
+    "en": "This day is outside the cycle.",
+    "fa": "این روز خارج از دوره است."
+  },
+  "DEFAULT_LANGUAGE_LOCKED": {
+    "en": "The default language cannot be changed this way.",
+    "fa": "زبان پیش‌فرض را این‌طور نمی‌شود تغییر داد."
+  },
+  "DEFAULT_LANGUAGE_REQUIRED": {
+    "en": "A value in the default language is required.",
+    "fa": "مقدار به زبان پیش‌فرض لازم است."
+  },
+  "DEFAULT_MUST_BE_ACTIVE": {
+    "en": "The default must be active.",
+    "fa": "مورد پیش‌فرض باید فعال باشد."
+  },
+  "DEPARTMENT_NOT_FOUND": {
+    "en": "Department not found.",
+    "fa": "بخش پشتیبانی پیدا نشد."
+  },
+  "DEPENDENCY_CYCLE": {
+    "en": "These items depend on each other in a loop.",
+    "fa": "این موارد به‌صورت چرخه‌ای به هم وابسته‌اند."
+  },
+  "DESCRIPTION_TOO_LONG": {
+    "en": "The description is too long.",
+    "fa": "توضیحات خیلی طولانی است."
+  },
+  "DEVELOPER_PAYLOAD_MISMATCH": {
+    "en": "The purchase data does not match.",
+    "fa": "اطلاعات خرید با هم نمی‌خواند."
+  },
+  "DEVICE_NOT_OWNED": {
+    "en": "This device does not belong to your account.",
+    "fa": "این دستگاه به حساب شما وصل نیست."
+  },
+  "DEVKIT_CATALOG_PRIVATE": {
+    "en": "The error list is not public.",
+    "fa": "فهرست خطاها عمومی نیست."
+  },
+  "DEVKIT_SCHEMA_DISABLED": {
+    "en": "The RPC schema is not available here.",
+    "fa": "نقشه RPCها از این راه در دسترس نیست."
+  },
+  "DEVKIT_UNKNOWN_MODULE": {
+    "en": "There is no module called {module}.",
+    "fa": "ماژولی به نام {module} وجود ندارد."
+  },
+  "DUPLICATE_DAY": {
+    "en": "This day is repeated.",
+    "fa": "این روز تکراری است."
+  },
+  "DUPLICATE_LEVEL": {
+    "en": "This level is repeated.",
+    "fa": "این سطح تکراری است."
+  },
+  "DUPLICATE_MILESTONE": {
+    "en": "This milestone is repeated.",
+    "fa": "این مرحله تکراری است."
+  },
+  "DUPLICATE_PRIZE": {
+    "en": "This prize is repeated.",
+    "fa": "این جایزه تکراری است."
+  },
+  "DUPLICATE_ROOM": {
+    "en": "This room is repeated.",
+    "fa": "این اتاق تکراری است."
+  },
+  "DUPLICATE_RULE_NAME": {
+    "en": "A rule with this name already exists.",
+    "fa": "قانونی با این نام از قبل هست."
+  },
+  "DUPLICATE_SERVICE": {
+    "en": "This service is repeated.",
+    "fa": "این سرویس تکراری است."
+  },
+  "DUPLICATE_STORE": {
+    "en": "This store is repeated.",
+    "fa": "این فروشگاه تکراری است."
+  },
+  "DUPLICATE_TIER": {
+    "en": "This tier is repeated.",
+    "fa": "این رده تکراری است."
+  },
+  "DURATION_NOT_ELAPSED": {
+    "en": "It is not time yet. Please try again later.",
+    "fa": "هنوز زمانش نرسیده است. بعداً دوباره امتحان کنید."
+  },
+  "ECONOMY_UNAVAILABLE": {
+    "en": "The economy module is not available.",
+    "fa": "ماژول اقتصاد در دسترس نیست."
+  },
+  "END_IN_PAST": {
+    "en": "The end time has already passed.",
+    "fa": "زمان پایان گذشته است."
+  },
+  "END_REQUIRED": {
+    "en": "An end time is required.",
+    "fa": "زمان پایان لازم است."
+  },
+  "END_TOO_FAR": {
+    "en": "The end time is too far away.",
+    "fa": "زمان پایان خیلی دور است."
+  },
+  "EVENT_NOT_ALLOWED": {
+    "en": "This event cannot be sent from the game.",
+    "fa": "این رویداد را نمی‌شود از بازی فرستاد."
+  },
+  "EVENT_TYPE_NOT_FOUND": {
+    "en": "Event type not found.",
+    "fa": "نوع رویداد پیدا نشد."
+  },
+  "EVERY_NEEDS_TOTAL": {
+    "en": "A total is needed for this rule.",
+    "fa": "این قانون به مقدار کل نیاز دارد."
+  },
+  "FAIRPLAY_FLAG_NOT_FOUND": {
+    "en": "Flag not found.",
+    "fa": "این پرچم پیدا نشد."
+  },
+  "FAIRPLAY_INVALID_ACTION": {
+    "en": "This action is not possible on the flag.",
+    "fa": "این کار روی این پرچم ممکن نیست."
+  },
+  "FAIR_PLAY_INVALID": {
+    "en": "Send at most {maxBalances} balances and {maxKeys} item keys.",
+    "fa": "حداکثر {maxBalances} موجودی و {maxKeys} کلید آیتم بفرستید."
+  },
+  "FILE_REQUIRED": {
+    "en": "Please choose a file.",
+    "fa": "لطفاً یک فایل انتخاب کنید."
+  },
+  "FILE_TOO_LARGE": {
+    "en": "The file is too large.",
+    "fa": "حجم فایل زیاد است."
+  },
+  "FREERIDE_KEY_REQUIRED": {
+    "en": "A free ride reward key is required.",
+    "fa": "کلید جایزهٔ گشت آزاد لازم است."
+  },
+  "FREERIDE_NOT_FOUND": {
+    "en": "This free ride reward was not found.",
+    "fa": "این جایزهٔ گشت آزاد پیدا نشد."
+  },
+  "FROM_LEVEL_REQUIRED": {
+    "en": "Send the current upgrade level.",
+    "fa": "سطح فعلی ارتقا را بفرستید."
+  },
+  "GAME_DISABLED": {
+    "en": "This game is not available right now.",
+    "fa": "این بازی فعلاً در دسترس نیست."
+  },
+  "GAME_KEY_REQUIRED": {
+    "en": "The game key is required.",
+    "fa": "کلید بازی لازم است."
+  },
+  "GAME_NOT_FOUND": {
+    "en": "Game not found.",
+    "fa": "بازی پیدا نشد."
+  },
+  "GATEWAY_REQUEST_FAILED": {
+    "en": "The payment service did not answer. Please try again.",
+    "fa": "درگاه پرداخت جواب نداد. دوباره امتحان کنید."
+  },
+  "GIFT_ALREADY_USED": {
+    "en": "You have already used this gift code.",
+    "fa": "این کد هدیه را قبلاً استفاده کرده‌اید."
+  },
+  "GIFT_EXHAUSTED": {
+    "en": "This gift code has run out.",
+    "fa": "ظرفیت این کد هدیه تمام شده است."
+  },
+  "GIFT_EXPIRED": {
+    "en": "This gift code has expired.",
+    "fa": "مهلت این کد هدیه تمام شده است."
+  },
+  "GIFT_INACTIVE": {
+    "en": "This gift code is not active.",
+    "fa": "این کد هدیه فعال نیست."
+  },
+  "GIFT_NOT_APPLICABLE": {
+    "en": "This gift code cannot be used here.",
+    "fa": "این کد هدیه برای این مورد قابل استفاده نیست."
+  },
+  "GIFT_NOT_FOUND": {
+    "en": "This gift code is not valid.",
+    "fa": "این کد هدیه معتبر نیست."
+  },
+  "GIFT_NOT_REDEEMABLE": {
+    "en": "This gift code cannot be redeemed.",
+    "fa": "این کد هدیه قابل استفاده نیست."
+  },
+  "GIFT_NOT_STARTED": {
+    "en": "This gift code is not active yet.",
+    "fa": "این کد هدیه هنوز فعال نشده است."
+  },
+  "GROUP_NOT_FOUND": {
+    "en": "Group not found.",
+    "fa": "گروه پیدا نشد."
+  },
+  "GROUP_TASK_REPEAT": {
+    "en": "Tasks inside a group cannot repeat on their own.",
+    "fa": "تسک‌های داخل گروه جدا تکرار نمی‌شوند."
+  },
+  "HANDOUT_AUTOMATIC": {
+    "en": "This is handed out automatically.",
+    "fa": "این مورد خودکار داده می‌شود."
+  },
+  "HAS_SUBTASKS": {
+    "en": "This item has sub-tasks.",
+    "fa": "این مورد زیرتسک دارد."
+  },
+  "IDS_REQUIRED": {
+    "en": "Please pick at least one item.",
+    "fa": "لطفاً دست‌کم یک مورد انتخاب کنید."
+  },
+  "IMAGE_NOT_ALLOWED": {
+    "en": "Images are not allowed here.",
+    "fa": "اینجا نمی‌شود عکس فرستاد."
+  },
+  "IMPORT_DUPLICATE_KEY": {
+    "en": "An item key is empty or repeated.",
+    "fa": "کلید یک آیتم خالی یا تکراری است."
+  },
+  "IMPORT_EMPTY": {
+    "en": "The item list is empty.",
+    "fa": "فهرست آیتم‌ها خالی است."
+  },
+  "IMPORT_TOO_MANY": {
+    "en": "At most {max} items can be imported at once.",
+    "fa": "در هر بار حداکثر {max} آیتم را می‌توان وارد کرد."
+  },
+  "INSUFFICIENT_BALANCE": {
+    "en": "Your balance is not enough.",
+    "fa": "موجودی شما کافی نیست."
+  },
+  "INTERNAL_ERROR": {
+    "en": "Something went wrong. Please try again.",
+    "fa": "مشکلی پیش آمد. دوباره امتحان کنید."
+  },
+  "INTERVAL_OR_PRICE_REQUIRED": {
+    "en": "Set a wait time or a price.",
+    "fa": "زمان انتظار یا قیمت را تعیین کنید."
+  },
+  "INTERVAL_TIME_IS_NULL": {
+    "en": "The wait time is not set.",
+    "fa": "زمان انتظار تعیین نشده است."
+  },
+  "INVALID_ACTION": {
+    "en": "This action is not valid.",
+    "fa": "این کار معتبر نیست."
+  },
+  "INVALID_ACTIVE_COUNT": {
+    "en": "The active count is not valid.",
+    "fa": "تعداد فعال معتبر نیست."
+  },
+  "INVALID_AGENT": {
+    "en": "The agent is not valid.",
+    "fa": "پشتیبان معتبر نیست."
+  },
+  "INVALID_BRANCH": {
+    "en": "The branch is not valid.",
+    "fa": "شاخه معتبر نیست."
+  },
+  "INVALID_CHANNEL": {
+    "en": "The channel is not valid.",
+    "fa": "کانال معتبر نیست."
+  },
+  "INVALID_CHUNK": {
+    "en": "The upload part is not valid.",
+    "fa": "بخش ارسال‌شده فایل معتبر نیست."
+  },
+  "INVALID_CODE": {
+    "en": "The code is not valid.",
+    "fa": "کد معتبر نیست."
+  },
+  "INVALID_COLOR": {
+    "en": "The color is not valid.",
+    "fa": "رنگ معتبر نیست."
+  },
+  "INVALID_CONTEXT": {
+    "en": "The request context is not valid.",
+    "fa": "زمینه درخواست معتبر نیست."
+  },
+  "INVALID_COOLDOWN": {
+    "en": "The cooldown is not valid.",
+    "fa": "زمان استراحت معتبر نیست."
+  },
+  "INVALID_COUNTRY_CODE": {
+    "en": "The country code is not valid.",
+    "fa": "کد کشور معتبر نیست."
+  },
+  "INVALID_CURSOR": {
+    "en": "The page cursor is not valid.",
+    "fa": "نشانگر صفحه معتبر نیست."
+  },
+  "INVALID_CYCLE": {
+    "en": "The cycle is not valid.",
+    "fa": "دوره معتبر نیست."
+  },
+  "INVALID_DATE": {
+    "en": "The date is not valid.",
+    "fa": "تاریخ معتبر نیست."
+  },
+  "INVALID_DATE_RANGE": {
+    "en": "The date range is not valid.",
+    "fa": "بازه تاریخ معتبر نیست."
+  },
+  "INVALID_DAY": {
+    "en": "The day is not valid.",
+    "fa": "روز معتبر نیست."
+  },
+  "INVALID_DAYS": {
+    "en": "The number of days is not valid.",
+    "fa": "تعداد روزها معتبر نیست."
+  },
+  "INVALID_DEVICE": {
+    "en": "The device is not valid.",
+    "fa": "دستگاه معتبر نیست."
+  },
+  "INVALID_DIAL_CODE": {
+    "en": "The dial code is not valid.",
+    "fa": "پیش‌شماره معتبر نیست."
+  },
+  "INVALID_DIRECTION": {
+    "en": "The direction is not valid.",
+    "fa": "جهت معتبر نیست."
+  },
+  "INVALID_DISCOUNT": {
+    "en": "The discount is not valid.",
+    "fa": "تخفیف معتبر نیست."
+  },
+  "INVALID_EMAIL": {
+    "en": "The email address is not valid.",
+    "fa": "نشانی ایمیل معتبر نیست."
+  },
+  "INVALID_END": {
+    "en": "The end time is not valid.",
+    "fa": "زمان پایان معتبر نیست."
+  },
+  "INVALID_ENTRY_FEE": {
+    "en": "The entry fee is not valid.",
+    "fa": "هزینه ورود معتبر نیست."
+  },
+  "INVALID_EVENT_KEY": {
+    "en": "The event key is not valid.",
+    "fa": "کلید رویداد معتبر نیست."
+  },
+  "INVALID_FILTER": {
+    "en": "The filter is not valid.",
+    "fa": "فیلتر معتبر نیست."
+  },
+  "INVALID_GAME_KEY": {
+    "en": "The game key is not valid.",
+    "fa": "کلید بازی معتبر نیست."
+  },
+  "INVALID_GITHUB_TOKEN": {
+    "en": "The GitHub token is not valid.",
+    "fa": "توکن گیت‌هاب معتبر نیست."
+  },
+  "INVALID_GRACE": {
+    "en": "The grace time is not valid.",
+    "fa": "زمان مهلت معتبر نیست."
+  },
+  "INVALID_HANDOUT_MINUTES": {
+    "en": "The handout time is not valid.",
+    "fa": "زمان اهدا معتبر نیست."
+  },
+  "INVALID_HOURS": {
+    "en": "The hours are not valid.",
+    "fa": "ساعت‌ها معتبر نیستند."
+  },
+  "INVALID_HOURS_BEFORE": {
+    "en": "The hours before are not valid.",
+    "fa": "تعداد ساعت قبل معتبر نیست."
+  },
+  "INVALID_ID": {
+    "en": "The ID is not valid.",
+    "fa": "شناسه معتبر نیست."
+  },
+  "INVALID_INTERVAL": {
+    "en": "The interval is not valid.",
+    "fa": "فاصله زمانی معتبر نیست."
+  },
+  "INVALID_INTERVAL_TIME": {
+    "en": "The wait time is not valid.",
+    "fa": "زمان انتظار معتبر نیست."
+  },
+  "INVALID_ITEM_TYPE": {
+    "en": "The item type is not valid.",
+    "fa": "نوع آیتم معتبر نیست."
+  },
+  "INVALID_JSON": {
+    "en": "The request is not valid.",
+    "fa": "درخواست معتبر نیست."
+  },
+  "INVALID_KEY": {
+    "en": "The key is not valid.",
+    "fa": "کلید معتبر نیست."
+  },
+  "INVALID_KEY_TYPE": {
+    "en": "The key type is not valid.",
+    "fa": "نوع کلید معتبر نیست."
+  },
+  "INVALID_KIND": {
+    "en": "The kind is not valid.",
+    "fa": "نوع معتبر نیست."
+  },
+  "INVALID_LANGUAGE_CODE": {
+    "en": "The language code is not valid.",
+    "fa": "کد زبان معتبر نیست."
+  },
+  "INVALID_LAYOUT": {
+    "en": "The layout is not valid.",
+    "fa": "چیدمان معتبر نیست."
+  },
+  "INVALID_LEVEL": {
+    "en": "The level is not valid.",
+    "fa": "سطح معتبر نیست."
+  },
+  "INVALID_LEVEL_RANGE": {
+    "en": "The level range is not valid.",
+    "fa": "بازه سطح معتبر نیست."
+  },
+  "INVALID_LIMIT": {
+    "en": "The limit is not valid.",
+    "fa": "سقف تعیین‌شده معتبر نیست."
+  },
+  "INVALID_LINK_TYPE": {
+    "en": "The link type is not valid.",
+    "fa": "نوع پیوند معتبر نیست."
+  },
+  "INVALID_MATCH": {
+    "en": "The match is not valid.",
+    "fa": "مسابقه معتبر نیست."
+  },
+  "INVALID_MATCH_FIELD": {
+    "en": "The match field is not valid.",
+    "fa": "فیلد شرط معتبر نیست."
+  },
+  "INVALID_MATCH_ID": {
+    "en": "The match ID is not valid.",
+    "fa": "شناسه مسابقه معتبر نیست."
+  },
+  "INVALID_MATCH_VALUE": {
+    "en": "The match value is not valid.",
+    "fa": "مقدار شرط معتبر نیست."
+  },
+  "INVALID_MAX_CLAIMS": {
+    "en": "The maximum claims value is not valid.",
+    "fa": "سقف دریافت معتبر نیست."
+  },
+  "INVALID_MAX_COMPLETIONS": {
+    "en": "The maximum completions value is not valid.",
+    "fa": "سقف انجام معتبر نیست."
+  },
+  "INVALID_MAX_ITEMS": {
+    "en": "The maximum items value is not valid.",
+    "fa": "سقف تعداد معتبر نیست."
+  },
+  "INVALID_MEASURE": {
+    "en": "The measure is not valid.",
+    "fa": "معیار معتبر نیست."
+  },
+  "INVALID_MESSAGE": {
+    "en": "The message is not valid.",
+    "fa": "پیام معتبر نیست."
+  },
+  "INVALID_METADATA": {
+    "en": "The extra data is not valid.",
+    "fa": "داده‌های اضافه معتبر نیستند."
+  },
+  "INVALID_METHOD": {
+    "en": "The method is not valid.",
+    "fa": "روش معتبر نیست."
+  },
+  "INVALID_MILESTONE_DAY": {
+    "en": "The milestone day is not valid.",
+    "fa": "روز مرحله معتبر نیست."
+  },
+  "INVALID_MOD_ACTION": {
+    "en": "The moderation action is not valid.",
+    "fa": "اقدام نظارتی معتبر نیست."
+  },
+  "INVALID_NAME": {
+    "en": "The name is not valid.",
+    "fa": "نام معتبر نیست."
+  },
+  "INVALID_NATIVE_NAME": {
+    "en": "The native name is not valid.",
+    "fa": "نام بومی معتبر نیست."
+  },
+  "INVALID_NEW_DAYS": {
+    "en": "The number of days is not valid.",
+    "fa": "تعداد روزها معتبر نیست."
+  },
+  "INVALID_OBJECT": {
+    "en": "The object is not valid.",
+    "fa": "شیء معتبر نیست."
+  },
+  "INVALID_OP": {
+    "en": "The operation is not valid.",
+    "fa": "عملیات معتبر نیست."
+  },
+  "INVALID_PAYMENT_METHOD": {
+    "en": "This payment method is not valid.",
+    "fa": "این روش پرداخت معتبر نیست."
+  },
+  "INVALID_PERCENT": {
+    "en": "The percentage is not valid.",
+    "fa": "درصد معتبر نیست."
+  },
+  "INVALID_PERIOD_DAYS": {
+    "en": "The period is not valid.",
+    "fa": "دوره معتبر نیست."
+  },
+  "INVALID_PHONE": {
+    "en": "The phone number is not valid.",
+    "fa": "شماره موبایل معتبر نیست."
+  },
+  "INVALID_PLACEMENT": {
+    "en": "The placement is not valid.",
+    "fa": "جایگاه معتبر نیست."
+  },
+  "INVALID_PLATFORM": {
+    "en": "The platform is not valid.",
+    "fa": "پلتفرم معتبر نیست."
+  },
+  "INVALID_PLAYER_AGE": {
+    "en": "The player age is not valid.",
+    "fa": "سن حساب بازیکن معتبر نیست."
+  },
+  "INVALID_POINTS": {
+    "en": "The points are not valid.",
+    "fa": "امتیاز معتبر نیست."
+  },
+  "INVALID_PRICE": {
+    "en": "The price is not valid.",
+    "fa": "قیمت معتبر نیست."
+  },
+  "INVALID_PRICE_AMOUNT": {
+    "en": "The price amount is not valid.",
+    "fa": "مبلغ قیمت معتبر نیست."
+  },
+  "INVALID_PRICE_PAYLOAD": {
+    "en": "The price data is not valid.",
+    "fa": "اطلاعات قیمت معتبر نیست."
+  },
+  "INVALID_PRIORITY": {
+    "en": "The priority is not valid.",
+    "fa": "اولویت معتبر نیست."
+  },
+  "INVALID_PRIZE_CHANCE": {
+    "en": "The prize chance is not valid.",
+    "fa": "شانس جایزه معتبر نیست."
+  },
+  "INVALID_PROVIDER_KIND": {
+    "en": "The provider type is not valid.",
+    "fa": "نوع سرویس‌دهنده معتبر نیست."
+  },
+  "INVALID_QUIET_HOURS": {
+    "en": "The quiet hours are not valid.",
+    "fa": "ساعت‌های سکوت معتبر نیستند."
+  },
+  "INVALID_RANGE": {
+    "en": "The range is not valid.",
+    "fa": "بازه معتبر نیست."
+  },
+  "INVALID_RARITY": {
+    "en": "The rarity is not valid.",
+    "fa": "کمیابی معتبر نیست."
+  },
+  "INVALID_RATE_LIMIT": {
+    "en": "The rate limit is not valid.",
+    "fa": "محدودیت تکرار معتبر نیست."
+  },
+  "INVALID_RATING": {
+    "en": "The rating is not valid.",
+    "fa": "امتیاز معتبر نیست."
+  },
+  "INVALID_REPEAT_MINUTES": {
+    "en": "The repeat time is not valid.",
+    "fa": "زمان تکرار معتبر نیست."
+  },
+  "INVALID_REPO": {
+    "en": "The repository is not valid.",
+    "fa": "مخزن معتبر نیست."
+  },
+  "INVALID_REPORT_STATUS": {
+    "en": "The report status is not valid.",
+    "fa": "وضعیت گزارش معتبر نیست."
+  },
+  "INVALID_REQUEST_ID": {
+    "en": "The request id is not valid.",
+    "fa": "شناسهٔ درخواست درست نیست."
+  },
+  "INVALID_RESTRICTION_KIND": {
+    "en": "The restriction type is not valid.",
+    "fa": "نوع محدودیت معتبر نیست."
+  },
+  "INVALID_RESULT": {
+    "en": "The result was not accepted.",
+    "fa": "نتیجهٔ ارسال‌شده پذیرفته نشد."
+  },
+  "INVALID_RETENTION": {
+    "en": "The retention time is not valid.",
+    "fa": "مدت نگهداری معتبر نیست."
+  },
+  "INVALID_ROOM": {
+    "en": "The room is not valid.",
+    "fa": "اتاق معتبر نیست."
+  },
+  "INVALID_ROOM_KEY": {
+    "en": "The room key is not valid.",
+    "fa": "کلید اتاق معتبر نیست."
+  },
+  "INVALID_ROTATE": {
+    "en": "The rotation time is not valid.",
+    "fa": "زمان چرخش معتبر نیست."
+  },
+  "INVALID_RULE": {
+    "en": "The rule is not valid.",
+    "fa": "قانون معتبر نیست."
+  },
+  "INVALID_RULE_NAME": {
+    "en": "The rule name is not valid.",
+    "fa": "نام قانون معتبر نیست."
+  },
+  "INVALID_SERVICE_ACCOUNT": {
+    "en": "The service account is not valid.",
+    "fa": "حساب سرویس معتبر نیست."
+  },
+  "INVALID_SKU": {
+    "en": "The product code is not valid.",
+    "fa": "کد محصول معتبر نیست."
+  },
+  "INVALID_STATUS": {
+    "en": "The status is not valid.",
+    "fa": "وضعیت معتبر نیست."
+  },
+  "INVALID_STEP": {
+    "en": "The step is not valid.",
+    "fa": "مرحله معتبر نیست."
+  },
+  "INVALID_STEP_STATUS": {
+    "en": "The step status is not valid.",
+    "fa": "وضعیت مرحله معتبر نیست."
+  },
+  "INVALID_STORE": {
+    "en": "The store is not valid.",
+    "fa": "فروشگاه معتبر نیست."
+  },
+  "INVALID_SUBJECT": {
+    "en": "The subject is not valid.",
+    "fa": "موضوع معتبر نیست."
+  },
+  "INVALID_TAG": {
+    "en": "The tag is not valid.",
+    "fa": "برچسب معتبر نیست."
+  },
+  "INVALID_TARGET": {
+    "en": "The target is not valid.",
+    "fa": "مقصد معتبر نیست."
+  },
+  "INVALID_THRESHOLD": {
+    "en": "The threshold is not valid.",
+    "fa": "آستانه معتبر نیست."
+  },
+  "INVALID_TIER": {
+    "en": "The tier is not valid.",
+    "fa": "رده معتبر نیست."
+  },
+  "INVALID_TIME": {
+    "en": "The time is not valid.",
+    "fa": "زمان معتبر نیست."
+  },
+  "INVALID_TIMEZONE": {
+    "en": "The time zone is not valid.",
+    "fa": "منطقه زمانی معتبر نیست."
+  },
+  "INVALID_TIME_OF_DAY": {
+    "en": "The time of day is not valid.",
+    "fa": "ساعت روز معتبر نیست."
+  },
+  "INVALID_TOKEN": {
+    "en": "The token is not valid.",
+    "fa": "توکن معتبر نیست."
+  },
+  "INVALID_TOPIC": {
+    "en": "The topic is not valid.",
+    "fa": "موضوع معتبر نیست."
+  },
+  "INVALID_TRANSITION": {
+    "en": "This change of status is not allowed.",
+    "fa": "این تغییر وضعیت مجاز نیست."
+  },
+  "INVALID_TRIGGER": {
+    "en": "The trigger is not valid.",
+    "fa": "رویداد شروع‌کننده معتبر نیست."
+  },
+  "INVALID_TYPE": {
+    "en": "The type is not valid.",
+    "fa": "نوع معتبر نیست."
+  },
+  "INVALID_UNITS": {
+    "en": "The units are not valid.",
+    "fa": "واحد معتبر نیست."
+  },
+  "INVALID_UPLOAD": {
+    "en": "The upload is not valid.",
+    "fa": "فایل ارسالی معتبر نیست."
+  },
+  "INVALID_URL": {
+    "en": "The link is not valid.",
+    "fa": "پیوند معتبر نیست."
+  },
+  "INVALID_VALUE": {
+    "en": "The value is not valid.",
+    "fa": "مقدار معتبر نیست."
+  },
+  "INVALID_VERSION": {
+    "en": "The version is not valid.",
+    "fa": "نسخه معتبر نیست."
+  },
+  "INVALID_VOICE_PLAYERS": {
+    "en": "The voice player limit is not valid.",
+    "fa": "سقف نفرات صدا معتبر نیست."
+  },
+  "INVALID_VOICE_PROVIDER": {
+    "en": "The voice provider is not valid.",
+    "fa": "سرویس صدا معتبر نیست."
+  },
+  "INVALID_WEEKDAY": {
+    "en": "The weekday is not valid.",
+    "fa": "روز هفته معتبر نیست."
+  },
+  "INVALID_WEEK_START": {
+    "en": "The start of the week is not valid.",
+    "fa": "شروع هفته معتبر نیست."
+  },
+  "INVALID_WEIGHT": {
+    "en": "The weight is not valid.",
+    "fa": "وزن معتبر نیست."
+  },
+  "INVALID_WINDOW": {
+    "en": "The time window is not valid.",
+    "fa": "بازه زمانی معتبر نیست."
+  },
+  "INVALID_WORD": {
+    "en": "The word is not valid.",
+    "fa": "واژه معتبر نیست."
+  },
+  "IN_USE": {
+    "en": "This is in use and cannot be removed.",
+    "fa": "این مورد در حال استفاده است و حذف نمی‌شود."
+  },
+  "ITEMS_REQUIRED": {
+    "en": "Please add at least one item.",
+    "fa": "لطفاً دست‌کم یک آیتم اضافه کنید."
+  },
+  "ITEM_NOT_FOUND": {
+    "en": "Item not found.",
+    "fa": "آیتم پیدا نشد."
+  },
+  "ITEM_TYPE_NOT_FOUND": {
+    "en": "Item type not found.",
+    "fa": "نوع آیتم پیدا نشد."
+  },
+  "KEY_EXISTS": {
+    "en": "This key is already used.",
+    "fa": "این کلید قبلاً استفاده شده است."
+  },
+  "KEY_IMMUTABLE": {
+    "en": "This key cannot be changed.",
+    "fa": "این کلید قابل تغییر نیست."
+  },
+  "KEY_LOCKED": {
+    "en": "This key is locked.",
+    "fa": "این کلید قفل است."
+  },
+  "LANGUAGE_ACTIVE": {
+    "en": "This language is active.",
+    "fa": "این زبان فعال است."
+  },
+  "LANGUAGE_NOT_AVAILABLE": {
+    "en": "This language is not available.",
+    "fa": "این زبان در دسترس نیست."
+  },
+  "LANGUAGE_NOT_FOUND": {
+    "en": "Language not found.",
+    "fa": "زبان پیدا نشد."
+  },
+  "LEADERBOARD_INVALID_CURSOR": {
+    "en": "The list position is not valid; load the list from the start.",
+    "fa": "جای فهرست معتبر نیست؛ فهرست را از اول باز کنید."
+  },
+  "LEADERBOARD_INVALID_SCORE": {
+    "en": "The score must be a whole number of zero or more.",
+    "fa": "امتیاز باید عددی صفر یا بیشتر باشد."
+  },
+  "LEADERBOARD_INVALID_STATUS": {
+    "en": "This reward status is not known.",
+    "fa": "این وضعیت جایزه شناخته‌شده نیست."
+  },
+  "LEADERBOARD_KEY_REQUIRED": {
+    "en": "Choose a leaderboard.",
+    "fa": "جدول امتیاز را مشخص کنید."
+  },
+  "LEADERBOARD_NOT_ACTIVE": {
+    "en": "This leaderboard is not taking scores right now.",
+    "fa": "این جدول امتیاز الان امتیاز نمی‌گیرد."
+  },
+  "LEADERBOARD_NOT_FOUND": {
+    "en": "Leaderboard not found.",
+    "fa": "جدول امتیازات پیدا نشد."
+  },
+  "LEADERBOARD_PERIOD_NOT_FOUND": {
+    "en": "This leaderboard round was not found.",
+    "fa": "این دورهٔ جدول امتیاز پیدا نشد."
+  },
+  "LEADERBOARD_PERIOD_REQUIRED": {
+    "en": "Choose the round whose reward you want.",
+    "fa": "دوره‌ای را که جایزه‌اش را می‌خواهید مشخص کنید."
+  },
+  "LEADERBOARD_RATE_LIMITED": {
+    "en": "Too many scores in a short time; try again in a minute.",
+    "fa": "در زمان کوتاهی امتیاز زیادی فرستاده شد؛ یک دقیقه دیگر دوباره امتحان کنید."
+  },
+  "LEADERBOARD_REWARD_EXPIRED": {
+    "en": "The time to claim this reward is over.",
+    "fa": "مهلت گرفتن این جایزه تمام شده است."
+  },
+  "LEADERBOARD_REWARD_NOT_CLAIMABLE": {
+    "en": "This reward cannot be claimed.",
+    "fa": "این جایزه را نمی‌شود گرفت."
+  },
+  "LEADERBOARD_REWARD_NOT_FOUND": {
+    "en": "No reward was found for you in this round.",
+    "fa": "برای شما در این دوره جایزه‌ای پیدا نشد."
+  },
+  "LEADERBOARD_SCORE_TOO_HIGH": {
+    "en": "This score is higher than allowed (at most {max}).",
+    "fa": "این امتیاز بیشتر از حد مجاز است (حداکثر {max})."
+  },
+  "LEADERBOARD_SUBMIT_NOT_ALLOWED": {
+    "en": "The game cannot send scores to this leaderboard.",
+    "fa": "بازی نمی‌تواند برای این جدول امتیاز بفرستد."
+  },
+  "LEVEL_TABLE_NOT_FOUND": {
+    "en": "Level table not found.",
+    "fa": "جدول سطح پیدا نشد."
+  },
+  "LEVEL_TABLE_REQUIRED": {
+    "en": "A level table is required.",
+    "fa": "جدول سطح لازم است."
+  },
+  "LEVEL_TOO_HIGH": {
+    "en": "Your level is too high for this.",
+    "fa": "سطح شما برای این مورد بالاست."
+  },
+  "LEVEL_TOO_LOW": {
+    "en": "Your level is not high enough yet.",
+    "fa": "سطح شما هنوز به اندازه کافی نرسیده است."
+  },
+  "LIMIT_REQUIRED": {
+    "en": "A limit is required.",
+    "fa": "تعیین سقف لازم است."
+  },
+  "LOCAL_STATE_NOT_FOUND": {
+    "en": "No device state report for this player.",
+    "fa": "گزارشی از وضعیت دستگاه این بازیکن نیست."
+  },
+  "MATCH_CANCELLED": {
+    "en": "The match was cancelled.",
+    "fa": "مسابقه لغو شد."
+  },
+  "MATCH_MISMATCH": {
+    "en": "This does not belong to this match.",
+    "fa": "این مورد مربوط به این مسابقه نیست."
+  },
+  "MATCH_NOT_FOUND": {
+    "en": "Match not found.",
+    "fa": "مسابقه پیدا نشد."
+  },
+  "MATCH_STARTED": {
+    "en": "The match has already started.",
+    "fa": "مسابقه شروع شده است."
+  },
+  "MESSAGE_NOT_FOUND": {
+    "en": "Message not found.",
+    "fa": "پیام پیدا نشد."
+  },
+  "METADATA_TOO_LARGE": {
+    "en": "The extra data is too large.",
+    "fa": "داده‌های اضافه خیلی زیاد است."
+  },
+  "META_NOT_FOUND": {
+    "en": "Meta not found.",
+    "fa": "متا پیدا نشد."
+  },
+  "METHOD_NOT_ALLOWED": {
+    "en": "This method is not allowed.",
+    "fa": "این روش مجاز نیست."
+  },
+  "METHOD_UNAVAILABLE": {
+    "en": "This payment method is not available right now.",
+    "fa": "این روش پرداخت فعلاً در دسترس نیست."
+  },
+  "MIN_ABOVE_LATEST": {
+    "en": "The minimum version is above the latest one.",
+    "fa": "حداقل نسخه از آخرین نسخه بالاتر است."
+  },
+  "MIN_ABOVE_MAX": {
+    "en": "The minimum is above the maximum.",
+    "fa": "کمینه از بیشینه بیشتر است."
+  },
+  "NESTED_SUBTASK": {
+    "en": "A sub-task cannot have its own sub-tasks.",
+    "fa": "زیرتسک نمی‌تواند زیرتسک داشته باشد."
+  },
+  "NEWS_NOT_FOUND": {
+    "en": "News not found.",
+    "fa": "خبر پیدا نشد."
+  },
+  "NOTE_REQUIRED": {
+    "en": "Please write a note.",
+    "fa": "لطفاً یادداشت بنویسید."
+  },
+  "NOTHING_TO_CLAIM": {
+    "en": "There is nothing to claim.",
+    "fa": "چیزی برای دریافت نیست."
+  },
+  "NOTIFICATION_NOT_FOUND": {
+    "en": "Notification not found.",
+    "fa": "اعلان پیدا نشد."
+  },
+  "NOT_ACTIVE": {
+    "en": "This is not active.",
+    "fa": "این مورد فعال نیست."
+  },
+  "NOT_CANCELLABLE": {
+    "en": "This cannot be cancelled.",
+    "fa": "این مورد قابل لغو نیست."
+  },
+  "NOT_FOR_SALE": {
+    "en": "This is not for sale.",
+    "fa": "این مورد فروشی نیست."
+  },
+  "NOT_FOUND": {
+    "en": "Not found.",
+    "fa": "پیدا نشد."
+  },
+  "NOT_HELD": {
+    "en": "You do not have this.",
+    "fa": "این مورد را ندارید."
+  },
+  "NOT_IN_MATCH": {
+    "en": "You are not in this match.",
+    "fa": "شما در این مسابقه نیستید."
+  },
+  "NOT_OWNED": {
+    "en": "You do not own this.",
+    "fa": "این مورد مال شما نیست."
+  },
+  "NOT_UNLOCKABLE": {
+    "en": "This cannot be unlocked.",
+    "fa": "این مورد باز نمی‌شود."
+  },
+  "NOT_UNLOCKED": {
+    "en": "This is still locked.",
+    "fa": "این مورد هنوز قفل است."
+  },
+  "NOT_YOUR_CHAT": {
+    "en": "This chat is not yours.",
+    "fa": "این گفتگو مال شما نیست."
+  },
+  "NO_TASK_AVAILABLE": {
+    "en": "No task is available right now.",
+    "fa": "فعلاً تسکی در دسترس نیست."
+  },
+  "OBJECT_TOO_LARGE": {
+    "en": "The data is too large.",
+    "fa": "حجم داده زیاد است."
+  },
+  "ONE_ROOM_PRIZE": {
+    "en": "Only one prize per room is allowed.",
+    "fa": "برای هر اتاق فقط یک جایزه مجاز است."
+  },
+  "ONE_TIME_SUBSCRIPTION": {
+    "en": "A subscription cannot be one-time.",
+    "fa": "اشتراک نمی‌تواند یک‌باره باشد."
+  },
+  "OTP_DISABLED": {
+    "en": "Sign in with a code is turned off.",
+    "fa": "ورود با کد فعلاً خاموش است."
+  },
+  "OTP_EXPIRED": {
+    "en": "The code has expired. Ask for a new one.",
+    "fa": "کد منقضی شده است. کد تازه بگیرید."
+  },
+  "OTP_INVALID_CODE": {
+    "en": "The code is wrong.",
+    "fa": "کد اشتباه است."
+  },
+  "OTP_MESSAGE_NEEDS_CODE": {
+    "en": "The message must contain the code.",
+    "fa": "متن پیام باید کد را داشته باشد."
+  },
+  "OTP_NOT_FOUND": {
+    "en": "No code was sent. Ask for a new one.",
+    "fa": "کدی فرستاده نشده است. کد تازه بگیرید."
+  },
+  "OTP_RATE_LIMITED": {
+    "en": "Too many codes were requested. Try again later.",
+    "fa": "کد زیادی درخواست شده است. کمی بعد دوباره امتحان کنید."
+  },
+  "OTP_SEND_FAILED": {
+    "en": "The code could not be sent. Please try again.",
+    "fa": "کد فرستاده نشد. دوباره امتحان کنید."
+  },
+  "OTP_TOO_MANY_ATTEMPTS": {
+    "en": "Too many wrong tries. Ask for a new code.",
+    "fa": "تعداد تلاش‌های اشتباه زیاد شد. کد تازه بگیرید."
+  },
+  "OTP_TOO_SOON": {
+    "en": "Wait {retryAfter} seconds before asking for a new code.",
+    "fa": "برای کد تازه {retryAfter} ثانیه صبر کنید."
+  },
+  "OTP_UNAVAILABLE": {
+    "en": "Sending codes is not available right now.",
+    "fa": "ارسال کد فعلاً ممکن نیست."
+  },
+  "PACK_ACTIVATE_DENIED": {
+    "en": "This tool may not activate packs; activate it in the console.",
+    "fa": "فعال کردن بسته از ابزار مجاز نیست؛ از کنسول فعالش کنید."
+  },
+  "PACK_ACTIVE": {
+    "en": "An active pack cannot be deleted; deactivate it first.",
+    "fa": "بستهٔ فعال را نمی‌توان حذف کرد؛ اول غیرفعالش کنید."
+  },
+  "PACK_CATALOG_AMBIGUOUS": {
+    "en": "The pack has more than one catalog.",
+    "fa": "بیش از یک کاتالوگ در بسته هست."
+  },
+  "PACK_CATALOG_MISSING": {
+    "en": "The pack has no Addressables catalog.",
+    "fa": "کاتالوگ Addressables در فایل‌های بسته پیدا نشد."
+  },
+  "PACK_FILES_MISSING": {
+    "en": "Some files of the pack are not uploaded yet.",
+    "fa": "بعضی فایل‌های بسته هنوز بارگذاری نشده‌اند."
+  },
+  "PACK_FILE_HASH_MISMATCH": {
+    "en": "The uploaded file does not match its hash; send it again.",
+    "fa": "هش فایل بارگذاری‌شده با فهرست نمی‌خواند؛ دوباره بفرستید."
+  },
+  "PACK_FILE_TOO_LARGE": {
+    "en": "A file is larger than {max} bytes.",
+    "fa": "یک فایل از سقف {max} بایت بزرگ‌تر است."
+  },
+  "PACK_FILE_UNKNOWN": {
+    "en": "This file is not in the pack.",
+    "fa": "این فایل در فهرست بسته نیست."
+  },
+  "PACK_HASH_MISSING": {
+    "en": "The catalog .hash file is missing.",
+    "fa": "فایل .hash کاتالوگ در بسته نیست."
+  },
+  "PACK_INVALID": {
+    "en": "The pack is not valid.",
+    "fa": "اطلاعات بسته درست نیست."
+  },
+  "PACK_NOT_FOUND": {
+    "en": "Pack not found.",
+    "fa": "بسته پیدا نشد."
+  },
+  "PACK_NOT_READY": {
+    "en": "This pack has not finished uploading.",
+    "fa": "بارگذاری این بسته تمام نشده است."
+  },
+  "PACK_NOT_UPLOADING": {
+    "en": "This pack is no longer uploading.",
+    "fa": "این بسته دیگر در حال بارگذاری نیست."
+  },
+  "PACK_PART_INVALID": {
+    "en": "The file part is not valid; parts are {partBytes} bytes.",
+    "fa": "تکهٔ فایل درست نیست؛ اندازهٔ هر تکه {partBytes} بایت است."
+  },
+  "PACK_PLATFORM_NOT_ALLOWED": {
+    "en": "This platform is not allowed in the settings.",
+    "fa": "این پلتفرم در تنظیمات مجاز نیست."
+  },
+  "PACK_TOO_LARGE": {
+    "en": "The pack is larger than {max} bytes.",
+    "fa": "حجم بسته از سقف {max} بایت بیشتر است."
+  },
+  "PACK_TOO_MANY_FILES": {
+    "en": "The pack has more than {max} files.",
+    "fa": "بسته بیش از {max} فایل دارد."
+  },
+  "PACK_VERSION_EXISTS": {
+    "en": "This version was already uploaded for this platform.",
+    "fa": "این نسخه برای این پلتفرم از قبل بارگذاری شده است."
+  },
+  "PARENT_COMMENT_NOT_FOUND": {
+    "en": "The comment you are replying to was not found.",
+    "fa": "نظری که به آن پاسخ می‌دهید پیدا نشد."
+  },
+  "PARENT_NOT_GROUPING": {
+    "en": "The parent is not a group.",
+    "fa": "والد یک گروه نیست."
+  },
+  "PARTY_NOT_FOUND": {
+    "en": "Party not found.",
+    "fa": "گروه بازی پیدا نشد."
+  },
+  "PASSWORD_CHANGED_MEANWHILE": {
+    "en": "The password was changed meanwhile; try again.",
+    "fa": "رمز عبور همین حالا عوض شد؛ دوباره امتحان کنید."
+  },
+  "PASSWORD_INVALID_CHARACTERS": {
+    "en": "The password can only have English letters, digits and keyboard symbols.",
+    "fa": "رمز عبور فقط می‌تواند حرف و عدد انگلیسی و نشانه‌های صفحه‌کلید داشته باشد."
+  },
+  "PASSWORD_LOGIN_DISABLED": {
+    "en": "Signing in with a phone number and password is turned off.",
+    "fa": "ورود با شماره و رمز عبور خاموش است."
+  },
+  "PASSWORD_NEEDS_DIGIT": {
+    "en": "The password needs at least one digit.",
+    "fa": "رمز عبور باید دست‌کم یک رقم داشته باشد."
+  },
+  "PASSWORD_NEEDS_LETTER": {
+    "en": "The password needs at least one letter.",
+    "fa": "رمز عبور باید دست‌کم یک حرف داشته باشد."
+  },
+  "PASSWORD_RATE_LIMITED": {
+    "en": "Too many tries. Try again in {retryAfter} seconds.",
+    "fa": "تلاش زیاد بود. {retryAfter} ثانیهٔ دیگر دوباره امتحان کنید."
+  },
+  "PASSWORD_REQUIRED": {
+    "en": "Enter the password.",
+    "fa": "رمز عبور را وارد کنید."
+  },
+  "PASSWORD_RESET_DISABLED": {
+    "en": "Password reset by SMS is turned off.",
+    "fa": "بازیابی رمز عبور با پیامک خاموش است."
+  },
+  "PASSWORD_TOO_LONG": {
+    "en": "The password can be at most {max} characters.",
+    "fa": "رمز عبور حداکثر می‌تواند {max} نویسه باشد."
+  },
+  "PASSWORD_TOO_SHORT": {
+    "en": "The password must be at least {min} characters.",
+    "fa": "رمز عبور باید دست‌کم {min} نویسه باشد."
+  },
+  "PAYMENT_ALREADY_SETTLED": {
+    "en": "This payment is already settled.",
+    "fa": "این پرداخت قبلاً نهایی شده است."
+  },
+  "PAYMENT_CLOSED": {
+    "en": "This payment is closed.",
+    "fa": "این پرداخت بسته شده است."
+  },
+  "PAYMENT_METHOD_NOT_CONFIGURED": {
+    "en": "This payment method is not set up.",
+    "fa": "این روش پرداخت راه‌اندازی نشده است."
+  },
+  "PAYMENT_METHOD_NOT_FOUND": {
+    "en": "Payment method not found.",
+    "fa": "روش پرداخت پیدا نشد."
+  },
+  "PAYMENT_NOT_FOUND": {
+    "en": "Payment not found.",
+    "fa": "پرداخت پیدا نشد."
+  },
+  "PAYMENT_NOT_PENDING": {
+    "en": "This payment is not waiting any more.",
+    "fa": "این پرداخت دیگر در انتظار نیست."
+  },
+  "PAYMENT_NOT_SUCCESSFUL": {
+    "en": "The payment was not successful.",
+    "fa": "پرداخت موفق نبود."
+  },
+  "PHONE_CHANGE_DISABLED": {
+    "en": "Changing the phone number is turned off.",
+    "fa": "تغییر شماره فعلاً بسته است."
+  },
+  "PHONE_CHANGE_TOO_SOON": {
+    "en": "You changed your number recently. Try again later.",
+    "fa": "شماره را به‌تازگی عوض کرده‌اید. بعداً دوباره امتحان کنید."
+  },
+  "PHONE_CHECK_RATE_LIMITED": {
+    "en": "Too many tries. Wait {retryAfter} seconds.",
+    "fa": "تلاش‌ها زیاد شد. {retryAfter} ثانیه صبر کنید."
+  },
+  "PHONE_COUNTRY_NOT_ALLOWED": {
+    "en": "Numbers from this country are not accepted.",
+    "fa": "شماره‌های این کشور پذیرفته نمی‌شوند."
+  },
+  "PHONE_NOT_REGISTERED": {
+    "en": "No account uses this number.",
+    "fa": "هیچ حسابی با این شماره ثبت نشده است."
+  },
+  "PHONE_NOT_VERIFIED": {
+    "en": "Verify your phone number before buying with this payment method.",
+    "fa": "برای خرید با این روش پرداخت، اول شماره موبایل خود را تأیید کنید."
+  },
+  "PHONE_NO_PENDING_REQUEST": {
+    "en": "Ask for a code first.",
+    "fa": "اول کد تأیید را درخواست کنید."
+  },
+  "PHONE_NUMBER_IS_EXIST": {
+    "en": "This number belongs to another account.",
+    "fa": "این شماره به حساب دیگری وصل است."
+  },
+  "PHONE_NUMBER_IS_SAME": {
+    "en": "This is already your number.",
+    "fa": "این شماره همین حالا روی حساب شماست."
+  },
+  "PHONE_OLD_CODE_REQUIRED": {
+    "en": "Confirm your current number first.",
+    "fa": "اول شماره فعلی‌تان را تأیید کنید."
+  },
+  "PHONE_RECOVERY_DISABLED": {
+    "en": "Signing in to another account with a phone number is turned off.",
+    "fa": "ورود به حساب دیگر با شماره بسته است."
+  },
+  "PHONE_REQUEST_CHANGED": {
+    "en": "Your request changed. Ask for a new code.",
+    "fa": "درخواست شما عوض شده است. دوباره کد بخواهید."
+  },
+  "PHONE_REQUIRED": {
+    "en": "Enter the phone number.",
+    "fa": "شمارهٔ تلفن را وارد کنید."
+  },
+  "PHONE_UNAVAILABLE": {
+    "en": "Phone verification is not available right now.",
+    "fa": "تأیید شماره الان در دسترس نیست."
+  },
+  "PLATFORM_REQUIRED": {
+    "en": "The platform is required.",
+    "fa": "پلتفرم را مشخص کنید."
+  },
+  "PLAYERS_MAX_BELOW_MIN": {
+    "en": "The maximum players is below the minimum.",
+    "fa": "بیشینه بازیکن از کمینه کمتر است."
+  },
+  "PLAY_CONFLICT": {
+    "en": "Another play is in progress.",
+    "fa": "یک بازی دیگر در جریان است."
+  },
+  "PLAY_NOT_FOUND": {
+    "en": "Play not found.",
+    "fa": "بازی انجام‌شده پیدا نشد."
+  },
+  "PREFS_REQUIRED": {
+    "en": "Please choose your preferences.",
+    "fa": "لطفاً تنظیمات را انتخاب کنید."
+  },
+  "PRICE_REQUIRED": {
+    "en": "A price is required.",
+    "fa": "قیمت لازم است."
+  },
+  "PRICE_TOO_LOW": {
+    "en": "The price is too low.",
+    "fa": "قیمت خیلی کم است."
+  },
+  "PRIZE_ALREADY_CLAIMED": {
+    "en": "You have already claimed this prize.",
+    "fa": "این جایزه را قبلاً گرفته‌اید."
+  },
+  "PRIZE_ALREADY_OWNED": {
+    "en": "You already own this prize.",
+    "fa": "این جایزه را از قبل دارید."
+  },
+  "PRIZE_GROUP_EMPTY": {
+    "en": "This prize group is empty.",
+    "fa": "این گروه جایزه خالی است."
+  },
+  "PRIZE_LIST_REQUIRED": {
+    "en": "A prize list is required.",
+    "fa": "فهرست جایزه لازم است."
+  },
+  "PRIZE_NOT_FOUND": {
+    "en": "Prize not found.",
+    "fa": "جایزه پیدا نشد."
+  },
+  "PRIZE_NOT_REPEATABLE": {
+    "en": "This prize cannot be given again.",
+    "fa": "این جایزه دوباره داده نمی‌شود."
+  },
+  "PRIZE_OWNER_MISMATCH": {
+    "en": "This prize belongs to someone else.",
+    "fa": "این جایزه مال کس دیگری است."
+  },
+  "PRIZE_TYPE_MISMATCH": {
+    "en": "The prize type does not fit here.",
+    "fa": "نوع جایزه با این مورد نمی‌خواند."
+  },
+  "PRODUCT_ALREADY_BOUGHT": {
+    "en": "You have already bought this.",
+    "fa": "این محصول را قبلاً خریده‌اید."
+  },
+  "PRODUCT_NOT_FOUND": {
+    "en": "Product not found.",
+    "fa": "محصول پیدا نشد."
+  },
+  "PROVIDER_CHANNEL_MISMATCH": {
+    "en": "This provider does not fit this channel.",
+    "fa": "این سرویس‌دهنده با این کانال نمی‌خواند."
+  },
+  "PROVIDER_INACTIVE": {
+    "en": "This provider is not active.",
+    "fa": "این سرویس‌دهنده فعال نیست."
+  },
+  "PROVIDER_KIND_FIXED": {
+    "en": "The provider type cannot be changed.",
+    "fa": "نوع سرویس‌دهنده قابل تغییر نیست."
+  },
+  "PROVIDER_NOT_ALLOWED": {
+    "en": "This provider is not allowed.",
+    "fa": "این سرویس‌دهنده مجاز نیست."
+  },
+  "PROVIDER_NOT_CONFIGURED": {
+    "en": "This provider is not set up.",
+    "fa": "این سرویس‌دهنده راه‌اندازی نشده است."
+  },
+  "PROVIDER_NOT_FOUND": {
+    "en": "Provider not found.",
+    "fa": "سرویس‌دهنده پیدا نشد."
+  },
+  "PROVIDER_NOT_SMS": {
+    "en": "This provider does not send SMS.",
+    "fa": "این سرویس‌دهنده پیامک نمی‌فرستد."
+  },
+  "PURCHASE_INVALID": {
+    "en": "The purchase could not be verified.",
+    "fa": "خرید تأیید نشد."
+  },
+  "QUERY_TOO_LONG": {
+    "en": "The search text is too long.",
+    "fa": "متن جستجو خیلی طولانی است."
+  },
+  "QUIZ_ANSWER_INVALID": {
+    "en": "The answer is not valid.",
+    "fa": "پاسخ ارسال‌شده معتبر نیست."
+  },
+  "QUIZ_BUSY": {
+    "en": "The server is busy; send it again.",
+    "fa": "سرور مشغول است؛ دوباره بفرستید."
+  },
+  "QUIZ_DAILY_PLAY_LIMIT": {
+    "en": "You reached today's limit of {limit} quizzes.",
+    "fa": "سقف بازی امروز ({limit} بار) پر شده است."
+  },
+  "QUIZ_GAME_MISSION_LOCKED": {
+    "en": "Finish the previous mission of this game first.",
+    "fa": "اول ماموریت قبلی این بازی را تمام کنید."
+  },
+  "QUIZ_GAME_TIME_OVER": {
+    "en": "The time for this game is over.",
+    "fa": "زمان این بازی تمام شده است."
+  },
+  "QUIZ_HINT_LIMIT": {
+    "en": "You can open at most {limit} hints for this question.",
+    "fa": "برای این سوال بیشتر از {limit} راهنما نمی‌شود گرفت."
+  },
+  "QUIZ_HINT_NOT_FOUND": {
+    "en": "This hint was not found.",
+    "fa": "این راهنما پیدا نشد."
+  },
+  "QUIZ_HINT_PRICE_INVALID": {
+    "en": "This hint has no valid price.",
+    "fa": "قیمت این راهنما درست تنظیم نشده است."
+  },
+  "QUIZ_INSUFFICIENT_CURRENCY_FOR_HINT": {
+    "en": "You do not have enough currency for this hint.",
+    "fa": "موجودی شما برای خرید این راهنما کافی نیست."
+  },
+  "QUIZ_METADATA_TOO_LARGE": {
+    "en": "The play metadata is too large.",
+    "fa": "اطلاعات همراه بازی بیش از حد بزرگ است."
+  },
+  "QUIZ_MISSION_NOT_FOUND": {
+    "en": "This mission was not found.",
+    "fa": "این ماموریت پیدا نشد."
+  },
+  "QUIZ_MISSION_PACK_LOCKED": {
+    "en": "Pass the previous quiz of this mission first.",
+    "fa": "اول آزمون قبلی این ماموریت را قبول شوید."
+  },
+  "QUIZ_MISSION_TIME_OVER": {
+    "en": "The time for this mission is over.",
+    "fa": "زمان این ماموریت تمام شده است."
+  },
+  "QUIZ_NO_PACK_FOUND": {
+    "en": "No quiz matches these filters.",
+    "fa": "آزمونی با این شرایط پیدا نشد."
+  },
+  "QUIZ_OPTION_NOT_FOUND": {
+    "en": "This option is not part of the question.",
+    "fa": "این گزینه در سوال نیست."
+  },
+  "QUIZ_PACK_ALREADY_PASSED": {
+    "en": "You already passed this quiz.",
+    "fa": "این آزمون را قبلا قبول شده‌اید."
+  },
+  "QUIZ_PACK_COOLDOWN": {
+    "en": "Try this quiz again in {retryAfter} seconds.",
+    "fa": "{retryAfter} ثانیه دیگر دوباره امتحان کنید."
+  },
+  "QUIZ_PACK_EMPTY": {
+    "en": "This quiz has no questions yet.",
+    "fa": "این آزمون هنوز سوالی ندارد."
+  },
+  "QUIZ_PACK_KEY_REQUIRED": {
+    "en": "Send the quiz key.",
+    "fa": "کلید آزمون را بفرستید."
+  },
+  "QUIZ_PACK_NOT_FOUND": {
+    "en": "This quiz was not found.",
+    "fa": "این آزمون پیدا نشد."
+  },
+  "QUIZ_PACK_PLAY_LIMIT": {
+    "en": "You played this quiz the allowed {limit} times.",
+    "fa": "دفعات مجاز این آزمون ({limit} بار) تمام شده است."
+  },
+  "QUIZ_QUESTION_NOT_CURRENT": {
+    "en": "Answer the current question first.",
+    "fa": "اول به سوال فعلی پاسخ دهید."
+  },
+  "QUIZ_QUESTION_NOT_FOUND": {
+    "en": "This question was not found.",
+    "fa": "این سوال پیدا نشد."
+  },
+  "QUIZ_QUESTION_NOT_IN_SESSION": {
+    "en": "This question is not part of your quiz.",
+    "fa": "این سوال در آزمون شما نیست."
+  },
+  "QUIZ_QUESTION_TIME_OVER": {
+    "en": "The time for this question was over.",
+    "fa": "زمان این سوال تمام شده بود."
+  },
+  "QUIZ_REPORTS_CLOSED": {
+    "en": "Question reports are closed for now.",
+    "fa": "گزارش سوال فعلا بسته است."
+  },
+  "QUIZ_REPORT_LIMIT": {
+    "en": "You reached today's limit of {limit} reports.",
+    "fa": "سقف گزارش امروز ({limit} مورد) پر شده است."
+  },
+  "QUIZ_REPORT_NOTE_REQUIRED": {
+    "en": "Describe the problem.",
+    "fa": "توضیح مشکل را بنویسید."
+  },
+  "QUIZ_REPORT_NOTE_TOO_LONG": {
+    "en": "The note can be at most 1000 letters.",
+    "fa": "توضیح حداکثر ۱۰۰۰ حرف است."
+  },
+  "QUIZ_REPORT_NOT_SEEN": {
+    "en": "You can only report a question you were asked.",
+    "fa": "فقط سوالی را که دیده‌اید می‌توانید گزارش کنید."
+  },
+  "QUIZ_REPORT_REASON_NOT_FOUND": {
+    "en": "Pick one of the report reasons.",
+    "fa": "یکی از دلیل‌های گزارش را انتخاب کنید."
+  },
+  "QUIZ_REPORT_TEMPLATE_NOT_FOUND": {
+    "en": "This result report was not found.",
+    "fa": "این گزارش نتیجه پیدا نشد."
+  },
+  "QUIZ_SESSION_CLOSED": {
+    "en": "This quiz session is closed.",
+    "fa": "این آزمون بسته شده است."
+  },
+  "QUIZ_SESSION_NOT_FOUND": {
+    "en": "The quiz session was not found.",
+    "fa": "آزمون در جریانی پیدا نشد."
+  },
+  "QUIZ_SESSION_REQUIRED": {
+    "en": "Send the quiz session id.",
+    "fa": "شناسه آزمون را بفرستید."
+  },
+  "QUIZ_TIME_OVER": {
+    "en": "The quiz time is over; your result was saved.",
+    "fa": "زمان آزمون تمام شد و نتیجه ثبت شد."
+  },
+  "QUIZ_TOO_MANY_ANSWERS": {
+    "en": "Too many answers in one request.",
+    "fa": "تعداد پاسخ‌ها بیش از حد است."
+  },
+  "RECOVERY_ONLY_FOR_GUESTS": {
+    "en": "Only a guest account can switch to another account with a phone number.",
+    "fa": "فقط حساب مهمان می‌تواند با شماره وارد حساب دیگری شود."
+  },
+  "REFERENCE_NOT_FOUND": {
+    "en": "The linked item was not found.",
+    "fa": "مورد پیوندشده پیدا نشد."
+  },
+  "REFERRAL_CYCLE": {
+    "en": "You cannot refer someone who referred you.",
+    "fa": "نمی‌توانید معرفِ معرف خودتان شوید."
+  },
+  "REFERRAL_DECIDED": {
+    "en": "This referral is already decided.",
+    "fa": "تکلیف این معرفی قبلاً روشن شده است."
+  },
+  "REFERRAL_DISABLED": {
+    "en": "Referrals are turned off.",
+    "fa": "معرفی دوستان فعلاً خاموش است."
+  },
+  "REFERRAL_NOT_FOUND": {
+    "en": "This referral code is not valid.",
+    "fa": "این کد معرف معتبر نیست."
+  },
+  "REFERRER_LIMIT": {
+    "en": "This referrer has reached the limit.",
+    "fa": "این معرف به سقف معرفی رسیده است."
+  },
+  "REPEAT_NEEDS_PERIOD": {
+    "en": "Repeating needs a period.",
+    "fa": "برای تکرار باید دوره تعیین شود."
+  },
+  "REPORT_CLOSED": {
+    "en": "This report is closed.",
+    "fa": "این گزارش بسته شده است."
+  },
+  "REPORT_NOT_FOUND": {
+    "en": "Report not found.",
+    "fa": "گزارش پیدا نشد."
+  },
+  "REPORT_TITLE_NOT_FOUND": {
+    "en": "Please pick a report reason.",
+    "fa": "لطفاً دلیل گزارش را انتخاب کنید."
+  },
+  "REQUEST_ID_REQUIRED": {
+    "en": "A request ID is required.",
+    "fa": "شناسه درخواست لازم است."
+  },
+  "REQUEST_ID_REUSED": {
+    "en": "This request was already sent.",
+    "fa": "این درخواست قبلاً فرستاده شده است."
+  },
+  "REQUEST_TOO_LARGE": {
+    "en": "The request is too large.",
+    "fa": "درخواست خیلی بزرگ است."
+  },
+  "REQUIRED": {
+    "en": "This field is required.",
+    "fa": "این مورد لازم است."
+  },
+  "REQUIRES_ITEM": {
+    "en": "You need a specific item for this.",
+    "fa": "برای این کار آیتم خاصی لازم است."
+  },
+  "RESTRICTION_NOT_FOUND": {
+    "en": "Restriction not found.",
+    "fa": "محدودیت پیدا نشد."
+  },
+  "REWARD_ALREADY_GRANTED": {
+    "en": "This reward was already given.",
+    "fa": "این پاداش قبلاً داده شده است."
+  },
+  "REWARD_LIMITED": {
+    "en": "No reward right now; try again later.",
+    "fa": "فعلاً جایزه‌ای نمی‌گیرید؛ کمی بعد دوباره امتحان کنید."
+  },
+  "ROOM_NOT_ALLOWED": {
+    "en": "You cannot join this room.",
+    "fa": "نمی‌توانید وارد این اتاق شوید."
+  },
+  "ROOM_NOT_FOUND": {
+    "en": "Room not found.",
+    "fa": "اتاق پیدا نشد."
+  },
+  "ROOM_REQUIRED": {
+    "en": "A room is required.",
+    "fa": "اتاق لازم است."
+  },
+  "SAME_META": {
+    "en": "Pick two different metas.",
+    "fa": "دو متای متفاوت انتخاب کنید."
+  },
+  "SCHEDULE_IN_PAST": {
+    "en": "The scheduled time has passed.",
+    "fa": "زمان برنامه‌ریزی‌شده گذشته است."
+  },
+  "SCHEDULE_TOO_FAR": {
+    "en": "The scheduled time is too far away.",
+    "fa": "زمان برنامه‌ریزی‌شده خیلی دور است."
+  },
+  "SECRET_KEY_MISSING": {
+    "en": "A secret key is missing.",
+    "fa": "کلید محرمانه تعیین نشده است."
+  },
+  "SELF_DEPENDENCY": {
+    "en": "An item cannot depend on itself.",
+    "fa": "یک مورد نمی‌تواند به خودش وابسته باشد."
+  },
+  "SELF_PARENT": {
+    "en": "An item cannot be its own parent.",
+    "fa": "یک مورد نمی‌تواند والد خودش باشد."
+  },
+  "SELF_REFERENCE": {
+    "en": "An item cannot point to itself.",
+    "fa": "یک مورد نمی‌تواند به خودش اشاره کند."
+  },
+  "SELF_REFERRAL": {
+    "en": "You cannot use your own referral code.",
+    "fa": "نمی‌توانید کد معرف خودتان را وارد کنید."
+  },
+  "SERVICE_NOT_FOUND": {
+    "en": "Service not found.",
+    "fa": "سرویس پیدا نشد."
+  },
+  "SESSION_UNAVAILABLE": {
+    "en": "Signing in is not possible right now.",
+    "fa": "ورود الان ممکن نیست."
+  },
+  "SHOP_CARDS_EMPTY": {
+    "en": "No cards were sent.",
+    "fa": "هیچ کارتی فرستاده نشده است."
+  },
+  "SHOP_CARDS_INVALID": {
+    "en": "A card is not valid ({key}).",
+    "fa": "یکی از کارت‌ها درست نیست ({key})."
+  },
+  "SHOP_CARDS_TOO_MANY": {
+    "en": "At most {max} cards can be sent at once.",
+    "fa": "در هر بار حداکثر {max} کارت را می‌توان فرستاد."
+  },
+  "SINGLE_PLAYER_GAME": {
+    "en": "This is a single-player game.",
+    "fa": "این بازی تک‌نفره است."
+  },
+  "SKU_REQUIRED": {
+    "en": "A product code is required.",
+    "fa": "کد محصول لازم است."
+  },
+  "SOCIAL_ACCEPT_REQUIRED": {
+    "en": "Say whether you accept the request.",
+    "fa": "پذیرفتن یا رد درخواست را مشخص کنید."
+  },
+  "SOCIAL_ACTION_NOT_ALLOWED": {
+    "en": "This action is not available here.",
+    "fa": "این کار اینجا ممکن نیست."
+  },
+  "SOCIAL_ALREADY_REPORTED": {
+    "en": "You have already reported this comment.",
+    "fa": "این نظر را قبلاً گزارش کرده‌اید."
+  },
+  "SOCIAL_BLOCKED": {
+    "en": "You cannot do this because one of you has blocked the other.",
+    "fa": "چون یکی از شما دیگری را مسدود کرده، این کار ممکن نیست."
+  },
+  "SOCIAL_BUSY": {
+    "en": "Please try again.",
+    "fa": "لطفاً دوباره امتحان کنید."
+  },
+  "SOCIAL_COMMENT_BLOCKED": {
+    "en": "Your comment contains words that are not allowed.",
+    "fa": "نظر شما کلمه‌های غیرمجاز دارد."
+  },
+  "SOCIAL_COMMENT_MUTED": {
+    "en": "You cannot comment until {until}.",
+    "fa": "تا {until} نمی‌توانید نظر بدهید."
+  },
+  "SOCIAL_COMMENT_NOT_FOUND": {
+    "en": "Comment not found.",
+    "fa": "نظر پیدا نشد."
+  },
+  "SOCIAL_COMMENT_TOO_DEEP": {
+    "en": "You cannot reply to this comment.",
+    "fa": "به این نظر نمی‌شود پاسخ داد."
+  },
+  "SOCIAL_COMMENT_TOO_LONG": {
+    "en": "A comment can have at most {max} characters.",
+    "fa": "نظر حداکثر {max} حرف می‌تواند باشد."
+  },
+  "SOCIAL_COMMENT_TOO_SHORT": {
+    "en": "A comment needs at least {min} characters.",
+    "fa": "نظر دست‌کم {min} حرف لازم دارد."
+  },
+  "SOCIAL_DELETE_CLOSED": {
+    "en": "This comment can no longer be deleted.",
+    "fa": "دیگر نمی‌توانید این نظر را حذف کنید."
+  },
+  "SOCIAL_DISABLED": {
+    "en": "This feature is turned off.",
+    "fa": "این بخش فعلاً خاموش است."
+  },
+  "SOCIAL_EDIT_CLOSED": {
+    "en": "This comment can no longer be edited.",
+    "fa": "دیگر نمی‌توانید این نظر را ویرایش کنید."
+  },
+  "SOCIAL_FAVORITE_LIMIT": {
+    "en": "You can keep at most {limit} favorites.",
+    "fa": "حداکثر {limit} مورد علاقه می‌توانید داشته باشید."
+  },
+  "SOCIAL_FOLLOW_CLOSED": {
+    "en": "This player does not accept followers.",
+    "fa": "این بازیکن دنبال‌کننده نمی‌پذیرد."
+  },
+  "SOCIAL_FOLLOW_LIMIT": {
+    "en": "You can follow at most {limit} players.",
+    "fa": "حداکثر {limit} بازیکن را می‌توانید دنبال کنید."
+  },
+  "SOCIAL_FOLLOW_SELF": {
+    "en": "You cannot follow yourself.",
+    "fa": "نمی‌توانید خودتان را دنبال کنید."
+  },
+  "SOCIAL_INVALID_KIND": {
+    "en": "Unknown list kind.",
+    "fa": "نوع فهرست معتبر نیست."
+  },
+  "SOCIAL_INVALID_METADATA": {
+    "en": "Metadata must be a JSON object.",
+    "fa": "دادهٔ اضافه باید یک شیء JSON باشد."
+  },
+  "SOCIAL_INVALID_POLICY": {
+    "en": "This privacy choice is not valid.",
+    "fa": "این انتخاب حریم خصوصی معتبر نیست."
+  },
+  "SOCIAL_INVALID_SORT": {
+    "en": "Unknown sort order.",
+    "fa": "ترتیب معتبر نیست."
+  },
+  "SOCIAL_INVALID_TARGET": {
+    "en": "This target id is not valid.",
+    "fa": "شناسهٔ مورد معتبر نیست."
+  },
+  "SOCIAL_INVALID_USER": {
+    "en": "This player id is not valid.",
+    "fa": "شناسهٔ بازیکن معتبر نیست."
+  },
+  "SOCIAL_LIST_HIDDEN": {
+    "en": "This player keeps the list private.",
+    "fa": "این بازیکن فهرستش را پنهان کرده است."
+  },
+  "SOCIAL_METADATA_TOO_LARGE": {
+    "en": "Metadata can be at most {max} bytes.",
+    "fa": "دادهٔ اضافه حداکثر {max} بایت می‌تواند باشد."
+  },
+  "SOCIAL_NOTE_TOO_LONG": {
+    "en": "The note can have at most {max} characters.",
+    "fa": "توضیح حداکثر {max} حرف می‌تواند باشد."
+  },
+  "SOCIAL_PRIVACY_LOCKED": {
+    "en": "Privacy settings are set by the game.",
+    "fa": "تنظیمات حریم خصوصی را بازی تعیین می‌کند."
+  },
+  "SOCIAL_RATE_LIMITED": {
+    "en": "Too many tries. Please wait {retryAfter} seconds.",
+    "fa": "تعداد دفعات زیاد است. {retryAfter} ثانیه صبر کنید."
+  },
+  "SOCIAL_RATE_SELF": {
+    "en": "You cannot rate yourself.",
+    "fa": "نمی‌توانید به خودتان امتیاز بدهید."
+  },
+  "SOCIAL_RATING_LOCKED": {
+    "en": "Your rating cannot be changed.",
+    "fa": "امتیازتان را نمی‌شود تغییر داد."
+  },
+  "SOCIAL_RATING_OUT_OF_RANGE": {
+    "en": "A rating is from 1 to {max}.",
+    "fa": "امتیاز باید از ۱ تا {max} باشد."
+  },
+  "SOCIAL_RATING_REQUIRED": {
+    "en": "Choose a rating.",
+    "fa": "امتیاز را انتخاب کنید."
+  },
+  "SOCIAL_REACTION_NOT_FOUND": {
+    "en": "This reaction is not available.",
+    "fa": "این واکنش در دسترس نیست."
+  },
+  "SOCIAL_REACTION_REQUIRED": {
+    "en": "Choose a reaction.",
+    "fa": "واکنش را انتخاب کنید."
+  },
+  "SOCIAL_REPLIES_OFF": {
+    "en": "Replies are turned off.",
+    "fa": "پاسخ دادن به نظرها خاموش است."
+  },
+  "SOCIAL_REPORT_OWN": {
+    "en": "You cannot report your own comment.",
+    "fa": "نمی‌توانید نظر خودتان را گزارش کنید."
+  },
+  "SOCIAL_REPORT_TITLE_NOT_FOUND": {
+    "en": "Unknown report reason.",
+    "fa": "دلیل گزارش معتبر نیست."
+  },
+  "SOCIAL_REPORT_TITLE_REQUIRED": {
+    "en": "Choose a reason for the report.",
+    "fa": "دلیل گزارش را انتخاب کنید."
+  },
+  "SOCIAL_REQUEST_NOT_FOUND": {
+    "en": "Follow request not found.",
+    "fa": "درخواست دنبال کردن پیدا نشد."
+  },
+  "SOCIAL_TARGET_NOT_FOUND": {
+    "en": "Not found.",
+    "fa": "مورد پیدا نشد."
+  },
+  "SOCIAL_TARGET_REQUIRED": {
+    "en": "Say what this is about.",
+    "fa": "مورد را مشخص کنید."
+  },
+  "SOCIAL_TARGET_TYPE_NOT_FOUND": {
+    "en": "Unknown target type.",
+    "fa": "نوع مورد شناخته نشد."
+  },
+  "SOCIAL_TOO_MANY_IDS": {
+    "en": "Send at most {max} ids at once.",
+    "fa": "حداکثر {max} شناسه را یک‌جا بفرستید."
+  },
+  "SOCIAL_USER_NOT_FOUND": {
+    "en": "Player not found.",
+    "fa": "بازیکن پیدا نشد."
+  },
+  "SOCIAL_USER_REQUIRED": {
+    "en": "Choose a player.",
+    "fa": "بازیکن را مشخص کنید."
+  },
+  "SPONSOR_LINK_NOT_FOUND": {
+    "en": "Sponsor link not found.",
+    "fa": "پیوند حامی پیدا نشد."
+  },
+  "SPONSOR_NOT_AVAILABLE": {
+    "en": "This sponsor is not available.",
+    "fa": "این حامی در دسترس نیست."
+  },
+  "SPONSOR_NOT_FOUND": {
+    "en": "Sponsor not found.",
+    "fa": "حامی پیدا نشد."
+  },
+  "SPONSOR_NO_WEBSITE": {
+    "en": "This sponsor has no website.",
+    "fa": "این حامی وبسایت ندارد."
+  },
+  "SPONSOR_REQUIRED": {
+    "en": "A sponsor is required.",
+    "fa": "حامی لازم است."
+  },
+  "STAGE_BUSY": {
+    "en": "The result could not be saved; send it again.",
+    "fa": "نتیجه ذخیره نشد؛ یک بار دیگر بفرستید."
+  },
+  "STAGE_FINISHED_TOO_FAST": {
+    "en": "The stage cannot be finished this fast; the result was not accepted.",
+    "fa": "این مرحله در این زمان کوتاه تمام نمی‌شود؛ نتیجه پذیرفته نشد."
+  },
+  "STAGE_KEY_REQUIRED": {
+    "en": "A stage key is required.",
+    "fa": "کلید مرحله لازم است."
+  },
+  "STAGE_LOCKED": {
+    "en": "This stage is still locked.",
+    "fa": "این مرحله هنوز باز نشده است."
+  },
+  "STAGE_NOT_FOUND": {
+    "en": "This stage was not found.",
+    "fa": "این مرحله پیدا نشد."
+  },
+  "STAGE_SERVER_OWNED": {
+    "en": "The server records the result of this stage.",
+    "fa": "نتیجه این مرحله را خود سرور ثبت می‌کند."
+  },
+  "STARTER_HAS_LEVEL": {
+    "en": "A starter item cannot have a level.",
+    "fa": "آیتم شروع نمی‌تواند سطح داشته باشد."
+  },
+  "STARTER_ITEM": {
+    "en": "This is a starter item.",
+    "fa": "این آیتم شروع است."
+  },
+  "STEPS_REQUIRED": {
+    "en": "Please add at least one step.",
+    "fa": "لطفاً دست‌کم یک مرحله اضافه کنید."
+  },
+  "STORE_CONFIGURATION_REJECTED": {
+    "en": "The store rejected its settings. Please try again later.",
+    "fa": "فروشگاه تنظیمات را نپذیرفت. بعداً دوباره امتحان کنید."
+  },
+  "STORE_UNAVAILABLE": {
+    "en": "The store is not available right now.",
+    "fa": "فروشگاه فعلاً در دسترس نیست."
+  },
+  "STREAK_NOT_FOUND": {
+    "en": "Streak not found.",
+    "fa": "روزهای پیاپی پیدا نشد."
+  },
+  "SUBSCRIPTION_NOT_SUPPORTED": {
+    "en": "Subscriptions are not supported here.",
+    "fa": "اشتراک در اینجا پشتیبانی نمی‌شود."
+  },
+  "SUBSCRIPTION_OWNED_BY_ANOTHER_USER": {
+    "en": "This subscription belongs to another account.",
+    "fa": "این اشتراک مال حساب دیگری است."
+  },
+  "SUBTASK_IN_GROUP": {
+    "en": "A sub-task cannot be in a group.",
+    "fa": "زیرتسک نمی‌تواند در گروه باشد."
+  },
+  "SUBTASK_NEEDS_EVENT": {
+    "en": "A sub-task needs an event.",
+    "fa": "زیرتسک باید رویداد داشته باشد."
+  },
+  "SYSTEM_EVENT": {
+    "en": "This is a system event.",
+    "fa": "این رویداد سیستمی است."
+  },
+  "SYSTEM_EVENT_SERVER_ONLY": {
+    "en": "Only the server can send this event.",
+    "fa": "این رویداد را فقط سرور می‌فرستد."
+  },
+  "TAGS_REQUIRED": {
+    "en": "Please pick at least one tag.",
+    "fa": "لطفاً دست‌کم یک برچسب انتخاب کنید."
+  },
+  "TAG_BOTH_WAYS": {
+    "en": "A tag cannot be both included and excluded.",
+    "fa": "یک برچسب نمی‌تواند هم شامل و هم مستثنا باشد."
+  },
+  "TAG_KIND_MISMATCH": {
+    "en": "This tag does not fit here.",
+    "fa": "این برچسب برای این بخش مناسب نیست."
+  },
+  "TAG_NOT_FOUND": {
+    "en": "Tag not found.",
+    "fa": "برچسب پیدا نشد."
+  },
+  "TARGET_TAGS_REQUIRED": {
+    "en": "Pick the tags to target.",
+    "fa": "برچسب‌های مخاطب را انتخاب کنید."
+  },
+  "TARGET_USERS_REQUIRED": {
+    "en": "Pick the players to target.",
+    "fa": "بازیکنان مخاطب را انتخاب کنید."
+  },
+  "TASK_ALREADY_CLAIMED": {
+    "en": "You have already claimed this task.",
+    "fa": "جایزه این تسک را قبلاً گرفته‌اید."
+  },
+  "TASK_ALREADY_COMPLETED": {
+    "en": "This task is already completed.",
+    "fa": "این تسک قبلاً انجام شده است."
+  },
+  "TASK_AND_GROUP": {
+    "en": "Pick a task or a group, not both.",
+    "fa": "تسک یا گروه را انتخاب کنید، نه هر دو."
+  },
+  "TASK_GROUP_FINISHED": {
+    "en": "This task group is finished.",
+    "fa": "این گروه تسک تمام شده است."
+  },
+  "TASK_GROUP_NOT_FOUND": {
+    "en": "Task group not found.",
+    "fa": "گروه تسک پیدا نشد."
+  },
+  "TASK_HAS_NO_PRIZE": {
+    "en": "This task has no prize.",
+    "fa": "این تسک جایزه ندارد."
+  },
+  "TASK_NOT_AVAILABLE": {
+    "en": "This task is not available.",
+    "fa": "این تسک در دسترس نیست."
+  },
+  "TASK_NOT_COMPLETED": {
+    "en": "This task is not completed yet.",
+    "fa": "این تسک هنوز کامل نشده است."
+  },
+  "TASK_NOT_FOUND": {
+    "en": "Task not found.",
+    "fa": "تسک پیدا نشد."
+  },
+  "TASK_NOT_STARTED": {
+    "en": "This task has not started.",
+    "fa": "این تسک هنوز شروع نشده است."
+  },
+  "TASK_REQUIRED": {
+    "en": "A task is required.",
+    "fa": "تسک لازم است."
+  },
+  "TEXT_REQUIRED": {
+    "en": "Please write the text.",
+    "fa": "لطفاً متن را بنویسید."
+  },
+  "TEXT_TOO_LONG": {
+    "en": "The text is too long.",
+    "fa": "متن خیلی طولانی است."
+  },
+  "THRESHOLDS_NOT_ORDERED": {
+    "en": "The thresholds must go up in order.",
+    "fa": "آستانه‌ها باید به ترتیب بالا بروند."
+  },
+  "TICKET_CLOSED": {
+    "en": "This ticket is closed.",
+    "fa": "این تیکت بسته شده است."
+  },
+  "TICKET_NOT_FINISHED": {
+    "en": "This ticket is not finished yet.",
+    "fa": "این تیکت هنوز تمام نشده است."
+  },
+  "TICKET_NOT_FOUND": {
+    "en": "Ticket not found.",
+    "fa": "تیکت پیدا نشد."
+  },
+  "TICKET_PLAY_IS_NOT_SUPPORT": {
+    "en": "Tickets cannot be used for this game.",
+    "fa": "برای این بازی نمی‌شود از بلیت استفاده کرد."
+  },
+  "TIERS_NEED_EVENT": {
+    "en": "Tiers need an event.",
+    "fa": "رده‌ها به رویداد نیاز دارند."
+  },
+  "TIERS_NOT_CONSECUTIVE": {
+    "en": "The tiers must follow each other.",
+    "fa": "رده‌ها باید پشت سر هم باشند."
+  },
+  "TIERS_REQUIRED": {
+    "en": "Please add at least one tier.",
+    "fa": "لطفاً دست‌کم یک رده اضافه کنید."
+  },
+  "TIER_HAS_NO_PRIZE": {
+    "en": "This tier has no prize.",
+    "fa": "این رده جایزه ندارد."
+  },
+  "TIER_IN_USE": {
+    "en": "This tier is in use.",
+    "fa": "این رده در حال استفاده است."
+  },
+  "TIER_NOT_FOUND": {
+    "en": "Tier not found.",
+    "fa": "رده پیدا نشد."
+  },
+  "TIER_NOT_REACHED": {
+    "en": "You have not reached this tier yet.",
+    "fa": "هنوز به این رده نرسیده‌اید."
+  },
+  "TIMEOUT": {
+    "en": "The server took too long. Please try again.",
+    "fa": "پاسخ سرور طول کشید. دوباره امتحان کنید."
+  },
+  "TOKEN_ALREADY_USED": {
+    "en": "This token was already used.",
+    "fa": "این توکن قبلاً استفاده شده است."
+  },
+  "TOKEN_NOT_VERIFIED": {
+    "en": "This token is not verified.",
+    "fa": "این توکن تأیید نشده است."
+  },
+  "TOO_MANY_ACTIONS": {
+    "en": "There are too many actions.",
+    "fa": "تعداد کارها زیاد است."
+  },
+  "TOO_MANY_AGENTS": {
+    "en": "There are too many agents.",
+    "fa": "تعداد پشتیبان‌ها زیاد است."
+  },
+  "TOO_MANY_ATTACHMENTS": {
+    "en": "There are too many attachments.",
+    "fa": "تعداد پیوست‌ها زیاد است."
+  },
+  "TOO_MANY_BANNERS": {
+    "en": "There are too many banners.",
+    "fa": "تعداد بنرها زیاد است."
+  },
+  "TOO_MANY_CODES": {
+    "en": "You asked for too many codes at once.",
+    "fa": "تعداد کدهای درخواستی زیاد است."
+  },
+  "TOO_MANY_DEPENDENCIES": {
+    "en": "There are too many dependencies.",
+    "fa": "تعداد وابستگی‌ها زیاد است."
+  },
+  "TOO_MANY_EVENTS": {
+    "en": "Too many events. Please slow down.",
+    "fa": "رویدادها زیاد شد. کمی آهسته‌تر."
+  },
+  "TOO_MANY_FIELDS": {
+    "en": "The result has too many fields.",
+    "fa": "تعداد فیلدهای نتیجه بیش از حد است."
+  },
+  "TOO_MANY_IDS": {
+    "en": "You picked too many items.",
+    "fa": "موارد انتخاب‌شده زیاد است."
+  },
+  "TOO_MANY_ITEMS": {
+    "en": "There are too many items.",
+    "fa": "تعداد آیتم‌ها زیاد است."
+  },
+  "TOO_MANY_KEYS": {
+    "en": "There are too many keys.",
+    "fa": "تعداد کلیدها زیاد است."
+  },
+  "TOO_MANY_LINKS": {
+    "en": "There are too many links.",
+    "fa": "تعداد پیوندها زیاد است."
+  },
+  "TOO_MANY_MILESTONES": {
+    "en": "There are too many milestones.",
+    "fa": "تعداد مرحله‌ها زیاد است."
+  },
+  "TOO_MANY_NOTES": {
+    "en": "There are too many notes.",
+    "fa": "تعداد یادداشت‌ها زیاد است."
+  },
+  "TOO_MANY_OPEN_TICKETS": {
+    "en": "You have too many open tickets.",
+    "fa": "تعداد تیکت‌های باز شما زیاد است."
+  },
+  "TOO_MANY_PREFS": {
+    "en": "There are too many preferences.",
+    "fa": "تعداد تنظیمات زیاد است."
+  },
+  "TOO_MANY_PRIZES": {
+    "en": "There are too many prizes.",
+    "fa": "تعداد جایزه‌ها زیاد است."
+  },
+  "TOO_MANY_REPORTS": {
+    "en": "You have sent too many reports. Please try later.",
+    "fa": "گزارش‌های شما زیاد شد. بعداً امتحان کنید."
+  },
+  "TOO_MANY_REQUESTS": {
+    "en": "Too many requests. Please wait a little.",
+    "fa": "درخواست‌ها زیاد شد. کمی صبر کنید."
+  },
+  "TOO_MANY_REWARDS": {
+    "en": "There are too many rewards.",
+    "fa": "تعداد پاداش‌ها زیاد است."
+  },
+  "TOO_MANY_ROOMS": {
+    "en": "There are too many rooms.",
+    "fa": "تعداد اتاق‌ها زیاد است."
+  },
+  "TOO_MANY_RULES": {
+    "en": "There are too many rules.",
+    "fa": "تعداد قانون‌ها زیاد است."
+  },
+  "TOO_MANY_SERVICES": {
+    "en": "There are too many services.",
+    "fa": "تعداد سرویس‌ها زیاد است."
+  },
+  "TOO_MANY_SPONSORS": {
+    "en": "There are too many sponsors.",
+    "fa": "تعداد حامیان زیاد است."
+  },
+  "TOO_MANY_STEPS": {
+    "en": "There are too many steps.",
+    "fa": "تعداد مرحله‌ها زیاد است."
+  },
+  "TOO_MANY_TAGS": {
+    "en": "There are too many tags.",
+    "fa": "تعداد برچسب‌ها زیاد است."
+  },
+  "TOO_MANY_TESTS": {
+    "en": "Too many tests. Please wait a little.",
+    "fa": "آزمایش‌ها زیاد شد. کمی صبر کنید."
+  },
+  "TOO_MANY_TIERS": {
+    "en": "There are too many tiers.",
+    "fa": "تعداد رده‌ها زیاد است."
+  },
+  "TOO_MANY_TRIES": {
+    "en": "Too many tries. Please wait a little.",
+    "fa": "تلاش‌ها زیاد شد. کمی صبر کنید."
+  },
+  "TOO_MANY_UPGRADES": {
+    "en": "There are too many upgrades.",
+    "fa": "تعداد ارتقاها زیاد است."
+  },
+  "TOO_MANY_USERS": {
+    "en": "There are too many players.",
+    "fa": "تعداد بازیکنان زیاد است."
+  },
+  "TOTAL_CHANCE_MUST_BE_100": {
+    "en": "The chances must add up to 100.",
+    "fa": "جمع شانس‌ها باید ۱۰۰ شود."
+  },
+  "TRACK_NOT_FOUND": {
+    "en": "This upgrade was not found.",
+    "fa": "این ارتقا پیدا نشد."
+  },
+  "TRACK_REQUIREMENT": {
+    "en": "Upgrade {track} to level {level} first.",
+    "fa": "اول {track} را به سطح {level} برسانید."
+  },
+  "TYPE_LOCKED": {
+    "en": "The type cannot be changed.",
+    "fa": "نوع قابل تغییر نیست."
+  },
+  "UNAUTHENTICATED": {
+    "en": "Please sign in again.",
+    "fa": "لطفاً دوباره وارد شوید."
+  },
+  "UNLOCK_NOT_AVAILABLE": {
+    "en": "This item cannot be unlocked early.",
+    "fa": "این آیتم را نمی‌شود زودتر باز کرد."
+  },
+  "UNSUPPORTED_FILE_TYPE": {
+    "en": "This file type is not supported.",
+    "fa": "این نوع فایل پشتیبانی نمی‌شود."
+  },
+  "UNSUPPORTED_PROVIDER": {
+    "en": "This provider is not supported.",
+    "fa": "این سرویس‌دهنده پشتیبانی نمی‌شود."
+  },
+  "UPDATES_OFF": {
+    "en": "Update checks are turned off.",
+    "fa": "بررسی به‌روزرسانی خاموش است."
+  },
+  "UPGRADE_CHANGED": {
+    "en": "The upgrade has changed. Please refresh and try again.",
+    "fa": "ارتقا تغییر کرده است. صفحه را تازه کنید و دوباره امتحان کنید."
+  },
+  "UPGRADE_MAXED": {
+    "en": "This is already fully upgraded.",
+    "fa": "این مورد به آخرین سطح ارتقا رسیده است."
+  },
+  "UPLOAD_INCOMPLETE": {
+    "en": "The upload is not complete.",
+    "fa": "ارسال فایل کامل نشده است."
+  },
+  "UPLOAD_NOT_FOUND": {
+    "en": "Upload not found.",
+    "fa": "فایل ارسالی پیدا نشد."
+  },
+  "UPM_PACKAGE_EMPTY": {
+    "en": "The request body must be the package .tgz.",
+    "fa": "بدنهٔ درخواست باید فایل ‎.tgz پکیج باشد."
+  },
+  "UPM_PACKAGE_INVALID": {
+    "en": "The file is not a valid npm package archive.",
+    "fa": "فایل یک بستهٔ npm درست نیست."
+  },
+  "UPM_PACKAGE_NAME_INVALID": {
+    "en": "Package names use lower-case letters, digits, dots, dashes or underscores.",
+    "fa": "نام پکیج فقط حرف کوچک انگلیسی، رقم، نقطه، خط تیره یا زیرخط دارد."
+  },
+  "UPM_PACKAGE_NAME_NOT_ALLOWED": {
+    "en": "Package names must start with one of: {prefixes}.",
+    "fa": "نام پکیج باید با یکی از این‌ها شروع شود: {prefixes}."
+  },
+  "UPM_PACKAGE_NOT_FOUND": {
+    "en": "Package not found.",
+    "fa": "پکیج پیدا نشد."
+  },
+  "UPM_PACKAGE_TOO_LARGE": {
+    "en": "The package is larger than {maxMB} MB.",
+    "fa": "پکیج از {maxMB} مگابایت بزرگ‌تر است."
+  },
+  "UPM_PACKAGE_VERSION_EXISTS": {
+    "en": "{name}@{version} is already published; raise the version.",
+    "fa": "{name}@{version} قبلاً منتشر شده است؛ نسخه را بالا ببرید."
+  },
+  "UPM_PACKAGE_VERSION_INVALID": {
+    "en": "The version must look like 1.2.3 or 1.2.3-beta.1.",
+    "fa": "نسخه باید شبیه 1.2.3 یا 1.2.3-beta.1 باشد."
+  },
+  "UPM_PART_INVALID": {
+    "en": "Invalid upload part (each part at most {partBytes} bytes).",
+    "fa": "بخش بارگذاری درست نیست (هر بخش حداکثر {partBytes} بایت)."
+  },
+  "UPM_PART_MISSING": {
+    "en": "Part {part} of the upload is missing; send the parts again.",
+    "fa": "بخش {part} بارگذاری نرسیده است؛ بخش‌ها را دوباره بفرستید."
+  },
+  "UPM_REGISTRY_DISABLED": {
+    "en": "The package registry is turned off.",
+    "fa": "رجیستری پکیج‌ها خاموش است."
+  },
+  "UPM_STORAGE_UNAVAILABLE": {
+    "en": "The package registry has no storage configured.",
+    "fa": "برای رجیستری پکیج‌ها فضای ذخیره تنظیم نشده است."
+  },
+  "URL_TOO_LONG": {
+    "en": "The link is too long.",
+    "fa": "پیوند خیلی طولانی است."
+  },
+  "USERNAME_DOUBLE_SEPARATOR": {
+    "en": "Two dots or underscores cannot come together.",
+    "fa": "دو نقطه یا زیرخط نباید پشت هم بیاید."
+  },
+  "USERNAME_INVALID_CHARACTERS": {
+    "en": "Use only English letters, digits and the allowed signs.",
+    "fa": "فقط حرف و عدد انگلیسی و نشانه‌های مجاز بنویسید."
+  },
+  "USERNAME_MUST_START_WITH_LETTER": {
+    "en": "The username must start with a letter.",
+    "fa": "نام کاربری باید با حرف شروع شود."
+  },
+  "USERNAME_REQUIRED": {
+    "en": "Enter a username.",
+    "fa": "نام کاربری را وارد کنید."
+  },
+  "USERNAME_RESERVED": {
+    "en": "This username is reserved.",
+    "fa": "این نام کاربری رزرو شده است."
+  },
+  "USERNAME_SEPARATOR_AT_EDGE": {
+    "en": "The username cannot start or end with a dot or underscore.",
+    "fa": "نام کاربری نباید با نقطه یا زیرخط شروع یا تمام شود."
+  },
+  "USERNAME_TAKEN": {
+    "en": "This username is taken.",
+    "fa": "این نام کاربری قبلاً گرفته شده است."
+  },
+  "USERNAME_TOO_LONG": {
+    "en": "The username is too long.",
+    "fa": "نام کاربری خیلی بلند است."
+  },
+  "USERNAME_TOO_SHORT": {
+    "en": "The username is too short.",
+    "fa": "نام کاربری خیلی کوتاه است."
+  },
+  "USERS_NOT_FOUND": {
+    "en": "Some players were not found.",
+    "fa": "بعضی از بازیکنان پیدا نشدند."
+  },
+  "USERS_REQUIRED": {
+    "en": "Please pick at least one player.",
+    "fa": "لطفاً دست‌کم یک بازیکن انتخاب کنید."
+  },
+  "USER_NOT_FOUND": {
+    "en": "Player not found.",
+    "fa": "بازیکن پیدا نشد."
+  },
+  "VALUE_OUT_OF_RANGE": {
+    "en": "The value is out of range.",
+    "fa": "مقدار خارج از بازه مجاز است."
+  },
+  "VALUE_REQUIRED": {
+    "en": "A value is required.",
+    "fa": "مقدار لازم است."
+  },
+  "VALUE_TOO_LONG": {
+    "en": "The value is too long.",
+    "fa": "مقدار خیلی طولانی است."
+  },
+  "VERSION_NOT_FOUND": {
+    "en": "Version not found.",
+    "fa": "نسخه پیدا نشد."
+  },
+  "VERSION_RANGE": {
+    "en": "The version range is not valid.",
+    "fa": "بازه نسخه معتبر نیست."
+  },
+  "VERSION_REQUIRED": {
+    "en": "A version is required.",
+    "fa": "نسخه لازم است."
+  },
+  "VOICE_PROVIDER_REQUIRED": {
+    "en": "A voice provider is required.",
+    "fa": "سرویس صدا لازم است."
+  },
+  "VOICE_RATE_LIMITED": {
+    "en": "Too many voice requests. Please wait a little.",
+    "fa": "درخواست‌های صدا زیاد شد. کمی صبر کنید."
+  },
+  "VOICE_ROOM_FULL": {
+    "en": "The voice room is full.",
+    "fa": "اتاق صوتی پر است."
+  },
+  "VOICE_ROOM_REQUIRED": {
+    "en": "A voice room is required.",
+    "fa": "اتاق صوتی لازم است."
+  },
+  "VOICE_SEAL_UNAVAILABLE": {
+    "en": "Voice secrets cannot be stored right now.",
+    "fa": "ذخیره کلیدهای صدا فعلاً ممکن نیست."
+  },
+  "WAITING_FOR_TURN": {
+    "en": "Please wait for your turn.",
+    "fa": "لطفاً منتظر نوبت خود بمانید."
+  }
+}

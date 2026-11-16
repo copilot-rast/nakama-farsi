@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/heroiclabs/nakama-common/runtime"
+	"github.com/heroiclabs/nakama/v3/internal/economyhooks"
 	"github.com/heroiclabs/nakama/v3/internal/gamecatalog"
 	"github.com/heroiclabs/nakama/v3/internal/objectstore"
 	"github.com/heroiclabs/nakama/v3/internal/playerevents"
@@ -114,6 +115,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	}
 	gamecatalog.SetProvider(gameProvider{s: svc})
 	playerevents.SetRecorder(svc.playerEventRecorder())
+	economyhooks.SetPrizeGranter(svc.grantPrizeHook)
 	go svc.reconcileLoop(ctx)
 	go svc.eventLoop(ctx)
 	logger.Info("Economy module registered (uploads: %s storage)", cfg.storage.Driver)

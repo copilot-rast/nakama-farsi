@@ -38,11 +38,9 @@ type eventSettings struct {
 	WeekStart       int    `json:"weekStart"`
 	RetentionDays   int    `json:"retentionDays"`
 	PlayerRateLimit int    `json:"playerRateLimit"`
-	// RelationChainDepth is how many meta relations may trigger one another
-	// in a row; 0 means a relation's targets never fire further relations.
+
 	RelationChainDepth int `json:"relationChainDepth"`
-	// RelationPrizeMissing decides what a relation does when its prize group
-	// has nothing to draw: complete without a prize, or wait and retry.
+
 	RelationPrizeMissing string `json:"relationPrizeMissing"`
 	UpdatedAt            string `json:"updatedAt,omitempty"`
 	loc                  *time.Location
@@ -391,6 +389,7 @@ func (s *service) recordEvent(ctx context.Context, in eventInput) (*eventOutcome
 	if err != nil {
 		return nil, err
 	}
+	playerevents.Notify(ctx, playerevents.Recorded{ID: out.EventID, UserID: in.UserID, Key: et.Key, Value: value, Source: in.Source, Metadata: in.Metadata})
 	s.settleTasks(ctx, in.UserID, out)
 	s.settleOutcome(ctx, in.UserID, out, in.depth)
 	if len(out.referrals) > 0 {

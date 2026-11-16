@@ -1,0 +1,11 @@
+{
+  "name": "nakama-console-leaderboardx",
+  "private": true,
+  "description": "Leaderboard boards with tiers and rewards, live standings, winners per period, a report and a player card section injected into the prebuilt Nakama Console UI.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check"
+  }
+}

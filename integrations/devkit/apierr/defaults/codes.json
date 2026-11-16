@@ -1,0 +1,4219 @@
+{
+  "ACCOUNT_DISABLED": {
+    "status": 403,
+    "modules": [
+      "account",
+      "publication"
+    ]
+  },
+  "ACCOUNT_HAS_PHONE": {
+    "status": 409,
+    "modules": [
+      "account",
+      "publication"
+    ]
+  },
+  "ACCOUNT_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "account"
+    ]
+  },
+  "ACCOUNT_TOO_NEW": {
+    "status": 403,
+    "modules": [
+      "base"
+    ]
+  },
+  "ACCOUNT_TOO_OLD": {
+    "status": 403,
+    "modules": [
+      "economy"
+    ]
+  },
+  "ACHIEVEMENT_LOCKED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "ACHIEVEMENT_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "ACTION_TARGET_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "ALREADY_CLAIMED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "ALREADY_EXISTS": {
+    "status": 409,
+    "modules": [
+      "base",
+      "economy",
+      "publication",
+      "quiz"
+    ]
+  },
+  "ALREADY_OWNED": {
+    "status": 409,
+    "modules": [
+      "economy",
+      "inventoryx"
+    ]
+  },
+  "ALREADY_RATED": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "ALREADY_REFERRED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "ALREADY_TAKEN": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "ALREADY_UNLOCKED": {
+    "status": 409,
+    "modules": [
+      "economy",
+      "inventoryx"
+    ]
+  },
+  "ANALYTICS_ALREADY_CLAIMED": {
+    "status": 409,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_BATCH_EMPTY": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_BATCH_ID_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_BATCH_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_BUSY": {
+    "status": 409,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_CARDS_EMPTY": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_GROUP_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_INVALID_APP_INFO": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_INVALID_BATCH_ID": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_INVALID_CONTEXT": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_INVALID_DIMENSION": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_INVALID_SESSION": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_NOTHING_TO_CLAIM": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_RATE_LIMITED": {
+    "status": 429,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_REWARD_FAILED": {
+    "status": 503,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_STEP_LOCKED": {
+    "status": 423,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_STEP_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_TOO_MANY_CARDS": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_TOO_MANY_CONTEXT_KEYS": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_TOO_MANY_DIMENSIONS": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "ANALYTICS_TOO_MANY_KEYS": {
+    "status": 400,
+    "modules": [
+      "analytics"
+    ]
+  },
+  "API_KEY_EXPIRED": {
+    "status": 401,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "API_KEY_INVALID": {
+    "status": 401,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "API_KEY_IP_DENIED": {
+    "status": 403,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "API_KEY_REQUIRED": {
+    "status": 401,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "API_KEY_REVOKED": {
+    "status": 401,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "API_KEY_SCOPE_DENIED": {
+    "status": 403,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "ASSETS_PRIVATE": {
+    "status": 403,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_DELETE_NOT_ALLOWED": {
+    "status": 403,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_EXISTS": {
+    "status": 409,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_FETCH_TOO_MANY": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_FORCE_NOT_ALLOWED": {
+    "status": 403,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_HISTORY_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_ID_DUPLICATED": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_INVALID": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_LIMIT_REACHED": {
+    "status": 409,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_PUSH_EMPTY": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_PUSH_TOO_MANY": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_SOURCE_DUPLICATED": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_SOURCE_ID_CHANGED": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ASSET_VERSION_CONFLICT": {
+    "status": 409,
+    "modules": [
+      "assets"
+    ]
+  },
+  "ATTACHMENTS_UNAVAILABLE": {
+    "status": 503,
+    "modules": [
+      "base"
+    ]
+  },
+  "ATTACHMENT_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "ATTACHMENT_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "ATTACHMENT_TYPE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "ATTEMPT_CLOSED": {
+    "status": 409,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "ATTEMPT_EXPIRED": {
+    "status": 409,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "ATTEMPT_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "ATTEMPT_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "AUDIENCE_NOT_ALLOWED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "AUTH_INVALID_CREDENTIALS": {
+    "status": 403,
+    "modules": [
+      "account"
+    ]
+  },
+  "AUTH_INVALID_CURRENT_PASSWORD": {
+    "status": 403,
+    "modules": [
+      "account"
+    ]
+  },
+  "AUTH_USER_ALREADY_HAS_A_PASSWORD": {
+    "status": 409,
+    "modules": [
+      "account"
+    ]
+  },
+  "AUTH_USER_HAS_NO_PASSWORD": {
+    "status": 400,
+    "modules": [
+      "account"
+    ]
+  },
+  "BANNER_LIST_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "publication"
+    ]
+  },
+  "BANNER_NOT_AVAILABLE": {
+    "status": 404,
+    "modules": [
+      "publication"
+    ]
+  },
+  "BODY_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "BODY_TOO_LONG": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "CANCELED": {
+    "status": 499,
+    "modules": [
+      "base",
+      "devkit",
+      "economy",
+      "publication"
+    ]
+  },
+  "CANNOT_RATE": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "CANNOT_REPORT_OWN": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "CANNOT_REPORT_SELF": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "CATEGORY_ALWAYS_ON": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "CATEGORY_KIND_MISMATCH": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "CATEGORY_LOCKED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "CATEGORY_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "CATEGORY_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "CHANCE_GAME_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "CHAT_CLOSED": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "CHAT_DISABLED": {
+    "status": 503,
+    "modules": [
+      "base"
+    ]
+  },
+  "CHAT_EMPTY": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "CHAT_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
+    ]
+  },
+  "CLAIM_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "CODE_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "CODE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "COIN_PRICE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "COMMENT_MESSAGE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "COMMENT_NOT_ALLOWED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "COMMENT_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "publication"
+    ]
+  },
+  "COMMENT_RATE_LIMITED": {
+    "status": 429,
+    "modules": [
+      "publication"
+    ]
+  },
+  "COMMENT_TOO_LONG": {
+    "status": 400,
+    "modules": [
+      "base",
+      "publication"
+    ]
+  },
+  "CONTENT_INDEX_PRIVATE": {
+    "status": 403,
+    "modules": [
+      "assets"
+    ]
+  },
+  "COUNTRY_NOT_AVAILABLE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "COUNTRY_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
+    ]
+  },
+  "CURRENCY_IS_NOT_ENOUGH": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "CURRENCY_NOT_ACCEPTED": {
+    "status": 400,
+    "modules": [
+      "inventoryx"
+    ]
+  },
+  "CURRENCY_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "CURRENCY_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "inventoryx"
+    ]
+  },
+  "CURRENT_TASK_MUST_BE_DONE": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "DAY_OUTSIDE_CYCLE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "DEFAULT_LANGUAGE_LOCKED": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "DEFAULT_LANGUAGE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "DEFAULT_MUST_BE_ACTIVE": {
+    "status": 400,
+    "modules": [
+      "base",
+      "publication"
+    ]
+  },
+  "DEPARTMENT_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "DEPENDENCY_CYCLE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "DESCRIPTION_TOO_LONG": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "DEVELOPER_PAYLOAD_MISMATCH": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "DEVICE_NOT_OWNED": {
+    "status": 403,
+    "modules": [
+      "account"
+    ]
+  },
+  "DEVKIT_CATALOG_PRIVATE": {
+    "status": 403,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "DEVKIT_SCHEMA_DISABLED": {
+    "status": 403,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "DEVKIT_UNKNOWN_MODULE": {
+    "status": 404,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "DUPLICATE_DAY": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "DUPLICATE_LEVEL": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "DUPLICATE_MILESTONE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "DUPLICATE_PRIZE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "DUPLICATE_ROOM": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "DUPLICATE_RULE_NAME": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "DUPLICATE_SERVICE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "DUPLICATE_STORE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "DUPLICATE_TIER": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "DURATION_NOT_ELAPSED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "ECONOMY_UNAVAILABLE": {
+    "status": 503,
+    "modules": [
+      "inventoryx"
+    ]
+  },
+  "END_IN_PAST": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "END_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "END_TOO_FAR": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "EVENT_NOT_ALLOWED": {
+    "status": 403,
+    "modules": [
+      "economy"
+    ]
+  },
+  "EVENT_TYPE_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "EVERY_NEEDS_TOTAL": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "FAIR_PLAY_INVALID": {
+    "status": 400,
+    "modules": [
+      "pp"
+    ]
+  },
+  "FILE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy"
+    ]
+  },
+  "FILE_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "FREERIDE_KEY_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "FREERIDE_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "FROM_LEVEL_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "inventoryx"
+    ]
+  },
+  "GAME_DISABLED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "GAME_KEY_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "GAME_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base",
+      "economy"
+    ]
+  },
+  "GATEWAY_REQUEST_FAILED": {
+    "status": 502,
+    "modules": [
+      "economy"
+    ]
+  },
+  "GIFT_ALREADY_USED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "GIFT_EXHAUSTED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "GIFT_EXPIRED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "GIFT_INACTIVE": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "GIFT_NOT_APPLICABLE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "GIFT_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "GIFT_NOT_REDEEMABLE": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "GIFT_NOT_STARTED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "GROUP_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "GROUP_TASK_REPEAT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "HANDOUT_AUTOMATIC": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "HAS_SUBTASKS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "IDS_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "IMAGE_NOT_ALLOWED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "IMPORT_DUPLICATE_KEY": {
+    "status": 400,
+    "modules": [
+      "inventoryx"
+    ]
+  },
+  "IMPORT_EMPTY": {
+    "status": 400,
+    "modules": [
+      "inventoryx"
+    ]
+  },
+  "IMPORT_TOO_MANY": {
+    "status": 400,
+    "modules": [
+      "inventoryx"
+    ]
+  },
+  "INSUFFICIENT_BALANCE": {
+    "status": 402,
+    "modules": [
+      "economy",
+      "inventoryx"
+    ]
+  },
+  "INTERNAL_ERROR": {
+    "status": 500,
+    "modules": [
+      "account",
+      "base",
+      "devkit",
+      "economy",
+      "publication"
+    ]
+  },
+  "INTERVAL_OR_PRICE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INTERVAL_TIME_IS_NULL": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_ACTION": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_ACTIVE_COUNT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_AGENT": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_BRANCH": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_CHANNEL": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_CHUNK": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_CODE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_COLOR": {
+    "status": 400,
+    "modules": [
+      "base",
+      "publication"
+    ]
+  },
+  "INVALID_CONTEXT": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_COOLDOWN": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_COUNTRY_CODE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_CURSOR": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "ledger",
+      "publication"
+    ]
+  },
+  "INVALID_CYCLE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_DATE": {
+    "status": 400,
+    "modules": [
+      "base",
+      "ledger",
+      "publication"
+    ]
+  },
+  "INVALID_DATE_RANGE": {
+    "status": 400,
+    "modules": [
+      "ledger",
+      "publication"
+    ]
+  },
+  "INVALID_DAY": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_DAYS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_DEVICE": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_DIAL_CODE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_DIRECTION": {
+    "status": 400,
+    "modules": [
+      "base",
+      "ledger"
+    ]
+  },
+  "INVALID_DISCOUNT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_EMAIL": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_END": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_ENTRY_FEE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_EVENT_KEY": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_FILTER": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_GAME_KEY": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy"
+    ]
+  },
+  "INVALID_GITHUB_TOKEN": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_GRACE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_HANDOUT_MINUTES": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_HOURS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_HOURS_BEFORE": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_ID": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_INTERVAL": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_INTERVAL_TIME": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_ITEM_TYPE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_JSON": {
+    "status": 400,
+    "modules": [
+      "analytics",
+      "assets",
+      "base",
+      "devkit",
+      "economy",
+      "inventoryx",
+      "publication"
+    ]
+  },
+  "INVALID_KEY": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_KEY_TYPE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_KIND": {
+    "status": 400,
+    "modules": [
+      "base",
+      "ledger"
+    ]
+  },
+  "INVALID_LANGUAGE_CODE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_LAYOUT": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_LEVEL": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_LEVEL_RANGE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_LIMIT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_LINK_TYPE": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_MATCH": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_MATCH_FIELD": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_MATCH_ID": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_MATCH_VALUE": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_MAX_CLAIMS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_MAX_COMPLETIONS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_MAX_ITEMS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_MEASURE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_MESSAGE": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_METADATA": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_METHOD": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_MILESTONE_DAY": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_MOD_ACTION": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_NAME": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_NATIVE_NAME": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_NEW_DAYS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_OBJECT": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_OP": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_PAYMENT_METHOD": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_PERCENT": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_PERIOD_DAYS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_PHONE": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_PLACEMENT": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_PLATFORM": {
+    "status": 400,
+    "modules": [
+      "base",
+      "publication"
+    ]
+  },
+  "INVALID_PLAYER_AGE": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_POINTS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_PRICE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_PRICE_AMOUNT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_PRICE_PAYLOAD": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_PRIORITY": {
+    "status": 400,
+    "modules": [
+      "base",
+      "publication"
+    ]
+  },
+  "INVALID_PRIZE_CHANCE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_PROVIDER_KIND": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_QUIET_HOURS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_RANGE": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_RARITY": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_RATE_LIMIT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_RATING": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_REPEAT_MINUTES": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_REPO": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_REPORT_STATUS": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_REQUEST_ID": {
+    "status": 400,
+    "modules": [
+      "campaign",
+      "leaderboardx"
+    ]
+  },
+  "INVALID_RESTRICTION_KIND": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_RESULT": {
+    "status": 400,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "INVALID_RETENTION": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_ROOM": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_ROOM_KEY": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_ROTATE": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_RULE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_RULE_NAME": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_SERVICE_ACCOUNT": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_SKU": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_STATUS": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_STEP": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_STEP_STATUS": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_STORE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_SUBJECT": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_TAG": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_TARGET": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_THRESHOLD": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_TIER": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_TIME": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_TIMEZONE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_TIME_OF_DAY": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_TOKEN": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_TOPIC": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_TRANSITION": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_TRIGGER": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_TYPE": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy"
+    ]
+  },
+  "INVALID_UNITS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_UPLOAD": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy"
+    ]
+  },
+  "INVALID_URL": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_VALUE": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_VERSION": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_VOICE_PLAYERS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_VOICE_PROVIDER": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "INVALID_WEEKDAY": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "INVALID_WEEK_START": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_WEIGHT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_WINDOW": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "INVALID_WORD": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "IN_USE": {
+    "status": 409,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "ITEMS_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "ITEM_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy",
+      "inventoryx"
+    ]
+  },
+  "ITEM_TYPE_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "KEY_EXISTS": {
+    "status": 409,
+    "modules": [
+      "publication"
+    ]
+  },
+  "KEY_IMMUTABLE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "KEY_LOCKED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "LANGUAGE_ACTIVE": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "LANGUAGE_NOT_AVAILABLE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "LANGUAGE_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
+    ]
+  },
+  "LEADERBOARD_INVALID_CURSOR": {
+    "status": 400,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_INVALID_SCORE": {
+    "status": 400,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_INVALID_STATUS": {
+    "status": 400,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_KEY_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_NOT_ACTIVE": {
+    "status": 409,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy",
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_PERIOD_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_PERIOD_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_RATE_LIMITED": {
+    "status": 429,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_REWARD_EXPIRED": {
+    "status": 409,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_REWARD_NOT_CLAIMABLE": {
+    "status": 409,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_REWARD_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_SCORE_TOO_HIGH": {
+    "status": 400,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEADERBOARD_SUBMIT_NOT_ALLOWED": {
+    "status": 403,
+    "modules": [
+      "leaderboardx"
+    ]
+  },
+  "LEVEL_TABLE_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "LEVEL_TABLE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "LEVEL_TOO_HIGH": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "LEVEL_TOO_LOW": {
+    "status": 403,
+    "modules": [
+      "campaign",
+      "economy",
+      "inventoryx"
+    ]
+  },
+  "LIMIT_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "MATCH_CANCELLED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "MATCH_MISMATCH": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "MATCH_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base",
+      "economy"
+    ]
+  },
+  "MATCH_STARTED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "MESSAGE_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
+    ]
+  },
+  "METADATA_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "META_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy"
+    ]
+  },
+  "METHOD_NOT_ALLOWED": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "shopx"
+    ]
+  },
+  "METHOD_UNAVAILABLE": {
+    "status": 503,
+    "modules": [
+      "economy",
+      "shopx"
+    ]
+  },
+  "MIN_ABOVE_LATEST": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "MIN_ABOVE_MAX": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "NESTED_SUBTASK": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "NEWS_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "publication"
+    ]
+  },
+  "NOTE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "NOTHING_TO_CLAIM": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "NOTIFICATION_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "publication"
+    ]
+  },
+  "NOT_ACTIVE": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "NOT_CANCELLABLE": {
+    "status": 409,
+    "modules": [
+      "publication"
+    ]
+  },
+  "NOT_FOR_SALE": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "NOT_HELD": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "NOT_IN_MATCH": {
+    "status": 403,
+    "modules": [
+      "base"
+    ]
+  },
+  "NOT_OWNED": {
+    "status": 409,
+    "modules": [
+      "economy",
+      "inventoryx"
+    ]
+  },
+  "NOT_UNLOCKABLE": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "NOT_UNLOCKED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "NOT_YOUR_CHAT": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "NO_TASK_AVAILABLE": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "OBJECT_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "ONE_ROOM_PRIZE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "ONE_TIME_SUBSCRIPTION": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "OTP_DISABLED": {
+    "status": 503,
+    "modules": [
+      "publication"
+    ]
+  },
+  "OTP_EXPIRED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "OTP_INVALID_CODE": {
+    "status": 400,
+    "modules": [
+      "account",
+      "publication"
+    ]
+  },
+  "OTP_MESSAGE_NEEDS_CODE": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "OTP_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "OTP_SEND_FAILED": {
+    "status": 502,
+    "modules": [
+      "publication"
+    ]
+  },
+  "OTP_TOO_MANY_ATTEMPTS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "OTP_UNAVAILABLE": {
+    "status": 503,
+    "modules": [
+      "publication"
+    ]
+  },
+  "PACK_ACTIVATE_DENIED": {
+    "status": 403,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_ACTIVE": {
+    "status": 409,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_CATALOG_AMBIGUOUS": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_CATALOG_MISSING": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_FILES_MISSING": {
+    "status": 409,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_FILE_HASH_MISMATCH": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_FILE_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_FILE_UNKNOWN": {
+    "status": 404,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_HASH_MISSING": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_INVALID": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_NOT_READY": {
+    "status": 409,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_NOT_UPLOADING": {
+    "status": 409,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_PART_INVALID": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_PLATFORM_NOT_ALLOWED": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_TOO_MANY_FILES": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PACK_VERSION_EXISTS": {
+    "status": 409,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PARENT_COMMENT_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "PARENT_NOT_GROUPING": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PARTY_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "PASSWORD_CHANGED_MEANWHILE": {
+    "status": 409,
+    "modules": [
+      "account"
+    ]
+  },
+  "PASSWORD_LOGIN_DISABLED": {
+    "status": 403,
+    "modules": [
+      "account"
+    ]
+  },
+  "PASSWORD_RATE_LIMITED": {
+    "status": 429,
+    "modules": [
+      "account"
+    ]
+  },
+  "PASSWORD_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "account"
+    ]
+  },
+  "PASSWORD_RESET_DISABLED": {
+    "status": 403,
+    "modules": [
+      "account"
+    ]
+  },
+  "PAYMENT_ALREADY_SETTLED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PAYMENT_CLOSED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PAYMENT_METHOD_NOT_CONFIGURED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PAYMENT_METHOD_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PAYMENT_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PAYMENT_NOT_PENDING": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PAYMENT_NOT_SUCCESSFUL": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PHONE_CHANGE_DISABLED": {
+    "status": 403,
+    "modules": [
+      "account"
+    ]
+  },
+  "PHONE_CHANGE_TOO_SOON": {
+    "status": 429,
+    "modules": [
+      "account"
+    ]
+  },
+  "PHONE_CHECK_RATE_LIMITED": {
+    "status": 429,
+    "modules": [
+      "account"
+    ]
+  },
+  "PHONE_COUNTRY_NOT_ALLOWED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "PHONE_NOT_REGISTERED": {
+    "status": 404,
+    "modules": [
+      "account"
+    ]
+  },
+  "PHONE_NOT_VERIFIED": {
+    "status": 403,
+    "modules": [
+      "shopx"
+    ]
+  },
+  "PHONE_NO_PENDING_REQUEST": {
+    "status": 400,
+    "modules": [
+      "account"
+    ]
+  },
+  "PHONE_NUMBER_IS_EXIST": {
+    "status": 409,
+    "modules": [
+      "account"
+    ]
+  },
+  "PHONE_NUMBER_IS_SAME": {
+    "status": 400,
+    "modules": [
+      "account"
+    ]
+  },
+  "PHONE_OLD_CODE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "account"
+    ]
+  },
+  "PHONE_RECOVERY_DISABLED": {
+    "status": 403,
+    "modules": [
+      "account"
+    ]
+  },
+  "PHONE_REQUEST_CHANGED": {
+    "status": 409,
+    "modules": [
+      "account"
+    ]
+  },
+  "PHONE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "account"
+    ]
+  },
+  "PHONE_UNAVAILABLE": {
+    "status": 503,
+    "modules": [
+      "account"
+    ]
+  },
+  "PLATFORM_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "assets"
+    ]
+  },
+  "PLAYERS_MAX_BELOW_MIN": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PLAY_CONFLICT": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PLAY_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PREFS_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "PRICE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PRICE_TOO_LOW": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PRIZE_ALREADY_CLAIMED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PRIZE_ALREADY_OWNED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PRIZE_GROUP_EMPTY": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PRIZE_LIST_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PRIZE_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PRIZE_NOT_REPEATABLE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PRIZE_OWNER_MISMATCH": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PRIZE_TYPE_MISMATCH": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PRODUCT_ALREADY_BOUGHT": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PRODUCT_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy",
+      "shopx"
+    ]
+  },
+  "PROVIDER_CHANNEL_MISMATCH": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "PROVIDER_INACTIVE": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "PROVIDER_KIND_FIXED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "PROVIDER_NOT_ALLOWED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "PROVIDER_NOT_CONFIGURED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "PROVIDER_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "PROVIDER_NOT_SMS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "PURCHASE_INVALID": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "QUERY_TOO_LONG": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "QUIZ_ANSWER_INVALID": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_BUSY": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DAILY_PLAY_LIMIT": {
+    "status": 429,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_GAME_MISSION_LOCKED": {
+    "status": 403,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_GAME_TIME_OVER": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_HINT_LIMIT": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_HINT_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_HINT_PRICE_INVALID": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_INSUFFICIENT_CURRENCY_FOR_HINT": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_METADATA_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_MISSION_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_MISSION_PACK_LOCKED": {
+    "status": 403,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_MISSION_TIME_OVER": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_NO_PACK_FOUND": {
+    "status": 404,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_OPTION_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_PACK_ALREADY_PASSED": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_PACK_COOLDOWN": {
+    "status": 429,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_PACK_EMPTY": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_PACK_KEY_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_PACK_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_PACK_PLAY_LIMIT": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_QUESTION_NOT_CURRENT": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_QUESTION_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_QUESTION_NOT_IN_SESSION": {
+    "status": 404,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_QUESTION_TIME_OVER": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_REPORTS_CLOSED": {
+    "status": 403,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_REPORT_LIMIT": {
+    "status": 429,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_REPORT_NOTE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_REPORT_NOTE_TOO_LONG": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_REPORT_NOT_SEEN": {
+    "status": 403,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_REPORT_REASON_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_REPORT_TEMPLATE_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_SESSION_CLOSED": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_SESSION_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_SESSION_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_TIME_OVER": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_TOO_MANY_ANSWERS": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "RECOVERY_ONLY_FOR_GUESTS": {
+    "status": 403,
+    "modules": [
+      "account"
+    ]
+  },
+  "REFERENCE_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "REFERRAL_CYCLE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "REFERRAL_DECIDED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "REFERRAL_DISABLED": {
+    "status": 403,
+    "modules": [
+      "economy"
+    ]
+  },
+  "REFERRAL_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "REFERRER_LIMIT": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "REPEAT_NEEDS_PERIOD": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "REPORT_CLOSED": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "REPORT_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
+    ]
+  },
+  "REPORT_TITLE_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "REQUEST_ID_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "campaign",
+      "economy",
+      "inventoryx",
+      "leaderboardx"
+    ]
+  },
+  "REQUEST_ID_REUSED": {
+    "status": 409,
+    "modules": [
+      "economy",
+      "inventoryx"
+    ]
+  },
+  "REQUEST_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "assets",
+      "base",
+      "devkit",
+      "economy",
+      "publication"
+    ]
+  },
+  "REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "REQUIRES_ITEM": {
+    "status": 409,
+    "modules": [
+      "economy",
+      "inventoryx"
+    ]
+  },
+  "RESTRICTION_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
+    ]
+  },
+  "REWARD_ALREADY_GRANTED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "REWARD_LIMITED": {
+    "status": 409,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "ROOM_NOT_ALLOWED": {
+    "status": 403,
+    "modules": [
+      "base"
+    ]
+  },
+  "ROOM_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "ROOM_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SAME_META": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SCHEDULE_IN_PAST": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "SCHEDULE_TOO_FAR": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "SECRET_KEY_MISSING": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "SELF_DEPENDENCY": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SELF_PARENT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SELF_REFERENCE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SELF_REFERRAL": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SERVICE_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SESSION_UNAVAILABLE": {
+    "status": 503,
+    "modules": [
+      "account"
+    ]
+  },
+  "SHOP_CARDS_EMPTY": {
+    "status": 400,
+    "modules": [
+      "shopx"
+    ]
+  },
+  "SHOP_CARDS_INVALID": {
+    "status": 400,
+    "modules": [
+      "shopx"
+    ]
+  },
+  "SHOP_CARDS_TOO_MANY": {
+    "status": 400,
+    "modules": [
+      "shopx"
+    ]
+  },
+  "SINGLE_PLAYER_GAME": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SKU_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SOCIAL_ACCEPT_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_ACTION_NOT_ALLOWED": {
+    "status": 403,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_ALREADY_REPORTED": {
+    "status": 409,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_BLOCKED": {
+    "status": 403,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_BUSY": {
+    "status": 409,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_COMMENT_BLOCKED": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_COMMENT_MUTED": {
+    "status": 403,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_COMMENT_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_COMMENT_TOO_DEEP": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_COMMENT_TOO_LONG": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_COMMENT_TOO_SHORT": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_DELETE_CLOSED": {
+    "status": 403,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_DISABLED": {
+    "status": 403,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_EDIT_CLOSED": {
+    "status": 403,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_FAVORITE_LIMIT": {
+    "status": 409,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_FOLLOW_CLOSED": {
+    "status": 403,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_FOLLOW_LIMIT": {
+    "status": 409,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_FOLLOW_SELF": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_INVALID_KIND": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_INVALID_METADATA": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_INVALID_POLICY": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_INVALID_SORT": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_INVALID_TARGET": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_INVALID_USER": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_LIST_HIDDEN": {
+    "status": 403,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_METADATA_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_NOTE_TOO_LONG": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_PRIVACY_LOCKED": {
+    "status": 403,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_RATE_LIMITED": {
+    "status": 429,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_RATE_SELF": {
+    "status": 403,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_RATING_LOCKED": {
+    "status": 403,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_RATING_OUT_OF_RANGE": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_RATING_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_REACTION_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_REACTION_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_REPLIES_OFF": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_REPORT_OWN": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_REPORT_TITLE_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_REPORT_TITLE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_REQUEST_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_TARGET_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_TARGET_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_TARGET_TYPE_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_TOO_MANY_IDS": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_USER_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "social"
+    ]
+  },
+  "SOCIAL_USER_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "social"
+    ]
+  },
+  "SPONSOR_LINK_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "publication"
+    ]
+  },
+  "SPONSOR_NOT_AVAILABLE": {
+    "status": 404,
+    "modules": [
+      "publication"
+    ]
+  },
+  "SPONSOR_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "SPONSOR_NO_WEBSITE": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "SPONSOR_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "STAGE_BUSY": {
+    "status": 409,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "STAGE_FINISHED_TOO_FAST": {
+    "status": 400,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "STAGE_KEY_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "STAGE_LOCKED": {
+    "status": 403,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "STAGE_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "STAGE_SERVER_OWNED": {
+    "status": 403,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "STARTER_HAS_LEVEL": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "STARTER_ITEM": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "STEPS_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "STORE_CONFIGURATION_REJECTED": {
+    "status": 503,
+    "modules": [
+      "economy"
+    ]
+  },
+  "STORE_UNAVAILABLE": {
+    "status": 503,
+    "modules": [
+      "economy"
+    ]
+  },
+  "STREAK_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy",
+      "publication"
+    ]
+  },
+  "SUBSCRIPTION_NOT_SUPPORTED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SUBSCRIPTION_OWNED_BY_ANOTHER_USER": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SUBTASK_IN_GROUP": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SUBTASK_NEEDS_EVENT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SYSTEM_EVENT": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SYSTEM_EVENT_SERVER_ONLY": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TAGS_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "TAG_BOTH_WAYS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "TAG_KIND_MISMATCH": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "TAG_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "TARGET_TAGS_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "TARGET_USERS_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "TASK_ALREADY_CLAIMED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TASK_ALREADY_COMPLETED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TASK_AND_GROUP": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TASK_GROUP_FINISHED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TASK_GROUP_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TASK_HAS_NO_PRIZE": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TASK_NOT_AVAILABLE": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TASK_NOT_COMPLETED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TASK_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TASK_NOT_STARTED": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TASK_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TEXT_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "TEXT_TOO_LONG": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "THRESHOLDS_NOT_ORDERED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TICKET_CLOSED": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "TICKET_NOT_FINISHED": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "TICKET_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
+    ]
+  },
+  "TICKET_PLAY_IS_NOT_SUPPORT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TIERS_NEED_EVENT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TIERS_NOT_CONSECUTIVE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TIERS_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TIER_HAS_NO_PRIZE": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TIER_IN_USE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TIER_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TIER_NOT_REACHED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TIMEOUT": {
+    "status": 504,
+    "modules": [
+      "base",
+      "devkit",
+      "economy",
+      "publication"
+    ]
+  },
+  "TOKEN_ALREADY_USED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOKEN_NOT_VERIFIED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_ACTIONS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "TOO_MANY_AGENTS": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "TOO_MANY_ATTACHMENTS": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "TOO_MANY_BANNERS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "TOO_MANY_CODES": {
+    "status": 400,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "TOO_MANY_DEPENDENCIES": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_EVENTS": {
+    "status": 429,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_FIELDS": {
+    "status": 400,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "TOO_MANY_IDS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "TOO_MANY_ITEMS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_KEYS": {
+    "status": 400,
+    "modules": [
+      "base",
+      "inventoryx"
+    ]
+  },
+  "TOO_MANY_LINKS": {
+    "status": 400,
+    "modules": [
+      "base",
+      "publication"
+    ]
+  },
+  "TOO_MANY_MILESTONES": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_NOTES": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "TOO_MANY_OPEN_TICKETS": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "TOO_MANY_PREFS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "TOO_MANY_PRIZES": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_REPORTS": {
+    "status": 429,
+    "modules": [
+      "base"
+    ]
+  },
+  "TOO_MANY_REQUESTS": {
+    "status": 429,
+    "modules": [
+      "publication"
+    ]
+  },
+  "TOO_MANY_REWARDS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_ROOMS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_RULES": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "TOO_MANY_SERVICES": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_SPONSORS": {
+    "status": 400,
+    "modules": [
+      "publication"
+    ]
+  },
+  "TOO_MANY_STEPS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_TAGS": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "TOO_MANY_TESTS": {
+    "status": 429,
+    "modules": [
+      "base"
+    ]
+  },
+  "TOO_MANY_TIERS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_TRIES": {
+    "status": 429,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_UPGRADES": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_USERS": {
+    "status": 400,
+    "modules": [
+      "base",
+      "publication"
+    ]
+  },
+  "TOTAL_CHANCE_MUST_BE_100": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TRACK_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "inventoryx"
+    ]
+  },
+  "TRACK_REQUIREMENT": {
+    "status": 409,
+    "modules": [
+      "inventoryx"
+    ]
+  },
+  "TYPE_LOCKED": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "UNAUTHENTICATED": {
+    "status": 401,
+    "modules": [
+      "base",
+      "devkit",
+      "economy",
+      "publication"
+    ]
+  },
+  "UNLOCK_NOT_AVAILABLE": {
+    "status": 409,
+    "modules": [
+      "inventoryx"
+    ]
+  },
+  "UNSUPPORTED_FILE_TYPE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "UNSUPPORTED_PROVIDER": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "UPDATES_OFF": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "UPGRADE_CHANGED": {
+    "status": 409,
+    "modules": [
+      "economy",
+      "inventoryx"
+    ]
+  },
+  "UPGRADE_MAXED": {
+    "status": 409,
+    "modules": [
+      "economy",
+      "inventoryx"
+    ]
+  },
+  "UPLOAD_INCOMPLETE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "UPLOAD_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
+    ]
+  },
+  "UPM_PACKAGE_EMPTY": {
+    "status": 400,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "UPM_PACKAGE_INVALID": {
+    "status": 400,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "UPM_PACKAGE_NAME_INVALID": {
+    "status": 400,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "UPM_PACKAGE_NAME_NOT_ALLOWED": {
+    "status": 400,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "UPM_PACKAGE_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "UPM_PACKAGE_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "UPM_PACKAGE_VERSION_EXISTS": {
+    "status": 409,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "UPM_PACKAGE_VERSION_INVALID": {
+    "status": 400,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "UPM_PART_INVALID": {
+    "status": 400,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "UPM_PART_MISSING": {
+    "status": 400,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "UPM_REGISTRY_DISABLED": {
+    "status": 404,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "UPM_STORAGE_UNAVAILABLE": {
+    "status": 503,
+    "modules": [
+      "devkit"
+    ]
+  },
+  "URL_TOO_LONG": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "USERNAME_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "account"
+    ]
+  },
+  "USERNAME_TAKEN": {
+    "status": 409,
+    "modules": [
+      "account"
+    ]
+  },
+  "USERS_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "base",
+      "publication"
+    ]
+  },
+  "USERS_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "USER_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base",
+      "economy",
+      "publication"
+    ]
+  },
+  "VALUE_OUT_OF_RANGE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "VALUE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "VALUE_TOO_LONG": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "VERSION_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
+    ]
+  },
+  "VERSION_RANGE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "VERSION_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "VOICE_PROVIDER_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "VOICE_RATE_LIMITED": {
+    "status": 429,
+    "modules": [
+      "base"
+    ]
+  },
+  "VOICE_ROOM_FULL": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "VOICE_ROOM_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "VOICE_SEAL_UNAVAILABLE": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "WAITING_FOR_TURN": {
+    "status": 403,
+    "modules": [
+      "economy"
+    ]
+  }
+}

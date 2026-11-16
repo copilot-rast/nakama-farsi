@@ -1,0 +1,304 @@
+package economyhooks
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+	"sort"
+	"sync"
+)
+
+type Refusal struct {
+	Status  int
+	Code    string
+	Message string
+	Meta    map[string]any
+}
+
+func (r *Refusal) Error() string {
+	if r.Message != "" {
+		return r.Code + ": " + r.Message
+	}
+	return r.Code
+}
+
+func AsRefusal(err error) (*Refusal, bool) {
+	var r *Refusal
+	if errors.As(err, &r) {
+		return r, true
+	}
+	return nil, false
+}
+
+type Purchase struct {
+	UserID     string
+	ProductID  string
+	ProductKey string
+	Method     string
+	Sandbox    bool
+	Restore    bool
+}
+
+type ItemState struct {
+	Unlocked bool
+
+	LockMeta map[string]any
+
+	Fields map[string]any
+}
+
+type (
+	PurchaseCheck func(ctx context.Context, p Purchase) error
+	ProductFields func(ctx context.Context, userID, lang string, productIDs []string) (map[string]map[string]any, error)
+	ItemStates    func(ctx context.Context, userID, lang string, itemIDs []string) (map[string]ItemState, error)
+
+	LevelReader func(ctx context.Context, userID, tableID string) (int, error)
+
+	MethodReader func(ctx context.Context) (map[string]bool, error)
+)
+
+var (
+	ErrNoLevels  = errors.New("player levels are not available: the economy plugin is not loaded")
+	ErrNoMethods = errors.New("payment methods are not available: the economy plugin is not loaded")
+
+	mu       sync.RWMutex
+	checks   = map[string]PurchaseCheck{}
+	products = map[string]ProductFields{}
+	items    = map[string]ItemStates{}
+	levels   LevelReader
+	methods  MethodReader
+)
+
+func SetPurchaseCheck(owner string, fn PurchaseCheck) { set(checks, owner, fn) }
+func SetProductFields(owner string, fn ProductFields) { set(products, owner, fn) }
+func SetItemStates(owner string, fn ItemStates)       { set(items, owner, fn) }
+
+func SetLevelReader(fn LevelReader) {
+	mu.Lock()
+	defer mu.Unlock()
+	levels = fn
+}
+
+func SetMethodReader(fn MethodReader) {
+	mu.Lock()
+	defer mu.Unlock()
+	methods = fn
+}
+
+func set[T any](m map[string]T, owner string, fn T) {
+	mu.Lock()
+	defer mu.Unlock()
+	m[owner] = fn
+}
+
+func sorted[T any](m map[string]T) []T {
+	mu.RLock()
+	defer mu.RUnlock()
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	out := make([]T, 0, len(keys))
+	for _, k := range keys {
+		out = append(out, m[k])
+	}
+	return out
+}
+
+func CheckPurchase(ctx context.Context, p Purchase) error {
+	for _, fn := range sorted(checks) {
+		if fn == nil {
+			continue
+		}
+		if err := fn(ctx, p); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func MergeProducts(ctx context.Context, userID, lang string, list []map[string]any) {
+	fns := sorted(products)
+	if len(fns) == 0 || len(list) == 0 {
+		return
+	}
+	ids := make([]string, 0, len(list))
+	for _, p := range list {
+		if id, ok := p["id"].(string); ok {
+			ids = append(ids, id)
+		}
+	}
+	for _, fn := range fns {
+		if fn == nil {
+			continue
+		}
+		extra, err := fn(ctx, userID, lang, ids)
+		if err != nil {
+			continue
+		}
+		for _, p := range list {
+			id, _ := p["id"].(string)
+			for k, v := range extra[id] {
+				if _, ok := p[k]; !ok {
+					p[k] = v
+				}
+			}
+		}
+	}
+}
+
+func Items(ctx context.Context, userID, lang string, itemIDs []string) map[string]ItemState {
+	out := map[string]ItemState{}
+	for _, fn := range sorted(items) {
+		if fn == nil || len(itemIDs) == 0 {
+			continue
+		}
+		got, err := fn(ctx, userID, lang, itemIDs)
+		if err != nil {
+			continue
+		}
+		for id, st := range got {
+			cur := out[id]
+			cur.Unlocked = cur.Unlocked || st.Unlocked
+			cur.LockMeta = mergeMap(cur.LockMeta, st.LockMeta)
+			cur.Fields = mergeMap(cur.Fields, st.Fields)
+			out[id] = cur
+		}
+	}
+	return out
+}
+
+func Fill(v map[string]any, fields map[string]any) {
+	for k, x := range fields {
+		if _, ok := v[k]; !ok {
+			v[k] = x
+		}
+	}
+}
+
+func mergeMap(dst, src map[string]any) map[string]any {
+	if len(src) == 0 {
+		return dst
+	}
+	if dst == nil {
+		dst = map[string]any{}
+	}
+	Fill(dst, src)
+	return dst
+}
+
+func Level(ctx context.Context, userID, tableID string) (int, error) {
+	mu.RLock()
+	fn := levels
+	mu.RUnlock()
+	if fn == nil {
+		return 0, ErrNoLevels
+	}
+	return fn(ctx, userID, tableID)
+}
+
+func Methods(ctx context.Context) (map[string]bool, error) {
+	mu.RLock()
+	fn := methods
+	mu.RUnlock()
+	if fn == nil {
+		return nil, ErrNoMethods
+	}
+	return fn(ctx)
+}
+
+type PrizeGrant struct {
+	UserID     string
+	PrizeKey   string
+	GroupKey   string
+	GroupMode  string
+	SourceType string
+	SourceID   string
+	Reason     string
+}
+
+const (
+	GroupDraw = "draw"
+
+	GroupAll = "all"
+)
+
+type PrizeResult struct {
+	Prizes []map[string]any `json:"prizes"`
+}
+
+type (
+	PrizeGranter func(ctx context.Context, g PrizeGrant) (PrizeResult, error)
+
+	MetaSettler func(ctx context.Context, userID string, metaKeys []string) (map[string]any, error)
+)
+
+var (
+	ErrNoPrizes = errors.New("economy prizes are not available: the economy plugin is not loaded")
+
+	prizeGranter PrizeGranter
+	metaSettler  MetaSettler
+)
+
+func SetPrizeGranter(fn PrizeGranter) {
+	mu.Lock()
+	defer mu.Unlock()
+	prizeGranter = fn
+}
+
+func SetMetaSettler(fn MetaSettler) {
+	mu.Lock()
+	defer mu.Unlock()
+	metaSettler = fn
+}
+
+func PrizesAvailable() bool {
+	mu.RLock()
+	defer mu.RUnlock()
+	return prizeGranter != nil
+}
+
+func GrantPrize(ctx context.Context, g PrizeGrant) (PrizeResult, error) {
+	mu.RLock()
+	fn := prizeGranter
+	mu.RUnlock()
+	if fn == nil {
+		return PrizeResult{}, ErrNoPrizes
+	}
+	return fn(ctx, g)
+}
+
+func SettleMetas(ctx context.Context, userID string, metaKeys []string) (map[string]any, error) {
+	mu.RLock()
+	fn := metaSettler
+	mu.RUnlock()
+	if fn == nil || len(metaKeys) == 0 {
+		return nil, nil
+	}
+	return fn(ctx, userID, metaKeys)
+}
+
+type ItemSaver func(ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error
+
+var (
+	ErrNoItemSaver = errors.New("economy items are not available: the economy plugin is not loaded")
+
+	itemSaver ItemSaver
+)
+
+func SetItemSaver(fn ItemSaver) {
+	mu.Lock()
+	defer mu.Unlock()
+	itemSaver = fn
+}
+
+func SaveItem(ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
+	mu.RLock()
+	fn := itemSaver
+	mu.RUnlock()
+	if fn == nil {
+		return ErrNoItemSaver
+	}
+	return fn(ctx, tx, id, create, raw)
+}
