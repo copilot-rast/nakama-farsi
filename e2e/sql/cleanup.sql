@@ -81,3 +81,5 @@ DELETE FROM base_friend_rule WHERE name LIKE 'e2e%';
 DELETE FROM base_chat_quota_rule WHERE name LIKE 'e2e%';
 DELETE FROM publication_news_source WHERE key LIKE 'e2e%';
 DELETE FROM publication_news_reaction_type WHERE key LIKE 'e2e%';
+DELETE FROM content_pack WHERE version LIKE 'e2e%';
+DELETE FROM insights_heatmap_map WHERE key LIKE 'e2e%';

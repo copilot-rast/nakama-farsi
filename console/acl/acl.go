@@ -243,7 +243,7 @@ func baseChatPath(path string) bool {
 }
 
 func baseSettingsPath(path string) bool {
-	for _, prefix := range []string{"/v2/console/base/brand", "/v2/console/base/setup", "/v2/console/base/account-rules", "/v2/console/base/friend-rules", "/v2/console/base/app-versions", "/v2/console/base/countries", "/v2/console/base/remote-config", "/v2/console/base/updates", "/v2/console/base/voice", "/v2/console/base/server-rules"} {
+	for _, prefix := range []string{"/v2/console/base/brand", "/v2/console/base/setup", "/v2/console/base/account-rules", "/v2/console/base/friend-rules", "/v2/console/base/app-versions", "/v2/console/base/countries", "/v2/console/base/remote-config", "/v2/console/base/updates", "/v2/console/base/voice", "/v2/console/base/server-rules", "/v2/console/base/content", "/v2/console/base/insights"} {
 		if strings.HasPrefix(path, prefix) {
 			return true
 		}

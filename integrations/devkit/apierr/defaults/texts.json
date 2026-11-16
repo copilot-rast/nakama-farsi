@@ -267,6 +267,10 @@
     "en": "This API key does not have the {scope} permission.",
     "fa": "این کلید API دسترسی {scope} را ندارد."
   },
+  "APP_VERSION_REQUIRED": {
+    "en": "Send the app version.",
+    "fa": "نسخهٔ برنامه را بفرستید."
+  },
   "ASSETS_PRIVATE": {
     "en": "Game data can only be read with a player session.",
     "fa": "خواندن داده‌ها بدون ورود بازیکن بسته است."
@@ -734,6 +738,26 @@
   "HAS_SUBTASKS": {
     "en": "This item has sub-tasks.",
     "fa": "این مورد زیرتسک دارد."
+  },
+  "HEATMAP_DISABLED": {
+    "en": "Heatmap upload is turned off.",
+    "fa": "ارسال هیت‌مپ خاموش است."
+  },
+  "HEATMAP_INVALID": {
+    "en": "The heatmap data is not valid.",
+    "fa": "دادهٔ هیت‌مپ درست نیست."
+  },
+  "HEATMAP_MAP_DISABLED": {
+    "en": "Heatmaps are turned off for this map.",
+    "fa": "هیت‌مپ برای این نقشه خاموش است."
+  },
+  "HEATMAP_MAP_UNKNOWN": {
+    "en": "This map is not registered for heatmaps.",
+    "fa": "این نقشه برای هیت‌مپ ثبت نشده است."
+  },
+  "HEATMAP_TOO_LARGE": {
+    "en": "The heatmap upload is too large; send it in smaller parts.",
+    "fa": "هیت‌مپ خیلی بزرگ است؛ آن را در چند تکهٔ کوچک‌تر بفرستید."
   },
   "IDS_REQUIRED": {
     "en": "Please pick at least one item.",

@@ -3,7 +3,7 @@ var SECTIONS = {
   publication: ['faqs', 'news', 'news-review', 'news-sources', 'news-ingest', 'news-reactions', 'news-settings', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'activity'],
   support: ['tickets', 'live-chat'],
-  system: ['updates', 'server-rules', 'sdk']
+  system: ['updates', 'server-rules', 'content-packs', 'content-settings', 'insights-overview', 'insights-sessions', 'heatmaps', 'insights-settings', 'sdk']
 };
 var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'];
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
@@ -21,14 +21,16 @@ var HUBS = {
   events: { section: 'economy', tabs: [['event-types', ''], ['event-rules', 'prizes'], ['event-log', 'report']] },
   news: { section: 'publication', tabs: [['news', ''], ['news-review', 'review'], ['news-sources', 'sources'], ['news-ingest', 'log'], ['news-reactions', 'reactions'], ['news-settings', 'settings']] },
   banners: { section: 'publication', tabs: [['banners', ''], ['banner-lists', 'placements']] },
-  notifications: { section: 'publication', tabs: [['notifications', ''], ['notify-categories', 'categories']] }
+  notifications: { section: 'publication', tabs: [['notifications', ''], ['notify-categories', 'categories']] },
+  content: { section: 'system', tabs: [['content-packs', ''], ['content-settings', 'settings']] },
+  insights: { section: 'system', tabs: [['insights-overview', ''], ['insights-sessions', 'sessions'], ['heatmaps', 'heatmaps'], ['insights-settings', 'settings']] }
 };
 var NAV = {
   economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'offers', 'items', 'avatar', 'gifts', 'friend-gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
   moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers'] }],
   support: ['tickets', 'live-chat'],
-  system: ['updates', 'server-rules', 'sdk']
+  system: ['updates', 'server-rules', 'content', 'insights', 'sdk']
 };
 var HUB_OF = {};
 Object.keys(HUBS).forEach(function (hub) { HUBS[hub].tabs.forEach(function (tab) { HUB_OF[tab[0]] = hub; }); });

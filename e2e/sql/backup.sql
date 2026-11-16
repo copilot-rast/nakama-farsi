@@ -27,5 +27,7 @@ CREATE TABLE zz_e2e_backup.rrules AS SELECT * FROM base_report_rules;
 CREATE TABLE zz_e2e_backup.offerset AS SELECT * FROM economy_offer_settings;
 CREATE TABLE zz_e2e_backup.fgset AS SELECT * FROM economy_friend_gift_settings;
 CREATE TABLE zz_e2e_backup.cqset AS SELECT * FROM base_chat_quota_settings;
+CREATE TABLE zz_e2e_backup.ctset AS SELECT * FROM content_settings;
+CREATE TABLE zz_e2e_backup.inset AS SELECT * FROM insights_settings;
 CREATE TABLE zz_e2e_backup.newsset AS SELECT * FROM publication_news_settings;
 SELECT 'backed up', (SELECT count(*) FROM zz_e2e_backup.pm), (SELECT count(*) FROM zz_e2e_backup.pv), (SELECT count(*) FROM zz_e2e_backup.lang), (SELECT count(*) FROM zz_e2e_backup.cur);
