@@ -53,6 +53,8 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/avatar/parts/{id}", http.MethodPut, s.avatarPartWrite(false)},
 		{consolePrefix + "/avatar/parts/{id}", http.MethodDelete, s.avatarPartDelete},
 		{consolePrefix + "/players/{id}/avatar", http.MethodGet, s.playerAvatar},
+		{consolePrefix + "/server-rules", http.MethodGet, s.serverRulesGet},
+		{consolePrefix + "/server-rules", http.MethodPut, s.serverRulesPut},
 		{consolePrefix + "/stickers/settings", http.MethodGet, s.stickerSettingsGet},
 		{consolePrefix + "/stickers/settings", http.MethodPut, s.stickerSettingsPut},
 		{consolePrefix + "/stickers/packs", http.MethodGet, s.stickerPackList},

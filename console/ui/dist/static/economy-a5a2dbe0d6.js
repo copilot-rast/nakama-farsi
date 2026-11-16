@@ -3369,6 +3369,40 @@ var MESSAGES = {
     'nav.updates': "به‌روزرسانی‌ها",
     'desc.updates': "نسخهٔ همین سرور و تغییرهای تازهٔ ریپوی بالایی. این صفحه فقط نشان می‌دهد و هیچ دستوری اجرا نمی‌کند.",
     'nav.sdk': "پکیج یونیتی",
+    'nav.server-rules': "قانون‌های سرور",
+    'desc.server-rules': "حالت تعمیر برای همهٔ بازیکن‌ها، قفل نوشتن مستقیم بازی در storage، و حذف حساب به درخواست بازیکن.",
+    'sr.h.maintenance': "حالت تعمیر",
+    'f.sr.mt.enabled': "حالت تعمیر روشن باشد",
+    'f.sr.mt.enabled.hint': "تا وقتی روشن است، بازیکن‌ها فقط نسخه و وضعیت سرور را می‌گیرند و بقیهٔ درخواست‌ها با کد MAINTENANCE رد می‌شود. کنسول و درخواست‌های سرور به سرور آزادند.",
+    'f.maintenance.message': "پیام تعمیر",
+    'f.sr.mt.message': "پیام تعمیر",
+    'f.sr.mt.message.hint': "خالی بماند تا متن پیش‌فرض نشان داده شود.",
+    'f.sr.mt.until': "پایان خودکار",
+    'f.sr.mt.until.hint': "بعد از این زمان حالت تعمیر خودش خاموش می‌شود. خالی یعنی تا وقتی خاموشش کنید.",
+    'f.sr.mt.tags': "برچسب‌های آزاد",
+    'f.sr.mt.tags.hint': "بازیکن‌هایی که یکی از این برچسب‌ها را دارند (مثلاً تسترها) در حالت تعمیر هم بازی می‌کنند.",
+    'f.sr.mt.rpcs': "درخواست‌های آزاد",
+    'f.sr.mt.rpcs.hint': "نام RPCهایی که در حالت تعمیر هم جواب می‌گیرند.",
+    'sr.rpc.add': "افزودن RPC",
+    'sr.rpc.empty': "فقط نسخه و وضعیت سرور آزاد است.",
+    'sr.mt.on': "حالت تعمیر روشن است و بازیکن‌ها نمی‌توانند بازی کنند.",
+    'sr.h.storage': "قفل storage",
+    'f.sr.st.writes': "بستن نوشتن بازی در storage",
+    'f.sr.st.writes.hint': "بازی نمی‌تواند مستقیم در storage بنویسد؛ فقط کد سرور می‌نویسد. جلوی دستکاری داده با بازی تغییریافته را می‌گیرد.",
+    'f.sr.st.deletes': "بستن حذف از storage",
+    'f.sr.st.allow': "مجموعه‌های آزاد",
+    'f.sr.st.allow.hint': "نام collectionهایی که بازی هنوز می‌تواند در آن‌ها بنویسد یا حذف کند (مثلاً تنظیمات گرافیک).",
+    'sr.col.add': "افزودن مجموعه",
+    'sr.col.empty': "همهٔ مجموعه‌ها بسته‌اند.",
+    'sr.h.delete': "حذف حساب",
+    'f.sr.ad.enabled': "بازیکن بتواند حسابش را حذف کند",
+    'f.sr.ad.enabled.hint': "با درخواست base_account_delete از داخل بازی.",
+    'f.sr.ad.mode': "روش حذف",
+    'sr.ad.grace': "با مهلت پشیمانی",
+    'sr.ad.immediate': "فوری",
+    'f.sr.ad.days': "مهلت پشیمانی (روز)",
+    'sr.ad.pending': "{n} حساب در صف حذف است.",
+    'code.MAINTENANCE': "بازی در حال تعمیر است.",
     'desc.sdk': "پکیج یونیتی این سرور: چه چیزهایی دارد، چطور نصب می‌شود و اولین کدها.",
     'sdk.what': "این پکیج چیست؟",
     'sdk.what.text': "یک پکیج یونیتی که بازی را به همین سرور وصل می‌کند. نسخهٔ گسترش‌یافتهٔ کلاینت رسمی Nakama است و همه‌چیز در همین یک پکیج است؛ پکیج رسمی Nakama را جدا نصب نکنید.",
@@ -8155,6 +8189,40 @@ var MESSAGES = {
     'nav.updates': "Updates",
     'desc.updates': "This server's version and the new changes in the parent repo. This page only shows; it never runs a command.",
     'nav.sdk': "Unity SDK",
+    'nav.server-rules': "Server rules",
+    'desc.server-rules': "Maintenance for every player, locking direct game writes to storage, and account deletion on the player's request.",
+    'sr.h.maintenance': "Maintenance",
+    'f.sr.mt.enabled': "Maintenance is on",
+    'f.sr.mt.enabled.hint': "While on, players only get the version and server status; other calls are refused with MAINTENANCE. The console and server-to-server calls are not affected.",
+    'f.maintenance.message': "Maintenance message",
+    'f.sr.mt.message': "Maintenance message",
+    'f.sr.mt.message.hint': "Leave empty to show the default text.",
+    'f.sr.mt.until': "Ends automatically",
+    'f.sr.mt.until.hint': "Maintenance turns itself off after this time. Empty = until you turn it off.",
+    'f.sr.mt.tags': "Tags that may play",
+    'f.sr.mt.tags.hint': "Players with one of these tags (testers, for example) keep playing during maintenance.",
+    'f.sr.mt.rpcs': "Open calls",
+    'f.sr.mt.rpcs.hint': "RPC names that still answer during maintenance.",
+    'sr.rpc.add': "Add RPC",
+    'sr.rpc.empty': "Only the version and server status stay open.",
+    'sr.mt.on': "Maintenance is on and players cannot play.",
+    'sr.h.storage': "Storage lock",
+    'f.sr.st.writes': "Block game writes to storage",
+    'f.sr.st.writes.hint': "The game cannot write to storage directly; only server code can. Stops a modified game from changing data.",
+    'f.sr.st.deletes': "Block game deletes from storage",
+    'f.sr.st.allow': "Open collections",
+    'f.sr.st.allow.hint': "Collections the game may still write to or delete from (graphics settings, for example).",
+    'sr.col.add': "Add collection",
+    'sr.col.empty': "Every collection is locked.",
+    'sr.h.delete': "Account deletion",
+    'f.sr.ad.enabled': "Players can delete their account",
+    'f.sr.ad.enabled.hint': "With base_account_delete from the game.",
+    'f.sr.ad.mode': "How",
+    'sr.ad.grace': "With a grace period",
+    'sr.ad.immediate': "Right away",
+    'f.sr.ad.days': "Grace period (days)",
+    'sr.ad.pending': "{n} accounts are waiting to be deleted.",
+    'code.MAINTENANCE': "The game is under maintenance.",
     'desc.sdk': "This server's Unity package: what it has, how to install it and the first lines of code.",
     'sdk.what': "What is it?",
     'sdk.what.text': "A Unity package that connects a game to this server. It extends the official Nakama client and holds everything in one package; do not install the official Nakama package next to it.",
@@ -12102,11 +12170,11 @@ var SECTIONS = {
   publication: ['faqs', 'news', 'news-review', 'news-sources', 'news-ingest', 'news-reactions', 'news-settings', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'activity'],
   support: ['tickets', 'live-chat'],
-  system: ['updates', 'sdk']
+  system: ['updates', 'server-rules', 'sdk']
 };
 var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'];
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
-var PAGE_ACL = { players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
+var PAGE_ACL = { 'server-rules': 'SETTINGS', players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
 var HUBS = {
   metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['meta-relations', 'relations'], ['level-tables', 'levels']] },
@@ -12127,7 +12195,7 @@ var NAV = {
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
   moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers'] }],
   support: ['tickets', 'live-chat'],
-  system: ['updates', 'sdk']
+  system: ['updates', 'server-rules', 'sdk']
 };
 var HUB_OF = {};
 Object.keys(HUBS).forEach(function (hub) { HUBS[hub].tabs.forEach(function (tab) { HUB_OF[tab[0]] = hub; }); });
@@ -23517,6 +23585,77 @@ function sdkPage(container) {
 }
 
 CUSTOM_PAGES['sdk'] = function (root) { sdkPage(root); };
+
+ICONS['server-rules'] = '<path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/>';
+PH_ICONS['server-rules'] = '<path d="M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.27,47,25.53a8,8,0,0,0,4.2,0c1-.26,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm0,72c0,37.07-13.66,67.16-40.6,89.42A129.3,129.3,0,0,1,128,223.62a128.25,128.25,0,0,1-38.92-21.81C61.82,179.51,48,149.3,48,112l0-56,160,0ZM82.34,141.66a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32l-56,56a8,8,0,0,1-11.32,0Z"/>';
+
+function srTextRows(name, label, hint, add, empty, max, when) {
+  return { name: name, type: 'rows', label: label, hint: hint, addLabel: add, emptyText: empty, max: max, empty: [], when: when,
+    newRow: function () { return { v: '' }; },
+    columns: [{ name: 'v', type: 'text', ltr: true, label: label, required: true }] };
+}
+
+var SR_FIELDS = [
+  { type: 'heading', label: 'sr.h.maintenance' },
+  { name: 'maintenance.enabled', type: 'bool', inline: true, label: 'f.sr.mt.enabled', hint: 'f.sr.mt.enabled.hint' },
+  tr('maintenance.message', { label: 'f.sr.mt.message', hint: 'f.sr.mt.message.hint', multiline: true, rows: 2, max: 500, optional: true }),
+  { name: 'maintenance.until', type: 'datetime', label: 'f.sr.mt.until', hint: 'f.sr.mt.until.hint', optional: true },
+  { name: 'maintenance.allowTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.sr.mt.tags', hint: 'f.sr.mt.tags.hint', optional: true, empty: [] },
+  srTextRows('maintenance.allowRpcs', 'f.sr.mt.rpcs', 'f.sr.mt.rpcs.hint', 'sr.rpc.add', 'sr.rpc.empty', 100),
+  { type: 'heading', label: 'sr.h.storage' },
+  { type: 'row', fields: [
+    { name: 'storage.blockWrites', type: 'bool', inline: true, label: 'f.sr.st.writes', hint: 'f.sr.st.writes.hint' },
+    { name: 'storage.blockDeletes', type: 'bool', inline: true, label: 'f.sr.st.deletes' }
+  ] },
+  srTextRows('storage.allowCollections', 'f.sr.st.allow', 'f.sr.st.allow.hint', 'sr.col.add', 'sr.col.empty', 100),
+  { type: 'heading', label: 'sr.h.delete' },
+  { name: 'accountDelete.enabled', type: 'bool', inline: true, label: 'f.sr.ad.enabled', hint: 'f.sr.ad.enabled.hint' },
+  { type: 'row', fields: [
+    { name: 'accountDelete.mode', type: 'select', label: 'f.sr.ad.mode', required: true, options: function () { return [{ value: 'grace', label: t('sr.ad.grace') }, { value: 'immediate', label: t('sr.ad.immediate') }]; } },
+    { name: 'accountDelete.graceDays', type: 'number', label: 'f.sr.ad.days', min: 1, max: 365, required: true, when: function (v) { return (v.accountDelete || {}).mode !== 'immediate'; } }
+  ] }
+];
+
+function srCall(method, path, body) {
+  return baseApi(method, path, body).then(function (res) {
+    var v = Object.assign({}, res || {});
+    v.maintenance = Object.assign({ enabled: false, message: {}, allowRpcs: [], allowTagIds: [] }, v.maintenance || {});
+    v.maintenance.allowRpcs = (v.maintenance.allowRpcs || []).map(function (x) { return { v: x }; });
+    v.maintenance.message = v.maintenance.message || {};
+    v.storage = Object.assign({ blockWrites: false, blockDeletes: false, allowCollections: [] }, v.storage || {});
+    v.storage.allowCollections = (v.storage.allowCollections || []).map(function (x) { return { v: x }; });
+    v.accountDelete = Object.assign({ enabled: true, mode: 'grace', graceDays: 14 }, v.accountDelete || {});
+    return v;
+  });
+}
+
+function serverRulesPage(container) {
+  var frame = pageFrame(t('nav.server-rules'), t('desc.server-rules'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(srCall, '/server-rules', null, SR_FIELDS, {
+    id: 'server-rules',
+    onchange: function (v, extra) {
+      clear(extra);
+      if (v.maintenance && v.maintenance.enabled) extra.appendChild(notice('warning', t('sr.mt.on')));
+      if (v.pendingDeletions) extra.appendChild(notice('info', t('sr.ad.pending', { n: fmtNum(v.pendingDeletions) })));
+    },
+    fixPayload: function (p) {
+      delete p.updatedAt;
+      delete p.updatedBy;
+      delete p.pendingDeletions;
+      p.maintenance.allowRpcs = (p.maintenance.allowRpcs || []).map(function (r) { return (r.v || '').trim(); }).filter(Boolean);
+      p.maintenance.allowTagIds = p.maintenance.allowTagIds || [];
+      p.maintenance.until = p.maintenance.until || null;
+      p.storage.allowCollections = (p.storage.allowCollections || []).map(function (r) { return (r.v || '').trim(); }).filter(Boolean);
+      if (!p.accountDelete.graceDays) p.accountDelete.graceDays = 14;
+      return p;
+    }
+  });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
+CUSTOM_PAGES['server-rules'] = function (root) { serverRulesPage(root); };
 
 function voiceSecretInput(cur, change, label, id) {
   var inp = textInput(cur || '', { ltr: true, mono: true, label: label, oninput: function (v) { change(v.trim()); } });

@@ -26,6 +26,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/heroiclabs/nakama/v3/internal/rpcgate"
 	"github.com/heroiclabs/nakama/v3/internal/satori"
 
 	"github.com/gofrs/uuid/v5"
@@ -3115,7 +3116,16 @@ func (r *Runtime) MatchCreateFunction() RuntimeMatchCreateFunction {
 }
 
 func (r *Runtime) Rpc(id string) RuntimeRpcFunction {
-	return r.rpcFunctions[id]
+	fn := r.rpcFunctions[id]
+	if fn == nil || !rpcgate.Active() {
+		return fn
+	}
+	return func(ctx context.Context, headers, queryParams map[string][]string, traceID, userID, username string, vars map[string]string, expiry int64, sessionID, clientIP, clientPort, lang, payload string) (string, error, codes.Code) {
+		if code, err := rpcgate.Check(ctx, id, userID); err != nil {
+			return "", err, code
+		}
+		return fn(ctx, headers, queryParams, traceID, userID, username, vars, expiry, sessionID, clientIP, clientPort, lang, payload)
+	}
 }
 
 func (r *Runtime) IAPProviderRegistry() *RuntimeIAPProviderRegistry {

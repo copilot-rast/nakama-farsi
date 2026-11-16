@@ -46,6 +46,9 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := initializer.RegisterHttp("/v2/support/files/{key}", svc.fileHTTP, http.MethodGet, http.MethodHead); err != nil {
 		return err
 	}
+	if err := registerServerRules(svc, initializer); err != nil {
+		return err
+	}
 	if err := svc.registerConsoleHTTP(initializer); err != nil {
 		return err
 	}
@@ -66,6 +69,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	go svc.updatesLoop(ctx)
 	go svc.friendsLoop(ctx)
 	go svc.chatQuotaLoop(ctx)
+	go svc.accountDeleteLoop(ctx)
 	logger.Info("Base module registered")
 	return nil
 }
