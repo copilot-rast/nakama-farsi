@@ -1,0 +1,11 @@
+{
+  "name": "nakama-console-quiz",
+  "private": true,
+  "description": "Quiz packs, questions, hints, missions, player reports, result reports, a quiz report and player progress pages injected into the prebuilt Nakama Console UI.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check"
+  }
+}

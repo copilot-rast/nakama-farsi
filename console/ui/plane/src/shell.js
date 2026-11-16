@@ -9,13 +9,15 @@ function iconFor(href) {
   if (parts[0] === 'publication' && parts[1] === 'notifications') return 'send';
   if (parts[0] === 'economy' && parts[1] === 'payments') return 'wallet';
   if (parts[0] === 'moderation' && parts[1] === 'players') return 'user';
+  if (parts[0] === 'quiz') return QUIZ_ICON[parts[1] || 'packs'] || 'help';
   var key = parts.length > 1 && /^(economy|publication|moderation|support|system|settings)$/.test(parts[0]) ? parts[1] : parts[0] || '';
   return HREF_ICON[key] || 'page';
 }
 
 window.NakamaPlane.iconFor = iconFor;
 
-var GROUP_ICON = { economy: 'coins', publication: 'megaphone', moderation: 'shield', support: 'buoy', system: 'cloudDown', developer: 'code', help: 'help', settings: 'settings' };
+var QUIZ_ICON = { packs: 'package', questions: 'help', missions: 'checklist', duels: 'users', 'duel-categories': 'layers', reports: 'flag', results: 'fileCode', 'import': 'cloudDown', stats: 'chart', settings: 'sliders' };
+var GROUP_ICON = { quiz: 'help', economy: 'coins', publication: 'megaphone', moderation: 'shield', support: 'buoy', system: 'cloudDown', developer: 'code', help: 'help', settings: 'settings' };
 
 function linkInfo(a) {
   var badgeEl = a.querySelector('.eco-nav-badge, .eco-nav-dot');
@@ -48,7 +50,7 @@ function railModel() {
     var labelEl = null;
     for (var i = 0; i < g.children.length; i++) if (g.children[i].tagName !== 'NAV' && !g.children[i].querySelector('a')) { labelEl = g.children[i]; break; }
     var label = labelEl ? labelEl.textContent.trim() : '';
-    var sec = g.getAttribute('data-economy-nav');
+    var sec = g.getAttribute('data-economy-nav') || g.getAttribute('data-plane-group');
     if (sec) {
       model.groups.push({ id: sec, label: label || pst('group.' + sec), icon: GROUP_ICON[sec] || 'page', links: links });
       return;

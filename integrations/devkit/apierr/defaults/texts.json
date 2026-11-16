@@ -1903,6 +1903,90 @@
     "en": "You reached today's limit of {limit} quizzes.",
     "fa": "سقف بازی امروز ({limit} بار) پر شده است."
   },
+  "QUIZ_DUEL_ACTIVE_LIMIT": {
+    "en": "You already have {limit} open duels. Finish one first.",
+    "fa": "شما {limit} دوئل باز دارید. اول یکی را تمام کنید."
+  },
+  "QUIZ_DUEL_BLOCKED": {
+    "en": "You cannot duel this player.",
+    "fa": "با این بازیکن نمی‌شود دوئل کرد."
+  },
+  "QUIZ_DUEL_CATEGORY_EMPTY": {
+    "en": "This category does not have enough questions right now.",
+    "fa": "این دسته فعلاً سوال کافی ندارد."
+  },
+  "QUIZ_DUEL_CATEGORY_NOT_OFFERED": {
+    "en": "Pick one of the offered categories.",
+    "fa": "یکی از دسته‌های پیشنهادشده را انتخاب کنید."
+  },
+  "QUIZ_DUEL_DAILY_LIMIT": {
+    "en": "You reached today's limit of {limit} duels.",
+    "fa": "سقف دوئل امروز ({limit} بار) پر شده است."
+  },
+  "QUIZ_DUEL_DISABLED": {
+    "en": "Duels are off right now.",
+    "fa": "دوئل فعلاً خاموش است."
+  },
+  "QUIZ_DUEL_INVALID_MODE": {
+    "en": "The duel mode must be random or friend.",
+    "fa": "نوع دوئل باید random یا friend باشد."
+  },
+  "QUIZ_DUEL_INVALID_STATUS": {
+    "en": "Unknown duel status filter.",
+    "fa": "فیلتر وضعیت دوئل شناخته نشد."
+  },
+  "QUIZ_DUEL_NOT_ACCEPTED": {
+    "en": "Accept the invite first.",
+    "fa": "اول دعوت را بپذیرید."
+  },
+  "QUIZ_DUEL_NOT_ENOUGH_CURRENCY": {
+    "en": "You need {amount} {currencyKey} to play this duel.",
+    "fa": "برای این دوئل {amount} {currencyKey} لازم است."
+  },
+  "QUIZ_DUEL_NOT_FOUND": {
+    "en": "Duel not found.",
+    "fa": "دوئل پیدا نشد."
+  },
+  "QUIZ_DUEL_NOT_FRIENDS": {
+    "en": "You can only invite your friends.",
+    "fa": "فقط دوست‌هایتان را می‌توانید دعوت کنید."
+  },
+  "QUIZ_DUEL_NOT_INVITED": {
+    "en": "There is no open invite for you in this duel.",
+    "fa": "در این دوئل دعوتی برای شما باز نیست."
+  },
+  "QUIZ_DUEL_NOT_PICKING": {
+    "en": "It is not time to pick a category.",
+    "fa": "الان وقت انتخاب دسته نیست."
+  },
+  "QUIZ_DUEL_NOT_YOUR_TURN": {
+    "en": "It is your opponent's turn.",
+    "fa": "نوبت حریف است."
+  },
+  "QUIZ_DUEL_NO_CATEGORIES": {
+    "en": "No category has enough questions for a duel yet.",
+    "fa": "هنوز هیچ دسته‌ای سوال کافی برای دوئل ندارد."
+  },
+  "QUIZ_DUEL_OVER": {
+    "en": "This duel is over.",
+    "fa": "این دوئل تمام شده است."
+  },
+  "QUIZ_DUEL_PICK_FIRST": {
+    "en": "Pick a category first.",
+    "fa": "اول یک دسته انتخاب کنید."
+  },
+  "QUIZ_DUEL_PLAYER_NOT_FOUND": {
+    "en": "Player not found.",
+    "fa": "بازیکن پیدا نشد."
+  },
+  "QUIZ_DUEL_QUESTION_NOT_SERVED": {
+    "en": "Ask for this question before answering it.",
+    "fa": "اول سوال را بگیرید، بعد جواب بدهید."
+  },
+  "QUIZ_DUEL_SELF": {
+    "en": "You cannot duel yourself.",
+    "fa": "با خودتان نمی‌توانید دوئل کنید."
+  },
   "QUIZ_GAME_MISSION_LOCKED": {
     "en": "Finish the previous mission of this game first.",
     "fa": "اول ماموریت قبلی این بازی را تمام کنید."

@@ -2749,6 +2749,132 @@
       "quiz"
     ]
   },
+  "QUIZ_DUEL_ACTIVE_LIMIT": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_BLOCKED": {
+    "status": 403,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_CATEGORY_EMPTY": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_CATEGORY_NOT_OFFERED": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_DAILY_LIMIT": {
+    "status": 429,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_DISABLED": {
+    "status": 503,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_INVALID_MODE": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_INVALID_STATUS": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_NOT_ACCEPTED": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_NOT_ENOUGH_CURRENCY": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_NOT_FRIENDS": {
+    "status": 403,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_NOT_INVITED": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_NOT_PICKING": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_NOT_YOUR_TURN": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_NO_CATEGORIES": {
+    "status": 503,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_OVER": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_PICK_FIRST": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_PLAYER_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_QUESTION_NOT_SERVED": {
+    "status": 409,
+    "modules": [
+      "quiz"
+    ]
+  },
+  "QUIZ_DUEL_SELF": {
+    "status": 400,
+    "modules": [
+      "quiz"
+    ]
+  },
   "QUIZ_GAME_MISSION_LOCKED": {
     "status": 403,
     "modules": [
