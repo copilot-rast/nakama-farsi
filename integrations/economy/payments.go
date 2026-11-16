@@ -54,32 +54,35 @@ func (s *service) loadPayment(ctx context.Context, q queryer, id string) (paymen
 }
 
 type productView struct {
-	ID              string            `json:"id"`
-	Key             string            `json:"key"`
-	Name            i18n              `json:"name"`
-	Description     i18n              `json:"description"`
-	IsActive        bool              `json:"isActive"`
-	CategoryID      *string           `json:"categoryId"`
-	TagIDs          []string          `json:"tagIds"`
-	AudienceTagIDs  []string          `json:"audienceTagIds"`
-	PriceToman      *int64            `json:"priceToman"`
-	CoinPrice       *coinPrice        `json:"coinPrice"`
-	DiscountPercent int               `json:"discountPercent"`
-	PaymentMethods  []string          `json:"paymentMethods"`
-	SKU             map[string]string `json:"sku"`
-	IsSubscription  bool              `json:"isSubscription"`
-	PrizeID         string            `json:"prizeId"`
-	IconURL         string            `json:"iconUrl"`
-	CoverURL        string            `json:"coverUrl"`
-	MinLevel        int               `json:"minLevel"`
-	MaxLevel        *int              `json:"maxLevel"`
-	LevelTableID    *string           `json:"levelTableId"`
-	IsOneTime       bool              `json:"isOneTime"`
-	CheckContents   bool              `json:"checkContents"`
-	Giftable        *bool             `json:"giftable"`
-	PurchaseMessage i18n              `json:"purchaseMessage"`
-	offer           *offerRef
-	giftID          string
+	ID                 string            `json:"id"`
+	Key                string            `json:"key"`
+	Name               i18n              `json:"name"`
+	Description        i18n              `json:"description"`
+	IsActive           bool              `json:"isActive"`
+	CategoryID         *string           `json:"categoryId"`
+	TagIDs             []string          `json:"tagIds"`
+	AudienceTagIDs     []string          `json:"audienceTagIds"`
+	PriceToman         *int64            `json:"priceToman"`
+	CoinPrice          *coinPrice        `json:"coinPrice"`
+	DiscountPercent    int               `json:"discountPercent"`
+	PaymentMethods     []string          `json:"paymentMethods"`
+	SKU                map[string]string `json:"sku"`
+	IsSubscription     bool              `json:"isSubscription"`
+	PrizeID            string            `json:"prizeId"`
+	IconURL            string            `json:"iconUrl"`
+	CoverURL           string            `json:"coverUrl"`
+	MinLevel           int               `json:"minLevel"`
+	MaxLevel           *int              `json:"maxLevel"`
+	LevelTableID       *string           `json:"levelTableId"`
+	IsOneTime          bool              `json:"isOneTime"`
+	CheckContents      bool              `json:"checkContents"`
+	Giftable           *bool             `json:"giftable"`
+	PurchaseMessage    i18n              `json:"purchaseMessage"`
+	TagDiscountPercent int               `json:"-"`
+	CoinOriginal       *coinPrice        `json:"-"`
+	TagFinalToman      *int64            `json:"-"`
+	offer              *offerRef
+	giftID             string
 }
 
 // friendGiftID is the friend gift a purchase pays for, or nil.

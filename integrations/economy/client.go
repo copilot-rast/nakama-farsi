@@ -109,6 +109,7 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 		return nil, err
 	}
 	lc := newLevelCache(s.db, userID)
+	disc := s.userDiscounts(ctx, s.db, userID)
 	prizes := map[string]prizeRow{}
 	products := []map[string]any{}
 	rows, err = s.db.QueryContext(ctx, `SELECT `+productJSON+`::text FROM economy_product t WHERE t.is_active ORDER BY t.sort, t.created_at`)
@@ -168,14 +169,28 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 				tags = append(tags, k)
 			}
 		}
+		ownPercent := p.DiscountPercent
+		storeFinal := any(nil)
+		if p.PriceToman != nil {
+			storeFinal = discounted(*p.PriceToman, ownPercent)
+		}
+		p = p.withTagDiscount(disc)
 		var final any
 		if p.PriceToman != nil {
 			final = discounted(*p.PriceToman, p.DiscountPercent)
+			if p.TagFinalToman != nil {
+				final = *p.TagFinalToman
+			}
+		}
+		var coinOriginal any
+		if p.CoinOriginal != nil {
+			coinOriginal = p.CoinOriginal
 		}
 		products = append(products, map[string]any{
 			"id": p.ID, "key": p.Key, "name": langs.Resolve(p.Name, lang), "description": langs.Resolve(p.Description, lang),
 			"iconUrl": p.IconURL, "coverUrl": p.CoverURL, "priceToman": p.PriceToman, "finalToman": final, "coinPrice": p.CoinPrice,
-			"discountPercent": p.DiscountPercent, "paymentMethods": available, "sku": sku, "isSubscription": p.IsSubscription,
+			"discountPercent": p.DiscountPercent, "tagDiscountPercent": p.TagDiscountPercent, "coinOriginal": coinOriginal, "storeFinalToman": storeFinal,
+			"paymentMethods": available, "sku": sku, "isSubscription": p.IsSubscription,
 			"categoryKey": categoryKey, "tags": tags, "minLevel": p.MinLevel, "maxLevel": p.MaxLevel, "exclusive": len(p.AudienceTagIDs) > 0,
 			"isOneTime": p.IsOneTime, "owned": st.Owned, "levelLocked": st.LevelLocked, "bought": st.Count > 0, "purchaseCount": st.Count,
 			"requiresKey": st.Missing, "purchaseMessage": langs.Resolve(p.PurchaseMessage, lang), "items": prizeItemKeys(prize.Items),
@@ -451,6 +466,9 @@ func (s *service) purchaseStart(ctx context.Context, userID string, in purchaseI
 		if !validMethod(in.Method) || !product.allows(in.Method) {
 			return nil, badRequest("METHOD_NOT_ALLOWED", "method", "this product cannot be bought with this method")
 		}
+		if !isStore(in.Method) && product.giftID == "" {
+			product = product.withTagDiscount(s.userDiscounts(ctx, s.db, userID))
+		}
 	}
 	pm, err := s.loadMethod(ctx, s.db, in.Method)
 	if err != nil {
@@ -582,6 +600,9 @@ func (s *service) startGateway(ctx context.Context, userID string, product produ
 	}
 	original := *product.PriceToman
 	final := discounted(original, product.DiscountPercent)
+	if product.TagFinalToman != nil {
+		final = *product.TagFinalToman
+	}
 	if product.offer != nil && product.offer.Final != nil {
 		final = *product.offer.Final
 	}

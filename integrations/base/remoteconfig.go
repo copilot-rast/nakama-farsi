@@ -563,7 +563,7 @@ func (s *service) userTagSet(ctx context.Context, userID string) (map[string]boo
 	if userID == "" {
 		return tags, nil
 	}
-	rows, err := s.db.QueryContext(ctx, `SELECT tag_id::text FROM base_user_tag WHERE user_id=$1`, userID)
+	rows, err := s.db.QueryContext(ctx, `SELECT tag_id::text FROM base_user_tag WHERE user_id=$1 AND (expires_at IS NULL OR expires_at > now())`, userID)
 	if err != nil {
 		return nil, err
 	}

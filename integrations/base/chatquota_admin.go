@@ -105,7 +105,7 @@ const chatRuleJSON = `jsonb_build_object('id',r.id,'name',r.name,'tagIds',to_jso
 	'dailyMessages',r.daily_messages,'dailyConversations',r.daily_conversations,'friendDailyMessages',r.friend_daily_messages,'friendDailyConversations',r.friend_daily_conversations,
 	'isActive',r.is_active,'createdBy',r.created_by,'createdAt',r.created_at,'updatedAt',r.updated_at,
 	'tags',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',g.id,'key',g.key,'name',g.name) ORDER BY g.key),'[]'::jsonb) FROM base_tag g WHERE g.id::text = ANY(r.tag_ids)),
-	'players',(SELECT count(DISTINCT ut.user_id) FROM base_user_tag ut WHERE ut.tag_id::text = ANY(r.tag_ids)))`
+	'players',(SELECT count(DISTINCT ut.user_id) FROM base_user_tag ut WHERE ut.tag_id::text = ANY(r.tag_ids) AND (ut.expires_at IS NULL OR ut.expires_at > now())))`
 
 func (s *service) chatRuleList(w http.ResponseWriter, r *http.Request) {
 	p := readPage(r)

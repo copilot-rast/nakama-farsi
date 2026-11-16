@@ -439,9 +439,17 @@
     "en": "Please choose a category.",
     "fa": "لطفاً یک دسته انتخاب کنید."
   },
+  "CHANCE_DAILY_LIMIT": {
+    "en": "No plays of this game left today.",
+    "fa": "سهم امروز این بازی تمام شده."
+  },
   "CHANCE_GAME_NOT_FOUND": {
     "en": "Game not found.",
     "fa": "بازی شانس پیدا نشد."
+  },
+  "CHANCE_TOTAL_LIMIT": {
+    "en": "Every play of this game has been used.",
+    "fa": "همهٔ دفعه‌های این بازی استفاده شده."
   },
   "CHAT_CLOSED": {
     "en": "This chat has been closed.",

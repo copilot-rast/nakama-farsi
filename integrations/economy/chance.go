@@ -47,6 +47,10 @@ type chanceGame struct {
 	Price       *chancePrice
 	Active      bool
 	Sort        int
+	Kind        string
+	DailyLimit  *int
+	TotalLimit  *int
+	ShowOdds    bool
 }
 
 type chancePick struct {
@@ -56,7 +60,7 @@ type chancePick struct {
 	GroupID string
 }
 
-const chanceGameColumns = `id::text, key, name::text, description::text, metadata::text, prize_type, prize::text, interval_time, price::text, is_active, sort`
+const chanceGameColumns = `id::text, key, name::text, description::text, metadata::text, prize_type, prize::text, interval_time, price::text, is_active, sort, kind, daily_limit, total_limit, show_odds`
 
 type scanner interface {
 	Scan(dest ...any) error
@@ -66,9 +70,17 @@ func scanChanceGame(row scanner) (*chanceGame, error) {
 	var g chanceGame
 	var name, desc, meta, rows string
 	var price sql.NullString
-	var interval sql.NullInt64
-	if err := row.Scan(&g.ID, &g.Key, &name, &desc, &meta, &g.PrizeType, &rows, &interval, &price, &g.Active, &g.Sort); err != nil {
+	var interval, daily, total sql.NullInt64
+	if err := row.Scan(&g.ID, &g.Key, &name, &desc, &meta, &g.PrizeType, &rows, &interval, &price, &g.Active, &g.Sort, &g.Kind, &daily, &total, &g.ShowOdds); err != nil {
 		return nil, err
+	}
+	if daily.Valid {
+		v := int(daily.Int64)
+		g.DailyLimit = &v
+	}
+	if total.Valid {
+		v := int(total.Int64)
+		g.TotalLimit = &v
 	}
 	_ = json.Unmarshal([]byte(name), &g.Name)
 	_ = json.Unmarshal([]byte(desc), &g.Description)
@@ -250,6 +262,44 @@ func chanceWait(g *chanceGame, last sql.NullTime, now time.Time) time.Duration {
 	return left
 }
 
+func (s *service) chanceDayStart(ctx context.Context, q queryer, now time.Time) time.Time {
+	st, err := loadEventSettings(ctx, q)
+	loc := st.loc
+	if err != nil || loc == nil {
+		loc = loadZone(defaultTimezone)
+	}
+	y, m, d := now.In(loc).Date()
+	return time.Date(y, m, d, 0, 0, 0, 0, loc)
+}
+
+func (s *service) chancePlaysSince(ctx context.Context, q queryer, gameID, userID string, since time.Time) (int, error) {
+	var n int
+	err := q.QueryRowContext(ctx, `SELECT count(*) FROM economy_chance_play WHERE game_id=$1 AND user_id=$2 AND created_at >= $3`, gameID, userID, since).Scan(&n)
+	return n, err
+}
+
+func (s *service) checkChanceLimits(ctx context.Context, q queryer, g *chanceGame, userID string, plays int64, now time.Time) error {
+	if g.TotalLimit != nil && plays >= int64(*g.TotalLimit) {
+		e := conflict("CHANCE_TOTAL_LIMIT", "this player has used every play of this game")
+		e.Meta = map[string]any{"limit": *g.TotalLimit}
+		return e
+	}
+	if g.DailyLimit == nil {
+		return nil
+	}
+	start := s.chanceDayStart(ctx, q, now)
+	n, err := s.chancePlaysSince(ctx, q, g.ID, userID, start)
+	if err != nil {
+		return err
+	}
+	if n >= *g.DailyLimit {
+		e := fail(http.StatusTooManyRequests, "CHANCE_DAILY_LIMIT", "", "no plays left today")
+		e.Meta = map[string]any{"limit": *g.DailyLimit, "resetsAt": start.AddDate(0, 0, 1).UTC().Format(time.RFC3339)}
+		return e
+	}
+	return nil
+}
+
 func waitSeconds(d time.Duration) int64 {
 	if d <= 0 {
 		return 0
@@ -366,6 +416,9 @@ func (s *service) playChance(ctx context.Context, userID, gameID, mode string) (
 			return notFound("CHANCE_GAME_NOT_FOUND")
 		}
 		g = cur
+		if err := s.checkChanceLimits(ctx, tx, g, userID, plays, now); err != nil {
+			return err
+		}
 		if mode == "free" {
 			if g.Interval == nil {
 				return badRequest("INTERVAL_TIME_IS_NULL", "", "this game has no free turn")

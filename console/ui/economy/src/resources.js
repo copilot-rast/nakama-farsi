@@ -158,6 +158,7 @@ function itemSummary(items) {
     if (r.type === 'storage') return r.key;
     if (r.type === 'item') return t('item.item') + ': ' + r.key;
     if (r.type === 'achievement') return t('item.achievement') + ': ' + r.key;
+    if (r.type === 'tag') return t('item.tag') + ': ' + r.key + ' · ' + (Number(r.value) > 0 ? t('item.tag.forDays', { n: fmtNum(r.value) }) : t('item.tag.forever'));
     var sign = r.action === 'add' && Number(r.value) > 0 ? '+' : '';
     return t('amount.of', { n: (r.action === 'set' ? '= ' : sign) + fmtNum(r.value), name: keyName(r.type === 'meta' ? 'meta' : 'currency', r.key) });
   });

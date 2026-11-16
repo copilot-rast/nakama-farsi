@@ -368,7 +368,7 @@ func (s *service) loadReqFacts(ctx context.Context, q rowsQueryer, userID string
 		}
 		rows.Close()
 	}
-	rows, err := q.QueryContext(ctx, `SELECT tag_id::text FROM base_user_tag WHERE user_id=$1`, userID)
+	rows, err := q.QueryContext(ctx, `SELECT tag_id::text FROM base_user_tag WHERE user_id=$1 AND (expires_at IS NULL OR expires_at > now())`, userID)
 	if err != nil {
 		return f, err
 	}

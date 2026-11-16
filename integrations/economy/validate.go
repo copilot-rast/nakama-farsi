@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math/big"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -235,8 +236,23 @@ func normalizePrizeItems(items []prizeItem) ([]prizeItem, error) {
 				return nil, badRequest("INVALID_KEY", "items", "invalid achievement key")
 			}
 			item.Value = json.RawMessage("1")
+		case "tag":
+			if item.Action != "give" && item.Action != "set" {
+				return nil, badRequest("INVALID_ACTION", "items", "tag entries support give (adds time) or set (starts again now)")
+			}
+			if !keyPattern.MatchString(item.Key) {
+				return nil, badRequest("INVALID_KEY", "items", "invalid tag key")
+			}
+			v, ok := numericFromJSON(item.Value)
+			if !ok {
+				return nil, badRequest("INVALID_VALUE", "items", "tag days must be a number with at most 4 decimals")
+			}
+			if days, _ := strconv.ParseFloat(string(v), 64); days < 0 || days > 36500 {
+				return nil, badRequest("INVALID_VALUE", "items", "tag days must be from 0 (no end) to 36500")
+			}
+			item.Value = json.RawMessage(v)
 		default:
-			return nil, badRequest("INVALID_ITEM_TYPE", "items", "type must be currency, meta, storage, item or achievement")
+			return nil, badRequest("INVALID_ITEM_TYPE", "items", "type must be currency, meta, storage, item, achievement or tag")
 		}
 		out = append(out, item)
 	}

@@ -415,7 +415,7 @@ func checkUserTags(ctx context.Context, tx *sql.Tx, ids []string) ([]string, err
 }
 
 func (s *service) userTagIDs(ctx context.Context, userID string) (map[string]bool, error) {
-	rows, err := s.db.QueryContext(ctx, `SELECT tag_id::text FROM base_user_tag WHERE user_id=$1`, userID)
+	rows, err := s.db.QueryContext(ctx, `SELECT tag_id::text FROM base_user_tag WHERE user_id=$1 AND (expires_at IS NULL OR expires_at > now())`, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -581,6 +581,13 @@ func checkPrizeItems(ctx context.Context, tx *sql.Tx, items []prizeItem) error {
 			}
 			if !exists {
 				return badRequest("ACHIEVEMENT_NOT_FOUND", "items", "achievement "+item.Key+" does not exist")
+			}
+		case "tag":
+			if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM base_tag WHERE key=$1 AND key_type='user')`, item.Key).Scan(&exists); err != nil {
+				return err
+			}
+			if !exists {
+				return badRequest("TAG_NOT_FOUND", "items", "player tag "+item.Key+" does not exist")
 			}
 		}
 	}

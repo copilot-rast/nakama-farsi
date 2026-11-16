@@ -118,6 +118,7 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 		var writes []*runtime.StorageWrite
 		var metas []prizeItem
 		var itemKeys, achKeys []string
+		var tags []prizeItem
 		for _, item := range prize.Items {
 			switch item.Type {
 			case "currency":
@@ -131,6 +132,8 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 				itemKeys = append(itemKeys, item.Key)
 			case "achievement":
 				achKeys = append(achKeys, item.Key)
+			case "tag":
+				tags = append(tags, item)
 			}
 		}
 		if len(itemKeys) > 0 {
@@ -186,6 +189,11 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 		}
 		for _, item := range metas {
 			if err := applyMeta(ctx, tx, req.UserID, item); err != nil {
+				return err
+			}
+		}
+		for _, item := range tags {
+			if err := applyTag(ctx, tx, req.UserID, item, req.SourceType); err != nil {
 				return err
 			}
 		}
@@ -266,6 +274,21 @@ func applyMeta(ctx context.Context, tx *sql.Tx, userID string, item prizeItem) e
 		return err
 	}
 	return nil
+}
+
+func applyTag(ctx context.Context, tx *sql.Tx, userID string, item prizeItem, source string) error {
+	days := string(item.Value)
+	if days == "" {
+		days = "0"
+	}
+	_, err := tx.ExecContext(ctx, `INSERT INTO base_user_tag (user_id, tag_id, created_by, expires_at)
+		SELECT $1::uuid, t.id, $4, CASE WHEN $3::numeric > 0 THEN now() + $3::numeric * INTERVAL '1 day' END FROM base_tag t WHERE t.key=$2 AND t.key_type='user'
+		ON CONFLICT (user_id, tag_id) DO UPDATE SET expires_at = CASE
+			WHEN $3::numeric <= 0 THEN NULL
+			WHEN base_user_tag.expires_at IS NULL THEN NULL
+			WHEN $5 = 'set' OR base_user_tag.expires_at <= now() THEN now() + $3::numeric * INTERVAL '1 day'
+			ELSE base_user_tag.expires_at + $3::numeric * INTERVAL '1 day' END`, userID, item.Key, days, "prize:"+source, item.Action)
+	return err
 }
 
 func truncate(s string, n int) string {

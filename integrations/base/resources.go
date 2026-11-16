@@ -23,7 +23,7 @@ type resource struct {
 
 const taxonomyJSON = `jsonb_build_object('id',t.id,'key',t.key,'keyType',t.key_type,'name',t.name,'description',t.description,'iconUrl',t.icon_url,'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
-const tagJSON = `jsonb_build_object('id',t.id,'key',t.key,'keyType',t.key_type,'name',t.name,'description',t.description,'iconUrl',t.icon_url,'metadata',t.metadata,'sort',t.sort,'isPublic',t.is_public,'players',(SELECT count(*) FROM base_user_tag ut WHERE ut.tag_id=t.id),'createdAt',t.created_at,'updatedAt',t.updated_at)`
+const tagJSON = `jsonb_build_object('id',t.id,'key',t.key,'keyType',t.key_type,'name',t.name,'description',t.description,'iconUrl',t.icon_url,'metadata',t.metadata,'sort',t.sort,'isPublic',t.is_public,'players',(SELECT count(*) FROM base_user_tag ut WHERE ut.tag_id=t.id AND (ut.expires_at IS NULL OR ut.expires_at > now())),'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
 const categoryUsedSQL = `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_product WHERE category_id=$1)
 	OR EXISTS (SELECT 1 FROM economy_gift WHERE category_id=$1) OR EXISTS (SELECT 1 FROM economy_currency WHERE category_id=$1)

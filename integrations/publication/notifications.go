@@ -150,7 +150,7 @@ func (s *service) eachTargetBatch(ctx context.Context, q interface {
 		base = `FROM users u JOIN group_edge ge ON ge.destination_id=u.id WHERE ge.source_id=$1 AND ge.state <= 2 AND u.disable_time = '1970-01-01 00:00:00+00'`
 		args = append(args, t.GroupID)
 	case "tags":
-		base = `FROM users u WHERE u.id IN (SELECT ut.user_id FROM base_user_tag ut WHERE ut.tag_id = ANY($1::uuid[])) AND u.disable_time = '1970-01-01 00:00:00+00'`
+		base = `FROM users u WHERE u.id IN (SELECT ut.user_id FROM base_user_tag ut WHERE ut.tag_id = ANY($1::uuid[]) AND (ut.expires_at IS NULL OR ut.expires_at > now())) AND u.disable_time = '1970-01-01 00:00:00+00'`
 		args = append(args, uuidArray(t.TagIDs))
 	}
 	last := systemUserID

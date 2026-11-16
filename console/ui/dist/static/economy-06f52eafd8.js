@@ -2871,6 +2871,87 @@ var MESSAGES = {
     'f.ch.amount.hint': "هر بار بازی با بلیت این مقدار کم می‌شود.",
     'ch.play.hint': "بازی با بلیت نوبت رایگان را عقب نمی‌اندازد.",
     'ch.h.more': "بیشتر",
+    "nav.tag-discounts": "تخفیف برچسب‌دارها",
+    "desc.tag-discounts": "بازیکنانی که برچسب خاصی دارند، مثل VIP، آیتم‌ها و محصولات انتخاب‌شده را ارزان‌تر می‌خرند.",
+    "tab.tag-discounts": "تخفیف‌ها",
+    "nav.tag-discount-preview": "پیش‌نمایش بازیکن",
+    "desc.tag-discount-preview": "ببینید یک بازیکن الان کدام تخفیف‌ها را دارد و هر چیز را چند می‌خرد.",
+    "nav.tag-discount-settings": "تنظیمات",
+    "desc.tag-discount-settings": "وقتی چند تخفیف یا تخفیف خود محصول هم‌زمان هست، قیمت نهایی چطور حساب شود.",
+    "col.td.percent": "تخفیف",
+    "col.td.who": "برای",
+    "col.td.on": "روی",
+    "col.td.price": "قیمت",
+    "td.percentN": "{n}٪",
+    "td.allItems": "همهٔ آیتم‌ها",
+    "td.allProducts": "همهٔ محصولات",
+    "td.itemsN": "{n} آیتم یا نوع آیتم",
+    "td.productsN": "{n} محصول",
+    "f.td.name": "نام تخفیف",
+    "f.td.name.hint": "فقط در کنسول دیده می‌شود، مثلاً «۵٪ VIP».",
+    "f.td.percent": "درصد تخفیف",
+    "f.td.percent.hint": "عدد صحیح از ۱ تا ۱۰۰.",
+    "f.td.tags": "برچسب بازیکن",
+    "f.td.tags.hint": "بازیکنی که یکی از این برچسب‌ها را دارد، تخفیف می‌گیرد. برچسب زمان‌دار بعد از تمام شدن، تخفیف را هم قطع می‌کند.",
+    "td.h.items": "آیتم‌ها",
+    "f.td.allItems": "همهٔ آیتم‌ها",
+    "f.td.allItems.hint": "تخفیف روی قیمت سکه‌ای هر آیتم فروشگاه.",
+    "f.td.items": "آیتم‌های انتخابی",
+    "f.td.items.hint": "مثلاً بستهٔ استیکر یا صدای گل.",
+    "f.td.itemTypes": "نوع آیتم",
+    "f.td.itemTypes.hint": "همهٔ آیتم‌های این نوع‌ها، حتی آیتم‌هایی که بعداً ساخته می‌شوند.",
+    "td.h.products": "محصولات فروشگاه",
+    "f.td.allProducts": "همهٔ محصولات",
+    "f.td.allProducts.hint": "روی قیمت تومانی درگاه و قیمت سکه‌ای.",
+    "f.td.products": "محصولات انتخابی",
+    "f.td.products.hint": "خرید از کافه‌بازار و مایکت تخفیف نمی‌گیرد، چون فروشگاه قیمت SKU را می‌گیرد.",
+    "td.h.time": "زمان",
+    "td.note": "پیشنهادهای ویژه و کدهای تخفیف قیمت خودشان را دارند. کد تخفیف روی قیمت بعد از این تخفیف اعمال می‌شود.",
+    "f.td.enabled": "تخفیف برچسب‌دارها روشن باشد",
+    "f.td.enabled.hint": "خاموش که باشد، هیچ تخفیفی از این بخش اعمال نمی‌شود.",
+    "f.td.combine": "چند تخفیف هم‌زمان",
+    "f.td.combine.hint": "اگر بازیکن چند برچسب تخفیف‌دار داشت.",
+    "td.combine.best": "فقط بیشترین تخفیف",
+    "td.combine.sum": "جمع تخفیف‌ها",
+    "f.td.max": "سقف تخفیف (درصد)",
+    "f.td.max.hint": "تخفیف این بخش از این عدد بیشتر نمی‌شود.",
+    "f.td.own": "با تخفیف خود محصول",
+    "f.td.own.hint": "محصولی که خودش تخفیف دارد.",
+    "td.own.stack": "روی قیمت تخفیف‌خورده هم اعمال شود",
+    "td.own.best": "هر کدام بیشتر بود",
+    "td.stores": "خرید با کافه‌بازار و مایکت همیشه قیمت SKU است و این تخفیف را نمی‌گیرد.",
+    "td.off": "تخفیف برچسب‌دارها خاموش است",
+    "td.pv.noRules": "این بازیکن الان هیچ تخفیفی ندارد.",
+    "td.pv.items": "آیتم‌ها",
+    "td.pv.products": "محصولات",
+    "td.pv.none": "چیزی با تخفیف نیست.",
+    "td.pv.pick.hint": "تخفیف‌ها و قیمت نهایی او را اینجا می‌بینید.",
+    "item.tag": "برچسب زمان‌دار",
+    "item.tag.days": "مدت (روز)",
+    "item.tag.days.hint": "۰ یعنی بی‌پایان. عدد اعشاری هم می‌شود، مثلاً ۰٫۵ برای ۱۲ ساعت.",
+    "item.tag.days.range": "از ۰ تا ۳۶۵۰۰",
+    "item.tag.forDays": "{n} روز",
+    "item.tag.forever": "بی‌پایان",
+    "action.tag.give": "اضافه به زمان باقی‌مانده",
+    "action.tag.set": "شروع دوباره از الان",
+    "code.TARGETS_REQUIRED": "آیتم، نوع آیتم یا محصولی را انتخاب کنید که تخفیف روی آن باشد.",
+    "code.CHANCE_DAILY_LIMIT": "سهم امروز این بازی تمام شده.",
+    "code.CHANCE_TOTAL_LIMIT": "همهٔ دفعه‌های این بازی استفاده شده.",
+    "ch.kind.wheel": "گردونه",
+    "ch.kind.chest": "صندوقچه",
+    "filter.ch.kind": "شکل بازی",
+    "f.ch.kind": "شکل بازی",
+    "f.ch.kind.hint": "گردونه یا صندوقچه. اپ با همین، صفحهٔ مناسب را نشان می‌دهد؛ قانون قرعه یکی است.",
+    "ch.h.limits": "سقف بازی",
+    "f.ch.dailyLimit": "سقف هر روز برای هر بازیکن",
+    "f.ch.dailyLimit.hint": "خالی یعنی بی‌سقف. روز با منطقهٔ زمانی پروژه عوض می‌شود.",
+    "f.ch.totalLimit": "سقف کل برای هر بازیکن",
+    "f.ch.totalLimit.hint": "خالی یعنی بی‌سقف.",
+    "f.ch.showOdds": "شانس هر جایزه به بازیکن نشان داده شود",
+    "f.ch.showOdds.hint": "خاموش که باشد، اپ فقط فهرست جایزه‌ها را می‌گیرد و درصدها را نه.",
+    "ch.limit.daily": "روزی {n} بار",
+    "ch.limit.total": "در کل {n} بار",
+    "tag.until": "تا {date}",
     'f.ch.metadata.hint': "هر چیزی که بازی برای نشان دادن لازم دارد، مثل رنگ‌ها یا نام تصویر.",
     'pg.shares': "شانس هر جایزه در گروه",
     'pg.pick': "جایزه را انتخاب کنید",
@@ -7975,6 +8056,87 @@ var MESSAGES = {
     'f.ch.amount.hint': "Taken each time the player plays with a ticket.",
     'ch.play.hint': "A ticket play does not move the free turn.",
     'ch.h.more': "More",
+    "nav.tag-discounts": "Tag discounts",
+    "desc.tag-discounts": "Players with a tag such as VIP buy the chosen items and products for less.",
+    "tab.tag-discounts": "Discounts",
+    "nav.tag-discount-preview": "Player preview",
+    "desc.tag-discount-preview": "See which discounts a player has right now and what they pay.",
+    "nav.tag-discount-settings": "Settings",
+    "desc.tag-discount-settings": "How the final price is worked out when several discounts or the product's own discount apply.",
+    "col.td.percent": "Discount",
+    "col.td.who": "For",
+    "col.td.on": "On",
+    "col.td.price": "Price",
+    "td.percentN": "{n}%",
+    "td.allItems": "All items",
+    "td.allProducts": "All products",
+    "td.itemsN": "{n} items or item types",
+    "td.productsN": "{n} products",
+    "f.td.name": "Discount name",
+    "f.td.name.hint": "Shown in the console only, e.g. \"VIP 5%\".",
+    "f.td.percent": "Discount percent",
+    "f.td.percent.hint": "A whole number from 1 to 100.",
+    "f.td.tags": "Player tags",
+    "f.td.tags.hint": "Players with any of these tags get the discount. A timed tag ends the discount when it runs out.",
+    "td.h.items": "Items",
+    "f.td.allItems": "All items",
+    "f.td.allItems.hint": "On the coin price of every shop item.",
+    "f.td.items": "Chosen items",
+    "f.td.items.hint": "For example a sticker pack or a goal sound.",
+    "f.td.itemTypes": "Item types",
+    "f.td.itemTypes.hint": "Every item of these types, also ones added later.",
+    "td.h.products": "Shop products",
+    "f.td.allProducts": "All products",
+    "f.td.allProducts.hint": "On the gateway Toman price and the coin price.",
+    "f.td.products": "Chosen products",
+    "f.td.products.hint": "Cafe Bazaar and Myket purchases get no discount; the store charges the SKU price.",
+    "td.h.time": "Time",
+    "td.note": "Offers and discount codes keep their own prices. A discount code applies on top of this discount.",
+    "f.td.enabled": "Tag discounts on",
+    "f.td.enabled.hint": "When off, no discount from this page applies.",
+    "f.td.combine": "Several discounts at once",
+    "f.td.combine.hint": "When a player has more than one discounted tag.",
+    "td.combine.best": "Only the largest",
+    "td.combine.sum": "Add them up",
+    "f.td.max": "Discount cap (percent)",
+    "f.td.max.hint": "Discounts from this page never go above this.",
+    "f.td.own": "With the product's own discount",
+    "f.td.own.hint": "For a product that already has a discount.",
+    "td.own.stack": "Apply on top of the discounted price",
+    "td.own.best": "Whichever is larger",
+    "td.stores": "Cafe Bazaar and Myket always charge the SKU price, without this discount.",
+    "td.off": "Tag discounts are off",
+    "td.pv.noRules": "This player has no discount right now.",
+    "td.pv.items": "Items",
+    "td.pv.products": "Products",
+    "td.pv.none": "Nothing is discounted.",
+    "td.pv.pick.hint": "You will see their discounts and final prices here.",
+    "item.tag": "Timed tag",
+    "item.tag.days": "Length (days)",
+    "item.tag.days.hint": "0 means no end. Decimals work, e.g. 0.5 for 12 hours.",
+    "item.tag.days.range": "from 0 to 36500",
+    "item.tag.forDays": "{n} days",
+    "item.tag.forever": "no end",
+    "action.tag.give": "Add to the time left",
+    "action.tag.set": "Start again from now",
+    "code.TARGETS_REQUIRED": "Pick the items, item types or products the discount is for.",
+    "code.CHANCE_DAILY_LIMIT": "No plays of this game left today.",
+    "code.CHANCE_TOTAL_LIMIT": "Every play of this game has been used.",
+    "ch.kind.wheel": "Wheel",
+    "ch.kind.chest": "Chest",
+    "filter.ch.kind": "Kind",
+    "f.ch.kind": "Kind",
+    "f.ch.kind.hint": "Wheel or chest. The app picks its screen from this; the draw is the same.",
+    "ch.h.limits": "Play limits",
+    "f.ch.dailyLimit": "Plays per player per day",
+    "f.ch.dailyLimit.hint": "Empty means no limit. The day follows the project time zone.",
+    "f.ch.totalLimit": "Plays per player in total",
+    "f.ch.totalLimit.hint": "Empty means no limit.",
+    "f.ch.showOdds": "Show each prize's chance to players",
+    "f.ch.showOdds.hint": "When off, the app gets the prize list without the percents.",
+    "ch.limit.daily": "{n} a day",
+    "ch.limit.total": "{n} in total",
+    "tag.until": "until {date}",
     'f.ch.metadata.hint': "Anything the game needs to draw it, like colours or a picture name.",
     'pg.shares': "Chance of each prize in the group",
     'pg.pick': "Pick a prize",
@@ -11951,7 +12113,7 @@ function actionsEditor(value, onchange) {
   return el;
 }
 
-var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'], item: ['give'], achievement: ['give'] };
+var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'], item: ['give'], achievement: ['give'], tag: ['give', 'set'] };
 
 function itemsEditor(value, onchange) {
   var rows = (value || []).map(function (r) { return Object.assign({}, r); });
@@ -11963,11 +12125,11 @@ function itemsEditor(value, onchange) {
     errors = [];
     if (!rows.length) listEl.appendChild(h('div', { class: 'text-sm text-secondary-500 dark:text-secondary-400 border border-dashed border-secondary-300 dark:border-secondary-700 rounded-md px-3 py-4 text-center', text: t('f.items.empty') }));
     rows.forEach(function (row, idx) {
-      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'achievement', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
+      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'achievement', 'tag', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
         row.type = v;
         row.key = '';
         row.action = (ITEM_ACTIONS[v] || ['add'])[0];
-        row.value = v === 'storage' ? {} : v === 'item' || v === 'achievement' ? 1 : 0;
+        row.value = v === 'storage' ? {} : v === 'item' || v === 'achievement' ? 1 : v === 'tag' ? 30 : 0;
         render();
         emit();
       }, { placeholder: false, label: t('f.item.type') });
@@ -11980,10 +12142,13 @@ function itemsEditor(value, onchange) {
       } else if (row.type === 'achievement') {
         keyCtl = refPicker({ resource: 'achievements', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
         keyCtl.setAttribute('data-achievement-picker', '');
+      } else if (row.type === 'tag') {
+        keyCtl = refPicker({ resource: 'tags', api: baseApi, filter: { keyType: 'user' }, valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
+        keyCtl.setAttribute('data-tag-picker', '');
       } else {
         keyCtl = refPicker({ resource: row.type === 'meta' ? 'metas' : 'currencies', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
       }
-      var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t('action.' + k) }; }), function (v) { row.action = v; emit(); }, { placeholder: false, label: t('f.item.action') });
+      var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t((row.type === 'tag' ? 'action.tag.' : 'action.') + k) }; }), function (v) { row.action = v; emit(); }, { placeholder: false, label: t('f.item.action') });
       var valCtl;
       if (row.type === 'item' || row.type === 'achievement') {
         valCtl = h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300 py-2', text: t('item.' + row.type + '.once') });
@@ -11992,6 +12157,9 @@ function itemsEditor(value, onchange) {
           try { row.value = JSON.parse(v); row._bad = false; } catch (e) { row._bad = true; }
           emit();
         } });
+      } else if (row.type === 'tag') {
+        valCtl = h('div', { class: 'flex flex-col gap-1' }, numberInput(row.value, { int: false, label: t('item.tag.days'), oninput: function (v) { row._raw = v; row.value = parseNumber(v, false); emit(); } }),
+          h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-tag-days-hint': '', text: t('item.tag.days.hint') }));
       } else {
         valCtl = numberInput(row.value, { int: row.type === 'currency', label: t('f.item.value'), oninput: function (v) { row._raw = v; row.value = parseNumber(v, row.type === 'currency'); emit(); } });
       }
@@ -12025,6 +12193,7 @@ function itemsEditor(value, onchange) {
       if (!r.key) msg = t('f.item.key') + ': ' + t('err.required');
       else if (r.type === 'storage' && (r._bad || r.value === null || typeof r.value !== 'object')) msg = t('err.json');
       else if (r.type !== 'storage' && r.type !== 'item' && r.type !== 'achievement' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
+      else if (r.type === 'tag' && (Number(r.value) < 0 || Number(r.value) > 36500)) msg = t('item.tag.days') + ': ' + t('item.tag.days.range');
       e.el.textContent = msg;
       e.el.hidden = !msg;
       e.el.parentElement.classList.toggle('eco-row-invalid', !!msg);
@@ -12413,6 +12582,7 @@ function itemSummary(items) {
     if (r.type === 'storage') return r.key;
     if (r.type === 'item') return t('item.item') + ': ' + r.key;
     if (r.type === 'achievement') return t('item.achievement') + ': ' + r.key;
+    if (r.type === 'tag') return t('item.tag') + ': ' + r.key + ' · ' + (Number(r.value) > 0 ? t('item.tag.forDays', { n: fmtNum(r.value) }) : t('item.tag.forever'));
     var sign = r.action === 'add' && Number(r.value) > 0 ? '+' : '';
     return t('amount.of', { n: (r.action === 'set' ? '= ' : sign) + fmtNum(r.value), name: keyName(r.type === 'meta' ? 'meta' : 'currency', r.key) });
   });
@@ -12734,7 +12904,7 @@ var RESOURCES = {
 };
 
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'offers', 'entry-offers', 'offer-preview', 'offer-report', 'offer-settings', 'friend-gifts', 'friend-gift-rules', 'friend-gift-settings', 'friend-gift-report', 'items', 'avatar-parts', 'avatar-settings', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
+  economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'offers', 'entry-offers', 'offer-preview', 'offer-report', 'offer-settings', 'tag-discounts', 'tag-discount-preview', 'tag-discount-settings', 'friend-gifts', 'friend-gift-rules', 'friend-gift-settings', 'friend-gift-report', 'items', 'avatar-parts', 'avatar-settings', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'news-review', 'news-sources', 'news-ingest', 'news-reactions', 'news-settings', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'activity'],
   support: ['tickets', 'live-chat'],
@@ -12748,6 +12918,7 @@ var HUBS = {
   metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['meta-relations', 'relations'], ['level-tables', 'levels']] },
   tasks: { section: 'economy', tabs: [['tasks', ''], ['task-groups', 'groups']] },
   offers: { section: 'economy', tabs: [['offers', ''], ['entry-offers', 'entry'], ['offer-preview', 'preview'], ['offer-report', 'report'], ['offer-settings', 'settings']] },
+  'tag-discounts': { section: 'economy', tabs: [['tag-discounts', ''], ['tag-discount-preview', 'preview'], ['tag-discount-settings', 'settings']] },
   'friend-gifts': { section: 'economy', tabs: [['friend-gifts', ''], ['friend-gift-rules', 'rules'], ['friend-gift-settings', 'settings'], ['friend-gift-report', 'report']] },
   prizes: { section: 'economy', tabs: [['prizes', ''], ['prize-groups', 'groups']] },
   'chat-quota': { section: 'moderation', tabs: [['chat-quota', ''], ['chat-quota-settings', 'settings'], ['chat-quota-report', 'report']] },
@@ -12761,7 +12932,7 @@ var HUBS = {
   insights: { section: 'system', tabs: [['insights-overview', ''], ['insights-sessions', 'sessions'], ['heatmaps', 'heatmaps'], ['insights-settings', 'settings']] }
 };
 var NAV = {
-  economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'offers', 'items', 'avatar', 'gifts', 'friend-gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
+  economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'offers', 'tag-discounts', 'items', 'avatar', 'gifts', 'friend-gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
   moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers'] }],
   support: ['tickets', 'live-chat'],
@@ -15287,8 +15458,11 @@ function playerTags(tags, max) {
   var list = tags || [];
   var box = h('div', { class: 'flex flex-wrap gap-1', 'data-player-tags': '' });
   list.slice(0, max || 6).forEach(function (tg) {
-    var chip = tag(i18nText(tg.name) || tg.key, tg.isPublic ? 'success' : 'primary');
+    var label = i18nText(tg.name) || tg.key;
+    if (tg.expiresAt) label += ' · ' + t('tag.until', { date: fmtDate(tg.expiresAt) });
+    var chip = tag(label, tg.isPublic ? 'success' : 'primary');
     if (tg.isPublic) chip.setAttribute('title', t('tag.public'));
+    if (tg.expiresAt) chip.setAttribute('data-tag-expires', tg.expiresAt);
     box.appendChild(chip);
   });
   if (max && list.length > max) box.appendChild(tag('+' + fmtNum(list.length - max), 'secondary'));
@@ -17960,6 +18134,157 @@ function playerOffersCard() {
   body.appendChild(h('div', { class: 'mt-3 border-t border-secondary-200 dark:border-secondary-700 pt-4' }, progressSection('of.card.entry', entryBox)));
   place();
 }
+
+ICONS['tag-discounts'] = '<path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><path d="M9 15l6-6"/><circle cx="8.5" cy="9" r=".6"/><circle cx="14.5" cy="15" r=".6"/>';
+ICONS['tag-discount-preview'] = '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>';
+ICONS['tag-discount-settings'] = '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>';
+
+function tdTargets(it) {
+  var parts = [];
+  if (it.allItems) parts.push(t('td.allItems'));
+  else if ((it.itemKeys || []).length || (it.itemTypeIds || []).length) parts.push(t('td.itemsN', { n: fmtNum((it.itemKeys || []).length + (it.itemTypeIds || []).length) }));
+  if (it.allProducts) parts.push(t('td.allProducts'));
+  else if ((it.productIds || []).length) parts.push(t('td.productsN', { n: fmtNum(it.productIds.length) }));
+  return parts.join(' · ');
+}
+
+RESOURCES['tag-discounts'] = {
+  filters: [activeFilter(), { name: 'tagId', label: 'filter.tag', type: 'ref', resource: 'tags', api: baseApi, filter: { keyType: 'user' } }],
+  columns: [
+    { label: 'col.name', render: function (it) {
+      return h('div', { class: 'min-w-0' }, h('div', { class: 'font-medium truncate', text: i18nText(it.name) || it.key }), h('div', { class: 'text-secondary-500' }, mono(it.key)));
+    }, skeleton: '35%' },
+    { label: 'col.td.percent', render: function (it) { return h('span', { class: 'font-medium tabular-nums', 'data-td-percent': '', text: t('td.percentN', { n: fmtNum(it.percent) }) }); }, width: 90 },
+    { label: 'col.td.who', render: function (it) {
+      return h('div', { class: 'flex flex-col gap-1 min-w-0' }, h('div', { class: 'flex flex-wrap gap-1' }, (it.tags || []).map(function (g) { return tag(i18nText(g.name) || g.key, 'primary'); })),
+        h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: t('fg.rule.players', { n: fmtNum(it.players || 0) }) }));
+    }, skeleton: '25%' },
+    { label: 'col.td.on', render: function (it) { return h('span', { class: 'text-sm', 'data-td-targets': '', text: tdTargets(it) }); }, skeleton: '25%' },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, lockOnEdit: true },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
+    ] },
+    tr('name', { label: 'f.td.name', hint: 'f.td.name.hint', required: true, max: 128 }),
+    { type: 'row', fields: [
+      { name: 'percent', type: 'number', label: 'f.td.percent', hint: 'f.td.percent.hint', required: true, min: 1, max: 100 },
+      { name: 'sort', type: 'number', label: 'f.sort', min: -100000, max: 100000, empty: 0 }
+    ] },
+    { name: 'tagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.td.tags', hint: 'f.td.tags.hint', required: true, empty: [] },
+    { type: 'heading', label: 'td.h.items' },
+    { name: 'allItems', type: 'bool', inline: true, label: 'f.td.allItems', hint: 'f.td.allItems.hint' },
+    { name: 'itemIds', type: 'refMulti', resource: 'items', label: 'f.td.items', hint: 'f.td.items.hint', optional: true, empty: [], when: function (v) { return !v.allItems; } },
+    { name: 'itemTypeIds', type: 'refMulti', resource: 'categories', api: baseApi, filter: { keyType: 'item_type' }, label: 'f.td.itemTypes', hint: 'f.td.itemTypes.hint', optional: true, empty: [], when: function (v) { return !v.allItems; } },
+    { type: 'heading', label: 'td.h.products' },
+    { name: 'allProducts', type: 'bool', inline: true, label: 'f.td.allProducts', hint: 'f.td.allProducts.hint' },
+    { name: 'productIds', type: 'refMulti', resource: 'products', label: 'f.td.products', hint: 'f.td.products.hint', optional: true, empty: [], when: function (v) { return !v.allProducts; } },
+    { type: 'heading', label: 'td.h.time' },
+    windowRow(),
+    { name: 'note', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-td-note': '', text: t('td.note') }); } }
+  ],
+  defaults: function () { return { key: '', name: {}, percent: 5, tagIds: [], allItems: false, itemIds: [], itemTypeIds: [], allProducts: false, productIds: [], startsAt: null, endsAt: null, isActive: true, sort: 0 }; },
+  fixPayload: function (p) {
+    if (p.sort == null) p.sort = 0;
+    if (p.allItems) { p.itemIds = []; p.itemTypeIds = []; }
+    delete p.itemKeys;
+    if (p.allProducts) p.productIds = [];
+    p.startsAt = p.startsAt || '';
+    p.endsAt = p.endsAt || '';
+    ['id', 'tags', 'players', 'note', 'createdAt', 'updatedAt'].forEach(function (k) { delete p[k]; });
+    return p;
+  },
+  afterSave: function () { forgetRefs('tag-discounts'); }
+};
+
+var TD_SETTINGS_FIELDS = [
+  { name: 'enabled', type: 'bool', inline: true, label: 'f.td.enabled', hint: 'f.td.enabled.hint' },
+  { type: 'row', fields: [
+    { name: 'combine', type: 'select', label: 'f.td.combine', hint: 'f.td.combine.hint', required: true, noPlaceholder: true, options: opts('td.combine.', ['best', 'sum']) },
+    { name: 'maxPercent', type: 'number', label: 'f.td.max', hint: 'f.td.max.hint', required: true, min: 1, max: 100 }
+  ] },
+  { name: 'withOwnDiscount', type: 'select', label: 'f.td.own', hint: 'f.td.own.hint', required: true, noPlaceholder: true, options: opts('td.own.', ['stack', 'best']) },
+  { name: 'storesNote', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('td.stores') }); } }
+];
+
+function tdSettingsCall(method, path, body) {
+  return api(method, path, body).then(function (res) { return Object.assign({}, (res && res.settings) || {}); });
+}
+
+function tagDiscountSettingsPage(container) {
+  var frame = pageFrame(t('nav.tag-discount-settings'), t('desc.tag-discount-settings'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(tdSettingsCall, '/tag-discount-settings', null, TD_SETTINGS_FIELDS, { id: 'tag-discounts', fixPayload: function (p) {
+    delete p.updatedAt;
+    delete p.storesNote;
+    p.maxPercent = Number(p.maxPercent);
+    return p;
+  } });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
+function tagDiscountPreviewPage(container, query) {
+  var frame = pageFrame(t('nav.tag-discount-preview'), t('desc.tag-discount-preview'));
+  clear(container).appendChild(frame.el);
+  var userId = query.userId || '';
+  var body = h('div', { class: 'flex flex-col gap-6', 'data-td-preview': '' });
+  var picker = refPicker({ resource: 'support/players', api: baseApi, value: userId, label: t('col.player'), placeholder: t('of.pickPlayer'), onchange: function (v) {
+    userId = v || '';
+    replaceHash(hashFor('tag-discount-preview', null, userId ? { userId: userId } : {}));
+    load();
+  } });
+  var idInput = h('input', { class: INPUT_SM + ' font-mono', dir: 'ltr', 'data-ltr': '', type: 'text', value: userId, placeholder: t('of.userId'), 'aria-label': t('of.userId'), 'data-td-user': '' });
+  idInput.addEventListener('change', function () {
+    userId = toLatinDigits(idInput.value).trim();
+    replaceHash(hashFor('tag-discount-preview', null, userId ? { userId: userId } : {}));
+    load();
+  });
+  frame.content.appendChild(h('div', { class: 'flex flex-col sm:flex-row gap-2 mb-4 eco-offer-pick' },
+    h('div', { class: 'x-label x-input eco-filter-ref min-w-0 flex-1', style: INPUT_VARS }, picker),
+    h('label', { class: 'x-label block relative x-input flex-1', style: INPUT_VARS }, idInput)));
+  frame.content.appendChild(body);
+
+  function coin(cp) { return cp ? t('amount.of', { n: fmtNum(cp.amount), name: keyName('currency', cp.currencyKey) }) : ''; }
+
+  function render(res) {
+    clear(body);
+    var rules = res.rules || [];
+    body.appendChild(h('div', { class: 'flex flex-wrap items-center gap-2 text-sm', 'data-td-rules': String(rules.length) },
+      res.settings && !res.settings.enabled ? tag(t('td.off'), 'warning') : null,
+      rules.length ? rules.map(function (r) { return tag((i18nText(r.name) || r.key) + ' · ' + t('td.percentN', { n: fmtNum(r.percent) }), 'primary'); }) : h('span', { class: 'text-secondary-500', text: t('td.pv.noRules') })));
+    var cols = [{ label: t('col.name'), skeleton: '40%' }, { label: t('col.td.price'), width: 220 }, { label: t('col.td.percent'), width: 90 }];
+    body.appendChild(section('td.pv.items', (res.items || []).length ? table(cols, res.items.map(function (r) {
+      return { item: r, cells: [
+        h('div', { class: 'min-w-0', 'data-td-item': r.key }, h('div', { class: 'font-medium truncate', text: i18nText(r.name) || r.key }), h('div', { class: 'text-secondary-500' }, mono(r.key))),
+        h('div', { class: 'flex flex-col tabular-nums text-sm' }, h('span', { class: 'text-secondary-500', style: 'text-decoration:line-through', text: coin(r.price) }), h('span', { class: 'font-medium', text: coin(r.finalPrice) })),
+        h('span', { class: 'tabular-nums', text: t('td.percentN', { n: fmtNum(r.percent) }) })
+      ] };
+    })) : h('p', { class: 'text-sm text-secondary-500 py-2', text: t('td.pv.none') })));
+    body.appendChild(section('td.pv.products', (res.products || []).length ? table(cols, res.products.map(function (r) {
+      var lines = [];
+      if (r.priceToman != null) lines.push(h('span', {}, h('span', { class: 'text-secondary-500', style: 'text-decoration:line-through', text: t('toman', { n: r.priceToman }) }), ' ', h('span', { class: 'font-medium', text: t('toman', { n: r.finalToman }) })));
+      if (r.coinPrice) lines.push(h('span', {}, h('span', { class: 'text-secondary-500', style: 'text-decoration:line-through', text: coin(r.coinPrice) }), ' ', h('span', { class: 'font-medium', text: coin(r.finalCoin) })));
+      return { item: r, cells: [
+        h('div', { class: 'min-w-0', 'data-td-product': r.key }, h('div', { class: 'font-medium truncate', text: i18nText(r.name) || r.key }), h('div', { class: 'text-secondary-500' }, mono(r.key))),
+        h('div', { class: 'flex flex-col tabular-nums text-sm' }, lines),
+        h('span', { class: 'tabular-nums', text: t('td.percentN', { n: fmtNum(r.totalPercent) }) })
+      ] };
+    })) : h('p', { class: 'text-sm text-secondary-500 py-2', text: t('td.pv.none') })));
+  }
+
+  function load() {
+    if (!userId) { clear(body).appendChild(card(emptyBlock(t('of.pv.pick'), t('td.pv.pick.hint')))); return; }
+    idInput.value = userId;
+    clear(body).appendChild(h('div', { class: 'flex flex-col gap-2' }, bar('40%'), bar('70%'), bar('55%')));
+    api('GET', '/tag-discount-preview' + qs({ userId: userId })).then(render, function (err) { clear(body).appendChild(errorBlock(err, load)); });
+  }
+  load();
+}
+
+CUSTOM_PAGES['tag-discount-settings'] = function (root) { tagDiscountSettingsPage(root); };
+CUSTOM_PAGES['tag-discount-preview'] = function (root, route) { tagDiscountPreviewPage(root, route.query || {}); };
 
 ICONS.tasks = '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>';
 ICONS['task-groups'] = '<rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="11" width="18" height="5" rx="1"/><path d="M7 20h10"/>';
@@ -22979,6 +23304,8 @@ function chanceModes(it) {
     out.push(h('span', { class: 'eco-tag eco-tag--primary inline-flex items-center gap-1 leading-tight max-w-full px-2 py-0.5 text-xs rounded-md whitespace-nowrap', 'data-ch-price': '' },
       h('span', { class: 'tabular-nums', text: t('ch.mode.ticket', { n: fmtNum(it.price.amount) }) }), refNameCell('currencies', it.price.currencyId)));
   }
+  if (it.dailyLimit) out.push(h('span', { 'data-ch-daily': '' }, tag(t('ch.limit.daily', { n: fmtNum(it.dailyLimit) }), 'warning')));
+  if (it.totalLimit) out.push(h('span', { 'data-ch-total': '' }, tag(t('ch.limit.total', { n: fmtNum(it.totalLimit) }), 'warning')));
   return out;
 }
 
@@ -23022,6 +23349,7 @@ function chanceStats(v) {
 
 RESOURCES['chance-games'] = {
   filters: [
+    { name: 'kind', label: 'filter.ch.kind', options: opts('ch.kind.', ['wheel', 'chest']) },
     { name: 'prizeType', label: 'filter.ch.type', options: opts('ch.type.', CHANCE_PRIZE_TYPES) },
     { name: 'mode', label: 'filter.ch.mode', options: opts('ch.modeName.', ['free', 'ticket']) },
     activeFilter()
@@ -23041,7 +23369,7 @@ RESOURCES['chance-games'] = {
         h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('ch.stat.players', { n: fmtNum(it.players || 0) }) }));
     }, width: 120 },
     { label: 'col.status', render: function (it) {
-      return h('div', { class: 'flex flex-wrap gap-1' }, activeTag(it.isActive), tag(t('ch.type.' + it.prizeType), it.prizeType === 'prizeGroup' ? 'warning' : 'secondary'));
+      return h('div', { class: 'flex flex-wrap gap-1' }, activeTag(it.isActive), h('span', { 'data-ch-kind': it.kind || 'wheel' }, tag(t('ch.kind.' + (it.kind || 'wheel')), it.kind === 'chest' ? 'primary' : 'secondary')), tag(t('ch.type.' + it.prizeType), it.prizeType === 'prizeGroup' ? 'warning' : 'secondary'));
     }, width: 150 }
   ],
   fields: [
@@ -23051,6 +23379,7 @@ RESOURCES['chance-games'] = {
     ] },
     tr('name', { label: 'f.ch.name', required: true, max: 128 }),
     tr('description', { multiline: true, max: 1000, optional: true }),
+    { name: 'kind', type: 'select', label: 'f.ch.kind', hint: 'f.ch.kind.hint', required: true, noPlaceholder: true, options: opts('ch.kind.', ['wheel', 'chest']) },
     { name: 'stats', type: 'static', readonly: true, render: chanceStats },
     { type: 'heading', label: 'ch.h.table' },
     { name: 'prizeType', type: 'select', label: 'f.ch.prizeType', hint: 'f.ch.prizeType.hint', required: true, noPlaceholder: true, options: opts('ch.type.', CHANCE_PRIZE_TYPES) },
@@ -23082,12 +23411,18 @@ RESOURCES['chance-games'] = {
       var none = !v.intervalTime && !(v.price && v.price.currencyId);
       return h('p', { class: 'text-xs ' + (none ? 'text-error-600 dark:text-error-400' : 'text-secondary-500 dark:text-secondary-400'), 'data-ch-play-hint': none ? 'none' : '', text: none ? t('code.INTERVAL_OR_PRICE_REQUIRED') : t('ch.play.hint') });
     } },
+    { type: 'heading', label: 'ch.h.limits' },
+    { type: 'row', fields: [
+      { name: 'dailyLimit', type: 'number', label: 'f.ch.dailyLimit', hint: 'f.ch.dailyLimit.hint', optional: true, min: 1, max: 100000 },
+      { name: 'totalLimit', type: 'number', label: 'f.ch.totalLimit', hint: 'f.ch.totalLimit.hint', optional: true, min: 1, max: 10000000 }
+    ] },
+    { name: 'showOdds', type: 'bool', inline: true, label: 'f.ch.showOdds', hint: 'f.ch.showOdds.hint' },
     { type: 'heading', label: 'ch.h.more' },
     { name: 'metadata', type: 'json', label: 'f.metadata', hint: 'f.ch.metadata.hint', optional: true, empty: {} },
     { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
   ],
   defaults: function () {
-    return { key: '', isActive: true, name: {}, description: {}, prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null },
+    return { key: '', isActive: true, name: {}, description: {}, kind: 'wheel', prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null }, dailyLimit: null, totalLimit: null, showOdds: true,
       prize: [{ chance: 30, prizeId: null, prizeGroupId: null }, { chance: 40, prizeId: null, prizeGroupId: null }, { chance: 30, prizeId: null, prizeGroupId: null }] };
   },
   toForm: function (v) {
@@ -23102,6 +23437,10 @@ RESOURCES['chance-games'] = {
     if (p.intervalTime === '' || p.intervalTime === undefined) p.intervalTime = null;
     if (p.sort == null) p.sort = 0;
     if (!p.metadata) p.metadata = {};
+    if (!p.kind) p.kind = 'wheel';
+    if (p.dailyLimit === '' || p.dailyLimit === undefined) p.dailyLimit = null;
+    if (p.totalLimit === '' || p.totalLimit === undefined) p.totalLimit = null;
+    p.showOdds = p.showOdds !== false;
     delete p.stats; delete p.sum; delete p.rowsHint; delete p.playHint;
     return p;
   },

@@ -379,7 +379,7 @@ func (s *service) metaValue(ctx context.Context, q queryer, userID, key string) 
 
 func (s *service) effectiveChatLimits(ctx context.Context, st chatQuotaSettings, userID string) (chatLimits, error) {
 	rows, err := s.db.QueryContext(ctx, `SELECT r.id::text, r.name, r.unlimited, r.daily_messages, r.daily_conversations, r.friend_daily_messages, r.friend_daily_conversations FROM base_chat_quota_rule r
-		WHERE r.is_active AND EXISTS (SELECT 1 FROM base_user_tag ut WHERE ut.user_id=$1::uuid AND ut.tag_id::text = ANY(r.tag_ids))
+		WHERE r.is_active AND EXISTS (SELECT 1 FROM base_user_tag ut WHERE ut.user_id=$1::uuid AND ut.tag_id::text = ANY(r.tag_ids) AND (ut.expires_at IS NULL OR ut.expires_at > now()))
 		ORDER BY r.priority DESC, r.created_at, r.id`, userID)
 	if err != nil {
 		return chatLimits{}, err

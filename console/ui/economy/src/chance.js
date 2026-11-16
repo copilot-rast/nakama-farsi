@@ -35,6 +35,8 @@ function chanceModes(it) {
     out.push(h('span', { class: 'eco-tag eco-tag--primary inline-flex items-center gap-1 leading-tight max-w-full px-2 py-0.5 text-xs rounded-md whitespace-nowrap', 'data-ch-price': '' },
       h('span', { class: 'tabular-nums', text: t('ch.mode.ticket', { n: fmtNum(it.price.amount) }) }), refNameCell('currencies', it.price.currencyId)));
   }
+  if (it.dailyLimit) out.push(h('span', { 'data-ch-daily': '' }, tag(t('ch.limit.daily', { n: fmtNum(it.dailyLimit) }), 'warning')));
+  if (it.totalLimit) out.push(h('span', { 'data-ch-total': '' }, tag(t('ch.limit.total', { n: fmtNum(it.totalLimit) }), 'warning')));
   return out;
 }
 
@@ -78,6 +80,7 @@ function chanceStats(v) {
 
 RESOURCES['chance-games'] = {
   filters: [
+    { name: 'kind', label: 'filter.ch.kind', options: opts('ch.kind.', ['wheel', 'chest']) },
     { name: 'prizeType', label: 'filter.ch.type', options: opts('ch.type.', CHANCE_PRIZE_TYPES) },
     { name: 'mode', label: 'filter.ch.mode', options: opts('ch.modeName.', ['free', 'ticket']) },
     activeFilter()
@@ -97,7 +100,7 @@ RESOURCES['chance-games'] = {
         h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', text: t('ch.stat.players', { n: fmtNum(it.players || 0) }) }));
     }, width: 120 },
     { label: 'col.status', render: function (it) {
-      return h('div', { class: 'flex flex-wrap gap-1' }, activeTag(it.isActive), tag(t('ch.type.' + it.prizeType), it.prizeType === 'prizeGroup' ? 'warning' : 'secondary'));
+      return h('div', { class: 'flex flex-wrap gap-1' }, activeTag(it.isActive), h('span', { 'data-ch-kind': it.kind || 'wheel' }, tag(t('ch.kind.' + (it.kind || 'wheel')), it.kind === 'chest' ? 'primary' : 'secondary')), tag(t('ch.type.' + it.prizeType), it.prizeType === 'prizeGroup' ? 'warning' : 'secondary'));
     }, width: 150 }
   ],
   fields: [
@@ -107,6 +110,7 @@ RESOURCES['chance-games'] = {
     ] },
     tr('name', { label: 'f.ch.name', required: true, max: 128 }),
     tr('description', { multiline: true, max: 1000, optional: true }),
+    { name: 'kind', type: 'select', label: 'f.ch.kind', hint: 'f.ch.kind.hint', required: true, noPlaceholder: true, options: opts('ch.kind.', ['wheel', 'chest']) },
     { name: 'stats', type: 'static', readonly: true, render: chanceStats },
     { type: 'heading', label: 'ch.h.table' },
     { name: 'prizeType', type: 'select', label: 'f.ch.prizeType', hint: 'f.ch.prizeType.hint', required: true, noPlaceholder: true, options: opts('ch.type.', CHANCE_PRIZE_TYPES) },
@@ -138,12 +142,18 @@ RESOURCES['chance-games'] = {
       var none = !v.intervalTime && !(v.price && v.price.currencyId);
       return h('p', { class: 'text-xs ' + (none ? 'text-error-600 dark:text-error-400' : 'text-secondary-500 dark:text-secondary-400'), 'data-ch-play-hint': none ? 'none' : '', text: none ? t('code.INTERVAL_OR_PRICE_REQUIRED') : t('ch.play.hint') });
     } },
+    { type: 'heading', label: 'ch.h.limits' },
+    { type: 'row', fields: [
+      { name: 'dailyLimit', type: 'number', label: 'f.ch.dailyLimit', hint: 'f.ch.dailyLimit.hint', optional: true, min: 1, max: 100000 },
+      { name: 'totalLimit', type: 'number', label: 'f.ch.totalLimit', hint: 'f.ch.totalLimit.hint', optional: true, min: 1, max: 10000000 }
+    ] },
+    { name: 'showOdds', type: 'bool', inline: true, label: 'f.ch.showOdds', hint: 'f.ch.showOdds.hint' },
     { type: 'heading', label: 'ch.h.more' },
     { name: 'metadata', type: 'json', label: 'f.metadata', hint: 'f.ch.metadata.hint', optional: true, empty: {} },
     { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
   ],
   defaults: function () {
-    return { key: '', isActive: true, name: {}, description: {}, prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null },
+    return { key: '', isActive: true, name: {}, description: {}, kind: 'wheel', prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null }, dailyLimit: null, totalLimit: null, showOdds: true,
       prize: [{ chance: 30, prizeId: null, prizeGroupId: null }, { chance: 40, prizeId: null, prizeGroupId: null }, { chance: 30, prizeId: null, prizeGroupId: null }] };
   },
   toForm: function (v) {
@@ -158,6 +168,10 @@ RESOURCES['chance-games'] = {
     if (p.intervalTime === '' || p.intervalTime === undefined) p.intervalTime = null;
     if (p.sort == null) p.sort = 0;
     if (!p.metadata) p.metadata = {};
+    if (!p.kind) p.kind = 'wheel';
+    if (p.dailyLimit === '' || p.dailyLimit === undefined) p.dailyLimit = null;
+    if (p.totalLimit === '' || p.totalLimit === undefined) p.totalLimit = null;
+    p.showOdds = p.showOdds !== false;
     delete p.stats; delete p.sum; delete p.rowsHint; delete p.playHint;
     return p;
   },

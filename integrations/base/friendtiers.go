@@ -60,7 +60,7 @@ func (s *service) metaBonus(ctx context.Context, userID, key string) (int, error
 func (s *service) effectiveFriendLimits(ctx context.Context, rules friendRules, userID string) (friendLimits, error) {
 	out := friendLimits{DailyRequests: rules.DailyRequests, MaxFriends: rules.MaxFriends, RejectCooldownHours: rules.RejectCooldownHours}
 	rows, err := s.db.QueryContext(ctx, `SELECT r.id::text, r.name, r.daily_requests, r.max_friends, r.reject_cooldown_hours FROM base_friend_rule r
-		WHERE r.is_active AND EXISTS (SELECT 1 FROM base_user_tag ut WHERE ut.user_id=$1::uuid AND ut.tag_id::text = ANY(r.tag_ids))
+		WHERE r.is_active AND EXISTS (SELECT 1 FROM base_user_tag ut WHERE ut.user_id=$1::uuid AND ut.tag_id::text = ANY(r.tag_ids) AND (ut.expires_at IS NULL OR ut.expires_at > now()))
 		ORDER BY r.priority DESC, r.created_at, r.id`, userID)
 	if err != nil {
 		return out, err
@@ -137,7 +137,7 @@ func (s *service) effectiveFriendLimits(ctx context.Context, rules friendRules, 
 const friendTierJSON = `jsonb_build_object('id',r.id,'name',r.name,'tagIds',to_jsonb(r.tag_ids),'priority',r.priority,'dailyRequests',r.daily_requests,'maxFriends',r.max_friends,
 	'rejectCooldownHours',r.reject_cooldown_hours,'isActive',r.is_active,'createdBy',r.created_by,'createdAt',r.created_at,'updatedAt',r.updated_at,
 	'tags',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',g.id,'key',g.key,'name',g.name) ORDER BY g.key),'[]'::jsonb) FROM base_tag g WHERE g.id::text = ANY(r.tag_ids)),
-	'players',(SELECT count(DISTINCT ut.user_id) FROM base_user_tag ut WHERE ut.tag_id::text = ANY(r.tag_ids)))`
+	'players',(SELECT count(DISTINCT ut.user_id) FROM base_user_tag ut WHERE ut.tag_id::text = ANY(r.tag_ids) AND (ut.expires_at IS NULL OR ut.expires_at > now())))`
 
 func (s *service) friendTierList(w http.ResponseWriter, r *http.Request) {
 	p := readPage(r)

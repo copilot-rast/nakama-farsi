@@ -13,7 +13,7 @@ import (
 )
 
 const chanceGameJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'metadata',t.metadata,'prizeType',t.prize_type,'prize',t.prize,
-	'intervalTime',t.interval_time,'price',t.price,'isActive',t.is_active,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at,
+	'intervalTime',t.interval_time,'price',t.price,'isActive',t.is_active,'sort',t.sort,'kind',t.kind,'dailyLimit',t.daily_limit,'totalLimit',t.total_limit,'showOdds',t.show_odds,'createdAt',t.created_at,'updatedAt',t.updated_at,
 	'plays',(SELECT count(*) FROM economy_chance_play p WHERE p.game_id=t.id),
 	'players',(SELECT count(*) FROM economy_chance_state c WHERE c.game_id=t.id),
 	'wins',(SELECT count(*) FROM economy_chance_play p WHERE p.game_id=t.id AND p.prize_id IS NOT NULL),
@@ -30,7 +30,7 @@ func chanceResources() []resource {
 			table:  "economy_chance_game",
 			json:   chanceGameJSON,
 			search: []string{"t.key", translatedSearch("t.name")},
-			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "prizeType": "t.prize_type = ?",
+			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "prizeType": "t.prize_type = ?", "kind": "t.kind = ?",
 				"mode": "(CASE ? WHEN 'free' THEN t.interval_time IS NOT NULL WHEN 'ticket' THEN t.price IS NOT NULL ELSE true END)"},
 			save: saveChanceGame,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
@@ -77,12 +77,29 @@ func saveChanceGame(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 			CurrencyID string          `json:"currencyId"`
 			Amount     json.RawMessage `json:"amount"`
 		} `json:"price"`
-		IsActive bool `json:"isActive"`
-		Sort     int  `json:"sort"`
+		IsActive   bool   `json:"isActive"`
+		Sort       int    `json:"sort"`
+		Kind       string `json:"kind"`
+		DailyLimit *int   `json:"dailyLimit"`
+		TotalLimit *int   `json:"totalLimit"`
+		ShowOdds   *bool  `json:"showOdds"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
 	}
+	if in.Kind == "" {
+		in.Kind = "wheel"
+	}
+	if err := oneOf("kind", "INVALID_KIND", in.Kind, "wheel", "chest"); err != nil {
+		return err
+	}
+	if in.DailyLimit != nil && (*in.DailyLimit < 1 || *in.DailyLimit > 100000) {
+		return badRequest("INVALID_LIMIT", "dailyLimit", "from 1 to 100000, or empty for no limit")
+	}
+	if in.TotalLimit != nil && (*in.TotalLimit < 1 || *in.TotalLimit > 10000000) {
+		return badRequest("INVALID_LIMIT", "totalLimit", "from 1 to 10000000, or empty for no limit")
+	}
+	showOdds := in.ShowOdds == nil || *in.ShowOdds
 	langs, err := loadLangs(ctx, tx)
 	if err != nil {
 		return err
@@ -182,8 +199,8 @@ func saveChanceGame(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 	}
 	rowsJSON, _ := json.Marshal(rows)
 	return execSave(ctx, tx, "economy_chance_game", id, create,
-		[]string{"key", "name", "description", "metadata", "prize_type", "prize", "interval_time", "price", "is_active", "sort"},
-		[]any{key, i18nJSON(name), i18nJSON(desc), meta, in.PrizeType, string(rowsJSON), interval, price, in.IsActive, in.Sort})
+		[]string{"key", "name", "description", "metadata", "prize_type", "prize", "interval_time", "price", "is_active", "sort", "kind", "daily_limit", "total_limit", "show_odds"},
+		[]any{key, i18nJSON(name), i18nJSON(desc), meta, in.PrizeType, string(rowsJSON), interval, price, in.IsActive, in.Sort, in.Kind, in.DailyLimit, in.TotalLimit, showOdds})
 }
 
 func savePrizeGroup(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {

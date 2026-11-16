@@ -30,7 +30,7 @@ func friendGiftResources() []resource {
 
 const friendGiftRuleJSON = `jsonb_build_object('id',t.id,'name',t.name,'tagIds',to_jsonb(t.tag_ids),'priority',t.priority,'perSenderDaily',t.per_sender_daily,
 	'perRecipientDaily',t.per_recipient_daily,'perPairDaily',t.per_pair_daily,'canSend',t.can_send,'isActive',t.is_active,'createdAt',t.created_at,'updatedAt',t.updated_at,
-	'players',(SELECT count(DISTINCT ut.user_id) FROM base_user_tag ut WHERE ut.tag_id::text = ANY(t.tag_ids)))`
+	'players',(SELECT count(DISTINCT ut.user_id) FROM base_user_tag ut WHERE ut.tag_id::text = ANY(t.tag_ids) AND (ut.expires_at IS NULL OR ut.expires_at > now())))`
 
 func saveFriendGiftRule(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
 	var in struct {

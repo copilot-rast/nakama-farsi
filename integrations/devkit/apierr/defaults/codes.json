@@ -523,11 +523,23 @@
       "publication"
     ]
   },
+  "CHANCE_DAILY_LIMIT": {
+    "status": 429,
+    "modules": [
+      "economy"
+    ]
+  },
   "CHANCE_GAME_NOT_FOUND": {
     "status": 404,
     "modules": [
       "economy",
       "publication"
+    ]
+  },
+  "CHANCE_TOTAL_LIMIT": {
+    "status": 409,
+    "modules": [
+      "economy"
     ]
   },
   "CHAT_CLOSED": {

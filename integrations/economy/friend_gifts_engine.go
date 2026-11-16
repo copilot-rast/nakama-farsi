@@ -132,7 +132,7 @@ func (s *service) giftRelation(ctx context.Context, q queryer, st friendGiftSett
 
 func (s *service) giftRules(ctx context.Context, q rowsQueryer, userID string) ([]giftRule, error) {
 	rows, err := q.QueryContext(ctx, `SELECT r.id::text, r.name, r.per_sender_daily, r.per_recipient_daily, r.per_pair_daily, r.can_send FROM economy_friend_gift_rule r
-		WHERE r.is_active AND EXISTS (SELECT 1 FROM base_user_tag ut WHERE ut.user_id=$1::uuid AND ut.tag_id::text = ANY(r.tag_ids))
+		WHERE r.is_active AND EXISTS (SELECT 1 FROM base_user_tag ut WHERE ut.user_id=$1::uuid AND ut.tag_id::text = ANY(r.tag_ids) AND (ut.expires_at IS NULL OR ut.expires_at > now()))
 		ORDER BY r.priority DESC, r.created_at, r.id`, userID)
 	if err != nil {
 		return nil, err

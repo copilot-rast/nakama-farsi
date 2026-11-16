@@ -41,8 +41,11 @@ function playerTags(tags, max) {
   var list = tags || [];
   var box = h('div', { class: 'flex flex-wrap gap-1', 'data-player-tags': '' });
   list.slice(0, max || 6).forEach(function (tg) {
-    var chip = tag(i18nText(tg.name) || tg.key, tg.isPublic ? 'success' : 'primary');
+    var label = i18nText(tg.name) || tg.key;
+    if (tg.expiresAt) label += ' · ' + t('tag.until', { date: fmtDate(tg.expiresAt) });
+    var chip = tag(label, tg.isPublic ? 'success' : 'primary');
     if (tg.isPublic) chip.setAttribute('title', t('tag.public'));
+    if (tg.expiresAt) chip.setAttribute('data-tag-expires', tg.expiresAt);
     box.appendChild(chip);
   });
   if (max && list.length > max) box.appendChild(tag('+' + fmtNum(list.length - max), 'secondary'));

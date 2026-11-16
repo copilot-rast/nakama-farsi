@@ -148,7 +148,7 @@ func (s *service) maintenanceBypass(ctx context.Context, r serverRules, userID s
 		return false
 	}
 	var ok bool
-	_ = s.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM base_user_tag WHERE user_id=$1::uuid AND tag_id::text = ANY($2::text[]))`, userID, r.Maintenance.AllowTags).Scan(&ok)
+	_ = s.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM base_user_tag WHERE user_id=$1::uuid AND tag_id::text = ANY($2::text[]) AND (expires_at IS NULL OR expires_at > now()))`, userID, r.Maintenance.AllowTags).Scan(&ok)
 	return ok
 }
 

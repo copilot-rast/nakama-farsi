@@ -89,7 +89,7 @@ func (s *service) bannerViewer(ctx context.Context, userID, platform, version, r
 		return nil, err
 	}
 	v.Lang = lang
-	rows, err := s.db.QueryContext(ctx, `SELECT tag_id::text FROM base_user_tag WHERE user_id=$1`, userID)
+	rows, err := s.db.QueryContext(ctx, `SELECT tag_id::text FROM base_user_tag WHERE user_id=$1 AND (expires_at IS NULL OR expires_at > now())`, userID)
 	if err != nil {
 		return nil, err
 	}

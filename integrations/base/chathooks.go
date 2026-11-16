@@ -288,7 +288,32 @@ func (s *service) rpcMyTags(ctx context.Context, userID, payload string) (any, e
 	if err := decodeStrict(payload, &in); err != nil {
 		return nil, err
 	}
-	return s.taxonomyItems(ctx, userID, in.Lang, "base_tag", `key_type='user' AND is_public AND id IN (SELECT tag_id FROM base_user_tag WHERE user_id=$1::uuid)`, userID)
+	langs, lang, err := localized.ForUser(ctx, s.db, userID, in.Lang)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := s.db.QueryContext(ctx, `SELECT t.key, t.key_type, t.name::text, t.description::text, t.icon_url, t.metadata::text, t.sort, ut.expires_at FROM base_tag t JOIN base_user_tag ut ON ut.tag_id=t.id
+		WHERE t.key_type='user' AND t.is_public AND ut.user_id=$1::uuid AND (ut.expires_at IS NULL OR ut.expires_at > now()) ORDER BY t.sort, t.key`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []map[string]any{}
+	for rows.Next() {
+		var key, kt, name, desc, icon, meta string
+		var sort int
+		var exp sql.NullTime
+		if err := rows.Scan(&key, &kt, &name, &desc, &icon, &meta, &sort, &exp); err != nil {
+			return nil, err
+		}
+		var expires any
+		if exp.Valid {
+			expires = exp.Time.UTC().Format(time.RFC3339)
+		}
+		items = append(items, map[string]any{"key": key, "keyType": kt, "name": langs.Resolve(localized.Parse(name), lang), "description": langs.Resolve(localized.Parse(desc), lang),
+			"iconUrl": icon, "metadata": rawJSON(meta), "sort": sort, "expiresAt": expires})
+	}
+	return map[string]any{"lang": lang, "items": items}, rows.Err()
 }
 
 func (s *service) rpcMyStatus(ctx context.Context, userID, payload string) (any, error) {

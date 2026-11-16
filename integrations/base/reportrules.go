@@ -99,7 +99,7 @@ func (s *service) hasAnyTag(ctx context.Context, userID string, tagIDs []string)
 		return false, nil
 	}
 	var ok bool
-	err := s.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM base_user_tag WHERE user_id=$1::uuid AND tag_id::text = ANY($2::text[]))`, userID, tagIDs).Scan(&ok)
+	err := s.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM base_user_tag WHERE user_id=$1::uuid AND tag_id::text = ANY($2::text[]) AND (expires_at IS NULL OR expires_at > now()))`, userID, tagIDs).Scan(&ok)
 	return ok, err
 }
 

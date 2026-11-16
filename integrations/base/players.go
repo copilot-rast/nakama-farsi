@@ -26,7 +26,7 @@ const (
 	restrictionLimit = 50
 )
 
-const playerTagsJSON = `COALESCE((SELECT jsonb_agg(jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'isPublic',t.is_public) ORDER BY t.sort, t.key) FROM base_user_tag ut JOIN base_tag t ON t.id=ut.tag_id WHERE ut.user_id=u.id),'[]'::jsonb)`
+const playerTagsJSON = `COALESCE((SELECT jsonb_agg(jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'isPublic',t.is_public,'expiresAt',ut.expires_at) ORDER BY t.sort, t.key) FROM base_user_tag ut JOIN base_tag t ON t.id=ut.tag_id WHERE ut.user_id=u.id AND (ut.expires_at IS NULL OR ut.expires_at > now())),'[]'::jsonb)`
 
 const activeRestrictionJSON = `(SELECT jsonb_build_object('id',r.id,'endsAt',r.ends_at,'reason',r.reason) FROM base_restriction r WHERE r.user_id=u.id AND r.kind=%s AND r.status='active' AND r.ends_at > now() ORDER BY r.ends_at DESC LIMIT 1)`
 
@@ -57,7 +57,7 @@ func (s *service) playerList(w http.ResponseWriter, r *http.Request) {
 			s.writeError(w, badRequest("INVALID_FILTER", "tagId", "tag id is not valid"))
 			return
 		}
-		where.add("EXISTS (SELECT 1 FROM base_user_tag ut WHERE ut.user_id=u.id AND ut.tag_id=?::uuid)", v)
+		where.add("EXISTS (SELECT 1 FROM base_user_tag ut WHERE ut.user_id=u.id AND ut.tag_id=?::uuid AND (ut.expires_at IS NULL OR ut.expires_at > now()))", v)
 	}
 	switch q.Get("status") {
 	case "suspended":
@@ -67,7 +67,7 @@ func (s *service) playerList(w http.ResponseWriter, r *http.Request) {
 	case "banned":
 		where.parts = append(where.parts, "u.disable_time > '1970-01-01 00:00:00+00'")
 	case "tagged":
-		where.parts = append(where.parts, "EXISTS (SELECT 1 FROM base_user_tag ut WHERE ut.user_id=u.id)")
+		where.parts = append(where.parts, "EXISTS (SELECT 1 FROM base_user_tag ut WHERE ut.user_id=u.id AND (ut.expires_at IS NULL OR ut.expires_at > now()))")
 	case "":
 	default:
 		s.writeError(w, badRequest("INVALID_FILTER", "status", "status must be suspended, muted, banned or tagged"))
@@ -195,7 +195,7 @@ func (s *service) playerTagsPut(w http.ResponseWriter, r *http.Request) {
 		if _, err := tx.ExecContext(r.Context(), `DELETE FROM base_user_tag WHERE user_id=$1 AND NOT (tag_id::text = ANY($2::text[]))`, id, tags); err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(r.Context(), `INSERT INTO base_user_tag (user_id, tag_id, created_by) SELECT $1, t::uuid, $3 FROM unnest($2::text[]) t ON CONFLICT DO NOTHING`, id, tags, consoleUser(r)); err != nil {
+		if _, err := tx.ExecContext(r.Context(), `INSERT INTO base_user_tag (user_id, tag_id, created_by) SELECT $1, t::uuid, $3 FROM unnest($2::text[]) t ON CONFLICT (user_id, tag_id) DO UPDATE SET expires_at=NULL, created_by=EXCLUDED.created_by, created_at=now() WHERE base_user_tag.expires_at IS NOT NULL AND base_user_tag.expires_at <= now()`, id, tags, consoleUser(r)); err != nil {
 			return err
 		}
 		out, err = s.playerView(r.Context(), tx, id)
@@ -261,7 +261,7 @@ func (s *service) playerTagsBulk(w http.ResponseWriter, r *http.Request) {
 		}
 		var res sql.Result
 		if in.Op == "add" {
-			res, err = tx.ExecContext(r.Context(), `INSERT INTO base_user_tag (user_id, tag_id, created_by) SELECT u::uuid, t::uuid, $3 FROM unnest($1::text[]) u CROSS JOIN unnest($2::text[]) t ON CONFLICT DO NOTHING`, users, tags, consoleUser(r))
+			res, err = tx.ExecContext(r.Context(), `INSERT INTO base_user_tag (user_id, tag_id, created_by) SELECT u::uuid, t::uuid, $3 FROM unnest($1::text[]) u CROSS JOIN unnest($2::text[]) t ON CONFLICT (user_id, tag_id) DO UPDATE SET expires_at=NULL, created_by=EXCLUDED.created_by, created_at=now() WHERE base_user_tag.expires_at IS NOT NULL AND base_user_tag.expires_at <= now()`, users, tags, consoleUser(r))
 		} else {
 			res, err = tx.ExecContext(r.Context(), `DELETE FROM base_user_tag WHERE user_id::text = ANY($1::text[]) AND tag_id::text = ANY($2::text[])`, users, tags)
 		}
@@ -598,6 +598,9 @@ func (s *service) restrictionLoop(ctx context.Context) {
 		if _, err := s.expireRestrictions(ctx); err != nil && ctx.Err() == nil {
 			s.logger.Error("Base restriction expiry failed: %v", err)
 		}
+		if _, err := s.expireTags(ctx); err != nil && ctx.Err() == nil {
+			s.logger.Error("Base tag expiry failed: %v", err)
+		}
 	}
 }
 
@@ -607,6 +610,29 @@ func (s *service) expireRestrictions(ctx context.Context) (int64, error) {
 		return 0, err
 	}
 	return res.RowsAffected()
+}
+
+func (s *service) expireTags(ctx context.Context) (int64, error) {
+	rows, err := s.db.QueryContext(ctx, `DELETE FROM base_user_tag ut USING base_tag t WHERE t.id=ut.tag_id AND ut.expires_at IS NOT NULL AND ut.expires_at <= now() RETURNING ut.user_id::text, t.key, ut.expires_at`)
+	if err != nil {
+		return 0, err
+	}
+	type gone struct {
+		user, key string
+		at        time.Time
+	}
+	list := []gone{}
+	for rows.Next() {
+		var g gone
+		if rows.Scan(&g.user, &g.key, &g.at) == nil {
+			list = append(list, g)
+		}
+	}
+	rows.Close()
+	for _, g := range list {
+		s.record(ctx, activity.Entry{UserID: g.user, Kind: activity.KindPrize, Action: "tag_expired", RefID: g.key, Actor: "system", Data: map[string]any{"tag": g.key, "expiresAt": g.at.UTC().Format(time.RFC3339)}})
+	}
+	return int64(len(list)), rows.Err()
 }
 
 func (s *service) kickFresh(ctx context.Context) {

@@ -239,7 +239,7 @@ type audienceView struct {
 func (s *service) loadAudienceView(ctx context.Context, q txQueryer, ids []string, needLast bool) (*audienceView, error) {
 	v := &audienceView{tags: map[string]map[string]bool{}, country: map[string]string{}, lang: map[string]string{}, created: map[string]time.Time{}, last: map[string]time.Time{}}
 	arr := uuidArray(ids)
-	rows, err := q.QueryContext(ctx, `SELECT user_id::text, tag_id::text FROM base_user_tag WHERE user_id = ANY($1::uuid[])`, arr)
+	rows, err := q.QueryContext(ctx, `SELECT user_id::text, tag_id::text FROM base_user_tag WHERE user_id = ANY($1::uuid[]) AND (expires_at IS NULL OR expires_at > now())`, arr)
 	if err != nil {
 		return nil, err
 	}

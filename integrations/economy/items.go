@@ -15,6 +15,7 @@ import (
 	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/internal/activity"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
+	"github.com/heroiclabs/nakama/v3/internal/tagdiscount"
 )
 
 var itemRequestNS = uuid.Must(uuid.FromString("4f1c2a52-8d0e-4b8e-9a51-6f1f2d6b7c11"))
@@ -626,6 +627,7 @@ func (s *service) inventoryView(ctx context.Context, userID string, langs *local
 		return nil, err
 	}
 	lc := newLevelCache(s.db, userID)
+	disc := s.userDiscounts(ctx, s.db, userID)
 	mainLevel, err := lc.level(ctx, "")
 	if err != nil {
 		return nil, err
@@ -651,6 +653,7 @@ func (s *service) inventoryView(ctx context.Context, userID string, langs *local
 		if err != nil {
 			return nil, err
 		}
+		itemDiscountView(v, d, disc)
 		counts["total"]++
 		if has {
 			counts["owned"]++
@@ -714,7 +717,28 @@ func (s *service) oneItemView(ctx context.Context, userID, key string, langs *lo
 		rows.Close()
 	}
 	o, has := owned[d.ID]
-	return s.itemState(ctx, d, o, has, newLevelCache(s.db, userID), ownedKeys, langs, lang)
+	v, err := s.itemState(ctx, d, o, has, newLevelCache(s.db, userID), ownedKeys, langs, lang)
+	if err != nil {
+		return nil, err
+	}
+	itemDiscountView(v, d, s.userDiscounts(ctx, s.db, userID))
+	return v, nil
+}
+
+func itemDiscountView(v itemView, d itemDef, set *tagdiscount.Set) {
+	v["finalPrice"] = d.Price
+	v["discountPercent"] = 0
+	v["discounts"] = []string{}
+	if d.Price == nil {
+		return
+	}
+	m := set.Item(d.Key, d.TypeID)
+	if m.Percent <= 0 {
+		return
+	}
+	v["finalPrice"] = coinPrice{CurrencyKey: d.Price.CurrencyKey, Amount: tagdiscount.Apply(d.Price.Amount, m.Percent)}
+	v["discountPercent"] = m.Percent
+	v["discounts"] = m.Rules
 }
 
 type itemResult struct {
@@ -782,6 +806,7 @@ func (s *service) buyItem(ctx context.Context, userID, key, rawRequest string) (
 	}
 	key = strings.TrimSpace(key)
 	grantID := requestGrantID(userID, requestID)
+	disc := s.userDiscounts(ctx, s.db, userID)
 	var out itemResult
 	err = s.inTx(ctx, func(tx *sql.Tx) error {
 		prev, err := s.claimItemRequest(ctx, tx, userID, requestID, "buy", key, "")
@@ -809,10 +834,20 @@ func (s *service) buyItem(ctx context.Context, userID, key, rawRequest string) (
 		if n, _ := res.RowsAffected(); n == 0 {
 			return conflict("ALREADY_OWNED", "the player already owns this item")
 		}
-		if err := s.walletChange(ctx, tx, userID, grantID, map[string]int64{d.Price.CurrencyKey: -d.Price.Amount}, map[string]any{"reason": "item_buy", "sourceType": "item", "sourceId": d.Key, "itemKey": d.Key}); err != nil {
-			return err
+		price := *d.Price
+		meta := map[string]any{"reason": "item_buy", "sourceType": "item", "sourceId": d.Key, "itemKey": d.Key}
+		if m := disc.Item(d.Key, d.TypeID); m.Percent > 0 {
+			price.Amount = tagdiscount.Apply(price.Amount, m.Percent)
+			meta["discountPercent"] = m.Percent
+			meta["discounts"] = m.Rules
+			meta["originalAmount"] = d.Price.Amount
 		}
-		out = itemResult{ItemKey: d.Key, Action: "buy", Paid: []coinPrice{*d.Price}, fresh: true, value: float64(d.Price.Amount)}
+		if price.Amount > 0 {
+			if err := s.walletChange(ctx, tx, userID, grantID, map[string]int64{price.CurrencyKey: -price.Amount}, meta); err != nil {
+				return err
+			}
+		}
+		out = itemResult{ItemKey: d.Key, Action: "buy", Paid: []coinPrice{price}, fresh: true, value: float64(price.Amount)}
 		return saveItemRequest(ctx, tx, userID, requestID, out)
 	})
 	if err != nil {

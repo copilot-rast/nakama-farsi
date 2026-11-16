@@ -12,6 +12,7 @@ import (
 	"github.com/gofrs/uuid/v5"
 	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
+	"github.com/heroiclabs/nakama/v3/internal/tagdiscount"
 	"google.golang.org/grpc/codes"
 )
 
@@ -214,7 +215,10 @@ func (s *service) rpcStickers(ctx context.Context, userID, payload string) (any,
 		return out, nil
 	}
 	rows, err := s.db.QueryContext(ctx, `SELECT p.id::text, p.key, p.name::text, p.description::text, p.icon_url, p.access, p.item_key,
-		COALESCE((SELECT jsonb_build_object('key',i.key,'name',i.name,'iconUrl',i.icon_url,'price',i.price) FROM economy_item i WHERE i.key=p.item_key AND p.access='item'), 'null'::jsonb)::text,
+		COALESCE((SELECT jsonb_build_object('key',i.key,'name',i.name,'iconUrl',i.icon_url,'price',i.price,'typeId',i.type_id::text,
+			'productIds',(SELECT COALESCE(jsonb_agg(pr.id::text ORDER BY pr.sort, pr.created_at),'[]'::jsonb) FROM economy_product pr JOIN economy_prize z ON z.id=pr.prize_id
+				WHERE pr.is_active AND z.items @> jsonb_build_array(jsonb_build_object('type','item','key',i.key))))
+			FROM economy_item i WHERE i.key=p.item_key AND p.access='item'), 'null'::jsonb)::text,
 		p.access='free' OR EXISTS (SELECT 1 FROM economy_user_item ui JOIN economy_item i ON i.id=ui.item_id WHERE ui.user_id=$1::uuid AND i.key=p.item_key)
 		FROM base_sticker_pack p WHERE p.is_active ORDER BY p.sort, p.key`, userID)
 	if err != nil {
@@ -222,6 +226,10 @@ func (s *service) rpcStickers(ctx context.Context, userID, payload string) (any,
 	}
 	packs := []clientStickerPack{}
 	ids := []string{}
+	disc, derr := tagdiscount.ForUser(ctx, s.db, userID)
+	if derr != nil {
+		disc = &tagdiscount.Set{Settings: tagdiscount.Defaults()}
+	}
 	for rows.Next() {
 		var p clientStickerPack
 		var id, name, desc, item string
@@ -238,6 +246,7 @@ func (s *service) rpcStickers(ctx context.Context, userID, payload string) (any,
 					b, _ := json.Marshal(raw)
 					m["name"] = langs.Resolve(localized.Parse(string(b)), lang)
 				}
+				stickerItemPrice(m, disc)
 				p.Item = m
 			}
 		} else {
@@ -519,4 +528,26 @@ func (s *service) stickerPackDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{})
+}
+
+func stickerItemPrice(m map[string]any, disc *tagdiscount.Set) {
+	typeID, _ := m["typeId"].(string)
+	delete(m, "typeId")
+	key, _ := m["key"].(string)
+	m["finalPrice"] = m["price"]
+	m["discountPercent"] = 0
+	price, ok := m["price"].(map[string]any)
+	if !ok {
+		return
+	}
+	amount, ok := price["amount"].(float64)
+	if !ok {
+		return
+	}
+	match := disc.Item(key, typeID)
+	if match.Percent <= 0 {
+		return
+	}
+	m["finalPrice"] = map[string]any{"currencyKey": price["currencyKey"], "amount": tagdiscount.Apply(int64(amount), match.Percent)}
+	m["discountPercent"] = match.Percent
 }
