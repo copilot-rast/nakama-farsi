@@ -5,12 +5,15 @@ import (
 	"database/sql"
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"sort"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 //go:embed defaults/codes.json defaults/texts.json
@@ -170,6 +173,10 @@ func ReadCatalog(ctx context.Context, db *sql.DB) (map[string]Entry, string, err
 	latest := time.Time{}
 	if db != nil {
 		rows, err := db.QueryContext(ctx, `SELECT code, messages, status, retry_after_seconds, is_custom, updated_by, updated_at FROM devkit_error_message`)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "42P01" {
+			return out, "", nil
+		}
 		if err != nil {
 			return nil, "", err
 		}
