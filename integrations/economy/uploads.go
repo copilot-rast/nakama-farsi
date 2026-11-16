@@ -16,12 +16,26 @@ import (
 
 const maxUploadBytes = 2 << 20
 
-var fileTypes = map[string]string{"png": "image/png", "jpg": "image/jpeg", "webp": "image/webp", "svg": "image/svg+xml"}
+var fileTypes = map[string]string{"png": "image/png", "jpg": "image/jpeg", "webp": "image/webp", "svg": "image/svg+xml", "mp3": "audio/mpeg", "ogg": "audio/ogg", "wav": "audio/wav"}
 
 var (
-	fileNamePattern = regexp.MustCompile(`^[a-f0-9]{32}\.(png|jpg|webp|svg)$`)
+	fileNamePattern = regexp.MustCompile(`^[a-f0-9]{32}\.(png|jpg|webp|svg|mp3|ogg|wav)$`)
 	svgDanger       = regexp.MustCompile(`(?i)<script|<foreignobject|\son[a-z]+\s*=|javascript:|<iframe|<embed|<object`)
 )
+
+func sniffAudio(data []byte) (string, bool) {
+	switch {
+	case len(data) >= 12 && string(data[:4]) == "RIFF" && string(data[8:12]) == "WAVE":
+		return "wav", true
+	case len(data) >= 4 && string(data[:4]) == "OggS":
+		return "ogg", true
+	case len(data) >= 3 && string(data[:3]) == "ID3":
+		return "mp3", true
+	case len(data) >= 2 && data[0] == 0xFF && data[1]&0xE0 == 0xE0 && data[1]&0x06 != 0:
+		return "mp3", true
+	}
+	return "", false
+}
 
 func sniffImage(data []byte) (string, bool) {
 	switch http.DetectContentType(data) {
@@ -66,7 +80,10 @@ func (s *service) consoleUpload(w http.ResponseWriter, r *http.Request) {
 	}
 	ext, ok := sniffImage(data)
 	if !ok {
-		s.writeError(w, badRequest("UNSUPPORTED_FILE_TYPE", "file", "only png, jpg, webp and safe svg are allowed"))
+		ext, ok = sniffAudio(data)
+	}
+	if !ok {
+		s.writeError(w, badRequest("UNSUPPORTED_FILE_TYPE", "file", "only png, jpg, webp, safe svg, mp3, ogg and wav are allowed"))
 		return
 	}
 	raw := make([]byte, 16)

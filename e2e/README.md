@@ -109,6 +109,7 @@ Read from the environment first, then from `~/.config/nakama-farsi/mac-dev.env` 
 | `game/59-leaderboardx.spec.ts` | economy events fill a weekly board (top, around me, tier, next tier), client submits obey the board (allowed, request id, cap, resend), claim mode pays once from the history, a core reset every minute closes the period by itself and pays the winner |
 | `console/60-stickers.spec.ts` | «استیکرها» hub in the chat group and the page search, a free pack from the editor with an uploaded and a linked picture, an item pack with its item picker, sticker settings (private chats off, outside the quota), the chat quota «پیام خصوصی شمرده شود» switch, English tabs, phone screen |
 | `game/60-stickers.spec.ts` | `base_stickers` (free pack open, item pack locked with its item, names per language), a sticker sent over the socket stored with its picture, `STICKER_LOCKED` until the item is owned, `STICKER_NOT_FOUND`, `STICKER_NOT_ALLOWED_HERE` in private chat while rooms stay open, `STICKERS_DISABLED`, stickers outside or inside the quota, private chat not counted with `countDirect` off |
+| `console/61-item-sound.spec.ts` | an item gets an uploaded wav in the «صدا» field with a player preview, the file is served as audio, `economy_inventory` carries `soundUrl`, an image picked as a sound is refused, phone screen |
 
 ## Multi-node cluster suite (phase 6)
 

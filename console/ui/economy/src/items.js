@@ -97,18 +97,22 @@ RESOURCES.items = {
       { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
       { name: 'imageUrl', type: 'image', label: 'f.it.image', optional: true }
     ] },
+    { type: 'row', fields: [
+      { name: 'soundUrl', type: 'sound', label: 'f.it.sound', hint: 'f.it.sound.hint', optional: true }
+    ] },
     { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' },
     { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
   ],
   defaults: function (query) {
     return { key: '', isActive: true, name: {}, description: {}, typeId: (query && query.typeId) || null, rarity: 'common', categoryId: null, tagIds: [], isStarter: false,
-      price: null, unlockLevel: null, levelTableId: null, requiresKey: null, parentKey: null, upgrades: [], services: [], iconUrl: '', imageUrl: '', sort: 0, metadata: {} };
+      price: null, unlockLevel: null, levelTableId: null, requiresKey: null, parentKey: null, upgrades: [], services: [], iconUrl: '', imageUrl: '', soundUrl: '', sort: 0, metadata: {} };
   },
   fixPayload: function (p) {
     if (p.isStarter || !p.price || (p.price.currencyKey == null && p.price.amount == null)) p.price = null;
     if (p.isStarter) { p.unlockLevel = null; p.levelTableId = null; }
     if (!p.iconUrl) p.iconUrl = '';
     if (!p.imageUrl) p.imageUrl = '';
+    if (!p.soundUrl) p.soundUrl = '';
     if (p.sort == null) p.sort = 0;
     p.requiresKey = p.requiresKey || '';
     p.parentKey = p.parentKey || '';

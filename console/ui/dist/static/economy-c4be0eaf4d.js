@@ -4786,7 +4786,10 @@ var MESSAGES = {
     'code.INVALID_STICKERS': "بسته باید ۱ تا ۲۰۰ استیکر داشته باشد.",
     'code.IMAGE_REQUIRED': "تصویر استیکر را بارگذاری کنید.",
     'code.ITEM_REQUIRED': "آیتمی را که بسته را باز می‌کند انتخاب کنید.",
-    'code.INVALID_ACCESS': "دسترسی نامعتبر است."
+    'code.INVALID_ACCESS': "دسترسی نامعتبر است.",
+    'f.it.sound': "صدا",
+    'f.it.sound.hint': "برای آیتم‌هایی که صدا دارند، مثل صدای گل. mp3، ogg یا wav تا ۲ مگابایت.",
+    'err.upload.sound': "فایل باید mp3، ogg یا wav و حداکثر ۲ مگابایت باشد."
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -9476,7 +9479,10 @@ var MESSAGES = {
     'code.INVALID_STICKERS': "A pack needs 1 to 200 stickers.",
     'code.IMAGE_REQUIRED': "Upload the sticker image.",
     'code.ITEM_REQUIRED': "Pick the item that opens the pack.",
-    'code.INVALID_ACCESS': "Invalid access."
+    'code.INVALID_ACCESS': "Invalid access.",
+    'f.it.sound': "Sound",
+    'f.it.sound.hint': "For items that play a sound, such as a goal sound. mp3, ogg or wav up to 2 MB.",
+    'err.upload.sound': "The file must be mp3, ogg or wav and at most 2 MB."
   }
 };
 
@@ -10629,6 +10635,46 @@ function imageInput(value, onchange) {
   return h('div', {}, h('div', { class: 'flex items-center gap-3' }, preview, h('div', { class: 'flex-1 min-w-0 flex flex-col gap-1.5' }, urlInput, h('div', {}, up))), file, err);
 }
 
+function soundInput(value, onchange) {
+  var url = value || '';
+  var player = h('audio', { controls: true, preload: 'none', class: 'w-full max-w-xs', 'data-sound-preview': '' });
+  var urlInput = textInput(url, { ltr: true, label: t('f.uploadUrl'), placeholder: 'https://', oninput: function (v) { url = v.trim(); paint(); onchange(url || null); } });
+  urlInput.classList.add('text-sm');
+  var file = h('input', { type: 'file', accept: 'audio/mpeg,audio/ogg,audio/wav,.mp3,.ogg,.wav', class: 'hidden' });
+  var err = h('p', { class: 'text-xs text-error-600 dark:text-error-400 mt-1', hidden: true });
+  var up = button({ variant: 'link', size: 'sm', icon: 'upload', label: t('upload'), onclick: function () { file.click(); } });
+  function paint() {
+    player.hidden = !url;
+    if (url) player.setAttribute('src', url);
+    else player.removeAttribute('src');
+  }
+  file.addEventListener('change', function () {
+    var f = file.files && file.files[0];
+    if (!f) return;
+    err.hidden = true;
+    if (!/^audio\//.test(f.type || '') && !/\.(mp3|ogg|wav)$/i.test(f.name || '')) {
+      err.textContent = t('err.upload.sound');
+      err.hidden = false;
+      file.value = '';
+      return;
+    }
+    var fd = new FormData();
+    fd.append('file', f, f.name);
+    setBusy(up, true, t('uploading'));
+    api('POST', '/uploads', fd, true).then(function (res) {
+      url = (res && res.url) || '';
+      urlInput.value = url;
+      paint();
+      onchange(url || null);
+    }, function (e) {
+      err.textContent = e && e.status === 400 ? t('err.upload.sound') : errorText(e);
+      err.hidden = false;
+    }).then(function () { setBusy(up, false); file.value = ''; });
+  });
+  paint();
+  return h('div', { class: 'flex flex-col gap-1.5' }, urlInput, h('div', { class: 'flex flex-wrap items-center gap-2' }, up, player), file, err);
+}
+
 function toLocalInput(v) {
   if (!v) return '';
   var d = new Date(v);
@@ -11249,6 +11295,8 @@ function buildForm(fields, values, ctx) {
       control = refMulti({ resource: f.resource, api: f.api, filter: f.filter, value: cur, label: label, quick: f.quick, onchange: function (v) { change(v); } });
     } else if (t2 === 'image') {
       control = imageInput(cur, function (v) { change(v); });
+    } else if (t2 === 'sound') {
+      control = soundInput(cur, function (v) { change(v); });
     } else if (t2 === 'datetime') {
       control = dateInput(cur, function (v) { change(v); });
     } else if (t2 === 'items') {
@@ -18809,18 +18857,22 @@ RESOURCES.items = {
       { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
       { name: 'imageUrl', type: 'image', label: 'f.it.image', optional: true }
     ] },
+    { type: 'row', fields: [
+      { name: 'soundUrl', type: 'sound', label: 'f.it.sound', hint: 'f.it.sound.hint', optional: true }
+    ] },
     { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' },
     { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
   ],
   defaults: function (query) {
     return { key: '', isActive: true, name: {}, description: {}, typeId: (query && query.typeId) || null, rarity: 'common', categoryId: null, tagIds: [], isStarter: false,
-      price: null, unlockLevel: null, levelTableId: null, requiresKey: null, parentKey: null, upgrades: [], services: [], iconUrl: '', imageUrl: '', sort: 0, metadata: {} };
+      price: null, unlockLevel: null, levelTableId: null, requiresKey: null, parentKey: null, upgrades: [], services: [], iconUrl: '', imageUrl: '', soundUrl: '', sort: 0, metadata: {} };
   },
   fixPayload: function (p) {
     if (p.isStarter || !p.price || (p.price.currencyKey == null && p.price.amount == null)) p.price = null;
     if (p.isStarter) { p.unlockLevel = null; p.levelTableId = null; }
     if (!p.iconUrl) p.iconUrl = '';
     if (!p.imageUrl) p.imageUrl = '';
+    if (!p.soundUrl) p.soundUrl = '';
     if (p.sort == null) p.sort = 0;
     p.requiresKey = p.requiresKey || '';
     p.parentKey = p.parentKey || '';

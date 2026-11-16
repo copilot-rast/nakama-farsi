@@ -332,6 +332,46 @@ function imageInput(value, onchange) {
   return h('div', {}, h('div', { class: 'flex items-center gap-3' }, preview, h('div', { class: 'flex-1 min-w-0 flex flex-col gap-1.5' }, urlInput, h('div', {}, up))), file, err);
 }
 
+function soundInput(value, onchange) {
+  var url = value || '';
+  var player = h('audio', { controls: true, preload: 'none', class: 'w-full max-w-xs', 'data-sound-preview': '' });
+  var urlInput = textInput(url, { ltr: true, label: t('f.uploadUrl'), placeholder: 'https://', oninput: function (v) { url = v.trim(); paint(); onchange(url || null); } });
+  urlInput.classList.add('text-sm');
+  var file = h('input', { type: 'file', accept: 'audio/mpeg,audio/ogg,audio/wav,.mp3,.ogg,.wav', class: 'hidden' });
+  var err = h('p', { class: 'text-xs text-error-600 dark:text-error-400 mt-1', hidden: true });
+  var up = button({ variant: 'link', size: 'sm', icon: 'upload', label: t('upload'), onclick: function () { file.click(); } });
+  function paint() {
+    player.hidden = !url;
+    if (url) player.setAttribute('src', url);
+    else player.removeAttribute('src');
+  }
+  file.addEventListener('change', function () {
+    var f = file.files && file.files[0];
+    if (!f) return;
+    err.hidden = true;
+    if (!/^audio\//.test(f.type || '') && !/\.(mp3|ogg|wav)$/i.test(f.name || '')) {
+      err.textContent = t('err.upload.sound');
+      err.hidden = false;
+      file.value = '';
+      return;
+    }
+    var fd = new FormData();
+    fd.append('file', f, f.name);
+    setBusy(up, true, t('uploading'));
+    api('POST', '/uploads', fd, true).then(function (res) {
+      url = (res && res.url) || '';
+      urlInput.value = url;
+      paint();
+      onchange(url || null);
+    }, function (e) {
+      err.textContent = e && e.status === 400 ? t('err.upload.sound') : errorText(e);
+      err.hidden = false;
+    }).then(function () { setBusy(up, false); file.value = ''; });
+  });
+  paint();
+  return h('div', { class: 'flex flex-col gap-1.5' }, urlInput, h('div', { class: 'flex flex-wrap items-center gap-2' }, up, player), file, err);
+}
+
 function toLocalInput(v) {
   if (!v) return '';
   var d = new Date(v);
@@ -952,6 +992,8 @@ function buildForm(fields, values, ctx) {
       control = refMulti({ resource: f.resource, api: f.api, filter: f.filter, value: cur, label: label, quick: f.quick, onchange: function (v) { change(v); } });
     } else if (t2 === 'image') {
       control = imageInput(cur, function (v) { change(v); });
+    } else if (t2 === 'sound') {
+      control = soundInput(cur, function (v) { change(v); });
     } else if (t2 === 'datetime') {
       control = dateInput(cur, function (v) { change(v); });
     } else if (t2 === 'items') {

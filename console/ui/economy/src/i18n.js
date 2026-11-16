@@ -4687,7 +4687,10 @@ var MESSAGES = {
     'code.INVALID_STICKERS': "بسته باید ۱ تا ۲۰۰ استیکر داشته باشد.",
     'code.IMAGE_REQUIRED': "تصویر استیکر را بارگذاری کنید.",
     'code.ITEM_REQUIRED': "آیتمی را که بسته را باز می‌کند انتخاب کنید.",
-    'code.INVALID_ACCESS': "دسترسی نامعتبر است."
+    'code.INVALID_ACCESS': "دسترسی نامعتبر است.",
+    'f.it.sound': "صدا",
+    'f.it.sound.hint': "برای آیتم‌هایی که صدا دارند، مثل صدای گل. mp3، ogg یا wav تا ۲ مگابایت.",
+    'err.upload.sound': "فایل باید mp3، ogg یا wav و حداکثر ۲ مگابایت باشد."
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -9377,6 +9380,9 @@ var MESSAGES = {
     'code.INVALID_STICKERS': "A pack needs 1 to 200 stickers.",
     'code.IMAGE_REQUIRED': "Upload the sticker image.",
     'code.ITEM_REQUIRED': "Pick the item that opens the pack.",
-    'code.INVALID_ACCESS': "Invalid access."
+    'code.INVALID_ACCESS': "Invalid access.",
+    'f.it.sound': "Sound",
+    'f.it.sound.hint': "For items that play a sound, such as a goal sound. mp3, ogg or wav up to 2 MB.",
+    'err.upload.sound': "The file must be mp3, ogg or wav and at most 2 MB."
   }
 };
