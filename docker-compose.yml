@@ -1,9 +1,3 @@
-# PostgreSQL connection for nakama-migrate and nakama, set in Dokploy's
-# Environment tab (or .env). The bundled postgres service is initialised with
-# the same DB_NAME, DB_USER and DB_PASSWORD. DB_URL, when set, replaces the
-# individual fields for the two Nakama services. build/nakama-db.sh turns
-# these into the Nakama database address; see
-# docs/integration/database-configuration.md and .env.example.
 x-database-env: &database-env
   DB_HOST: ${DB_HOST:-postgres}
   DB_PORT: ${DB_PORT:-5432}
@@ -18,24 +12,20 @@ x-database-env: &database-env
 services:
 
   postgres:
-    image: postgres:16.8-alpine
+    image: ${NEXUS_DOCKER_HOST:-docker.arvancloud.ir}/library/postgres:16.8-alpine@sha256:3b057e1c2c6dfee60a30950096f3fab33be141dbb0fdd7af3d477083de94166c
 
     restart: unless-stopped
 
-    # Resource limits
     mem_limit: 2g
     memswap_limit: 2g
     cpus: "1"
 
-    # Prevent unbounded Docker logs
     logging:
       driver: json-file
       options:
         max-size: "150m"
         max-file: "3"
 
-    # Read on the first start of an empty volume only. Changing them later
-    # does not change an existing role or password.
     environment:
       POSTGRES_DB: ${DB_NAME:-nakama}
       POSTGRES_USER: ${DB_USER:-nakama}
@@ -47,8 +37,6 @@ services:
     expose:
       - "5432"
 
-    # Over TCP, so the temporary socket-only server of the first
-    # initialisation is not reported ready.
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -q -h 127.0.0.1 -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
       interval: 3s
@@ -57,14 +45,9 @@ services:
       start_period: 120s
 
 
-  # Legacy CockroachDB, kept only as the source of the one-time import into
-  # PostgreSQL (DB_IMPORT_FROM_COCKROACH). Nothing else connects to it. Its
-  # profile keeps `up` from starting or removing it: an existing container
-  # stays as it is, with its data volume. After a verified import it can be
-  # removed; see docs/integration/database-configuration.md.
   cockroachdb:
     profiles: ["cockroach-import"]
-    image: cockroachdb/cockroach:latest-v24.1
+    image: ${NEXUS_DOCKER_HOST:-docker.arvancloud.ir}/cockroachdb/cockroach:v24.1.34@sha256:0f7c4db12f7a9eda952682a4fe33ef896a5254ef8b00dc83e580d8f37257900f
 
     command:
       - start-single-node
@@ -73,12 +56,10 @@ services:
 
     restart: unless-stopped
 
-    # Resource limits
     mem_limit: 2g
     memswap_limit: 2g
     cpus: "1"
 
-    # Prevent unbounded Docker logs
     logging:
       driver: json-file
       options:
@@ -103,19 +84,15 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
-      # A slow first start or recovery is not reported unhealthy.
       start_period: 120s
 
 
-  # One-shot schema migration. It runs once per deployment, waits up to
-  # DB_WAIT_TIMEOUT_SECONDS for PostgreSQL to resolve and accept connections,
-  # imports the legacy CockroachDB data once into an empty PostgreSQL, and the
-  # server starts only if it exits 0. A failure stops the deployment instead
-  # of restarting in a loop.
   nakama-migrate:
     build:
       context: .
       dockerfile: build/Dockerfile.local
+      args:
+        NEXUS_DOCKER_HOST: ${NEXUS_DOCKER_HOST:-docker.arvancloud.ir}
     image: nakama-farsi:local
 
     entrypoint: ["/nakama/nakama-db.sh", "migrate"]
@@ -123,8 +100,6 @@ services:
     environment:
       <<: *database-env
       DB_MIGRATIONS_ENABLED: ${DB_MIGRATIONS_ENABLED:-true}
-      # true: this deployment has legacy CockroachDB data. Set false for a new
-      # installation. Ignored once an import has completed.
       DB_IMPORT_FROM_COCKROACH: ${DB_IMPORT_FROM_COCKROACH:-true}
       COCKROACH_IMPORT_URL: ${COCKROACH_IMPORT_URL:-postgresql://root@cockroachdb:26257/nakama?sslmode=disable}
 
@@ -142,19 +117,13 @@ services:
 
 
   nakama:
-    # Built from this repository so the Persian (fa-IR) console is included;
-    # the official heroiclabs/nakama image ships the upstream English console.
     build:
       context: .
       dockerfile: build/Dockerfile.local
+      args:
+        NEXUS_DOCKER_HOST: ${NEXUS_DOCKER_HOST:-docker.arvancloud.ir}
     image: nakama-farsi:local
 
-    # Migrations run in nakama-migrate. The server itself refuses to start
-    # while migrations are pending ("DB schema outdated"). nakama-db.sh
-    # supplies the database address from the DB_* variables.
-    # -e without -x: tracing would print the secret flags below. $$ defers
-    # them to the container shell, so they are not written into the
-    # container's stored command.
     entrypoint:
       - "/bin/sh"
       - "-ec"
@@ -199,12 +168,10 @@ services:
 
     restart: unless-stopped
 
-    # Resource limits
     mem_limit: 3g
     memswap_limit: 3g
     cpus: "2"
 
-    # Prevent unbounded Docker logs
     logging:
       driver: json-file
       options:
@@ -219,16 +186,11 @@ services:
       NAKAMA_CONSOLE_USERNAME: ${NAKAMA_CONSOLE_USERNAME}
       NAKAMA_CONSOLE_PASSWORD: ${NAKAMA_CONSOLE_PASSWORD}
       NAKAMA_CONSOLE_SIGNING_KEY: ${NAKAMA_CONSOLE_SIGNING_KEY}
-      # Unset: derived from NAKAMA_SESSION_ENCRYPTION_KEY. Changing either
-      # later makes the stored gateway and SMS/email secrets unreadable.
       ECONOMY_SECRET_KEY: ${ECONOMY_SECRET_KEY:-${NAKAMA_SESSION_ENCRYPTION_KEY}}
       ECONOMY_PUBLIC_BASE_URL: ${ECONOMY_PUBLIC_BASE_URL:-https://nakama.dastar.dev}
       ECONOMY_WEB_REDIRECT_URL: ${ECONOMY_WEB_REDIRECT_URL:-https://nakama.dastar.dev/stargame/?payment={paymentId}&success={success}}
       ECONOMY_DEEP_LINK: ${ECONOMY_DEEP_LINK:-nakama://payment?success={success}&paymentId={paymentId}}
-      # false: the Star Catcher sample does not create its shop data on start.
       STARGAME_SEED: ${STARGAME_SEED:-true}
-      # local keeps uploads in the economy-uploads volume (one node only);
-      # s3 stores them in an S3-compatible bucket shared by every node.
       STORAGE_DRIVER: ${STORAGE_DRIVER:-local}
       STORAGE_S3_ENDPOINT: ${STORAGE_S3_ENDPOINT:-}
       STORAGE_S3_BUCKET: ${STORAGE_S3_BUCKET:-}
@@ -238,10 +200,6 @@ services:
       STORAGE_S3_PATH_STYLE: ${STORAGE_S3_PATH_STYLE:-true}
       STORAGE_S3_PUBLIC_BASE_URL: ${STORAGE_S3_PUBLIC_BASE_URL:-}
       STORAGE_S3_PREFIX: ${STORAGE_S3_PREFIX:-}
-      # Cluster (docs/cluster-design.md). Off by default: one node, no Redis.
-      # On: start with the cluster profile (COMPOSE_PROFILES=cluster), use
-      # STORAGE_DRIVER=s3 and scale with --scale nakama=N behind a load
-      # balancer for 7350/7351.
       NAKAMA_CLUSTER_ENABLED: ${NAKAMA_CLUSTER_ENABLED:-false}
       NAKAMA_NODE_NAME: ${NAKAMA_NODE_NAME:-}
       NAKAMA_CLUSTER_REDIS_ADDRESS: ${NAKAMA_CLUSTER_REDIS_ADDRESS:-redis:6379}
@@ -260,10 +218,6 @@ services:
       nakama-migrate:
         condition: service_completed_successfully
 
-    # Internal Docker ports only.
-    # Dokploy/Traefik routes:
-    #   nakama.dastar.dev         -> 7350
-    #   nakama-console.dastar.dev -> 7351
     expose:
       - "7349"
       - "7350"
@@ -283,12 +237,9 @@ services:
       retries: 5
 
 
-  # Shared state of the cluster (presence, matchmaker shards, logout and ban
-  # log, node registry). Only with COMPOSE_PROFILES=cluster. No persistence
-  # is needed: the nodes republish their state when Redis comes back empty.
   redis:
     profiles: ["cluster"]
-    image: redis:7.4-alpine
+    image: ${NEXUS_DOCKER_HOST:-docker.arvancloud.ir}/library/redis:7.4-alpine@sha256:7f7d30b7fdd09467bac58198a1f166dd69789d348d4fe859cccb20e0cf287fbe
     command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "${NAKAMA_CLUSTER_REDIS_MAXMEMORY:-1gb}", "--maxmemory-policy", "noeviction"]
     restart: unless-stopped
     mem_limit: 2g
@@ -307,7 +258,7 @@ services:
 
 
   prometheus:
-    image: prom/prometheus:latest
+    image: ${NEXUS_DOCKER_HOST:-docker.arvancloud.ir}/prom/prometheus:v3.16.0@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06
 
     restart: unless-stopped
 
@@ -335,8 +286,6 @@ services:
       prometheus --config.file=./prometheus.yml
       EOF'
 
-    # Prometheus is internal only.
-    # Do NOT expose 9090 publicly.
     expose:
       - "9090"
 
@@ -344,6 +293,4 @@ services:
 volumes:
   postgres-data:
   economy-uploads:
-  # Legacy CockroachDB store, read by the one-time import. Keep it until the
-  # PostgreSQL deployment is verified.
   data:

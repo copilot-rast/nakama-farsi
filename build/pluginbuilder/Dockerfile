@@ -12,10 +12,10 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 
-# docker build . --file ./Dockerfile --build-arg version=v2.1.1 -t heroiclabs/nakama-pluginbuilder:2.1.1
-# docker build . --file ./Dockerfile --build-arg version="v2.1.1-$(git rev-parse --short HEAD)" -t heroiclabs/nakama-pluginbuilder:"2.1.1-$(git rev-parse --short HEAD)"
+ARG NEXUS_DOCKER_HOST=docker.arvancloud.ir
+ARG GO_IMAGE=${NEXUS_DOCKER_HOST}/library/golang:1.27.3-bookworm@sha256:dc0963f32053e4bc451d24d87e3892d42d01021b61f093e98eb95c0352bb84b0
 
-FROM golang:1.27.3-bookworm AS builder
+FROM ${GO_IMAGE} AS builder
 
 ARG VERSION
 ARG TARGETOS
@@ -31,12 +31,6 @@ ENV GOOS=$TARGETOS
 ENV GOARCH=$TARGETARCH
 ENV CGO_ENABLED=1
 ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && \
-    apt-get -y upgrade && \
-    apt-get install -y --no-install-recommends ca-certificates gcc libc6-dev git && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /builder
 

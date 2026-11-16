@@ -12,15 +12,14 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 
-# docker build .. -f Dockerfile.local -t nakama:dev
+ARG NEXUS_DOCKER_HOST=docker.arvancloud.ir
+ARG GO_IMAGE=${NEXUS_DOCKER_HOST}/library/golang:1.27.3-bookworm@sha256:dc0963f32053e4bc451d24d87e3892d42d01021b61f093e98eb95c0352bb84b0
+ARG DEBIAN_IMAGE=${NEXUS_DOCKER_HOST}/library/debian:bookworm-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc
 
-FROM golang:1.27.3-bookworm AS builder
+FROM ${GO_IMAGE} AS builder
 
 ENV GOOS=linux
 ENV CGO_ENABLED=1
-
-# No apt here or in the runtime stage: deb.debian.org is unreachable from servers
-# in Iran. golang:*-bookworm already ships gcc, libc6-dev, ca-certificates and tzdata.
 
 WORKDIR /go/build/nakama
 
@@ -40,7 +39,7 @@ RUN go build -buildmode=plugin -o /go/build-out/modules/economy.so -trimpath -mo
 RUN go build -buildmode=plugin -o /go/build-out/modules/publication.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/publication
 RUN go build -buildmode=plugin -o /go/build-out/modules/stargame.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./samples/stargame
 
-FROM debian:bookworm-slim
+FROM ${DEBIAN_IMAGE}
 
 LABEL MAINTAINER="Heroic Labs <support@heroiclabs.com>"
 
@@ -50,9 +49,6 @@ LABEL version=$version
 LABEL variant=nakama
 LABEL description="Distributed server for social and realtime games and apps."
 
-# CA certificates and time zones come from the builder (same Debian release), so
-# the image builds without any package download. psql is not included: it is only
-# needed for the one-time CockroachDB import (DB_IMPORT_FROM_COCKROACH=true).
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 RUN mkdir -p /nakama/data/modules /nakama/uploads
@@ -64,7 +60,6 @@ COPY --chmod=755 build/nakama-db.sh build/nakama-start.sh /nakama/
 VOLUME /nakama/uploads
 EXPOSE 7349 7350 7351 7353 9100
 
-# nakama-start.sh execs Nakama, which then runs as PID 1 and handles SIGTERM itself.
 ENTRYPOINT ["/nakama/nakama-start.sh"]
 
 HEALTHCHECK --interval=30s --timeout=10s \
