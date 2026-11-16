@@ -208,7 +208,7 @@ RESOURCES.news = {
 };
 
 function newsReviewPage(container, query) {
-  var frame = tabFrame(t('desc.news-review'));
+  var frame = pageFrame(t('nav.news-review'), t('desc.news-review'));
   clear(container).appendChild(frame.el);
   var state = { page: Math.max(1, parseInt(query.page, 10) || 1), total: 0, items: [], sel: {} };
   var box = h('div', {});
@@ -623,7 +623,7 @@ var NEWS_SETTINGS_FIELDS = [
 ];
 
 function newsSettingsPage(container) {
-  var frame = tabFrame(t('desc.news-settings'));
+  var frame = pageFrame(t('nav.news-settings'), t('desc.news-settings'));
   clear(container).appendChild(frame.el);
   var page = apiPage(pubApi, '/news-settings', null, NEWS_SETTINGS_FIELDS, {
     id: 'news',
