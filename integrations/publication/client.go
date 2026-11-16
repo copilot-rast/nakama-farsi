@@ -30,6 +30,7 @@ func (s *service) clientRPCs() map[string]clientRPC {
 		"publication_news_react":          s.rpcNewsReact,
 		"publication_news_reaction_types": s.rpcNewsReactionTypes,
 		"publication_inbox":               s.rpcInbox,
+		"publication_inbox_claim":         s.rpcInboxClaim,
 		"publication_inbox_seen":          s.rpcInboxSeen,
 		"publication_otp_request":         s.rpcOTPRequest,
 		"publication_otp_verify":          s.rpcOTPVerify,
@@ -320,7 +321,8 @@ func (s *service) rpcInbox(ctx context.Context, userID, payload string) (any, er
 		return nil, err
 	}
 	rows, err := s.db.QueryContext(ctx, `SELECT n.id::text, n.title::text, n.body::text, COALESCE(n.action::text,'null'), n.created_at, r.seen_at IS NOT NULL, r.vars::text, n.image_url,
-		COALESCE(c.key,''), COALESCE(c.name::text,'{}'), r.opened_at IS NOT NULL
+		COALESCE(c.key,''), COALESCE(c.name::text,'{}'), r.opened_at IS NOT NULL,
+		COALESCE((SELECT jsonb_build_object('id',p.id,'key',p.key,'name',p.name,'items',p.items) FROM economy_prize p WHERE p.id=n.prize_id)::text,''), r.claimed_at
 		FROM publication_notification_recipient r JOIN publication_notification n ON n.id=r.notification_id LEFT JOIN publication_notify_category c ON c.id=n.category_id
 		WHERE r.user_id=$1 AND n.channel IN ('in_app','push_in_app') AND r.status='sent'
 		ORDER BY n.created_at DESC, n.id DESC LIMIT $2 OFFSET $3`, userID, limit, offset)
@@ -333,7 +335,9 @@ func (s *service) rpcInbox(ctx context.Context, userID, payload string) (any, er
 		var id, title, body, act, varsRaw, image, catKey, catName string
 		var created time.Time
 		var seen, opened bool
-		if err := rows.Scan(&id, &title, &body, &act, &created, &seen, &varsRaw, &image, &catKey, &catName, &opened); err != nil {
+		var prizeRaw string
+		var claimed sql.NullTime
+		if err := rows.Scan(&id, &title, &body, &act, &created, &seen, &varsRaw, &image, &catKey, &catName, &opened, &prizeRaw, &claimed); err != nil {
 			return nil, err
 		}
 		var vars map[string]string
@@ -348,6 +352,21 @@ func (s *service) rpcInbox(ctx context.Context, userID, payload string) (any, er
 		}
 		if catKey != "" {
 			item["category"] = map[string]any{"key": catKey, "name": langs.Resolve(parseI18n(catName), lang)}
+		}
+		if prizeRaw != "" {
+			var pz struct {
+				ID    string          `json:"id"`
+				Key   string          `json:"key"`
+				Name  json.RawMessage `json:"name"`
+				Items json.RawMessage `json:"items"`
+			}
+			if json.Unmarshal([]byte(prizeRaw), &pz) == nil {
+				item["prize"] = map[string]any{"id": pz.ID, "key": pz.Key, "name": langs.Resolve(parseI18n(string(pz.Name)), lang), "items": pz.Items}
+				item["claimed"] = claimed.Valid
+				if claimed.Valid {
+					item["claimedAt"] = claimed.Time.UTC()
+				}
+			}
 		}
 		items = append(items, item)
 	}

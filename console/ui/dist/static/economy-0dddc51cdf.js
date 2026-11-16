@@ -3369,6 +3369,11 @@ var MESSAGES = {
     'nav.updates': "به‌روزرسانی‌ها",
     'desc.updates': "نسخهٔ همین سرور و تغییرهای تازهٔ ریپوی بالایی. این صفحه فقط نشان می‌دهد و هیچ دستوری اجرا نمی‌کند.",
     'nav.sdk': "پکیج یونیتی",
+    'nt.f.prize': "جایزهٔ پیوست",
+    'nt.f.prize.none': "بدون جایزه",
+    'nt.f.prize.hint': "بازیکن جایزه را از صندوق پیام یک بار می‌گیرد.",
+    'code.MESSAGE_HAS_NO_PRIZE': "این پیام جایزه ندارد.",
+    'code.PRIZE_IN_APP_ONLY': "جایزه فقط به پیام درون بازی پیوست می‌شود.",
     'nav.server-rules': "قانون‌های سرور",
     'desc.server-rules': "حالت تعمیر برای همهٔ بازیکن‌ها، قفل نوشتن مستقیم بازی در storage، و حذف حساب به درخواست بازیکن.",
     'sr.h.maintenance': "حالت تعمیر",
@@ -8189,6 +8194,11 @@ var MESSAGES = {
     'nav.updates': "Updates",
     'desc.updates': "This server's version and the new changes in the parent repo. This page only shows; it never runs a command.",
     'nav.sdk': "Unity SDK",
+    'nt.f.prize': "Attached prize",
+    'nt.f.prize.none': "No prize",
+    'nt.f.prize.hint': "The player claims the prize once from the inbox.",
+    'code.MESSAGE_HAS_NO_PRIZE': "This message has no prize.",
+    'code.PRIZE_IN_APP_ONLY': "A prize can only be attached to an in-game message.",
     'nav.server-rules': "Server rules",
     'desc.server-rules': "Maintenance for every player, locking direct game writes to storage, and account deletion on the player's request.",
     'sr.h.maintenance': "Maintenance",
@@ -13528,6 +13538,7 @@ function composePage(container, query) {
     body: {},
     name: '',
     imageUrl: '',
+    prizeId: '',
     categoryId: query.categoryId || '',
     audience: { audienceTagIds: [], excludeTagIds: [], levelTableId: null, minLevel: null, maxLevel: null, playerAge: 'all', newDays: 7, platforms: [], minVersion: '', maxVersion: '', countriesText: '', languages: [], inactiveDays: null },
     when: 'now',
@@ -13593,7 +13604,13 @@ function composePage(container, query) {
     fields.category = field(t('nt.f.category'), catPicker, t('nt.f.category.hint'));
     var imageCtl = imageInput(v.imageUrl, function (x) { v.imageUrl = x || ''; });
     fields.image = field(t('nt.f.image'), imageCtl, t('nt.f.image.hint'), { optional: true });
-    var catSection = section('nt.s.category', h('div', {}, fields.name, fields.category, fields.image));
+    var prizePicker = refPicker({ resource: 'prizes', api: api, value: v.prizeId, required: false, label: t('nt.f.prize'), placeholder: t('nt.f.prize.none'), onchange: function (id) {
+      v.prizeId = id || '';
+      fields.prize.setError('');
+    } });
+    prizePicker.setAttribute('data-nt-prize-pick', '');
+    fields.prize = field(t('nt.f.prize'), prizePicker, t('nt.f.prize.hint'), { optional: true });
+    var catSection = section('nt.s.category', h('div', {}, fields.name, fields.category, fields.image, fields.prize));
     main.appendChild(catSection);
 
     var actType = selectInput('', [{ value: 'goto', label: t('act.goto') }, { value: 'url', label: t('act.url') }, { value: 'product', label: t('act.product') }, { value: 'achievement', label: t('act.achievement') }], function (x) {
@@ -13681,6 +13698,7 @@ function composePage(container, query) {
       titleRow.hidden = v.channel === 'sms';
       actionSection.hidden = v.channel === 'sms';
       catSection.hidden = !isRich();
+      fields.prize.hidden = v.channel !== 'in_app' && v.channel !== 'push_in_app';
       audSection.hidden = !isRich();
       whenSection.hidden = !isRich();
       testCard.hidden = !isRich();
@@ -13850,6 +13868,7 @@ function composePage(container, query) {
         if (v.name.trim()) p.name = v.name.trim();
         if (v.imageUrl) p.imageUrl = v.imageUrl;
         if (v.categoryId) p.categoryId = v.categoryId;
+        if (v.prizeId && (v.channel === 'in_app' || v.channel === 'push_in_app')) p.prizeId = v.prizeId;
         var aud = ntAudiencePayload(v.audience);
         if (aud) p.audience = aud;
         if (v.when === 'later' && v.scheduledAt) p.scheduledAt = v.scheduledAt;

@@ -182,9 +182,23 @@ func (s *service) createNotificationTx(ctx context.Context, tx *sql.Tx, in notif
 	if opts.ruleID != "" {
 		ruleID = &opts.ruleID
 	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO publication_notification (id, channel, title, body, action, target, provider, status, created_by, kind, name, image_url, category_id, audience, scheduled_at, rule_id)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14::jsonb,$15,$16)`,
-		id, in.Channel, i18nJSON(in.Title), i18nJSON(in.Body), actionJSON, string(targetJSON), providerID, status, createdBy, opts.kind, name, image, cat, audJSON, scheduled, ruleID); err != nil {
+	var prize *string
+	if p := strings.TrimSpace(in.PrizeID); p != "" {
+		if in.Channel != "in_app" && in.Channel != "push_in_app" {
+			return "", badRequest("PRIZE_IN_APP_ONLY", "prizeId", "a prize can only be attached to an in-app message")
+		}
+		var ok bool
+		if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE id::text=$1)`, p).Scan(&ok); err != nil {
+			return "", err
+		}
+		if !ok {
+			return "", badRequest("PRIZE_NOT_FOUND", "prizeId", "the prize does not exist")
+		}
+		prize = &p
+	}
+	if _, err := tx.ExecContext(ctx, `INSERT INTO publication_notification (id, channel, title, body, action, target, provider, status, created_by, kind, name, image_url, category_id, audience, scheduled_at, rule_id, prize_id)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14::jsonb,$15,$16,$17)`,
+		id, in.Channel, i18nJSON(in.Title), i18nJSON(in.Body), actionJSON, string(targetJSON), providerID, status, createdBy, opts.kind, name, image, cat, audJSON, scheduled, ruleID, prize); err != nil {
 		return "", err
 	}
 	if scheduled != nil {

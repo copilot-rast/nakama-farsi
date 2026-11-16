@@ -208,6 +208,7 @@ type notificationInput struct {
 	CategoryID  string         `json:"categoryId"`
 	Audience    *audienceInput `json:"audience"`
 	ScheduledAt string         `json:"scheduledAt"`
+	PrizeID     string         `json:"prizeId"`
 }
 
 func cleanNotification(langs *localized.Set, in notificationInput) (notificationInput, error) {

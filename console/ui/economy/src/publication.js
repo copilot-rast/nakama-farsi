@@ -433,6 +433,7 @@ function composePage(container, query) {
     body: {},
     name: '',
     imageUrl: '',
+    prizeId: '',
     categoryId: query.categoryId || '',
     audience: { audienceTagIds: [], excludeTagIds: [], levelTableId: null, minLevel: null, maxLevel: null, playerAge: 'all', newDays: 7, platforms: [], minVersion: '', maxVersion: '', countriesText: '', languages: [], inactiveDays: null },
     when: 'now',
@@ -498,7 +499,13 @@ function composePage(container, query) {
     fields.category = field(t('nt.f.category'), catPicker, t('nt.f.category.hint'));
     var imageCtl = imageInput(v.imageUrl, function (x) { v.imageUrl = x || ''; });
     fields.image = field(t('nt.f.image'), imageCtl, t('nt.f.image.hint'), { optional: true });
-    var catSection = section('nt.s.category', h('div', {}, fields.name, fields.category, fields.image));
+    var prizePicker = refPicker({ resource: 'prizes', api: api, value: v.prizeId, required: false, label: t('nt.f.prize'), placeholder: t('nt.f.prize.none'), onchange: function (id) {
+      v.prizeId = id || '';
+      fields.prize.setError('');
+    } });
+    prizePicker.setAttribute('data-nt-prize-pick', '');
+    fields.prize = field(t('nt.f.prize'), prizePicker, t('nt.f.prize.hint'), { optional: true });
+    var catSection = section('nt.s.category', h('div', {}, fields.name, fields.category, fields.image, fields.prize));
     main.appendChild(catSection);
 
     var actType = selectInput('', [{ value: 'goto', label: t('act.goto') }, { value: 'url', label: t('act.url') }, { value: 'product', label: t('act.product') }, { value: 'achievement', label: t('act.achievement') }], function (x) {
@@ -586,6 +593,7 @@ function composePage(container, query) {
       titleRow.hidden = v.channel === 'sms';
       actionSection.hidden = v.channel === 'sms';
       catSection.hidden = !isRich();
+      fields.prize.hidden = v.channel !== 'in_app' && v.channel !== 'push_in_app';
       audSection.hidden = !isRich();
       whenSection.hidden = !isRich();
       testCard.hidden = !isRich();
@@ -755,6 +763,7 @@ function composePage(container, query) {
         if (v.name.trim()) p.name = v.name.trim();
         if (v.imageUrl) p.imageUrl = v.imageUrl;
         if (v.categoryId) p.categoryId = v.categoryId;
+        if (v.prizeId && (v.channel === 'in_app' || v.channel === 'push_in_app')) p.prizeId = v.prizeId;
         var aud = ntAudiencePayload(v.audience);
         if (aud) p.audience = aud;
         if (v.when === 'later' && v.scheduledAt) p.scheduledAt = v.scheduledAt;
