@@ -10,7 +10,6 @@ INSERT INTO leaderboardx_settings (id) VALUES (1) ON CONFLICT (id) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS leaderboardx_board (
     id UUID PRIMARY KEY,
-    -- the Nakama core leaderboard id
     key TEXT NOT NULL UNIQUE,
     name JSONB NOT NULL DEFAULT '{}',
     description JSONB NOT NULL DEFAULT '{}',
@@ -19,25 +18,17 @@ CREATE TABLE IF NOT EXISTS leaderboardx_board (
     is_active BOOLEAN NOT NULL DEFAULT true,
     sort_order TEXT NOT NULL DEFAULT 'desc' CHECK (sort_order IN ('desc','asc')),
     operator TEXT NOT NULL DEFAULT 'incr' CHECK (operator IN ('best','set','incr','decr')),
-    -- none | daily | weekly | monthly | custom; reset_schedule is the core CRON (UTC), '' = never resets
     period TEXT NOT NULL DEFAULT 'none',
     reset_schedule TEXT NOT NULL DEFAULT '',
     starts_at TIMESTAMPTZ,
     ends_at TIMESTAMPTZ,
-    -- 0 = unlimited; after this many closed periods the board stops (legacy LifeCycle)
     max_periods INT NOT NULL DEFAULT 0 CHECK (max_periods >= 0),
-    -- {type: economy_event|game_event|client|server, event, context, field, calc: value|count, multiplier}
     source JSONB NOT NULL DEFAULT '{}',
-    -- {clientSubmit, maxPerWrite, perMinute, onExceed: reject|clamp}
     limits JSONB NOT NULL DEFAULT '{}',
-    -- none | score | rank | percent
     tier_basis TEXT NOT NULL DEFAULT 'none' CHECK (tier_basis IN ('none','score','rank','percent')),
-    -- [{key, name:{lang:text}, iconUrl, threshold}] best tier first
     tiers JSONB NOT NULL DEFAULT '[]',
-    -- [{tier, fromRank, toRank, currencies:{key:n}, prizeKey, prizeGroupKey}]
     rewards JSONB NOT NULL DEFAULT '[]',
     reward_min_score BIGINT NOT NULL DEFAULT 0,
-    -- '' = the settings default
     pay_mode TEXT NOT NULL DEFAULT '' CHECK (pay_mode IN ('','auto','claim')),
     periods_closed INT NOT NULL DEFAULT 0,
     finished_at TIMESTAMPTZ,
@@ -55,11 +46,9 @@ CREATE TABLE IF NOT EXISTS leaderboardx_period (
     period_start TIMESTAMPTZ,
     period_end TIMESTAMPTZ NOT NULL,
     expiry_time TIMESTAMPTZ NOT NULL,
-    -- reset | manual | restart | end
     reason TEXT NOT NULL DEFAULT 'reset',
     players INT NOT NULL DEFAULT 0,
     rewarded INT NOT NULL DEFAULT 0,
-    -- board tiers, rewards, tier basis, sort order as they were at the end
     config JSONB NOT NULL DEFAULT '{}',
     pay_mode TEXT NOT NULL DEFAULT 'auto',
     created_by TEXT NOT NULL DEFAULT '',
@@ -77,9 +66,7 @@ CREATE TABLE IF NOT EXISTS leaderboardx_result (
     score BIGINT NOT NULL,
     subscore BIGINT NOT NULL DEFAULT 0,
     username TEXT NOT NULL DEFAULT '',
-    -- {currencies:{key:n}, prizes:[{prizeKey, prizeGroupKey, sourceId, paid, error}], rows:[i]}
     plan JSONB,
-    -- none | pending (auto, waits for the worker) | claimable | paid | failed | expired
     status TEXT NOT NULL DEFAULT 'none' CHECK (status IN ('none','pending','claimable','paid','failed','expired')),
     pay_tries INT NOT NULL DEFAULT 0,
     last_error TEXT NOT NULL DEFAULT '',
@@ -96,11 +83,9 @@ CREATE TABLE IF NOT EXISTS leaderboardx_score_log (
     board_id UUID NOT NULL,
     source_id TEXT NOT NULL,
     user_id UUID NOT NULL,
-    -- economy_event | game_event | client | admin
     source TEXT NOT NULL,
     value NUMERIC NOT NULL DEFAULT 0,
     delta BIGINT NOT NULL DEFAULT 0,
-    -- '' accepted, clamped, refused reason
     outcome TEXT NOT NULL DEFAULT '',
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (board_id, source_id)
