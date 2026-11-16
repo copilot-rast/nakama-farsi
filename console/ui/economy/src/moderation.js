@@ -286,6 +286,12 @@ function playerCheck(it) {
 
 LISTS.players = {
   api: 'base',
+  create: function () {
+    if (!aclCan('ACCOUNT', 1)) return null;
+    var b = button({ variant: 'primary', size: 'page', icon: 'plus', label: t('pc.new'), onclick: playerCreatePanel });
+    b.setAttribute('data-player-new', '');
+    return b;
+  },
   rowHref: function (it) { return '#/players/' + encodeURIComponent(it.id); },
   onItems: function (items) { playerSel.page = items; },
   filters: [
@@ -304,6 +310,47 @@ LISTS.players = {
     { label: 'col.created', render: function (it) { return dateCell(it.createTime); }, width: 170 }
   ]
 };
+
+function playerCreatePanel() {
+  var values = { kind: 'phone', phone: '', email: '', password: '', username: '', displayName: '' };
+  var isPhone = function (v) { return v.kind === 'phone'; };
+  var isEmail = function (v) { return v.kind === 'email'; };
+  var form = buildForm([
+    { name: 'kind', type: 'select', label: 'f.pc.kind', required: true, options: function () { return [{ value: 'phone', label: t('pc.kind.phone') }, { value: 'email', label: t('pc.kind.email') }]; } },
+    { name: 'phone', type: 'text', ltr: true, label: 'f.pc.phone', hint: 'f.pc.phone.hint', required: true, when: isPhone },
+    { name: 'email', type: 'text', ltr: true, label: 'f.pc.email', required: true, when: isEmail },
+    { name: 'password', type: 'text', ltr: true, label: 'f.pc.password', hint: 'f.pc.password.hint', required: true, when: isEmail,
+      check: function (v) { return v && (v.length < 8 || v.length > 128) ? t('code.INVALID_PASSWORD') : null; } },
+    { type: 'row', fields: [
+      { name: 'username', type: 'text', ltr: true, label: 'f.pc.username', hint: 'f.pc.username.hint', optional: true },
+      { name: 'displayName', type: 'text', label: 'f.pc.displayName', optional: true }
+    ] }
+  ], values);
+  var close = function () { document.removeEventListener('keydown', esc, true); el.remove(); };
+  var esc = function (e) { if (e.key === 'Escape') { e.preventDefault(); close(); } };
+  var save = button({ variant: 'primary', size: 'footer', icon: 'plus', label: t('pc.create'), onclick: function () {
+    if (!form.validate()) return;
+    var p = form.payload();
+    var body = { kind: p.kind, username: (p.username || '').trim(), displayName: (p.displayName || '').trim() };
+    if (p.kind === 'phone') body.phone = toLatinDigits(String(p.phone || '')).trim();
+    else { body.email = String(p.email || '').trim(); body.password = p.password || ''; }
+    setBusy(save, true);
+    pubApi('POST', '/players', body).then(function (res) {
+      toast('success', t('pc.created', { name: res.username }));
+      close();
+      location.hash = '#/players/' + encodeURIComponent(res.userId);
+    }, function (err) {
+      setBusy(save, false);
+      if (!form.showServerError(err)) toast('error', errorText(err));
+    });
+  } });
+  save.setAttribute('data-player-create', '');
+  var cancel = button({ variant: 'ghost', size: 'footer', label: t('cancel'), onclick: function () { close(); } });
+  var body = h('div', { class: 'flex flex-col gap-4', 'data-player-form': '' }, notice('info', t('pc.note')), form.el);
+  var el = sidePanel(t('pc.new'), body, h('div', { class: 'flex gap-4 w-full items-center justify-end' }, cancel, save), close);
+  document.addEventListener('keydown', esc, true);
+  document.body.appendChild(el);
+}
 
 function playersPage(container, query, ctx) {
   playerSel.ids = {};

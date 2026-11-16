@@ -157,6 +157,28 @@ var MESSAGES = {
     'save': 'ذخیره',
     'saving': 'در حال ذخیره…',
     'cancel': 'انصراف',
+    'pc.new': 'بازیکن تازه',
+    'pc.create': 'ساختن بازیکن',
+    'pc.created': 'بازیکن {name} ساخته شد.',
+    'pc.note': 'حساب بدون کد تأیید ساخته می‌شود؛ نه ایمیل تأیید فرستاده می‌شود، نه پیامک. بازیکن بعداً با همین شماره (با کد پیامکی) یا با همین ایمیل و رمز وارد همین حساب می‌شود.',
+    'pc.kind.phone': 'شمارهٔ موبایل',
+    'pc.kind.email': 'ایمیل و رمز',
+    'f.pc.kind': 'ساخت با',
+    'f.pc.phone': 'شمارهٔ موبایل',
+    'f.pc.phone.hint': 'مثل ۰۹۱۲۱۲۳۴۵۶۷ یا با کد کشور مثل +971501234567',
+    'f.pc.email': 'ایمیل',
+    'f.pc.password': 'رمز',
+    'f.pc.password.hint': '۸ تا ۱۲۸ حرف؛ به بازیکن بدهید',
+    'f.pc.username': 'نام کاربری',
+    'f.pc.username.hint': 'خالی بماند تا خودکار ساخته شود',
+    'f.pc.displayName': 'نام نمایشی',
+    'code.PHONE_TAKEN': 'این شماره مال بازیکن دیگری است.',
+    'code.EMAIL_TAKEN': 'این ایمیل مال بازیکن دیگری است.',
+    'code.USERNAME_TAKEN': 'این نام کاربری گرفته شده است.',
+    'code.INVALID_PASSWORD': 'رمز باید ۸ تا ۱۲۸ حرف باشد.',
+    'code.INVALID_USERNAME': 'نام کاربری ۳ تا ۱۲۸ حرف، رقم یا _ . - باشد.',
+    'code.INVALID_DISPLAY_NAME': 'نام نمایشی حداکثر ۲۵۵ حرف است.',
+    'code.PHONE_COUNTRY_NOT_ALLOWED': 'شماره‌های این کشور پذیرفته نمی‌شود.',
     'close': 'بستن',
     'delete': 'حذف',
     'delete.confirm': 'حذف شود؟',
@@ -4921,6 +4943,28 @@ var MESSAGES = {
     'save': 'Save',
     'saving': 'Saving…',
     'cancel': 'Cancel',
+    'pc.new': 'New player',
+    'pc.create': 'Create player',
+    'pc.created': 'Player {name} created.',
+    'pc.note': 'The account is made without a verification code: no confirmation email and no SMS are sent. The player later signs in to this same account with this number (with an SMS code) or with this email and password.',
+    'pc.kind.phone': 'Mobile number',
+    'pc.kind.email': 'Email and password',
+    'f.pc.kind': 'Create with',
+    'f.pc.phone': 'Mobile number',
+    'f.pc.phone.hint': 'Like 09121234567, or with the country code like +971501234567',
+    'f.pc.email': 'Email',
+    'f.pc.password': 'Password',
+    'f.pc.password.hint': '8 to 128 characters; give it to the player',
+    'f.pc.username': 'Username',
+    'f.pc.username.hint': 'Leave empty to make one automatically',
+    'f.pc.displayName': 'Display name',
+    'code.PHONE_TAKEN': 'Another player has this number.',
+    'code.EMAIL_TAKEN': 'Another player has this email.',
+    'code.USERNAME_TAKEN': 'This username is taken.',
+    'code.INVALID_PASSWORD': 'The password must be 8 to 128 characters.',
+    'code.INVALID_USERNAME': 'Use 3 to 128 letters, digits or _ . -',
+    'code.INVALID_DISPLAY_NAME': 'The display name is at most 255 characters.',
+    'code.PHONE_COUNTRY_NOT_ALLOWED': 'Numbers from this country are not accepted.',
     'close': 'Close',
     'delete': 'Delete',
     'delete.confirm': 'Delete this?',
@@ -14841,6 +14885,12 @@ function playerCheck(it) {
 
 LISTS.players = {
   api: 'base',
+  create: function () {
+    if (!aclCan('ACCOUNT', 1)) return null;
+    var b = button({ variant: 'primary', size: 'page', icon: 'plus', label: t('pc.new'), onclick: playerCreatePanel });
+    b.setAttribute('data-player-new', '');
+    return b;
+  },
   rowHref: function (it) { return '#/players/' + encodeURIComponent(it.id); },
   onItems: function (items) { playerSel.page = items; },
   filters: [
@@ -14859,6 +14909,47 @@ LISTS.players = {
     { label: 'col.created', render: function (it) { return dateCell(it.createTime); }, width: 170 }
   ]
 };
+
+function playerCreatePanel() {
+  var values = { kind: 'phone', phone: '', email: '', password: '', username: '', displayName: '' };
+  var isPhone = function (v) { return v.kind === 'phone'; };
+  var isEmail = function (v) { return v.kind === 'email'; };
+  var form = buildForm([
+    { name: 'kind', type: 'select', label: 'f.pc.kind', required: true, options: function () { return [{ value: 'phone', label: t('pc.kind.phone') }, { value: 'email', label: t('pc.kind.email') }]; } },
+    { name: 'phone', type: 'text', ltr: true, label: 'f.pc.phone', hint: 'f.pc.phone.hint', required: true, when: isPhone },
+    { name: 'email', type: 'text', ltr: true, label: 'f.pc.email', required: true, when: isEmail },
+    { name: 'password', type: 'text', ltr: true, label: 'f.pc.password', hint: 'f.pc.password.hint', required: true, when: isEmail,
+      check: function (v) { return v && (v.length < 8 || v.length > 128) ? t('code.INVALID_PASSWORD') : null; } },
+    { type: 'row', fields: [
+      { name: 'username', type: 'text', ltr: true, label: 'f.pc.username', hint: 'f.pc.username.hint', optional: true },
+      { name: 'displayName', type: 'text', label: 'f.pc.displayName', optional: true }
+    ] }
+  ], values);
+  var close = function () { document.removeEventListener('keydown', esc, true); el.remove(); };
+  var esc = function (e) { if (e.key === 'Escape') { e.preventDefault(); close(); } };
+  var save = button({ variant: 'primary', size: 'footer', icon: 'plus', label: t('pc.create'), onclick: function () {
+    if (!form.validate()) return;
+    var p = form.payload();
+    var body = { kind: p.kind, username: (p.username || '').trim(), displayName: (p.displayName || '').trim() };
+    if (p.kind === 'phone') body.phone = toLatinDigits(String(p.phone || '')).trim();
+    else { body.email = String(p.email || '').trim(); body.password = p.password || ''; }
+    setBusy(save, true);
+    pubApi('POST', '/players', body).then(function (res) {
+      toast('success', t('pc.created', { name: res.username }));
+      close();
+      location.hash = '#/players/' + encodeURIComponent(res.userId);
+    }, function (err) {
+      setBusy(save, false);
+      if (!form.showServerError(err)) toast('error', errorText(err));
+    });
+  } });
+  save.setAttribute('data-player-create', '');
+  var cancel = button({ variant: 'ghost', size: 'footer', label: t('cancel'), onclick: function () { close(); } });
+  var body = h('div', { class: 'flex flex-col gap-4', 'data-player-form': '' }, notice('info', t('pc.note')), form.el);
+  var el = sidePanel(t('pc.new'), body, h('div', { class: 'flex gap-4 w-full items-center justify-end' }, cancel, save), close);
+  document.addEventListener('keydown', esc, true);
+  document.body.appendChild(el);
+}
 
 function playersPage(container, query, ctx) {
   playerSel.ids = {};

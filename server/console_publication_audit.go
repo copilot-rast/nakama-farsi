@@ -25,6 +25,13 @@ var publicationAudit = consoleModuleAudit{
 		if strings.HasPrefix(pattern, "/v2/console/publication/providers") {
 			return maskPublicationProviderBody(body)
 		}
+		if pattern == "/v2/console/publication/players" {
+			if m, ok := body.(map[string]any); ok {
+				if _, has := m["password"]; has {
+					m["password"] = "***"
+				}
+			}
+		}
 		return body
 	},
 }
