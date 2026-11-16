@@ -4789,7 +4789,42 @@ var MESSAGES = {
     'code.INVALID_ACCESS': "دسترسی نامعتبر است.",
     'f.it.sound': "صدا",
     'f.it.sound.hint': "برای آیتم‌هایی که صدا دارند، مثل صدای گل. mp3، ogg یا wav تا ۲ مگابایت.",
-    'err.upload.sound': "فایل باید mp3، ogg یا wav و حداکثر ۲ مگابایت باشد."
+    'err.upload.sound': "فایل باید mp3، ogg یا wav و حداکثر ۲ مگابایت باشد.",
+    'nav.avatar': "آواتارساز",
+    'nav.avatar-parts': "بخش‌های آواتار",
+    'tab.avatar-parts': "بخش‌ها",
+    'desc.avatar-parts': "بخش‌های آواتار بازیکن، مثل چشم، مو، رنگ پوست، هیکل، جنسیت، پیراهن، کلاه و ماسک. هر گزینه رایگان است یا با یک آیتم فروشگاه باز می‌شود.",
+    'new.avatar-parts': "بخش تازه",
+    'edit.avatar-parts': "ویرایش بخش",
+    'empty.hint.avatar-parts': "مثلاً «رنگ پوست» را اجباری بسازید با چند رنگ رایگان، و «کلاه» را با چند کلاه که با آیتم فروشگاه باز می‌شوند.",
+    'search.avatar-parts': "جست‌وجوی کلید یا نام بخش",
+    'nav.avatar-settings': "تنظیمات",
+    'desc.avatar-settings': "آواتارساز برای بازیکن‌ها روشن باشد یا نه.",
+    'col.av.options': "گزینه‌ها",
+    'col.av.layer': "لایه",
+    'col.av.players': "بازیکن‌ها",
+    'av.countN': "{n} گزینه",
+    'av.required': "اجباری",
+    'f.av.key.hint': "کلید در ظاهر ذخیره‌شدهٔ بازیکن می‌آید؛ بعداً عوضش نکنید.",
+    'f.av.layer': "لایه",
+    'f.av.layer.hint': "ترتیب کشیدن تصویرها روی هم؛ عدد بزرگ‌تر روی بقیه کشیده می‌شود.",
+    'f.av.required': "بازیکن حتماً یک گزینه داشته باشد",
+    'f.av.required.hint': "اگر بازیکن چیزی انتخاب نکرده باشد، گزینهٔ پیش‌فرض یا اولین گزینهٔ رایگان به کار می‌رود.",
+    'av.h.options': "گزینه‌ها",
+    'av.add': "افزودن گزینه",
+    'av.empty': "هنوز گزینه‌ای اضافه نشده است.",
+    'f.av.image': "تصویر",
+    'f.av.value': "مقدار (مثلاً رنگ)",
+    'f.av.item': "آیتمی که گزینه را باز می‌کند",
+    'f.av.default': "پیش‌فرض",
+    'f.av.enabled': "آواتارساز روشن باشد",
+    'f.av.enabled.hint': "خاموش: بازیکن نمی‌تواند ظاهرش را عوض کند و همه با ظاهر خالی دیده می‌شوند.",
+    'code.OPTION_LOOK_REQUIRED': "هر گزینه یا تصویر لازم دارد یا مقدار.",
+    'code.DEFAULT_MUST_BE_FREE': "گزینهٔ پیش‌فرض باید رایگان و فعال باشد.",
+    'code.ONE_DEFAULT': "فقط یک گزینه می‌تواند پیش‌فرض باشد.",
+    'code.REQUIRED_NEEDS_FREE': "بخش اجباری دست‌کم یک گزینهٔ رایگان و فعال لازم دارد.",
+    'code.INVALID_OPTIONS': "بخش باید ۱ تا ۳۰۰ گزینه داشته باشد.",
+    'code.INVALID_LAYER': "لایه باید بین منفی ۱۰۰۰ و ۱۰۰۰ باشد."
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -9482,7 +9517,42 @@ var MESSAGES = {
     'code.INVALID_ACCESS': "Invalid access.",
     'f.it.sound': "Sound",
     'f.it.sound.hint': "For items that play a sound, such as a goal sound. mp3, ogg or wav up to 2 MB.",
-    'err.upload.sound': "The file must be mp3, ogg or wav and at most 2 MB."
+    'err.upload.sound': "The file must be mp3, ogg or wav and at most 2 MB.",
+    'nav.avatar': "Avatar builder",
+    'nav.avatar-parts': "Avatar parts",
+    'tab.avatar-parts': "Parts",
+    'desc.avatar-parts': "Parts of the player avatar, such as eyes, hair, skin colour, body, gender, shirt, hat and mask. Each option is free or opened by a shop item.",
+    'new.avatar-parts': "New part",
+    'edit.avatar-parts': "Edit part",
+    'empty.hint.avatar-parts': "For example, make a required \"Skin\" with a few free colours and a \"Hat\" with hats opened by shop items.",
+    'search.avatar-parts': "Search part key or name",
+    'nav.avatar-settings': "Settings",
+    'desc.avatar-settings': "Whether players can use the avatar builder.",
+    'col.av.options': "Options",
+    'col.av.layer': "Layer",
+    'col.av.players': "Players",
+    'av.countN': "{n} options",
+    'av.required': "Required",
+    'f.av.key.hint': "The key is stored in the player look; do not change it later.",
+    'f.av.layer': "Layer",
+    'f.av.layer.hint': "Drawing order; a larger number is drawn on top.",
+    'f.av.required': "The player always has an option",
+    'f.av.required.hint': "When the player picked nothing, the default option or the first free option is used.",
+    'av.h.options': "Options",
+    'av.add': "Add option",
+    'av.empty': "No options yet.",
+    'f.av.image': "Image",
+    'f.av.value': "Value (for example a colour)",
+    'f.av.item': "Item that opens the option",
+    'f.av.default': "Default",
+    'f.av.enabled': "Avatar builder is on",
+    'f.av.enabled.hint': "Off: players cannot change their look and everyone is shown with an empty look.",
+    'code.OPTION_LOOK_REQUIRED': "Each option needs an image or a value.",
+    'code.DEFAULT_MUST_BE_FREE': "The default option must be free and active.",
+    'code.ONE_DEFAULT': "Only one option can be the default.",
+    'code.REQUIRED_NEEDS_FREE': "A required part needs at least one free active option.",
+    'code.INVALID_OPTIONS': "A part needs 1 to 300 options.",
+    'code.INVALID_LAYER': "The layer must be between -1000 and 1000."
   }
 };
 
@@ -11912,7 +11982,7 @@ var RESOURCES = {
 };
 
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'offers', 'entry-offers', 'offer-preview', 'offer-report', 'offer-settings', 'friend-gifts', 'friend-gift-rules', 'friend-gift-settings', 'friend-gift-report', 'items', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
+  economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'offers', 'entry-offers', 'offer-preview', 'offer-report', 'offer-settings', 'friend-gifts', 'friend-gift-rules', 'friend-gift-settings', 'friend-gift-report', 'items', 'avatar-parts', 'avatar-settings', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
   publication: ['faqs', 'news', 'news-review', 'news-sources', 'news-ingest', 'news-reactions', 'news-settings', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'activity'],
   support: ['tickets', 'live-chat'],
@@ -11929,6 +11999,7 @@ var HUBS = {
   'friend-gifts': { section: 'economy', tabs: [['friend-gifts', ''], ['friend-gift-rules', 'rules'], ['friend-gift-settings', 'settings'], ['friend-gift-report', 'report']] },
   prizes: { section: 'economy', tabs: [['prizes', ''], ['prize-groups', 'groups']] },
   'chat-quota': { section: 'moderation', tabs: [['chat-quota', ''], ['chat-quota-settings', 'settings'], ['chat-quota-report', 'report']] },
+  avatar: { section: 'economy', tabs: [['avatar-parts', ''], ['avatar-settings', 'settings']] },
   stickers: { section: 'moderation', tabs: [['sticker-packs', ''], ['sticker-settings', 'settings']] },
   events: { section: 'economy', tabs: [['event-types', ''], ['event-rules', 'prizes'], ['event-log', 'report']] },
   news: { section: 'publication', tabs: [['news', ''], ['news-review', 'review'], ['news-sources', 'sources'], ['news-ingest', 'log'], ['news-reactions', 'reactions'], ['news-settings', 'settings']] },
@@ -11936,7 +12007,7 @@ var HUBS = {
   notifications: { section: 'publication', tabs: [['notifications', ''], ['notify-categories', 'categories']] }
 };
 var NAV = {
-  economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'offers', 'items', 'gifts', 'friend-gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
+  economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'offers', 'items', 'avatar', 'gifts', 'friend-gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
   moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers'] }],
   support: ['tickets', 'live-chat'],
@@ -19029,6 +19100,111 @@ function playerItemsCard() {
   }
   place();
 }
+
+ICONS['avatar'] = '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>';
+PH_ICONS['avatar'] = '<path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"/>';
+ICONS['avatar-parts'] = ICONS['avatar'];
+PH_ICONS['avatar-parts'] = PH_ICONS['avatar'];
+ICONS['avatar-settings'] = '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>';
+
+function avPreview(it) {
+  var box = h('div', { class: 'flex items-center gap-1', 'data-av-preview': '' });
+  (it.options || []).slice(0, 6).forEach(function (o) {
+    var cell = h('div', { class: 'h-8 w-8 shrink-0 rounded-md bg-secondary-100 dark:bg-secondary-700 overflow-hidden flex items-center justify-center', title: o.key });
+    if (o.iconUrl || o.imageUrl) cell.appendChild(img(o.iconUrl || o.imageUrl));
+    else if (o.value) cell.style.background = /^#[0-9a-f]{3,8}$/i.test(o.value) ? o.value : '';
+    box.appendChild(cell);
+  });
+  if ((it.count || 0) > 6) box.appendChild(h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: '+' + fmtNum(it.count - 6) }));
+  return box;
+}
+
+function avAccessOptions() {
+  return [{ value: 'free', label: t('sp.access.free') }, { value: 'item', label: t('sp.access.item') }];
+}
+
+RESOURCES['avatar-parts'] = {
+  api: 'base',
+  path: 'avatar/parts',
+  filters: [activeFilter()],
+  columns: [
+    { label: 'col.name', render: function (it) { return nameCell(it, false); } },
+    { label: 'col.av.options', render: function (it) { return h('div', { class: 'flex flex-col gap-1' }, avPreview(it), h('span', { class: 'text-xs text-secondary-500', text: t('av.countN', { n: fmtNum(it.count || 0) }) })); }, skeleton: '30%' },
+    { label: 'col.av.layer', render: function (it) { return h('div', { class: 'flex flex-col', 'data-av-layer': '' }, numCell(it.layer), it.required ? h('span', { class: 'text-xs text-secondary-500', text: t('av.required') }) : null); }, width: 110 },
+    { label: 'col.av.players', render: function (it) { return numCell(it.players || 0); }, width: 100 },
+    { label: 'col.status', render: function (it) { return activeTag(it.isActive); }, width: 100 }
+  ],
+  fields: [
+    { type: 'row', fields: [
+      { name: 'key', type: 'key', label: 'f.key', hint: 'f.av.key.hint', required: true, lockOnEdit: true },
+      { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' }
+    ] },
+    tr('name', { label: 'f.name', required: true, max: 100 }),
+    { type: 'row', fields: [
+      { name: 'layer', type: 'number', label: 'f.av.layer', hint: 'f.av.layer.hint', min: -1000, max: 1000, empty: 0 },
+      { name: 'sort', type: 'number', label: 'f.sort', min: -100000, max: 100000, empty: 0 }
+    ] },
+    { name: 'required', type: 'bool', inline: true, label: 'f.av.required', hint: 'f.av.required.hint' },
+    { type: 'heading', label: 'av.h.options' },
+    { name: 'options', type: 'rows', addLabel: 'av.add', emptyText: 'av.empty', min: 1, max: 300, empty: [], refresh: true,
+      newRow: function (rows) { return { key: 'o' + (rows.length + 1), name: {}, imageUrl: '', iconUrl: '', value: '', access: 'free', itemKey: null, isDefault: rows.length === 0, isActive: true }; },
+      check: function (rows) {
+        var seen = {};
+        var defaults = 0;
+        for (var i = 0; i < rows.length; i++) {
+          var r = rows[i];
+          if (!r.imageUrl && !r.value) return { index: i, message: t('code.OPTION_LOOK_REQUIRED') };
+          if (r.access === 'item' && !r.itemKey) return { index: i, message: t('code.ITEM_REQUIRED') };
+          if (r.isDefault && r.access === 'item') return { index: i, message: t('code.DEFAULT_MUST_BE_FREE') };
+          if (r.isDefault) defaults++;
+          if (seen[r.key]) return { index: i, message: t('code.DUPLICATE_KEY') };
+          seen[r.key] = true;
+        }
+        if (defaults > 1) return { index: rows.length - 1, message: t('code.ONE_DEFAULT') };
+        return null;
+      },
+      columns: [
+        { name: 'imageUrl', type: 'custom', label: 'f.av.image', build: function (cur, change) { return imageInput(cur || '', function (v) { change(v || ''); }); } },
+        { name: 'key', type: 'text', ltr: true, mono: true, label: 'f.key', required: true },
+        { name: 'name', type: 'i18n', label: 'f.name', max: 100 },
+        { name: 'value', type: 'text', ltr: true, label: 'f.av.value' },
+        { name: 'access', type: 'select', label: 'f.sp.access', options: avAccessOptions },
+        { name: 'itemKey', type: 'ref', resource: 'items', valueKey: 'key', label: 'f.av.item' },
+        { name: 'isDefault', type: 'custom', label: 'f.av.default', build: function (cur, change) { return checkbox(!!cur, t('f.av.default'), function (on) { change(!!on); }); } }
+      ] }
+  ],
+  defaults: function () { return { key: '', name: {}, layer: 0, sort: 0, required: false, isActive: true, options: [] }; },
+  fixPayload: function (p) {
+    p.layer = p.layer || 0;
+    p.sort = p.sort || 0;
+    p.options = (p.options || []).map(function (o) {
+      return { key: o.key, name: o.name || {}, imageUrl: o.imageUrl || '', iconUrl: o.iconUrl || '', value: toLatinDigits(String(o.value || '')).trim(), access: o.access || 'free', itemKey: o.access === 'item' ? (o.itemKey || '') : '', isDefault: !!o.isDefault, isActive: o.isActive !== false };
+    });
+    ['id', 'count', 'players', 'createdAt', 'createdBy', 'updatedAt'].forEach(function (k) { delete p[k]; });
+    return p;
+  }
+};
+
+var AV_SETTINGS_FIELDS = [
+  { name: 'enabled', type: 'bool', inline: true, label: 'f.av.enabled', hint: 'f.av.enabled.hint' }
+];
+
+function avatarSettingsPage(container) {
+  var frame = pageFrame(t('nav.avatar-settings'), t('desc.avatar-settings'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(baseApi, '/avatar/settings', null, AV_SETTINGS_FIELDS, {
+    id: 'avatar',
+    fixPayload: function (p) {
+      delete p.updatedAt;
+      delete p.updatedBy;
+      return p;
+    }
+  });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
+CUSTOM_PAGES['avatar-settings'] = function (root) { avatarSettingsPage(root); };
 
 ICONS['friend-gifts'] = '<path d="M11 14h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16"/><path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 15 6 6"/><path d="M19.5 8.5c.7-.7 1.5-1.6 1.5-2.7A2.73 2.73 0 0 0 16 4a2.78 2.78 0 0 0-5 1.8c0 1.2.8 2 1.5 2.8L16 12Z"/>';
 PH_ICONS['friend-gifts'] = '<path d="M230.33,141.06a24.43,24.43,0,0,0-18.61-4.77C230.5,117.33,240,98.48,240,80c0-26.47-21.29-48-47.46-48A47.58,47.58,0,0,0,156,48.75,47.58,47.58,0,0,0,119.46,32C93.29,32,72,53.53,72,80c0,11,3.24,21.69,10.06,33a31.87,31.87,0,0,0-14.75,8.4L44.69,144H16A16,16,0,0,0,0,160v40a16,16,0,0,0,16,16H120a7.93,7.93,0,0,0,1.94-.24l64-16a6.94,6.94,0,0,0,1.19-.4L226,182.82l.44-.2a24.6,24.6,0,0,0,3.93-41.56ZM119.46,48A31.15,31.15,0,0,1,148.6,67a8,8,0,0,0,14.8,0,31.15,31.15,0,0,1,29.14-19C209.59,48,224,62.65,224,80c0,19.51-15.79,41.58-45.66,63.9l-11.09,2.55A28,28,0,0,0,140,112H100.68C92.05,100.36,88,90.12,88,80,88,62.65,102.41,48,119.46,48ZM16,160H40v40H16Zm203.43,8.21-38,16.18L119,200H56V155.31l22.63-22.62A15.86,15.86,0,0,1,89.94,128H140a12,12,0,0,1,0,24H112a8,8,0,0,0,0,16h32a8.32,8.32,0,0,0,1.79-.2l67-15.41.31-.08a8.6,8.6,0,0,1,6.3,15.9Z"/>';
