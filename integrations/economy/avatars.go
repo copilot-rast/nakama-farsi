@@ -1069,45 +1069,51 @@ func (s *service) checkEquip(x *avCtx, a *avRow, it *avItem) error {
 	return fail(http.StatusForbidden, "AVATAR_ITEM_NOT_OWNED", "", "buy this item first")
 }
 
-func (s *service) rpcAvatarEquip(on bool) clientRPC {
-	return func(ctx context.Context, userID, payload string) (any, error) {
-		var in struct {
-			ID       string `json:"id"`
-			Category string `json:"category"`
-			Key      string `json:"key"`
-			Lang     string `json:"lang"`
-		}
-		if err := decodeStrict(payload, &in); err != nil {
-			return nil, err
-		}
-		x, err := s.avatarEnabled(ctx, userID, in.Lang, on)
-		if err != nil {
-			return nil, err
-		}
-		a, err := s.pickAvatar(ctx, x, in.ID)
-		if err != nil {
-			return nil, err
-		}
-		if x.cat.catKey[strings.TrimSpace(in.Category)] == nil {
-			return nil, notFound("AVATAR_CATEGORY_NOT_FOUND")
-		}
-		it := x.cat.find(in.Category, in.Key)
-		if it == nil {
-			return nil, notFound("AVATAR_ITEM_NOT_FOUND")
-		}
-		if on {
-			if err := s.checkEquip(x, a, it); err != nil {
-				return nil, err
-			}
-			err = s.equipAvatarItem(ctx, x, a, it)
-		} else {
-			err = s.unequipAvatarItem(ctx, x, a, it)
-		}
-		if err != nil {
-			return nil, err
-		}
-		return s.oneAvatarAnswer(ctx, x, a.ID)
+func (s *service) rpcAvatarEquip(ctx context.Context, userID, payload string) (any, error) {
+	return s.avatarWear(ctx, userID, payload, true)
+}
+
+func (s *service) rpcAvatarUnequip(ctx context.Context, userID, payload string) (any, error) {
+	return s.avatarWear(ctx, userID, payload, false)
+}
+
+func (s *service) avatarWear(ctx context.Context, userID, payload string, on bool) (any, error) {
+	var in struct {
+		ID       string `json:"id"`
+		Category string `json:"category"`
+		Key      string `json:"key"`
+		Lang     string `json:"lang"`
 	}
+	if err := decodeStrict(payload, &in); err != nil {
+		return nil, err
+	}
+	x, err := s.avatarEnabled(ctx, userID, in.Lang, on)
+	if err != nil {
+		return nil, err
+	}
+	a, err := s.pickAvatar(ctx, x, in.ID)
+	if err != nil {
+		return nil, err
+	}
+	if x.cat.catKey[strings.TrimSpace(in.Category)] == nil {
+		return nil, notFound("AVATAR_CATEGORY_NOT_FOUND")
+	}
+	it := x.cat.find(in.Category, in.Key)
+	if it == nil {
+		return nil, notFound("AVATAR_ITEM_NOT_FOUND")
+	}
+	if on {
+		if err := s.checkEquip(x, a, it); err != nil {
+			return nil, err
+		}
+		err = s.equipAvatarItem(ctx, x, a, it)
+	} else {
+		err = s.unequipAvatarItem(ctx, x, a, it)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return s.oneAvatarAnswer(ctx, x, a.ID)
 }
 
 func (s *service) equipAvatarItem(ctx context.Context, x *avCtx, a *avRow, it *avItem) error {
@@ -1402,8 +1408,8 @@ func (s *service) avatarRPCs() map[string]clientRPC {
 		"economy_avatar_create":     s.rpcAvatarCreate,
 		"economy_avatar_rename":     s.rpcAvatarRename,
 		"economy_avatar_delete":     s.rpcAvatarDelete,
-		"economy_avatar_equip":      s.rpcAvatarEquip(true),
-		"economy_avatar_unequip":    s.rpcAvatarEquip(false),
+		"economy_avatar_equip":      s.rpcAvatarEquip,
+		"economy_avatar_unequip":    s.rpcAvatarUnequip,
 		"economy_avatar_set_active": s.rpcAvatarActivate,
 		"economy_avatar_looks":      s.rpcAvatarLooks,
 	}
