@@ -2852,7 +2852,8 @@ html.pl .eco-tab:focus-visible {
   }
 
   html.pl .pl-sdk {
-    width: 32px;
+    width: 40px;
+    height: 40px;
     padding: 0;
     justify-content: center;
   }
