@@ -153,10 +153,10 @@ func (s *service) loop(ctx context.Context) {
 }
 
 func (s *service) work(ctx context.Context) {
+	s.advanceCups(ctx)
 	if err := s.scheduleTemplates(ctx); err != nil {
 		s.logger.Warn("Cup templates not scheduled: %v", err)
 	}
-	s.advanceCups(ctx)
 	s.retryRefunds(ctx, 200)
 	s.payPending(ctx, "", 500)
 }
@@ -202,16 +202,16 @@ func (s *service) inappText(ctx context.Context, n note) (map[string]string, map
 	if en == "" {
 		en = fa
 	}
-	title := map[string]string{"fa": "جام " + fa, "en": en + " cup"}
+	title := map[string]string{"fa": fa, "en": en}
 	switch n.subject {
 	case "cup_round_started", "cup_check_in":
-		return title, map[string]string{"fa": "ورود به بازی بعدی باز شد. حالا اعلام آمادگی کن.", "en": "Check-in for your next match is open. Check in now."}
+		return title, map[string]string{"fa": "نوبت بازی بعدی‌ات رسیده. اعلام حضور کن.", "en": "Check-in for your next match is open. Check in now."}
 	case "cup_finished":
-		return title, map[string]string{"fa": "جام تمام شد. جایزه‌ات را ببین.", "en": "The cup is over. See your prize."}
+		return title, map[string]string{"fa": "تورنمنت تمام شد. نتیجه و جایزه‌ات را ببین.", "en": "The cup is over. See your prize."}
 	case "cup_cancelled":
-		return title, map[string]string{"fa": "جام لغو شد و ورودی برگشت داده شد.", "en": "The cup was cancelled and your entry was refunded."}
+		return title, map[string]string{"fa": "تورنمنت لغو شد و ورودی‌ات برگشت داده شد.", "en": "The cup was cancelled and your entry was refunded."}
 	case "cup_prize":
-		return title, map[string]string{"fa": "جایزه جام به حسابت واریز شد.", "en": "Your cup prize has been paid."}
+		return title, map[string]string{"fa": "جایزه تورنمنت به حسابت واریز شد.", "en": "Your cup prize has been paid."}
 	}
 	return nil, nil
 }

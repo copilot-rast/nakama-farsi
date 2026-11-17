@@ -983,6 +983,288 @@
       "base"
     ]
   },
+  "CUP_ALREADY_OVER": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_ALREADY_SIGNED_UP": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_BAD_STATUS": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_BEST_OF_ODD": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_BUSY": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_CAPACITY_BELOW_PLAYERS": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_CHECK_IN_NOT_OPEN": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_DELETE_ONLY_DRAFT_OR_CANCELLED": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_DISABLED": {
+    "status": 503,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_FULL": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_GAME_ID_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_GAME_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_GAME_UNKNOWN": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_ID_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_LEAGUE_REQUIRED": {
+    "status": 403,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_MATCH_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_MATCH_NOT_READY": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_MATCH_OVER": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_NOT_A_PLAYER": {
+    "status": 403,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_NOT_DRAFT": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_NOT_ENOUGH_CURRENCY": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_NOT_RUNNING": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_NOT_SIGNED_UP": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_NOT_STARTABLE": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_NO_MATCH": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_REFUNDS_PENDING": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_REMOVED": {
+    "status": 403,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_SCHEDULE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_SERVER_ONLY": {
+    "status": 403,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_SHARES_OVER_100": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_SIGNUP_AFTER_START": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_SIGNUP_CLOSED": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_SIGNUP_NOT_OPEN": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_START_IN_PAST": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_SWAP_TOO_LATE": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_TAG_EXCLUDED": {
+    "status": 403,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_TAG_REQUIRED": {
+    "status": 403,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_TEMPLATE_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_TIMES_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_TOO_MANY_ACTIVE": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_TROPHIES_TOO_HIGH": {
+    "status": 403,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_TROPHIES_TOO_LOW": {
+    "status": 403,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_USE_DISQUALIFY": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_WAITING_FOR_OPPONENT": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_WINNER_NOT_IN_MATCH": {
+    "status": 400,
+    "modules": [
+      "cup"
+    ]
+  },
+  "CUP_WITHDRAW_CLOSED": {
+    "status": 409,
+    "modules": [
+      "cup"
+    ]
+  },
   "CURRENCY_IS_NOT_ENOUGH": {
     "status": 409,
     "modules": [

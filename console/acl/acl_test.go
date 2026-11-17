@@ -318,6 +318,7 @@ func TestCheckACLHttpClansAndTrophies(t *testing.T) {
 		{console.AclResources_GROUP, []string{"/v2/console/base/clans/settings", "/v2/console/base/clans/list", "/v2/console/base/clans/list/{id}", "/v2/console/base/clans/list/{id}/members/{userId}",
 			"/v2/console/base/clans/levels", "/v2/console/base/clans/wars/configs", "/v2/console/base/clans/wars/rounds/{id}/settle"}},
 		{console.AclResources_LEADERBOARD, []string{"/v2/console/base/trophies/settings", "/v2/console/base/trophies/leagues/{id}", "/v2/console/base/trophies/players/{id}", "/v2/console/base/trophies/seasons/reset"}},
+		{console.AclResources_LEADERBOARD, []string{"/v2/console/base/cups/settings", "/v2/console/base/cups/list", "/v2/console/base/cups/list/{id}/matches/{matchId}/result", "/v2/console/base/cups/templates/{id}/run"}},
 	}
 	other := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
 	for _, c := range cases {

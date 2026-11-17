@@ -743,6 +743,194 @@
     "en": "Country not found.",
     "fa": "کشور پیدا نشد."
   },
+  "CUP_ALREADY_OVER": {
+    "en": "This cup is already over.",
+    "fa": "این تورنمنت تمام شده است."
+  },
+  "CUP_ALREADY_SIGNED_UP": {
+    "en": "You are already signed up for this cup.",
+    "fa": "قبلاً در این تورنمنت ثبت‌نام کرده‌ای."
+  },
+  "CUP_BAD_STATUS": {
+    "en": "Unknown cup list filter.",
+    "fa": "فیلتر فهرست تورنمنت‌ها درست نیست."
+  },
+  "CUP_BEST_OF_ODD": {
+    "en": "Games per match must be an odd number from 1 to 9.",
+    "fa": "تعداد بازی‌های هر مسابقه باید عددی فرد از ۱ تا ۹ باشد."
+  },
+  "CUP_BUSY": {
+    "en": "The cup is being updated. Try again in a moment.",
+    "fa": "تورنمنت در حال به‌روزرسانی است. چند لحظه بعد دوباره امتحان کن."
+  },
+  "CUP_CAPACITY_BELOW_PLAYERS": {
+    "en": "Capacity cannot be below the signed-up players.",
+    "fa": "ظرفیت نمی‌تواند از تعداد ثبت‌نام‌شده‌ها کمتر باشد."
+  },
+  "CUP_CHECK_IN_NOT_OPEN": {
+    "en": "Check-in for this match is not open yet.",
+    "fa": "زمان اعلام حضور این بازی هنوز نرسیده است."
+  },
+  "CUP_DELETE_ONLY_DRAFT_OR_CANCELLED": {
+    "en": "Only draft or cancelled cups can be deleted.",
+    "fa": "فقط تورنمنت پیش‌نویس یا لغوشده را می‌شود حذف کرد."
+  },
+  "CUP_DISABLED": {
+    "en": "Cups are turned off.",
+    "fa": "تورنمنت‌ها فعلاً خاموش هستند."
+  },
+  "CUP_FULL": {
+    "en": "This cup is full.",
+    "fa": "ظرفیت این تورنمنت پر شده است."
+  },
+  "CUP_GAME_ID_REQUIRED": {
+    "en": "The game match id is required.",
+    "fa": "شناسه بازی لازم است."
+  },
+  "CUP_GAME_NOT_FOUND": {
+    "en": "This game does not belong to a cup.",
+    "fa": "این بازی به هیچ تورنمنتی تعلق ندارد."
+  },
+  "CUP_GAME_UNKNOWN": {
+    "en": "This game cannot run cup matches.",
+    "fa": "این بازی مسابقه تورنمنت را پشتیبانی نمی‌کند."
+  },
+  "CUP_ID_REQUIRED": {
+    "en": "The cup id is required.",
+    "fa": "شناسه تورنمنت لازم است."
+  },
+  "CUP_LEAGUE_REQUIRED": {
+    "en": "Your league cannot enter this cup.",
+    "fa": "لیگ تو اجازه ورود به این تورنمنت را ندارد."
+  },
+  "CUP_MATCH_NOT_FOUND": {
+    "en": "Cup match not found.",
+    "fa": "بازی تورنمنت پیدا نشد."
+  },
+  "CUP_MATCH_NOT_READY": {
+    "en": "Both players of this match are not known yet.",
+    "fa": "هنوز هر دو بازیکن این بازی مشخص نشده‌اند."
+  },
+  "CUP_MATCH_OVER": {
+    "en": "This match is already decided.",
+    "fa": "نتیجه این بازی قبلاً مشخص شده است."
+  },
+  "CUP_NOT_A_PLAYER": {
+    "en": "You are not playing in this cup.",
+    "fa": "تو در این تورنمنت بازی نمی‌کنی."
+  },
+  "CUP_NOT_DRAFT": {
+    "en": "This cup is already published.",
+    "fa": "این تورنمنت قبلاً منتشر شده است."
+  },
+  "CUP_NOT_ENOUGH_CURRENCY": {
+    "en": "You do not have enough {currencyKey} for the entry fee ({amount}).",
+    "fa": "برای ورودی تورنمنت {amount} {currencyKey} لازم داری."
+  },
+  "CUP_NOT_FOUND": {
+    "en": "Cup not found.",
+    "fa": "تورنمنت پیدا نشد."
+  },
+  "CUP_NOT_RUNNING": {
+    "en": "This cup is not running.",
+    "fa": "این تورنمنت در حال برگزاری نیست."
+  },
+  "CUP_NOT_SIGNED_UP": {
+    "en": "You are not signed up for this cup.",
+    "fa": "در این تورنمنت ثبت‌نام نکرده‌ای."
+  },
+  "CUP_NOT_STARTABLE": {
+    "en": "This cup cannot be started now.",
+    "fa": "این تورنمنت را الان نمی‌شود شروع کرد."
+  },
+  "CUP_NO_MATCH": {
+    "en": "You have no match in this cup.",
+    "fa": "در این تورنمنت بازی‌ای نداری."
+  },
+  "CUP_REFUNDS_PENDING": {
+    "en": "Some entry fees are not refunded yet.",
+    "fa": "هنوز ورودی بعضی بازیکن‌ها برنگشته است."
+  },
+  "CUP_REMOVED": {
+    "en": "You were removed from this cup.",
+    "fa": "از این تورنمنت کنار گذاشته شده‌ای."
+  },
+  "CUP_SCHEDULE_REQUIRED": {
+    "en": "An active template needs a schedule.",
+    "fa": "قالب فعال باید زمان‌بندی داشته باشد."
+  },
+  "CUP_SERVER_ONLY": {
+    "en": "Only the game server can report cup results.",
+    "fa": "نتیجه تورنمنت را فقط سرور بازی می‌فرستد."
+  },
+  "CUP_SHARES_OVER_100": {
+    "en": "Prize pool shares add up to more than 100%.",
+    "fa": "سهم‌های جایزه بیشتر از ۱۰۰٪ شده است."
+  },
+  "CUP_SIGNUP_AFTER_START": {
+    "en": "Signup must open before the cup starts.",
+    "fa": "ثبت‌نام باید قبل از شروع تورنمنت باز شود."
+  },
+  "CUP_SIGNUP_CLOSED": {
+    "en": "Signup for this cup is closed.",
+    "fa": "ثبت‌نام این تورنمنت بسته شده است."
+  },
+  "CUP_SIGNUP_NOT_OPEN": {
+    "en": "Signup opens at {signupAt}.",
+    "fa": "ثبت‌نام از {signupAt} باز می‌شود."
+  },
+  "CUP_START_IN_PAST": {
+    "en": "The start time is in the past.",
+    "fa": "زمان شروع گذشته است."
+  },
+  "CUP_SWAP_TOO_LATE": {
+    "en": "This player can no longer be swapped.",
+    "fa": "دیگر نمی‌شود این بازیکن را عوض کرد."
+  },
+  "CUP_TAG_EXCLUDED": {
+    "en": "Players with your tag cannot enter this cup.",
+    "fa": "بازیکن‌های دارای برچسب تو نمی‌توانند وارد این تورنمنت شوند."
+  },
+  "CUP_TAG_REQUIRED": {
+    "en": "This cup needs a special tag, such as VIP.",
+    "fa": "برای این تورنمنت برچسب ویژه (مثلاً VIP) لازم است."
+  },
+  "CUP_TEMPLATE_NOT_FOUND": {
+    "en": "Cup template not found.",
+    "fa": "قالب تورنمنت پیدا نشد."
+  },
+  "CUP_TIMES_REQUIRED": {
+    "en": "Signup and start times are required.",
+    "fa": "زمان ثبت‌نام و شروع لازم است."
+  },
+  "CUP_TOO_MANY_ACTIVE": {
+    "en": "You are already in {max} cups.",
+    "fa": "الان در {max} تورنمنت هستی و بیشتر از این نمی‌شود."
+  },
+  "CUP_TROPHIES_TOO_HIGH": {
+    "en": "You need at most {max} trophies for this cup.",
+    "fa": "برای این تورنمنت حداکثر {max} جام مجاز است."
+  },
+  "CUP_TROPHIES_TOO_LOW": {
+    "en": "You need {min} trophies for this cup.",
+    "fa": "برای این تورنمنت دست‌کم {min} جام لازم است."
+  },
+  "CUP_USE_DISQUALIFY": {
+    "en": "The cup has started; disqualify the player instead.",
+    "fa": "تورنمنت شروع شده؛ به‌جای حذف، بازیکن را رد صلاحیت کن."
+  },
+  "CUP_WAITING_FOR_OPPONENT": {
+    "en": "Your next opponent is not known yet.",
+    "fa": "حریف بعدی‌ات هنوز مشخص نشده است."
+  },
+  "CUP_WINNER_NOT_IN_MATCH": {
+    "en": "The winner must be one of the two players.",
+    "fa": "برنده باید یکی از دو بازیکن باشد."
+  },
+  "CUP_WITHDRAW_CLOSED": {
+    "en": "You can no longer withdraw from this cup.",
+    "fa": "دیگر نمی‌شود از این تورنمنت انصراف داد."
+  },
   "CURRENCY_IS_NOT_ENOUGH": {
     "en": "You do not have enough coins.",
     "fa": "سکه کافی ندارید."

@@ -87,6 +87,13 @@ var baseClanAudit = consoleModuleAudit{
 	invokes:  []string{"/xp", "/start", "/settle", "/cancel", "/payouts/retry", "/approve", "/reject", "/reset-look"},
 }
 
+var baseCupAudit = consoleModuleAudit{
+	prefix:   "/v2/console/base/",
+	label:    "base",
+	resource: console.AclResources_LEADERBOARD,
+	invokes:  []string{"/publish", "/start", "/cancel", "/disqualify", "/swap", "/result", "/run", "/payouts/retry"},
+}
+
 var baseTrophyAudit = consoleModuleAudit{
 	prefix:   "/v2/console/base/",
 	label:    "base",
@@ -118,6 +125,9 @@ func consoleBaseAuditLog(ctx context.Context, logger *zap.Logger, db *sql.DB, me
 	}
 	if strings.HasPrefix(pattern, "/v2/console/base/trophies") {
 		mod = baseTrophyAudit
+	}
+	if strings.HasPrefix(pattern, "/v2/console/base/cups") {
+		mod = baseCupAudit
 	}
 	if strings.HasPrefix(pattern, "/v2/console/base/voice") {
 		mod = baseVoiceAudit
