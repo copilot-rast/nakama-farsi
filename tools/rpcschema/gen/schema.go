@@ -606,6 +606,7 @@ func (sc *scope) appended(name string) Schema {
 
 func (sc *scope) returns(depth int) Schema {
 	var out Schema
+	sawNil := false
 	var walk func(n ast.Node) bool
 	walk = func(n ast.Node) bool {
 		switch st := n.(type) {
@@ -617,6 +618,9 @@ func (sc *scope) returns(depth int) Schema {
 			}
 			first := st.Results[0]
 			if id, ok := first.(*ast.Ident); ok && id.Name == "nil" {
+				if len(st.Results) == 1 || isNilIdent(st.Results[len(st.Results)-1]) {
+					sawNil = true
+				}
 				return true
 			}
 			s := sc.expr(first, depth)
@@ -625,6 +629,9 @@ func (sc *scope) returns(depth int) Schema {
 		return true
 	}
 	ast.Inspect(sc.decl.Body, walk)
+	if sawNil && len(out) > 0 {
+		out = nullable(out)
+	}
 	if out == nil {
 		if res := sc.decl.Type.Results; res != nil && len(res.List) > 0 {
 			if t := res.List[0].Type; !isAnyType(t) {
@@ -756,9 +763,29 @@ func (sc *scope) untypedExpr(e ast.Expr, depth int) Schema {
 				return got
 			}
 		}
-		if got := sc.assigned(v.Name, depth); len(got) > 0 && sc.varType(v.Name) == nil {
-			if init := sc.varInit(v.Name); init == nil || len(sc.expr(init, depth+1)) == 0 || isNullSchema(sc.expr(init, depth+1)) {
-				return got
+		if vt := sc.varType(v.Name); vt == nil || isAnyType(vt) {
+			if got := sc.assigned(v.Name, depth); len(got) > 0 {
+				init := sc.varInit(v.Name)
+				var is Schema
+				if init != nil {
+					is = sc.expr(init, depth+1)
+				}
+				if init == nil || isNullSchema(is) {
+					return nullable(got)
+				}
+				if len(is) == 0 || (is["type"] == "object" && is["properties"] == nil && got["properties"] != nil) {
+					return got
+				}
+			}
+			if vt != nil {
+				if init := sc.varInit(v.Name); init != nil {
+					if is := sc.expr(init, depth+1); len(is) > 0 && !isNullSchema(is) {
+						if sc.assignsNil(v.Name) {
+							return nullable(is)
+						}
+						return is
+					}
+				}
 			}
 		}
 		if t := sc.varType(v.Name); t != nil {
@@ -805,6 +832,13 @@ func (sc *scope) untypedExpr(e ast.Expr, depth int) Schema {
 		return sc.selector(v, depth)
 	case *ast.IndexExpr:
 		base := sc.expr(v.X, depth+1)
+		if props, ok := base["properties"].(Schema); ok {
+			if key, ok := stringLit(v.Index); ok {
+				if ps, ok := props[key].(Schema); ok {
+					return ps
+				}
+			}
+		}
 		if base["type"] == "array" {
 			if it, ok := base["items"].(Schema); ok {
 				return it
@@ -834,13 +868,18 @@ func (sc *scope) enrich(name string, s Schema, depth int) Schema {
 		s = Schema{}
 	}
 	if s["type"] == "object" {
-		if extra := sc.indexAssigns(name); len(extra) > 0 {
+		if extra := sc.allIndexAssigns(name, depth); len(extra) > 0 {
 			props, _ := s["properties"].(Schema)
 			merged := Schema{}
 			for k, v := range props {
 				merged[k] = v
 			}
 			for k, v := range extra {
+				if cur, ok := merged[k].(Schema); ok && isNullSchema(cur) {
+					if vs, ok := v.(Schema); ok {
+						v = nullable(vs)
+					}
+				}
 				merged[k] = v
 			}
 			c := Schema{"type": "object", "properties": merged}
@@ -1207,4 +1246,106 @@ func jsonName(f *ast.Field) (string, bool, bool) {
 		}
 	}
 	return parts[0], omit, false
+}
+
+func isNilIdent(e ast.Expr) bool {
+	id, ok := e.(*ast.Ident)
+	return ok && id.Name == "nil"
+}
+
+func nullable(s Schema) Schema {
+	if len(s) == 0 || s["$ref"] != nil {
+		return s
+	}
+	c := Schema{}
+	for k, v := range s {
+		c[k] = v
+	}
+	c["nullable"] = true
+	return c
+}
+
+func (sc *scope) assignsNil(name string) bool {
+	found := false
+	ast.Inspect(sc.decl.Body, func(n ast.Node) bool {
+		as, ok := n.(*ast.AssignStmt)
+		if !ok || as.Tok != token.ASSIGN || len(as.Lhs) != len(as.Rhs) {
+			return !found
+		}
+		for i, l := range as.Lhs {
+			if id, ok := l.(*ast.Ident); ok && id.Name == name && isNilIdent(as.Rhs[i]) {
+				found = true
+			}
+		}
+		return !found
+	})
+	return found
+}
+
+type assignKey struct {
+	decl *ast.FuncDecl
+	name string
+}
+
+var assignCache = map[assignKey]Schema{}
+
+func (sc *scope) allIndexAssigns(name string, depth int) Schema {
+	key := assignKey{sc.decl, name}
+	if got, ok := assignCache[key]; ok {
+		return got
+	}
+	assignCache[key] = Schema{}
+	out := sc.allIndexAssignsUncached(name, depth)
+	assignCache[key] = out
+	return out
+}
+
+func (sc *scope) allIndexAssignsUncached(name string, depth int) Schema {
+	props := sc.indexAssigns(name)
+	if depth > 8 || sc.depth > 3 {
+		return props
+	}
+	ast.Inspect(sc.decl.Body, func(n ast.Node) bool {
+		call, ok := n.(*ast.CallExpr)
+		if !ok {
+			return true
+		}
+		at := -1
+		for i, a := range call.Args {
+			if id, ok := a.(*ast.Ident); ok && id.Name == name {
+				at = i
+			}
+		}
+		if at < 0 {
+			return true
+		}
+		p2, d := sc.resolve(call.Fun)
+		if d == nil || d == sc.decl || d.Body == nil {
+			return true
+		}
+		param := ""
+		i := 0
+		for _, f := range d.Type.Params.List {
+			for _, n := range f.Names {
+				if i == at {
+					param = n.Name
+				}
+				i++
+			}
+			if len(f.Names) == 0 {
+				i++
+			}
+		}
+		if param == "" {
+			return true
+		}
+		inner := &scope{p: p2, decl: d, depth: sc.depth + 1, args: sc.bind(d, call.Args)}
+		for k, v := range inner.allIndexAssigns(param, depth+1) {
+			if _, ok := props[k]; !ok {
+				props[k] = v
+			}
+		}
+		return true
+	})
+	return props
 }
