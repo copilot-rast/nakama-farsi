@@ -79,8 +79,40 @@ function permGrid(roles) {
   return el;
 }
 
+function tagRows(list) {
+  var box = h('div', { class: 'cl-rows', 'data-clan-tag-rows': '' });
+  var rows = [];
+  function addRow(g) {
+    g = g || { key: '', name: {} };
+    var key = input(g.key, { name: 'tag-key', ltr: true, mono: true, placeholder: 'friendly' });
+    var names = {};
+    var cells = [field(t('f.key'), key)];
+    (clLanguages || []).forEach(function (l) {
+      var el = input((g.name || {})[l.code] || '', { name: 'tag-name-' + l.code });
+      el.setAttribute('dir', l.direction === 'rtl' ? 'rtl' : 'ltr');
+      names[l.code] = el;
+      cells.push(field(t('lang.text', { label: t('f.name'), lang: l.name }), el));
+    });
+    var rec = { key: key, names: names };
+    var row = h('div', { class: 'cl-row', 'data-clan-tag-row': '' }, cells,
+      h('div', {}, button({ label: t('remove'), variant: 'danger', onclick: function () { row.remove(); rows = rows.filter(function (r) { return r !== rec; }); } })));
+    rows.push(rec);
+    box.appendChild(row);
+  }
+  (list || []).forEach(addRow);
+  var wrap = h('div', {}, box, h('div', { class: 'mt-2' }, button({ label: '+ ' + t('cs.addTag'), data: { 'clan-action': 'add-tag' }, onclick: function () { addRow(); } })));
+  wrap.read = function () {
+    return rows.map(function (r) {
+      var name = {};
+      Object.keys(r.names).forEach(function (k) { var v = r.names[k].value.trim(); if (v) name[k] = v; });
+      return { key: r.key.value.trim(), name: name };
+    }).filter(function (g) { return g.key; });
+  };
+  return wrap;
+}
+
 function clanSettingsPage(root) {
-  loadRefs('clans', true).then(function () {
+  Promise.all([loadRefs('clans', true), loadLanguages()]).then(function () {
     settingsPage(root, 'clans/settings', '/clans', function (cur) {
       var cr = cur.create, bd = cur.badge, ro = cur.roles, cd = cur.cooldowns, xp = cur.xp, ch = cur.chat, ds = cur.display, ev = cur.events;
       var enabled = check(cur.enabled, t('cs.enabled'), 'enabled');
@@ -114,6 +146,19 @@ function clanSettingsPage(root) {
       var pub = check(ev.publish, t('ts.publish'), 'events.publish');
       var notify = check(ev.notify, t('cs.notify'), 'events.notify');
       var code = numInput(ev.code, 'events.code');
+      var pf = cur.profile || {}, upl = cur.uploads || {};
+      var tags = tagRows(pf.tags);
+      var maxTags = numInput(pf.maxTags, 'profile.maxTags');
+      var mottoMax = numInput(pf.mottoMax, 'profile.mottoMax');
+      var colorsP = tagsInput(pf.colors, 'profile.colors', '#E53935، #1E88E5');
+      var cooldown = numInput(pf.changeCooldownMinutes, 'profile.changeCooldownMinutes');
+      var blocked = input((pf.blockedWords || []).join('\n'), { name: 'profile.blockedWords', multiline: true, rows: 5 });
+      var chatWords = check(pf.useChatWords, t('cs.useChatWords'), 'profile.useChatWords');
+      var reqEmblem = check(pf.requireEmblem, t('cs.requireEmblem'), 'profile.requireEmblem');
+      var upOn = check(upl.enabled, t('cs.uploadsOn'), 'uploads.enabled');
+      var approval = check(upl.needsApproval, t('cs.needsApproval'), 'uploads.needsApproval');
+      var maxKb = numInput(Math.round((upl.maxBytes || 0) / 1024), 'uploads.maxKb');
+      var typeBoxes = ['png', 'jpg', 'webp'].map(function (x) { var b = check((upl.types || []).indexOf(x) !== -1, x.toUpperCase(), 'uploads.types'); b.input.value = x; return b; });
       return {
         el: [
           section(t('ts.general'), h('div', {}, enabled, h('p', { class: 'text-xs text-secondary-500', text: t('cs.hint.enabled') })), 'general'),
@@ -123,6 +168,11 @@ function clanSettingsPage(root) {
           section(t('cs.badge'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('cs.hint.badge') }), field(t('cl.emblem'), emblems), field(t('cs.colors'), colors), field(t('cl.frame'), frames)), 'badge'),
           section(t('cs.roles'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('cs.hint.roles') }), perms, h('div', { class: 'h-3' }),
             grid(field(t('cs.maxCo'), maxCo), field(t('cs.leaderLeave'), leave, t('cs.hint.leaderLeave')))), 'roles'),
+          section(t('cs.profile'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('cs.hint.profile') }),
+            group(t('cs.tags'), tags, t('cs.hint.tags')), grid3(field(t('cs.maxTags'), maxTags, t('cs.hint.maxTags')), field(t('cs.mottoMax'), mottoMax, t('cs.hint.mottoMax')), field(t('cs.lookCooldown'), cooldown, t('cs.hint.lookCooldown'))),
+            field(t('cs.lookColors'), colorsP, t('cs.hint.lookColors')), field(t('cs.blocked'), blocked, t('cs.hint.blocked')), chatWords, reqEmblem), 'profile'),
+          section(t('cs.uploads'), h('div', {}, upOn, h('p', { class: 'text-xs text-secondary-500 -mt-2 mb-3', text: t('cs.hint.uploads') }), approval,
+            grid(field(t('cs.maxKb'), maxKb, t('cs.hint.maxKb')), group(t('cs.types'), h('div', { class: 'flex flex-wrap gap-x-4', 'data-clan-types': '' }, typeBoxes)))), 'uploads'),
           section(t('cs.cooldowns'), h('div', {}, grid(field(t('cs.joinAfter'), joinAfter, t('cs.hint.joinAfter')), field(t('cs.rejoin'), rejoin, t('cs.hint.rejoin'))),
             grid3(field(t('cs.leaveAfter'), leaveAfter, t('cs.hint.leaveAfter')), field(t('cs.invDays'), invDays), field(t('cs.reqs'), reqs, t('cs.hint.reqs')))), 'cooldowns'),
           section(t('cs.xp'), h('div', {}, sources, h('div', { class: 'h-3' }), grid(field(t('cs.cap'), cap, t('cs.hint.cap')), h('div', {})),
@@ -142,6 +192,9 @@ function clanSettingsPage(root) {
           c.chat = { systemMessages: sys.input.checked };
           c.display = { searchLimit: intOr(sLimit, 0), historyLimit: intOr(hLimit, 0) };
           c.events = { publish: pub.input.checked, notify: notify.input.checked, code: intOr(code, 0) };
+          c.profile = { mottoMax: intOr(mottoMax, 0), tags: tags.read(), maxTags: intOr(maxTags, 0), colors: colorsP.read().map(function (x) { return x.toUpperCase(); }), changeCooldownMinutes: intOr(cooldown, 0),
+            blockedWords: blocked.value.split('\n').map(function (w) { return w.trim(); }).filter(Boolean), useChatWords: chatWords.input.checked, requireEmblem: reqEmblem.input.checked };
+          c.uploads = { enabled: upOn.input.checked, needsApproval: approval.input.checked, maxBytes: intOr(maxKb, 0) * 1024, types: typeBoxes.filter(function (b) { return b.input.checked; }).map(function (b) { return b.input.value; }) };
           return null;
         },
         after: function (out) { clClanSettings = out.settings; }

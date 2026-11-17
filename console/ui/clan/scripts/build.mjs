@@ -10,7 +10,7 @@ const INDEX = path.join(DIST, 'index.html');
 const MANIFEST = path.join(ROOT, 'dist-manifest.json');
 export const START = '<!-- nakama-clan:start -->';
 export const END = '<!-- nakama-clan:end -->';
-export const SOURCES = ['i18n.js', 'core.js', 'refs.js', 'leagues.js', 'players.js', 'trsettings.js', 'clans.js', 'levels.js', 'wars.js', 'rounds.js', 'clsettings.js', 'shell.js'];
+export const SOURCES = ['i18n.js', 'core.js', 'refs.js', 'leagues.js', 'players.js', 'trsettings.js', 'gallery.js', 'uploads.js', 'look.js', 'clans.js', 'levels.js', 'wars.js', 'rounds.js', 'clsettings.js', 'shell.js'];
 
 function hash(content) {
   return crypto.createHash('sha256').update(content).digest('hex').slice(0, 10);

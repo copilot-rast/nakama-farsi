@@ -86,6 +86,7 @@ DELETE FROM insights_heatmap_map WHERE key LIKE 'e2e%';
 DELETE FROM trophy_league WHERE key LIKE 'e2e%';
 DELETE FROM clan_war_round WHERE config_key LIKE 'e2e%';
 DELETE FROM clan_war_config WHERE key LIKE 'e2e%';
+DELETE FROM clan_art WHERE key LIKE 'e2e%';
 DELETE FROM clan WHERE group_id IN (SELECT id FROM groups WHERE name LIKE 'e2e%');
 DELETE FROM group_edge WHERE source_id IN (SELECT id FROM groups WHERE name LIKE 'e2e%') OR destination_id IN (SELECT id FROM groups WHERE name LIKE 'e2e%');
 DELETE FROM groups WHERE name LIKE 'e2e%';

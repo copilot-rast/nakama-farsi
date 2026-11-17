@@ -126,3 +126,9 @@ function localInput(v, name) {
   el.read = function () { if (!el.value) return null; var d = new Date(el.value); return isNaN(d) ? null : d.toISOString(); };
   return el;
 }
+
+function group(label, control, hint) {
+  return h('div', { class: 'cl-field block mb-4', role: 'group', 'aria-label': label },
+    h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 mb-1', text: label }), control,
+    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 mt-1', text: hint }) : null);
+}

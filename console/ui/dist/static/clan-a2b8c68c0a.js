@@ -19,7 +19,7 @@ var CL_TEXT = {
     'active': 'فعال', 'inactive': 'غیرفعال', 'on': 'روشن', 'off': 'خاموش', 'confirm.title': 'مطمئن هستید؟', 'lang.text': '{label} ({lang})', 'updated': 'آخرین تغییر: {by} · {at}', 'none': '—',
     'missing': 'پیدا نشد', 'noPrizes': 'افزونهٔ جایزه بارگذاری نشده است؛ جایزه‌ها ثبت می‌شوند ولی پرداخت نمی‌شوند.',
     'f.name': 'نام', 'f.description': 'توضیح', 'f.key': 'کلید', 'f.icon': 'نشانی آیکون', 'f.color': 'رنگ', 'f.active': 'فعال باشد', 'f.state': 'وضعیت', 'f.metadata': 'داده‌ی اضافه (JSON)',
-    'f.player': 'بازیکن', 'f.date': 'زمان', 'f.updated': 'آخرین تغییر', 'f.created': 'ساخته‌شده',
+    'f.player': 'بازیکن', 'f.date': 'زمان', 'f.updated': 'آخرین تغییر', 'f.sort': 'ترتیب', 'f.created': 'ساخته‌شده',
     'hint.key': 'حرف کوچک انگلیسی، عدد و _ . - ؛ بازی با همین کلید کار می‌کند.', 'hint.json': 'یک شیء JSON، مثل {"badge":"gold"}', 'hint.tags': 'با ویرگول جدا کنید', 'hint.zero': '۰ یعنی بدون محدودیت',
     'src.economy_event': 'رویداد اقتصاد', 'src.game_event': 'رویداد بازی',
     'tr.unranked': 'بدون لیگ',
@@ -119,6 +119,37 @@ var CL_TEXT = {
     'cs.chat': 'گفتگو', 'cs.system': 'پیام سیستمی در گفتگوی کلن', 'cs.hint.system': 'مثل «فلانی وارد شد» یا «کلن سطح ۵ شد»',
     'cs.sLimit': 'نتیجهٔ جستجو', 'cs.hint.sLimit': 'چند کلن در هر جستجو', 'cs.hLimit': 'تاریخچه', 'cs.hint.hLimit': 'چند ردیف تاریخچه برای بازیکن',
     'cs.notify': 'به عضوها اعلان بده', 'cs.code': 'کد اعلان', 'cs.hint.code': 'بازی با این کد اعلان کلن را می‌شناسد',
+    'nav.clans/gallery': 'گالری نشان و کاور', 'nav.clans/uploads': 'تصویرهای ارسالی',
+    'desc.clans/gallery': 'نشان‌ها و کاورهایی که کلن‌ها از بین آن‌ها انتخاب می‌کنند. برای هر کدام می‌توانید سطح لازم و قیمت یک‌باره بگذارید و یکی را پیش‌فرض کلن‌های تازه کنید.',
+    'desc.clans/uploads': 'تصویرهایی که کلن‌ها خودشان فرستاده‌اند. هر تصویر تا وقتی تأیید نشود روی کلن نمی‌نشیند. با رد کردن، دلیل به رهبر کلن اعلام می‌شود.',
+    'ga.new': 'تصویر تازه', 'ga.kind': 'نوع', 'ga.kind.emblem': 'نشان', 'ga.kind.cover': 'کاور', 'ga.empty': 'هنوز تصویری در گالری نیست.', 'ga.default': 'پیش‌فرض',
+    'ga.fromLevel': 'از سطح {n}', 'ga.price': '{n}', 'ga.free': 'رایگان', 'ga.clans': '{n} کلن از این استفاده می‌کنند', 'ga.hint': 'بازیکن‌ها در بازی همین تصویر و نام را می‌بینند.',
+    'ga.image': 'تصویر', 'ga.hint.image': 'فایل را بارگذاری کنید یا نشانی تصویر را بچسبانید.', 'ga.upload': 'بارگذاری فایل', 'ga.noImage': 'بدون تصویر',
+    'ga.minLevel': 'از سطح کلن', 'ga.hint.minLevel': 'کلن پایین‌تر این را قفل می‌بیند', 'ga.currency': 'ارز قیمت', 'ga.noPrice': 'رایگان', 'ga.amount': 'قیمت',
+    'ga.hint.price': 'فقط یک بار از کلن گرفته می‌شود', 'ga.isDefault': 'پیش‌فرض کلن‌های تازه باشد', 'ga.hint.default': 'از هر نوع فقط یکی پیش‌فرض است؛ «بازگردانی ظاهر» هم به همین برمی‌گردد.',
+    'ga.delete': 'تصویر {key} از گالری حذف شود؟', 'ga.inUse': '{n} کلن از این تصویر استفاده می‌کنند؛ اول آن را غیرفعال کنید یا ظاهر آن کلن‌ها را عوض کنید.',
+    'up.st.pending': 'در انتظار', 'up.st.approved': 'تأییدشده', 'up.st.rejected': 'ردشده', 'up.st.replaced': 'جایگزین‌شده', 'up.st.all': 'همه',
+    'up.empty.pending': 'تصویری در انتظار بررسی نیست.', 'up.empty.approved': 'تصویر تأییدشده‌ای نیست.', 'up.empty.rejected': 'تصویر ردشده‌ای نیست.', 'up.empty.replaced': 'تصویر جایگزین‌شده‌ای نیست.', 'up.empty.all': 'هنوز تصویری فرستاده نشده است.',
+    'up.approve': 'تأیید', 'up.reject': 'رد کردن', 'up.approved': 'تصویر تأیید شد و روی کلن نشست', 'up.rejected': 'تصویر رد شد', 'up.reason': 'دلیل', 'up.reasonHint': 'مثلاً: تصویر نامناسب است',
+    'up.reasonNote': 'به رهبر و معاون‌های کلن نشان داده می‌شود', 'up.by': 'فرستنده: {name}', 'up.size': '{n} کیلوبایت', 'up.reviewed': 'بررسی: {name}', 'up.previewOf': 'تصویر کلن {name}',
+    'up.pendingN': '{n} تصویر در انتظار بررسی',
+    'lk.title': 'ظاهر کلن', 'lk.hint': 'ادمین محدودیت سطح، قیمت و زمان انتظار را ندارد.', 'lk.emblem': 'نشان', 'lk.cover': 'کاور', 'lk.color': 'رنگ', 'lk.motto': 'شعار', 'lk.country': 'کشور',
+    'lk.tags': 'برچسب‌ها', 'lk.noTags': 'در تنظیمات کلن برچسبی تعریف نشده است.', 'lk.hint.motto': 'حداکثر {n} حرف', 'lk.hint.tags': 'حداکثر {n} برچسب',
+    'lk.reset': 'بازگردانی ظاهر', 'lk.resetConfirm': 'ظاهر «{name}» به حالت پیش‌فرض برگردد؟ نشان و کاور پیش‌فرض گالری می‌آیند و رنگ و شعار پاک می‌شوند.', 'lk.resetDone': 'ظاهر کلن بازگردانی شد',
+    'lk.waiting': 'در انتظار بررسی: {what}', 'lk.next': 'تغییر بعدی بازیکن‌ها از {at}',
+    'cs.profile': 'پروفایل کلن', 'cs.hint.profile': 'قانون‌های نام، شعار، برچسب و رنگ کلن.', 'cs.tags': 'برچسب‌ها', 'cs.hint.tags': 'کلن‌ها از این برچسب‌ها (مثل «دوستانه» یا «رقابتی») انتخاب می‌کنند.',
+    'cs.addTag': 'افزودن برچسب', 'cs.maxTags': 'حداکثر برچسب هر کلن', 'cs.hint.maxTags': '۰ یعنی بدون برچسب', 'cs.mottoMax': 'بلندترین شعار', 'cs.hint.mottoMax': '۰ یعنی شعار ندارد',
+    'cs.lookCooldown': 'فاصلهٔ تغییر ظاهر (دقیقه)', 'cs.hint.lookCooldown': 'بین دو تغییر ظاهر', 'cs.lookColors': 'رنگ‌های مجاز', 'cs.hint.lookColors': 'به شکل #RRGGBB؛ خالی یعنی هر رنگی',
+    'cs.blocked': 'کلمه‌های ممنوع', 'cs.hint.blocked': 'هر خط یک کلمه؛ در نام، توضیح و شعار پذیرفته نمی‌شوند', 'cs.useChatWords': 'کلمه‌های ممنوع گفتگو هم حساب شوند', 'cs.requireEmblem': 'کلن بدون نشان ساخته نشود',
+    'cs.uploads': 'تصویر اختصاصی', 'cs.uploadsOn': 'کلن‌ها بتوانند نشان و کاور خودشان را بفرستند', 'cs.hint.uploads': 'فقط کسانی که اختیار ویرایش پروفایل دارند.',
+    'cs.needsApproval': 'تصویر پیش از نمایش تأیید ادمین بخواهد', 'cs.maxKb': 'بیشترین حجم (کیلوبایت)', 'cs.hint.maxKb': 'از ۱ تا ۲۰۴۸', 'cs.types': 'نوع فایل',
+    'code.CLAN_ART_EXISTS': 'تصویری از همین نوع با همین کلید هست.', 'code.CLAN_ART_NOT_FOUND': 'این تصویر در گالری نیست.', 'code.CLAN_ART_IMAGE_REQUIRED': 'تصویر لازم است (نشانی http یا https).',
+    'code.CURRENCY_NOT_FOUND': 'این ارز پیدا نشد.', 'code.CLAN_UPLOAD_NOT_PENDING': 'این تصویر دیگر در انتظار بررسی نیست.', 'code.CLAN_UPLOAD_NOT_FOUND': 'این تصویر پیدا نشد.',
+    'code.CLAN_CHANGE_COOLDOWN': 'ظاهر کلن تازه عوض شده است؛ کمی بعد دوباره تلاش کنید.', 'code.CLAN_AVATAR_USE_GALLERY': 'تصویر کلن باید از گالری انتخاب شود.', 'code.CLAN_NAME_BLOCKED': 'این نام کلمهٔ ممنوع دارد.',
+    'code.CLAN_TEXT_BLOCKED': 'متن کلمهٔ ممنوع دارد.', 'code.CLAN_MOTTO_TOO_LONG': 'شعار بلندتر از حد مجاز است.', 'code.CLAN_COLOR_INVALID': 'رنگ باید به شکل #RRGGBB و در فهرست رنگ‌ها باشد.',
+    'code.CLAN_COUNTRY_INVALID': 'این کشور در فهرست کشورهای فعال نیست.', 'code.CLAN_TAG_INVALID': 'این برچسب در تنظیمات نیست.', 'code.CLAN_TOO_MANY_TAGS': 'تعداد برچسب‌ها بیشتر از حد مجاز است.',
+    'code.CLAN_ART_LOCKED': 'این تصویر برای سطح این کلن قفل است.', 'code.CLAN_EMBLEM_REQUIRED': 'کلن باید نشان داشته باشد.', 'code.CLAN_UPLOADS_DISABLED': 'فرستادن تصویر خاموش است.',
+    'code.CLAN_UPLOAD_TOO_LARGE': 'حجم تصویر بیشتر از حد مجاز است.', 'code.CLAN_UPLOAD_TYPE': 'نوع این فایل پذیرفته نیست.',
     'code.TROPHY_LEAGUE_EXISTS': 'لیگی با همین کلید یا همین حداقل جام هست.', 'code.TROPHY_LEAGUE_NOT_FOUND': 'این لیگ پیدا نشد.',
     'code.CLAN_WAR_CONFIG_EXISTS': 'قالب جنگی با همین کلید هست.', 'code.CLAN_WAR_CONFIG_NOT_FOUND': 'این قالب جنگ پیدا نشد.', 'code.CLAN_WAR_ROUND_NOT_FOUND': 'این دور پیدا نشد.',
     'code.CLAN_WAR_ROUND_NOT_OPEN': 'این دور دیگر در ثبت‌نام نیست.', 'code.CLAN_WAR_ROUND_NOT_ACTIVE': 'این دور در جریان نیست.', 'code.CLAN_WAR_POINTS_REQUIRED': 'جنگ امتیازی دست‌کم یک قانون امتیاز لازم دارد.',
@@ -152,7 +183,7 @@ var CL_TEXT = {
     'active': 'Active', 'inactive': 'Inactive', 'on': 'On', 'off': 'Off', 'confirm.title': 'Are you sure?', 'lang.text': '{label} ({lang})', 'updated': 'Last change: {by} · {at}', 'none': '—',
     'missing': 'missing', 'noPrizes': 'The prize plugin is not loaded; prizes are recorded but not paid.',
     'f.name': 'Name', 'f.description': 'Description', 'f.key': 'Key', 'f.icon': 'Icon URL', 'f.color': 'Color', 'f.active': 'Active', 'f.state': 'Status', 'f.metadata': 'Extra data (JSON)',
-    'f.player': 'Player', 'f.date': 'Time', 'f.updated': 'Last change', 'f.created': 'Created',
+    'f.player': 'Player', 'f.date': 'Time', 'f.updated': 'Last change', 'f.sort': 'Order', 'f.created': 'Created',
     'hint.key': 'Lowercase letters, digits and _ . - ; the game uses this key.', 'hint.json': 'A JSON object, like {"badge":"gold"}', 'hint.tags': 'Separate with commas', 'hint.zero': '0 means no limit',
     'src.economy_event': 'Economy event', 'src.game_event': 'Game event',
     'tr.unranked': 'No league',
@@ -252,6 +283,37 @@ var CL_TEXT = {
     'cs.chat': 'Chat', 'cs.system': 'System messages in the clan chat', 'cs.hint.system': 'Like "Sara joined" or "The clan reached level 5"',
     'cs.sLimit': 'Search results', 'cs.hint.sLimit': 'Clans per search', 'cs.hLimit': 'History', 'cs.hint.hLimit': 'History rows for the player',
     'cs.notify': 'Notify members', 'cs.code': 'Notification code', 'cs.hint.code': 'The game knows clan notifications by this code',
+    'nav.clans/gallery': 'Emblems and covers', 'nav.clans/uploads': 'Uploaded images',
+    'desc.clans/gallery': 'The emblems and covers clans choose from. Give each one a required level and a one-time price, and make one the default for new clans.',
+    'desc.clans/uploads': 'Images clans sent themselves. An image is not shown on the clan until it is approved. A rejection tells the clan leader the reason.',
+    'ga.new': 'New image', 'ga.kind': 'Type', 'ga.kind.emblem': 'Emblem', 'ga.kind.cover': 'Cover', 'ga.empty': 'The gallery is empty.', 'ga.default': 'Default',
+    'ga.fromLevel': 'From level {n}', 'ga.price': '{n}', 'ga.free': 'Free', 'ga.clans': 'Used by {n} clans', 'ga.hint': 'Players see this image and name in the game.',
+    'ga.image': 'Image', 'ga.hint.image': 'Upload a file or paste an image URL.', 'ga.upload': 'Upload file', 'ga.noImage': 'No image',
+    'ga.minLevel': 'From clan level', 'ga.hint.minLevel': 'Lower clans see it locked', 'ga.currency': 'Price currency', 'ga.noPrice': 'Free', 'ga.amount': 'Price',
+    'ga.hint.price': 'Charged to the clan once', 'ga.isDefault': 'Default for new clans', 'ga.hint.default': 'Only one default per type; "Reset look" also goes back to it.',
+    'ga.delete': 'Delete image {key} from the gallery?', 'ga.inUse': '{n} clans use this image; turn it off or change those clans\' look first.',
+    'up.st.pending': 'Pending', 'up.st.approved': 'Approved', 'up.st.rejected': 'Rejected', 'up.st.replaced': 'Replaced', 'up.st.all': 'All',
+    'up.empty.pending': 'No images waiting for review.', 'up.empty.approved': 'No approved images.', 'up.empty.rejected': 'No rejected images.', 'up.empty.replaced': 'No replaced images.', 'up.empty.all': 'No images sent yet.',
+    'up.approve': 'Approve', 'up.reject': 'Reject', 'up.approved': 'Image approved and set on the clan', 'up.rejected': 'Image rejected', 'up.reason': 'Reason', 'up.reasonHint': 'For example: the image is not suitable',
+    'up.reasonNote': 'Shown to the clan leader and co-leaders', 'up.by': 'By {name}', 'up.size': '{n} KB', 'up.reviewed': 'Reviewed by {name}', 'up.previewOf': 'Image of clan {name}',
+    'up.pendingN': '{n} images waiting for review',
+    'lk.title': 'Clan look', 'lk.hint': 'Admins skip level locks, prices and the change cooldown.', 'lk.emblem': 'Emblem', 'lk.cover': 'Cover', 'lk.color': 'Colour', 'lk.motto': 'Motto', 'lk.country': 'Country',
+    'lk.tags': 'Tags', 'lk.noTags': 'No tags are set in the clan settings.', 'lk.hint.motto': 'Up to {n} characters', 'lk.hint.tags': 'Up to {n} tags',
+    'lk.reset': 'Reset look', 'lk.resetConfirm': 'Reset the look of "{name}"? The gallery default emblem and cover come back and the colour and motto are cleared.', 'lk.resetDone': 'Clan look reset',
+    'lk.waiting': 'Waiting for review: {what}', 'lk.next': 'Players can change it again from {at}',
+    'cs.profile': 'Clan profile', 'cs.hint.profile': 'Rules for clan names, mottos, tags and colours.', 'cs.tags': 'Tags', 'cs.hint.tags': 'Clans pick from these tags (like "Friendly" or "Competitive").',
+    'cs.addTag': 'Add tag', 'cs.maxTags': 'Most tags per clan', 'cs.hint.maxTags': '0 means no tags', 'cs.mottoMax': 'Longest motto', 'cs.hint.mottoMax': '0 means no motto',
+    'cs.lookCooldown': 'Look change cooldown (minutes)', 'cs.hint.lookCooldown': 'Between two look changes', 'cs.lookColors': 'Allowed colours', 'cs.hint.lookColors': 'As #RRGGBB; empty means any colour',
+    'cs.blocked': 'Blocked words', 'cs.hint.blocked': 'One word per line; refused in names, descriptions and mottos', 'cs.useChatWords': 'Also use the chat blocked words', 'cs.requireEmblem': 'A clan must have an emblem',
+    'cs.uploads': 'Custom images', 'cs.uploadsOn': 'Clans can send their own emblem and cover', 'cs.hint.uploads': 'Only roles allowed to edit the profile.',
+    'cs.needsApproval': 'Images need admin approval before they show', 'cs.maxKb': 'Largest size (KB)', 'cs.hint.maxKb': 'From 1 to 2048', 'cs.types': 'File types',
+    'code.CLAN_ART_EXISTS': 'An image of this type with this key already exists.', 'code.CLAN_ART_NOT_FOUND': 'This image is not in the gallery.', 'code.CLAN_ART_IMAGE_REQUIRED': 'An image is required (an http or https URL).',
+    'code.CURRENCY_NOT_FOUND': 'Currency not found.', 'code.CLAN_UPLOAD_NOT_PENDING': 'This image is no longer waiting for review.', 'code.CLAN_UPLOAD_NOT_FOUND': 'Image not found.',
+    'code.CLAN_CHANGE_COOLDOWN': 'The clan look changed recently; try again a little later.', 'code.CLAN_AVATAR_USE_GALLERY': 'The clan image must come from the gallery.', 'code.CLAN_NAME_BLOCKED': 'The name has a blocked word.',
+    'code.CLAN_TEXT_BLOCKED': 'The text has a blocked word.', 'code.CLAN_MOTTO_TOO_LONG': 'The motto is too long.', 'code.CLAN_COLOR_INVALID': 'The colour must be #RRGGBB and in the colour list.',
+    'code.CLAN_COUNTRY_INVALID': 'This country is not in the active country list.', 'code.CLAN_TAG_INVALID': 'This tag is not in the settings.', 'code.CLAN_TOO_MANY_TAGS': 'Too many tags.',
+    'code.CLAN_ART_LOCKED': 'This image is locked for this clan\'s level.', 'code.CLAN_EMBLEM_REQUIRED': 'The clan must have an emblem.', 'code.CLAN_UPLOADS_DISABLED': 'Sending images is turned off.',
+    'code.CLAN_UPLOAD_TOO_LARGE': 'The image is too large.', 'code.CLAN_UPLOAD_TYPE': 'This file type is not accepted.',
     'code.TROPHY_LEAGUE_EXISTS': 'A league with this key or this minimum already exists.', 'code.TROPHY_LEAGUE_NOT_FOUND': 'League not found.',
     'code.CLAN_WAR_CONFIG_EXISTS': 'A war template with this key already exists.', 'code.CLAN_WAR_CONFIG_NOT_FOUND': 'War template not found.', 'code.CLAN_WAR_ROUND_NOT_FOUND': 'Round not found.',
     'code.CLAN_WAR_ROUND_NOT_OPEN': 'This round is no longer in signup.', 'code.CLAN_WAR_ROUND_NOT_ACTIVE': 'This round is not running.', 'code.CLAN_WAR_POINTS_REQUIRED': 'A points war needs at least one point rule.',
@@ -834,6 +896,12 @@ function localInput(v, name) {
   return el;
 }
 
+function group(label, control, hint) {
+  return h('div', { class: 'cl-field block mb-4', role: 'group', 'aria-label': label },
+    h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 mb-1', text: label }), control,
+    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 mt-1', text: hint }) : null);
+}
+
 var clLeagues = null;
 function loadLeagues(force) {
   if (clLeagues && !force) return Promise.resolve(clLeagues);
@@ -1179,6 +1247,364 @@ function trophySettingsPage(root) {
   });
 }
 
+var clArt = null;
+function loadArt(force) {
+  if (clArt && !force) return Promise.resolve(clArt);
+  return api('GET', '/clans/art').then(function (d) { clArt = d.items || []; return clArt; });
+}
+
+function artOf(kind, key) {
+  return (clArt || []).filter(function (a) { return a.kind === kind && a.key === key; })[0] || null;
+}
+
+function uploadImage(file) {
+  var fd = new FormData();
+  fd.append('file', file, file.name);
+  var headers = { Accept: 'application/json' };
+  var tk = token();
+  if (tk) headers.Authorization = 'Bearer ' + tk;
+  return fetch('/v2/console/economy/uploads', { method: 'POST', headers: headers, body: fd, credentials: 'same-origin' }).then(function (res) {
+    return res.text().then(function (text) {
+      var data = null;
+      try { data = text ? JSON.parse(text) : null; } catch (e) { data = null; }
+      if (!res.ok) throw new ClError(res.status, data && typeof data.error === 'string' ? data.error : 'HTTP_' + res.status, data && data.message || '', 'file', null);
+      return data || {};
+    });
+  });
+}
+
+function imageField(value, name) {
+  var url = input(value || '', { name: name, ltr: true, placeholder: 'https://…' });
+  var preview = h('div', { class: 'cl-thumb', 'data-clan-preview': name });
+  var file = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp', class: 'sr-only', name: name + '-file', 'aria-label': t('ga.upload') });
+  var err = h('p', { class: 'text-xs text-error-600 dark:text-error-400', hidden: true });
+  var up = button({ label: t('ga.upload'), data: { 'clan-action': 'upload-image' }, onclick: function () { file.click(); } });
+  function paint() {
+    clear(preview);
+    var v = url.value.trim();
+    if (v) preview.appendChild(h('img', { src: v, alt: '' }));
+    else preview.appendChild(h('span', { class: 'text-xs text-secondary-500', text: t('ga.noImage') }));
+  }
+  url.addEventListener('change', paint);
+  file.addEventListener('change', function () {
+    var f = file.files && file.files[0];
+    if (!f) return;
+    err.hidden = true;
+    busy(up, true);
+    uploadImage(f).then(function (res) {
+      url.value = res.url || '';
+      paint();
+    }, function (e) {
+      err.textContent = clErrText(e);
+      err.hidden = false;
+    }).then(function () { busy(up, false); file.value = ''; });
+  });
+  paint();
+  var wrap = h('div', { class: 'flex gap-3 items-start' }, preview, h('div', { class: 'flex-1 min-w-0 flex flex-col gap-2' }, url, h('div', {}, up, file), err));
+  wrap.input = url;
+  return wrap;
+}
+
+function priceText(a) {
+  return a.priceAmount ? t('ga.price', { n: fmtNum(a.priceAmount) }) + ' ' + a.priceCurrency : t('ga.free');
+}
+
+function galleryPage(root) {
+  var state = { kind: '' };
+  var frame = pageFrame('clans/gallery', t('desc.clans/gallery'), [
+    button({ label: t('ga.new'), variant: 'primary', data: { 'clan-action': 'new-art' }, onclick: function () { artEditor(null, state.kind || 'emblem', reload); } })]);
+  clear(root).appendChild(frame.el);
+  var tabs = h('div', { class: 'cl-seg', role: 'tablist', 'aria-label': t('ga.kind') });
+  ['', 'emblem', 'cover'].forEach(function (k) {
+    var b = h('button', { type: 'button', role: 'tab', class: 'cl-seg-item', 'data-clan-kind': k || 'all', 'aria-selected': k === state.kind ? 'true' : 'false', text: k ? t('ga.kind.' + k) : t('all'), onclick: function () {
+      state.kind = k;
+      Array.prototype.forEach.call(tabs.children, function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+      paint();
+    } });
+    tabs.appendChild(b);
+  });
+  var box = h('div', { class: 'flex flex-col gap-3' });
+  frame.content.appendChild(tabs);
+  frame.content.appendChild(box);
+  function paint() {
+    var items = (clArt || []).filter(function (a) { return !state.kind || a.kind === state.kind; });
+    clear(box);
+    if (!items.length) { box.appendChild(emptyCard(t('ga.empty'))); return; }
+    box.appendChild(h('div', { class: 'cl-gallery', 'data-clan-list': 'art' }, items.map(function (a) {
+      var cardEl = h('button', { type: 'button', class: 'cl-art' + (a.kind === 'cover' ? ' cl-art--cover' : ''), 'data-clan-art': a.kind + ':' + a.key, onclick: function () { artEditor(a, a.kind, reload); } },
+        h('div', { class: 'cl-art-img' }, a.imageUrl ? h('img', { src: a.imageUrl, alt: '', loading: 'lazy' }) : null),
+        h('div', { class: 'cl-art-body' },
+          h('span', { class: 'font-medium truncate', dir: 'auto', text: textOf(a.name, a.key) }), mono(a.key),
+          h('div', { class: 'flex flex-wrap gap-1 mt-1' }, tag(t('ga.kind.' + a.kind), a.kind === 'cover' ? 'primary' : 'secondary'),
+            a.isDefault ? tag(t('ga.default'), 'success') : null, !a.isActive ? tag(t('inactive'), 'warning') : null,
+            a.minLevel > 1 ? tag(t('ga.fromLevel', { n: a.minLevel }), 'secondary') : null, a.priceAmount ? tag(priceText(a), 'warning') : null),
+          h('span', { class: 'text-xs text-secondary-500 mt-1', text: t('ga.clans', { n: fmtNum(a.clans || 0) }) })));
+      return cardEl;
+    })));
+  }
+  function reload() {
+    clear(box).appendChild(loading());
+    Promise.all([loadArt(true), loadLanguages(), loadRefs('clans')]).then(paint, function (err) { clear(box).appendChild(notice('error', clErrText(err))); });
+  }
+  reload();
+}
+
+function artEditor(a, kind, done) {
+  var creating = !a;
+  a = a || { kind: kind, name: {}, imageUrl: '', sort: 0, isActive: true, minLevel: 1, priceCurrency: '', priceAmount: 0, isDefault: false };
+  var kindSel = select(a.kind, opt('ga.kind.', ['emblem', 'cover']), { name: 'kind' });
+  var key = input(a.key || '', { name: 'key', ltr: true, mono: true });
+  var name = translated(t('f.name'), 'name', a.name);
+  var img = imageField(a.imageUrl, 'imageUrl');
+  var sort = numInput(a.sort || 0, 'sort');
+  var active = check(a.isActive, t('f.active'), 'isActive');
+  var minLevel = numInput(a.minLevel || 1, 'minLevel');
+  var cur = refSelect(refList('clans', 'currencies'), a.priceCurrency, 'priceCurrency', t('ga.noPrice'));
+  var amount = numInput(a.priceAmount || 0, 'priceAmount');
+  var def = check(a.isDefault, t('ga.isDefault'), 'isDefault');
+  var msg = h('div', {});
+  var body = h('div', { 'data-clan-form': 'art' },
+    h('p', { class: 'text-sm text-secondary-500 mb-3', text: t('ga.hint') }),
+    grid(field(t('ga.kind'), kindSel), field(t('f.key'), key, t('hint.key'))), name,
+    group(t('ga.image'), img, t('ga.hint.image')),
+    grid(field(t('ga.minLevel'), minLevel, t('ga.hint.minLevel')), field(t('f.sort'), sort)),
+    grid(field(t('ga.currency'), cur), field(t('ga.amount'), amount, t('ga.hint.price'))),
+    active, def, h('p', { class: 'text-xs text-secondary-500 -mt-2 mb-3', text: t('ga.hint.default') }), msg);
+  var save = button({ label: t('save'), variant: 'primary', data: { 'clan-action': 'save-art' }, onclick: function () {
+    clear(msg);
+    var out = { kind: kindSel.value, key: key.value.trim(), name: name.read(), imageUrl: img.input.value.trim(), sort: intOr(sort, 0), isActive: active.input.checked,
+      minLevel: intOr(minLevel, 1), priceCurrency: cur.value, priceAmount: cur.value ? intOr(amount, 0) : 0, isDefault: def.input.checked };
+    busy(save, true);
+    api(creating ? 'POST' : 'PUT', '/clans/art' + (creating ? '' : '/' + a.id), out).then(function (d) {
+      clArt = d.items || []; closePanel(); toast('success', t('saved')); done();
+    }, function (err) { busy(save, false); fieldError(msg, err); });
+  } });
+  var foot = [button({ label: t('cancel'), onclick: closePanel }), save];
+  if (!creating) {
+    var del = button({ label: t('delete'), variant: 'danger', data: { 'clan-action': 'delete-art' }, onclick: function () {
+      confirmBox(t('ga.delete', { key: a.key }), t('delete')).then(function (ok) {
+        if (!ok) return;
+        busy(del, true);
+        api('DELETE', '/clans/art/' + a.id).then(function () { closePanel(); toast('success', t('deleted')); done(); }, function (err) {
+          busy(del, false);
+          clear(msg).appendChild(notice('error', err.code === 'IN_USE' ? t('ga.inUse', { n: (err.meta && err.meta.clans) || 0 }) : clErrText(err)));
+        });
+      });
+    } });
+    foot = [del, h('div', { class: 'flex-1' })].concat(foot);
+  }
+  sidePanel(creating ? t('ga.new') : textOf(a.name, a.key), body, foot, 'art');
+}
+
+var clPendingUploads = 0;
+var clPendingAt = 0;
+function refreshPendingUploads(force) {
+  var now = Date.now();
+  if (!force && now - clPendingAt < 60000) return;
+  clPendingAt = now;
+  var tk = token();
+  if (!tk) return;
+  fetch(CL_API + '/clans/uploads?status=pending&limit=1', { headers: { Accept: 'application/json', Authorization: 'Bearer ' + tk }, credentials: 'same-origin' }).then(function (res) {
+    return res.ok ? res.json() : null;
+  }).then(function (d) {
+    var n = (d && d.total) || 0;
+    if (n !== clPendingUploads) { clPendingUploads = n; clSchedule(); }
+  }, function () { return null; });
+}
+
+function uploadBlob(id) {
+  var tk = token();
+  return fetch(CL_API + '/clans/uploads/' + id + '/file', { headers: tk ? { Authorization: 'Bearer ' + tk } : {}, credentials: 'same-origin' }).then(function (res) {
+    if (!res.ok) throw new Error('HTTP_' + res.status);
+    return res.blob();
+  }).then(function (b) { return URL.createObjectURL(b); });
+}
+
+function reasonBox() {
+  return new Promise(function (resolve) {
+    var root;
+    var area = input('', { name: 'reason', multiline: true, rows: 3, placeholder: t('up.reasonHint') });
+    function done(v) { root.remove(); resolve(v); }
+    root = h('div', { 'data-clan': 'confirm', 'data-l10n-skip': '', class: 'cl-confirm', dir: document.documentElement.getAttribute('dir') || 'ltr' },
+      h('div', { class: 'cl-confirm-box bg-white dark:bg-secondary-800 rounded-md shadow-lg p-5', role: 'alertdialog', 'aria-modal': 'true', 'aria-label': t('up.reject') },
+        h('h3', { class: 'font-semibold mb-2', text: t('up.reject') }),
+        field(t('up.reason'), area, t('up.reasonNote')),
+        h('div', { class: 'flex gap-2 justify-end' },
+          button({ label: t('cancel'), onclick: function () { done(null); } }),
+          button({ label: t('up.reject'), variant: 'danger', data: { 'clan-confirm': 'ok' }, onclick: function () { done(area.value.trim()); } }))));
+    document.body.appendChild(root);
+    area.focus();
+  });
+}
+
+var CL_UPLOAD_COLOR = { pending: 'warning', approved: 'success', rejected: 'error', replaced: 'secondary' };
+
+function uploadsPage(root) {
+  var state = { page: 1, limit: 24, total: 0, status: 'pending' };
+  var frame = pageFrame('clans/uploads', t('desc.clans/uploads'));
+  clear(root).appendChild(frame.el);
+  var tabs = h('div', { class: 'cl-seg', role: 'tablist', 'aria-label': t('f.state') });
+  ['pending', 'approved', 'rejected', 'replaced', 'all'].forEach(function (s) {
+    var b = h('button', { type: 'button', role: 'tab', class: 'cl-seg-item', 'data-clan-status': s, 'aria-selected': s === state.status ? 'true' : 'false', text: t('up.st.' + s), onclick: function () {
+      state.status = s; state.page = 1;
+      Array.prototype.forEach.call(tabs.children, function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+      reload();
+    } });
+    tabs.appendChild(b);
+  });
+  var box = h('div', { class: 'flex flex-col gap-3' });
+  frame.content.appendChild(tabs);
+  frame.content.appendChild(box);
+  var urls = [];
+  function reload() {
+    urls.forEach(function (u) { URL.revokeObjectURL(u); });
+    urls = [];
+    clear(box).appendChild(loading());
+    api('GET', '/clans/uploads' + qs({ status: state.status, page: state.page, limit: state.limit })).then(function (d) {
+      state.total = d.total || 0;
+      var items = d.items || [];
+      clear(box);
+      if (!items.length) box.appendChild(emptyCard(t('up.empty.' + state.status)));
+      else box.appendChild(h('div', { class: 'cl-gallery cl-uploads', 'data-clan-list': 'uploads' }, items.map(function (u) {
+        var img = h('div', { class: 'cl-art-img' }, h('span', { class: 'text-xs text-secondary-500', text: t('loading') }));
+        uploadBlob(u.id).then(function (src) { urls.push(src); clear(img).appendChild(h('img', { src: src, alt: t('up.previewOf', { name: u.clanName }) })); }, function () { clear(img).appendChild(h('span', { class: 'text-xs text-secondary-500', text: t('ga.noImage') })); });
+        var actions = h('div', { class: 'flex flex-wrap gap-2 mt-2' });
+        if (u.status === 'pending') {
+          var ok = button({ label: t('up.approve'), variant: 'primary', data: { 'clan-action': 'approve' }, onclick: function () {
+            busy(ok, true);
+            api('POST', '/clans/uploads/' + u.id + '/approve', {}).then(function () { toast('success', t('up.approved')); refreshPendingUploads(true); reload(); }, function (err) { busy(ok, false); toast('error', clErrText(err)); });
+          } });
+          var no = button({ label: t('up.reject'), variant: 'danger', data: { 'clan-action': 'reject' }, onclick: function () {
+            reasonBox().then(function (reason) {
+              if (reason === null) return;
+              busy(no, true);
+              api('POST', '/clans/uploads/' + u.id + '/reject', { reason: reason }).then(function () { toast('success', t('up.rejected')); refreshPendingUploads(true); reload(); }, function (err) { busy(no, false); toast('error', clErrText(err)); });
+            });
+          } });
+          actions.appendChild(ok);
+          actions.appendChild(no);
+        }
+        return h('div', { class: 'cl-art cl-upload' + (u.kind === 'cover' ? ' cl-art--cover' : ''), 'data-clan-upload': u.id }, img,
+          h('div', { class: 'cl-art-body' },
+            h('a', { href: '#/clans/list', class: 'eco-link font-medium truncate', dir: 'auto', text: u.clanName || u.clanId.slice(0, 8), onclick: function (e) { e.preventDefault(); clanPanel(u.clanId, u.clanName); } }),
+            h('div', { class: 'flex flex-wrap gap-1' }, tag(t('ga.kind.' + u.kind), 'secondary'), tag(t('up.st.' + u.status), CL_UPLOAD_COLOR[u.status] || 'secondary')),
+            h('span', { class: 'text-xs text-secondary-500', text: t('up.by', { name: u.username || '—' }) + ' · ' + fmtDate(u.createdAt) }),
+            h('span', { class: 'text-xs text-secondary-500', dir: 'auto', text: t('up.size', { n: fmtNum(Math.max(1, Math.round(u.size / 1024))) }) + ' · ' + (u.contentType || '') }),
+            u.reviewedBy ? h('span', { class: 'text-xs text-secondary-500', dir: 'auto', text: t('up.reviewed', { name: u.reviewedBy }) + (u.reviewedAt ? ' · ' + fmtDate(u.reviewedAt) : '') }) : null,
+            u.reason ? h('span', { class: 'text-xs text-error-600 dark:text-error-400', dir: 'auto', 'data-clan-reason': '', text: u.reason }) : null,
+            actions));
+      })));
+      box.appendChild(pager(state, function (p) { state.page = p; reload(); }));
+    }, function (err) { clear(box).appendChild(notice('error', clErrText(err))); });
+  }
+  reload();
+}
+
+var clCountries = null;
+function loadCountries() {
+  if (clCountries) return Promise.resolve(clCountries);
+  var out = [];
+  function page(n) {
+    return api('GET', '/countries' + qs({ isActive: 'true', limit: 100, page: n })).then(function (d) {
+      out = out.concat(d.items || []);
+      if ((d.items || []).length === 100 && out.length < (d.total || 0) && n < 5) return page(n + 1);
+      return out;
+    });
+  }
+  return page(1).then(function (list) { clCountries = list; return list; }, function () { clCountries = out; return out; });
+}
+
+function countryName(code) {
+  if (!code) return '';
+  var c = (clCountries || []).filter(function (x) { return x.code === code; })[0];
+  return c ? ((c.flag ? c.flag + ' ' : '') + (typeof c.name === 'object' ? textOf(c.name, code) : c.name || code)) : code;
+}
+
+function tagName(key) {
+  var list = (clClanSettings && clClanSettings.profile && clClanSettings.profile.tags) || [];
+  var x = list.filter(function (g) { return g.key === key; })[0];
+  return x ? textOf(x.name, key) : key;
+}
+
+function lookHeader(c) {
+  var cover = h('div', { class: 'cl-cover', 'data-clan-cover': c.coverKey || '' });
+  if (c.coverUrl) cover.appendChild(h('img', { src: c.coverUrl, alt: '' }));
+  if (c.color) cover.style.backgroundColor = c.color;
+  var emblem = h('div', { class: 'cl-emblem', 'data-clan-emblem': c.emblemKey || '' });
+  if (c.emblemUrl || c.avatarUrl) emblem.appendChild(h('img', { src: c.emblemUrl || c.avatarUrl, alt: '' }));
+  else emblem.appendChild(h('span', { text: (c.name || '?').slice(0, 1) }));
+  var pend = c.pendingUploads || {};
+  var waiting = ['emblem', 'cover'].filter(function (k) { return pend[k]; });
+  return h('div', { class: 'cl-look mb-4', 'data-clan-look': '' }, cover,
+    h('div', { class: 'cl-look-row' }, emblem,
+      h('div', { class: 'flex flex-col gap-1 min-w-0 flex-1' },
+        h('span', { class: 'font-semibold text-lg truncate', dir: 'auto', text: c.name }),
+        c.motto ? h('span', { class: 'text-sm text-secondary-600 dark:text-secondary-300', dir: 'auto', 'data-clan-value': 'motto', text: '«' + c.motto + '»' }) : null,
+        h('div', { class: 'flex flex-wrap gap-1 items-center' },
+          c.color ? h('span', { class: 'cl-swatch', 'data-clan-value': 'color', title: c.color, 'aria-label': t('lk.color') + ' ' + c.color, style: 'background:' + c.color }) : null,
+          c.country ? tag(countryName(c.country), 'secondary') : null,
+          c.lang ? tag(c.lang, 'secondary') : null,
+          (c.tags || []).map(function (k) { return tag(tagName(k), 'primary'); })),
+        waiting.length ? h('span', { class: 'text-xs text-warning-700 dark:text-warning-400', text: t('lk.waiting', { what: waiting.map(function (k) { return t('ga.kind.' + k); }).join('، ') }) }) : null,
+        c.nextChangeAt && new Date(c.nextChangeAt) > new Date() ? h('span', { class: 'text-xs text-secondary-500', text: t('lk.next', { at: fmtDate(c.nextChangeAt) }) }) : null)));
+}
+
+function artSelect(kind, value, name) {
+  var list = (clArt || []).filter(function (a) { return a.kind === kind; });
+  var opts = [{ value: '', label: t('none') }].concat(list.map(function (a) {
+    return { value: a.key, label: textOf(a.name, a.key) + ' · ' + a.key + (a.isActive ? '' : ' (' + t('inactive') + ')') + (a.minLevel > 1 ? ' · ' + t('ga.fromLevel', { n: a.minLevel }) : '') };
+  }));
+  if (value && !list.some(function (a) { return a.key === value; })) opts.push({ value: value, label: value + ' (' + t('missing') + ')' });
+  return select(value || '', opts, { name: name, label: name });
+}
+
+function lookForm(c, clanId, changed) {
+  var prof = (clClanSettings && clClanSettings.profile) || {};
+  var emblem = artSelect('emblem', c.emblemKey, 'emblemKey');
+  var cover = artSelect('cover', c.coverKey, 'coverKey');
+  var color = colorField(c.color);
+  color.input.setAttribute('name', 'look-color');
+  var swatches = h('div', { class: 'flex flex-wrap gap-1 mt-1' }, (prof.colors || []).map(function (hex) {
+    return h('button', { type: 'button', class: 'cl-swatch cl-swatch--pick', title: hex, 'aria-label': hex, style: 'background:' + hex, onclick: function () { color.input.value = hex; color.input.dispatchEvent(new Event('input')); } });
+  }));
+  var motto = input(c.motto, { name: 'motto' });
+  var countries = [{ value: '', label: t('none') }].concat((clCountries || []).map(function (x) { return { value: x.code, label: countryName(x.code) + ' · ' + x.code }; }));
+  if (c.country && !(clCountries || []).some(function (x) { return x.code === c.country; })) countries.push({ value: c.country, label: c.country });
+  var country = (clCountries || []).length ? select(c.country || '', countries, { name: 'country', label: t('lk.country') }) : input(c.country, { name: 'country', ltr: true, mono: true, placeholder: 'IR' });
+  var langs = [{ value: '', label: t('none') }].concat((clLanguages || []).map(function (l) { return { value: l.code, label: l.name + ' · ' + l.code }; }));
+  if (c.lang && !(clLanguages || []).some(function (l) { return l.code === c.lang; })) langs.push({ value: c.lang, label: c.lang });
+  var lang = select(c.lang || '', langs, { name: 'lang', label: t('cl.lang') });
+  var tagBoxes = (prof.tags || []).map(function (g) {
+    var b = check((c.tags || []).indexOf(g.key) !== -1, textOf(g.name, g.key), 'tag');
+    b.input.value = g.key;
+    return b;
+  });
+  var tagBox = tagBoxes.length ? h('div', { class: 'flex flex-wrap gap-x-4', 'data-clan-tags': '' }, tagBoxes) : h('p', { class: 'text-xs text-secondary-500 mb-3', text: t('lk.noTags') });
+  var msg = h('div', {});
+  var save = button({ label: t('save'), variant: 'primary', data: { 'clan-action': 'save-look' }, onclick: function () {
+    clear(msg);
+    busy(save, true);
+    api('PUT', '/clans/list/' + clanId, { emblemKey: emblem.value, coverKey: cover.value, color: color.input.value.trim(), motto: motto.value.trim(), country: String(country.value || '').trim().toUpperCase(),
+      lang: lang.value, tags: tagBoxes.filter(function (b) { return b.input.checked; }).map(function (b) { return b.input.value; }) }).then(function (out) {
+      toast('success', t('saved')); changed(out);
+    }, function (err) { busy(save, false); fieldError(msg, err); });
+  } });
+  var reset = button({ label: t('lk.reset'), variant: 'danger', data: { 'clan-action': 'reset-look' }, onclick: function () {
+    confirmBox(t('lk.resetConfirm', { name: c.name }), t('lk.reset')).then(function (ok) {
+      if (!ok) return;
+      busy(reset, true);
+      api('POST', '/clans/list/' + clanId + '/reset-look', {}).then(function (out) { toast('success', t('lk.resetDone')); changed(out); }, function (err) { busy(reset, false); fieldError(msg, err); });
+    });
+  } });
+  return section(t('lk.title'), h('div', { 'data-clan-form': 'look' },
+    h('p', { class: 'text-xs text-secondary-500 mb-3', text: t('lk.hint') }),
+    grid(field(t('lk.emblem'), emblem), field(t('lk.cover'), cover)),
+    grid(group(t('lk.color'), h('div', {}, color, swatches)), field(t('lk.motto'), motto, prof.mottoMax ? t('lk.hint.motto', { n: prof.mottoMax }) : null)),
+    grid(field(t('lk.country'), country), field(t('cl.lang'), lang)),
+    group(t('lk.tags'), tagBox, prof.maxTags ? t('lk.hint.tags', { n: prof.maxTags }) : null),
+    msg, h('div', { class: 'flex flex-wrap justify-between gap-2' }, reset, save)), 'look');
+}
+
 var CL_ROLES = ['leader', 'co_leader', 'elder', 'member'];
 var clClanSettings = null;
 function loadClanSettings(force) {
@@ -1264,6 +1690,7 @@ function clanPanel(clanId, label, done) {
     var badge = c.badge || {};
     label = c.name;
     clear(body);
+    body.appendChild(lookHeader(c));
     body.appendChild(h('div', { class: 'mb-4' }, dl([
       [t('cl.tag'), mono('#' + c.tag)],
       [t('cl.level'), h('div', { class: 'flex items-center gap-2' }, tag(t('cl.lv', { n: c.level }), 'primary'), levelBar(c))],
@@ -1276,7 +1703,6 @@ function clanPanel(clanId, label, done) {
     var name = input(c.name, { name: 'name' });
     var desc = input(c.description, { name: 'description', multiline: true });
     var avatar = input(c.avatarUrl, { name: 'avatarUrl', ltr: true });
-    var lang = input(c.lang, { name: 'lang', ltr: true, mono: true, placeholder: 'fa' });
     var emblem = badgeControl(cfg.badge.emblems, badge.emblem, 'badge.emblem');
     var color = badgeControl(cfg.badge.colors, badge.color, 'badge.color');
     var frameB = badgeControl(cfg.badge.frames, badge.frame, 'badge.frame');
@@ -1286,14 +1712,18 @@ function clanPanel(clanId, label, done) {
     var psave = button({ label: t('save'), variant: 'primary', data: { 'clan-action': 'save-profile' }, onclick: function () {
       clear(pmsg);
       busy(psave, true);
-      api('PUT', '/clans/list/' + clanId, { name: name.value.trim(), description: desc.value.trim(), avatarUrl: avatar.value.trim(), lang: lang.value.trim(),
-        badge: { emblem: emblem.value.trim(), color: color.value.trim(), frame: frameB.value.trim() }, joinType: jt.value, minTrophies: intOr(minT, 0) }).then(function (out) {
+      var prof = { name: name.value.trim(), description: desc.value.trim(),
+        badge: { emblem: emblem.value.trim(), color: color.value.trim(), frame: frameB.value.trim() }, joinType: jt.value, minTrophies: intOr(minT, 0) };
+      if (avatar.value.trim() !== (c.avatarUrl || '')) prof.avatarUrl = avatar.value.trim();
+      api('PUT', '/clans/list/' + clanId, prof).then(function (out) {
         toast('success', t('saved')); changed(out);
       }, function (err) { busy(psave, false); fieldError(pmsg, err); });
     } });
-    body.appendChild(section(t('cl.profile'), h('div', { 'data-clan-form': 'profile' }, grid(field(t('f.name'), name), field(t('cl.lang'), lang)), field(t('f.description'), desc),
+    body.appendChild(section(t('cl.profile'), h('div', { 'data-clan-form': 'profile' }, field(t('f.name'), name), field(t('f.description'), desc),
       field(t('cl.avatar'), avatar), grid3(field(t('cl.emblem'), emblem), field(t('f.color'), color), field(t('cl.frame'), frameB)),
       grid(field(t('cl.joinType'), jt), field(t('cl.minTrophies'), minT, t('cl.hint.minTrophies'))), pmsg, h('div', { class: 'flex justify-end' }, psave)), 'profile'));
+    body.appendChild(h('div', { class: 'h-3' }));
+    body.appendChild(lookForm(c, clanId, changed));
     body.appendChild(h('div', { class: 'h-3' }));
     var amount = numInput('', 'xp-amount', t('cl.xpAmount'));
     var xmsg = h('div', {});
@@ -1350,7 +1780,7 @@ function clanPanel(clanId, label, done) {
           h('span', { dir: 'ltr', text: digits(String(mine ? w.scoreA : w.scoreB) + ' : ' + String(mine ? w.scoreB : w.scoreA)) }), h('span', { class: 'text-xs', text: fmtDate(w.endsAt) })] };
       })) : h('p', { class: 'text-sm text-secondary-500', text: t('cl.noWars') }), 'wars'));
   }
-  Promise.all([api('GET', '/clans/list/' + clanId), loadClanSettings()]).then(function (res) { paint(res[0]); }, function (err) { clear(body).appendChild(notice('error', clErrText(err))); });
+  Promise.all([api('GET', '/clans/list/' + clanId), loadClanSettings(), loadArt().catch(function () { return []; }), loadCountries(), loadLanguages()]).then(function (res) { paint(res[0]); }, function (err) { clear(body).appendChild(notice('error', clErrText(err))); });
 }
 
 function levelsPage(root) {
@@ -1810,8 +2240,40 @@ function permGrid(roles) {
   return el;
 }
 
+function tagRows(list) {
+  var box = h('div', { class: 'cl-rows', 'data-clan-tag-rows': '' });
+  var rows = [];
+  function addRow(g) {
+    g = g || { key: '', name: {} };
+    var key = input(g.key, { name: 'tag-key', ltr: true, mono: true, placeholder: 'friendly' });
+    var names = {};
+    var cells = [field(t('f.key'), key)];
+    (clLanguages || []).forEach(function (l) {
+      var el = input((g.name || {})[l.code] || '', { name: 'tag-name-' + l.code });
+      el.setAttribute('dir', l.direction === 'rtl' ? 'rtl' : 'ltr');
+      names[l.code] = el;
+      cells.push(field(t('lang.text', { label: t('f.name'), lang: l.name }), el));
+    });
+    var rec = { key: key, names: names };
+    var row = h('div', { class: 'cl-row', 'data-clan-tag-row': '' }, cells,
+      h('div', {}, button({ label: t('remove'), variant: 'danger', onclick: function () { row.remove(); rows = rows.filter(function (r) { return r !== rec; }); } })));
+    rows.push(rec);
+    box.appendChild(row);
+  }
+  (list || []).forEach(addRow);
+  var wrap = h('div', {}, box, h('div', { class: 'mt-2' }, button({ label: '+ ' + t('cs.addTag'), data: { 'clan-action': 'add-tag' }, onclick: function () { addRow(); } })));
+  wrap.read = function () {
+    return rows.map(function (r) {
+      var name = {};
+      Object.keys(r.names).forEach(function (k) { var v = r.names[k].value.trim(); if (v) name[k] = v; });
+      return { key: r.key.value.trim(), name: name };
+    }).filter(function (g) { return g.key; });
+  };
+  return wrap;
+}
+
 function clanSettingsPage(root) {
-  loadRefs('clans', true).then(function () {
+  Promise.all([loadRefs('clans', true), loadLanguages()]).then(function () {
     settingsPage(root, 'clans/settings', '/clans', function (cur) {
       var cr = cur.create, bd = cur.badge, ro = cur.roles, cd = cur.cooldowns, xp = cur.xp, ch = cur.chat, ds = cur.display, ev = cur.events;
       var enabled = check(cur.enabled, t('cs.enabled'), 'enabled');
@@ -1845,6 +2307,19 @@ function clanSettingsPage(root) {
       var pub = check(ev.publish, t('ts.publish'), 'events.publish');
       var notify = check(ev.notify, t('cs.notify'), 'events.notify');
       var code = numInput(ev.code, 'events.code');
+      var pf = cur.profile || {}, upl = cur.uploads || {};
+      var tags = tagRows(pf.tags);
+      var maxTags = numInput(pf.maxTags, 'profile.maxTags');
+      var mottoMax = numInput(pf.mottoMax, 'profile.mottoMax');
+      var colorsP = tagsInput(pf.colors, 'profile.colors', '#E53935، #1E88E5');
+      var cooldown = numInput(pf.changeCooldownMinutes, 'profile.changeCooldownMinutes');
+      var blocked = input((pf.blockedWords || []).join('\n'), { name: 'profile.blockedWords', multiline: true, rows: 5 });
+      var chatWords = check(pf.useChatWords, t('cs.useChatWords'), 'profile.useChatWords');
+      var reqEmblem = check(pf.requireEmblem, t('cs.requireEmblem'), 'profile.requireEmblem');
+      var upOn = check(upl.enabled, t('cs.uploadsOn'), 'uploads.enabled');
+      var approval = check(upl.needsApproval, t('cs.needsApproval'), 'uploads.needsApproval');
+      var maxKb = numInput(Math.round((upl.maxBytes || 0) / 1024), 'uploads.maxKb');
+      var typeBoxes = ['png', 'jpg', 'webp'].map(function (x) { var b = check((upl.types || []).indexOf(x) !== -1, x.toUpperCase(), 'uploads.types'); b.input.value = x; return b; });
       return {
         el: [
           section(t('ts.general'), h('div', {}, enabled, h('p', { class: 'text-xs text-secondary-500', text: t('cs.hint.enabled') })), 'general'),
@@ -1854,6 +2329,11 @@ function clanSettingsPage(root) {
           section(t('cs.badge'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('cs.hint.badge') }), field(t('cl.emblem'), emblems), field(t('cs.colors'), colors), field(t('cl.frame'), frames)), 'badge'),
           section(t('cs.roles'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('cs.hint.roles') }), perms, h('div', { class: 'h-3' }),
             grid(field(t('cs.maxCo'), maxCo), field(t('cs.leaderLeave'), leave, t('cs.hint.leaderLeave')))), 'roles'),
+          section(t('cs.profile'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('cs.hint.profile') }),
+            group(t('cs.tags'), tags, t('cs.hint.tags')), grid3(field(t('cs.maxTags'), maxTags, t('cs.hint.maxTags')), field(t('cs.mottoMax'), mottoMax, t('cs.hint.mottoMax')), field(t('cs.lookCooldown'), cooldown, t('cs.hint.lookCooldown'))),
+            field(t('cs.lookColors'), colorsP, t('cs.hint.lookColors')), field(t('cs.blocked'), blocked, t('cs.hint.blocked')), chatWords, reqEmblem), 'profile'),
+          section(t('cs.uploads'), h('div', {}, upOn, h('p', { class: 'text-xs text-secondary-500 -mt-2 mb-3', text: t('cs.hint.uploads') }), approval,
+            grid(field(t('cs.maxKb'), maxKb, t('cs.hint.maxKb')), group(t('cs.types'), h('div', { class: 'flex flex-wrap gap-x-4', 'data-clan-types': '' }, typeBoxes)))), 'uploads'),
           section(t('cs.cooldowns'), h('div', {}, grid(field(t('cs.joinAfter'), joinAfter, t('cs.hint.joinAfter')), field(t('cs.rejoin'), rejoin, t('cs.hint.rejoin'))),
             grid3(field(t('cs.leaveAfter'), leaveAfter, t('cs.hint.leaveAfter')), field(t('cs.invDays'), invDays), field(t('cs.reqs'), reqs, t('cs.hint.reqs')))), 'cooldowns'),
           section(t('cs.xp'), h('div', {}, sources, h('div', { class: 'h-3' }), grid(field(t('cs.cap'), cap, t('cs.hint.cap')), h('div', {})),
@@ -1873,6 +2353,9 @@ function clanSettingsPage(root) {
           c.chat = { systemMessages: sys.input.checked };
           c.display = { searchLimit: intOr(sLimit, 0), historyLimit: intOr(hLimit, 0) };
           c.events = { publish: pub.input.checked, notify: notify.input.checked, code: intOr(code, 0) };
+          c.profile = { mottoMax: intOr(mottoMax, 0), tags: tags.read(), maxTags: intOr(maxTags, 0), colors: colorsP.read().map(function (x) { return x.toUpperCase(); }), changeCooldownMinutes: intOr(cooldown, 0),
+            blockedWords: blocked.value.split('\n').map(function (w) { return w.trim(); }).filter(Boolean), useChatWords: chatWords.input.checked, requireEmblem: reqEmblem.input.checked };
+          c.uploads = { enabled: upOn.input.checked, needsApproval: approval.input.checked, maxBytes: intOr(maxKb, 0) * 1024, types: typeBoxes.filter(function (b) { return b.input.checked; }).map(function (b) { return b.input.value; }) };
           return null;
         },
         after: function (out) { clClanSettings = out.settings; }
@@ -1882,10 +2365,10 @@ function clanSettingsPage(root) {
 }
 
 var CL_ROOT = 'clan-root';
-var CL_GROUPS = { trophies: ['leagues', 'players', 'seasons', 'settings'], clans: ['list', 'levels', 'wars', 'rounds', 'settings'] };
+var CL_GROUPS = { trophies: ['leagues', 'players', 'seasons', 'settings'], clans: ['list', 'levels', 'wars', 'rounds', 'gallery', 'uploads', 'settings'] };
 var CL_ORDER = ['trophies', 'clans'];
 var CL_RENDER = { 'trophies/leagues': leaguesPage, 'trophies/players': trPlayersPage, 'trophies/seasons': seasonsPage, 'trophies/settings': trophySettingsPage,
-  'clans/list': clansPage, 'clans/levels': levelsPage, 'clans/wars': warsPage, 'clans/rounds': roundsPage, 'clans/settings': clanSettingsPage };
+  'clans/list': clansPage, 'clans/levels': levelsPage, 'clans/wars': warsPage, 'clans/rounds': roundsPage, 'clans/gallery': galleryPage, 'clans/uploads': uploadsPage, 'clans/settings': clanSettingsPage };
 var CL_HASH = /^#\/(trophies|clans)(?:\/([^/?]*))?/;
 var clPending = null;
 var clRouter = null;
@@ -1935,7 +2418,8 @@ function clNavLink(g, page, active) {
   var on = id === active;
   return h('li', {}, h('a', { href: '#/' + id, 'data-clan-nav': id, 'aria-current': on ? 'page' : null,
     class: 'h-[37px] px-3 py-2 flex items-center gap-2 text-secondary-800 hover:text-primary-700 dark:text-[#afbccb] dark:hover:text-primary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-md border-l-[2px] border-transparent' + (on ? ' !text-primary-700 dark:!text-primary-300 !bg-secondary-50 dark:!bg-secondary-800 !border-primary-700' : '') },
-    h('div', { class: 'font-medium relative truncate flex-1' }, h('span', { text: t('nav.' + id) }))));
+    h('div', { class: 'font-medium relative truncate flex-1' }, h('span', { text: t('nav.' + id) })),
+    id === 'clans/uploads' && clPendingUploads ? h('span', { class: 'eco-nav-badge tabular-nums', 'aria-label': t('up.pendingN', { n: clPendingUploads }), text: fmtNum(clPendingUploads) }) : null));
 }
 
 function clSyncNav(active) {
@@ -1944,7 +2428,7 @@ function clSyncNav(active) {
   var existing = document.querySelectorAll('[data-clan-group]');
   if (!group || !clAllowed()) { Array.prototype.forEach.call(existing, function (e) { e.remove(); }); return; }
   var target = document.querySelector('.x-drawer [data-quiz-group]') || document.querySelector('.x-drawer [data-campaign-group]') || document.querySelector('.x-drawer [data-shopx-group]') || document.querySelector('.x-drawer [data-account-group]') || document.querySelector('.x-drawer [data-analytics-group]') || group;
-  var key = clLang() + '|' + active;
+  var key = clLang() + '|' + active + '|' + clPendingUploads;
   var first = document.querySelector('[data-clan-group="trophies"]');
   var second = document.querySelector('[data-clan-group="clans"]');
   if (first && second && first.getAttribute('data-key') === key && second.getAttribute('data-key') === key && first.nextElementSibling === second && second.nextElementSibling === target) return;
@@ -1972,6 +2456,7 @@ function clUnmount() {
 function clSync() {
   clAddRoutes();
   var page = clRoute();
+  if (clAllowed()) refreshPendingUploads();
   clSyncNav(page);
   if (!page) { if (clMounted || document.getElementById(CL_ROOT)) clUnmount(); return; }
   var mains = document.querySelectorAll('#main > main');

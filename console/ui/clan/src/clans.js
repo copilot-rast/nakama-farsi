@@ -83,6 +83,7 @@ function clanPanel(clanId, label, done) {
     var badge = c.badge || {};
     label = c.name;
     clear(body);
+    body.appendChild(lookHeader(c));
     body.appendChild(h('div', { class: 'mb-4' }, dl([
       [t('cl.tag'), mono('#' + c.tag)],
       [t('cl.level'), h('div', { class: 'flex items-center gap-2' }, tag(t('cl.lv', { n: c.level }), 'primary'), levelBar(c))],
@@ -95,7 +96,6 @@ function clanPanel(clanId, label, done) {
     var name = input(c.name, { name: 'name' });
     var desc = input(c.description, { name: 'description', multiline: true });
     var avatar = input(c.avatarUrl, { name: 'avatarUrl', ltr: true });
-    var lang = input(c.lang, { name: 'lang', ltr: true, mono: true, placeholder: 'fa' });
     var emblem = badgeControl(cfg.badge.emblems, badge.emblem, 'badge.emblem');
     var color = badgeControl(cfg.badge.colors, badge.color, 'badge.color');
     var frameB = badgeControl(cfg.badge.frames, badge.frame, 'badge.frame');
@@ -105,14 +105,18 @@ function clanPanel(clanId, label, done) {
     var psave = button({ label: t('save'), variant: 'primary', data: { 'clan-action': 'save-profile' }, onclick: function () {
       clear(pmsg);
       busy(psave, true);
-      api('PUT', '/clans/list/' + clanId, { name: name.value.trim(), description: desc.value.trim(), avatarUrl: avatar.value.trim(), lang: lang.value.trim(),
-        badge: { emblem: emblem.value.trim(), color: color.value.trim(), frame: frameB.value.trim() }, joinType: jt.value, minTrophies: intOr(minT, 0) }).then(function (out) {
+      var prof = { name: name.value.trim(), description: desc.value.trim(),
+        badge: { emblem: emblem.value.trim(), color: color.value.trim(), frame: frameB.value.trim() }, joinType: jt.value, minTrophies: intOr(minT, 0) };
+      if (avatar.value.trim() !== (c.avatarUrl || '')) prof.avatarUrl = avatar.value.trim();
+      api('PUT', '/clans/list/' + clanId, prof).then(function (out) {
         toast('success', t('saved')); changed(out);
       }, function (err) { busy(psave, false); fieldError(pmsg, err); });
     } });
-    body.appendChild(section(t('cl.profile'), h('div', { 'data-clan-form': 'profile' }, grid(field(t('f.name'), name), field(t('cl.lang'), lang)), field(t('f.description'), desc),
+    body.appendChild(section(t('cl.profile'), h('div', { 'data-clan-form': 'profile' }, field(t('f.name'), name), field(t('f.description'), desc),
       field(t('cl.avatar'), avatar), grid3(field(t('cl.emblem'), emblem), field(t('f.color'), color), field(t('cl.frame'), frameB)),
       grid(field(t('cl.joinType'), jt), field(t('cl.minTrophies'), minT, t('cl.hint.minTrophies'))), pmsg, h('div', { class: 'flex justify-end' }, psave)), 'profile'));
+    body.appendChild(h('div', { class: 'h-3' }));
+    body.appendChild(lookForm(c, clanId, changed));
     body.appendChild(h('div', { class: 'h-3' }));
     var amount = numInput('', 'xp-amount', t('cl.xpAmount'));
     var xmsg = h('div', {});
@@ -169,5 +173,5 @@ function clanPanel(clanId, label, done) {
           h('span', { dir: 'ltr', text: digits(String(mine ? w.scoreA : w.scoreB) + ' : ' + String(mine ? w.scoreB : w.scoreA)) }), h('span', { class: 'text-xs', text: fmtDate(w.endsAt) })] };
       })) : h('p', { class: 'text-sm text-secondary-500', text: t('cl.noWars') }), 'wars'));
   }
-  Promise.all([api('GET', '/clans/list/' + clanId), loadClanSettings()]).then(function (res) { paint(res[0]); }, function (err) { clear(body).appendChild(notice('error', clErrText(err))); });
+  Promise.all([api('GET', '/clans/list/' + clanId), loadClanSettings(), loadArt().catch(function () { return []; }), loadCountries(), loadLanguages()]).then(function (res) { paint(res[0]); }, function (err) { clear(body).appendChild(notice('error', clErrText(err))); });
 }

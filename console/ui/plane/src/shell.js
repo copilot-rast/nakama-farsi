@@ -20,7 +20,7 @@ window.NakamaPlane.iconFor = iconFor;
 
 var QUIZ_ICON = { packs: 'package', questions: 'help', missions: 'checklist', duels: 'users', 'duel-categories': 'layers', reports: 'flag', results: 'fileCode', 'import': 'cloudDown', stats: 'chart', settings: 'sliders' };
 var TROPHY_ICON = { leagues: 'ladder', players: 'trophy', seasons: 'calendar', settings: 'sliders' };
-var CLAN_ICON = { list: 'group', levels: 'layers', wars: 'shield', rounds: 'repeat', settings: 'sliders' };
+var CLAN_ICON = { list: 'group', levels: 'layers', wars: 'shield', rounds: 'repeat', gallery: 'image', uploads: 'inbox', settings: 'sliders' };
 var GROUP_ICON = { quiz: 'help', trophies: 'trophy', clans: 'group', economy: 'coins', publication: 'megaphone', moderation: 'shield', support: 'buoy', system: 'cloudDown', developer: 'code', help: 'help', settings: 'settings' };
 
 function linkInfo(a) {

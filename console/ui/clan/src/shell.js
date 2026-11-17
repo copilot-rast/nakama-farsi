@@ -1,8 +1,8 @@
 var CL_ROOT = 'clan-root';
-var CL_GROUPS = { trophies: ['leagues', 'players', 'seasons', 'settings'], clans: ['list', 'levels', 'wars', 'rounds', 'settings'] };
+var CL_GROUPS = { trophies: ['leagues', 'players', 'seasons', 'settings'], clans: ['list', 'levels', 'wars', 'rounds', 'gallery', 'uploads', 'settings'] };
 var CL_ORDER = ['trophies', 'clans'];
 var CL_RENDER = { 'trophies/leagues': leaguesPage, 'trophies/players': trPlayersPage, 'trophies/seasons': seasonsPage, 'trophies/settings': trophySettingsPage,
-  'clans/list': clansPage, 'clans/levels': levelsPage, 'clans/wars': warsPage, 'clans/rounds': roundsPage, 'clans/settings': clanSettingsPage };
+  'clans/list': clansPage, 'clans/levels': levelsPage, 'clans/wars': warsPage, 'clans/rounds': roundsPage, 'clans/gallery': galleryPage, 'clans/uploads': uploadsPage, 'clans/settings': clanSettingsPage };
 var CL_HASH = /^#\/(trophies|clans)(?:\/([^/?]*))?/;
 var clPending = null;
 var clRouter = null;
@@ -52,7 +52,8 @@ function clNavLink(g, page, active) {
   var on = id === active;
   return h('li', {}, h('a', { href: '#/' + id, 'data-clan-nav': id, 'aria-current': on ? 'page' : null,
     class: 'h-[37px] px-3 py-2 flex items-center gap-2 text-secondary-800 hover:text-primary-700 dark:text-[#afbccb] dark:hover:text-primary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-md border-l-[2px] border-transparent' + (on ? ' !text-primary-700 dark:!text-primary-300 !bg-secondary-50 dark:!bg-secondary-800 !border-primary-700' : '') },
-    h('div', { class: 'font-medium relative truncate flex-1' }, h('span', { text: t('nav.' + id) }))));
+    h('div', { class: 'font-medium relative truncate flex-1' }, h('span', { text: t('nav.' + id) })),
+    id === 'clans/uploads' && clPendingUploads ? h('span', { class: 'eco-nav-badge tabular-nums', 'aria-label': t('up.pendingN', { n: clPendingUploads }), text: fmtNum(clPendingUploads) }) : null));
 }
 
 function clSyncNav(active) {
@@ -61,7 +62,7 @@ function clSyncNav(active) {
   var existing = document.querySelectorAll('[data-clan-group]');
   if (!group || !clAllowed()) { Array.prototype.forEach.call(existing, function (e) { e.remove(); }); return; }
   var target = document.querySelector('.x-drawer [data-quiz-group]') || document.querySelector('.x-drawer [data-campaign-group]') || document.querySelector('.x-drawer [data-shopx-group]') || document.querySelector('.x-drawer [data-account-group]') || document.querySelector('.x-drawer [data-analytics-group]') || group;
-  var key = clLang() + '|' + active;
+  var key = clLang() + '|' + active + '|' + clPendingUploads;
   var first = document.querySelector('[data-clan-group="trophies"]');
   var second = document.querySelector('[data-clan-group="clans"]');
   if (first && second && first.getAttribute('data-key') === key && second.getAttribute('data-key') === key && first.nextElementSibling === second && second.nextElementSibling === target) return;
@@ -89,6 +90,7 @@ function clUnmount() {
 function clSync() {
   clAddRoutes();
   var page = clRoute();
+  if (clAllowed()) refreshPendingUploads();
   clSyncNav(page);
   if (!page) { if (clMounted || document.getElementById(CL_ROOT)) clUnmount(); return; }
   var mains = document.querySelectorAll('#main > main');
