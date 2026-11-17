@@ -83,8 +83,8 @@ func (s *service) rpcMe(ctx context.Context, userID, payload string) (any, error
 	next := l.next(st.Trophies)
 	var nextView map[string]any
 	if next != nil {
-		nextView = leagueView(next, tx)
-		nextView["need"] = next.MinTrophies - st.Trophies
+		nextView = map[string]any{"key": next.Key, "name": tx.of(next.Name, next.Key), "iconUrl": next.IconURL, "color": next.Color, "minTrophies": next.MinTrophies,
+			"need": next.MinTrophies - st.Trophies}
 	}
 	var pending int
 	_ = s.db.QueryRowContext(ctx, `SELECT count(*) FROM trophy_prize WHERE user_id::text=$1 AND status='pending'`, userID).Scan(&pending)

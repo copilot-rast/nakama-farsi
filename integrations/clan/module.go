@@ -84,7 +84,7 @@ func (g nkGroups) Say(ctx context.Context, id string, content map[string]any) er
 	if err != nil {
 		return err
 	}
-	_, err = g.nk.ChannelMessageSend(ctx, ch, content, "", "", true)
+	_, err = g.nk.ChannelMessageSend(ctx, ch, content, "00000000-0000-0000-0000-000000000000", "", true)
 	return err
 }
 

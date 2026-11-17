@@ -136,7 +136,7 @@ func (s *service) write(ctx context.Context, cfg settings.All, l ladder, userID,
 	if cur := l.at(after); cur != nil {
 		leagueAfter = cur.Key
 	}
-	if leagueBefore == "" && before == after {
+	if leagueBefore == "" {
 		if cur := l.at(before); cur != nil {
 			leagueBefore = cur.Key
 		}

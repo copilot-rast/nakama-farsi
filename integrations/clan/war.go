@@ -743,12 +743,13 @@ func (s *service) warView(ctx context.Context, warID, myClan, userID string, tx 
 		return nil, err
 	}
 	usSide["score"], usSide["wins"] = usScore, usWins
-	var themSide map[string]any
-	if them != "" {
-		if themSide, err = s.warSide(ctx, warID, them, tx); err != nil {
-			return nil, err
-		}
-		themSide["score"], themSide["wins"] = themScore, themWins
+	themSide, err := s.warSide(ctx, warID, them, tx)
+	if err != nil {
+		return nil, err
+	}
+	themSide["score"], themSide["wins"] = themScore, themWins
+	if them == "" {
+		themSide = nil
 	}
 	var attacks int
 	inWar := false
