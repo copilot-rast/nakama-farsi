@@ -594,32 +594,4 @@ A sticker is a chat message whose content has `sticker: "<pack>/<sticker>"`. The
 
 ## Avatar builder
 
-Admin-defined avatar parts and options. Migration `20261211000000-base-avatar.sql`, code `integrations/base/avatar.go`.
-
-### Data
-
-| Table | What |
-|---|---|
-| `base_avatar_settings` (row 1) | `settings` JSONB: `enabled` [true] |
-| `base_avatar_part` | `key` (immutable), translated `name`, `layer` (−1000…1000, drawing order, larger on top), `required` (the player always has an option), `sort`, `is_active` |
-| `base_avatar_option` | `part_id`, `key` (unique in the part), translated `name`, `image_url` (the layer picture), `icon_url` (thumbnail), `value` (free text up to 64, such as a colour), `access` (`free` or `item`), `item_key` (`economy_item`; owning it opens the option), `is_default`, `sort`, `is_active`; 1 to 300 per part, replaced as a list when the part is saved |
-| `base_avatar_look` | `user_id`, `look` JSONB `{partKey: optionKey}` (`""` = nothing chosen for a part that is not required) |
-
-Rules when saving a part: an option needs a picture or a value (`OPTION_LOOK_REQUIRED`); one default at most (`ONE_DEFAULT`), free and active (`DEFAULT_MUST_BE_FREE`); a required part needs a free active option (`REQUIRED_NEEDS_FREE`); item keys must exist (`ITEM_NOT_FOUND`).
-
-### Resolving a look
-
-For each active part in order: the saved option if it is active and free or owned; otherwise, unless the player chose nothing for a part that is not required, the default option, or for a required part the first free option. The answer is `{parts: {partKey: optionKey}, layers: [{part, option, imageUrl, value, layer}]}` sorted by layer. A look is resolved when it is read, so a removed option or a lost item falls back without touching the saved row. Ids without a saved look (bots, unknown ids) get the default look.
-
-### Client RPCs
-
-| RPC | In | Out |
-|---|---|---|
-| `base_avatar` | `{lang?}` | `{lang, enabled, parts: [{key, name, layer, required, options: [{key, name, imageUrl, iconUrl, value, access, owned, isDefault, itemKey?, item?: {key, name, iconUrl, price}}]}], look}`; empty when off |
-| `base_avatar_save` | `{look: {partKey: optionKey}}` (full replace) | `{look}`; errors (message is JSON `{code, meta}`): `AVATAR_DISABLED`, `AVATAR_PART_NOT_FOUND {part}`, `AVATAR_OPTION_NOT_FOUND {part, option}`, `AVATAR_OPTION_LOCKED {part, option, itemKey}`, `AVATAR_PART_REQUIRED {part}` |
-| `base_avatar_get` | `{userIds: [1..100]}` | `{enabled, looks: {id: look}}`; `INVALID_USER_IDS` |
-
-### Console
-
-«آواتارساز» hub in the economy sales group (`#/economy/avatar`, `HIRO_ECONOMY`): «بخش‌ها» (list with option previews, layer, required and how many players chose the part; editor with key, name, layer, order, required and an option row list: picture upload or link, key, name, value, access, item, default) and «تنظیمات» (on/off). Console API under `/v2/console/base/avatar`: `settings` (GET/PUT), `parts` (GET/POST), `parts/{id}` (GET/PUT/DELETE); `GET /players/{id}/avatar` returns `{saved, look}`.
-
+Moved to the economy plugin as the avatar designer (see `docs/economy/spec.md`, «Avatar designer»). Migration `20261228000000-economy-avatar.sql` copies the parts, options, settings and saved looks; the `base_avatar*` tables are kept untouched and the RPCs `base_avatar`, `base_avatar_save` and `base_avatar_get` keep their shapes, now served by the economy plugin on the player's active avatar.

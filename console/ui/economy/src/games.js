@@ -122,14 +122,14 @@ function reqFields(scope) {
     { name: 'itemIds', type: 'refMulti', resource: 'items', label: 'f.gm.req.items', hint: 'f.gm.req.items.hint', optional: true, empty: [] },
     { type: 'row', fields: [
       { name: 'itemsMode', type: 'select', noPlaceholder: true, label: 'f.gm.req.itemsMode', options: opts('gm.req.mode.', ['any', 'all']), when: function (v) { return (v.itemIds || []).length > 1; } },
-      { name: 'consumeItems', type: 'bool', inline: true, label: 'f.gm.req.consumeItems', hint: 'f.gm.req.consumeItems.hint', when: hasItems }
+      { name: 'consumeItems', type: 'bool', inline: true, label: 'f.gm.req.consumeItems', hint: 'f.gm.req.consumeItems.hint', when: function (v) { return scope !== 'avatar' && hasItems(v); } }
     ] },
     { name: 'tagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.gm.req.tags', hint: 'f.gm.req.tags.hint', optional: true, empty: [] },
     { name: 'tagsMode', type: 'select', noPlaceholder: true, label: 'f.gm.req.tagsMode', options: opts('gm.req.mode.', ['any', 'all']), when: hasTags },
     { name: 'excludeTagIds', type: 'refMulti', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.gm.req.exclude', hint: 'f.gm.req.exclude.hint', optional: true, empty: [],
       check: function (v, vals) { return (v || []).some(function (id) { return (vals.tagIds || []).indexOf(id) !== -1; }) ? t('gm.req.bothWays') : null; } }
   ];
-  if (scope === 'game') fields.push({ name: 'minLevel', type: 'number', label: 'f.gm.req.minLevel', hint: 'f.gm.req.minLevel.hint', optional: true, min: 0, max: 1000 });
+  if (scope === 'game' || scope === 'avatar') fields.push({ name: 'minLevel', type: 'number', label: 'f.gm.req.minLevel', hint: 'f.gm.req.minLevel.hint', optional: true, min: 0, max: 1000 });
   fields.push(
     { name: 'metas', type: 'rows', label: 'f.gm.req.metas', hint: 'f.gm.req.metas.hint', addLabel: 'gm.req.meta.add', emptyText: 'gm.req.meta.empty', max: 10, empty: [], refresh: true,
       newRow: function () { return { metaId: null, operator: 'gte', value: 1, consume: null }; },
@@ -137,13 +137,13 @@ function reqFields(scope) {
         { name: 'metaId', type: 'ref', resource: 'metas', label: 'f.rel.meta', required: true },
         { name: 'operator', type: 'select', label: 'f.rel.operator', options: opts('rel.op.', REL_OPS) },
         { name: 'value', type: 'number', int: false, label: 'f.rel.value', required: true },
-        { name: 'consume', type: 'number', int: false, label: 'f.gm.req.consume', optional: true, min: 0, max: 1000000000 }
-      ] },
+        scope === 'avatar' ? null : { name: 'consume', type: 'number', int: false, label: 'f.gm.req.consume', optional: true, min: 0, max: 1000000000 }
+      ].filter(Boolean) },
     { name: 'productIds', type: 'refMulti', resource: 'products', label: 'f.gm.req.products', hint: 'f.gm.req.products.hint', optional: true, empty: [] },
-    { name: 'paths', type: 'multi', label: 'f.gm.req.paths', hint: 'f.gm.req.paths.hint', options: opts('gm.req.path.', GAME_REQ_PATHS) },
+    { name: 'paths', type: 'multi', label: 'f.gm.req.paths', hint: 'f.gm.req.paths.hint', options: opts('gm.req.path.', GAME_REQ_PATHS), when: function () { return scope !== 'avatar'; } },
     { type: 'row', fields: [
       { name: 'lock', type: 'select', noPlaceholder: true, label: 'f.gm.req.lock', options: opts('gm.req.lock.', ['show', 'hide']) },
-      { name: 'refund', type: 'select', noPlaceholder: true, label: 'f.gm.req.refund', options: opts('gm.req.refund.', ['return', 'keep']), when: reqConsumes }
+      { name: 'refund', type: 'select', noPlaceholder: true, label: 'f.gm.req.refund', options: opts('gm.req.refund.', ['return', 'keep']), when: function (v) { return scope !== 'avatar' && reqConsumes(v); } }
     ] }
   );
   if (scope === 'room') fields.push({ name: 'inherit', type: 'bool', inline: true, label: 'f.gm.req.inherit', hint: 'f.gm.req.inherit.hint' });
@@ -154,7 +154,7 @@ function reqFields(scope) {
 function reqToForm(v, scope) {
   v = v || {};
   return { itemIds: (v.itemIds || []).slice(), itemsMode: v.itemsMode || 'any', consumeItems: !!v.consumeItems, tagIds: (v.tagIds || []).slice(), tagsMode: v.tagsMode || 'any',
-    excludeTagIds: (v.excludeTagIds || []).slice(), minLevel: scope === 'game' ? (v.minLevel || null) : null,
+    excludeTagIds: (v.excludeTagIds || []).slice(), minLevel: scope === 'game' || scope === 'avatar' ? (v.minLevel || null) : null,
     metas: (v.metas || []).map(function (m) { return { metaId: m.metaId, operator: m.operator || 'gte', value: m.value, consume: m.consume || null }; }),
     productIds: (v.productIds || []).slice(), paths: v.paths && v.paths.length ? v.paths.slice() : GAME_REQ_PATHS.slice(), lock: v.lock || 'show', refund: v.refund || 'return',
     inherit: v.inherit !== false, message: v.message || {} };
@@ -165,12 +165,12 @@ function reqPayload(v, scope) {
   var out = { itemIds: v.itemIds || [], itemsMode: v.itemsMode || 'any', consumeItems: !!v.consumeItems && (v.itemIds || []).length > 0, tagIds: v.tagIds || [], tagsMode: v.tagsMode || 'any',
     excludeTagIds: v.excludeTagIds || [], metas: (v.metas || []).map(function (m) { return { metaId: m.metaId, operator: m.operator || 'gte', value: m.value, consume: m.consume == null || m.consume === '' ? null : m.consume }; }),
     productIds: v.productIds || [], paths: (v.paths || []).length === GAME_REQ_PATHS.length ? [] : (v.paths || []), lock: v.lock || 'show', refund: v.refund || 'return', message: trClean(v.message) || {} };
-  if (scope === 'game') out.minLevel = v.minLevel == null || v.minLevel === '' ? 0 : Number(v.minLevel);
+  if (scope === 'avatar') { out.paths = []; out.consumeItems = false; out.metas.forEach(function (m) { m.consume = null; }); }
+  if (scope === 'game' || scope === 'avatar') out.minLevel = v.minLevel == null || v.minLevel === '' ? 0 : Number(v.minLevel);
   if (scope === 'room') out.inherit = v.inherit !== false;
   return out;
 }
 
-// requirementsEditor is a folded panel: a summary line with an edit button, and the nested form under it.
 function requirementsEditor(scope) {
   return function (cur, change) {
     var vals = reqToForm(cur, scope);

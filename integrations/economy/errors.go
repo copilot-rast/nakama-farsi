@@ -111,6 +111,10 @@ func (s *service) rpc(fn clientRPC) func(context.Context, runtime.Logger, *sql.D
 }
 
 func (s *service) runtimeError(err error) error {
+	var re *runtime.Error
+	if errors.As(err, &re) {
+		return re
+	}
 	if app, ok := asApp(err); ok {
 		return runtime.NewError(app.Code, int(grpcCode(app.Status)))
 	}

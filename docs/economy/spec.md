@@ -749,3 +749,30 @@ To add a second game in another plugin: `gamecatalog.Register(...)` and `initial
 ## Item sounds
 
 Migration `20261210000000-economy-item-sound.sql` adds `economy_item.sound_url` (default empty). The item editor has a «صدا» field (upload or link, with a player preview); the console upload endpoint `POST /v2/console/economy/uploads` also takes mp3, ogg and wav (sniffed from the file, 2 MB like images) and serves them from `/v2/economy/files/<name>` with an audio content type. Client item views (`economy_inventory`, item answers) carry `soundUrl`. Games read it from the equipped item, for example a goal sound slot.
+
+## Avatar designer
+
+Migration `20261228000000-economy-avatar.sql`, code `integrations/economy/avatars*.go`. Replaces the base avatar builder; its data is copied (parts → categories with one slot, options → items, each saved look → one active avatar with its choices, `""` choices → cleared categories).
+
+### Data
+
+| Table | What |
+|---|---|
+| `economy_avatar_settings` (row 1) | `enabled` [true], `maxAvatars` [1, 1–50], `tagLimits` [`{tagId, maxAvatars}`, the largest matching player tag wins], `nameMaxLength` [24], `autoCreate` [true: a player with no avatar gets one on the first call], `keepLast` [true: the last avatar cannot be deleted], `slotFull` [`replace` or `refuse`, for categories with more than one slot], `keepBought` [true: a bought item stays wearable after its condition stops holding] |
+| `economy_avatar_type` | avatar bases such as male/female: `key`, `name`, `image_url` (empty body), `icon_url`, `sort` (first active type is the default for new avatars), `is_active` |
+| `economy_avatar_category` | `key`, `name`, `icon_url`, `layer` (drawing order), `required` (always one item), `slots` [1, 1–20], `sort`, `is_active` |
+| `economy_avatar_item` | `category_id` (immutable), `key` (unique in the category), `name`, `image_url`, `icon_url`, `value`, `access` (`free`, `currency` with `price {currencyKey, amount}`, `product` with `product_id`: owned after a successful payment for it, `item` with `item_key`: owned with that economy item), `requirements` (the game entry-requirements shape: `minLevel`, `metas [{metaId, operator, value}]`, `tagIds`, `excludeTagIds`, `itemIds`, `lock` `show`/`hide`, `message`; nothing is consumed), `type_ids` (empty = every type), `is_default` (free, no condition, one per category), `sort`, `is_active` |
+| `economy_avatar_unlock` | currency purchases `(user_id, item_id)` with `paid` and `request_id` |
+| `economy_avatar` | `user_id`, `type_id`, `name`, `is_active` (one per player), `cleared` (categories the player emptied) |
+| `economy_avatar_equip` | `(avatar_id, item_id)`, `category_id`, `equipped_at` |
+
+A look is resolved per category: worn items that are active, fit the avatar type and are still owned (newest `slots` kept); if none and the category is not cleared, the default item, or for a required category the first free item without a condition that fits. Conditions are checked when buying and wearing.
+
+### Client RPCs
+
+`economy_avatar_catalog {lang?, avatarId?}`, `economy_avatar_buy {category, key, requestId?}`, `economy_avatar_list`, `economy_avatar_create {name?, type?, activate?}`, `economy_avatar_rename {id, name}`, `economy_avatar_delete {id}`, `economy_avatar_equip|unequip {id?, category, key}` (no id = the active avatar), `economy_avatar_set_active {id}`, `economy_avatar_looks {userIds}`. Errors: `AVATAR_DISABLED`, `AVATAR_NOT_FOUND`, `AVATAR_TYPE_NOT_FOUND`, `AVATAR_CATEGORY_NOT_FOUND`, `AVATAR_ITEM_NOT_FOUND`, `AVATAR_TYPE_NOT_ALLOWED`, `AVATAR_ITEM_LOCKED`, `AVATAR_ITEM_NOT_OWNED`, `AVATAR_ITEM_FREE`, `AVATAR_ALREADY_OWNED`, `AVATAR_PRODUCT_REQUIRED`, `AVATAR_SLOT_FULL`, `AVATAR_CATEGORY_REQUIRED`, `AVATAR_NOT_EQUIPPED`, `AVATAR_LIMIT`, `AVATAR_LAST`, `INVALID_NAME`, `INVALID_USER_IDS`, `INSUFFICIENT_BALANCE`. The old `base_avatar`, `base_avatar_save` and `base_avatar_get` keep their shapes and JSON `{code, meta}` errors on the active avatar.
+
+### Console
+
+«آواتارساز» hub in the economy sales group (`#/economy/avatar`): «دسته‌ها», «آیتم‌ها» (filters category, access, type, status; editor with look, how to get, allowed types and the unlock-condition panel), «نوع‌ها», «تنظیمات». Console API: CRUD `avatar-types`, `avatar-categories`, `avatar-items` (delete refused with `IN_USE` while bought or used), `GET/PUT /avatar-settings`, `GET /users/{userId}/avatars`.
+
