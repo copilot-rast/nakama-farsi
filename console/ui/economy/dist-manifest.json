@@ -1,9 +1,9 @@
 {
   "note": "Files generated in console/ui/dist by scripts/build.mjs.",
   "files": [
-    "static/economy-562c7c3429.js",
-    "static/economy-562c7c3429.js.gz",
     "static/economy-6182886563.css",
-    "static/economy-6182886563.css.gz"
+    "static/economy-6182886563.css.gz",
+    "static/economy-767d57b7c1.js",
+    "static/economy-767d57b7c1.js.gz"
   ]
 }

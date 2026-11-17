@@ -11,6 +11,7 @@ import (
 	"github.com/heroiclabs/nakama-common/api"
 	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/internal/activity"
+	"github.com/heroiclabs/nakama/v3/internal/apidocs"
 	"github.com/heroiclabs/nakama/v3/internal/clusterkit"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
 	"github.com/heroiclabs/nakama/v3/internal/rpcgate"
@@ -52,6 +53,7 @@ type serverRules struct {
 	Maintenance   maintenanceRules `json:"maintenance"`
 	Storage       storageRules     `json:"storage"`
 	AccountDelete deleteRules      `json:"accountDelete"`
+	Docs          apidocs.Settings `json:"docs"`
 }
 
 func defaultServerRules() serverRules {
@@ -59,6 +61,7 @@ func defaultServerRules() serverRules {
 		Maintenance:   maintenanceRules{Message: localized.Text{}, AllowRpcs: []string{}, AllowTags: []string{}},
 		Storage:       storageRules{AllowCollections: []string{}},
 		AccountDelete: deleteRules{Enabled: true, Mode: "grace", GraceDays: 14},
+		Docs:          apidocs.DefaultSettings(),
 	}
 }
 
@@ -372,6 +375,7 @@ func (s *service) serverRulesPut(w http.ResponseWriter, r *http.Request) {
 		s.writeError(w, err)
 		return
 	}
+	apidocs.Invalidate()
 	s.serverRulesGet(w, r)
 }
 

@@ -42,6 +42,7 @@ RUN go build -buildmode=plugin -o /go/build-out/modules/content.so -trimpath -mo
 RUN go build -buildmode=plugin -o /go/build-out/modules/insights.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/insights
 RUN go build -buildmode=plugin -o /go/build-out/modules/quiz.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/quiz
 RUN go build -buildmode=plugin -o /go/build-out/modules/stargame.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./samples/stargame
+RUN go run -mod=vendor ./tools/rpcschema -root . -openapi /go/build-out/modules/openapi.json -buildflag=-buildmode=plugin -buildflag=-trimpath -buildflag=-mod=vendor "-buildflag=-gcflags=-trimpath $PWD" "-buildflag=-asmflags=-trimpath $PWD"
 
 FROM ${DEBIAN_IMAGE}
 

@@ -3115,6 +3115,15 @@ func (r *Runtime) MatchCreateFunction() RuntimeMatchCreateFunction {
 	return r.matchCreateFunction
 }
 
+func (r *Runtime) RpcIDs() []string {
+	ids := make([]string, 0, len(r.rpcFunctions))
+	for id := range r.rpcFunctions {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	return ids
+}
+
 func (r *Runtime) Rpc(id string) RuntimeRpcFunction {
 	fn := r.rpcFunctions[id]
 	if fn == nil || !rpcgate.Active() {

@@ -25,6 +25,11 @@ var SR_FIELDS = [
   { type: 'row', fields: [
     { name: 'accountDelete.mode', type: 'select', label: 'f.sr.ad.mode', required: true, options: function () { return [{ value: 'grace', label: t('sr.ad.grace') }, { value: 'immediate', label: t('sr.ad.immediate') }]; } },
     { name: 'accountDelete.graceDays', type: 'number', label: 'f.sr.ad.days', min: 1, max: 365, required: true, when: function (v) { return (v.accountDelete || {}).mode !== 'immediate'; } }
+  ] },
+  { type: 'heading', label: 'sr.h.docs' },
+  { type: 'row', fields: [
+    { name: 'docs.enabled', type: 'bool', inline: true, label: 'f.sr.docs.enabled', hint: 'f.sr.docs.enabled.hint' },
+    { name: 'docs.consoleLogin', type: 'bool', inline: true, label: 'f.sr.docs.login', hint: 'f.sr.docs.login.hint', when: function (v) { return (v.docs || {}).enabled !== false; } }
   ] }
 ];
 
@@ -37,6 +42,7 @@ function srCall(method, path, body) {
     v.storage = Object.assign({ blockWrites: false, blockDeletes: false, allowCollections: [] }, v.storage || {});
     v.storage.allowCollections = (v.storage.allowCollections || []).map(function (x) { return { v: x }; });
     v.accountDelete = Object.assign({ enabled: true, mode: 'grace', graceDays: 14 }, v.accountDelete || {});
+    v.docs = Object.assign({ enabled: true, consoleLogin: false }, v.docs || {});
     return v;
   });
 }
