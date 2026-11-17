@@ -134,7 +134,7 @@ func TestHeatmapImportFormats(t *testing.T) {
 		t.Fatalf("map = %v", m)
 	}
 	cells := get(t, f.s.mapCells, "/cells?from=2026-06-01&to=2026-06-01", map[string]string{"key": key})
-	if cells["totals"].(map[string]any)["points"] != 115.0 || cells["size"] != 2.0 {
+	if tt := cells["totals"].(map[string]any); tt["points"] != 115.0 || tt["players"] != 1.0 || cells["size"] != 2.0 {
 		t.Fatalf("cells = %v", cells["totals"])
 	}
 	ups := get(t, f.s.mapUploads, "/uploads?limit=100", map[string]string{"key": key})

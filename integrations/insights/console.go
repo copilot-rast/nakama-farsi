@@ -616,7 +616,7 @@ func (s *service) mapCells(w http.ResponseWriter, r *http.Request) {
 		srows.Close()
 	}
 	var uploads, players int64
-	_ = s.db.QueryRowContext(ctx, `SELECT count(*)::int8, count(DISTINCT user_id)::int8 FROM insights_heatmap_upload WHERE map_key=$1 AND created_at >= $2 AND created_at < $3`,
+	_ = s.db.QueryRowContext(ctx, `SELECT count(*)::int8, (count(DISTINCT user_id) FILTER (WHERE source <> 'console') + coalesce(max(players) FILTER (WHERE source = 'console'), 0))::int8 FROM insights_heatmap_upload WHERE map_key=$1 AND created_at >= $2 AND created_at < $3`,
 		m["key"], sp.from.In(cfg.Location()), sp.to.AddDate(0, 0, 1).In(cfg.Location())).Scan(&uploads, &players)
 	pluginkit.WriteJSON(w, http.StatusOK, map[string]any{"map": m, "size": size, "sizes": sizes, "cells": cells,
 		"range": map[string]any{"from": sp.fromS, "to": sp.toS}, "totals": map[string]any{"points": total, "maxPoints": maxN, "cells": len(cells), "uploads": uploads, "players": players}})
