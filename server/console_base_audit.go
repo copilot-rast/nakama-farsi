@@ -84,7 +84,7 @@ var baseClanAudit = consoleModuleAudit{
 	prefix:   "/v2/console/base/",
 	label:    "base",
 	resource: console.AclResources_GROUP,
-	invokes:  []string{"/xp", "/start", "/settle", "/cancel", "/payouts/retry"},
+	invokes:  []string{"/xp", "/start", "/settle", "/cancel", "/payouts/retry", "/approve", "/reject", "/reset-look"},
 }
 
 var baseTrophyAudit = consoleModuleAudit{

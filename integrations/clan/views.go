@@ -52,11 +52,25 @@ func (s *service) clanView(ctx context.Context, c *clanRow, userID, role string)
 	out := map[string]any{"clanId": c.ID, "name": c.Name, "description": c.Description, "avatarUrl": c.AvatarURL, "lang": c.Lang, "tag": c.Tag, "badge": c.Badge,
 		"joinType": c.JoinType, "minTrophies": c.MinTrophies, "members": c.Members, "maxMembers": c.MaxMembers, "level": c.Level, "xp": c.XP, "levelXp": curXP, "nextLevelXp": nextXP,
 		"trophies": c.Trophies, "warWins": c.WarWins, "warLosses": c.WarLosses, "warDraws": c.WarDraws, "warPoints": c.WarPoints, "createdAt": c.CreatedAt.UTC().Format(time.RFC3339),
-		"channel": "3." + c.ID}
+		"channel": "3." + c.ID, "motto": c.Motto, "color": c.Color, "country": c.Country, "tags": c.Tags, "emblemKey": c.EmblemKey, "emblemUrl": c.AvatarURL,
+		"coverKey": c.CoverKey, "coverUrl": c.CoverURL, "nextChangeAt": s.nextChange(ctx, c), "pendingUploads": s.pendingUploads(ctx, c.ID)}
 	if role != "" {
 		out["myRole"] = role
 	}
 	return out
+}
+
+func (s *service) nextChange(ctx context.Context, c *clanRow) *string {
+	cfg := s.settings(ctx)
+	if c.LookChangedAt == nil || cfg.Profile.ChangeCooldownMinutes <= 0 {
+		return nil
+	}
+	t := c.LookChangedAt.Add(time.Duration(cfg.Profile.ChangeCooldownMinutes) * time.Minute)
+	if !t.After(s.now()) {
+		return nil
+	}
+	v := t.UTC().Format(time.RFC3339)
+	return &v
 }
 
 func (s *service) members(ctx context.Context, clanID string) ([]map[string]any, error) {

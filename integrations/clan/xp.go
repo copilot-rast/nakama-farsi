@@ -206,7 +206,7 @@ func (s *service) levelUp(ctx context.Context, cfg settings.All, r road, clanID 
 	if cap > 0 {
 		var join string
 		_ = s.db.QueryRowContext(ctx, `SELECT join_type FROM clan WHERE group_id::text=$1`, clanID).Scan(&join)
-		if err := s.groups.Update(ctx, clanID, "", "", "", "", join == settings.JoinOpen, cap); err != nil {
+		if err := s.groups.Update(ctx, clanID, "", "", "", "", join == settings.JoinOpen, cap, nil); err != nil {
 			s.logger.Warn("Clan %s member cap not raised to %d: %v", clanID, cap, err)
 		}
 	}

@@ -47,13 +47,22 @@ func (g *fakeGroups) Create(ctx context.Context, ownerID, name, lang, descriptio
 	return id, err
 }
 
-func (g *fakeGroups) Update(ctx context.Context, id, name, lang, description, avatar string, open bool, maxCount int) error {
+func (g *fakeGroups) Update(ctx context.Context, id, name, lang, description, avatar string, open bool, maxCount int, metadata map[string]any) error {
 	state := 1
 	if open {
 		state = 0
 	}
-	_, err := g.db.ExecContext(ctx, `UPDATE groups SET name=COALESCE(NULLIF($2,''),name), state=$3, max_count=CASE WHEN $4 > 0 THEN $4 ELSE max_count END WHERE id::text=$1`, id, name, state, maxCount)
+	_, err := g.db.ExecContext(ctx, `UPDATE groups SET name=COALESCE(NULLIF($2,''),name), state=$3, max_count=CASE WHEN $4 > 0 THEN $4 ELSE max_count END,
+		avatar_url=COALESCE(NULLIF($5,''),avatar_url), description=COALESCE(NULLIF($6,''),description), metadata=COALESCE($7::jsonb, metadata) WHERE id::text=$1`, id, name, state, maxCount, avatar, description, metaJSON(metadata))
 	return err
+}
+
+func metaJSON(m map[string]any) any {
+	if m == nil {
+		return nil
+	}
+	raw, _ := json.Marshal(m)
+	return string(raw)
 }
 
 func (g *fakeGroups) Delete(ctx context.Context, id string) error {

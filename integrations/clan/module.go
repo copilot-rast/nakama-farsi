@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -15,6 +16,7 @@ import (
 	"github.com/heroiclabs/nakama/v3/internal/clusterkit"
 	"github.com/heroiclabs/nakama/v3/internal/economyhooks"
 	"github.com/heroiclabs/nakama/v3/internal/gameevents"
+	"github.com/heroiclabs/nakama/v3/internal/objectstore"
 	"github.com/heroiclabs/nakama/v3/internal/playerevents"
 	"github.com/heroiclabs/nakama/v3/internal/pluginkit"
 )
@@ -28,7 +30,7 @@ const (
 
 type groupOps interface {
 	Create(ctx context.Context, ownerID, name, lang, description, avatar string, open bool, maxCount int) (string, error)
-	Update(ctx context.Context, id, name, lang, description, avatar string, open bool, maxCount int) error
+	Update(ctx context.Context, id, name, lang, description, avatar string, open bool, maxCount int, metadata map[string]any) error
 	Delete(ctx context.Context, id string) error
 	Join(ctx context.Context, id, userID, username string) error
 	Leave(ctx context.Context, id, userID, username string) error
@@ -49,8 +51,8 @@ func (g nkGroups) Create(ctx context.Context, ownerID, name, lang, description, 
 	return grp.Id, nil
 }
 
-func (g nkGroups) Update(ctx context.Context, id, name, lang, description, avatar string, open bool, maxCount int) error {
-	return g.nk.GroupUpdate(ctx, id, "", name, "", lang, description, avatar, open, nil, maxCount)
+func (g nkGroups) Update(ctx context.Context, id, name, lang, description, avatar string, open bool, maxCount int, metadata map[string]any) error {
+	return g.nk.GroupUpdate(ctx, id, "", name, "", lang, description, avatar, open, metadata, maxCount)
 }
 
 func (g nkGroups) Delete(ctx context.Context, id string) error { return g.nk.GroupDelete(ctx, id) }
@@ -95,6 +97,9 @@ type service struct {
 	now    func() time.Time
 	groups groupOps
 
+	store      objectstore.Store
+	publicBase string
+
 	prize  func(ctx context.Context, g economyhooks.PrizeGrant) (economyhooks.PrizeResult, error)
 	notify func(ctx context.Context, userIDs []string, subject string, content map[string]any, persistent bool)
 	debit  func(ctx context.Context, userID, grantID string, amounts map[string]int64) error
@@ -128,10 +133,23 @@ func newService(db *sql.DB, nk runtime.NakamaModule, logger runtime.Logger) *ser
 
 func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {
 	svc := newService(db, nk, logger)
+	env, _ := ctx.Value(runtime.RUNTIME_CTX_ENV).(map[string]string)
+	if store, base, err := openStore(env, os.Args); err != nil {
+		logger.Warn("Clan uploads are off, storage not ready: %v", err)
+	} else {
+		svc.store, svc.publicBase = store, base
+	}
 	for name, fn := range svc.clientRPCs() {
-		if err := initializer.RegisterRpc(name, apierr.RPC(db, apierr.RPCOptions{Logger: logger, MaxPayload: maxPayload}, fn)); err != nil {
+		limit := maxPayload
+		if name == "clan_image_upload" {
+			limit = maxUploadPayload
+		}
+		if err := initializer.RegisterRpc(name, apierr.RPC(db, apierr.RPCOptions{Logger: logger, MaxPayload: limit}, fn)); err != nil {
 			return err
 		}
+	}
+	if err := initializer.RegisterHttp(filesPath+"{name}", svc.filesHTTP, http.MethodGet, http.MethodHead); err != nil {
+		return err
 	}
 	if err := svc.registerConsoleHTTP(initializer); err != nil {
 		return err
@@ -154,6 +172,8 @@ func (s *service) clientRPCs() map[string]apierr.Handler {
 		"clan_mine":           s.rpcMine,
 		"clan_search":         s.rpcSearch,
 		"clan_update":         s.rpcUpdate,
+		"clan_options":        s.rpcOptions,
+		"clan_image_upload":   s.rpcImageUpload,
 		"clan_join":           s.rpcJoin,
 		"clan_leave":          s.rpcLeave,
 		"clan_requests":       s.rpcRequests,

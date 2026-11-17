@@ -996,7 +996,7 @@ func (s *service) reconcileCaps(ctx context.Context) {
 	}
 	rows.Close()
 	for _, f := range list {
-		if err := s.groups.Update(ctx, f.id, "", "", "", "", f.open, f.cap); err != nil {
+		if err := s.groups.Update(ctx, f.id, "", "", "", "", f.open, f.cap, nil); err != nil {
 			s.logger.Debug("Clan %s cap not reconciled: %v", f.id, err)
 		}
 	}

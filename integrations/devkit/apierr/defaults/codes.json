@@ -584,7 +584,25 @@
       "clan"
     ]
   },
+  "CLAN_ART_LOCKED": {
+    "status": 403,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_ART_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "clan"
+    ]
+  },
   "CLAN_AVATAR_INVALID": {
+    "status": 400,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_AVATAR_USE_GALLERY": {
     "status": 400,
     "modules": [
       "clan"
@@ -608,8 +626,26 @@
       "clan"
     ]
   },
+  "CLAN_CHANGE_COOLDOWN": {
+    "status": 409,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_COLOR_INVALID": {
+    "status": 400,
+    "modules": [
+      "clan"
+    ]
+  },
   "CLAN_COOLDOWN": {
     "status": 409,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_COUNTRY_INVALID": {
+    "status": 400,
     "modules": [
       "clan"
     ]
@@ -628,6 +664,12 @@
   },
   "CLAN_DISABLED": {
     "status": 403,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_EMBLEM_REQUIRED": {
+    "status": 400,
     "modules": [
       "clan"
     ]
@@ -698,6 +740,18 @@
       "clan"
     ]
   },
+  "CLAN_MOTTO_TOO_LONG": {
+    "status": 400,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_NAME_BLOCKED": {
+    "status": 400,
+    "modules": [
+      "clan"
+    ]
+  },
   "CLAN_NAME_INVALID": {
     "status": 400,
     "modules": [
@@ -759,6 +813,18 @@
       "clan"
     ]
   },
+  "CLAN_TAG_INVALID": {
+    "status": 400,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_TEXT_BLOCKED": {
+    "status": 400,
+    "modules": [
+      "clan"
+    ]
+  },
   "CLAN_TOO_MANY_CO_LEADERS": {
     "status": 409,
     "modules": [
@@ -767,6 +833,42 @@
   },
   "CLAN_TOO_MANY_REQUESTS": {
     "status": 409,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_TOO_MANY_TAGS": {
+    "status": 400,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_UPLOADS_DISABLED": {
+    "status": 403,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_UPLOAD_INVALID": {
+    "status": 400,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_UPLOAD_KIND_INVALID": {
+    "status": 400,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_UPLOAD_TOO_LARGE": {
+    "status": 400,
+    "modules": [
+      "clan"
+    ]
+  },
+  "CLAN_UPLOAD_TYPE": {
+    "status": 400,
     "modules": [
       "clan"
     ]

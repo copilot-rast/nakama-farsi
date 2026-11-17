@@ -89,17 +89,31 @@ type clanRow struct {
 	WarDraws    int
 	WarPoints   int64
 	CreatedAt   time.Time
+	Motto       string
+	Color       string
+	Country     string
+	Tags        []string
+	EmblemKey   string
+	CoverKey    string
+	CoverURL    string
+	LookChangedAt *time.Time
 }
 
 const clanCols = `c.group_id::text, g.name, g.description, g.avatar_url, g.lang_tag, g.edge_count, g.max_count, c.tag, c.badge::text, c.join_type, c.min_trophies,
-	c.level, c.xp, c.trophies, c.war_wins, c.war_losses, c.war_draws, c.war_points, c.created_at`
+	c.level, c.xp, c.trophies, c.war_wins, c.war_losses, c.war_draws, c.war_points, c.created_at,
+	c.motto, c.color, c.country, array_to_json(c.tags)::text, c.emblem_key, c.cover_key, c.cover_url, c.look_changed_at`
 
 func scanClan(row interface{ Scan(...any) error }) (*clanRow, error) {
 	c := &clanRow{}
-	var badge string
+	var badge, tags string
 	if err := row.Scan(&c.ID, &c.Name, &c.Description, &c.AvatarURL, &c.Lang, &c.Members, &c.MaxMembers, &c.Tag, &badge, &c.JoinType, &c.MinTrophies,
-		&c.Level, &c.XP, &c.Trophies, &c.WarWins, &c.WarLosses, &c.WarDraws, &c.WarPoints, &c.CreatedAt); err != nil {
+		&c.Level, &c.XP, &c.Trophies, &c.WarWins, &c.WarLosses, &c.WarDraws, &c.WarPoints, &c.CreatedAt,
+		&c.Motto, &c.Color, &c.Country, &tags, &c.EmblemKey, &c.CoverKey, &c.CoverURL, &c.LookChangedAt); err != nil {
 		return nil, err
+	}
+	_ = json.Unmarshal([]byte(tags), &c.Tags)
+	if c.Tags == nil {
+		c.Tags = []string{}
 	}
 	_ = json.Unmarshal([]byte(badge), &c.Badge)
 	if c.Badge == nil {
@@ -206,6 +220,7 @@ func cleanBadge(cfg settings.All, in map[string]any) (map[string]any, error) {
 }
 
 type profileInput struct {
+	lookInput
 	Name        *string        `json:"name"`
 	Description *string        `json:"description"`
 	AvatarURL   *string        `json:"avatarUrl"`
@@ -310,8 +325,40 @@ func (s *service) rpcCreate(ctx context.Context, userID, payload string) (any, e
 	if len(req) > 64 {
 		return nil, apierr.BadRequest("INVALID_REQUEST_ID").WithField("requestId")
 	}
+	if in.AvatarURL != nil {
+		return nil, apierr.BadRequest("CLAN_AVATAR_USE_GALLERY").WithField("avatarUrl")
+	}
+	f := s.wordFilter(ctx, cfg)
+	if blocked(f, name) {
+		return nil, apierr.BadRequest("CLAN_NAME_BLOCKED").WithField("name")
+	}
+	var taken bool
+	_ = s.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM groups WHERE lower(name)=lower($1))`, name).Scan(&taken)
+	if taken {
+		return nil, apierr.Conflict("CLAN_NAME_TAKEN").WithField("name")
+	}
+	if in.EmblemKey == nil || *in.EmblemKey == "" {
+		if d := s.defaultArt(ctx, artEmblem); d != nil {
+			k := d.Key
+			in.EmblemKey = &k
+		}
+	}
+	if in.CoverKey == nil || *in.CoverKey == "" {
+		if d := s.defaultArt(ctx, artCover); d != nil {
+			k := d.Key
+			in.CoverKey = &k
+		}
+	}
+	if cfg.Profile.RequireEmblem && (in.EmblemKey == nil || *in.EmblemKey == "") {
+		return nil, apierr.BadRequest("CLAN_EMBLEM_REQUIRED").WithField("emblemKey")
+	}
+	probe := &clanRow{Level: 1, Tags: []string{}, Name: name}
+	plan, err := s.planProfile(ctx, cfg, probe, profileInput{lookInput: in.lookInput, Lang: in.Lang, Description: in.Description}, editor{userID: userID})
+	if err != nil {
+		return nil, err
+	}
 	cap := s.road(ctx).memberCap(1, 30)
-	id, err := s.groups.Create(ctx, userID, name, deref(in.Lang), deref(in.Description), deref(in.AvatarURL), joinType == settings.JoinOpen, cap)
+	id, err := s.groups.Create(ctx, userID, name, deref(in.Lang), deref(in.Description), "", joinType == settings.JoinOpen, cap)
 	if err != nil {
 		if errors.Is(err, runtime.ErrGroupNameInUse) || strings.Contains(err.Error(), "name") && strings.Contains(err.Error(), "use") {
 			return nil, apierr.Conflict("CLAN_NAME_TAKEN").WithField("name")
@@ -352,6 +399,14 @@ func (s *service) rpcCreate(ctx context.Context, userID, payload string) (any, e
 		}
 		return nil, err
 	}
+	if c, err := s.clanByID(ctx, s.db, id); err == nil {
+		plan.changed = false
+		if err := s.applyPlan(ctx, c, joinType, plan, editor{userID: userID}); err != nil {
+			_, _ = s.db.ExecContext(ctx, `DELETE FROM clan WHERE group_id=$1`, id)
+			undo()
+			return nil, err
+		}
+	}
 	s.refreshTrophies(ctx, id)
 	s.say(ctx, cfg, id, "created", userID, "")
 	c, err := s.clanByID(ctx, s.db, id)
@@ -381,7 +436,7 @@ func (s *service) rpcUpdate(ctx context.Context, userID, payload string) (any, e
 	if err != nil {
 		return nil, err
 	}
-	if err := s.applyProfile(ctx, cfg, c, in); err != nil {
+	if err := s.applyProfile(ctx, cfg, c, in, editor{userID: userID}); err != nil {
 		return nil, err
 	}
 	s.say(ctx, cfg, c.ID, "updated", userID, "")
@@ -392,16 +447,10 @@ func (s *service) rpcUpdate(ctx context.Context, userID, payload string) (any, e
 	return map[string]any{"clan": s.clanView(ctx, c, userID, m.Role)}, nil
 }
 
-func (s *service) applyProfile(ctx context.Context, cfg settings.All, c *clanRow, in profileInput) error {
-	name := ""
-	if in.Name != nil {
-		n, err := cleanName(cfg, *in.Name)
-		if err != nil {
-			return err
-		}
-		if n != c.Name {
-			name = n
-		}
+func (s *service) applyProfile(ctx context.Context, cfg settings.All, c *clanRow, in profileInput, who editor) error {
+	plan, err := s.planProfile(ctx, cfg, c, in, who)
+	if err != nil {
+		return err
 	}
 	joinType := c.JoinType
 	if in.JoinType != nil {
@@ -419,16 +468,11 @@ func (s *service) applyProfile(ctx context.Context, cfg settings.All, c *clanRow
 	if in.MinTrophies != nil {
 		minT = *in.MinTrophies
 	}
-	if err := s.groups.Update(ctx, c.ID, name, deref(in.Lang), deref(in.Description), deref(in.AvatarURL), joinType == settings.JoinOpen, 0); err != nil {
-		if errors.Is(err, runtime.ErrGroupNameInUse) {
-			return apierr.Conflict("CLAN_NAME_TAKEN").WithField("name")
-		}
-		if !errors.Is(err, runtime.ErrGroupNoUpdateOps) && !errors.Is(err, runtime.ErrGroupNotUpdated) {
-			return err
-		}
+	if err := s.applyPlan(ctx, c, joinType, plan, who); err != nil {
+		return err
 	}
 	raw, _ := json.Marshal(badge)
-	_, err := s.db.ExecContext(ctx, `UPDATE clan SET badge=$2, join_type=$3, min_trophies=$4, updated_at=now() WHERE group_id::text=$1`, c.ID, raw, joinType, minT)
+	_, err = s.db.ExecContext(ctx, `UPDATE clan SET badge=$2, join_type=$3, min_trophies=$4, updated_at=now() WHERE group_id::text=$1`, c.ID, raw, joinType, minT)
 	return err
 }
 
@@ -790,39 +834,37 @@ func (s *service) rpcInvite(ctx context.Context, userID, payload string) (any, e
 }
 
 func (s *service) rpcInvites(ctx context.Context, userID, payload string) (any, error) {
-	rows, err := s.db.QueryContext(ctx, `SELECT `+clanCols+`, r.by_user::text, r.created_at, r.expires_at FROM clan_request r JOIN clan c ON c.group_id=r.group_id JOIN groups g ON g.id=c.group_id
+	rows, err := s.db.QueryContext(ctx, `SELECT r.group_id::text, COALESCE(r.by_user::text,''), r.created_at, r.expires_at FROM clan_request r
 		WHERE r.user_id::text=$1 AND r.kind='invite' AND (r.expires_at IS NULL OR r.expires_at > now()) ORDER BY r.created_at DESC`, userID)
 	if err != nil {
 		return nil, err
 	}
 	type inv struct {
-		c       *clanRow
-		by      sql.NullString
+		id, by  string
 		at      time.Time
 		expires *time.Time
 	}
 	list := []inv{}
 	for rows.Next() {
 		var x inv
-		c := &clanRow{}
-		var badge string
-		if err := rows.Scan(&c.ID, &c.Name, &c.Description, &c.AvatarURL, &c.Lang, &c.Members, &c.MaxMembers, &c.Tag, &badge, &c.JoinType, &c.MinTrophies,
-			&c.Level, &c.XP, &c.Trophies, &c.WarWins, &c.WarLosses, &c.WarDraws, &c.WarPoints, &c.CreatedAt, &x.by, &x.at, &x.expires); err != nil {
+		if err := rows.Scan(&x.id, &x.by, &x.at, &x.expires); err != nil {
 			rows.Close()
 			return nil, err
 		}
-		_ = json.Unmarshal([]byte(badge), &c.Badge)
-		x.c = c
 		list = append(list, x)
 	}
 	rows.Close()
 	items := []map[string]any{}
 	for _, x := range list {
+		c, err := s.clanByID(ctx, s.db, x.id)
+		if err != nil {
+			continue
+		}
 		var exp any
 		if x.expires != nil {
 			exp = x.expires.UTC().Format(time.RFC3339)
 		}
-		items = append(items, map[string]any{"clan": s.clanView(ctx, x.c, userID, ""), "byUserId": x.by.String, "invitedAt": x.at.UTC().Format(time.RFC3339), "expiresAt": exp})
+		items = append(items, map[string]any{"clan": s.clanView(ctx, c, userID, ""), "byUserId": x.by, "invitedAt": x.at.UTC().Format(time.RFC3339), "expiresAt": exp})
 	}
 	return map[string]any{"items": items}, nil
 }

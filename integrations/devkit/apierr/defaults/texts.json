@@ -479,9 +479,21 @@
     "en": "You are already in a clan.",
     "fa": "شما همین حالا عضو یک کلن هستید."
   },
+  "CLAN_ART_LOCKED": {
+    "en": "This emblem or cover opens at a higher clan level.",
+    "fa": "این نشان یا کاور در سطح بالاتر کلن باز می‌شود."
+  },
+  "CLAN_ART_NOT_FOUND": {
+    "en": "This emblem or cover was not found.",
+    "fa": "این نشان یا کاور پیدا نشد."
+  },
   "CLAN_AVATAR_INVALID": {
     "en": "The clan picture link is not valid.",
     "fa": "لینک تصویر کلن درست نیست."
+  },
+  "CLAN_AVATAR_USE_GALLERY": {
+    "en": "Pick an emblem from the gallery or upload an image.",
+    "fa": "نشان را از گالری انتخاب کنید یا تصویر بفرستید."
   },
   "CLAN_BADGE_INVALID": {
     "en": "This badge is not allowed.",
@@ -495,9 +507,21 @@
     "en": "You cannot remove yourself. Leave the clan instead.",
     "fa": "نمی‌توانید خودتان را بیرون کنید؛ از کلن خارج شوید."
   },
+  "CLAN_CHANGE_COOLDOWN": {
+    "en": "The clan look was changed a short time ago. Try again later.",
+    "fa": "ظاهر کلن کمی پیش عوض شد. کمی بعد دوباره تلاش کنید."
+  },
+  "CLAN_COLOR_INVALID": {
+    "en": "This colour is not allowed.",
+    "fa": "این رنگ مجاز نیست."
+  },
   "CLAN_COOLDOWN": {
     "en": "You left a clan a short time ago. Try again later.",
     "fa": "کمی پیش از یک کلن بیرون آمدید. کمی بعد دوباره تلاش کنید."
+  },
+  "CLAN_COUNTRY_INVALID": {
+    "en": "This country is not allowed.",
+    "fa": "این کشور مجاز نیست."
   },
   "CLAN_CREATE_DISABLED": {
     "en": "Creating clans is turned off.",
@@ -510,6 +534,10 @@
   "CLAN_DISABLED": {
     "en": "Clans are turned off.",
     "fa": "کلن‌ها فعلاً خاموش هستند."
+  },
+  "CLAN_EMBLEM_REQUIRED": {
+    "en": "Pick an emblem for the clan.",
+    "fa": "برای کلن یک نشان انتخاب کنید."
   },
   "CLAN_FULL": {
     "en": "This clan is full.",
@@ -555,6 +583,14 @@
     "en": "The minimum trophies value is not valid.",
     "fa": "حداقل جام درست نیست."
   },
+  "CLAN_MOTTO_TOO_LONG": {
+    "en": "The clan motto is too long.",
+    "fa": "شعار کلن خیلی بلند است."
+  },
+  "CLAN_NAME_BLOCKED": {
+    "en": "This clan name is not allowed.",
+    "fa": "این نام برای کلن مجاز نیست."
+  },
   "CLAN_NAME_INVALID": {
     "en": "The clan name length is not allowed.",
     "fa": "طول نام کلن مجاز نیست."
@@ -595,6 +631,14 @@
     "en": "The sort order is not valid.",
     "fa": "ترتیب نمایش درست نیست."
   },
+  "CLAN_TAG_INVALID": {
+    "en": "This clan tag is not allowed.",
+    "fa": "این برچسب کلن مجاز نیست."
+  },
+  "CLAN_TEXT_BLOCKED": {
+    "en": "This text has words that are not allowed.",
+    "fa": "این متن کلمهٔ غیرمجاز دارد."
+  },
   "CLAN_TOO_MANY_CO_LEADERS": {
     "en": "This clan has the most co-leaders it can have.",
     "fa": "تعداد معاون‌های کلن به سقف رسیده است."
@@ -602,6 +646,30 @@
   "CLAN_TOO_MANY_REQUESTS": {
     "en": "You have too many open join requests.",
     "fa": "درخواست‌های عضویت باز شما زیاد است."
+  },
+  "CLAN_TOO_MANY_TAGS": {
+    "en": "Too many clan tags.",
+    "fa": "برچسب‌های کلن زیاد است."
+  },
+  "CLAN_UPLOADS_DISABLED": {
+    "en": "Uploading clan images is turned off.",
+    "fa": "فرستادن تصویر کلن فعلاً بسته است."
+  },
+  "CLAN_UPLOAD_INVALID": {
+    "en": "The image data is not valid.",
+    "fa": "دادهٔ تصویر درست نیست."
+  },
+  "CLAN_UPLOAD_KIND_INVALID": {
+    "en": "The image kind must be emblem or cover.",
+    "fa": "نوع تصویر باید نشان یا کاور باشد."
+  },
+  "CLAN_UPLOAD_TOO_LARGE": {
+    "en": "The image is too large.",
+    "fa": "حجم تصویر زیاد است."
+  },
+  "CLAN_UPLOAD_TYPE": {
+    "en": "This image type is not allowed.",
+    "fa": "این نوع تصویر مجاز نیست."
   },
   "CLAN_USE_RPC": {
     "en": "Clans change only through the clan calls.",

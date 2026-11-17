@@ -43,9 +43,8 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{p + "/levels", http.MethodPut, s.levelPut},
 		{p + "/payouts/retry", http.MethodPost, s.payoutRetry},
 	}
-	for _, r := range s.warRoutes() {
-		routes = append(routes, r)
-	}
+	routes = append(routes, s.warRoutes()...)
+	routes = append(routes, s.lookRoutes()...)
 	for _, r := range routes {
 		if err := initializer.RegisterConsoleHttp(r.path, r.handler, r.method); err != nil {
 			return err
@@ -256,7 +255,7 @@ func (s *service) clanPut(w http.ResponseWriter, r *http.Request) {
 		s.consoleFail(w, err)
 		return
 	}
-	if err := s.applyProfile(ctx, cfg, c, in); err != nil {
+	if err := s.applyProfile(ctx, cfg, c, in, editor{admin: true}); err != nil {
 		s.consoleFail(w, err)
 		return
 	}

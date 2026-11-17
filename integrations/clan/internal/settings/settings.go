@@ -92,6 +92,39 @@ type XP struct {
 	WarLoss int64 `json:"warLoss"`
 }
 
+type Tag struct {
+	Key  string            `json:"key"`
+	Name map[string]string `json:"name"`
+}
+
+type Profile struct {
+	MottoMax int `json:"mottoMax"`
+
+	Tags []Tag `json:"tags"`
+
+	MaxTags int `json:"maxTags"`
+
+	Colors []string `json:"colors"`
+
+	ChangeCooldownMinutes int `json:"changeCooldownMinutes"`
+
+	BlockedWords []string `json:"blockedWords"`
+
+	UseChatWords bool `json:"useChatWords"`
+
+	RequireEmblem bool `json:"requireEmblem"`
+}
+
+type Uploads struct {
+	Enabled bool `json:"enabled"`
+
+	NeedsApproval bool `json:"needsApproval"`
+
+	MaxBytes int `json:"maxBytes"`
+
+	Types []string `json:"types"`
+}
+
 type Chat struct {
 	SystemMessages bool `json:"systemMessages"`
 }
@@ -114,6 +147,8 @@ type All struct {
 	Enabled   bool      `json:"enabled"`
 	Create    Create    `json:"create"`
 	Badge     Badge     `json:"badge"`
+	Profile   Profile   `json:"profile"`
+	Uploads   Uploads   `json:"uploads"`
 	Roles     Roles     `json:"roles"`
 	Cooldowns Cooldowns `json:"cooldowns"`
 	XP        XP        `json:"xp"`
@@ -142,6 +177,7 @@ var (
 	EventPattern = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_.:]{0,63}$`)
 	FieldPattern = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_]{0,39}$`)
 	ShortPattern = regexp.MustCompile(`^[A-Za-z0-9_#-]{1,32}$`)
+	ColorPattern = regexp.MustCompile(`^#[0-9A-Fa-f]{6}$`)
 )
 
 func Defaults() All {
@@ -150,6 +186,8 @@ func Defaults() All {
 		Enabled: true,
 		Create:  Create{Enabled: true, Cost: map[string]int64{}, NameMin: 3, NameMax: 24, DescriptionMax: 250, DefaultJoinType: JoinOpen, MaxMinTrophies: 100000},
 		Badge:   Badge{Emblems: []string{}, Colors: []string{}, Frames: []string{}},
+		Profile: Profile{MottoMax: 60, Tags: []Tag{}, MaxTags: 3, Colors: []string{}, ChangeCooldownMinutes: 10, BlockedWords: []string{}, UseChatWords: true},
+		Uploads: Uploads{Enabled: false, NeedsApproval: true, MaxBytes: 300 * 1024, Types: []string{"png", "jpg", "webp"}},
 		Roles: Roles{Accept: []string{RoleLeader, RoleCoLeader, RoleElder}, Invite: []string{RoleLeader, RoleCoLeader, RoleElder}, Kick: managers, Promote: managers,
 			Edit: managers, War: managers, MaxCoLeaders: 3, LeaderLeave: LeaveTransfer},
 		Cooldowns: Cooldowns{JoinAfterLeaveMinutes: 60, RejoinAfterKickHours: 24, LeaveAfterJoinMinutes: 0, InviteDays: 7, RequestsPerUser: 5},
@@ -179,6 +217,14 @@ func (a *All) Normalize() {
 		if *p == nil {
 			*p = []string{}
 		}
+	}
+	for _, p := range []*[]string{&a.Profile.Colors, &a.Profile.BlockedWords, &a.Uploads.Types} {
+		if *p == nil {
+			*p = []string{}
+		}
+	}
+	if a.Profile.Tags == nil {
+		a.Profile.Tags = []Tag{}
 	}
 	if a.XP.Sources == nil {
 		a.XP.Sources = []XPSource{}
@@ -213,6 +259,34 @@ func (a All) Validate() (string, string) {
 	for name, list := range map[string][]string{"roles.accept": a.Roles.Accept, "roles.invite": a.Roles.Invite, "roles.kick": a.Roles.Kick, "roles.promote": a.Roles.Promote, "roles.edit": a.Roles.Edit, "roles.war": a.Roles.War} {
 		if !rolesOK(list) {
 			return name, "INVALID_POLICY"
+		}
+	}
+	if len(a.Profile.Tags) > 100 {
+		return "profile.tags", "VALUE_OUT_OF_RANGE"
+	}
+	seen := map[string]bool{}
+	for _, t := range a.Profile.Tags {
+		if !KeyPattern.MatchString(t.Key) || seen[t.Key] {
+			return "profile.tags", "INVALID_KEY"
+		}
+		seen[t.Key] = true
+	}
+	for _, c := range a.Profile.Colors {
+		if !ColorPattern.MatchString(c) {
+			return "profile.colors", "INVALID_KEY"
+		}
+	}
+	if len(a.Profile.BlockedWords) > 2000 {
+		return "profile.blockedWords", "VALUE_OUT_OF_RANGE"
+	}
+	for _, w := range a.Profile.BlockedWords {
+		if len(w) == 0 || len(w) > 64 {
+			return "profile.blockedWords", "VALUE_OUT_OF_RANGE"
+		}
+	}
+	for _, t := range a.Uploads.Types {
+		if !oneOf(t, "png", "jpg", "webp") {
+			return "uploads.types", "INVALID_POLICY"
 		}
 	}
 	if len(a.XP.Sources) > 50 {
@@ -265,6 +339,16 @@ func (a All) Validate() (string, string) {
 		return "xp.warDraw", "VALUE_OUT_OF_RANGE"
 	case a.XP.WarLoss < 0 || a.XP.WarLoss > 1e9:
 		return "xp.warLoss", "VALUE_OUT_OF_RANGE"
+	case !between(a.Profile.MottoMax, 0, 500):
+		return "profile.mottoMax", "VALUE_OUT_OF_RANGE"
+	case !between(a.Profile.MaxTags, 0, 20):
+		return "profile.maxTags", "VALUE_OUT_OF_RANGE"
+	case !between(a.Profile.ChangeCooldownMinutes, 0, 43200):
+		return "profile.changeCooldownMinutes", "VALUE_OUT_OF_RANGE"
+	case !between(a.Uploads.MaxBytes, 1024, 2<<20):
+		return "uploads.maxBytes", "VALUE_OUT_OF_RANGE"
+	case a.Uploads.Enabled && len(a.Uploads.Types) == 0:
+		return "uploads.types", "VALUE_OUT_OF_RANGE"
 	case !between(a.Display.SearchLimit, 1, 100):
 		return "display.searchLimit", "VALUE_OUT_OF_RANGE"
 	case !between(a.Display.HistoryLimit, 1, 100):
