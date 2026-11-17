@@ -470,6 +470,303 @@ function inMapPanel(m, onSaved) {
   if (aclCan('SETTINGS', 1)) { footer.appendChild(del); footer.appendChild(h('span', { class: 'flex-1' })); footer.appendChild(save); }
 }
 
+var IN_MAP_KEY = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$/;
+
+function inXhr(path, fd, onprogress) {
+  return new Promise(function (resolve, reject) {
+    var x = new XMLHttpRequest();
+    x.open('POST', BASE_BASE + path);
+    var tk = token();
+    if (tk) x.setRequestHeader('Authorization', 'Bearer ' + tk);
+    x.setRequestHeader('Accept', 'application/json');
+    if (x.upload && onprogress) x.upload.onprogress = function (e) { if (e.lengthComputable) onprogress(e.loaded, e.total); };
+    x.onload = function () {
+      var data = null;
+      try { data = x.responseText ? JSON.parse(x.responseText) : null; } catch (e) { data = null; }
+      if (x.status === 401) { toLogin(); reject(new ApiError(401, 'UNAUTHENTICATED', '')); return; }
+      if (x.status >= 200 && x.status < 300) { resolve(data); return; }
+      reject(new ApiError(x.status, data && typeof data.error === 'string' ? data.error : null, (data && data.message) || '', data && data.field));
+    };
+    x.onerror = function () { reject(new ApiError(0, 'NETWORK', '')); };
+    x.send(fd);
+  });
+}
+
+function inPack(file) {
+  if (!window.CompressionStream || file.size < (1 << 20) || !/\.(csv|txt)$/i.test(file.name)) return Promise.resolve(file);
+  try {
+    return new Response(file.stream().pipeThrough(new CompressionStream('gzip'))).blob().catch(function () { return file; });
+  } catch (e) { return Promise.resolve(file); }
+}
+
+function inFileError(f) {
+  var m = f.meta || {};
+  if (f.error === 'HEATMAP_TOO_LARGE' && m.maxRows) return t('in.up.err.rows', { n: fmtNum(m.maxRows) });
+  if (f.error === 'HEATMAP_TOO_LARGE' && m.maxMB) return t('in.up.err.mb', { n: fmtNum(m.maxMB) });
+  if (f.error === 'TOO_MANY_FILES') return t('in.up.err.many', { n: fmtNum(m.maxFiles || 0) });
+  if (f.error === 'HEATMAP_INVALID') return t('in.up.err.invalid');
+  return errorText({ code: f.error });
+}
+
+function inReasons(r) {
+  var out = [];
+  ['columns', 'number', 'range'].forEach(function (k) { if (r && r[k]) out.push(t('in.up.why.' + k, { n: fmtNum(r[k]) })); });
+  return out.join(lang() === 'fa' ? '، ' : ', ');
+}
+
+function inUploadPanel(maps, currentKey, onDone) {
+  var write = aclCan('SETTINGS', 1);
+  var v = { target: maps.length ? 'existing' : 'new', map: currentKey || (maps[0] && maps[0].key) || '', key: '', name: '', cellSize: '',
+    race: 'file', label: '', player: 'file', playerName: '', mode: 'add', bg: null, files: [] };
+  var body = h('div', { 'data-in-upload': '' });
+  var footer = h('div', { class: 'flex flex-wrap gap-2 w-full items-center justify-end' });
+  ctOpenPanel('heatmap-upload', t('in.up.title'), body, footer, closePanel);
+  var top = h('div', {});
+  function mapOf(key) { return maps.filter(function (m) { return m.key === key; })[0] || null; }
+  var existingBox = h('div', {});
+  var newBox = h('div', {});
+  var sel = selectInput(v.map, maps.map(function (m) { return { value: m.key, label: (m.name && m.name !== m.key ? m.name + ' · ' : '') + m.key }; }), function (x) { v.map = x; paintBg(); paintMode(); }, { label: t('in.up.existing'), placeholder: false });
+  sel.setAttribute('data-in-up-map', '');
+  existingBox.appendChild(field(t('in.up.existing'), sel));
+  var keyIn = textInput('', { ltr: true, label: t('in.up.key'), placeholder: 'desert_1', oninput: function (x) { v.key = x.trim(); paintMode(); } });
+  keyIn.setAttribute('data-in-up-key', '');
+  var nameIn = textInput('', { label: t('in.hm.name'), oninput: function (x) { v.name = x; } });
+  nameIn.setAttribute('data-in-up-name', '');
+  var cellIn = numberInput('', { int: false, label: t('in.hm.cellSize'), oninput: function (x) { v.cellSize = x; } });
+  newBox.appendChild(h('div', { class: 'eco-form-row' }, field(t('in.up.key'), keyIn, t('in.up.key.hint')), field(t('in.hm.name'), nameIn, null, { optional: true })));
+  newBox.appendChild(field(t('in.hm.cellSize'), cellIn, t('in.up.cell.hint'), { optional: true }));
+  var target = segmented([{ value: 'existing', label: t('in.up.existing') }, { value: 'new', label: t('in.up.new') }], v.target, function (x) { v.target = x; paintTarget(); }, t('in.up.target'), 'md');
+  target.setAttribute('data-in-up-target', '');
+  if (!maps.length) target.querySelector('[data-value="existing"]').disabled = true;
+  function paintTarget() {
+    existingBox.hidden = v.target !== 'existing';
+    newBox.hidden = v.target !== 'new';
+    paintBg();
+    paintMode();
+  }
+
+  var fileInput = h('input', { type: 'file', multiple: true, accept: '.csv,.txt,.gz,.zip,text/csv,application/gzip,application/zip', class: 'hidden', 'data-in-up-input': '' });
+  var list = h('div', { class: 'flex flex-col gap-1 mt-2', 'data-in-up-files': '' });
+  var drop = h('div', { class: 'in-drop', tabindex: '0', role: 'button', 'aria-label': t('in.up.pick'), 'data-in-up-drop': '' },
+    icon('upload', 'h-6 w-6'),
+    h('p', { class: 'font-medium', text: t('in.up.drop') }),
+    h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('in.up.types') }),
+    button({ variant: 'ghost', size: 'sm', icon: 'plus', label: t('in.up.pick'), onclick: function (e) { e.stopPropagation(); fileInput.click(); } }));
+  drop.addEventListener('click', function () { fileInput.click(); });
+  drop.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
+  ['dragenter', 'dragover'].forEach(function (n) { drop.addEventListener(n, function (e) { e.preventDefault(); drop.classList.add('in-drop-on'); }); });
+  ['dragleave', 'drop'].forEach(function (n) { drop.addEventListener(n, function (e) { e.preventDefault(); drop.classList.remove('in-drop-on'); }); });
+  drop.addEventListener('drop', function (e) { add(e.dataTransfer && e.dataTransfer.files); });
+  fileInput.addEventListener('change', function () { add(fileInput.files); fileInput.value = ''; });
+  function add(fl) {
+    Array.prototype.forEach.call(fl || [], function (f) {
+      if (v.files.some(function (x) { return x.file.name === f.name && x.file.size === f.size; })) return;
+      v.files.push({ file: f, status: 'pending', sent: 0 });
+    });
+    paintFiles();
+  }
+  function paintFiles() {
+    clear(list);
+    if (!v.files.length) { list.appendChild(h('p', { class: 'text-sm text-secondary-500', text: t('in.up.none') })); return; }
+    v.files.forEach(function (x, i) {
+      var pct = x.file.size ? Math.min(100, Math.round(x.sent / x.file.size * 100)) : 0;
+      list.appendChild(h('div', { class: 'in-up-file', 'data-in-up-file': x.file.name },
+        h('div', { class: 'flex items-center gap-2 min-w-0' },
+          h('span', { class: 'flex-1 min-w-0 truncate text-sm', dir: 'auto', text: x.file.name }),
+          h('span', { class: 'text-xs text-secondary-500 tabular-nums shrink-0', text: ctBytes(x.file.size) }),
+          x.status === 'pending' && !busy ? button({ variant: 'ghost', size: 'icon', icon: 'close', iconClass: 'h-3 w-3', title: t('in.up.remove'), onclick: function () { v.files.splice(i, 1); paintFiles(); } }) : h('span', { class: 'text-xs shrink-0', text: t('in.up.st.' + x.status) })),
+        x.status === 'sending' ? h('div', { class: 'eco-ct-progress mt-1' }, h('span', { style: 'width:' + pct + '%' })) : null));
+    });
+  }
+
+  var labelIn = textInput('', { label: t('in.up.label'), oninput: function (x) { v.label = x; } });
+  labelIn.setAttribute('data-in-up-label', '');
+  var labelBox = field(t('in.up.label'), labelIn);
+  var race = segmented([{ value: 'file', label: t('in.up.race.file') }, { value: 'label', label: t('in.up.race.label') }], v.race, function (x) { v.race = x; labelBox.hidden = x !== 'label'; }, t('in.up.race'));
+  race.setAttribute('data-in-up-race', '');
+  labelBox.hidden = true;
+  var playerIn = textInput('', { label: t('in.up.playerName'), oninput: function (x) { v.playerName = x; } });
+  playerIn.setAttribute('data-in-up-player-name', '');
+  var playerBox = field(t('in.up.playerName'), playerIn);
+  playerBox.hidden = true;
+  var player = segmented([{ value: 'file', label: t('in.up.player.file') }, { value: 'fixed', label: t('in.up.player.fixed') }], v.player, function (x) { v.player = x; playerBox.hidden = x !== 'fixed'; }, t('in.up.player'));
+  player.setAttribute('data-in-up-player', '');
+  var modeWarn = h('div', { class: 'mb-4', hidden: true });
+  var mode = segmented([{ value: 'add', label: t('in.up.mode.add') }, { value: 'replace', label: t('in.up.mode.replace') }], v.mode, function (x) { v.mode = x; paintMode(); }, t('in.up.mode'));
+  mode.setAttribute('data-in-up-mode', '');
+  function curKey() { return v.target === 'existing' ? v.map : v.key; }
+  function paintMode() {
+    clear(modeWarn);
+    modeWarn.hidden = v.mode !== 'replace';
+    if (v.mode === 'replace') modeWarn.appendChild(notice('warning', t('in.up.replace.warn', { map: curKey() || '…' })));
+  }
+  function opt(label, control, extra) {
+    return h('div', { class: 'mb-4' }, h('p', { class: 'font-medium mb-1 text-secondary-800 dark:text-secondary-200', text: label }), control, extra || null);
+  }
+
+  var bgBox = h('div', {});
+  function paintBg() {
+    clear(bgBox);
+    var m = v.target === 'existing' ? mapOf(v.map) : null;
+    v.bg = null;
+    bgBox.appendChild(field(t('in.up.bg'), imageInput(m ? m.backgroundUrl : '', function (url) { v.bg = url || ''; }), t('in.hm.bg.hint'), { optional: true }));
+  }
+
+  var limits = h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1' });
+  var help = h('details', { class: 'in-up-help mb-5', 'data-in-up-help': '' },
+    h('summary', { class: 'cursor-pointer font-medium text-sm', text: t('in.up.format') }),
+    h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300 mt-2 flex flex-col gap-1.5' },
+      h('p', { text: t('in.up.format.text') }),
+      h('p', { text: t('in.up.format.sample') }),
+      h('pre', { class: 'eco-pre font-mono text-xs bg-secondary-50 dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-700 rounded-md p-2 overflow-x-auto', dir: 'ltr', text: 't,x,z,player,kmh\n12.5,104.2,-33.7,Sara,86\n13.0,106.9,-31.2,Sara,91' }),
+      h('p', { text: t('in.up.format.dup') }),
+      limits));
+  baseApi('GET', '/insights/settings').then(function (res) {
+    var hm = (res && res.settings && res.settings.heatmap) || {};
+    if (hm.importMaxMB) limits.textContent = t('in.up.format.limits', { mb: fmtNum(hm.importMaxMB), rows: fmtNum(hm.importMaxRows), files: fmtNum(hm.importMaxFiles) });
+  }, function () {});
+
+  var progress = h('div', { class: 'flex flex-col gap-1 mb-4', hidden: true, 'data-in-up-progress': '' });
+  var progBar = h('div', { class: 'eco-ct-progress' }, h('span', { style: 'width:0%' }));
+  var progText = h('div', { class: 'text-xs text-secondary-500 tabular-nums' });
+  progress.appendChild(progBar);
+  progress.appendChild(progText);
+  var results = h('div', { 'data-in-up-results': '' });
+  var rows = [];
+  function paintResults() {
+    clear(results);
+    if (!rows.length) return;
+    var cols = [{ label: t('in.up.col.file') }, { label: t('in.up.col.status'), width: 130 }, { label: t('in.up.col.rows'), width: 90 }, { label: t('in.up.col.dropped'), width: 130 }, { label: t('in.up.col.points'), width: 90 }];
+    results.appendChild(h('h3', { class: 'font-medium mb-2', text: t('in.up.results') }));
+    results.appendChild(table(cols, rows.map(function (f) {
+      var tone = f.status === 'stored' ? 'text-success-700 dark:text-success-400' : f.status === 'duplicate' || f.status === 'skipped' ? 'text-warning-700 dark:text-warning-400' : 'text-error-600 dark:text-error-400';
+      var why = inReasons(f.reasons);
+      return { item: f, cells: [
+        h('span', { class: 'text-sm break-all', dir: 'auto', text: f.name }),
+        h('span', { class: 'text-sm ' + tone, 'data-in-up-status': f.status }, h('span', { text: t('in.up.st.' + f.status) }), f.error ? h('span', { class: 'block text-xs', text: inFileError(f) }) : null),
+        h('span', { class: 'tabular-nums', text: fmtNum(f.rows || 0) }),
+        h('span', {}, h('span', { class: 'tabular-nums', text: fmtNum(f.dropped || 0) }), why ? h('span', { class: 'block text-xs text-secondary-500', text: why }) : null),
+        h('span', { class: 'tabular-nums', 'data-in-up-points': '', text: fmtNum(f.points || 0) })
+      ] };
+    })));
+  }
+
+  body.appendChild(h('div', {}, top,
+    opt(t('in.up.target'), target),
+    existingBox, newBox,
+    h('div', { class: 'mb-5' }, h('p', { class: 'font-medium mb-1 text-secondary-800 dark:text-secondary-200', text: t('in.up.files') }), drop, fileInput, list),
+    help,
+    opt(t('in.up.race'), race), labelBox,
+    opt(t('in.up.player'), player), playerBox,
+    opt(t('in.up.mode'), mode), modeWarn,
+    bgBox,
+    progress,
+    results));
+  paintTarget();
+  paintFiles();
+
+  var busy = false;
+  var send = button({ variant: 'primary', size: 'footer', icon: 'upload', label: t('in.up.go'), onclick: function () { run(); } });
+  send.setAttribute('data-in-up-send', '');
+  var view = button({ variant: 'ghost', size: 'footer', label: t('in.up.view'), onclick: function () { closePanel(); } });
+  view.hidden = true;
+  view.setAttribute('data-in-up-view', '');
+  if (write) { footer.appendChild(view); footer.appendChild(send); }
+
+  function problem(text) {
+    clear(top);
+    top.appendChild(h('div', { class: 'mb-4' }, notice('error', text)));
+    body.parentNode && body.parentNode.scrollTo && body.parentNode.scrollTo(0, 0);
+  }
+  function run() {
+    if (busy) return;
+    clear(top);
+    var key = curKey();
+    var pending = v.files.filter(function (x) { return x.status === 'pending'; });
+    if (v.target === 'new' && !IN_MAP_KEY.test(key)) { problem(t('in.up.err.key')); return; }
+    if (v.target === 'new' && mapOf(key)) { problem(t('in.up.err.exists')); return; }
+    if (!pending.length && v.bg === null) { problem(t('in.up.err.files')); return; }
+    if (v.race === 'label' && !v.label.trim()) { problem(t('in.up.err.label')); return; }
+    if (v.player === 'fixed' && !v.playerName.trim()) { problem(t('in.up.err.player')); return; }
+    var size = parseNumber(v.cellSize, false);
+    if (size !== null && (isNaN(size) || size < 0.1 || size > 1000)) { problem(t('err.number')); return; }
+    busy = true;
+    setBusy(send, true, t('uploading'));
+    var lastMap = mapOf(key);
+    var first = true;
+    var total = pending.reduce(function (a, x) { return a + x.file.size; }, 0) || 1;
+    var doneBytes = 0;
+    function step(i) {
+      if (i >= pending.length) return Promise.resolve();
+      var x = pending[i];
+      x.status = 'sending';
+      paintFiles();
+      progress.hidden = false;
+      progText.textContent = t('in.up.sending', { i: fmtNum(i + 1), n: fmtNum(pending.length) });
+      return inPack(x.file).then(function (blob) {
+        var fd = new FormData();
+        fd.append('mode', first && v.mode === 'replace' ? 'replace' : 'add');
+        fd.append('race', v.race);
+        if (v.race === 'label') fd.append('label', v.label.trim());
+        fd.append('player', v.player);
+        if (v.player === 'fixed') fd.append('playerName', v.playerName.trim());
+        if (v.target === 'new') {
+          fd.append('create', 'true');
+          if (v.name.trim()) fd.append('name', v.name.trim());
+          if (size) fd.append('cellSize', String(size));
+        }
+        fd.append('file', blob, x.file.name);
+        var ratio = x.file.size / (blob.size || 1);
+        return inXhr('/insights/heatmaps/' + encodeURIComponent(key) + '/import', fd, function (loaded) {
+          x.sent = Math.min(x.file.size, loaded * ratio);
+          progBar.firstChild.style.width = Math.min(100, Math.round((doneBytes + x.sent) / total * 100)) + '%';
+          var bar = list.querySelector('[data-in-up-file="' + CSS.escape(x.file.name) + '"] .eco-ct-progress span');
+          if (bar) bar.style.width = Math.min(100, Math.round(x.sent / (x.file.size || 1) * 100)) + '%';
+        });
+      }).then(function (res) {
+        first = false;
+        lastMap = res.map || lastMap;
+        (res.files || []).forEach(function (f) { rows.push(f); });
+        var failed = (res.files || []).some(function (f) { return f.status === 'failed'; });
+        x.status = failed ? 'failed' : 'done';
+      }, function (err) {
+        x.status = 'failed';
+        rows.push({ name: x.file.name, status: 'failed', rows: 0, dropped: 0, points: 0, error: err.code || 'NETWORK', message: errorText(err) });
+        if (err.status && err.status !== 0 && err.status < 500 && i === 0) throw err;
+      }).then(function () {
+        doneBytes += x.file.size;
+        progBar.firstChild.style.width = Math.round(doneBytes / total * 100) + '%';
+        paintFiles();
+        paintResults();
+        return step(i + 1);
+      });
+    }
+    step(0).then(function () {
+      if (v.bg === null || !lastMap) return null;
+      var m = lastMap;
+      return baseApi('PUT', '/insights/heatmaps/' + encodeURIComponent(key), { name: m.name || key, cellSize: m.cellSize || 0, backgroundUrl: v.bg, enabled: m.enabled !== false, imageBounds: m.imageBounds && m.imageBounds.minX !== null && m.imageBounds.minX !== undefined ? m.imageBounds : {} }).then(function (res) {
+        lastMap = res.item;
+        toast('success', t('in.up.bgSaved'));
+      });
+    }).then(function () {
+      var c = { stored: 0, duplicate: 0, failed: 0 };
+      rows.forEach(function (f) { c[f.status === 'skipped' ? 'failed' : f.status] = (c[f.status === 'skipped' ? 'failed' : f.status] || 0) + 1; });
+      if (pending.length) progText.textContent = t('in.up.done', { stored: fmtNum(c.stored), dup: fmtNum(c.duplicate), failed: fmtNum(c.failed) });
+      progBar.firstChild.style.width = '100%';
+      busy = false;
+      setBusy(send, false);
+      view.hidden = false;
+      if (lastMap) onDone(key);
+    }, function (err) {
+      busy = false;
+      setBusy(send, false);
+      paintFiles();
+      paintResults();
+      problem(errorText(err));
+    });
+  }
+}
+
 function heatmapsPage(container, query) {
   var frame = pageFrame(t('nav.heatmaps'), t('desc.heatmaps'));
   clear(container).appendChild(frame.el);
@@ -500,12 +797,20 @@ function heatmapsPage(container, query) {
     var seg = segmented([{ value: 'density', label: t('in.hm.density') }, { value: 'speed', label: t('in.hm.speed') }], state.layer, function (v) { state.layer = v; route(); loadMap(); }, t('in.hm.layer'));
     seg.setAttribute('data-in-hm-layer', '');
     filters.appendChild(seg);
+    if (aclCan('SETTINGS', 1)) {
+      var up = button({ variant: 'primary', size: 'sm', icon: 'upload', label: t('in.up.btn'), onclick: function () { openUpload(); } });
+      up.setAttribute('data-in-hm-upload', '');
+      filters.appendChild(up);
+    }
     var m = current();
     if (m && aclCan('SETTINGS', 1)) {
       var edit = button({ variant: 'ghost', size: 'sm', icon: 'gear', label: t('in.hm.settings'), onclick: function () { inMapPanel(m, function () { loadList(); }); } });
       edit.setAttribute('data-in-hm-edit', '');
       filters.appendChild(edit);
     }
+  }
+  function openUpload() {
+    inUploadPanel(maps, state.map, function (key) { state.map = key; state.trace = null; route(); loadList(); });
   }
   function loadList() {
     clear(view).appendChild(card(h('div', { class: 'p-4' }, bar('100%', 'h-64'))));
@@ -516,7 +821,9 @@ function heatmapsPage(container, query) {
         clear(filters);
         clear(stats);
         clear(uploads);
-        clear(view).appendChild(card(emptyBlock(t('in.hm.empty'), t('in.hm.empty.hint'))));
+        var first = aclCan('SETTINGS', 1) ? button({ variant: 'primary', size: 'sm', icon: 'upload', label: t('in.up.btn'), onclick: function () { openUpload(); } }) : null;
+        if (first) first.setAttribute('data-in-hm-upload', '');
+        clear(view).appendChild(card(emptyBlock(t('in.hm.empty'), t('in.hm.empty.hint'), first)));
         return;
       }
       if (!current()) state.map = maps[0].key;
@@ -559,8 +866,8 @@ function heatmapsPage(container, query) {
         } }) : h('span', { class: 'text-xs text-secondary-400', text: t('in.hm.trace.gone') });
         if (u.hasTrace) show.setAttribute('data-in-trace-btn', u.id);
         return { item: u, cells: [
-          playerLink(u.userId, u.displayName || u.username),
-          h('span', { dir: 'ltr', class: 'font-mono text-xs truncate', text: u.uploadId + (u.part ? ' #' + u.part : '') }),
+          u.source === 'console' ? h('span', { class: 'text-sm', 'data-in-src': 'console', text: t('in.hm.console') + (u.uploadedBy ? ' · ' + u.uploadedBy : '') }) : playerLink(u.userId, u.displayName || u.username),
+          u.source === 'console' ? h('span', { dir: 'auto', class: 'text-xs truncate', title: u.fileName, text: u.label || u.fileName }) : h('span', { dir: 'ltr', class: 'font-mono text-xs truncate', text: u.uploadId + (u.part ? ' #' + u.part : '') }),
           h('span', { class: 'tabular-nums', text: fmtNum(u.points) + (u.dropped ? ' (−' + fmtNum(u.dropped) + ')' : '') }),
           h('span', { class: 'tabular-nums', text: inDur(u.durationMs / 1000) }),
           h('span', { class: 'text-sm whitespace-nowrap', text: fmtDate(u.createdAt, true) }),
@@ -608,7 +915,12 @@ var IN_SETTINGS_FIELDS = [
     { name: 'heatmap.keepRawDays', type: 'number', label: 'in.s.hm.raw', hint: 'in.s.hm.raw.hint', min: 0, max: 3650, required: true },
     { name: 'heatmap.keepCellsDays', type: 'number', label: 'in.s.hm.cells', hint: 'in.s.zero.keep', min: 0, max: 3650, required: true }
   ] },
-  { name: 'heatmap.maxTracePoints', type: 'number', label: 'in.s.hm.trace', min: 100, max: 500000, required: true }
+  { name: 'heatmap.maxTracePoints', type: 'number', label: 'in.s.hm.trace', min: 100, max: 500000, required: true },
+  { type: 'row', fields: [
+    { name: 'heatmap.importMaxMB', type: 'number', label: 'in.s.hm.importMB', hint: 'in.s.hm.import.hint', min: 1, max: 2048, required: true },
+    { name: 'heatmap.importMaxRows', type: 'number', label: 'in.s.hm.importRows', min: 100, max: 50000000, required: true }
+  ] },
+  { name: 'heatmap.importMaxFiles', type: 'number', label: 'in.s.hm.importFiles', min: 1, max: 2000, required: true }
 ];
 
 function inSettingsCall(method, path, body) {

@@ -918,6 +918,13 @@ a.eco-ov-kpi:focus-visible,.eco-ov-tile:focus-visible,.eco-ov-legend-row:focus-v
 .dark .in-cohort-cell{color:#fff}
 .in-heat{position:relative;width:100%;min-width:0;overflow:hidden}
 .in-heat-canvas{display:block;max-width:100%;border-radius:.375rem}
+.in-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;text-align:center;padding:1.25rem 1rem;border:2px dashed rgb(var(--secondary-color-300));border-radius:.5rem;cursor:pointer;color:rgb(var(--secondary-color-600));min-width:0}
+.dark .in-drop{border-color:rgb(var(--secondary-color-600));color:rgb(var(--secondary-color-300))}
+.in-drop:focus-visible{outline:2px solid rgb(var(--primary-color-500));outline-offset:2px}
+.in-drop-on{border-color:rgb(var(--primary-color-500));background:rgb(var(--primary-color-500)/.06)}
+.in-up-file{padding:.35rem .5rem;border-radius:.375rem;background:rgb(var(--secondary-color-50));min-width:0}
+.dark .in-up-file{background:rgb(var(--secondary-color-800))}
+.in-up-help summary{list-style-position:inside}
 .in-heat-scale{display:inline-block;width:8rem;height:.5rem;border-radius:4px;background:linear-gradient(90deg,#fde9b6,#fcc66b,#f7953a,#e8602a,#c63a24,#8f1d21)}
 .eco-ct-field{min-width:9rem}
 .eco-ct-grow{flex:1 1 9rem;max-width:20rem}
