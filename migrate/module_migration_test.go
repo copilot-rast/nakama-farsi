@@ -10,6 +10,14 @@ import (
 
 var moduleMigration = regexp.MustCompile(`^2026\d{10}-(economy|publication|base)-`)
 
+var nonRerunnable = []*regexp.Regexp{
+	regexp.MustCompile(`(?i)\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?`),
+	regexp.MustCompile(`(?i)\bCREATE\s+SEQUENCE\s+(?:IF\s+NOT\s+EXISTS\s+)?`),
+	regexp.MustCompile(`(?i)\bCREATE\s+(?:UNIQUE\s+)?INDEX\s+(?:IF\s+NOT\s+EXISTS\s+)?`),
+	regexp.MustCompile(`(?i)\bADD\s+COLUMN\s+(?:IF\s+NOT\s+EXISTS\s+)?`),
+	regexp.MustCompile(`(?i)\bDROP\s+CONSTRAINT\s+(?:IF\s+EXISTS\s+)?`),
+}
+
 func TestModuleMigrationsAreEmbeddedRerunnableAndRefuseDown(t *testing.T) {
 	source := &sqlmigrate.EmbedFileSystemMigrationSource{FileSystem: sqlMigrateFS, Root: "sql"}
 	migrations, err := source.FindMigrations()

@@ -1,6 +1,6 @@
 # Cluster readiness (phase 0b)
 
-Goal: every plugin of this fork (`integrations/economy`, `integrations/publication`, `integrations/base`, `integrations/jazebe/native`, `samples/stargame`) and the shared packages (`internal/localized`, `internal/secretbox`) behave correctly when several Nakama nodes run against the same database, so the cluster phase (phase 6, porting the cluster layer of doublemo/nakama-plus) needs no rework in plugin code. The database engine and its settings are unchanged.
+Goal: every plugin of this fork (`integrations/economy`, `integrations/publication`, `integrations/base`, `samples/stargame`) and the shared packages (`internal/localized`, `internal/secretbox`) behave correctly when several Nakama nodes run against the same database, so the cluster phase (phase 6, porting the cluster layer of doublemo/nakama-plus) needs no rework in plugin code. The database engine and its settings are unchanged.
 
 Audit date: 2026-11-10, branch `dev`.
 
@@ -49,12 +49,6 @@ Status: **fixed** = changed in phase 0b; **safe** = already correct on N nodes, 
 | stargame | `samples/stargame/seed.go:173` | Seed on every node start | Concurrent starts | One transaction, every insert `ON CONFLICT DO NOTHING` in a fixed order; covered by the existing 4-way concurrent `TestSeedPostgres` | safe |
 | stargame | `samples/stargame/main.go:79`, `:96` | Rounds | — | Stored in Nakama storage with version checks (`ErrStorageRejectedVersion`) | safe |
 | stargame | `samples/stargame/web.go` | Embedded static files | — | Read-only, built into the plugin | safe |
-| jazebe | `integrations/jazebe/native/media_upload.go:231` | Media uploads | — | Chunks are stored in PostgreSQL (`jazebe_media_chunk`), not on disk; ticket rate limit is a count under a DB row lock (`lockXact`) | safe |
-| jazebe | `integrations/jazebe/native/shop_rate.go:43` | Purchase rate limit | — | Atomic upsert on `jazebe_shop_purchase_rate` | safe |
-| jazebe | `lottery_worker.go:19`, `medal_backfill.go:102`, `referral_completion.go:114`, `shop_progression.go:166` | Workers on every node | — | Conditional status flips + `FOR UPDATE` (lottery), `FOR UPDATE SKIP LOCKED` (medal backfill, referral jobs), row locks + `processed_at` (progression) | safe |
-| jazebe | `profile_account_state.go:211`, `:261` | Suspension revokes sessions with `SessionLogout`, `StreamUserList(0, user)` and `SessionDisconnect`, then clears `session_revocation_pending` | On N nodes only the local node's sockets are closed and only its session cache records the logout; the flag is still cleared | Plugin logic is right; Nakama must route disconnects and broadcast session invalidation | phase 6 |
-| jazebe | `group_stream.go:18`, `:98`, `:112`, `:116`, `group_chat_notify.go:14` | Group chat over a custom stream: `StreamUserJoin/List/Kick`, `StreamSend` | Members on another node do not receive live messages; kicks only hit local presences | Messages are persisted first; live routing and presence are server-side | phase 6 |
-| jazebe | 36 `os.Getenv` reads (`JAZEBE_*`, `RATE_LIMIT_*`) | Config from the process environment instead of `--runtime.env` | Different values per node if deployed inconsistently | Same env on every node (rule 5) | safe |
 
 No plugin uses match listing, `MatchSignal`, the matchmaker, parties or `sync.Once`; there are no timers besides the worker tickers listed above and no in-memory caches, counters or maps that hold shared state.
 
@@ -64,9 +58,9 @@ Every row marked **phase 6** above is now handled by the cluster layer when `clu
 
 | Item | Delivered by |
 |---|---|
-| Tracker/presence and streams across nodes (`StreamUserList/Send/Kick/Join`, jazebe group chat) | Redis stream hashes + per-node views (`server/cluster_tracker.go`), remote stream joins through the session's node (`ClusterStreamManager`) |
+| Tracker/presence and streams across nodes (`StreamUserList/Send/Kick/Join`) | Redis stream hashes + per-node views (`server/cluster_tracker.go`), remote stream joins through the session's node (`ClusterStreamManager`) |
 | Live `NotificationsSend` (publication in-app, support 1210/1211) and `SessionDisconnect` | `ClusterRouter` routes by the node in each presence ID; disconnects go to the node found from the session ID |
-| `SessionLogout`, bans, phase 3 suspension and jazebe suspension | invalidation log `nk:inv` replayed and tailed by every node; ban disconnects routed (`server/cluster_session.go`) |
+| `SessionLogout`, bans and phase 3 suspension | invalidation log `nk:inv` replayed and tailed by every node; ban disconnects routed (`server/cluster_session.go`) |
 | Matches, matchmaker, parties, status | host routing (`cluster_match.go`, `cluster_party.go`), sharded exactly-once matchmaker (`cluster_matchmaker.go`), status followers in Redis (`cluster_status.go`) |
 | Live support chat "chat changed" | `integrations/base/livechat.go` publishes `chat:<id>` after every message, typing, take, transfer, close and player view; the console long-poll waits up to 5 s on it (600 ms sleep when clustering is off, as before) |
 | Leaderboard/tournament schedulers | each callback claimed once with `clusterkit.AcquireLease` (`cluster_scheduler.go`) |
@@ -77,7 +71,7 @@ Multi-node checks: `e2e/cluster/` (four nodes) and `go test ./internal/cluster .
 
 These are inside Nakama OSS, not in our plugins. When porting the nakama-plus cluster layer, check each one with a multi-node e2e:
 
-- Tracker/presence and streams across nodes: `StreamUserList`, `StreamSend`, `StreamUserKick`, `StreamUserJoin` (jazebe group chat).
+- Tracker/presence and streams across nodes: `StreamUserList`, `StreamSend`, `StreamUserKick`, `StreamUserJoin`.
 - Message routing to sessions on other nodes: live part of `NotificationsSend` (publication in-app, any future notification), `SessionDisconnect`.
 - Session cache invalidation broadcast: `SessionLogout`, bans, suspension (OSS `LocalSessionCache` keeps invalidations per node, so a token logged out on node A stays valid on node B). Phase 3 temporary suspensions already repeat the logout on every node for two minutes (`restrictionLoop`), and sign-in, refresh and chat are refused from the database, so a cluster broadcast only shortens that window.
 - Matches, matchmaker, parties, status, leaderboard rank cache (not used by our plugins today; Star Catcher rounds are RPC + storage).
@@ -110,6 +104,6 @@ Serving choice: proxy by default, because the bucket would not send the `Content
 - Unit: SigV4 matches the three AWS S3 documentation examples (GET object with Range, PUT object, GET bucket with query); config parsing; key validation; local driver round trip.
 - Real S3: `TestS3StoreAgainstRealServer` and `TestEconomyUploadsOnS3` against a throwaway MinIO (`OBJECTSTORE_TEST_S3_*`): put/get/delete, wrong secret → `SignatureDoesNotMatch`, upload through one service and read through another (proxy, Range 206, 404, 302 with a public base).
 - Many nodes against a disposable database: `TestEconomyReconcilerOnManyNodes` (4 services × 2 passes over 12 pending payments: each payment claimed, inquired and verified exactly once, granted once; the same test fails on the old reconciler with 44 checks for 12 payments), `TestExpiredClaimIsNotSentTwice` (live SMS slower than the lease: every phone gets exactly one message; fails without `renewClaim`), the existing `TestConcurrentWorkersDoNotDoubleSend` (6 workers, 130 recipients), `TestLeaseOneHolderAtATime` (16 contenders), `TestRateLimitIsSharedAndAtomic` (40 concurrent hits, limit 10 → exactly 10), `TestSeedPostgres` (4 concurrent seeds).
-- Disposable test databases: `ECONOMY_DISPOSABLE_TEST_DB_URL`, `PUBLICATION_DISPOSABLE_TEST_DB_URL`, `BASE_DISPOSABLE_TEST_DB_URL`, `STARGAME_DISPOSABLE_TEST_DB_URL`, `CLUSTERKIT_DISPOSABLE_TEST_DB_URL`, `JAZEBE_DISPOSABLE_TEST_DB_URL` (names must end in `_disposable`; run `nakama migrate up` on them after adding a migration).
+- Disposable test databases: `ECONOMY_DISPOSABLE_TEST_DB_URL`, `PUBLICATION_DISPOSABLE_TEST_DB_URL`, `BASE_DISPOSABLE_TEST_DB_URL`, `STARGAME_DISPOSABLE_TEST_DB_URL`, `CLUSTERKIT_DISPOSABLE_TEST_DB_URL` (names must end in `_disposable`; run `nakama migrate up` on them after adding a migration).
 - Two real nodes on this Mac (2026-11-10): `nakama-mac` (7450/7451) and `nakama-mac-2` (7460/7461), same binary, modules, database and runtime env, both on `STORAGE_DRIVER=s3` against a throwaway MinIO. 25 pending payments (10 created for the check, aged 2 h) were split by the two reconcilers in the same second, 11 and 14, every one claimed once (`inquiry_count` 1, all 10 test payments `expired`). A 20-recipient sandbox SMS notification created on node 2: 20 sends logged in total, every recipient `sent` with `attempts` 1. An image uploaded through each node's console was served byte-identical, with `image/png` and the sandbox CSP, by the other node's API port; nothing was written to the node's disk. Test rows were removed afterwards.
 - Full Playwright suite (`cd e2e && npm test`): 58 passed, twice, on the local driver.

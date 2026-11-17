@@ -33,7 +33,6 @@ COPY . .
 
 RUN sh build/buildinfo.sh > /go/buildinfo.ldflags && cat /go/buildinfo.ldflags | tr ' ' '\n' | grep -v '^-X$' | grep -v 'Upstream=' | sed 's/^/buildinfo: /'
 RUN go build -o /go/build-out/nakama -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "-s -w -X main.version=local $(cat /go/buildinfo.ldflags)"
-RUN go build -buildmode=plugin -o /go/build-out/modules/jazebe.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/jazebe/native
 RUN go build -buildmode=plugin -o /go/build-out/modules/base.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/base
 RUN go build -buildmode=plugin -o /go/build-out/modules/economy.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/economy
 RUN go build -buildmode=plugin -o /go/build-out/modules/publication.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/publication

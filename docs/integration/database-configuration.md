@@ -1,9 +1,8 @@
 # Database: PostgreSQL configuration, deployment and the CockroachDB import
 
 Nakama Farsi runs on **PostgreSQL 16** (`postgres:16.8-alpine`, the version CI tests).
-PostgreSQL is the only database the Nakama server, the migration job and the Jazebe
-module connect to. The module uses Nakama's database handle and opens no connection
-of its own.
+PostgreSQL is the only database the Nakama server, the migration job and the plugins
+connect to. The plugins use Nakama's database handle and open no connection of their own.
 
 Production ran CockroachDB until this change. Its data is copied into PostgreSQL
 once, by the migration job, and CockroachDB is not used after that. The background
@@ -213,10 +212,5 @@ scripts/nakama-db-test.sh
 # CockroachDB v24.1.33 production state imported into PostgreSQL 16.8, end to end
 docker build -f build/Dockerfile.local -t nakama-farsi:local .
 scripts/cockroach-import-test.sh nakama-farsi:local
-
-# Jazebe workflows on PostgreSQL: see the profile_postgres job in
-# .github/workflows/jazebe-migrations.yaml. The tests only accept a loopback database.
 ```
 
-`.github/workflows/jazebe-migrations.yaml` runs all three (`profile_postgres` and
-`deployment_image`).

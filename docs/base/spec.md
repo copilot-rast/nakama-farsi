@@ -7,7 +7,6 @@ Port of asp `Modules/Base/{Language,LanguageItem,Category,Tag}` (`/Users/mazyar/
 - New Go plugin `integrations/base` → `base.so`, owning languages, categories and tags. Economy and Publication read its tables (same DB) and drop their own category/tag tables after migrating the data.
 - Translations live on the owning row as `jsonb` maps keyed by language code (`{"fa": "…", "en": "…", "ar": "…"}`), not in a separate LanguageItem table. Same capability as asp, atomic with the row, no orphan rows.
 - The console's own UI language (EN/FA button) is unrelated and stays as it is.
-- Jazebe content is out of scope.
 
 ## Languages (`base_language`)
 

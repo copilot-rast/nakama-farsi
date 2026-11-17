@@ -106,7 +106,7 @@ The envelope is marshalled to protobuf once per target node; the receiver re-enc
 - `SessionRegistry.Disconnect(session)`: local if the session is here, else one disconnect frame to the node found from the session ID hash (with the ban notice when `ban`).
 - `SingleSession`: local plus one frame to every node that hosts the user's notification stream.
 - `SessionCache` (`Remove`, `RemoveAll`, `Ban`, `Unban`): applied locally, then appended to the Redis stream `nk:inv` (`XADD … MINID ~ now-maxTokenLifetime`). Every node tails it with a blocking `XREAD` on its own connection and applies each record to its local cache; at start a node replays the records newer than the longest token lifetime before it serves requests. A replayed "log out everywhere" or ban uses the time of the record (the stream ID), not the time of the replay, so tokens issued after the logout stay valid. So a logout or ban on one node invalidates the token on every node within milliseconds, and a node started later still knows it. The console session cache uses its own stream `nk:invc`.
-- Our plugins need no change: phase 3 suspension (`SessionLogout` + `StreamUserList(0, user)` + `SessionDisconnect`) and jazebe's suspension now reach every node through the three rows above. The phase 3 `restrictionLoop` stays as a database-side safety net.
+- Our plugins need no change: phase 3 suspension (`SessionLogout` + `StreamUserList(0, user)` + `SessionDisconnect`) now reaches every node through the three rows above. The phase 3 `restrictionLoop` stays as a database-side safety net.
 - Live notifications (publication in-app, support 1210/1211, any `NotificationsSend`) are routed to the node that holds the player's socket.
 
 ## Matchmaker: shards with exactly-once matching

@@ -19,7 +19,7 @@ References:
 | Console auth for `/v2/console/economy/` | `server/console.go`, `console/acl/acl.go` |
 | Console pages (overlay, like the l10n layer) | `console/ui/economy/` → injected into `console/ui/dist/index.html` |
 
-Rules: SQL must run on PostgreSQL 16 (CockroachDB is legacy, but avoid Postgres-only features where a portable form exists; no advisory locks, use `SELECT … FOR UPDATE`). Up sections re-runnable (`IF NOT EXISTS`), Down raises like the Jazebe migrations. No code comments. Every money/grant path idempotent.
+Rules: SQL must run on PostgreSQL 16 (CockroachDB is legacy, but avoid Postgres-only features where a portable form exists; no advisory locks, use `SELECT … FOR UPDATE`). Up sections re-runnable (`IF NOT EXISTS`), Down raises an error. No code comments. Every money/grant path idempotent.
 
 ## Runtime env (`--runtime.env KEY=VALUE`)
 
