@@ -88,12 +88,27 @@ func (s *service) chanceTargetGame(ctx context.Context, payload string) (*chance
 
 type chanceLookups struct {
 	prizes     map[string]prizeName
-	groups     map[string]map[string]any
+	groups     map[string]chanceGroupView
 	currencies map[string][2]string
 }
 
+type chanceGroupPrize struct {
+	ID     string   `json:"id"`
+	Key    string   `json:"key"`
+	Name   string   `json:"name"`
+	Weight *int     `json:"weight,omitempty"`
+	Share  *float64 `json:"share,omitempty"`
+}
+
+type chanceGroupView struct {
+	ID     string             `json:"id"`
+	Key    string             `json:"key"`
+	Name   string             `json:"name"`
+	Prizes []chanceGroupPrize `json:"prizes"`
+}
+
 func (s *service) chanceLookupsFor(ctx context.Context, langs *localized.Set, lang string, games []*chanceGame) (*chanceLookups, error) {
-	lk := &chanceLookups{groups: map[string]map[string]any{}, currencies: map[string][2]string{}}
+	lk := &chanceLookups{groups: map[string]chanceGroupView{}, currencies: map[string][2]string{}}
 	prizeIDs := []string{}
 	groupIDs := []string{}
 	currencyIDs := []string{}
@@ -122,7 +137,7 @@ func (s *service) chanceLookupsFor(ctx context.Context, langs *localized.Set, la
 				rows.Close()
 				return nil, err
 			}
-			lk.groups[id] = map[string]any{"id": id, "key": key, "name": langs.Resolve(localized.Parse(name), lang)}
+			lk.groups[id] = chanceGroupView{ID: id, Key: key, Name: langs.Resolve(localized.Parse(name), lang), Prizes: []chanceGroupPrize{}}
 		}
 		rows.Close()
 		for id := range lk.groups {
@@ -142,7 +157,7 @@ func (s *service) chanceLookupsFor(ctx context.Context, langs *localized.Set, la
 	}
 	lk.prizes = names
 	for id, g := range lk.groups {
-		list := []map[string]any{}
+		list := []chanceGroupPrize{}
 		total := 0
 		for _, m := range members[id] {
 			total += m.Weight
@@ -152,9 +167,11 @@ func (s *service) chanceLookupsFor(ctx context.Context, langs *localized.Set, la
 			if total > 0 {
 				share = float64(m.Weight) / float64(total)
 			}
-			list = append(list, map[string]any{"id": m.PrizeID, "key": names[m.PrizeID].Key, "name": names[m.PrizeID].Name, "weight": m.Weight, "share": share})
+			weight := m.Weight
+			list = append(list, chanceGroupPrize{ID: m.PrizeID, Key: names[m.PrizeID].Key, Name: names[m.PrizeID].Name, Weight: &weight, Share: &share})
 		}
-		g["prizes"] = list
+		g.Prizes = list
+		lk.groups[id] = g
 	}
 	if len(currencyIDs) > 0 {
 		rows, err := s.db.QueryContext(ctx, `SELECT id::text, key, name::text FROM economy_currency WHERE id::text = ANY($1)`, currencyIDs)
@@ -178,19 +195,13 @@ func limitReached(out map[string]any) bool {
 	return v
 }
 
-func hideGroupOdds(grp map[string]any) map[string]any {
-	out := map[string]any{}
-	for k, v := range grp {
-		out[k] = v
+func hideGroupOdds(grp chanceGroupView) chanceGroupView {
+	hidden := make([]chanceGroupPrize, 0, len(grp.Prizes))
+	for _, p := range grp.Prizes {
+		hidden = append(hidden, chanceGroupPrize{ID: p.ID, Key: p.Key, Name: p.Name})
 	}
-	if list, ok := grp["prizes"].([]map[string]any); ok {
-		hidden := make([]map[string]any, 0, len(list))
-		for _, p := range list {
-			hidden = append(hidden, map[string]any{"id": p["id"], "key": p["key"], "name": p["name"]})
-		}
-		out["prizes"] = hidden
-	}
-	return out
+	grp.Prizes = hidden
+	return grp
 }
 
 func (s *service) chanceGameView(g *chanceGame, lk *chanceLookups, langs *localized.Set, lang string, last sql.NullTime, plays int64, today int, now time.Time) map[string]any {

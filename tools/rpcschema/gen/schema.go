@@ -604,9 +604,56 @@ func (sc *scope) appended(name string) Schema {
 	return item
 }
 
+func orOperands(e ast.Expr) []ast.Expr {
+	if b, ok := e.(*ast.BinaryExpr); ok && b.Op == token.LOR {
+		return append(orOperands(b.X), orOperands(b.Y)...)
+	}
+	if p, ok := e.(*ast.ParenExpr); ok {
+		return orOperands(p.X)
+	}
+	return []ast.Expr{e}
+}
+
+func orGuardedReturns(body *ast.BlockStmt) map[*ast.ReturnStmt]bool {
+	out := map[*ast.ReturnStmt]bool{}
+	ast.Inspect(body, func(n ast.Node) bool {
+		if _, ok := n.(*ast.FuncLit); ok {
+			return false
+		}
+		ifs, ok := n.(*ast.IfStmt)
+		if !ok {
+			return true
+		}
+		ops := orOperands(ifs.Cond)
+		if len(ops) < 2 {
+			return true
+		}
+		for _, st := range ifs.Body.List {
+			r, ok := st.(*ast.ReturnStmt)
+			if !ok || len(r.Results) < 2 {
+				continue
+			}
+			last, ok := r.Results[len(r.Results)-1].(*ast.Ident)
+			if !ok {
+				continue
+			}
+			for _, op := range ops {
+				if b, ok := op.(*ast.BinaryExpr); ok && b.Op == token.NEQ && isNilIdent(b.Y) {
+					if id, ok := b.X.(*ast.Ident); ok && id.Name == last.Name {
+						out[r] = true
+					}
+				}
+			}
+		}
+		return true
+	})
+	return out
+}
+
 func (sc *scope) returns(depth int) Schema {
 	var out Schema
 	sawNil := false
+	orGuarded := orGuardedReturns(sc.decl.Body)
 	var walk func(n ast.Node) bool
 	walk = func(n ast.Node) bool {
 		switch st := n.(type) {
@@ -618,7 +665,7 @@ func (sc *scope) returns(depth int) Schema {
 			}
 			first := st.Results[0]
 			if id, ok := first.(*ast.Ident); ok && id.Name == "nil" {
-				if len(st.Results) == 1 || isNilIdent(st.Results[len(st.Results)-1]) {
+				if len(st.Results) == 1 || isNilIdent(st.Results[len(st.Results)-1]) || orGuarded[st] {
 					sawNil = true
 				}
 				return true
@@ -692,12 +739,19 @@ func merge(a, b Schema) Schema {
 			}
 		}
 		res := Schema{"type": "object", "properties": out}
+		if a["nullable"] == true || b["nullable"] == true {
+			res["nullable"] = true
+		}
 		return res
 	}
 	if a["type"] == "array" && b["type"] == "array" {
 		ia, _ := a["items"].(Schema)
 		ib, _ := b["items"].(Schema)
-		return Schema{"type": "array", "items": merge(ia, ib)}
+		res := Schema{"type": "array", "items": merge(ia, ib)}
+		if a["nullable"] == true || b["nullable"] == true {
+			res["nullable"] = true
+		}
+		return res
 	}
 	if reflect.DeepEqual(a, b) {
 		return a

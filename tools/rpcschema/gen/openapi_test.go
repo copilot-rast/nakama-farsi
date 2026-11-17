@@ -52,9 +52,7 @@ func TestServedDocumentListsEveryRegisteredRPC(t *testing.T) {
 	}
 	ids := []string{"lua_only_rpc"}
 	for _, r := range rpcs {
-		if r.Module != "jazebe" {
-			ids = append(ids, r.ID)
-		}
+		ids = append(ids, r.ID)
 	}
 	doc := servedDoc(t, ids)
 	paths := doc["paths"].(map[string]any)
@@ -137,5 +135,42 @@ func TestAccountGetIsTypedFromTheProtoMessage(t *testing.T) {
 func TestGeneratedFileIsNotCommitted(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(repoRoot, "integrations", apidocs.FileName)); err == nil {
 		t.Fatal("the document is generated at build time")
+	}
+}
+
+func TestNullableAndNestedShapesMatchLiveResponses(t *testing.T) {
+	doc := servedDoc(t, []string{"economy_avatar_catalog", "base_my_status", "economy_chance_games"})
+	schemas := doc["components"].(map[string]any)["schemas"].(map[string]any)
+	at := func(s any, path ...string) map[string]any {
+		cur := s.(map[string]any)
+		for _, p := range path {
+			if p == "[]" {
+				cur = cur["items"].(map[string]any)
+				continue
+			}
+			cur = cur["properties"].(map[string]any)[p].(map[string]any)
+		}
+		return cur
+	}
+	price := at(schemas["EconomyAvatarCatalogResponse"], "categories", "[]", "items", "[]", "price")
+	if price["nullable"] != true {
+		t.Errorf("avatar catalog price is not nullable: %v", price)
+	}
+	for _, k := range []string{"mute", "suspension"} {
+		if s := at(schemas["BaseMyStatusResponse"], k); s["nullable"] != true {
+			t.Errorf("my status %s is not nullable: %v", k, s)
+		}
+	}
+	group := at(schemas["EconomyChanceGamesResponse"], "items", "[]", "prize", "[]", "group")
+	for _, k := range []string{"id", "key", "name", "prizes"} {
+		if _, ok := group["properties"].(map[string]any)[k]; !ok {
+			t.Errorf("chance prize group has no %s: %v", k, group)
+		}
+	}
+	prize := at(group, "prizes", "[]")
+	for _, k := range []string{"id", "key", "name", "weight", "share"} {
+		if _, ok := prize["properties"].(map[string]any)[k]; !ok {
+			t.Errorf("chance prize group member has no %s: %v", k, prize)
+		}
 	}
 }
