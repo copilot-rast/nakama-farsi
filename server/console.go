@@ -352,8 +352,7 @@ func StartConsoleServer(logger *zap.Logger, startupLogger *zap.Logger, db *sql.D
 		handlerFunc := handler.Handler
 		if isPublicConsoleHandler(handler.PathPattern, handler.Methods) {
 			handlerFunc = publicConsoleHandler(handlerFunc)
-		} else if strings.HasPrefix(handler.PathPattern, "/v2/console/hiro/") || strings.HasPrefix(handler.PathPattern, "/v2/console/economy/") || strings.HasPrefix(handler.PathPattern, "/v2/console/publication/") || strings.HasPrefix(handler.PathPattern, "/v2/console/base/") {
-			// Handlers in reverse order of priority.
+		} else {
 			handlerFunc = customHttpMuxParamsFunc(handlerFunc)
 			handlerFunc = customHttpAuditLogFunc(handler.PathPattern, handler.Methods, handlerFunc)
 			handlerFunc = customHttpAuthFunc(handler.PathPattern, handler.Methods, handlerFunc)
