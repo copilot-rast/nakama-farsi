@@ -35,6 +35,9 @@ type Heatmap struct {
 	KeepRawDays    int     `json:"keepRawDays"`
 	KeepCellsDays  int     `json:"keepCellsDays"`
 	MaxTracePoints int     `json:"maxTracePoints"`
+	ImportMaxMB    int     `json:"importMaxMB"`
+	ImportMaxRows  int     `json:"importMaxRows"`
+	ImportMaxFiles int     `json:"importMaxFiles"`
 }
 
 type All struct {
@@ -60,7 +63,7 @@ func Defaults() All {
 		Timezone:  "Asia/Tehran",
 		Sessions:  Sessions{Source: SourceClient, PingSeconds: 60, TimeoutSeconds: 300, MaxSeconds: 6 * 3600, StartsPerHour: 120, CloseOtherOpen: true, KeepDays: 400},
 		Retention: Retention{Days: []int{1, 7, 30}, Mode: ModeClassic, CohortRows: 30},
-		Heatmap:   Heatmap{Enabled: true, UnknownMaps: MapsAccept, CellSize: 5, MaxPoints: 20000, MaxBytes: 512 * 1024, UploadsPerHour: 120, MaxKmh: 600, KeepRawDays: 14, KeepCellsDays: 365, MaxTracePoints: 20000},
+		Heatmap:   Heatmap{Enabled: true, UnknownMaps: MapsAccept, CellSize: 5, MaxPoints: 20000, MaxBytes: 512 * 1024, UploadsPerHour: 120, MaxKmh: 600, KeepRawDays: 14, KeepCellsDays: 365, MaxTracePoints: 20000, ImportMaxMB: 64, ImportMaxRows: 2000000, ImportMaxFiles: 100},
 	}
 }
 
@@ -115,6 +118,12 @@ func (a All) Validate() (string, string) {
 		return "heatmap.keepCellsDays", "VALUE_OUT_OF_RANGE"
 	case !between(h.MaxTracePoints, 100, 500000):
 		return "heatmap.maxTracePoints", "VALUE_OUT_OF_RANGE"
+	case !between(h.ImportMaxMB, 1, 2048):
+		return "heatmap.importMaxMB", "VALUE_OUT_OF_RANGE"
+	case !between(h.ImportMaxRows, 100, 50000000):
+		return "heatmap.importMaxRows", "VALUE_OUT_OF_RANGE"
+	case !between(h.ImportMaxFiles, 1, 2000):
+		return "heatmap.importMaxFiles", "VALUE_OUT_OF_RANGE"
 	}
 	seen := map[int]bool{}
 	for _, d := range r.Days {

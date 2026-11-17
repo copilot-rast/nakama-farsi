@@ -68,6 +68,10 @@ func (s *statusCheckResponseWriter) WriteHeader(statusCode int) {
 	s.w.WriteHeader(statusCode)
 }
 
+func (s *statusCheckResponseWriter) Unwrap() http.ResponseWriter {
+	return s.w
+}
+
 type ctxConsoleUserIdKey struct{}
 type ctxConsoleUsernameKey struct{}
 type ctxConsoleEmailKey struct{}
@@ -305,7 +309,11 @@ func StartConsoleServer(logger *zap.Logger, startupLogger *zap.Logger, db *sql.D
 		}
 		return func(w http.ResponseWriter, r *http.Request) {
 			// Read the body so we can later write it to the audit log.
-			originalBody, err := io.ReadAll(r.Body)
+			var originalBody []byte
+			var err error
+			if !strings.HasPrefix(strings.ToLower(r.Header.Get("Content-Type")), "multipart/") {
+				originalBody, err = io.ReadAll(r.Body)
+			}
 			if err != nil {
 				s.logger.Error("Error reading request body", zap.Error(err))
 
@@ -316,8 +324,10 @@ func StartConsoleServer(logger *zap.Logger, startupLogger *zap.Logger, db *sql.D
 				}
 				return
 			}
-			_ = r.Body.Close()
-			r.Body = io.NopCloser(bytes.NewReader(originalBody))
+			if originalBody != nil {
+				_ = r.Body.Close()
+				r.Body = io.NopCloser(bytes.NewReader(originalBody))
+			}
 
 			sw := &statusCheckResponseWriter{w: w}
 

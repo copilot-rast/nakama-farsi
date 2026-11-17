@@ -35,6 +35,7 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{p + "/heatmaps/{key}", http.MethodDelete, s.mapDelete},
 		{p + "/heatmaps/{key}/cells", http.MethodGet, s.mapCells},
 		{p + "/heatmaps/{key}/uploads", http.MethodGet, s.mapUploads},
+		{p + "/heatmaps/{key}/import", http.MethodPost, s.importCSV},
 	}
 	for _, r := range routes {
 		if err := initializer.RegisterConsoleHttp(r.path, r.handler, r.method); err != nil {
@@ -627,7 +628,7 @@ func (s *service) mapUploads(w http.ResponseWriter, r *http.Request) {
 	key := pluginkit.PathVar(r, "key")
 	var total int64
 	_ = s.db.QueryRowContext(ctx, `SELECT count(*) FROM insights_heatmap_upload WHERE map_key=$1`, key).Scan(&total)
-	rows, err := s.db.QueryContext(ctx, `SELECT h.id::text, h.user_id::text, coalesce(u.username,''), coalesce(u.display_name,''), h.upload_key, h.part, h.points, h.dropped, h.players, h.duration_ms, h.raw_key <> '', h.created_at
+	rows, err := s.db.QueryContext(ctx, `SELECT h.id::text, h.user_id::text, coalesce(u.username,''), coalesce(u.display_name,''), h.upload_key, h.part, h.points, h.dropped, h.players, h.duration_ms, h.raw_key <> '', h.created_at, h.source, h.label, h.file_name, h.uploaded_by
 		FROM insights_heatmap_upload h LEFT JOIN users u ON u.id=h.user_id WHERE h.map_key=$1 ORDER BY h.created_at DESC LIMIT $2 OFFSET $3`, key, limit, (page-1)*limit)
 	if err != nil {
 		s.fail(w, err)
@@ -636,17 +637,17 @@ func (s *service) mapUploads(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 	items := []map[string]any{}
 	for rows.Next() {
-		var id, uid, username, display, upload string
+		var id, uid, username, display, upload, source, label, fileName, by string
 		var part, points, dropped, players int
 		var dur int64
 		var raw bool
 		var at time.Time
-		if err := rows.Scan(&id, &uid, &username, &display, &upload, &part, &points, &dropped, &players, &dur, &raw, &at); err != nil {
+		if err := rows.Scan(&id, &uid, &username, &display, &upload, &part, &points, &dropped, &players, &dur, &raw, &at, &source, &label, &fileName, &by); err != nil {
 			s.fail(w, err)
 			return
 		}
 		items = append(items, map[string]any{"id": id, "userId": uid, "username": username, "displayName": display, "uploadId": upload, "part": part, "points": points, "dropped": dropped,
-			"players": players, "durationMs": dur, "hasTrace": raw, "createdAt": at})
+			"players": players, "durationMs": dur, "hasTrace": raw, "createdAt": at, "source": source, "label": label, "fileName": fileName, "uploadedBy": by})
 	}
 	pluginkit.WriteJSON(w, http.StatusOK, map[string]any{"items": items, "total": total, "page": page, "limit": limit})
 }

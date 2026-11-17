@@ -43,51 +43,267 @@ type heatmapIn struct {
 	Points   [][]any `json:"points"`
 }
 
-func readCSV(r io.Reader, max int) ([]point, int, error) {
-	out := []point{}
-	dropped := 0
+const (
+	dropColumns = "columns"
+	dropNumber  = "number"
+	dropRange   = "range"
+)
+
+type csvLayout struct {
+	sep                  string
+	t, x, z, player, kmh int
+}
+
+var defaultLayout = csvLayout{sep: ",", t: 0, x: 1, z: 2, player: 3, kmh: 4}
+
+var headerAliases = map[string]string{
+	"t": "t", "time": "t", "timestamp": "t", "sec": "t", "seconds": "t", "elapsed": "t",
+	"x": "x", "posx": "x", "positionx": "x",
+	"z": "z", "posz": "z", "positionz": "z",
+	"player": "player", "name": "player", "playername": "player", "driver": "player", "racer": "player", "playerid": "player",
+	"kmh": "kmh", "speed": "kmh", "speedkmh": "kmh",
+}
+
+type csvStats struct {
+	Rows    int            `json:"rows"`
+	Dropped int            `json:"dropped"`
+	Reasons map[string]int `json:"reasons"`
+}
+
+func (c *csvStats) drop(reason string) {
+	c.Dropped++
+	if c.Reasons == nil {
+		c.Reasons = map[string]int{}
+	}
+	c.Reasons[reason]++
+}
+
+func headerKey(v string) string {
+	var b strings.Builder
+	for _, r := range strings.ToLower(v) {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+func detectSep(line string) string {
+	switch {
+	case strings.Contains(line, ","):
+		return ","
+	case strings.Contains(line, ";"):
+		return ";"
+	case strings.Contains(line, "\t"):
+		return "\t"
+	}
+	return ","
+}
+
+func headerLayout(fields []string, sep string) (csvLayout, bool) {
+	l := csvLayout{sep: sep, t: -1, x: -1, z: -1, player: -1, kmh: -1}
+	for i, f := range fields {
+		switch headerAliases[headerKey(f)] {
+		case "t":
+			if l.t < 0 {
+				l.t = i
+			}
+		case "x":
+			if l.x < 0 {
+				l.x = i
+			}
+		case "z":
+			if l.z < 0 {
+				l.z = i
+			}
+		case "player":
+			if l.player < 0 {
+				l.player = i
+			}
+		case "kmh":
+			if l.kmh < 0 {
+				l.kmh = i
+			}
+		}
+	}
+	if l.x < 0 || l.z < 0 {
+		return csvLayout{}, false
+	}
+	return l, true
+}
+
+func col(f []string, i int) string {
+	if i < 0 || i >= len(f) {
+		return ""
+	}
+	return strings.Trim(strings.TrimSpace(f[i]), `"'`)
+}
+
+func scanCSV(r io.Reader, fn func(point) error) (csvStats, error) {
+	st := csvStats{}
 	sc := bufio.NewScanner(r)
-	sc.Buffer(make([]byte, 0, 4096), 4096)
-	line := 0
+	sc.Buffer(make([]byte, 0, 4096), 64*1024)
+	var layout *csvLayout
 	for sc.Scan() {
-		line++
-		raw := strings.TrimSpace(sc.Text())
+		raw := strings.TrimSpace(strings.TrimPrefix(sc.Text(), "\ufeff"))
 		if raw == "" {
 			continue
 		}
-		f := strings.Split(raw, ",")
-		if len(f) < 3 {
-			dropped++
-			continue
+		first := layout == nil
+		if first {
+			l := defaultLayout
+			l.sep = detectSep(raw)
+			layout = &l
 		}
-		t, e1 := strconv.ParseFloat(strings.TrimSpace(f[0]), 64)
-		x, e2 := strconv.ParseFloat(strings.TrimSpace(f[1]), 64)
-		z, e3 := strconv.ParseFloat(strings.TrimSpace(f[2]), 64)
-		if e1 != nil || e2 != nil || e3 != nil {
-			if line == 1 {
+		f := strings.Split(raw, layout.sep)
+		need := max(layout.x, layout.z, layout.t) + 1
+		if len(f) < need || len(f) < 2 {
+			if first {
 				continue
 			}
-			dropped++
+			st.Rows++
+			st.drop(dropColumns)
 			continue
 		}
-		p := point{T: t, X: x, Z: z}
-		if len(f) > 3 {
-			p.Player = cleanLabel(f[3], 32)
+		x, e2 := strconv.ParseFloat(col(f, layout.x), 64)
+		z, e3 := strconv.ParseFloat(col(f, layout.z), 64)
+		var t float64
+		var e1 error
+		if layout.t >= 0 {
+			t, e1 = strconv.ParseFloat(col(f, layout.t), 64)
 		}
-		if len(f) > 4 {
-			if v, err := strconv.ParseFloat(strings.TrimSpace(f[4]), 64); err == nil {
-				p.Kmh = v
+		if e1 != nil || e2 != nil || e3 != nil {
+			if first {
+				if l, ok := headerLayout(f, layout.sep); ok {
+					layout = &l
+				}
+				continue
+			}
+			st.Rows++
+			st.drop(dropNumber)
+			continue
+		}
+		st.Rows++
+		p := point{T: t, X: x, Z: z, Player: cleanLabel(col(f, layout.player), 32)}
+		if v := col(f, layout.kmh); v != "" {
+			if k, err := strconv.ParseFloat(v, 64); err == nil {
+				p.Kmh = k
 			}
 		}
-		out = append(out, p)
-		if len(out) > max {
-			return nil, 0, apierr.New(413, "HEATMAP_TOO_LARGE").With("maxPoints", max)
+		if err := fn(p); err != nil {
+			return st, err
 		}
 	}
 	if err := sc.Err(); err != nil {
-		return nil, 0, apierr.BadRequest("HEATMAP_INVALID").WithField("data").WithDetail(err.Error())
+		if errors.As(err, new(limitErr)) {
+			return st, err
+		}
+		return st, apierr.BadRequest("HEATMAP_INVALID").WithField("data").WithDetail(err.Error())
 	}
-	return out, dropped, nil
+	return st, nil
+}
+
+func readCSV(r io.Reader, max int) ([]point, int, error) {
+	out := []point{}
+	st, err := scanCSV(r, func(p point) error {
+		out = append(out, p)
+		if len(out) > max {
+			return apierr.New(413, "HEATMAP_TOO_LARGE").With("maxPoints", max)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, 0, err
+	}
+	return out, st.Dropped, nil
+}
+
+func validPoint(p point, maxKmh float64) bool {
+	return !(math.IsNaN(p.X) || math.IsNaN(p.Z) || math.IsInf(p.X, 0) || math.IsInf(p.Z, 0) || math.Abs(p.X) > 1e7 || math.Abs(p.Z) > 1e7 || math.IsNaN(p.T) || math.IsInf(p.T, 0) || math.IsNaN(p.Kmh) || p.Kmh < 0 || p.Kmh > maxKmh)
+}
+
+type heatAgg struct {
+	size                               float64
+	cells                              map[cellKey]*cellAgg
+	players                            map[string]bool
+	minT, maxT, minX, maxX, minZ, maxZ float64
+	kept                               int
+	raw                                *bytes.Buffer
+	zw                                 *gzip.Writer
+}
+
+func newHeatAgg(size float64, keepRaw bool) *heatAgg {
+	a := &heatAgg{size: size, cells: map[cellKey]*cellAgg{}, players: map[string]bool{},
+		minT: math.Inf(1), maxT: math.Inf(-1), minX: math.Inf(1), maxX: math.Inf(-1), minZ: math.Inf(1), maxZ: math.Inf(-1)}
+	if keepRaw {
+		a.raw = &bytes.Buffer{}
+		a.zw, _ = gzip.NewWriterLevel(a.raw, gzip.BestCompression)
+		_, _ = a.zw.Write([]byte("t,x,z,player,kmh\n"))
+	}
+	return a
+}
+
+func (a *heatAgg) add(p point) {
+	a.kept++
+	a.players[p.Player] = true
+	a.minT, a.maxT = math.Min(a.minT, p.T), math.Max(a.maxT, p.T)
+	a.minX, a.maxX, a.minZ, a.maxZ = math.Min(a.minX, p.X), math.Max(a.maxX, p.X), math.Min(a.minZ, p.Z), math.Max(a.maxZ, p.Z)
+	k := cellKey{int(math.Floor(p.X / a.size)), int(math.Floor(p.Z / a.size))}
+	c := a.cells[k]
+	if c == nil {
+		c = &cellAgg{}
+		a.cells[k] = c
+	}
+	c.points++
+	c.speedSum += p.Kmh
+	c.speedMax = math.Max(c.speedMax, p.Kmh)
+	if a.zw != nil {
+		writePoint(a.zw, p)
+	}
+}
+
+func (a *heatAgg) rawBytes() []byte {
+	if a.zw == nil {
+		return nil
+	}
+	_ = a.zw.Close()
+	return a.raw.Bytes()
+}
+
+func (a *heatAgg) durationMs() int64 {
+	if a.kept == 0 {
+		return 0
+	}
+	return int64(math.Round((a.maxT - a.minT) * 1000))
+}
+
+func (s *service) writeHeat(ctx context.Context, tx *sql.Tx, mapKey string, a *heatAgg, day string, now time.Time) error {
+	keys := make([]cellKey, 0, len(a.cells))
+	for k := range a.cells {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		if keys[i].cx != keys[j].cx {
+			return keys[i].cx < keys[j].cx
+		}
+		return keys[i].cz < keys[j].cz
+	})
+	cxs, czs, counts, sums, maxes := make([]int64, 0, len(keys)), make([]int64, 0, len(keys)), make([]int64, 0, len(keys)), make([]float64, 0, len(keys)), make([]float64, 0, len(keys))
+	for _, k := range keys {
+		c := a.cells[k]
+		cxs, czs, counts, sums, maxes = append(cxs, int64(k.cx)), append(czs, int64(k.cz)), append(counts, c.points), append(sums, c.speedSum), append(maxes, c.speedMax)
+	}
+	if _, err := tx.ExecContext(ctx, `INSERT INTO insights_heatmap_cell (map_key, size, day, cx, cz, points, speed_sum, speed_max)
+		SELECT $1, $2, $3::date, u.cx, u.cz, u.n, u.s, u.m FROM unnest($4::int[], $5::int[], $6::bigint[], $7::float8[], $8::float8[]) AS u(cx, cz, n, s, m)
+		ON CONFLICT (map_key, size, day, cx, cz) DO UPDATE SET points=insights_heatmap_cell.points+EXCLUDED.points,
+		speed_sum=insights_heatmap_cell.speed_sum+EXCLUDED.speed_sum, speed_max=GREATEST(insights_heatmap_cell.speed_max, EXCLUDED.speed_max)`,
+		mapKey, a.size, day, cxs, czs, counts, sums, maxes); err != nil {
+		return err
+	}
+	_, err := tx.ExecContext(ctx, `UPDATE insights_heatmap_map SET uploads=uploads+1, points=points+$2, last_upload_at=$3,
+		min_x=LEAST(coalesce(min_x,$4),$4), max_x=GREATEST(coalesce(max_x,$5),$5), min_z=LEAST(coalesce(min_z,$6),$6), max_z=GREATEST(coalesce(max_z,$7),$7) WHERE key=$1`,
+		mapKey, a.kept, now, a.minX, a.maxX, a.minZ, a.maxZ)
+	return err
 }
 
 func num(v any) (float64, bool) {
@@ -192,15 +408,8 @@ func (s *service) heatmapMap(ctx context.Context, q queryer, key string, cfg set
 	return m, nil
 }
 
-func encodeCSV(points []point) []byte {
-	var buf bytes.Buffer
-	zw, _ := gzip.NewWriterLevel(&buf, gzip.BestCompression)
-	_, _ = zw.Write([]byte("t,x,z,player,kmh\n"))
-	for _, p := range points {
-		_, _ = fmt.Fprintf(zw, "%s,%s,%s,%s,%s\n", strconv.FormatFloat(p.T, 'f', -1, 64), strconv.FormatFloat(p.X, 'f', -1, 64), strconv.FormatFloat(p.Z, 'f', -1, 64), strings.ReplaceAll(p.Player, ",", " "), strconv.FormatFloat(p.Kmh, 'f', -1, 64))
-	}
-	_ = zw.Close()
-	return buf.Bytes()
+func writePoint(w io.Writer, p point) {
+	_, _ = fmt.Fprintf(w, "%s,%s,%s,%s,%s\n", strconv.FormatFloat(p.T, 'f', -1, 64), strconv.FormatFloat(p.X, 'f', -1, 64), strconv.FormatFloat(p.Z, 'f', -1, 64), strings.ReplaceAll(p.Player, ",", " "), strconv.FormatFloat(p.Kmh, 'f', -1, 64))
 }
 
 type cellKey struct{ cx, cz int }
@@ -247,7 +456,7 @@ func (s *service) heatmap(ctx context.Context, userID string, in heatmapIn) (map
 	}
 	kept := pts[:0]
 	for _, p := range pts {
-		if math.IsNaN(p.X) || math.IsNaN(p.Z) || math.IsInf(p.X, 0) || math.IsInf(p.Z, 0) || math.Abs(p.X) > 1e7 || math.Abs(p.Z) > 1e7 || math.IsNaN(p.Kmh) || p.Kmh < 0 || p.Kmh > hc.MaxKmh {
+		if !validPoint(p, hc.MaxKmh) {
 			dropped++
 			continue
 		}
@@ -273,68 +482,29 @@ func (s *service) heatmap(ctx context.Context, userID string, in heatmapIn) (map
 	if err != nil {
 		return nil, err
 	}
-	players := map[string]bool{}
-	minT, maxT := math.Inf(1), math.Inf(-1)
-	minX, maxX, minZ, maxZ := math.Inf(1), math.Inf(-1), math.Inf(1), math.Inf(-1)
-	cells := map[cellKey]*cellAgg{}
+	agg := newHeatAgg(m.CellSize, hc.KeepRawDays > 0)
 	for _, p := range kept {
-		players[p.Player] = true
-		minT, maxT = math.Min(minT, p.T), math.Max(maxT, p.T)
-		minX, maxX, minZ, maxZ = math.Min(minX, p.X), math.Max(maxX, p.X), math.Min(minZ, p.Z), math.Max(maxZ, p.Z)
-		k := cellKey{int(math.Floor(p.X / m.CellSize)), int(math.Floor(p.Z / m.CellSize))}
-		c := cells[k]
-		if c == nil {
-			c = &cellAgg{}
-			cells[k] = c
-		}
-		c.points++
-		c.speedSum += p.Kmh
-		c.speedMax = math.Max(c.speedMax, p.Kmh)
+		agg.add(p)
 	}
 	id := uuid.Must(uuid.NewV4()).String()
 	rawKey := ""
 	if hc.KeepRawDays > 0 {
-		rawKey = "heatmaps/" + strings.ReplaceAll(in.Map, ":", "_") + "/" + id + ".csv.gz"
+		rawKey = rawKeyFor(in.Map, id)
 	}
-	duration := int64(math.Round((maxT - minT) * 1000))
 	if _, err := tx.ExecContext(ctx, `INSERT INTO insights_heatmap_upload (id, user_id, map_key, upload_key, part, points, dropped, players, duration_ms, raw_key, created_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-		id, userID, in.Map, in.UploadID, in.Part, len(kept), dropped, len(players), duration, rawKey, now); err != nil {
+		id, userID, in.Map, in.UploadID, in.Part, agg.kept, dropped, len(agg.players), agg.durationMs(), rawKey, now); err != nil {
 		var pg *pgconn.PgError
 		if errors.As(err, &pg) && pg.Code == "23505" {
-			return map[string]any{"uploadId": in.UploadID, "part": in.Part, "duplicate": true, "accepted": len(kept)}, nil
+			return map[string]any{"uploadId": in.UploadID, "part": in.Part, "duplicate": true, "accepted": agg.kept}, nil
 		}
 		return nil, err
-	}
-	keys := make([]cellKey, 0, len(cells))
-	for k := range cells {
-		keys = append(keys, k)
-	}
-	sort.Slice(keys, func(i, j int) bool {
-		if keys[i].cx != keys[j].cx {
-			return keys[i].cx < keys[j].cx
-		}
-		return keys[i].cz < keys[j].cz
-	})
-	cxs, czs, counts, sums, maxes := make([]int64, 0, len(keys)), make([]int64, 0, len(keys)), make([]int64, 0, len(keys)), make([]float64, 0, len(keys)), make([]float64, 0, len(keys))
-	for _, k := range keys {
-		c := cells[k]
-		cxs, czs, counts, sums, maxes = append(cxs, int64(k.cx)), append(czs, int64(k.cz)), append(counts, c.points), append(sums, c.speedSum), append(maxes, c.speedMax)
 	}
 	day := now.In(cfg.Location()).Format(time.DateOnly)
-	if _, err := tx.ExecContext(ctx, `INSERT INTO insights_heatmap_cell (map_key, size, day, cx, cz, points, speed_sum, speed_max)
-		SELECT $1, $2, $3::date, u.cx, u.cz, u.n, u.s, u.m FROM unnest($4::int[], $5::int[], $6::bigint[], $7::float8[], $8::float8[]) AS u(cx, cz, n, s, m)
-		ON CONFLICT (map_key, size, day, cx, cz) DO UPDATE SET points=insights_heatmap_cell.points+EXCLUDED.points,
-		speed_sum=insights_heatmap_cell.speed_sum+EXCLUDED.speed_sum, speed_max=GREATEST(insights_heatmap_cell.speed_max, EXCLUDED.speed_max)`,
-		in.Map, m.CellSize, day, cxs, czs, counts, sums, maxes); err != nil {
-		return nil, err
-	}
-	if _, err := tx.ExecContext(ctx, `UPDATE insights_heatmap_map SET uploads=uploads+1, points=points+$2, last_upload_at=$3,
-		min_x=LEAST(coalesce(min_x,$4),$4), max_x=GREATEST(coalesce(max_x,$5),$5), min_z=LEAST(coalesce(min_z,$6),$6), max_z=GREATEST(coalesce(max_z,$7),$7) WHERE key=$1`,
-		in.Map, len(kept), now, minX, maxX, minZ, maxZ); err != nil {
+	if err := s.writeHeat(ctx, tx, in.Map, agg, day, now); err != nil {
 		return nil, err
 	}
 	if rawKey != "" {
-		if err := s.store.Put(ctx, rawKey, encodeCSV(kept), "application/gzip"); err != nil {
+		if err := s.store.Put(ctx, rawKey, agg.rawBytes(), "application/gzip"); err != nil {
 			return nil, err
 		}
 	}
@@ -344,7 +514,11 @@ func (s *service) heatmap(ctx context.Context, userID string, in heatmapIn) (map
 		}
 		return nil, err
 	}
-	return map[string]any{"uploadId": in.UploadID, "part": in.Part, "duplicate": false, "accepted": len(kept), "dropped": dropped, "players": len(players), "cells": len(keys)}, nil
+	return map[string]any{"uploadId": in.UploadID, "part": in.Part, "duplicate": false, "accepted": agg.kept, "dropped": dropped, "players": len(agg.players), "cells": len(agg.cells)}, nil
+}
+
+func rawKeyFor(mapKey, id string) string {
+	return "heatmaps/" + strings.ReplaceAll(mapKey, ":", "_") + "/" + id + ".csv.gz"
 }
 
 func (s *service) trace(ctx context.Context, key string, max int) ([]point, error) {
