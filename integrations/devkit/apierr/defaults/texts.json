@@ -471,6 +471,166 @@
     "en": "Nothing to claim was found.",
     "fa": "موردی برای دریافت پیدا نشد."
   },
+  "CLAN_ALREADY_LEADER": {
+    "en": "You are already the leader.",
+    "fa": "شما همین حالا رهبر کلن هستید."
+  },
+  "CLAN_ALREADY_MEMBER": {
+    "en": "You are already in a clan.",
+    "fa": "شما همین حالا عضو یک کلن هستید."
+  },
+  "CLAN_AVATAR_INVALID": {
+    "en": "The clan picture link is not valid.",
+    "fa": "لینک تصویر کلن درست نیست."
+  },
+  "CLAN_BADGE_INVALID": {
+    "en": "This badge is not allowed.",
+    "fa": "این نشان مجاز نیست."
+  },
+  "CLAN_CANNOT_INVITE_SELF": {
+    "en": "You cannot invite yourself.",
+    "fa": "نمی‌توانید خودتان را دعوت کنید."
+  },
+  "CLAN_CANNOT_KICK_SELF": {
+    "en": "You cannot remove yourself. Leave the clan instead.",
+    "fa": "نمی‌توانید خودتان را بیرون کنید؛ از کلن خارج شوید."
+  },
+  "CLAN_COOLDOWN": {
+    "en": "You left a clan a short time ago. Try again later.",
+    "fa": "کمی پیش از یک کلن بیرون آمدید. کمی بعد دوباره تلاش کنید."
+  },
+  "CLAN_CREATE_DISABLED": {
+    "en": "Creating clans is turned off.",
+    "fa": "ساختن کلن فعلاً بسته است."
+  },
+  "CLAN_DESCRIPTION_TOO_LONG": {
+    "en": "The clan description is too long.",
+    "fa": "توضیح کلن خیلی بلند است."
+  },
+  "CLAN_DISABLED": {
+    "en": "Clans are turned off.",
+    "fa": "کلن‌ها فعلاً خاموش هستند."
+  },
+  "CLAN_FULL": {
+    "en": "This clan is full.",
+    "fa": "ظرفیت این کلن پر است."
+  },
+  "CLAN_ID_REQUIRED": {
+    "en": "A clan id is required.",
+    "fa": "شناسهٔ کلن لازم است."
+  },
+  "CLAN_INVITE_NOT_FOUND": {
+    "en": "Invite not found or expired.",
+    "fa": "دعوت پیدا نشد یا تمام شده است."
+  },
+  "CLAN_INVITE_ONLY": {
+    "en": "This clan takes members by invite only.",
+    "fa": "این کلن فقط با دعوت عضو می‌گیرد."
+  },
+  "CLAN_JOIN_TYPE_INVALID": {
+    "en": "The join type is not valid.",
+    "fa": "نوع عضوگیری درست نیست."
+  },
+  "CLAN_KICK_COOLDOWN": {
+    "en": "You were removed from this clan a short time ago.",
+    "fa": "کمی پیش از این کلن بیرون شدید."
+  },
+  "CLAN_LANG_INVALID": {
+    "en": "The clan language is not valid.",
+    "fa": "زبان کلن درست نیست."
+  },
+  "CLAN_LEADER_MUST_TRANSFER": {
+    "en": "Hand the clan to another member before you leave.",
+    "fa": "پیش از خروج، رهبری را به عضو دیگری بدهید."
+  },
+  "CLAN_LEAVE_COOLDOWN": {
+    "en": "You joined a short time ago and cannot leave yet.",
+    "fa": "تازه عضو شده‌اید و هنوز نمی‌توانید خارج شوید."
+  },
+  "CLAN_MEMBER_NOT_FOUND": {
+    "en": "This player is not a member of your clan.",
+    "fa": "این بازیکن عضو کلن شما نیست."
+  },
+  "CLAN_MIN_TROPHIES_INVALID": {
+    "en": "The minimum trophies value is not valid.",
+    "fa": "حداقل جام درست نیست."
+  },
+  "CLAN_NAME_INVALID": {
+    "en": "The clan name length is not allowed.",
+    "fa": "طول نام کلن مجاز نیست."
+  },
+  "CLAN_NAME_TAKEN": {
+    "en": "This clan name is taken.",
+    "fa": "این نام کلن را کس دیگری گرفته است."
+  },
+  "CLAN_NOT_ENOUGH_CURRENCY": {
+    "en": "You do not have enough currency to create a clan.",
+    "fa": "برای ساختن کلن موجودی کافی ندارید."
+  },
+  "CLAN_NOT_ENOUGH_TROPHIES": {
+    "en": "You do not have enough trophies.",
+    "fa": "جام کافی ندارید."
+  },
+  "CLAN_NOT_FOUND": {
+    "en": "Clan not found.",
+    "fa": "کلن پیدا نشد."
+  },
+  "CLAN_NOT_MEMBER": {
+    "en": "You are not in a clan.",
+    "fa": "شما عضو هیچ کلنی نیستید."
+  },
+  "CLAN_REQUEST_NOT_FOUND": {
+    "en": "Join request not found.",
+    "fa": "درخواست عضویت پیدا نشد."
+  },
+  "CLAN_ROLE_NOT_ALLOWED": {
+    "en": "Your clan role cannot do this.",
+    "fa": "نقش شما در کلن اجازهٔ این کار را ندارد."
+  },
+  "CLAN_ROLE_TOO_LOW": {
+    "en": "You can only manage members below your role.",
+    "fa": "فقط اعضای پایین‌تر از نقش خودتان را می‌توانید مدیریت کنید."
+  },
+  "CLAN_SORT_INVALID": {
+    "en": "The sort order is not valid.",
+    "fa": "ترتیب نمایش درست نیست."
+  },
+  "CLAN_TOO_MANY_CO_LEADERS": {
+    "en": "This clan has the most co-leaders it can have.",
+    "fa": "تعداد معاون‌های کلن به سقف رسیده است."
+  },
+  "CLAN_TOO_MANY_REQUESTS": {
+    "en": "You have too many open join requests.",
+    "fa": "درخواست‌های عضویت باز شما زیاد است."
+  },
+  "CLAN_USE_RPC": {
+    "en": "Clans change only through the clan calls.",
+    "fa": "کلن فقط از راه درخواست‌های کلن تغییر می‌کند."
+  },
+  "CLAN_WAR_LEVEL_TOO_LOW": {
+    "en": "Your clan level is too low for this war.",
+    "fa": "سطح کلن برای این جنگ کافی نیست."
+  },
+  "CLAN_WAR_NOT_ACTIVE": {
+    "en": "Your clan has no war running now.",
+    "fa": "کلن شما الان جنگی ندارد."
+  },
+  "CLAN_WAR_NOT_ENOUGH_MEMBERS": {
+    "en": "Your clan has too few members for this war.",
+    "fa": "تعداد اعضای کلن برای این جنگ کم است."
+  },
+  "CLAN_WAR_ROUND_NOT_FOUND": {
+    "en": "War round not found.",
+    "fa": "دور جنگ پیدا نشد."
+  },
+  "CLAN_WAR_ROUND_REQUIRED": {
+    "en": "A war round id is required.",
+    "fa": "شناسهٔ دور جنگ لازم است."
+  },
+  "CLAN_WAR_SIGNUP_CLOSED": {
+    "en": "Signup for this war is closed.",
+    "fa": "ثبت‌نام این جنگ بسته است."
+  },
   "CODE_NOT_FOUND": {
     "en": "This code is not valid.",
     "fa": "این کد معتبر نیست."
@@ -1055,6 +1215,10 @@
     "en": "The object is not valid.",
     "fa": "شیء معتبر نیست."
   },
+  "INVALID_OFFSET": {
+    "en": "The offset is not valid.",
+    "fa": "شروع فهرست درست نیست."
+  },
   "INVALID_OP": {
     "en": "The operation is not valid.",
     "fa": "عملیات معتبر نیست."
@@ -1270,6 +1434,10 @@
   "INVALID_URL": {
     "en": "The link is not valid.",
     "fa": "پیوند معتبر نیست."
+  },
+  "INVALID_USER_ID": {
+    "en": "The user id is not valid.",
+    "fa": "شناسهٔ کاربر درست نیست."
   },
   "INVALID_VALUE": {
     "en": "The value is not valid.",
@@ -2826,6 +2994,14 @@
   "TRACK_REQUIREMENT": {
     "en": "Upgrade {track} to level {level} first.",
     "fa": "اول {track} را به سطح {level} برسانید."
+  },
+  "TROPHY_TOO_MANY_USERS": {
+    "en": "Too many players in one call.",
+    "fa": "تعداد بازیکن‌ها در یک درخواست زیاد است."
+  },
+  "TROPHY_USERS_REQUIRED": {
+    "en": "At least one player id is required.",
+    "fa": "دست‌کم یک شناسهٔ بازیکن لازم است."
   },
   "TYPE_LOCKED": {
     "en": "The type cannot be changed.",

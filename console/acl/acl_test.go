@@ -309,3 +309,29 @@ func TestCheckACLHttpSupportAndGrowth(t *testing.T) {
 		}
 	}
 }
+
+func TestCheckACLHttpClansAndTrophies(t *testing.T) {
+	cases := []struct {
+		resource console.AclResources
+		paths    []string
+	}{
+		{console.AclResources_GROUP, []string{"/v2/console/base/clans/settings", "/v2/console/base/clans/list", "/v2/console/base/clans/list/{id}", "/v2/console/base/clans/list/{id}/members/{userId}",
+			"/v2/console/base/clans/levels", "/v2/console/base/clans/wars/configs", "/v2/console/base/clans/wars/rounds/{id}/settle"}},
+		{console.AclResources_LEADERBOARD, []string{"/v2/console/base/trophies/settings", "/v2/console/base/trophies/leagues/{id}", "/v2/console/base/trophies/players/{id}", "/v2/console/base/trophies/seasons/reset"}},
+	}
+	other := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
+	for _, c := range cases {
+		read := NewPermission(c.resource, PermissionRead)
+		write := NewPermission(c.resource, PermissionWrite)
+		for _, path := range c.paths {
+			if !CheckACLHttp(http.MethodGet, path, read) || CheckACLHttp(http.MethodGet, path, other) {
+				t.Fatalf("GET %s must need %v read", path, c.resource)
+			}
+			for _, method := range []string{http.MethodPut, http.MethodPost, http.MethodDelete} {
+				if !CheckACLHttp(method, path, write) || CheckACLHttp(method, path, read) {
+					t.Fatalf("%s %s must need %v write", method, path, c.resource)
+				}
+			}
+		}
+	}
+}

@@ -80,6 +80,20 @@ func maskBaseVoiceBody(_ string, body any) any {
 	return m
 }
 
+var baseClanAudit = consoleModuleAudit{
+	prefix:   "/v2/console/base/",
+	label:    "base",
+	resource: console.AclResources_GROUP,
+	invokes:  []string{"/xp", "/start", "/settle", "/cancel", "/payouts/retry"},
+}
+
+var baseTrophyAudit = consoleModuleAudit{
+	prefix:   "/v2/console/base/",
+	label:    "base",
+	resource: console.AclResources_LEADERBOARD,
+	invokes:  []string{"/seasons/reset", "/prizes/retry"},
+}
+
 var baseTaxonomyAudit = consoleModuleAudit{
 	prefix:   "/v2/console/base/",
 	label:    "base",
@@ -98,6 +112,12 @@ func consoleBaseAuditLog(ctx context.Context, logger *zap.Logger, db *sql.DB, me
 	}
 	if strings.HasPrefix(pattern, "/v2/console/base/updates") {
 		mod = baseUpdatesAudit
+	}
+	if strings.HasPrefix(pattern, "/v2/console/base/clans") {
+		mod = baseClanAudit
+	}
+	if strings.HasPrefix(pattern, "/v2/console/base/trophies") {
+		mod = baseTrophyAudit
 	}
 	if strings.HasPrefix(pattern, "/v2/console/base/voice") {
 		mod = baseVoiceAudit

@@ -218,6 +218,14 @@ func CheckACLHttp(method, path string, userPermissions Permission) bool {
 		requiredPermissions = NewPermission(console.AclResources_HIRO_ECONOMY, PermissionRead)
 	case method != "" && (strings.HasPrefix(path, "/v2/console/base/categories") || strings.HasPrefix(path, "/v2/console/base/tags") || strings.HasPrefix(path, "/v2/console/base/avatar")):
 		requiredPermissions = NewPermission(console.AclResources_HIRO_ECONOMY, PermissionWrite)
+	case method == http.MethodGet && strings.HasPrefix(path, "/v2/console/base/clans"):
+		requiredPermissions = NewPermission(console.AclResources_GROUP, PermissionRead)
+	case method != "" && strings.HasPrefix(path, "/v2/console/base/clans"):
+		requiredPermissions = NewPermission(console.AclResources_GROUP, PermissionWrite)
+	case method == http.MethodGet && strings.HasPrefix(path, "/v2/console/base/trophies"):
+		requiredPermissions = NewPermission(console.AclResources_LEADERBOARD, PermissionRead)
+	case method != "" && strings.HasPrefix(path, "/v2/console/base/trophies"):
+		requiredPermissions = NewPermission(console.AclResources_LEADERBOARD, PermissionWrite)
 	default:
 		requiredPermissions = Admin()
 	}

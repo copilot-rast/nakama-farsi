@@ -142,6 +142,18 @@ func (s *service) cleanBoard(ctx context.Context, b *board) error {
 	if !settings.KeyPattern.MatchString(b.Key) {
 		return bad("INVALID_KEY", "key")
 	}
+	if b.Scope == "" {
+		b.Scope = scopePlayer
+	}
+	if b.Scope != scopePlayer && b.Scope != scopeClan {
+		return bad("INVALID_POLICY", "scope")
+	}
+	if b.Scope == scopeClan && len(b.Rewards) > 0 {
+		return bad("LEADERBOARD_CLAN_NO_REWARDS", "rewards")
+	}
+	if b.Scope == scopeClan && b.Limits.ClientSubmit {
+		return bad("LEADERBOARD_CLAN_NO_SUBMIT", "limits.clientSubmit")
+	}
 	if b.Name, err = s.cleanText(ctx, "name", b.Name, true, 120); err != nil {
 		return err
 	}
@@ -501,6 +513,10 @@ func (s *service) boardSave(w http.ResponseWriter, r *http.Request) {
 			s.fail(w, bad("KEY_EXISTS", "key"))
 			return
 		}
+		s.fail(w, err)
+		return
+	}
+	if _, err := s.db.ExecContext(ctx, `UPDATE leaderboardx_board SET scope=$2 WHERE id=$1`, b.ID, b.Scope); err != nil {
 		s.fail(w, err)
 		return
 	}

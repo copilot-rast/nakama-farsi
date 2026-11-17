@@ -90,6 +90,7 @@ type board struct {
 	PeriodsClosed  int               `json:"periodsClosed"`
 	FinishedAt     *time.Time        `json:"finishedAt"`
 	Metadata       map[string]any    `json:"metadata"`
+	Scope          string            `json:"scope"`
 	UpdatedBy      string            `json:"updatedBy"`
 	CreatedAt      time.Time         `json:"createdAt"`
 	UpdatedAt      time.Time         `json:"updatedAt"`
@@ -97,7 +98,7 @@ type board struct {
 
 const boardCols = `id::text, key, name::text, description::text, icon_url, sort, is_active, sort_order, operator, period, reset_schedule,
 	starts_at, ends_at, max_periods, source::text, limits::text, tier_basis, tiers::text, rewards::text, reward_min_score, pay_mode,
-	periods_closed, finished_at, metadata::text, updated_by, created_at, updated_at`
+	periods_closed, finished_at, metadata::text, scope, updated_by, created_at, updated_at`
 
 type scanner interface{ Scan(dest ...any) error }
 
@@ -106,7 +107,7 @@ func scanBoard(row scanner) (*board, error) {
 	var name, desc, src, lim, tiers, rewards, meta string
 	if err := row.Scan(&b.ID, &b.Key, &name, &desc, &b.IconURL, &b.Sort, &b.Active, &b.SortOrder, &b.Operator, &b.Period, &b.ResetSchedule,
 		&b.StartsAt, &b.EndsAt, &b.MaxPeriods, &src, &lim, &b.TierBasis, &tiers, &rewards, &b.RewardMinScore, &b.PayMode,
-		&b.PeriodsClosed, &b.FinishedAt, &meta, &b.UpdatedBy, &b.CreatedAt, &b.UpdatedAt); err != nil {
+		&b.PeriodsClosed, &b.FinishedAt, &meta, &b.Scope, &b.UpdatedBy, &b.CreatedAt, &b.UpdatedAt); err != nil {
 		return nil, err
 	}
 	unmarshal([]byte(name), &b.Name)
@@ -120,7 +121,15 @@ func scanBoard(row scanner) (*board, error) {
 	return b, nil
 }
 
+const (
+	scopePlayer = "player"
+	scopeClan   = "clan"
+)
+
 func (b *board) normalize() {
+	if b.Scope == "" {
+		b.Scope = scopePlayer
+	}
 	if b.Name == nil {
 		b.Name = map[string]string{}
 	}

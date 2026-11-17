@@ -4,12 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"sort"
 	"strings"
 	"time"
 
 	"github.com/heroiclabs/nakama-common/api"
 	"github.com/heroiclabs/nakama/v3/integrations/devkit/apierr"
 	"github.com/heroiclabs/nakama/v3/integrations/leaderboardx/internal/settings"
+	"github.com/heroiclabs/nakama/v3/internal/clanhooks"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
@@ -76,7 +78,76 @@ func (s *service) boardInfo(b *board, tx texts, now time.Time) map[string]any {
 		"status": b.status(now), "sortOrder": b.SortOrder, "operator": b.Operator, "period": b.Period, "resetSchedule": b.ResetSchedule,
 		"periodStart": iso(start), "periodEnd": iso(end), "startsAt": iso(b.StartsAt), "endsAt": iso(b.EndsAt),
 		"clientSubmit": b.Limits.ClientSubmit, "tierBasis": b.TierBasis, "tiers": tiers, "rewards": rewardPreview(b, nil), "rewardMinScore": b.RewardMinScore,
-		"payMode": b.payMode(s.settings(context.Background())), "metadata": b.Metadata}
+		"payMode": b.payMode(s.settings(context.Background())), "metadata": b.Metadata, "scope": b.Scope}
+}
+
+func (s *service) ownerFor(ctx context.Context, b *board, userID string) string {
+	if b.Scope != scopeClan {
+		return userID
+	}
+	m, ok := clanhooks.ClanOf(ctx, userID)
+	if !ok {
+		return ""
+	}
+	return m.ClanID
+}
+
+func (s *service) clanNames(ctx context.Context, ids []string) map[string]person {
+	out := map[string]person{}
+	if len(ids) == 0 {
+		return out
+	}
+	rows, err := s.db.QueryContext(ctx, `SELECT id::text, name, avatar_url FROM groups WHERE id::text = ANY($1)`, ids)
+	if err != nil {
+		return out
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id string
+		var p person
+		if rows.Scan(&id, &p.Username, &p.AvatarURL) == nil {
+			p.DisplayName = p.Username
+			out[id] = p
+		}
+	}
+	return out
+}
+
+func (s *service) clanStandings(ctx context.Context, b *board, clanID, userID string, limit int, cfg settings.All) (map[string]any, error) {
+	ids := clanhooks.Members(ctx, clanID)
+	out := map[string]any{"clanId": clanID, "members": len(ids), "top": []any{}, "me": nil}
+	if len(ids) == 0 {
+		return out, nil
+	}
+	_, own, _, err := s.core.List(ctx, b.Key, ids, 1, "")
+	if err != nil {
+		return nil, err
+	}
+	sort.SliceStable(own, func(i, j int) bool {
+		if own[i].Score != own[j].Score {
+			if b.SortOrder == "asc" {
+				return own[i].Score < own[j].Score
+			}
+			return own[i].Score > own[j].Score
+		}
+		return own[i].Subscore > own[j].Subscore
+	})
+	ranked := make([]*api.LeaderboardRecord, 0, len(own))
+	for i, r := range own {
+		ranked = append(ranked, &api.LeaderboardRecord{LeaderboardId: r.LeaderboardId, OwnerId: r.OwnerId, Username: r.Username, Score: r.Score, Subscore: r.Subscore, NumScore: r.NumScore, Rank: int64(i + 1)})
+	}
+	rows := s.rows(ctx, b, ranked, userID, 0, cfg)
+	for i, r := range ranked {
+		rows[i]["boardRank"] = own[i].Rank
+		if r.OwnerId == userID {
+			out["me"] = rows[i]
+		}
+	}
+	if len(rows) > limit {
+		rows = rows[:limit]
+	}
+	out["top"] = rows
+	return out, nil
 }
 
 func (s *service) rpcList(ctx context.Context, userID, payload string) (any, error) {
@@ -112,8 +183,8 @@ func (s *service) rpcList(ctx context.Context, userID, payload string) (any, err
 		}
 		info := s.boardInfo(b, tx, now)
 		info["me"] = nil
-		if b.status(now) == "active" {
-			if _, own, _, err := s.core.List(ctx, b.Key, []string{userID}, 1, ""); err == nil && len(own) > 0 {
+		if owner := s.ownerFor(ctx, b, userID); b.status(now) == "active" && owner != "" {
+			if _, own, _, err := s.core.List(ctx, b.Key, []string{owner}, 1, ""); err == nil && len(own) > 0 {
 				info["me"] = s.meRow(ctx, b, own[0])
 			}
 		}
@@ -142,12 +213,17 @@ func (s *service) rows(ctx context.Context, b *board, recs []*api.LeaderboardRec
 		ids = append(ids, r.OwnerId)
 	}
 	var people map[string]person
-	if cfg.Display.ShowDisplayName {
+	if b.Scope == scopeClan {
+		people = s.clanNames(ctx, ids)
+	} else if cfg.Display.ShowDisplayName {
 		people = s.people(ctx, ids)
 	}
 	out := make([]map[string]any, 0, len(recs))
 	for _, r := range recs {
 		row := map[string]any{"rank": r.Rank, "userId": r.OwnerId, "username": "", "score": r.Score, "subscore": r.Subscore, "me": r.OwnerId == userID, "tier": nil}
+		if b.Scope == scopeClan {
+			row["clanId"] = r.OwnerId
+		}
 		if r.Username != nil {
 			row["username"] = r.Username.Value
 		}
@@ -172,6 +248,8 @@ func (s *service) rpcBoard(ctx context.Context, userID, payload string) (any, er
 		Limit  int    `json:"limit"`
 		Around *int   `json:"around"`
 		Cursor string `json:"cursor"`
+		Clan   bool   `json:"clan"`
+		ClanID string `json:"clanId"`
 	}
 	if err := apierr.Decode(payload, &in); err != nil {
 		return nil, err
@@ -205,16 +283,37 @@ func (s *service) rpcBoard(ctx context.Context, userID, payload string) (any, er
 
 		return s.endedView(ctx, b, info, userID, limit, cfg)
 	}
-	recs, own, next, err := s.core.List(ctx, b.Key, []string{userID}, limit, strings.TrimSpace(in.Cursor))
+	if b.Scope != scopeClan && (in.Clan || in.ClanID != "") {
+		clanID := strings.TrimSpace(in.ClanID)
+		if clanID == "" {
+			m, ok := clanhooks.ClanOf(ctx, userID)
+			if !ok {
+				return nil, apierr.Forbidden("CLAN_NOT_MEMBER").WithField("clan")
+			}
+			clanID = m.ClanID
+		}
+		inner, err := s.clanStandings(ctx, b, clanID, userID, limit, cfg)
+		if err != nil {
+			return nil, err
+		}
+		info["clan"] = inner
+		info["top"], info["me"] = inner["top"], inner["me"]
+		return info, nil
+	}
+	owner := s.ownerFor(ctx, b, userID)
+	if owner == "" {
+		owner = userID
+	}
+	recs, own, next, err := s.core.List(ctx, b.Key, []string{owner}, limit, strings.TrimSpace(in.Cursor))
 	if err != nil {
 		return nil, apierr.BadRequest("LEADERBOARD_INVALID_CURSOR").WithField("cursor")
 	}
-	info["top"], info["nextCursor"] = s.rows(ctx, b, recs, userID, total, cfg), next
+	info["top"], info["nextCursor"] = s.rows(ctx, b, recs, owner, total, cfg), next
 	if len(own) > 0 {
 		info["me"] = s.meRow(ctx, b, own[0])
 		if around > 0 {
-			if hay, err := s.core.Haystack(ctx, b.Key, userID, around); err == nil {
-				info["around"] = s.rows(ctx, b, hay, userID, total, cfg)
+			if hay, err := s.core.Haystack(ctx, b.Key, owner, around); err == nil {
+				info["around"] = s.rows(ctx, b, hay, owner, total, cfg)
 			}
 		}
 	}

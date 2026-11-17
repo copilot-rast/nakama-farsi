@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/gameevents"
 	"github.com/heroiclabs/nakama/v3/internal/inapp"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
@@ -847,6 +848,10 @@ func (s *service) settleTasks(ctx context.Context, userID string, out *eventOutc
 	for _, ch := range out.Tasks {
 		if !ch.Completed {
 			continue
+		}
+		if gameevents.Has() {
+			gameevents.Publish(ctx, gameevents.Event{ID: "economy:task:" + ch.TaskID + ":" + ch.Scope, UserID: userID, Name: "task_completed", Context: ch.Key, Source: "economy",
+				Fields: map[string]any{"taskId": ch.TaskID, "key": ch.Key, "scope": ch.Scope, "value": float64(1)}})
 		}
 		if ch.groupID != "" && !containsString(groups, ch.groupID) {
 			groups = append(groups, ch.groupID)
