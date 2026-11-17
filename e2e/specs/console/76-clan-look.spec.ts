@@ -206,6 +206,8 @@ test.describe('clan look console', () => {
     const again = await cln.raw('POST', '/uploads/' + two.data.uploadId + '/approve', {});
     expect(again.status).toBe(409);
     expect(again.data.error).toBe('CLAN_UPLOAD_NOT_PENDING');
+    const audit = sql(`SELECT string_agg(DISTINCT regexp_replace(message, '[0-9a-f-]{36}', 'id', 'g'), ',' ORDER BY regexp_replace(message, '[0-9a-f-]{36}', 'id', 'g')) FROM console_audit_log WHERE (message LIKE '%${F.clan}/reset-look' OR message LIKE '%clans/uploads/${up.data.uploadId}/approve' OR message LIKE '%clans/uploads/${two.data.uploadId}/reject') AND create_time > now() - interval '10 minutes'`);
+    expect(audit).toBe('base invoke clans/list/id/reset-look,base invoke clans/uploads/id/approve,base invoke clans/uploads/id/reject');
   });
 
   test('a gallery image is deleted; Ctrl K and 390px English dark without sideways scroll', async ({ page, spawn }) => {

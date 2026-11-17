@@ -56,7 +56,7 @@ test.describe('navigation: sidebar groups, tabbed pages and old links', () => {
   test('other sections are grouped the same way', async ({ page }) => {
     await open(page, '#/publication/faqs');
     await expect(page.locator('.pl-side .pl-group-label')).toHaveText(['محتوا', 'بنر و اسپانسر', 'پیام به بازیکن']);
-    await expect(page.locator('.pl-side a.pl-nav')).toHaveText(['سؤال‌های متداول', 'اخبار', 'کامنت‌ها', 'بنرها', 'اسپانسرها', 'اعلان‌ها', 'اعلان‌های خودکار', 'پیکربندی بازی']);
+    await expect(page.locator('.pl-side a.pl-nav .pl-nav-label')).toHaveText(['سؤال‌های متداول', 'اخبار', 'کامنت‌ها', 'بنرها', 'اسپانسرها', 'اعلان‌ها', 'اعلان‌های خودکار', 'پیکربندی بازی']);
     await go(page, '#/moderation/players');
     await expect(page.locator('.pl-side .pl-group-label')).toHaveText(['بازیکنان', 'گزارش و گفتگو']);
     await go(page, '#/support/tickets');
