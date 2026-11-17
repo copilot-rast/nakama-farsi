@@ -13,7 +13,7 @@ function boardsPage(root) {
         var b = x.board;
         var src = t('src.' + b.source.type) + (b.source.event ? ' · ' + b.source.event : '');
         return { id: b.key, item: x, cells: [
-          h('div', { class: 'flex flex-wrap items-center gap-2' }, h('span', { class: 'font-medium', text: textOf(b.name, b.key) }), statusTag(x.status)),
+          h('div', { class: 'flex flex-wrap items-center gap-2' }, h('span', { class: 'font-medium', text: textOf(b.name, b.key) }), statusTag(x.status), b.scope === 'clan' ? h('span', { class: 'eco-tag eco-tag--primary inline-flex leading-tight px-2 py-0.5 text-xs rounded-md whitespace-nowrap', 'data-lbx-scope': b.key, text: t('b.clan') }) : null),
           mono(b.key),
           h('div', { class: 'flex flex-col text-xs' }, h('span', { text: t('period.' + b.period) }), h('span', { class: 'text-secondary-500', text: x.periodEnd ? t('b.ends', { at: fmtDate(x.periodEnd) }) : t('b.noEnd') })),
           h('span', { class: 'text-xs', 'data-lbx-source': b.key, text: src }),
@@ -122,6 +122,8 @@ function boardEditor(b, done) {
   var icon = input(b.iconUrl, { name: 'iconUrl', ltr: true });
   var sort = numInput(b.sort || 0, 'sort');
   var active = check(b.isActive, t('f.active'), 'isActive');
+  var scope = select(b.scope || 'player', opt('scope.', ['player', 'clan']), { name: 'scope' });
+  var clanNote = h('p', { class: 'text-xs text-warning-700 dark:text-warning-400 mb-3', 'data-lbx-clan-note': '', text: t('hint.clanNoRewards') });
   var period = select(b.period, opt('period.', ['none', 'daily', 'weekly', 'monthly', 'custom']), { name: 'period' });
   var cron = input(b.period === 'custom' ? b.resetSchedule : '', { name: 'resetSchedule', ltr: true, mono: true, placeholder: '0 0 * * 5' });
   var cronField = field(t('f.cron'), cron, t('hint.cron'));
@@ -150,31 +152,43 @@ function boardEditor(b, done) {
   var rewards = rewardRows(b, tiers);
   var minScore = numInput(b.rewardMinScore || 0, 'rewardMinScore');
   var payMode = select(b.payMode || '', opt('pay.', ['', 'auto', 'claim']), { name: 'payMode' });
+  var clientOpt = srcType.querySelector('option[value="client"]');
+  var rewardsSec = null;
   function paint() {
+    var clan = scope.value === 'clan';
+    if (clan && srcType.value === 'client') srcType.value = 'economy_event';
+    if (clientOpt) clientOpt.disabled = clan;
     cronField.hidden = period.value !== 'custom';
     eventBox.hidden = srcType.value !== 'economy_event' && srcType.value !== 'game_event';
     gameBox.hidden = srcType.value !== 'game_event';
-    if (srcType.value === 'client') { clientSubmit.input.checked = true; clientSubmit.input.disabled = true; } else clientSubmit.input.disabled = false;
+    if (clan) { clientSubmit.input.checked = false; clientSubmit.input.disabled = true; }
+    else if (srcType.value === 'client') { clientSubmit.input.checked = true; clientSubmit.input.disabled = true; } else clientSubmit.input.disabled = false;
+    clanNote.hidden = !clan;
+    if (rewardsSec) rewardsSec.hidden = clan;
   }
-  [period, srcType].forEach(function (el) { el.addEventListener('change', paint); });
+  [period, srcType, scope].forEach(function (el) { el.addEventListener('change', paint); });
   paint();
   var msg = h('div', { 'data-lbx-msg': '' });
   var grid = function () { return h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, Array.prototype.slice.call(arguments)); };
+  rewardsSec = section(t('sec.rewards'), h('div', {}, rewards, h('div', { class: 'h-3' }), grid(field(t('f.rewardMinScore'), minScore), field(t('f.payMode'), payMode))), 'rewards');
+  paint();
   var body = h('div', { 'data-lbx-form': 'board' }, field(t('f.key'), key, t('hint.key')), name, desc, grid(field(t('f.icon'), icon), field(t('f.sort'), sort)), active,
+    field(t('f.scope'), scope, t('hint.scope')), clanNote,
     section(t('sec.period'), h('div', {}, field(t('f.period'), period), cronField, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('hint.window') }),
       grid(field(t('f.startsAt'), starts), field(t('f.endsAt'), ends)), field(t('f.maxPeriods'), maxPeriods, null, 'lb-num')), 'period'), h('div', { class: 'h-3' }),
     section(t('sec.scoring'), h('div', {}, grid(field(t('f.sortOrder'), sortOrder), field(t('f.operator'), operator)), field(t('f.source'), srcType), eventBox, gameBox,
       grid(field(t('f.calc'), calc), field(t('f.multiplier'), mult, t('hint.multiplier')))), 'scoring'), h('div', { class: 'h-3' }),
     section(t('sec.limits'), h('div', {}, clientSubmit, grid(field(t('f.maxPerWrite'), maxPerWrite), field(t('f.perMinute'), perMinute)), field(t('f.onExceed'), onExceed)), 'limits'), h('div', { class: 'h-3' }),
     section(t('sec.tiers'), h('div', {}, field(t('f.tierBasis'), basis), tiers), 'tiers'), h('div', { class: 'h-3' }),
-    section(t('sec.rewards'), h('div', {}, rewards, h('div', { class: 'h-3' }), grid(field(t('f.rewardMinScore'), minScore), field(t('f.payMode'), payMode))), 'rewards'), msg);
+    rewardsSec, msg);
   function read() {
-    return { key: key.value.trim(), name: name.read(), description: desc.read(), iconUrl: icon.value.trim(), sort: numberValue(sort) || 0, isActive: active.input.checked,
+    var clan = scope.value === 'clan';
+    return { key: key.value.trim(), name: name.read(), description: desc.read(), iconUrl: icon.value.trim(), sort: numberValue(sort) || 0, isActive: active.input.checked, scope: scope.value,
       period: period.value, resetSchedule: period.value === 'custom' ? cron.value.trim() : '', startsAt: starts.read(), endsAt: ends.read(), maxPeriods: numberValue(maxPeriods) || 0,
       sortOrder: sortOrder.value, operator: operator.value,
       source: { type: srcType.value, event: event.value.trim(), context: context.value.trim(), field: fieldIn.value.trim(), calc: calc.value, multiplier: floatValue(mult) || 1 },
-      limits: { clientSubmit: clientSubmit.input.checked, maxPerWrite: numberValue(maxPerWrite) || 0, perMinute: numberValue(perMinute) || 0, onExceed: onExceed.value },
-      tierBasis: basis.value, tiers: tiers.read(), rewards: rewards.read(), rewardMinScore: numberValue(minScore) || 0, payMode: payMode.value, metadata: b.metadata || {} };
+      limits: { clientSubmit: !clan && clientSubmit.input.checked, maxPerWrite: numberValue(maxPerWrite) || 0, perMinute: numberValue(perMinute) || 0, onExceed: onExceed.value },
+      tierBasis: basis.value, tiers: tiers.read(), rewards: clan ? [] : rewards.read(), rewardMinScore: numberValue(minScore) || 0, payMode: payMode.value, metadata: b.metadata || {} };
   }
   function send(extra) {
     busy(save, true);

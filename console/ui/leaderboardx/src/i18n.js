@@ -67,6 +67,9 @@ var LB_TEXT = {
     'pc.rank': 'رتبهٔ {r}', 'pc.score': '{s} امتیاز',
     'code.KEY_EXISTS': 'این کلید قبلاً استفاده شده است.', 'code.INVALID_KEY': 'کلید درست نیست (حروف انگلیسی، رقم، _ . : -).', 'code.VALUE_OUT_OF_RANGE': 'عدد خارج از بازهٔ مجاز است.',
     'code.INVALID_POLICY': 'یکی از گزینه‌ها معتبر نیست.', 'code.DEFAULT_LANGUAGE_REQUIRED': 'نام به زبان پیش‌فرض لازم است.', 'code.INVALID_FIELD': 'نام فیلد درست نیست.',
+    'f.scope': 'رتبه‌بندی چه کسی', 'scope.player': 'بازیکن‌ها', 'scope.clan': 'کلن‌ها', 'hint.scope': 'در جدول کلن هر ردیف یک کلن است و امتیاز عضوها برای کلنشان جمع می‌شود.',
+    'hint.clanNoRewards': 'جدول کلن جایزه ندارد و بازی نمی‌تواند مستقیم امتیاز بفرستد.', 'b.clan': 'کلن',
+    'code.LEADERBOARD_CLAN_NO_REWARDS': 'جدول کلن نمی‌تواند جایزه داشته باشد.', 'code.LEADERBOARD_CLAN_NO_SUBMIT': 'در جدول کلن بازی نمی‌تواند مستقیم امتیاز بفرستد.',
     'code.LEADERBOARD_INVALID_SCHEDULE': 'دورهٔ ریست یا CRON درست نیست.', 'code.LEADERBOARD_INVALID_WINDOW': 'پایان باید بعد از شروع باشد.',
     'code.LEADERBOARD_COUNT_NEEDS_INCR': 'برای «هر رویداد یک امتیاز» روش ثبت باید «جمع شود» باشد.', 'code.LEADERBOARD_TIER_ORDER': 'سطح‌ها باید از بهترین به پایین مرتب باشند.',
     'code.LEADERBOARD_TIER_NOT_FOUND': 'این سطح در جدول نیست.', 'code.LEADERBOARD_INVALID_RANKS': 'بازهٔ رتبه درست نیست (بدون سطح، «تا رتبه» لازم است).',
@@ -142,6 +145,9 @@ var LB_TEXT = {
     'pc.rank': 'Rank {r}', 'pc.score': '{s} points',
     'code.KEY_EXISTS': 'This key is already used.', 'code.INVALID_KEY': 'Invalid key (English letters, digits, _ . : -).', 'code.VALUE_OUT_OF_RANGE': 'The number is out of range.',
     'code.INVALID_POLICY': 'One of the choices is not valid.', 'code.DEFAULT_LANGUAGE_REQUIRED': 'A name in the default language is required.', 'code.INVALID_FIELD': 'Invalid field name.',
+    'f.scope': 'Who is ranked', 'scope.player': 'Players', 'scope.clan': 'Clans', 'hint.scope': 'On a clan board each row is a clan and members\' scores add up for their clan.',
+    'hint.clanNoRewards': 'Clan boards have no rewards and the game cannot submit scores directly.', 'b.clan': 'Clan',
+    'code.LEADERBOARD_CLAN_NO_REWARDS': 'A clan board cannot have rewards.', 'code.LEADERBOARD_CLAN_NO_SUBMIT': 'On a clan board the game cannot submit scores directly.',
     'code.LEADERBOARD_INVALID_SCHEDULE': 'The reset period or CRON is not valid.', 'code.LEADERBOARD_INVALID_WINDOW': 'The end must be after the start.',
     'code.LEADERBOARD_COUNT_NEEDS_INCR': '“One point per event” needs the “Add up” score write.', 'code.LEADERBOARD_TIER_ORDER': 'Tiers must go from the best down.',
     'code.LEADERBOARD_TIER_NOT_FOUND': 'This tier is not on the board.', 'code.LEADERBOARD_INVALID_RANKS': 'Invalid rank range (without a tier, “to rank” is needed).',
@@ -190,7 +196,6 @@ function fmtDate(v) {
   }
 }
 
-// tr is t() with raw values (keys) that keep their Latin digits.
 function tr(key, vars, raw) {
   var s = t(key, vars);
   Object.keys(raw || {}).forEach(function (k) { s = s.split('{' + k + '}').join(String(raw[k])); });

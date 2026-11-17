@@ -1,0 +1,11 @@
+{
+  "name": "nakama-console-clan",
+  "private": true,
+  "description": "Trophy leagues, player trophies, seasons, clans, clan levels, clan wars and war rounds pages injected into the prebuilt Nakama Console UI.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check"
+  }
+}

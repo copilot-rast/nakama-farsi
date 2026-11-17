@@ -10,6 +10,8 @@ function iconFor(href) {
   if (parts[0] === 'economy' && parts[1] === 'payments') return 'wallet';
   if (parts[0] === 'moderation' && parts[1] === 'players') return 'user';
   if (parts[0] === 'quiz') return QUIZ_ICON[parts[1] || 'packs'] || 'help';
+  if (parts[0] === 'trophies') return TROPHY_ICON[parts[1] || 'leagues'] || 'trophy';
+  if (parts[0] === 'clans') return CLAN_ICON[parts[1] || 'list'] || 'group';
   var key = parts.length > 1 && /^(economy|publication|moderation|support|system|settings)$/.test(parts[0]) ? parts[1] : parts[0] || '';
   return HREF_ICON[key] || 'page';
 }
@@ -17,7 +19,9 @@ function iconFor(href) {
 window.NakamaPlane.iconFor = iconFor;
 
 var QUIZ_ICON = { packs: 'package', questions: 'help', missions: 'checklist', duels: 'users', 'duel-categories': 'layers', reports: 'flag', results: 'fileCode', 'import': 'cloudDown', stats: 'chart', settings: 'sliders' };
-var GROUP_ICON = { quiz: 'help', economy: 'coins', publication: 'megaphone', moderation: 'shield', support: 'buoy', system: 'cloudDown', developer: 'code', help: 'help', settings: 'settings' };
+var TROPHY_ICON = { leagues: 'ladder', players: 'trophy', seasons: 'calendar', settings: 'sliders' };
+var CLAN_ICON = { list: 'group', levels: 'layers', wars: 'shield', rounds: 'repeat', settings: 'sliders' };
+var GROUP_ICON = { quiz: 'help', trophies: 'trophy', clans: 'group', economy: 'coins', publication: 'megaphone', moderation: 'shield', support: 'buoy', system: 'cloudDown', developer: 'code', help: 'help', settings: 'settings' };
 
 function linkInfo(a) {
   var badgeEl = a.querySelector('.eco-nav-badge, .eco-nav-dot');

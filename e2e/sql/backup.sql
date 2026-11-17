@@ -1,5 +1,5 @@
 CREATE SCHEMA IF NOT EXISTS zz_e2e_backup;
-DROP TABLE IF EXISTS zz_e2e_backup.pm, zz_e2e_backup.pv, zz_e2e_backup.lang, zz_e2e_backup.cur, zz_e2e_backup.brand, zz_e2e_backup.setup, zz_e2e_backup.rules, zz_e2e_backup.ver, zz_e2e_backup.ctry, zz_e2e_backup.otp, zz_e2e_backup.words, zz_e2e_backup.rtitles, zz_e2e_backup.evset, zz_e2e_backup.supset, zz_e2e_backup.dept, zz_e2e_backup.canned, zz_e2e_backup.cfgkey, zz_e2e_backup.cfghist, zz_e2e_backup.refset, zz_e2e_backup.updset, zz_e2e_backup.updstate, zz_e2e_backup.frules, zz_e2e_backup.vset, zz_e2e_backup.rrules, zz_e2e_backup.offerset, zz_e2e_backup.fgset, zz_e2e_backup.cqset, zz_e2e_backup.newsset;
+DROP TABLE IF EXISTS zz_e2e_backup.pm, zz_e2e_backup.pv, zz_e2e_backup.lang, zz_e2e_backup.cur, zz_e2e_backup.brand, zz_e2e_backup.setup, zz_e2e_backup.rules, zz_e2e_backup.ver, zz_e2e_backup.ctry, zz_e2e_backup.otp, zz_e2e_backup.words, zz_e2e_backup.rtitles, zz_e2e_backup.evset, zz_e2e_backup.supset, zz_e2e_backup.dept, zz_e2e_backup.canned, zz_e2e_backup.cfgkey, zz_e2e_backup.cfghist, zz_e2e_backup.refset, zz_e2e_backup.updset, zz_e2e_backup.updstate, zz_e2e_backup.frules, zz_e2e_backup.vset, zz_e2e_backup.rrules, zz_e2e_backup.offerset, zz_e2e_backup.fgset, zz_e2e_backup.cqset, zz_e2e_backup.newsset, zz_e2e_backup.trset, zz_e2e_backup.clset, zz_e2e_backup.cllevel;
 CREATE TABLE zz_e2e_backup.pm AS SELECT * FROM economy_payment_method;
 CREATE TABLE zz_e2e_backup.pv AS SELECT * FROM publication_provider;
 CREATE TABLE zz_e2e_backup.lang AS SELECT * FROM base_language;
@@ -30,4 +30,7 @@ CREATE TABLE zz_e2e_backup.cqset AS SELECT * FROM base_chat_quota_settings;
 CREATE TABLE zz_e2e_backup.ctset AS SELECT * FROM content_settings;
 CREATE TABLE zz_e2e_backup.inset AS SELECT * FROM insights_settings;
 CREATE TABLE zz_e2e_backup.newsset AS SELECT * FROM publication_news_settings;
+CREATE TABLE zz_e2e_backup.trset AS SELECT * FROM trophy_settings;
+CREATE TABLE zz_e2e_backup.clset AS SELECT * FROM clan_settings;
+CREATE TABLE zz_e2e_backup.cllevel AS SELECT * FROM clan_level;
 SELECT 'backed up', (SELECT count(*) FROM zz_e2e_backup.pm), (SELECT count(*) FROM zz_e2e_backup.pv), (SELECT count(*) FROM zz_e2e_backup.lang), (SELECT count(*) FROM zz_e2e_backup.cur);
