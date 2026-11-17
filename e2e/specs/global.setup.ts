@@ -8,7 +8,7 @@ import { loginAs, ADMIN } from '../lib/console';
 
 setup('back up shared config and sign in once', async ({ page }) => {
   if (sql("select count(*) from pg_namespace where nspname = 'zz_e2e_backup'") !== '0') {
-    restoreConfig();
+    restoreConfig(true);
     dropBackup();
   }
   backupConfig();

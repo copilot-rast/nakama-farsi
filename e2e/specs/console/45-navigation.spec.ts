@@ -45,7 +45,7 @@ test.describe('navigation: sidebar groups, tabbed pages and old links', () => {
     await go(page, '#/economy/items');
     await expect(sales).toHaveAttribute('aria-expanded', 'true');
     await expect(page.locator('.pl-side a.pl-nav[aria-current="page"]')).toHaveText('آیتم‌ها');
-    await expect(page.locator('.pl-tabs .pl-seg-item')).toHaveText(['فروشگاه', 'پیشنهادهای ویژه', 'آیتم‌ها', 'آواتارساز', 'هدیه‌ها', 'هدیه به دوست', 'پرداخت‌ها']);
+    await expect(page.locator('.pl-tabs .pl-seg-item')).toHaveText(['فروشگاه', 'پیشنهادهای ویژه', 'تخفیف برچسب‌دارها', 'آیتم‌ها', 'آواتارساز', 'هدیه‌ها', 'هدیه به دوست', 'پرداخت‌ها']);
     await page.evaluate(() => { localStorage.setItem('nakama-console:nav-groups', '{oops'); });
     await page.reload();
     await root(page).waitFor();

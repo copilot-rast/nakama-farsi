@@ -11,7 +11,7 @@ test('specs left shared config and data as they found it', async () => {
   const changed = Object.keys(before).filter((k) => before[k] !== after[k] && !adjusted.includes(k));
   const left = leftovers();
   if (Object.keys(left).length) cleanupLeftovers();
-  restoreConfig();
+  restoreConfig(true);
   const restored = configHashes();
   dropBackup();
   console.log('config hashes', JSON.stringify({ changedBySpecs: changed, leftovers: left, restoredEqual: JSON.stringify(restored) === JSON.stringify(before) }));

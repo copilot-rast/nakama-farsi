@@ -51,8 +51,12 @@ export function savedHashes(): Record<string, string> {
   return JSON.parse(fs.readFileSync(HASH_FILE, 'utf8'));
 }
 
-export function restoreConfig() {
+export function restoreConfig(final = false) {
   sqlFile('restore.sql');
+  if (final) return;
+  const file = path.join(STATE_DIR, 'adjusted.json');
+  const adjusted: string[] = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : [];
+  if (adjusted.includes('H-setup')) sql("UPDATE base_setup SET status = 'completed'");
 }
 
 export function cleanupLeftovers() {

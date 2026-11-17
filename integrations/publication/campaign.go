@@ -133,6 +133,9 @@ func (s *service) createNotificationTx(ctx context.Context, tx *sql.Tx, in notif
 	if err != nil {
 		return "", err
 	}
+	if strings.TrimSpace(in.PrizeID) != "" && in.Channel != "in_app" && in.Channel != "push_in_app" {
+		return "", badRequest("PRIZE_IN_APP_ONLY", "prizeId", "a prize can only be attached to an in-app message")
+	}
 	var providerID *string
 	if in.Channel != "in_app" {
 		pch := in.Channel
@@ -184,9 +187,6 @@ func (s *service) createNotificationTx(ctx context.Context, tx *sql.Tx, in notif
 	}
 	var prize *string
 	if p := strings.TrimSpace(in.PrizeID); p != "" {
-		if in.Channel != "in_app" && in.Channel != "push_in_app" {
-			return "", badRequest("PRIZE_IN_APP_ONLY", "prizeId", "a prize can only be attached to an in-app message")
-		}
 		var ok bool
 		if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_prize WHERE id::text=$1)`, p).Scan(&ok); err != nil {
 			return "", err

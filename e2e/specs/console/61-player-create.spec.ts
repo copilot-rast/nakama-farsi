@@ -35,7 +35,7 @@ test.describe('console: create a player without verification', () => {
     const name = uid('pc');
     const sentBefore = codeCount(phone.e164);
     await open(page, '#/moderation/players');
-    await root(page).locator('[data-player-new]').click();
+    await root(page).locator('[data-player-new]').first().click();
     const form = page.locator('[data-player-form]');
     await expect(form).toBeVisible();
     await expect(form).toContainText('نه ایمیل تأیید فرستاده می‌شود، نه پیامک');
@@ -69,7 +69,7 @@ test.describe('console: create a player without verification', () => {
   test('by email: no confirmation email, the player signs in with the password at once', async ({ page }) => {
     const email = uid('pc') + '@example.com';
     await open(page, '#/moderation/players');
-    await root(page).locator('[data-player-new]').click();
+    await root(page).locator('[data-player-new]').first().click();
     const form = page.locator('[data-player-form]');
     await form.locator('select').first().selectOption('email');
     await form.getByLabel('ایمیل', { exact: true }).fill(email);
@@ -88,7 +88,7 @@ test.describe('console: create a player without verification', () => {
     expect((await emailLogin(email, 'wrong-pass-9999')).status).toBe(401);
 
     await open(page, '#/moderation/players');
-    await root(page).locator('[data-player-new]').click();
+    await root(page).locator('[data-player-new]').first().click();
     const again = page.locator('[data-player-form]');
     await again.locator('select').first().selectOption('email');
     await again.getByLabel('ایمیل', { exact: true }).fill(email.toUpperCase());
@@ -102,8 +102,8 @@ test.describe('console: create a player without verification', () => {
   test('English, dark, 390px: the panel fits and an audit row hides the password', async ({ spawn }) => {
     const m = await spawn({ signedIn: true, mobile: true, locale: 'en', mode: 'dark', width: 390, height: 844 });
     await open(m, '#/moderation/players');
-    await expect(root(m).locator('[data-player-new]')).toHaveText('New player');
-    await root(m).locator('[data-player-new]').click();
+    await expect(root(m).locator('[data-player-new]').first()).toHaveText('New player');
+    await root(m).locator('[data-player-new]').first().click();
     await expect(m.locator('[data-player-form]')).toContainText('no confirmation email and no SMS are sent');
     await noHorizontalScroll(m);
     expect(Number(sql(`SELECT count(*) FROM console_audit_log WHERE metadata::text LIKE '%/publication/players%' AND create_time > now() - interval '10 minutes'`))).toBeGreaterThan(0);
