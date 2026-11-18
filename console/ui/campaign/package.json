@@ -1,0 +1,11 @@
+{
+  "name": "nakama-console-campaign",
+  "private": true,
+  "description": "Chapters, stages, star rules, freeride rewards, a stage report and player progress pages injected into the prebuilt Nakama Console UI.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check"
+  }
+}
