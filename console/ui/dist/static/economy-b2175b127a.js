@@ -27792,7 +27792,7 @@ function errorSummary(box, count) {
 }
 
 function requiredMissing(f, value, saved, sandbox) {
-  if (!f.required || f.type === 'bool') return false;
+  if (!f.required || f.type === 'bool' || f.default) return false;
   if ((f.type === 'secret' || f.type === 'secretJson') && (sandbox || saved)) return false;
   return String(value == null ? '' : value).trim() === '';
 }
