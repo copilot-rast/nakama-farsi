@@ -14,7 +14,7 @@ function lbSettingsPage(root) {
     var groupMode = select(r.prizeGroupMode, opt('se.groupMode.', ['draw', 'all']), { name: 'rewards.prizeGroupMode' });
     var maxTries = numInput(r.maxTries, 'rewards.maxTries'), catchUp = numInput(r.catchUpDays, 'rewards.catchUpDays');
     var reqId = check(s.requireRequestId, t('se.requireRequestId'), 'scores.requireRequestId');
-    var perMinute = numInput(s.playerPerMinute, 'scores.playerPerMinute'), logDays = numInput(s.logDays, 'scores.logDays');
+    var perMinute = numInput(s.playerPerMinute, 'scores.playerPerMinute'), logDays = numInput(s.logDays, 'scores.logDays'), clientMax = numInput(s.clientMaxPerWrite, 'scores.clientMaxPerWrite');
     var keepDays = numInput(hi.keepDays, 'history.keepDays'), playerLimit = numInput(hi.playerLimit, 'history.playerLimit'), winnersLimit = numInput(hi.winnersLimit, 'history.winnersLimit');
     var ecoEvent = input(e.economyEvent, { name: 'events.economyEvent', ltr: true, mono: true });
     var anEvent = input(e.analyticsEvent, { name: 'events.analyticsEvent', ltr: true, mono: true });
@@ -26,13 +26,13 @@ function lbSettingsPage(root) {
         section(t('se.display'), h('div', {}, grid(field(t('se.topLimit'), topLimit), field(t('se.maxLimit'), maxLimit)), grid(field(t('se.aroundLimit'), around), field(t('se.showEndedDays'), endedDays)), showName, showUpcoming), 'display'),
         section(t('se.rewards'), h('div', {}, grid(field(t('se.payMode'), payMode), field(t('se.claimDays'), claimDays)), grid(field(t('se.stack'), stack), field(t('se.groupMode'), groupMode)),
           grid(field(t('se.maxTries'), maxTries), field(t('se.catchUpDays'), catchUp))), 'rewards'),
-        section(t('se.scores'), h('div', {}, reqId, grid(field(t('se.playerPerMinute'), perMinute), field(t('se.logDays'), logDays))), 'scores'),
+        section(t('se.scores'), h('div', {}, reqId, grid(field(t('se.playerPerMinute'), perMinute), field(t('se.logDays'), logDays)), field(t('se.clientMaxPerWrite'), clientMax, null, 'lb-num')), 'scores'),
         section(t('se.history'), h('div', {}, field(t('se.keepDays'), keepDays, null, 'lb-num'), grid(field(t('se.playerLimit'), playerLimit), field(t('se.winnersLimit'), winnersLimit))), 'history'),
         section(t('se.events'), h('div', {}, grid(field(t('se.economyEvent'), ecoEvent), field(t('se.analyticsEvent'), anEvent)), notify, field(t('se.notifyCode'), code, null, 'lb-num')), 'events')],
       read: function (c) {
         c.display = { topLimit: numberValue(topLimit), maxLimit: numberValue(maxLimit), aroundLimit: numberValue(around), showDisplayName: showName.input.checked, showUpcoming: showUpcoming.input.checked, showEndedDays: numberValue(endedDays) };
         c.rewards = { payMode: payMode.value, claimDays: numberValue(claimDays), stack: stack.value, prizeGroupMode: groupMode.value, maxTries: numberValue(maxTries), catchUpDays: numberValue(catchUp) };
-        c.scores = { requireRequestId: reqId.input.checked, playerPerMinute: numberValue(perMinute), logDays: numberValue(logDays) };
+        c.scores = { requireRequestId: reqId.input.checked, playerPerMinute: numberValue(perMinute), logDays: numberValue(logDays), clientMaxPerWrite: numberValue(clientMax) || 0 };
         c.history = { keepDays: numberValue(keepDays), playerLimit: numberValue(playerLimit), winnersLimit: numberValue(winnersLimit) };
         c.events = { economyEvent: ecoEvent.value.trim(), analyticsEvent: anEvent.value.trim(), notify: notify.input.checked, notifyCode: numberValue(code) || 0 };
         return null;

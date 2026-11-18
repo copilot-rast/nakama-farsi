@@ -206,7 +206,7 @@ func (s *service) afterClose(ctx context.Context, b *board, periodID, mode strin
 		activity.Safe(ctx, s.db, s.logger, activity.Entry{UserID: w.user, Kind: activity.KindEvent, Action: "leaderboard_ranked", RefID: b.Key, Actor: "system",
 			Data: map[string]any{"boardKey": b.Key, "rank": w.rank, "tier": w.tier, "score": w.score, "periodId": periodID, "status": w.status}})
 		if w.status == "claimable" && cfg.Events.Notify {
-			s.notify(ctx, w.user, "leaderboard_reward", map[string]any{"boardKey": b.Key, "periodId": periodID, "rank": w.rank, "tier": w.tier, "claim": true}, cfg.Events.NotifyCode)
+			s.notify(ctx, w.user, "leaderboard_reward", map[string]any{"boardKey": b.Key, "periodId": periodID, "rank": w.rank, "tier": w.tier, "claim": true}, cfg.Events.Code())
 		}
 	}
 	if mode == settings.PayAuto {
@@ -301,7 +301,7 @@ func (s *service) payResult(ctx context.Context, periodID, userID string, claim 
 	}
 	out["status"], out["paid"], out["pendingPrizes"], out["replayed"] = next, paid, pending, false
 	if next == "paid" && !claim && cfg.Events.Notify {
-		s.notify(ctx, userID, "leaderboard_reward", map[string]any{"boardKey": boardKey, "periodId": periodID, "rank": rank, "tier": tier, "claim": false, "rewards": paid}, cfg.Events.NotifyCode)
+		s.notify(ctx, userID, "leaderboard_reward", map[string]any{"boardKey": boardKey, "periodId": periodID, "rank": rank, "tier": tier, "claim": false, "rewards": paid}, cfg.Events.Code())
 	}
 	return out, nil
 }
