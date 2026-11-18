@@ -571,9 +571,10 @@ func (s *service) rpcRegenRefill(ctx context.Context, userID, payload string) (a
 			if prevKey != key {
 				return conflict("REQUEST_ID_REUSED", "this requestId was used for another currency")
 			}
-			out = map[string]any{}
-			_ = json.Unmarshal([]byte(prev), &out)
-			out["replayed"] = true
+			stored := map[string]any{}
+			_ = json.Unmarshal([]byte(prev), &stored)
+			stored["replayed"] = true
+			out = stored
 			return nil
 		}
 		if !errors.Is(err, sql.ErrNoRows) {
