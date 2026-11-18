@@ -17,7 +17,7 @@ Reference behaviour: the legacy .NET `Gamification/Progress` module (`ProgressCh
 
 ### Stars
 
-`stars.rules` (or the stage's own `starRules`): `[{stars, conditions:[{field, op, value}]}]`, ops `>= > <= < == !=`. The highest rule whose conditions all hold wins; a won run that matches none gets `stars.minOnSuccess` (1); a lost run gets 0. A condition on a field the game did not send holds or fails by `stars.missingField` (`pass`). Built-in fields: `timeSavedPercent = (limit − elapsed) / limit × 100` (100 without a limit; elapsed is clamped to the limit), `elapsedSeconds`, `healthPercent`. Defaults (legacy): 3 stars at ≥ 30 % saved and ≥ 75 % health, 2 stars at ≥ 10 % and ≥ 50 %.
+`stars.rules` (or the stage's own `starRules`): `[{stars, conditions:[{field, op, value}]}]`, ops `>= > <= < == !=`. The highest rule whose conditions all hold wins; a won run that matches none gets `stars.minOnSuccess` (1); a lost run gets 0. A condition on a field the game did not send holds or fails by `stars.missingField` (`fail`). Built-in fields: `timeSavedPercent = (limit − elapsed) / limit × 100` (100 without a limit; elapsed is clamped to the limit), `elapsedSeconds`, `healthPercent`. Defaults (legacy): 3 stars at ≥ 30 % saved and ≥ 75 % health, 2 stars at ≥ 10 % and ≥ 50 %.
 
 ### Payouts
 
@@ -54,13 +54,14 @@ Chapters and stages take `[{type, key, value, table}]`, all must hold: `level` (
 |---|---|---|
 | `attempts.hours` | 24 | 1–168: how long a started run can be completed |
 | `attempts.graceSeconds` | 3 | 0–120 added to the server clock and the time limit |
+| `attempts.defaultMinSeconds` | 5 | 0–3600: shortest won run of a stage without its own minimum |
 | `attempts.closeOthers` | true | a start closes the player's other open attempts |
 | `attempts.keepDays` | 90 | finished attempts kept (0 = forever) |
 | `stars.rules` | legacy rules | star rules (see above) |
 | `stars.multipliers` / `stars.repeatableMultipliers` | 0.2, 0.5, 1 / 1, 1, 1 | one per star, 0–10 |
 | `stars.maxStars` | 3 | 1–5 |
 | `stars.minOnSuccess` | 1 | stars of a win matching no rule |
-| `stars.missingField` | `pass` | `pass`, `fail` |
+| `stars.missingField` | `fail` | `pass`, `fail` |
 | `unlock.stageDefault` | `all_previous` | `all_previous`, `previous`, `none` |
 | `unlock.chapterDefault` | `none` | `none`, `previous` |
 | `unlock.minStars` | 1 | stars that pass a stage |

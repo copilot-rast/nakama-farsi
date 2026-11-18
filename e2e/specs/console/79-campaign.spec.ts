@@ -32,6 +32,7 @@ test.beforeAll(async () => {
   F.cur = 'e2e' + k + 'c';
   await eco.post('/currencies', { key: F.cur, name: { fa: 'سکهٔ کنسول ' + k, en: 'Console coin ' + k }, type: 'soft', defaultValue: 0, iconUrl: '', tagIds: [], metadata: {}, sort: 99 });
   F.prize = await eco.post('/prizes', { key: 'e2e_' + k + '_medal', name: { fa: 'مدال ' + k }, message: {}, tagIds: [], isRepeatable: true, metadata: {}, items: [{ type: 'currency', key: F.cur, action: 'add', value: 1 }] });
+  await cg.setSettings((s) => { s.stars.missingField = 'pass'; s.attempts.defaultMinSeconds = 0; });
 });
 
 test.afterAll(async () => {
