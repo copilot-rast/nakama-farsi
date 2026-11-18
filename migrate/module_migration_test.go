@@ -47,13 +47,21 @@ func TestModuleMigrationsAreEmbeddedRerunnableAndRefuseDown(t *testing.T) {
 					}
 				}
 			}
-			for _, match := range addConstraint.FindAllStringSubmatch(stmt, -1) {
-				if !dropped[match[1]] {
-					t.Errorf("%s: ADD CONSTRAINT %s must be preceded by DROP CONSTRAINT IF EXISTS of the same name", m.Id, match[1])
+			drops := dropConstraint.FindAllStringSubmatchIndex(stmt, -1)
+			for _, at := range addConstraint.FindAllStringSubmatchIndex(stmt, -1) {
+				name := stmt[at[2]:at[3]]
+				ok := dropped[name]
+				for _, d := range drops {
+					if d[0] < at[0] && stmt[d[2]:d[3]] == name {
+						ok = true
+					}
+				}
+				if !ok {
+					t.Errorf("%s: ADD CONSTRAINT %s must be preceded by DROP CONSTRAINT IF EXISTS of the same name", m.Id, name)
 				}
 			}
-			for _, match := range dropConstraint.FindAllStringSubmatch(stmt, -1) {
-				dropped[match[1]] = true
+			for _, d := range drops {
+				dropped[stmt[d[2]:d[3]]] = true
 			}
 		}
 	}
