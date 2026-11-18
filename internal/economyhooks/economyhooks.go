@@ -391,3 +391,41 @@ func RefundRegen(ctx context.Context, userID, currency, sourceID string) (RegenR
 	}
 	return fn(ctx, userID, currency, sourceID)
 }
+
+type (
+	CatalogReader  func(ctx context.Context, userID, lang string) (map[string]any, error)
+	BalancesReader func(ctx context.Context, userID string) (map[string]any, error)
+)
+
+var (
+	ErrNoCatalog = errors.New("the economy catalog is not available: the economy plugin is not loaded")
+
+	catalogReader  CatalogReader
+	balancesReader BalancesReader
+)
+
+func SetCatalog(catalog CatalogReader, balances BalancesReader) {
+	mu.Lock()
+	defer mu.Unlock()
+	catalogReader, balancesReader = catalog, balances
+}
+
+func Catalog(ctx context.Context, userID, lang string) (map[string]any, error) {
+	mu.RLock()
+	fn := catalogReader
+	mu.RUnlock()
+	if fn == nil {
+		return nil, ErrNoCatalog
+	}
+	return fn(ctx, userID, lang)
+}
+
+func Balances(ctx context.Context, userID string) (map[string]any, error) {
+	mu.RLock()
+	fn := balancesReader
+	mu.RUnlock()
+	if fn == nil {
+		return nil, ErrNoCatalog
+	}
+	return fn(ctx, userID)
+}

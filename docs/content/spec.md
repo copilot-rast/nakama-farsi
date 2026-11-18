@@ -23,6 +23,8 @@ Content types: `.json` `application/json`, `.hash`/`.txt` text, `.xml`, `.webp`,
 
 A web client keeps the `files` list, compares `sha256` with what it cached and downloads only changed files; the browser cache does the rest through the immutable URLs.
 
+Other plugins read the same answer through `internal/contenthooks`: `contenthooks.Catalog(ctx, platform, appVersion)` (`ErrUnavailable` without the content plugin).
+
 ## Console (`/v2/console/base/content`)
 
 `settings` (GET/PUT), `packs` (GET list, POST create → `{pack, partBytes, missing}`), `packs/events`, `packs/preview` (what a platform and app version would get), `packs/{id}` (GET with files and the index, DELETE), `packs/{id}/blobs/{sha}/{part}` (PUT a part), `packs/{id}/complete` (`{activate}`; `PACK_FILES_MISSING`), `packs/{id}/activate`, `packs/{id}/deactivate`. The upload panel («بسته‌های محتوا») hashes files in the browser, uploads only the missing blobs and has a «نوع بسته» picker (Addressables or plain files); the pack page shows the kind.

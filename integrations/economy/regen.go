@@ -616,3 +616,22 @@ func (s *service) rpcRegenRefill(ctx context.Context, userID, payload string) (a
 	}
 	return out, nil
 }
+
+func (s *service) catalogHook(ctx context.Context, userID, lang string) (map[string]any, error) {
+	raw, _ := json.Marshal(map[string]string{"lang": lang})
+	out, err := s.rpcCatalog(ctx, userID, string(raw))
+	if err != nil {
+		return nil, err
+	}
+	m, _ := out.(map[string]any)
+	return m, nil
+}
+
+func (s *service) balancesHook(ctx context.Context, userID string) (map[string]any, error) {
+	out, err := s.rpcBalances(ctx, userID, "{}")
+	if err != nil {
+		return nil, err
+	}
+	m, _ := out.(map[string]any)
+	return m, nil
+}

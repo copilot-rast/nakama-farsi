@@ -88,3 +88,25 @@ func TestGrantPrizeAndSettleMetasNeedEconomy(t *testing.T) {
 		t.Fatal("settler not called")
 	}
 }
+
+func TestCatalogAndBalancesReaders(t *testing.T) {
+	SetCatalog(nil, nil)
+	if _, err := Catalog(context.Background(), "u", "fa"); !errors.Is(err, ErrNoCatalog) {
+		t.Fatalf("want ErrNoCatalog, got %v", err)
+	}
+	if _, err := Balances(context.Background(), "u"); !errors.Is(err, ErrNoCatalog) {
+		t.Fatalf("want ErrNoCatalog, got %v", err)
+	}
+	SetCatalog(func(_ context.Context, userID, lang string) (map[string]any, error) {
+		return map[string]any{"user": userID, "lang": lang}, nil
+	}, func(_ context.Context, userID string) (map[string]any, error) {
+		return map[string]any{"wallet": map[string]int64{"coin": 1}}, nil
+	})
+	defer SetCatalog(nil, nil)
+	if out, err := Catalog(context.Background(), "u", "fa"); err != nil || out["lang"] != "fa" {
+		t.Fatalf("got %v %v", out, err)
+	}
+	if out, err := Balances(context.Background(), "u"); err != nil || out["wallet"] == nil {
+		t.Fatalf("got %v %v", out, err)
+	}
+}

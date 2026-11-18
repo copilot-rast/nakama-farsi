@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"os"
@@ -14,6 +15,7 @@ import (
 	"github.com/heroiclabs/nakama/v3/integrations/content/internal/settings"
 	"github.com/heroiclabs/nakama/v3/integrations/devkit/apierr"
 	"github.com/heroiclabs/nakama/v3/internal/clusterkit"
+	"github.com/heroiclabs/nakama/v3/internal/contenthooks"
 	"github.com/heroiclabs/nakama/v3/internal/objectstore"
 	"github.com/heroiclabs/nakama/v3/internal/pluginkit"
 )
@@ -79,6 +81,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := svc.registerConsoleHTTP(initializer); err != nil {
 		return err
 	}
+	contenthooks.SetCatalog(svc.catalogHook)
 	go svc.loop(ctx)
 	logger.Info("Content module registered (%d client RPCs, packs in %s storage)", len(svc.clientRPCs()), store.Driver())
 	return nil
@@ -180,3 +183,13 @@ type queryer interface {
 }
 
 func isNoRows(err error) bool { return errors.Is(err, sql.ErrNoRows) }
+
+func (s *service) catalogHook(ctx context.Context, platform, appVersion string) (map[string]any, error) {
+	raw, _ := json.Marshal(indexIn{Platform: platform, AppVersion: appVersion})
+	out, err := s.rpcCatalog(ctx, "", string(raw))
+	if err != nil {
+		return nil, err
+	}
+	m, _ := out.(map[string]any)
+	return m, nil
+}
