@@ -6,6 +6,7 @@ import (
 	"errors"
 	"sort"
 	"sync"
+	"time"
 )
 
 type Refusal struct {
@@ -301,4 +302,92 @@ func SaveItem(ctx context.Context, tx *sql.Tx, id string, create bool, raw []byt
 		return ErrNoItemSaver
 	}
 	return fn(ctx, tx, id, create, raw)
+}
+
+type RegenPrice struct {
+	CurrencyKey string `json:"currencyKey"`
+	Amount      int64  `json:"amount"`
+}
+
+type Regen struct {
+	CurrencyKey     string      `json:"currencyKey"`
+	Value           int64       `json:"value"`
+	Regen           bool        `json:"regen"`
+	Max             int64       `json:"max"`
+	IntervalSeconds int64       `json:"intervalSeconds"`
+	NextAt          *time.Time  `json:"nextAt"`
+	FullAt          *time.Time  `json:"fullAt"`
+	Unlimited       bool        `json:"unlimited"`
+	UnlimitedUntil  *time.Time  `json:"unlimitedUntil"`
+	RefillPrice     *RegenPrice `json:"refillPrice"`
+}
+
+type RegenSpend struct {
+	View     Regen `json:"view"`
+	Spent    int64 `json:"spent"`
+	Free     bool  `json:"free"`
+	Replayed bool  `json:"replayed"`
+}
+
+type RegenRefund struct {
+	View     Regen `json:"view"`
+	Refunded int64 `json:"refunded"`
+	Replayed bool  `json:"replayed"`
+	Found    bool  `json:"found"`
+}
+
+type (
+	RegenViewer   func(ctx context.Context, userID, currency string) (Regen, error)
+	RegenSpender  func(ctx context.Context, userID, currency string, amount int64, sourceID string) (RegenSpend, error)
+	RegenRefunder func(ctx context.Context, userID, currency, sourceID string) (RegenRefund, error)
+)
+
+var (
+	ErrNoRegen = errors.New("regenerating currencies are not available: the economy plugin is not loaded")
+
+	regenView   RegenViewer
+	regenSpend  RegenSpender
+	regenRefund RegenRefunder
+)
+
+func SetRegen(view RegenViewer, spend RegenSpender, refund RegenRefunder) {
+	mu.Lock()
+	defer mu.Unlock()
+	regenView, regenSpend, regenRefund = view, spend, refund
+}
+
+func RegenAvailable() bool {
+	mu.RLock()
+	defer mu.RUnlock()
+	return regenSpend != nil
+}
+
+func RegenView(ctx context.Context, userID, currency string) (Regen, error) {
+	mu.RLock()
+	fn := regenView
+	mu.RUnlock()
+	if fn == nil {
+		return Regen{}, ErrNoRegen
+	}
+	return fn(ctx, userID, currency)
+}
+
+func SpendRegen(ctx context.Context, userID, currency string, amount int64, sourceID string) (RegenSpend, error) {
+	mu.RLock()
+	fn := regenSpend
+	mu.RUnlock()
+	if fn == nil {
+		return RegenSpend{}, ErrNoRegen
+	}
+	return fn(ctx, userID, currency, amount, sourceID)
+}
+
+func RefundRegen(ctx context.Context, userID, currency, sourceID string) (RegenRefund, error) {
+	mu.RLock()
+	fn := regenRefund
+	mu.RUnlock()
+	if fn == nil {
+		return RegenRefund{}, ErrNoRegen
+	}
+	return fn(ctx, userID, currency, sourceID)
 }

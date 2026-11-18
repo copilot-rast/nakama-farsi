@@ -92,6 +92,9 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	for name, fn := range svc.legacyAvatarRPCs() {
 		rpcs[name] = fn
 	}
+	for name, fn := range svc.regenRPCs() {
+		rpcs[name] = fn
+	}
 	for name, fn := range rpcs {
 		if err := initializer.RegisterRpc(name, svc.rpc(fn)); err != nil {
 			return err
@@ -125,6 +128,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	economyhooks.SetPrizeGranter(svc.grantPrizeHook)
 	economyhooks.SetMetaSettler(svc.settleMetasHook)
 	economyhooks.SetItemSaver(svc.saveItemHook)
+	economyhooks.SetRegen(svc.regenViewHook, svc.spendRegenHook, svc.refundRegenHook)
 	playerevents.SetRecorder(svc.playerEventRecorder())
 	economyhooks.SetPrizeGranter(svc.grantPrizeHook)
 	go svc.reconcileLoop(ctx)

@@ -30,9 +30,9 @@ func resources() []resource {
 		{
 			name:    "currencies",
 			table:   "economy_currency",
-			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'type',t.type,'defaultValue',t.default_value,'iconUrl',t.icon_url,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`,
+			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'type',t.type,'defaultValue',t.default_value,'iconUrl',t.icon_url,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'metadata',t.metadata,'sort',t.sort,'regen',t.regen,'createdAt',t.created_at,'updatedAt',t.updated_at)`,
 			search:  []string{"t.key", translatedSearch("t.name")},
-			filters: map[string]string{"type": "t.type = ?", "categoryId": "t.category_id::text = ?"},
+			filters: map[string]string{"type": "t.type = ?", "categoryId": "t.category_id::text = ?", "regen": "(COALESCE(t.regen->>'enabled','false') = 'true') = ?::boolean"},
 			save:    saveCurrency,
 			remove: func(s *service, ctx context.Context, tx *sql.Tx, id string) error {
 				return refuseIfUsed(ctx, tx, id, `SELECT EXISTS (SELECT 1 FROM economy_currency c JOIN economy_product p ON p.coin_price->>'currencyKey' = c.key WHERE c.id=$1)
@@ -454,6 +454,7 @@ func saveCurrency(s *service, ctx context.Context, tx *sql.Tx, id string, create
 		TagIDs       []string        `json:"tagIds"`
 		Metadata     json.RawMessage `json:"metadata"`
 		Sort         int             `json:"sort"`
+		Regen        json.RawMessage `json:"regen"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -501,8 +502,16 @@ func saveCurrency(s *service, ctx context.Context, tx *sql.Tx, id string, create
 	if err != nil {
 		return err
 	}
-	return execSave(ctx, tx, "economy_currency", id, create, []string{"key", "name", "type", "default_value", "icon_url", "category_id", "tag_ids", "metadata", "sort"},
-		[]any{key, i18nJSON(name), in.Type, in.DefaultValue, icon, category, tags, meta, in.Sort})
+	cols := []string{"key", "name", "type", "default_value", "icon_url", "category_id", "tag_ids", "metadata", "sort"}
+	vals := []any{key, i18nJSON(name), in.Type, in.DefaultValue, icon, category, tags, meta, in.Sort}
+	if in.Regen != nil || create {
+		regen, err := cleanRegen(ctx, tx, key, in.Regen)
+		if err != nil {
+			return err
+		}
+		cols, vals = append(cols, "regen"), append(vals, regen)
+	}
+	return execSave(ctx, tx, "economy_currency", id, create, cols, vals)
 }
 
 func saveMeta(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {

@@ -49,17 +49,22 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 		return nil, err
 	}
 	currencies := []map[string]any{}
-	rows, err := s.db.QueryContext(ctx, `SELECT t.key, t.name::text, t.type, t.icon_url, `+taxonomyKeysSQL("currency")+` FROM economy_currency t ORDER BY t.sort, t.key`)
+	rows, err := s.db.QueryContext(ctx, `SELECT t.key, t.name::text, t.type, t.icon_url, `+taxonomyKeysSQL("currency")+`, COALESCE(t.regen::text,'') FROM economy_currency t ORDER BY t.sort, t.key`)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		var key, name, typ, icon, catKey, tagsRaw string
-		if err := rows.Scan(&key, &name, &typ, &icon, &catKey, &tagsRaw); err != nil {
+		var key, name, typ, icon, catKey, tagsRaw, regenRaw string
+		if err := rows.Scan(&key, &name, &typ, &icon, &catKey, &tagsRaw, &regenRaw); err != nil {
 			rows.Close()
 			return nil, err
 		}
-		currencies = append(currencies, map[string]any{"key": key, "name": langs.Resolve(localized.Parse(name), lang), "type": typ, "iconUrl": icon, "categoryKey": catKey, "tags": tagKeyList(tagsRaw)})
+		cur := map[string]any{"key": key, "name": langs.Resolve(localized.Parse(name), lang), "type": typ, "iconUrl": icon, "categoryKey": catKey, "tags": tagKeyList(tagsRaw), "regen": nil}
+		var rc regenConfig
+		if regenRaw != "" && json.Unmarshal([]byte(regenRaw), &rc) == nil && rc.on() {
+			cur["regen"] = map[string]any{"max": rc.Max, "intervalSeconds": rc.IntervalSeconds, "refillPrice": rc.RefillPrice}
+		}
+		currencies = append(currencies, cur)
 	}
 	rows.Close()
 
@@ -239,6 +244,10 @@ func (s *service) rpcBalances(ctx context.Context, userID, payload string) (any,
 		return nil, err
 	}
 	s.grantPendingRewards(ctx, userID)
+	regen, err := s.regenViews(ctx, userID, nil)
+	if err != nil {
+		return nil, err
+	}
 	wallet, err := s.userWallet(ctx, userID)
 	if err != nil {
 		return nil, err
@@ -264,7 +273,7 @@ func (s *service) rpcBalances(ctx context.Context, userID, payload string) (any,
 		}
 		cursor = next
 	}
-	return map[string]any{"wallet": wallet, "metas": metas, "items": items}, nil
+	return map[string]any{"wallet": wallet, "metas": metas, "items": items, "regen": regen}, nil
 }
 
 type giftRow struct {
