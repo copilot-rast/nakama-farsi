@@ -1,6 +1,8 @@
 package handoffkit
 
 import (
+	"html"
+	"regexp"
 	"strings"
 	"testing"
 	"testing/fstest"
@@ -128,5 +130,35 @@ func TestSettings(t *testing.T) {
 	}
 	if _, ok := (Settings{Audience: "everyone"}).Clean(); ok {
 		t.Fatal("bad audience accepted")
+	}
+}
+
+func TestShippedContent(t *testing.T) {
+	b, err := Load(content.FS)
+	if err != nil {
+		t.Fatal(err)
+	}
+	out, err := Render(content.FS, b, Options{ConsoleURL: "https://console.example", GeneratedAt: time.Now()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := string(out)
+	if m := regexp.MustCompile(`href="[^"#:]*\.(md|html)(#[^"]*)?"`).FindAllString(h, 5); len(m) > 0 {
+		t.Errorf("links to source files left: %v", m)
+	}
+	if m := regexp.MustCompile(`[0-9a-f]{64}`).FindString(h); m != "" {
+		t.Errorf("a 64-hex key is in the file: %s…", m[:8])
+	}
+	if strings.Contains(h, ConsolePlaceholder) {
+		t.Error("console placeholder left")
+	}
+	ids := map[string]bool{}
+	for _, m := range regexp.MustCompile(` id="([^"]+)"`).FindAllStringSubmatch(h, -1) {
+		ids[m[1]] = true
+	}
+	for _, m := range regexp.MustCompile(`href="#([^"]+)"`).FindAllStringSubmatch(h, -1) {
+		if !ids[html.UnescapeString(m[1])] && !ids[m[1]] {
+			t.Errorf("anchor #%s has no target", m[1])
+		}
 	}
 }
