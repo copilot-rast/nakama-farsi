@@ -32,13 +32,15 @@ type payment struct {
 	RewardError   sql.NullString
 	CreatedAt     time.Time
 	Outcome       string
+	Currency      sql.NullString
+	AmountMinor   sql.NullInt64
 }
 
-const paymentColumns = `id::text, user_id::text, product_id::text, method, sandbox, status, original_toman, final_toman, amount_rial, gift_id::text, authority, track_id, store_token, error, reward_granted, reward_error, created_at, COALESCE(outcome,'')`
+const paymentColumns = `id::text, user_id::text, product_id::text, method, sandbox, status, original_toman, final_toman, amount_rial, gift_id::text, authority, track_id, store_token, error, reward_granted, reward_error, created_at, COALESCE(outcome,''), currency, amount_minor`
 
 func scanPayment(row interface{ Scan(...any) error }) (payment, error) {
 	var p payment
-	err := row.Scan(&p.ID, &p.UserID, &p.ProductID, &p.Method, &p.Sandbox, &p.Status, &p.OriginalToman, &p.FinalToman, &p.AmountRial, &p.GiftID, &p.Authority, &p.TrackID, &p.StoreToken, &p.Error, &p.RewardGranted, &p.RewardError, &p.CreatedAt, &p.Outcome)
+	err := row.Scan(&p.ID, &p.UserID, &p.ProductID, &p.Method, &p.Sandbox, &p.Status, &p.OriginalToman, &p.FinalToman, &p.AmountRial, &p.GiftID, &p.Authority, &p.TrackID, &p.StoreToken, &p.Error, &p.RewardGranted, &p.RewardError, &p.CreatedAt, &p.Outcome, &p.Currency, &p.AmountMinor)
 	return p, err
 }
 
@@ -63,6 +65,8 @@ type productView struct {
 	TagIDs             []string          `json:"tagIds"`
 	AudienceTagIDs     []string          `json:"audienceTagIds"`
 	PriceToman         *int64            `json:"priceToman"`
+	PriceMinor         *int64            `json:"priceMinor"`
+	PriceCurrency      string            `json:"priceCurrency"`
 	CoinPrice          *coinPrice        `json:"coinPrice"`
 	DiscountPercent    int               `json:"discountPercent"`
 	PaymentMethods     []string          `json:"paymentMethods"`
@@ -285,7 +289,7 @@ func (s *service) checkGateway(ctx context.Context, p payment, callbackOK *bool,
 	if err != nil {
 		return p.Status, err
 	}
-	if pm.Config.flag("sandbox") != p.Sandbox || !methodConfigured(p.Method, pm.Config) {
+	if methodSandbox(p.Method, pm.Config) != p.Sandbox || !methodConfigured(p.Method, pm.Config) {
 		s.logger.Warn("Economy payment %s cannot be checked: its gateway settings changed", p.ID)
 		return p.Status, nil
 	}

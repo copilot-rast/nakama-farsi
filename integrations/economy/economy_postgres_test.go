@@ -384,7 +384,7 @@ func TestEconomyPostgresFlows(t *testing.T) {
 	h.mustAPI(200, http.MethodPut, "/payment-methods/bazaar", map[string]any{"isActive": true, "config": map[string]any{"sandbox": true, "packageName": "ir.game"}})
 	h.mustAPI(200, http.MethodPut, "/payment-methods/myket", map[string]any{"isActive": true, "config": map[string]any{"sandbox": true, "packageName": "ir.game"}})
 	h.mustAPI(200, http.MethodPut, "/payment-methods/in_app", map[string]any{"isActive": true})
-	if l := h.mustAPI(200, http.MethodGet, "/payment-methods", nil)["list"].([]any); len(l) != 5 {
+	if l := h.mustAPI(200, http.MethodGet, "/payment-methods", nil)["list"].([]any); len(l) != len(allMethods) {
 		t.Fatalf("methods = %v", l)
 	}
 

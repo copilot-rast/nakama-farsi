@@ -309,8 +309,14 @@ var MESSAGES = {
     'f.paymentMethods': 'روش‌های پرداخت',
     'f.sku.bazaar': 'SKU بازار',
     'f.sku.myket': 'SKU مایکت',
+    'f.sku.google_play': 'شناسهٔ محصول گوگل‌پلی',
+    'f.sku.apple': 'شناسهٔ محصول اپل',
+    'f.priceMinor': 'قیمت استرایپ (کوچک‌ترین واحد)',
+    'f.priceMinor.hint': 'مثلاً ۱۹۹ یعنی ۱٫۹۹ دلار.',
+    'f.priceCurrency': 'واحد پول قیمت',
+    'f.priceCurrency.hint': 'کد سه‌حرفی، مثل usd. باید با واحد پول استرایپ یکی باشد.',
     'f.isSubscription': 'اشتراکی',
-    'f.isSubscription.hint': 'فقط در بازار پشتیبانی می‌شود.',
+    'f.isSubscription.hint': 'در بازار، گوگل‌پلی و اپل پشتیبانی می‌شود.',
     'f.prize': 'جایزه',
     'f.prize.product.hint': 'بعد از پرداخت موفق به بازیکن داده می‌شود.',
     'f.minLevel': 'حداقل سطح',
@@ -399,6 +405,9 @@ var MESSAGES = {
     'method.zibal': 'زیبال',
     'method.bazaar': 'بازار',
     'method.myket': 'مایکت',
+    'method.google_play': 'گوگل‌پلی',
+    'method.apple': 'اپ‌استور اپل',
+    'method.stripe': 'استرایپ',
     'method.in_app': 'سکهٔ بازی',
     'status.pending': 'در انتظار',
     'status.success': 'موفق',
@@ -415,6 +424,7 @@ var MESSAGES = {
     'pay.original': 'قیمت اصلی',
     'pay.final': 'مبلغ نهایی',
     'pay.rial': 'مبلغ به ریال',
+    'pay.minor': 'مبلغ استرایپ (کوچک‌ترین واحد)',
     'pay.coin': 'پرداخت با سکه',
     'pay.discount': 'تخفیف',
     'pay.gateway': 'درگاه و فروشگاه',
@@ -489,6 +499,21 @@ var MESSAGES = {
     'ps.expired.refuse': 'همیشه رد شود',
     'f.ps.sandbox': 'بستن پرداخت‌های تست با خاموش شدن حالت تست',
     'f.ps.sandbox.hint': 'پرداخت‌های باز حالت تست بسته می‌شوند و رسید تست دیگر قبول نمی‌شود.',
+    'f.ps.stores': 'گوگل‌پلی، اپل و استرایپ',
+    'f.ps.liveTest': 'قبول خرید تست در حالت واقعی',
+    'f.ps.liveTest.hint': 'برای بازبینی اپل لازم است؛ خریدهای تست گوگل و اپل در حالت واقعی هم قبول می‌شوند.',
+    'f.ps.payload': 'شناسهٔ پرداخت در خرید گوگل و اپل',
+    'f.ps.payload.hint': 'obfuscatedProfileId در گوگل و appAccountToken در اپل. اگر اختیاری باشد، خرید بدون آن به همان پرداختی وصل می‌شود که با آن فرستاده شده.',
+    'ps.payload.optional': 'اختیاری',
+    'ps.payload.required': 'لازم',
+    'f.ps.consumed': 'خرید مصرف‌شدهٔ گوگل که هنوز ثبت نشده',
+    'f.ps.consumed.hint': 'وقتی بازی خرید را پیش از بررسی سرور مصرف کرده است.',
+    'ps.consumed.accept': 'قبول شود',
+    'ps.consumed.refuse': 'رد شود',
+    'f.ps.ack': 'تأیید (acknowledge) خرید گوگل بعد از ثبت',
+    'f.ps.ack.hint': 'گوگل خرید تأییدنشده را بعد از سه روز پس می‌دهد.',
+    'f.ps.stripeTolerance': 'بیشترین سن امضای وب‌هوک استرایپ (ثانیه)',
+    'f.ps.stripeTolerance.hint': 'از ۳۰ تا ۳۶۰۰؛ پیش‌فرض ۳۰۰.',
     'pay.request': 'درخواست',
     'pay.response': 'پاسخ',
     'pay.duration': '{n} میلی‌ثانیه',
@@ -511,6 +536,25 @@ var MESSAGES = {
     'pm.field.apiSecret': 'کلید API',
     'pm.field.accessToken': 'توکن دسترسی',
     'pm.field.rsaPublicKey': 'کلید عمومی RSA',
+    'pm.field.serviceAccountJson': 'کلید JSON حساب سرویس گوگل',
+    'pm.field.bundleId': 'Bundle ID',
+    'pm.field.sharedSecret': 'Shared secret (رسید قدیمی)',
+    'pm.field.issuerId': 'Issuer ID',
+    'pm.field.keyId': 'Key ID',
+    'pm.field.privateKeyP8': 'کلید خصوصی .p8',
+    'pm.field.secretKey': 'کلید مخفی (Secret key)',
+    'pm.field.webhookSecret': 'رمز امضای وب‌هوک',
+    'pm.field.publishableKey': 'کلید عمومی (Publishable key)',
+    'pm.field.currency': 'واحد پول',
+    'pm.field.testMode': 'حالت تست',
+    'pm.hint.serviceAccountJson': 'فایل JSON حساب سرویسی که در Play Console دسترسی «مدیریت سفارش‌ها» دارد. بعد از ذخیره فقط با ستاره نشان داده می‌شود.',
+    'pm.hint.sharedSecret': 'برای بررسی رسیدهای قدیمی (verifyReceipt). اگر کلیدهای App Store Server API را بگذارید، اول از آن‌ها استفاده می‌شود.',
+    'pm.hint.issuerId': 'Issuer ID و Key ID و فایل .p8 را با هم بگذارید تا تراکنش‌ها با App Store Server API بررسی شوند.',
+    'pm.hint.privateKeyP8': 'متن کامل فایل .p8 از App Store Connect.',
+    'pm.hint.secretKey': 'در حالت تست کلید sk_test_ و در حالت واقعی کلید sk_live_.',
+    'pm.hint.webhookSecret': 'از بخش Webhooks استرایپ (whsec_...). آدرس وب‌هوک: /v2/economy/stripe/webhook روی آدرس عمومی سرور.',
+    'pm.hint.currency': 'کد سه‌حرفی، مثل usd. محصول باید قیمتی با همین واحد داشته باشد.',
+    'pm.hint.sandbox.store': 'در حالت تست فقط خریدهای تست (حساب‌های تستر) قبول می‌شوند و در حالت واقعی فقط خریدهای واقعی.',
 
     'ov.catalog': 'کاتالوگ',
     'ov.revenue30': 'درآمد ۳۰ روز اخیر',
@@ -5746,8 +5790,14 @@ var MESSAGES = {
     'f.paymentMethods': 'Payment methods',
     'f.sku.bazaar': 'Bazaar SKU',
     'f.sku.myket': 'Myket SKU',
+    'f.sku.google_play': 'Google Play product ID',
+    'f.sku.apple': 'Apple product ID',
+    'f.priceMinor': 'Stripe price (smallest unit)',
+    'f.priceMinor.hint': 'For example 199 means 1.99 USD.',
+    'f.priceCurrency': 'Price currency',
+    'f.priceCurrency.hint': 'Three-letter code such as usd. Must match the Stripe currency.',
     'f.isSubscription': 'Subscription',
-    'f.isSubscription.hint': 'Supported on Bazaar only.',
+    'f.isSubscription.hint': 'Supported on Bazaar, Google Play and Apple.',
     'f.prize': 'Prize',
     'f.prize.product.hint': 'Granted after a successful payment.',
     'f.minLevel': 'Minimum level',
@@ -5836,6 +5886,9 @@ var MESSAGES = {
     'method.zibal': 'Zibal',
     'method.bazaar': 'Bazaar',
     'method.myket': 'Myket',
+    'method.google_play': 'Google Play',
+    'method.apple': 'Apple App Store',
+    'method.stripe': 'Stripe',
     'method.in_app': 'In-game coins',
     'status.pending': 'Pending',
     'status.success': 'Success',
@@ -5852,6 +5905,7 @@ var MESSAGES = {
     'pay.original': 'Original price',
     'pay.final': 'Final amount',
     'pay.rial': 'Amount in Rial',
+    'pay.minor': 'Stripe amount (smallest unit)',
     'pay.coin': 'Paid with coins',
     'pay.discount': 'Discount',
     'pay.gateway': 'Gateway and store',
@@ -5926,6 +5980,21 @@ var MESSAGES = {
     'ps.expired.refuse': 'Always refuse',
     'f.ps.sandbox': 'Close test payments when test mode is turned off',
     'f.ps.sandbox.hint': 'Open test-mode payments are closed and test receipts stop working.',
+    'f.ps.stores': 'Google Play, Apple and Stripe',
+    'f.ps.liveTest': 'Accept test purchases in live mode',
+    'f.ps.liveTest.hint': 'Needed for Apple App Review: Google and Apple test purchases are accepted even when test mode is off.',
+    'f.ps.payload': 'Payment id in Google and Apple purchases',
+    'f.ps.payload.hint': 'obfuscatedProfileId on Google, appAccountToken on Apple. When optional, a purchase without it is bound to the payment it was sent with.',
+    'ps.payload.optional': 'Optional',
+    'ps.payload.required': 'Required',
+    'f.ps.consumed': 'Consumed Google purchase we have not recorded',
+    'f.ps.consumed.hint': 'When the game consumed the purchase before the server checked it.',
+    'ps.consumed.accept': 'Accept',
+    'ps.consumed.refuse': 'Refuse',
+    'f.ps.ack': 'Acknowledge Google purchases after recording',
+    'f.ps.ack.hint': 'Google refunds purchases that are not acknowledged within three days.',
+    'f.ps.stripeTolerance': 'Oldest Stripe webhook signature (seconds)',
+    'f.ps.stripeTolerance.hint': '30 to 3600; default 300.',
     'pay.request': 'Request',
     'pay.response': 'Response',
     'pay.duration': '{n} ms',
@@ -5948,6 +6017,25 @@ var MESSAGES = {
     'pm.field.apiSecret': 'API secret',
     'pm.field.accessToken': 'Access token',
     'pm.field.rsaPublicKey': 'RSA public key',
+    'pm.field.serviceAccountJson': 'Google service account JSON key',
+    'pm.field.bundleId': 'Bundle ID',
+    'pm.field.sharedSecret': 'Shared secret (legacy receipts)',
+    'pm.field.issuerId': 'Issuer ID',
+    'pm.field.keyId': 'Key ID',
+    'pm.field.privateKeyP8': 'Private key (.p8)',
+    'pm.field.secretKey': 'Secret key',
+    'pm.field.webhookSecret': 'Webhook signing secret',
+    'pm.field.publishableKey': 'Publishable key',
+    'pm.field.currency': 'Currency',
+    'pm.field.testMode': 'Test mode',
+    'pm.hint.serviceAccountJson': 'The JSON key of a service account with "Manage orders" access in Play Console. Shown as stars after saving.',
+    'pm.hint.sharedSecret': 'Checks legacy receipts (verifyReceipt). When App Store Server API keys are set they are used first.',
+    'pm.hint.issuerId': 'Set Issuer ID, Key ID and the .p8 key together to check transactions with the App Store Server API.',
+    'pm.hint.privateKeyP8': 'The full text of the .p8 file from App Store Connect.',
+    'pm.hint.secretKey': 'Test mode needs an sk_test_ key, live mode an sk_live_ key.',
+    'pm.hint.webhookSecret': 'From Stripe Webhooks (whsec_...). Webhook URL: /v2/economy/stripe/webhook on the server public address.',
+    'pm.hint.currency': 'Three-letter code such as usd. Products need a price in this currency.',
+    'pm.hint.sandbox.store': 'In test mode only test purchases (license testers) are accepted; in live mode only real ones.',
 
     'ov.catalog': 'Catalog',
     'ov.revenue30': 'Revenue, last 30 days',
@@ -12936,9 +13024,10 @@ function buildForm(fields, values, ctx) {
   return { el: root, validate: validate, payload: payload, showServerError: showServerError };
 }
 
-var METHODS = ['zarinpal', 'zibal', 'bazaar', 'myket', 'in_app'];
+var METHODS = ['zarinpal', 'zibal', 'stripe', 'bazaar', 'myket', 'google_play', 'apple', 'in_app'];
 var GATEWAYS = ['zarinpal', 'zibal'];
-var STORES = ['bazaar', 'myket'];
+var STORES = ['bazaar', 'myket', 'google_play', 'apple'];
+var SUB_STORES = ['bazaar', 'google_play', 'apple'];
 var CATEGORY_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news', 'task'];
 var TAG_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news', 'task', 'general', 'user'];
 var LANG_CODE_RE = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/;
@@ -13087,6 +13176,7 @@ function withKeyNames(build) {
 function priceText(it) {
   var parts = [];
   if (it.priceToman !== null && it.priceToman !== undefined) parts.push(t('toman', { n: it.priceToman }));
+  if (it.priceMinor) parts.push(fmtNum(it.priceMinor) + ' ' + String(it.priceCurrency || '').toUpperCase());
   if (it.coinPrice && it.coinPrice.amount !== undefined && it.coinPrice.amount !== null) parts.push(t('amount.of', { n: fmtNum(it.coinPrice.amount), name: keyName('currency', it.coinPrice.currencyKey) }));
   return parts;
 }
@@ -13276,6 +13366,10 @@ var RESOURCES = {
         { name: 'discountPercent', type: 'number', label: 'f.discountPercent', min: 0, max: 100, empty: 0,
           when: function (v) { return (v.paymentMethods || []).length > 0; } }
       ] },
+      { type: 'row', when: function (v) { return hasAny(v.paymentMethods, ['stripe']); }, fields: [
+        { name: 'priceMinor', type: 'number', label: 'f.priceMinor', hint: 'f.priceMinor.hint', required: true, min: 1, when: function (v) { return hasAny(v.paymentMethods, ['stripe']); } },
+        { name: 'priceCurrency', type: 'text', ltr: true, label: 'f.priceCurrency', hint: 'f.priceCurrency.hint', optional: true, when: function (v) { return hasAny(v.paymentMethods, ['stripe']); } }
+      ] },
       { type: 'row', when: function (v) { return hasAny(v.paymentMethods, ['in_app']); }, fields: [
         { name: 'coinPrice.currencyKey', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.coinPrice.currency', required: true, when: function (v) { return hasAny(v.paymentMethods, ['in_app']); } },
         { name: 'coinPrice.amount', type: 'number', label: 'f.coinPrice.amount', required: true, min: 1, when: function (v) { return hasAny(v.paymentMethods, ['in_app']); } }
@@ -13284,7 +13378,11 @@ var RESOURCES = {
         { name: 'sku.bazaar', type: 'text', ltr: true, label: 'f.sku.bazaar', required: true, when: function (v) { return hasAny(v.paymentMethods, ['bazaar']); } },
         { name: 'sku.myket', type: 'text', ltr: true, label: 'f.sku.myket', required: true, when: function (v) { return hasAny(v.paymentMethods, ['myket']); } }
       ] },
-      { name: 'isSubscription', type: 'bool', inline: true, label: 'f.isSubscription', hint: 'f.isSubscription.hint', empty: false, when: function (v) { return hasAny(v.paymentMethods, ['bazaar']); } },
+      { type: 'row', when: function (v) { return hasAny(v.paymentMethods, ['google_play', 'apple']); }, fields: [
+        { name: 'sku.google_play', type: 'text', ltr: true, label: 'f.sku.google_play', required: true, when: function (v) { return hasAny(v.paymentMethods, ['google_play']); } },
+        { name: 'sku.apple', type: 'text', ltr: true, label: 'f.sku.apple', required: true, when: function (v) { return hasAny(v.paymentMethods, ['apple']); } }
+      ] },
+      { name: 'isSubscription', type: 'bool', inline: true, label: 'f.isSubscription', hint: 'f.isSubscription.hint', empty: false, when: function (v) { return hasAny(v.paymentMethods, SUB_STORES); } },
       { type: 'heading', label: 'f.icon' },
       { type: 'row', fields: [
         { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
@@ -13300,9 +13398,10 @@ var RESOURCES = {
     fixPayload: function (p) {
       if (p.coinPrice && p.coinPrice.currencyKey == null && p.coinPrice.amount == null) p.coinPrice = null;
       var sku = {};
-      if (p.sku && p.sku.bazaar) sku.bazaar = p.sku.bazaar;
-      if (p.sku && p.sku.myket) sku.myket = p.sku.myket;
+      STORES.forEach(function (m) { if (p.sku && p.sku[m]) sku[m] = p.sku[m]; });
       p.sku = sku;
+      if (!hasAny(p.paymentMethods, ['stripe']) || p.priceMinor === '' || p.priceMinor == null) { p.priceMinor = null; p.priceCurrency = ''; }
+      else { p.priceMinor = Number(p.priceMinor); p.priceCurrency = String(p.priceCurrency || '').trim().toLowerCase(); }
       return p;
     }
   },
@@ -13872,6 +13971,7 @@ function paymentDetail(container, id) {
       ['pay.discount', p.discountPercent ? h('span', { text: t('percent', { n: p.discountPercent }) }) : null],
       ['pay.final', p.finalToman != null ? h('span', { class: 'tabular-nums font-semibold', text: t('toman', { n: p.finalToman }) }) : null],
       ['pay.rial', p.amountRial ? h('span', { class: 'tabular-nums', text: fmtNum(p.amountRial) }) : null],
+      ['pay.minor', p.amountMinor ? h('span', { class: 'tabular-nums', dir: 'ltr', text: fmtNum(p.amountMinor) + ' ' + String(p.currency || '').toUpperCase() }) : null],
       ['pay.coin', p.coinAmount != null && p.coinCurrency ? h('span', { class: 'tabular-nums', text: fmtNum(p.coinAmount) + ' ' + p.coinCurrency }) : null]
     ])));
     grid.appendChild(section('pay.user', dl([
@@ -13964,6 +14064,10 @@ function paymentDetail(container, id) {
   load();
 }
 
+function isSecretField(f) {
+  return f.type === 'secret' || f.type === 'secretJson' || f.type === 'secretText';
+}
+
 function paymentMethodsPage(container) {
   var frame = tabFrame(t('desc.payment-methods'));
   clear(container).appendChild(frame.el);
@@ -13991,14 +14095,19 @@ function paymentMethodsPage(container) {
       var ctl;
       if (f.type === 'bool') {
         ctl = toggle(cfg[f.name], label, function (v) { cfg[f.name] = v; }, 'sm');
-        body.appendChild(h('div', { class: 'mb-4' }, ctl));
+        ctl.setAttribute('data-field', f.name);
+        body.appendChild(h('div', { class: 'mb-4' }, ctl, f.name === m.sandboxField && m.sandboxNeedsKeys && has('pm.hint.sandbox.store') && m.method !== 'stripe' ? h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1.5', text: t('pm.hint.sandbox.store') }) : null));
         fieldEls[f.name] = { setError: function () {} };
         return;
       }
-      ctl = textInput(cfg[f.name] == null ? '' : cfg[f.name], { ltr: true, mono: f.type !== 'textarea' || true, multiline: f.type === 'textarea', rows: 3, label: label, oninput: function (v) { cfg[f.name] = v; } });
-      if (f.type === 'secret') { ctl.setAttribute('autocomplete', 'off'); ctl.classList.add('eco-secret'); }
+      var secret = isSecretField(f);
+      var multi = f.type === 'textarea' || f.type === 'secretJson' || f.type === 'secretText';
+      ctl = textInput(cfg[f.name] == null ? '' : cfg[f.name], { ltr: true, mono: true, multiline: multi, rows: f.type === 'secretJson' || f.type === 'secretText' ? 5 : 3, label: label, placeholder: f.default || '', oninput: function (v) { cfg[f.name] = v; } });
+      if (secret) { ctl.setAttribute('autocomplete', 'off'); ctl.setAttribute('spellcheck', 'false'); ctl.classList.add('eco-secret'); }
+      ctl.setAttribute('data-field', f.name);
       ctl.classList.add('text-sm');
-      var wrap = field(label, ctl, f.type === 'secret' && cfg[f.name] ? t('pm.secret.hint') : null, { optional: !f.required });
+      var help = secret && cfg[f.name] ? t('pm.secret.hint') : has('pm.hint.' + f.name) ? t('pm.hint.' + f.name) : null;
+      var wrap = field(label, ctl, help, { optional: !f.required });
       fieldEls[f.name] = wrap;
       body.appendChild(wrap);
     });
@@ -14433,7 +14542,15 @@ var PAYMENT_SETTINGS_FIELDS = [
     { name: 'onceHoldMinutes', type: 'number', label: 'f.ps.onceHold', hint: 'f.ps.onceHold.hint', required: true, min: 1, max: 1440 }
   ] },
   { name: 'expiredReceipts', type: 'select', label: 'f.ps.expired', hint: 'f.ps.expired.hint', required: true, noPlaceholder: true, options: opts('ps.expired.', ['verified', 'refuse']) },
-  { name: 'closeSandboxOnOff', type: 'bool', inline: true, label: 'f.ps.sandbox', hint: 'f.ps.sandbox.hint' }
+  { name: 'closeSandboxOnOff', type: 'bool', inline: true, label: 'f.ps.sandbox', hint: 'f.ps.sandbox.hint' },
+  { type: 'heading', label: 'f.ps.stores' },
+  { name: 'liveAcceptsTestPurchases', type: 'bool', inline: true, label: 'f.ps.liveTest', hint: 'f.ps.liveTest.hint' },
+  { type: 'row', fields: [
+    { name: 'appStorePayload', type: 'select', label: 'f.ps.payload', hint: 'f.ps.payload.hint', required: true, noPlaceholder: true, options: opts('ps.payload.', ['optional', 'required']) },
+    { name: 'storeConsumed', type: 'select', label: 'f.ps.consumed', hint: 'f.ps.consumed.hint', required: true, noPlaceholder: true, options: opts('ps.consumed.', ['accept', 'refuse']) }
+  ] },
+  { name: 'googleAcknowledge', type: 'bool', inline: true, label: 'f.ps.ack', hint: 'f.ps.ack.hint' },
+  { name: 'stripeToleranceSeconds', type: 'number', label: 'f.ps.stripeTolerance', hint: 'f.ps.stripeTolerance.hint', required: true, min: 30, max: 3600 }
 ];
 
 function paymentSettingsCall(method, path, body) {
@@ -14445,7 +14562,7 @@ function paymentSettingsPage(container) {
   clear(container).appendChild(frame.el);
   var page = apiPage(paymentSettingsCall, '/payment-settings', null, PAYMENT_SETTINGS_FIELDS, { id: 'payments', fixPayload: function (p) {
     delete p.updatedAt;
-    ['retryMinutes', 'maxAttempts', 'onceHoldMinutes'].forEach(function (k) { p[k] = Number(p[k]); });
+    ['retryMinutes', 'maxAttempts', 'onceHoldMinutes', 'stripeToleranceSeconds'].forEach(function (k) { p[k] = Number(p[k]); });
     return p;
   } });
   frame.content.appendChild(page.el);
@@ -28052,7 +28169,7 @@ function errorSummary(box, count) {
 
 function requiredMissing(f, value, saved, sandbox) {
   if (!f.required || f.type === 'bool' || f.default) return false;
-  if ((f.type === 'secret' || f.type === 'secretJson') && (sandbox || saved)) return false;
+  if (isSecretField(f) && (sandbox || saved)) return false;
   return String(value == null ? '' : value).trim() === '';
 }
 
@@ -28093,16 +28210,19 @@ function stepPayment(box) {
     var cfg = cfgs[m.method];
     var fieldEls = {};
     var fieldsBox = h('div', { class: 'setup-method-fields' });
-    var sandboxField = (m.fields || []).filter(function (f) { return f.name === 'sandbox'; })[0];
-    if (sandboxField) fieldsBox.appendChild(sandboxBox(cfg.sandbox !== false, function (v) { cfg.sandbox = v; dirty = true; }, true, 'pay'));
+    var sbName = m.sandboxField || 'sandbox';
+    var sandboxField = (m.fields || []).filter(function (f) { return f.name === sbName; })[0];
+    if (sandboxField) fieldsBox.appendChild(sandboxBox(cfg[sbName] !== false, function (v) { cfg[sbName] = v; dirty = true; }, true, 'pay'));
     (m.fields || []).forEach(function (f) {
       if (f.type === 'bool') return;
       var label = has('pm.field.' + f.name) ? t('pm.field.' + f.name) : f.name;
-      var ctl = textInput(cfg[f.name] == null ? '' : cfg[f.name], { ltr: true, mono: true, multiline: f.type === 'textarea', rows: 3, label: label, oninput: function (v) { cfg[f.name] = v; dirty = true; fieldEls[f.name].setError(''); } });
+      var secret = isSecretField(f);
+      var multi = f.type === 'textarea' || f.type === 'secretJson' || f.type === 'secretText';
+      var ctl = textInput(cfg[f.name] == null ? '' : cfg[f.name], { ltr: true, mono: true, multiline: multi, rows: multi && secret ? 5 : 3, label: label, placeholder: f.default || '', oninput: function (v) { cfg[f.name] = v; dirty = true; fieldEls[f.name].setError(''); } });
       ctl.setAttribute('data-field', f.name);
       ctl.classList.add('text-sm');
-      if (f.type === 'secret') ctl.classList.add('eco-secret');
-      var hint = f.type === 'secret' && cfg[f.name] ? t('pm.secret.hint') : f.type === 'secret' && sandboxField ? t('setup.pay.secret.sandbox') : null;
+      if (secret) ctl.classList.add('eco-secret');
+      var hint = secret && cfg[f.name] ? t('pm.secret.hint') : secret && sandboxField && !m.sandboxNeedsKeys ? t('setup.pay.secret.sandbox') : has('pm.hint.' + f.name) ? t('pm.hint.' + f.name) : null;
       fieldEls[f.name] = field(label, ctl, hint, { optional: !f.required });
       fieldsBox.appendChild(fieldEls[f.name]);
     });
@@ -28159,7 +28279,8 @@ function stepPayment(box) {
       methods.forEach(function (m) {
         picked[m.method] = !!m.isActive;
         cfgs[m.method] = clone(m.config || {}) || {};
-        if (!m.configured && !m.isActive && (m.fields || []).some(function (f) { return f.name === 'sandbox'; })) cfgs[m.method].sandbox = true;
+        var sbName = m.sandboxField || 'sandbox';
+        if (!m.configured && !m.isActive && (m.fields || []).some(function (f) { return f.name === sbName; })) cfgs[m.method][sbName] = true;
       });
       need = savedNeed('payment', methods.some(function (m) { return m.isActive; }));
       paint();
@@ -28182,7 +28303,8 @@ function stepPayment(box) {
         (m.fields || []).forEach(function (f) {
           if (!e.fields[f.name]) return;
           e.fields[f.name].setError('');
-          if (requiredMissing(f, cfg[f.name], f.type === 'secret' && saved[f.name], cfg.sandbox !== false && (m.fields || []).some(function (x) { return x.name === 'sandbox'; }))) {
+          var sbName = m.sandboxField || 'sandbox';
+          if (requiredMissing(f, cfg[f.name], isSecretField(f) && saved[f.name], !m.sandboxNeedsKeys && cfg[sbName] !== false && (m.fields || []).some(function (x) { return x.name === sbName; }))) {
             e.fields[f.name].setError(t('setup.err.required'));
             bad.push(m.method);
           }

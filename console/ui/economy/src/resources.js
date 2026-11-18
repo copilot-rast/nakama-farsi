@@ -1,6 +1,7 @@
-var METHODS = ['zarinpal', 'zibal', 'bazaar', 'myket', 'in_app'];
+var METHODS = ['zarinpal', 'zibal', 'stripe', 'bazaar', 'myket', 'google_play', 'apple', 'in_app'];
 var GATEWAYS = ['zarinpal', 'zibal'];
-var STORES = ['bazaar', 'myket'];
+var STORES = ['bazaar', 'myket', 'google_play', 'apple'];
+var SUB_STORES = ['bazaar', 'google_play', 'apple'];
 var CATEGORY_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news', 'task'];
 var TAG_KEY_TYPES = ['product', 'prize', 'gift', 'currency', 'faq', 'news', 'task', 'general', 'user'];
 var LANG_CODE_RE = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/;
@@ -149,6 +150,7 @@ function withKeyNames(build) {
 function priceText(it) {
   var parts = [];
   if (it.priceToman !== null && it.priceToman !== undefined) parts.push(t('toman', { n: it.priceToman }));
+  if (it.priceMinor) parts.push(fmtNum(it.priceMinor) + ' ' + String(it.priceCurrency || '').toUpperCase());
   if (it.coinPrice && it.coinPrice.amount !== undefined && it.coinPrice.amount !== null) parts.push(t('amount.of', { n: fmtNum(it.coinPrice.amount), name: keyName('currency', it.coinPrice.currencyKey) }));
   return parts;
 }
@@ -338,6 +340,10 @@ var RESOURCES = {
         { name: 'discountPercent', type: 'number', label: 'f.discountPercent', min: 0, max: 100, empty: 0,
           when: function (v) { return (v.paymentMethods || []).length > 0; } }
       ] },
+      { type: 'row', when: function (v) { return hasAny(v.paymentMethods, ['stripe']); }, fields: [
+        { name: 'priceMinor', type: 'number', label: 'f.priceMinor', hint: 'f.priceMinor.hint', required: true, min: 1, when: function (v) { return hasAny(v.paymentMethods, ['stripe']); } },
+        { name: 'priceCurrency', type: 'text', ltr: true, label: 'f.priceCurrency', hint: 'f.priceCurrency.hint', optional: true, when: function (v) { return hasAny(v.paymentMethods, ['stripe']); } }
+      ] },
       { type: 'row', when: function (v) { return hasAny(v.paymentMethods, ['in_app']); }, fields: [
         { name: 'coinPrice.currencyKey', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.coinPrice.currency', required: true, when: function (v) { return hasAny(v.paymentMethods, ['in_app']); } },
         { name: 'coinPrice.amount', type: 'number', label: 'f.coinPrice.amount', required: true, min: 1, when: function (v) { return hasAny(v.paymentMethods, ['in_app']); } }
@@ -346,7 +352,11 @@ var RESOURCES = {
         { name: 'sku.bazaar', type: 'text', ltr: true, label: 'f.sku.bazaar', required: true, when: function (v) { return hasAny(v.paymentMethods, ['bazaar']); } },
         { name: 'sku.myket', type: 'text', ltr: true, label: 'f.sku.myket', required: true, when: function (v) { return hasAny(v.paymentMethods, ['myket']); } }
       ] },
-      { name: 'isSubscription', type: 'bool', inline: true, label: 'f.isSubscription', hint: 'f.isSubscription.hint', empty: false, when: function (v) { return hasAny(v.paymentMethods, ['bazaar']); } },
+      { type: 'row', when: function (v) { return hasAny(v.paymentMethods, ['google_play', 'apple']); }, fields: [
+        { name: 'sku.google_play', type: 'text', ltr: true, label: 'f.sku.google_play', required: true, when: function (v) { return hasAny(v.paymentMethods, ['google_play']); } },
+        { name: 'sku.apple', type: 'text', ltr: true, label: 'f.sku.apple', required: true, when: function (v) { return hasAny(v.paymentMethods, ['apple']); } }
+      ] },
+      { name: 'isSubscription', type: 'bool', inline: true, label: 'f.isSubscription', hint: 'f.isSubscription.hint', empty: false, when: function (v) { return hasAny(v.paymentMethods, SUB_STORES); } },
       { type: 'heading', label: 'f.icon' },
       { type: 'row', fields: [
         { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
@@ -362,9 +372,10 @@ var RESOURCES = {
     fixPayload: function (p) {
       if (p.coinPrice && p.coinPrice.currencyKey == null && p.coinPrice.amount == null) p.coinPrice = null;
       var sku = {};
-      if (p.sku && p.sku.bazaar) sku.bazaar = p.sku.bazaar;
-      if (p.sku && p.sku.myket) sku.myket = p.sku.myket;
+      STORES.forEach(function (m) { if (p.sku && p.sku[m]) sku[m] = p.sku[m]; });
       p.sku = sku;
+      if (!hasAny(p.paymentMethods, ['stripe']) || p.priceMinor === '' || p.priceMinor == null) { p.priceMinor = null; p.priceCurrency = ''; }
+      else { p.priceMinor = Number(p.priceMinor); p.priceCurrency = String(p.priceCurrency || '').trim().toLowerCase(); }
       return p;
     }
   },

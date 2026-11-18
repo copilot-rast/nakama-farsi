@@ -73,11 +73,17 @@ func (s *service) registerPublicHTTP(initializer runtime.Initializer) error {
 	if err := initializer.RegisterHttp("/v2/economy/payments/callback/{ticket}", s.callbackHTTP, http.MethodGet, http.MethodPost); err != nil {
 		return err
 	}
+	if err := initializer.RegisterHttp(stripeWebhookPath, s.stripeWebhookHTTP, http.MethodPost); err != nil {
+		return err
+	}
+	if err := initializer.RegisterHttp("/v2/economy/stripe/return/{ticket}", s.stripeReturnHTTP, http.MethodGet); err != nil {
+		return err
+	}
 	return initializer.RegisterHttp("/v2/economy/files/{name}", s.fileHTTP, http.MethodGet, http.MethodHead)
 }
 
 const paymentAdminJSON = `jsonb_build_object('id',p.id,'userId',p.user_id,'username',u.username,'productId',p.product_id,'productKey',pr.key,'productName',pr.name,
-	'method',p.method,'sandbox',p.sandbox,'status',p.status,'originalToman',p.original_toman,'finalToman',p.final_toman,'amountRial',p.amount_rial,
+	'method',p.method,'sandbox',p.sandbox,'status',p.status,'originalToman',p.original_toman,'finalToman',p.final_toman,'amountRial',p.amount_rial,'currency',p.currency,'amountMinor',p.amount_minor,
 	'coinCurrency',p.coin_currency,'coinAmount',p.coin_amount,'giftId',p.gift_id,'discountPercent',p.discount_percent,'authority',p.authority,'trackId',p.track_id,
 	'refId',p.ref_id,'storeToken',p.store_token,'cardMask',p.card_mask,'outcome',p.outcome,'error',p.error,'rewardGranted',p.reward_granted,'rewardError',p.reward_error,
 	'inquiryCount',p.inquiry_count,'grantAttempts',p.grant_attempts,'grantRetryAt',p.grant_retry_at,'refundStatus',p.refund_status,'refundNote',p.refund_note,'refundBy',p.refund_by,'refundAt',p.refund_at,'inquiredAt',p.inquired_at,'verifiedAt',p.verified_at,'createdAt',p.created_at,'updatedAt',p.updated_at)`
@@ -411,7 +417,7 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 			s.writeError(w, err)
 			return
 		}
-		methods = append(methods, map[string]any{"method": m, "isActive": pm.Active, "configured": methodConfigured(m, pm.Config), "sandbox": pm.Config.flag("sandbox")})
+		methods = append(methods, map[string]any{"method": m, "isActive": pm.Active, "configured": methodConfigured(m, pm.Config), "sandbox": methodSandbox(m, pm.Config)})
 	}
 	counts["payments"] = byStatus["pending"] + byStatus["success"] + byStatus["failed"] + byStatus["expired"]
 	daily, err := s.revenueDaily(ctx)

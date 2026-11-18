@@ -144,7 +144,10 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 		available := []string{}
 		sku := map[string]string{}
 		for _, m := range p.PaymentMethods {
-			if _, ok := methods[m]; ok {
+			if pm, ok := methods[m]; ok {
+				if isStripe(m) && !stripePriceFits(p, pm.Config) {
+					continue
+				}
 				available = append(available, m)
 				if isStore(m) {
 					sku[m] = p.SKU[m]
@@ -191,9 +194,14 @@ func (s *service) rpcCatalog(ctx context.Context, userID, payload string) (any, 
 		if p.CoinOriginal != nil {
 			coinOriginal = p.CoinOriginal
 		}
+		var finalMinor any
+		if p.PriceMinor != nil {
+			finalMinor = discounted(*p.PriceMinor, p.DiscountPercent)
+		}
 		products = append(products, map[string]any{
 			"id": p.ID, "key": p.Key, "name": langs.Resolve(p.Name, lang), "description": langs.Resolve(p.Description, lang),
 			"iconUrl": p.IconURL, "coverUrl": p.CoverURL, "priceToman": p.PriceToman, "finalToman": final, "coinPrice": p.CoinPrice,
+			"priceMinor": p.PriceMinor, "priceCurrency": nullText(p.PriceCurrency), "finalMinor": finalMinor,
 			"discountPercent": p.DiscountPercent, "tagDiscountPercent": p.TagDiscountPercent, "coinOriginal": coinOriginal, "storeFinalToman": storeFinal,
 			"paymentMethods": available, "sku": sku, "isSubscription": p.IsSubscription,
 			"categoryKey": categoryKey, "tags": tags, "minLevel": p.MinLevel, "maxLevel": p.MaxLevel, "exclusive": len(p.AudienceTagIDs) > 0,
@@ -510,6 +518,8 @@ func (s *service) purchaseStart(ctx context.Context, userID string, in purchaseI
 		return s.startInApp(ctx, userID, product, in.Lang)
 	case isStore(in.Method):
 		return s.startStore(ctx, userID, product, pm)
+	case isStripe(in.Method):
+		return s.startStripe(ctx, userID, product, pm, in.Lang)
 	default:
 		return s.startGateway(ctx, userID, product, pm, in.GiftCode)
 	}
@@ -704,7 +714,7 @@ func (s *service) rpcPurchaseSubmit(ctx context.Context, userID, payload string)
 		return nil, err
 	}
 	token := strings.TrimSpace(in.Token)
-	if token == "" || len(token) > 1024 {
+	if token == "" {
 		return nil, badRequest("INVALID_TOKEN", "token", "token is required")
 	}
 	p, err := s.loadPayment(ctx, s.db, in.PaymentID)
@@ -716,6 +726,9 @@ func (s *service) rpcPurchaseSubmit(ctx context.Context, userID, payload string)
 	}
 	if !isStore(p.Method) {
 		return nil, badRequest("INVALID_METHOD", "paymentId", "not a store payment")
+	}
+	if len(token) > storeTokenLimit(p.Method) {
+		return nil, badRequest("INVALID_TOKEN", "token", "token is too long")
 	}
 	product, err := s.loadProduct(ctx, s.db, p.ProductID)
 	if err != nil {
@@ -737,10 +750,10 @@ func (s *service) rpcPurchaseReview(ctx context.Context, userID, payload string)
 		return nil, err
 	}
 	if !isStore(in.Method) {
-		return nil, badRequest("INVALID_METHOD", "method", "method must be bazaar or myket")
+		return nil, badRequest("INVALID_METHOD", "method", "method must be bazaar, myket, google_play or apple")
 	}
 	token := strings.TrimSpace(in.Token)
-	if token == "" || len(token) > 1024 || !skuPattern.MatchString(in.SKU) {
+	if token == "" || len(token) > storeTokenLimit(in.Method) || !skuPattern.MatchString(in.SKU) {
 		return nil, badRequest("INVALID_TOKEN", "token", "sku and token are required")
 	}
 	var productID string
@@ -776,7 +789,11 @@ func (s *service) rpcPurchaseReview(ctx context.Context, userID, payload string)
 		return nil, fail(http.StatusServiceUnavailable, "METHOD_UNAVAILABLE", "method", "this payment method is not available")
 	}
 	var existing string
-	err = s.db.QueryRowContext(ctx, `SELECT id::text FROM economy_payment WHERE method=$1 AND (store_token=$2 OR store_token LIKE $3) ORDER BY created_at DESC LIMIT 1`, in.Method, token, likePrefix(token)+"#%").Scan(&existing)
+	lookup := token
+	if len(lookup) > 1024 {
+		lookup = ""
+	}
+	err = s.db.QueryRowContext(ctx, `SELECT id::text FROM economy_payment WHERE method=$1 AND $2<>'' AND (store_token=$2 OR store_token LIKE $3) ORDER BY created_at DESC LIMIT 1`, in.Method, lookup, likePrefix(lookup)+"#%").Scan(&existing)
 	if err == nil {
 		p, err := s.loadPayment(ctx, s.db, existing)
 		if err != nil {
@@ -800,7 +817,7 @@ func (s *service) rpcPurchaseReview(ctx context.Context, userID, payload string)
 		if err != nil {
 			return nil, conflict("DEVELOPER_PAYLOAD_MISMATCH", "the purchase does not belong to a known payment")
 		}
-	} else if product.IsSubscription {
+	} else if product.IsSubscription || s.payloadOptional(ctx, in.Method) {
 		var id string
 		err = s.db.QueryRowContext(ctx, `SELECT id::text FROM economy_payment WHERE user_id=$1 AND product_id=$2 AND method=$3 AND status IN ('pending','expired') ORDER BY created_at DESC LIMIT 1`, userID, product.ID, in.Method).Scan(&id)
 		if errors.Is(err, sql.ErrNoRows) {
@@ -819,6 +836,9 @@ func (s *service) rpcPurchaseReview(ctx context.Context, userID, payload string)
 		return nil, conflict("DEVELOPER_PAYLOAD_MISMATCH", "the purchase does not belong to this account")
 	}
 	s.logExchange(ctx, p.ID, "store_validate", check.Exchange)
+	if p.Status == "success" && check.StoreKey != "" && p.StoreToken.Valid && storeKeyMatches(p.StoreToken.String, check.StoreKey) {
+		return s.storeResult(ctx, p)
+	}
 	if p.Sandbox != pm.Config.flag("sandbox") && p.Status != "success" {
 		return nil, conflict("PAYMENT_CLOSED", "this payment was started in another store mode")
 	}
@@ -851,6 +871,9 @@ func (s *service) storeCheck(ctx context.Context, pm paymentMethod, sandbox bool
 		return check, conflict("PURCHASE_INVALID", "the store does not know this purchase")
 	}
 	if !check.Valid {
+		if check.Code != "" {
+			return check, conflict(check.Code, "purchase state: "+check.State)
+		}
 		return check, conflict("PURCHASE_INVALID", "purchase state: "+check.State)
 	}
 	return check, nil
@@ -858,8 +881,15 @@ func (s *service) storeCheck(ctx context.Context, pm paymentMethod, sandbox bool
 
 func (s *service) settleStore(ctx context.Context, p payment, product productView, token string) (any, error) {
 	if p.Status == "success" {
-		if p.StoreToken.Valid && (p.StoreToken.String == token || strings.HasPrefix(p.StoreToken.String, token+"#")) {
+		if p.StoreToken.Valid && storeKeyMatches(p.StoreToken.String, token) {
 			return s.storeResult(ctx, p)
+		}
+		if p.Method == "apple" && p.StoreToken.Valid {
+			if pm, err := s.loadMethod(ctx, s.db, p.Method); err == nil {
+				if check, err := s.storeCheck(ctx, pm, p.Sandbox, product, token); err == nil && check.StoreKey != "" && storeKeyMatches(p.StoreToken.String, check.StoreKey) {
+					return s.storeResult(ctx, p)
+				}
+			}
 		}
 		return nil, conflict("PAYMENT_ALREADY_SETTLED", "this payment is already complete")
 	}
@@ -882,7 +912,7 @@ func (s *service) settleStore(ctx context.Context, p payment, product productVie
 	if err := s.expiredAllowed(ctx, p, sandbox); err != nil {
 		return nil, err
 	}
-	if !methodConfigured(p.Method, pm.Config) && !sandbox {
+	if !methodConfigured(p.Method, pm.Config) && !(sandbox && fakeSandbox(p.Method)) {
 		return nil, fail(http.StatusServiceUnavailable, "METHOD_UNAVAILABLE", "", "this payment method is not available")
 	}
 	check, err := s.storeCheck(ctx, pm, sandbox, product, token)
@@ -890,10 +920,10 @@ func (s *service) settleStore(ctx context.Context, p payment, product productVie
 	if err != nil {
 		if app, ok := asApp(err); ok {
 			switch app.Code {
-			case "STORE_CONFIGURATION_REJECTED", "STORE_UNAVAILABLE":
+			case "STORE_CONFIGURATION_REJECTED", "STORE_UNAVAILABLE", "PURCHASE_PENDING":
 				s.notePending(ctx, p.ID, app.Code)
-			case "PURCHASE_INVALID":
-				_, _ = s.closePayment(ctx, p.ID, "failed", "PURCHASE_INVALID")
+			case "PURCHASE_INVALID", "TEST_PURCHASE_REFUSED", "STORE_ENVIRONMENT_MISMATCH", "BUNDLE_MISMATCH", "PRODUCT_MISMATCH", "PURCHASE_CONSUMED":
+				_, _ = s.closePayment(ctx, p.ID, "failed", app.Code)
 			}
 		}
 		return nil, err
@@ -901,7 +931,7 @@ func (s *service) settleStore(ctx context.Context, p payment, product productVie
 	if check.Payload != "" && check.Payload != p.ID {
 		return nil, conflict("DEVELOPER_PAYLOAD_MISMATCH", "the purchase does not belong to this payment")
 	}
-	if check.Payload == "" && !product.IsSubscription {
+	if check.Payload == "" && !product.IsSubscription && !s.payloadOptional(ctx, p.Method) {
 		return nil, conflict("DEVELOPER_PAYLOAD_MISMATCH", "the purchase has no developer payload")
 	}
 	return s.finishStore(ctx, p, product, token, check)
@@ -909,11 +939,14 @@ func (s *service) settleStore(ctx context.Context, p payment, product productVie
 
 func (s *service) finishStore(ctx context.Context, p payment, product productView, token string, check storeCheck) (any, error) {
 	key := token
+	if check.StoreKey != "" {
+		key = check.StoreKey
+	}
 	if product.IsSubscription {
 		if check.ValidUntil == nil {
 			return nil, conflict("TOKEN_NOT_VERIFIED", "the store did not return the subscription period")
 		}
-		base := token
+		base := key
 		if check.LinkedToken != "" {
 			base = check.LinkedToken
 		}
@@ -926,7 +959,16 @@ func (s *service) finishStore(ctx context.Context, p payment, product productVie
 		}
 		key = base + "#" + jsonInt(*check.ValidUntil)
 	}
-	won, err := s.markSuccess(ctx, p, successFields{StoreToken: key, Outcome: "paid", Allowed: []string{"pending", "expired"}})
+	if check.RefID != "" {
+		var other bool
+		if err := s.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_payment WHERE method=$1 AND ref_id=$2 AND id<>$3 AND status='success')`, p.Method, check.RefID, p.ID).Scan(&other); err != nil {
+			return nil, err
+		}
+		if other {
+			return nil, conflict("TOKEN_ALREADY_USED", "this store order was already used")
+		}
+	}
+	won, err := s.markSuccess(ctx, p, successFields{StoreToken: key, RefID: check.RefID, Outcome: "paid", Allowed: []string{"pending", "expired"}})
 	if _, unique := isUniqueViolation(err); unique {
 		return nil, conflict("TOKEN_ALREADY_USED", "this purchase token was already used")
 	}
@@ -942,6 +984,9 @@ func (s *service) finishStore(ctx context.Context, p payment, product productVie
 			return s.storeResult(ctx, fresh)
 		}
 		return nil, conflict("PAYMENT_CLOSED", "payment state changed: "+fresh.Status)
+	}
+	if check.Acknowledge != nil {
+		check.Acknowledge(ctx, p.ID)
 	}
 	rewards, err := s.grantPayment(ctx, p.ID)
 	if err != nil {
@@ -1023,7 +1068,7 @@ func (s *service) rpcStoreConfig(ctx context.Context, userID, payload string) (a
 		return nil, err
 	}
 	if !isStore(in.Method) {
-		return nil, badRequest("INVALID_METHOD", "method", "method must be bazaar or myket")
+		return nil, badRequest("INVALID_METHOD", "method", "method must be bazaar, myket, google_play or apple")
 	}
 	pm, err := s.loadMethod(ctx, s.db, in.Method)
 	if err != nil {
@@ -1032,7 +1077,11 @@ func (s *service) rpcStoreConfig(ctx context.Context, userID, payload string) (a
 	if !pm.usable() {
 		return nil, fail(http.StatusServiceUnavailable, "METHOD_UNAVAILABLE", "method", "this payment method is not available")
 	}
-	return map[string]any{"method": in.Method, "sandbox": pm.Config.flag("sandbox"), "rsaPublicKey": pm.Config.str("rsaPublicKey"), "packageName": pm.Config.str("packageName")}, nil
+	out := map[string]any{"method": in.Method, "sandbox": pm.Config.flag("sandbox"), "rsaPublicKey": pm.Config.str("rsaPublicKey"), "packageName": pm.Config.str("packageName")}
+	if in.Method == "apple" {
+		out["bundleId"] = pm.Config.str("bundleId")
+	}
+	return out, nil
 }
 
 func (s *service) purchaseDescription(ctx context.Context, name i18n) string {

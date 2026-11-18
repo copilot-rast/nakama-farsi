@@ -67,19 +67,27 @@ type gatewayCheck struct {
 }
 
 func (s *service) doJSON(ctx context.Context, method, target string, header map[string]string, body any, logged any) (map[string]any, exchange, error) {
-	ex := exchange{URL: target, Request: logged}
 	var reader io.Reader
 	if body != nil {
 		raw, _ := json.Marshal(body)
 		reader = bytes.NewReader(raw)
 	}
+	contentType := ""
+	if body != nil {
+		contentType = "application/json"
+	}
+	return s.doRequest(ctx, method, target, header, contentType, reader, logged)
+}
+
+func (s *service) doRequest(ctx context.Context, method, target string, header map[string]string, contentType string, reader io.Reader, logged any) (map[string]any, exchange, error) {
+	ex := exchange{URL: target, Request: logged}
 	req, err := http.NewRequestWithContext(ctx, method, target, reader)
 	if err != nil {
 		return nil, ex, err
 	}
 	req.Header.Set("Accept", "application/json")
-	if body != nil {
-		req.Header.Set("Content-Type", "application/json")
+	if contentType != "" {
+		req.Header.Set("Content-Type", contentType)
 	}
 	for k, v := range header {
 		req.Header.Set(k, v)
@@ -408,9 +416,13 @@ type storeCheck struct {
 	Class       storeClass
 	Valid       bool
 	State       string
+	Code        string
 	Payload     string
 	ValidUntil  *int64
 	LinkedToken string
+	StoreKey    string
+	RefID       string
+	Acknowledge func(context.Context, string)
 	Exchange    exchange
 }
 
@@ -434,6 +446,12 @@ func sandboxPayload(token string) string {
 }
 
 func (s *service) validateStore(ctx context.Context, method string, cfg methodConfig, sku, token string, subscription bool) (storeCheck, error) {
+	switch method {
+	case "google_play":
+		return s.validateGoogle(ctx, cfg, sku, token, subscription)
+	case "apple":
+		return s.validateApple(ctx, cfg, sku, token, subscription)
+	}
 	if cfg.flag("sandbox") {
 		payload := sandboxPayload(token)
 		check := storeCheck{Class: storeAccepted, Valid: payload != "", Payload: payload, State: "SANDBOX"}

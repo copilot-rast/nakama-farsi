@@ -90,7 +90,7 @@ func resources() []resource {
 	}
 }
 
-const productJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'isActive',t.is_active,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'audienceTagIds',to_jsonb(t.audience_tag_ids),'priceToman',t.price_toman,'coinPrice',t.coin_price,'discountPercent',t.discount_percent,'paymentMethods',to_jsonb(t.payment_methods),'sku',t.sku,'isSubscription',t.is_subscription,'prizeId',t.prize_id,'iconUrl',t.icon_url,'coverUrl',t.cover_url,'minLevel',t.min_level,'maxLevel',t.max_level,'levelTableId',t.level_table_id,'isOneTime',t.is_one_time,'checkContents',t.check_contents,'giftable',t.giftable,'purchaseMessage',t.purchase_message,'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
+const productJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'isActive',t.is_active,'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'audienceTagIds',to_jsonb(t.audience_tag_ids),'priceToman',t.price_toman,'priceMinor',t.price_minor,'priceCurrency',t.price_currency,'coinPrice',t.coin_price,'discountPercent',t.discount_percent,'paymentMethods',to_jsonb(t.payment_methods),'sku',t.sku,'isSubscription',t.is_subscription,'prizeId',t.prize_id,'iconUrl',t.icon_url,'coverUrl',t.cover_url,'minLevel',t.min_level,'maxLevel',t.max_level,'levelTableId',t.level_table_id,'isOneTime',t.is_one_time,'checkContents',t.check_contents,'giftable',t.giftable,'purchaseMessage',t.purchase_message,'metadata',t.metadata,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at)`
 
 func refuseIfUsed(ctx context.Context, tx *sql.Tx, id, query string) error {
 	var used bool
@@ -679,6 +679,8 @@ type productInput struct {
 	TagIDs          []string          `json:"tagIds"`
 	AudienceTagIDs  []string          `json:"audienceTagIds"`
 	PriceToman      *int64            `json:"priceToman"`
+	PriceMinor      *int64            `json:"priceMinor"`
+	PriceCurrency   string            `json:"priceCurrency"`
 	CoinPrice       *coinPrice        `json:"coinPrice"`
 	DiscountPercent int               `json:"discountPercent"`
 	PaymentMethods  []string          `json:"paymentMethods"`
@@ -723,6 +725,18 @@ func validateProductShape(in *productInput) error {
 	if in.PriceToman != nil && *in.PriceToman < 0 {
 		return badRequest("INVALID_PRICE", "priceToman", "price cannot be negative")
 	}
+	in.PriceCurrency = strings.ToLower(strings.TrimSpace(in.PriceCurrency))
+	if in.PriceMinor != nil && *in.PriceMinor <= 0 {
+		return badRequest("INVALID_PRICE", "priceMinor", "price must be positive")
+	}
+	if in.PriceCurrency != "" && !priceCurrencyPattern.MatchString(in.PriceCurrency) {
+		return badRequest("INVALID_CURRENCY", "priceCurrency", "use a three-letter ISO currency code such as usd")
+	}
+	if in.PriceMinor == nil {
+		in.PriceCurrency = ""
+	} else if in.PriceCurrency == "" {
+		in.PriceCurrency = defaultStripeCurrency
+	}
 	if in.CoinPrice != nil {
 		in.CoinPrice.CurrencyKey = strings.TrimSpace(in.CoinPrice.CurrencyKey)
 		if !currencyPattern.MatchString(in.CoinPrice.CurrencyKey) {
@@ -735,8 +749,8 @@ func validateProductShape(in *productInput) error {
 	sku := map[string]string{}
 	for k, v := range in.SKU {
 		v = strings.TrimSpace(v)
-		if k != "bazaar" && k != "myket" {
-			return badRequest("INVALID_SKU", "sku", "sku keys are bazaar and myket")
+		if !isStore(k) {
+			return badRequest("INVALID_SKU", "sku", "sku keys are bazaar, myket, google_play and apple")
 		}
 		if v == "" {
 			continue
@@ -759,6 +773,13 @@ func validateProductShape(in *productInput) error {
 		case m == "in_app":
 			if in.CoinPrice == nil {
 				return badRequest("COIN_PRICE_REQUIRED", "coinPrice", "in_app needs a coin price")
+			}
+		case isStripe(m):
+			if in.PriceMinor == nil {
+				return badRequest("PRICE_REQUIRED", "priceMinor", "stripe needs a price in the smallest currency unit")
+			}
+			if in.IsSubscription {
+				return badRequest("SUBSCRIPTION_NOT_SUPPORTED", "isSubscription", "Stripe subscriptions are not supported")
 			}
 		case isStore(m):
 			if sku[m] == "" {
@@ -870,8 +891,8 @@ func saveProduct(s *service, ctx context.Context, tx *sql.Tx, id string, create 
 	}
 	skuJSON, _ := json.Marshal(in.SKU)
 	return execSave(ctx, tx, "economy_product", id, create,
-		[]string{"key", "name", "description", "is_active", "category_id", "tag_ids", "audience_tag_ids", "price_toman", "coin_price", "discount_percent", "payment_methods", "sku", "is_subscription", "prize_id", "icon_url", "cover_url", "min_level", "max_level", "level_table_id", "is_one_time", "check_contents", "giftable", "purchase_message", "metadata", "sort"},
-		[]any{key, i18nJSON(name), i18nJSON(desc), in.IsActive, category, tags, audience, in.PriceToman, coin, in.DiscountPercent, in.PaymentMethods, string(skuJSON), in.IsSubscription, *prize, icon, cover, in.MinLevel, in.MaxLevel, table, in.IsOneTime, check, in.Giftable, i18nJSON(message), meta, in.Sort})
+		[]string{"key", "name", "description", "is_active", "category_id", "tag_ids", "audience_tag_ids", "price_toman", "price_minor", "price_currency", "coin_price", "discount_percent", "payment_methods", "sku", "is_subscription", "prize_id", "icon_url", "cover_url", "min_level", "max_level", "level_table_id", "is_one_time", "check_contents", "giftable", "purchase_message", "metadata", "sort"},
+		[]any{key, i18nJSON(name), i18nJSON(desc), in.IsActive, category, tags, audience, in.PriceToman, in.PriceMinor, nullText(in.PriceCurrency), coin, in.DiscountPercent, in.PaymentMethods, string(skuJSON), in.IsSubscription, *prize, icon, cover, in.MinLevel, in.MaxLevel, table, in.IsOneTime, check, in.Giftable, i18nJSON(message), meta, in.Sort})
 }
 
 func saveGift(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {

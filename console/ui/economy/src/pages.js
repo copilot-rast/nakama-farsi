@@ -413,6 +413,7 @@ function paymentDetail(container, id) {
       ['pay.discount', p.discountPercent ? h('span', { text: t('percent', { n: p.discountPercent }) }) : null],
       ['pay.final', p.finalToman != null ? h('span', { class: 'tabular-nums font-semibold', text: t('toman', { n: p.finalToman }) }) : null],
       ['pay.rial', p.amountRial ? h('span', { class: 'tabular-nums', text: fmtNum(p.amountRial) }) : null],
+      ['pay.minor', p.amountMinor ? h('span', { class: 'tabular-nums', dir: 'ltr', text: fmtNum(p.amountMinor) + ' ' + String(p.currency || '').toUpperCase() }) : null],
       ['pay.coin', p.coinAmount != null && p.coinCurrency ? h('span', { class: 'tabular-nums', text: fmtNum(p.coinAmount) + ' ' + p.coinCurrency }) : null]
     ])));
     grid.appendChild(section('pay.user', dl([
@@ -505,6 +506,10 @@ function paymentDetail(container, id) {
   load();
 }
 
+function isSecretField(f) {
+  return f.type === 'secret' || f.type === 'secretJson' || f.type === 'secretText';
+}
+
 function paymentMethodsPage(container) {
   var frame = tabFrame(t('desc.payment-methods'));
   clear(container).appendChild(frame.el);
@@ -532,14 +537,19 @@ function paymentMethodsPage(container) {
       var ctl;
       if (f.type === 'bool') {
         ctl = toggle(cfg[f.name], label, function (v) { cfg[f.name] = v; }, 'sm');
-        body.appendChild(h('div', { class: 'mb-4' }, ctl));
+        ctl.setAttribute('data-field', f.name);
+        body.appendChild(h('div', { class: 'mb-4' }, ctl, f.name === m.sandboxField && m.sandboxNeedsKeys && has('pm.hint.sandbox.store') && m.method !== 'stripe' ? h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1.5', text: t('pm.hint.sandbox.store') }) : null));
         fieldEls[f.name] = { setError: function () {} };
         return;
       }
-      ctl = textInput(cfg[f.name] == null ? '' : cfg[f.name], { ltr: true, mono: f.type !== 'textarea' || true, multiline: f.type === 'textarea', rows: 3, label: label, oninput: function (v) { cfg[f.name] = v; } });
-      if (f.type === 'secret') { ctl.setAttribute('autocomplete', 'off'); ctl.classList.add('eco-secret'); }
+      var secret = isSecretField(f);
+      var multi = f.type === 'textarea' || f.type === 'secretJson' || f.type === 'secretText';
+      ctl = textInput(cfg[f.name] == null ? '' : cfg[f.name], { ltr: true, mono: true, multiline: multi, rows: f.type === 'secretJson' || f.type === 'secretText' ? 5 : 3, label: label, placeholder: f.default || '', oninput: function (v) { cfg[f.name] = v; } });
+      if (secret) { ctl.setAttribute('autocomplete', 'off'); ctl.setAttribute('spellcheck', 'false'); ctl.classList.add('eco-secret'); }
+      ctl.setAttribute('data-field', f.name);
       ctl.classList.add('text-sm');
-      var wrap = field(label, ctl, f.type === 'secret' && cfg[f.name] ? t('pm.secret.hint') : null, { optional: !f.required });
+      var help = secret && cfg[f.name] ? t('pm.secret.hint') : has('pm.hint.' + f.name) ? t('pm.hint.' + f.name) : null;
+      var wrap = field(label, ctl, help, { optional: !f.required });
       fieldEls[f.name] = wrap;
       body.appendChild(wrap);
     });
@@ -974,7 +984,15 @@ var PAYMENT_SETTINGS_FIELDS = [
     { name: 'onceHoldMinutes', type: 'number', label: 'f.ps.onceHold', hint: 'f.ps.onceHold.hint', required: true, min: 1, max: 1440 }
   ] },
   { name: 'expiredReceipts', type: 'select', label: 'f.ps.expired', hint: 'f.ps.expired.hint', required: true, noPlaceholder: true, options: opts('ps.expired.', ['verified', 'refuse']) },
-  { name: 'closeSandboxOnOff', type: 'bool', inline: true, label: 'f.ps.sandbox', hint: 'f.ps.sandbox.hint' }
+  { name: 'closeSandboxOnOff', type: 'bool', inline: true, label: 'f.ps.sandbox', hint: 'f.ps.sandbox.hint' },
+  { type: 'heading', label: 'f.ps.stores' },
+  { name: 'liveAcceptsTestPurchases', type: 'bool', inline: true, label: 'f.ps.liveTest', hint: 'f.ps.liveTest.hint' },
+  { type: 'row', fields: [
+    { name: 'appStorePayload', type: 'select', label: 'f.ps.payload', hint: 'f.ps.payload.hint', required: true, noPlaceholder: true, options: opts('ps.payload.', ['optional', 'required']) },
+    { name: 'storeConsumed', type: 'select', label: 'f.ps.consumed', hint: 'f.ps.consumed.hint', required: true, noPlaceholder: true, options: opts('ps.consumed.', ['accept', 'refuse']) }
+  ] },
+  { name: 'googleAcknowledge', type: 'bool', inline: true, label: 'f.ps.ack', hint: 'f.ps.ack.hint' },
+  { name: 'stripeToleranceSeconds', type: 'number', label: 'f.ps.stripeTolerance', hint: 'f.ps.stripeTolerance.hint', required: true, min: 30, max: 3600 }
 ];
 
 function paymentSettingsCall(method, path, body) {
@@ -986,7 +1004,7 @@ function paymentSettingsPage(container) {
   clear(container).appendChild(frame.el);
   var page = apiPage(paymentSettingsCall, '/payment-settings', null, PAYMENT_SETTINGS_FIELDS, { id: 'payments', fixPayload: function (p) {
     delete p.updatedAt;
-    ['retryMinutes', 'maxAttempts', 'onceHoldMinutes'].forEach(function (k) { p[k] = Number(p[k]); });
+    ['retryMinutes', 'maxAttempts', 'onceHoldMinutes', 'stripeToleranceSeconds'].forEach(function (k) { p[k] = Number(p[k]); });
     return p;
   } });
   frame.content.appendChild(page.el);
