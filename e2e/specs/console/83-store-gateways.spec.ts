@@ -36,6 +36,8 @@ async function method(name: string) {
 
 test.describe('store gateways: Google Play, Apple, Stripe', () => {
   test('payment methods page configures the three methods and masks their secrets', async ({ page }) => {
+    const active: Record<string, boolean> = {};
+    for (const m of await eco.get('/payment-methods')) active[m.method] = m.isActive;
     try {
       await open(page, '#/project-settings/payment-methods');
       const gp = root(page).locator('[data-method="google_play"]');
@@ -93,7 +95,7 @@ test.describe('store gateways: Google Play, Apple, Stripe', () => {
       expect(a.config).toMatchObject({ bundleId: 'com.e2e.ios', privateKeyP8: '********', sharedSecret: '********', issuerId: 'issuer-' + k.slice(-6) });
       expect(s.config).toMatchObject({ secretKey: '********', webhookSecret: '********', publishableKey: 'pk_test_' + k, currency: 'usd', testMode: true });
       expect(s.sandboxField).toBe('testMode');
-      for (const m of [g, a, s]) expect(m.isActive).toBe(false);
+      for (const m of [g, a, s]) expect(m.isActive).toBe(active[m.method]);
 
       await page.reload();
       await settle(page);
@@ -114,7 +116,10 @@ test.describe('store gateways: Google Play, Apple, Stripe', () => {
       restoreConfig();
     }
     const back = await eco.get('/payment-methods');
-    for (const m of back.filter((x: any) => ['google_play', 'apple', 'stripe'].includes(x.method))) expect(m.configured).toBe(false);
+    for (const m of back.filter((x: any) => ['google_play', 'apple', 'stripe'].includes(x.method))) {
+      expect(m.configured).toBe(false);
+      expect(m.isActive).toBe(active[m.method]);
+    }
   });
 
   test('product editor: store product ids and the Stripe price', async ({ page }) => {

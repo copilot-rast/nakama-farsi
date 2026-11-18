@@ -17,6 +17,16 @@ export const cg = {
   },
 };
 
+export const defaultStarRules = () => [
+  { stars: 3, conditions: [{ field: 'timeSavedPercent', op: '>=', value: 30 }, { field: 'healthPercent', op: '>=', value: 75 }] },
+  { stars: 2, conditions: [{ field: 'timeSavedPercent', op: '>=', value: 10 }, { field: 'healthPercent', op: '>=', value: 50 }] },
+];
+
+export function plainCampaign(s: any) {
+  s.play = { ...s.play, costCurrency: '', costAmount: 1, refundOnWin: true };
+  s.stars = { ...s.stars, rules: defaultStarRules(), multipliers: [0.2, 0.5, 1], repeatableMultipliers: [1, 1, 1], maxStars: 3, minOnSuccess: 1, missingField: 'pass' };
+}
+
 export function removeCampaign(part: string) {
   sql(`DELETE FROM campaign_attempt WHERE stage_id IN (SELECT id FROM campaign_stage WHERE key LIKE '%${part}%');
     DELETE FROM campaign_user_stage WHERE stage_id IN (SELECT id FROM campaign_stage WHERE key LIKE '%${part}%');

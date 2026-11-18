@@ -1,6 +1,6 @@
 import { expect, test } from '../../lib/fixtures';
 import { deleteUser, devicePlayer, eco, rpc, uid, type Player } from '../../lib/api';
-import { cg, removeCampaign } from '../../lib/campaign';
+import { cg, plainCampaign, removeCampaign } from '../../lib/campaign';
 import { errorOf } from '../../lib/leaderboardx';
 import { sql } from '../../lib/db';
 
@@ -37,7 +37,7 @@ test.beforeAll(async () => {
   await eco.post('/currencies', { key: F.cur, name: { fa: 'سکهٔ مرحله ' + k, en: 'Stage coin ' + k }, type: 'soft', defaultValue: 0, iconUrl: '', tagIds: [], metadata: {}, sort: 99 });
   F.meta = await eco.post('/metas', { key: F.xpKey, name: { fa: 'تجربهٔ ' + k, en: 'XP ' + k } });
   F.prize = await eco.post('/prizes', { key: 'e2e_' + k + '_gold', name: { fa: 'طلای ' + k }, message: {}, tagIds: [], isRepeatable: true, metadata: {}, items: [{ type: 'currency', key: F.cur, action: 'add', value: 7 }] });
-  await cg.setSettings((s) => { s.xp.metaKey = F.xpKey; s.attempts.graceSeconds = 3; s.attempts.defaultMinSeconds = 0; s.stars.missingField = 'pass'; s.events.economyEvent = ''; });
+  await cg.setSettings((s) => { plainCampaign(s); s.xp.metaKey = F.xpKey; s.attempts.graceSeconds = 3; s.attempts.defaultMinSeconds = 0; s.events.economyEvent = ''; });
   F.ch1 = await cg.post('/chapters', { key: 'e2e_' + k + '_ch1', name: { fa: 'فصل یک ' + k, en: 'Chapter one' }, isActive: true, sort: 9001,
     milestones: [{ percent: 50, currencies: { [F.cur]: 40 } }] });
   F.ch2 = await cg.post('/chapters', { key: 'e2e_' + k + '_ch2', name: { fa: 'فصل دو ' + k }, isActive: true, sort: 9002, unlock: [{ type: 'chapter', key: F.ch1.key }] });
