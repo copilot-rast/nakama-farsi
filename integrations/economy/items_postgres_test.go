@@ -443,3 +443,26 @@ func TestItemConsolePlayerTools(t *testing.T) {
 	}
 	h.mustAPI(200, http.MethodDelete, "/items/"+extra["id"].(string), nil)
 }
+
+func TestOwnedItemStaysInTheInventoryWhenItsSaleStops(t *testing.T) {
+	h, skin := newItemHarness(t)
+	h.item(map[string]any{"key": "car_old", "typeId": skin, "price": map[string]any{"currencyKey": "coin", "amount": 5}})
+	h.item(map[string]any{"key": "car_other", "typeId": skin, "price": map[string]any{"currencyKey": "coin", "amount": 5}})
+	user := h.user()
+	h.give(user, 50)
+	h.mustRPC(user, "economy_item_buy", map[string]any{"key": "car_old"})
+	if _, err := h.s.db.ExecContext(h.ctx, `UPDATE economy_item SET is_active=false WHERE key IN ('car_old','car_other')`); err != nil {
+		t.Fatal(err)
+	}
+	inv := h.inventory(user)
+	if inv["car_old"]["owned"] != true || inv["car_old"]["saleStopped"] != true || inv["car_old"]["canBuy"] != false {
+		t.Fatalf("stopped owned item = %v", inv["car_old"])
+	}
+	if _, found := inv["car_other"]; found {
+		t.Fatal("a stopped item the player does not own is listed")
+	}
+	other := h.user()
+	if _, found := h.inventory(other)["car_old"]; found {
+		t.Fatal("stopped item listed for a player who does not own it")
+	}
+}

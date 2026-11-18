@@ -36,7 +36,7 @@ func (s *service) rpcInventory(ctx context.Context, userID, payload string) (any
 	if err := s.ensureDefaults(ctx, userID); err != nil {
 		return nil, err
 	}
-	return s.inventoryView(ctx, userID, langs, lang, strings.TrimSpace(in.Type), false)
+	return s.inventoryView(ctx, userID, langs, lang, strings.TrimSpace(in.Type), true)
 }
 
 func (s *service) itemAnswer(ctx context.Context, userID, lang string, res itemResult) (any, error) {
