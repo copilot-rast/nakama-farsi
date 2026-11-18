@@ -29,6 +29,7 @@ Rules: SQL must run on PostgreSQL 16 (CockroachDB is legacy, but avoid Postgres-
 | `ECONOMY_PUBLIC_BASE_URL` | Public base of the API port, used for callback and file URLs | required |
 | `ECONOMY_DEEP_LINK` | Redirect after a gateway payment; `{success}` and `{paymentId}` are replaced | `nakama://payment?success={success}&paymentId={paymentId}` |
 | `ECONOMY_WEB_REDIRECT_URL` | If set, used instead of the deep link (same placeholders) | empty; compose sets `https://nakama.dastar.dev/stargame/?payment={paymentId}&success={success}` |
+| `ECONOMY_LOCAL_STRIPE_URL`, `ECONOMY_LOCAL_GOOGLE_PLAY_URL`, `ECONOMY_LOCAL_APPLE_URL` | Local test only: send Stripe, Google Play and Apple calls to a fake store on this machine. Only localhost or loopback addresses are accepted; anything else stops the plugin | empty (the real stores) |
 | `ECONOMY_PENDING_TTL_MINUTES` | Pending payment expiry | 45 |
 | `ECONOMY_UPLOAD_DIR` | Where admin uploads are written with the `local` driver | `<data_dir>/economy-uploads` |
 | `STORAGE_DRIVER` | `local` (files in `ECONOMY_UPLOAD_DIR`, one node only) or `s3` (S3-compatible bucket shared by all nodes; `internal/objectstore`, SigV4 with the standard library) | `local` |

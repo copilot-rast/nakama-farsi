@@ -175,6 +175,9 @@ func loadSettings(env map[string]string, args []string) (settings, error) {
 		}
 		cfg.pendingTTL = time.Duration(minutes) * time.Minute
 	}
+	if err := applyLocalStoreURLs(env); err != nil {
+		return cfg, err
+	}
 	cfg.uploadDir = strings.TrimSpace(env["ECONOMY_UPLOAD_DIR"])
 	if cfg.uploadDir == "" {
 		cfg.uploadDir = filepath.Join(dataDirFromArgs(args), "economy-uploads")
