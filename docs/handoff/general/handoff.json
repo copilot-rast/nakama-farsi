@@ -8,7 +8,7 @@
     {"date": "2026-11-18", "title": "راهنمای فرانت از نوار بالای کنسول دانلود می‌شود", "titleEn": "The front-end handoff downloads from the console header", "section": "01-this-file.md"},
     {"date": "2026-11-18", "title": "کدهای پرداخت تازه: پرداخت باز، پرداخت منقضی، حالت آزمایشی فروشگاه", "titleEn": "New payment codes: open payment, expired payment, store test mode", "section": "04-errors.md"},
     {"date": "2026-11-18", "title": "پکیج یونیتی از مخزن عمومی HTTPS نصب می‌شود", "titleEn": "The Unity package installs from the public HTTPS repository", "section": "05-unity-sdk.md"},
-    {"date": "2026-11-17", "title": "مستندات API در /docs و /docs/openapi.json", "titleEn": "API docs at /docs and /docs/openapi.json", "section": "03-api-docs.md"},
+    {"date": "2026-11-17", "title": "صفحهٔ مستندات API روی خود سرور", "titleEn": "API docs page on the server itself", "section": "03-api-docs.md"},
     {"date": "2026-11-16", "title": "راهنمای پکیج یونیتی", "titleEn": "Unity package guide", "section": "05-unity-sdk.md"}
   ]
 }

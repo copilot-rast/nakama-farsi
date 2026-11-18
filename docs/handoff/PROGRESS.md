@@ -21,7 +21,7 @@ summary: یک خط زیر عنوان
 ---
 ```
 
-Without `title` the first `# ` heading is the title. Links to other source files (`../phase1/README.md#anchor`) become in-file anchors.
+Without `title` the first `# ` heading is the title. `{{CONSOLE_URL}}` in a section becomes the console address at download time (e.g. `{{CONSOLE_URL}}/#/system/sdk`). Links to other source files (`../phase1/README.md#anchor`) become in-file anchors.
 
 ## Add a changelog entry
 
@@ -40,5 +40,5 @@ Edit `general/handoff.json` (general) or `project/handoff.json` (fork) and add a
 ## Progress
 
 - [x] Engine, endpoints, ACL, admin header, general content (nakama-farsi)
-- [ ] Console header button + panel, settings card, e2e
+- [x] Console header button (plane topbar `data-pl-handoff`) + side panel (`console/ui/economy/src/handoff.js`), Server rules section, e2e `79-handoff`
 - [ ] Forks: rakhtkan, combatrace, pp project parts; finteen, viralvanguard, soltan general only

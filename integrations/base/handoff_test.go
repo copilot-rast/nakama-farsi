@@ -27,7 +27,7 @@ func TestHandoffDefaultsServeEveryConsoleUser(t *testing.T) {
 	rec = httptest.NewRecorder()
 	s.handoffDownload(rec, req)
 	body := rec.Body.String()
-	if rec.Code != http.StatusOK || !strings.Contains(rec.Header().Get("Content-Disposition"), "attachment") || !strings.Contains(body, `id="part-general"`) || !strings.Contains(body, "https://console.example:7351/#/sdk") {
+	if rec.Code != http.StatusOK || !strings.Contains(rec.Header().Get("Content-Disposition"), "attachment") || !strings.Contains(body, `id="part-general"`) || !strings.Contains(body, "https://console.example:7351/#/system/sdk") {
 		t.Fatalf("download %d %s", rec.Code, rec.Header())
 	}
 }

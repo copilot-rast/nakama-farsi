@@ -12,7 +12,7 @@ const MANIFEST = path.join(ROOT, 'dist-manifest.json');
 export const START = '<!-- nakama-economy:start -->';
 export const END = '<!-- nakama-economy:end -->';
 const L10N_START = '<!-- nakama-l10n:start -->';
-export const SOURCES = ['i18n.js', 'core.js', 'ui.js', 'form.js', 'resources.js', 'pages.js', 'publication.js', 'accounts.js', 'moderation.js', 'events.js', 'relations.js', 'offers.js', 'discounts.js', 'tasks.js', 'support.js', 'growth.js', 'items.js', 'avatar.js', 'friendgifts.js', 'chatquota.js', 'stickers.js', 'achievements.js', 'banners.js', 'sponsors.js', 'notify.js', 'news.js', 'chance.js', 'games.js', 'updates.js', 'sdk.js', 'serverrules.js', 'content.js', 'insights.js', 'voice.js', 'brand.js', 'setup.js', 'settings.js', 'native.js', 'shell.js'];
+export const SOURCES = ['i18n.js', 'core.js', 'ui.js', 'form.js', 'resources.js', 'pages.js', 'publication.js', 'accounts.js', 'moderation.js', 'events.js', 'relations.js', 'offers.js', 'discounts.js', 'tasks.js', 'support.js', 'growth.js', 'items.js', 'avatar.js', 'friendgifts.js', 'chatquota.js', 'stickers.js', 'achievements.js', 'banners.js', 'sponsors.js', 'notify.js', 'news.js', 'chance.js', 'games.js', 'updates.js', 'sdk.js', 'handoff.js', 'serverrules.js', 'content.js', 'insights.js', 'voice.js', 'brand.js', 'setup.js', 'settings.js', 'native.js', 'shell.js'];
 
 export const VENDOR = ['tiptap.js'];
 
