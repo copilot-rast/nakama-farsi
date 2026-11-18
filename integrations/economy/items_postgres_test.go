@@ -183,10 +183,9 @@ func TestItemUnlockUpgradeEquipUse(t *testing.T) {
 	if _, err := h.s.db.ExecContext(h.ctx, `INSERT INTO economy_user_meta (user_id, meta_id, value) VALUES ($1,$2,150)`, user, xp["id"]); err != nil {
 		t.Fatal(err)
 	}
-	if inv := h.inventory(user); inv["ship_lv2"]["canUnlock"] != true || inv["ship_lv2"]["locked"] != false {
-		t.Fatalf("unlock view = %v", inv["ship_lv2"])
+	if inv := h.inventory(user); inv["ship_lv2"]["owned"] != true || inv["ship_lv2"]["source"] != "unlock" {
+		t.Fatalf("level item not granted on reaching the level = %v", inv["ship_lv2"])
 	}
-	h.mustRPC(user, "economy_item_unlock", map[string]any{"key": "ship_lv2"})
 	if c := h.rpcCode(user, "economy_item_unlock", map[string]any{"key": "ship_lv2"}); c != "ALREADY_OWNED" {
 		t.Fatalf("unlock twice = %s", c)
 	}

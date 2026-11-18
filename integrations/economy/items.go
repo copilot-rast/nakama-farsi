@@ -466,6 +466,68 @@ type execQueryer interface {
 }
 
 func (s *service) ensureStarters(ctx context.Context, userID string) error {
+	if err := s.ensureStarterItems(ctx, userID); err != nil {
+		return err
+	}
+	return s.ensureLevelUnlocks(ctx, userID)
+}
+
+func (s *service) ensureLevelUnlocks(ctx context.Context, userID string) error {
+	var missing bool
+	if err := s.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_item i WHERE i.is_active AND (i.price IS NULL OR i.price = 'null'::jsonb) AND COALESCE(i.unlock_level,0) > 0
+		AND NOT EXISTS (SELECT 1 FROM economy_user_item u WHERE u.user_id=$1 AND u.item_id=i.id))`, userID).Scan(&missing); err != nil || !missing {
+		return err
+	}
+	var added []itemDef
+	err := s.inTx(ctx, func(tx *sql.Tx) error {
+		added = nil
+		rows, err := tx.QueryContext(ctx, `SELECT i.key FROM economy_item i WHERE i.is_active AND (i.price IS NULL OR i.price = 'null'::jsonb) AND COALESCE(i.unlock_level,0) > 0
+			AND NOT EXISTS (SELECT 1 FROM economy_user_item u WHERE u.user_id=$1 AND u.item_id=i.id) ORDER BY i.unlock_level, i.sort, i.key LIMIT 200`, userID)
+		if err != nil {
+			return err
+		}
+		var keys []string
+		for rows.Next() {
+			var k string
+			if err := rows.Scan(&k); err != nil {
+				rows.Close()
+				return err
+			}
+			keys = append(keys, k)
+		}
+		rows.Close()
+		for _, k := range keys {
+			d, err := s.activeItem(ctx, tx, k)
+			if err != nil {
+				return err
+			}
+			if d.Price != nil || d.unlock() == 0 {
+				continue
+			}
+			if err := s.checkItemAccess(ctx, tx, userID, d); err != nil {
+				if _, ok := asApp(err); ok {
+					continue
+				}
+				return err
+			}
+			res, err := tx.ExecContext(ctx, `INSERT INTO economy_user_item (user_id, item_id, source, source_ref) VALUES ($1,$2,'unlock',$3) ON CONFLICT (user_id, item_id) DO NOTHING`, userID, d.ID, "L"+itoa(d.unlock()))
+			if err != nil {
+				return err
+			}
+			if n, _ := res.RowsAffected(); n > 0 {
+				added = append(added, d)
+			}
+		}
+		return nil
+	})
+	for _, d := range added {
+		s.recordServerEvent(ctx, userID, "item_unlocked", float64(d.unlock()), map[string]any{"itemKey": d.Key, "auto": true})
+		activity.Safe(ctx, s.db, s.logger, activity.Entry{UserID: userID, Kind: activity.KindItem, Action: "unlocked", RefID: d.Key, Actor: "system", Data: map[string]any{"item": d.Key, "level": d.unlock()}})
+	}
+	return err
+}
+
+func (s *service) ensureStarterItems(ctx context.Context, userID string) error {
 	var missing bool
 	if err := s.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_item i WHERE i.is_starter AND i.is_active
 		AND NOT EXISTS (SELECT 1 FROM economy_user_item u WHERE u.user_id=$1 AND u.item_id=i.id))`, userID).Scan(&missing); err != nil || !missing {
@@ -857,7 +919,7 @@ func (s *service) buyItem(ctx context.Context, userID, key, rawRequest string) (
 }
 
 func (s *service) unlockItem(ctx context.Context, userID, key string) (itemResult, error) {
-	if err := s.ensureStarters(ctx, userID); err != nil {
+	if err := s.ensureStarterItems(ctx, userID); err != nil {
 		return itemResult{}, err
 	}
 	var out itemResult
