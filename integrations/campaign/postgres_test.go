@@ -396,10 +396,10 @@ func TestPostgresOnceStageTierPrizesMilestonesAndRules(t *testing.T) {
 		a.Unlock.ChapterDefault = settings.UnlockPrevious
 		a.Stars.MissingField = settings.MissingPass
 	})
-	first := f.chapter(map[string]any{"sort": 1, "milestones": []map[string]any{{"percent": 50, "currencies": map[string]int64{f.coin: 40}}, {"percent": 100, "prizeGroupKey": "pt_chest"}}})
+	first := f.chapter(map[string]any{"sort": -2000000001, "milestones": []map[string]any{{"percent": 50, "currencies": map[string]int64{f.coin: 40}}, {"percent": 100, "prizeGroupKey": "pt_chest"}}})
 	quiz := f.stage(first, map[string]any{"mode": "once", "rewards": map[string]any{"currencies": map[string]int64{f.coin: 5000}}})
 	a := f.stage(first, map[string]any{"mode": "ordered", "sort": 1, "tierPrizes": []map[string]any{{"stars": 2, "prizeKey": "pt_silver"}, {"stars": 3, "prizeKey": "pt_gold"}}})
-	second := f.chapter(map[string]any{"sort": 2})
+	second := f.chapter(map[string]any{"sort": -2000000000})
 	b := f.stage(second, map[string]any{"mode": "ordered", "unlock": []map[string]any{{"type": "level", "value": 2}, {"type": "meta", "key": f.meta, "value": 1}}})
 	user := f.user()
 
