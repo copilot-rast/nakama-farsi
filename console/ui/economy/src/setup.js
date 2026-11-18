@@ -496,7 +496,7 @@ function errorSummary(box, count) {
 
 function requiredMissing(f, value, saved, sandbox) {
   if (!f.required || f.type === 'bool' || f.default) return false;
-  if ((f.type === 'secret' || f.type === 'secretJson') && (sandbox || saved)) return false;
+  if (isSecretField(f) && (sandbox || saved)) return false;
   return String(value == null ? '' : value).trim() === '';
 }
 
@@ -537,16 +537,19 @@ function stepPayment(box) {
     var cfg = cfgs[m.method];
     var fieldEls = {};
     var fieldsBox = h('div', { class: 'setup-method-fields' });
-    var sandboxField = (m.fields || []).filter(function (f) { return f.name === 'sandbox'; })[0];
-    if (sandboxField) fieldsBox.appendChild(sandboxBox(cfg.sandbox !== false, function (v) { cfg.sandbox = v; dirty = true; }, true, 'pay'));
+    var sbName = m.sandboxField || 'sandbox';
+    var sandboxField = (m.fields || []).filter(function (f) { return f.name === sbName; })[0];
+    if (sandboxField) fieldsBox.appendChild(sandboxBox(cfg[sbName] !== false, function (v) { cfg[sbName] = v; dirty = true; }, true, 'pay'));
     (m.fields || []).forEach(function (f) {
       if (f.type === 'bool') return;
       var label = has('pm.field.' + f.name) ? t('pm.field.' + f.name) : f.name;
-      var ctl = textInput(cfg[f.name] == null ? '' : cfg[f.name], { ltr: true, mono: true, multiline: f.type === 'textarea', rows: 3, label: label, oninput: function (v) { cfg[f.name] = v; dirty = true; fieldEls[f.name].setError(''); } });
+      var secret = isSecretField(f);
+      var multi = f.type === 'textarea' || f.type === 'secretJson' || f.type === 'secretText';
+      var ctl = textInput(cfg[f.name] == null ? '' : cfg[f.name], { ltr: true, mono: true, multiline: multi, rows: multi && secret ? 5 : 3, label: label, placeholder: f.default || '', oninput: function (v) { cfg[f.name] = v; dirty = true; fieldEls[f.name].setError(''); } });
       ctl.setAttribute('data-field', f.name);
       ctl.classList.add('text-sm');
-      if (f.type === 'secret') ctl.classList.add('eco-secret');
-      var hint = f.type === 'secret' && cfg[f.name] ? t('pm.secret.hint') : f.type === 'secret' && sandboxField ? t('setup.pay.secret.sandbox') : null;
+      if (secret) ctl.classList.add('eco-secret');
+      var hint = secret && cfg[f.name] ? t('pm.secret.hint') : secret && sandboxField && !m.sandboxNeedsKeys ? t('setup.pay.secret.sandbox') : has('pm.hint.' + f.name) ? t('pm.hint.' + f.name) : null;
       fieldEls[f.name] = field(label, ctl, hint, { optional: !f.required });
       fieldsBox.appendChild(fieldEls[f.name]);
     });
@@ -603,7 +606,8 @@ function stepPayment(box) {
       methods.forEach(function (m) {
         picked[m.method] = !!m.isActive;
         cfgs[m.method] = clone(m.config || {}) || {};
-        if (!m.configured && !m.isActive && (m.fields || []).some(function (f) { return f.name === 'sandbox'; })) cfgs[m.method].sandbox = true;
+        var sbName = m.sandboxField || 'sandbox';
+        if (!m.configured && !m.isActive && (m.fields || []).some(function (f) { return f.name === sbName; })) cfgs[m.method][sbName] = true;
       });
       need = savedNeed('payment', methods.some(function (m) { return m.isActive; }));
       paint();
@@ -626,7 +630,8 @@ function stepPayment(box) {
         (m.fields || []).forEach(function (f) {
           if (!e.fields[f.name]) return;
           e.fields[f.name].setError('');
-          if (requiredMissing(f, cfg[f.name], f.type === 'secret' && saved[f.name], cfg.sandbox !== false && (m.fields || []).some(function (x) { return x.name === 'sandbox'; }))) {
+          var sbName = m.sandboxField || 'sandbox';
+          if (requiredMissing(f, cfg[f.name], isSecretField(f) && saved[f.name], !m.sandboxNeedsKeys && cfg[sbName] !== false && (m.fields || []).some(function (x) { return x.name === sbName; }))) {
             e.fields[f.name].setError(t('setup.err.required'));
             bad.push(m.method);
           }
