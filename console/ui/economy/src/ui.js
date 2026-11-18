@@ -288,6 +288,16 @@ function field(label, control, hint, opts) {
     err.textContent = msg || '';
     err.hidden = !msg;
     wrap.classList.toggle('eco-invalid', !!msg);
+    var input = control && control.matches && control.matches('input,textarea,select') ? control : control && control.querySelector ? control.querySelector('input:not([type="file"]),textarea,select') : null;
+    if (!input) return;
+    if (msg) {
+      if (!err.id) err.id = 'eco-err-' + Math.random().toString(36).slice(2, 9);
+      input.setAttribute('aria-invalid', 'true');
+      input.setAttribute('aria-errormessage', err.id);
+    } else {
+      input.removeAttribute('aria-invalid');
+      input.removeAttribute('aria-errormessage');
+    }
   };
   return wrap;
 }

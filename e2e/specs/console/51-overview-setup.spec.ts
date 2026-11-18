@@ -2,6 +2,7 @@ import type { Page, Route } from '@playwright/test';
 import { expect, test } from '../../lib/fixtures';
 import { restoreConfig } from '../../lib/db';
 import { noHorizontalScroll, open, root } from '../../lib/console';
+import { base, eco, pub } from '../../lib/api';
 
 const W = '[data-economy="setup"]';
 
@@ -128,6 +129,7 @@ test.describe('setup wizard stepper', () => {
       await leave(page);
       await waitStep(page, step);
       await expect(page.locator(`${W} [data-setup-of]`)).toHaveText(`مرحلهٔ ${'۱۲۳۴۵۶۷'[i]} از ۷`);
+      await expect(page.locator(`${W} [data-setup-progress]`)).toContainText('مرحله انجام شده');
       if (i > 0) await expect(page.locator(`${W} #setup-step-title`)).toBeFocused();
       if (step === 'sms' || step === 'email') {
         const yes = page.locator(`${W} [data-need] [data-value="yes"]`);
@@ -176,8 +178,8 @@ test.describe('setup wizard stepper', () => {
     await expect(page.locator(W)).toBeVisible();
   });
 
-  test('phone: the step bar is a compact row and only the step body scrolls', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
+  test('phone: the step bar is a compact row and only the step body scrolls', async ({ spawn }) => {
+    const page = await spawn({ signedIn: true, mode: 'dark', width: 390, height: 844, mobile: true });
     await open(page, '#/project-settings/setup');
     await page.locator('[data-setup-open]').click();
     await page.locator(`${W} .setup-step[data-step="payment"]`).click();
@@ -189,5 +191,151 @@ test.describe('setup wizard stepper', () => {
     await expect(page.locator(`${W} .setup-step[data-step="payment"] .setup-step-label`)).toBeVisible();
     await expect(page.locator(`${W} .setup-step[data-step="brand"] .setup-step-label`)).toBeHidden();
     await noHorizontalScroll(page);
+  });
+
+  test('full run in Persian: every step saves through the API, required fields are checked, reopening shows the saved values', async ({ page: first, spawn }) => {
+    let page = first;
+    const tag = 'e2e' + Date.now().toString(36);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await open(page, '#/project-settings/setup');
+    await page.locator('[data-setup-open]').click();
+    await page.locator(`${W} .setup-step[data-step="brand"]`).click();
+    await leave(page);
+    await waitStep(page, 'brand');
+    await expect(page.locator(`${W} [data-setup-more] > summary`)).not.toContainText('فاوآیکن');
+    const name = page.locator(`${W} [data-translated="name"] [role="tabpanel"][data-lang="fa"] input`);
+    await name.fill('برند ' + tag);
+    await page.keyboard.press('Control+Enter');
+    await waitStep(page, 'languages');
+    expect((await base.get('/brand')).name.fa).toBe('برند ' + tag);
+
+    const known = (await base.get('/languages/known')).items.map((l: any) => l.code);
+    const have = (await base.get('/languages?limit=100')).items.map((l: any) => l.code);
+    await expect(page.locator(`${W} [data-add-lang]`)).toHaveCount(known.filter((c: string) => !have.includes(c)).length);
+    await expect(page.locator(`${W} [data-setup-next]`)).toHaveText('ادامه');
+    await page.locator(`${W} [data-setup-next]`).click();
+    await waitStep(page, 'currency');
+
+    await page.locator(`${W} input[aria-label="موجودی اول"]`).fill('۷۷');
+    await page.locator(`${W} [data-setup-more] > summary`).click();
+    await expect(page.locator(`${W} select[aria-label="نوع ارز"], ${W} [aria-label="نوع ارز"]`).first()).toBeVisible();
+    await page.locator(`${W} [data-setup-next]`).click();
+    await waitStep(page, 'payment');
+    const main = (await eco.get('/currencies?limit=100')).items.sort((a: any, b: any) => (a.sort || 0) - (b.sort || 0))[0];
+    expect(main.defaultValue).toBe(77);
+
+    const yes = page.locator(`${W} [data-need] [data-value="yes"]`);
+    if ((await yes.getAttribute('aria-checked')) !== 'true') await yes.click();
+    const bazaar = page.locator(`${W} [data-method="bazaar"]`);
+    await expect(bazaar.locator('.setup-method-desc')).toContainText('کافه‌بازار');
+    if (!(await bazaar.evaluate((el) => el.classList.contains('setup-method--on')))) await bazaar.locator('[data-pick-method="bazaar"]').click();
+    if ((await bazaar.locator('[data-method-edit]').getAttribute('aria-expanded')) !== 'true') await bazaar.locator('[data-method-edit]').click();
+    const pkg = bazaar.locator('input[data-field="packageName"]');
+    await pkg.fill('');
+    await page.locator(`${W} [data-setup-next]`).click();
+    await expect(page.locator(`${W} [data-setup-errors]`)).toBeVisible();
+    await expect(pkg).toBeFocused();
+    await expect(pkg).toHaveAttribute('aria-invalid', 'true');
+    await expect(bazaar.locator('.eco-invalid')).toContainText('این فیلد لازم است.');
+    await expect(page.locator(`${W} [data-setup-step="payment"]`)).toBeVisible();
+    await pkg.fill('ir.' + tag + '.game');
+    await expect(pkg).not.toHaveAttribute('aria-invalid', 'true');
+    await page.locator(`${W} [data-setup-next]`).click();
+    await waitStep(page, 'sms');
+    expect((await eco.get('/payment-methods')).find((m: any) => m.method === 'bazaar').config.packageName).toBe('ir.' + tag + '.game');
+
+    const smsActive = (await pub.get('/providers')).items.some((p: any) => p.channel === 'sms' && p.isActive);
+    await page.locator(`${W} [data-need] [data-value="no"]`).click();
+    await page.locator(`${W} [data-setup-next]`).click();
+    await waitStep(page, 'email');
+    const email = page.locator(`${W} [data-need] [data-value="yes"]`);
+    if ((await email.getAttribute('aria-checked')) !== 'true') await email.click();
+    if ((await page.locator(`${W} [data-kind] [aria-checked="true"]`).getAttribute('data-value')) !== 'smtp') await page.locator(`${W} [data-kind] [data-value="smtp"]`).click();
+    await expect(page.locator(`${W} [data-sandbox-box]`)).toContainText('ایمیلی واقعاً فرستاده نمی‌شود');
+    await expect(page.locator(`${W} [data-sandbox-box]`)).not.toContainText('پرداخت');
+    await expect(page.locator(`${W} [data-test-otp]`)).toHaveCount(0);
+    const host = page.locator(`${W} input[aria-label="میزبان"]`);
+    await host.fill('');
+    await page.locator(`${W} [data-setup-next]`).click();
+    await expect(page.locator(`${W} [data-setup-errors]`)).toBeVisible();
+    await expect(host).toHaveAttribute('aria-invalid', 'true');
+    await host.fill('smtp.' + tag + '.test');
+    const from = page.locator(`${W} input[aria-label="فرستنده"]`);
+    if (!(await from.inputValue())) await from.fill('noreply@example.com');
+    await page.locator(`${W} [data-setup-next]`).click();
+    await waitStep(page, 'review');
+    const smtp = (await pub.get('/providers')).items.find((p: any) => p.kind === 'smtp');
+    expect(smtp).toMatchObject({ isActive: true, isDefault: true });
+    expect(smtp.config.host).toBe('smtp.' + tag + '.test');
+    await expect(page.locator(`${W} [data-review="brand"]`)).toContainText('برند ' + tag);
+    await expect(page.locator(`${W} [data-review="currency"]`)).toContainText('۷۷');
+    await page.locator(`${W} [data-setup-next]`).click();
+    await expect(page.locator(W)).toHaveCount(0);
+    expect((await base.get('/setup')).status).toBe('completed');
+
+    page = await spawn({ signedIn: true, width: 1280, height: 800 });
+    await open(page, '#/project-settings/setup');
+    await page.locator('[data-setup-open]').click();
+    await page.locator(`${W} .setup-step[data-step="brand"]`).click();
+    await waitStep(page, 'brand');
+    await expect(page.locator(`${W} [data-translated="name"] [role="tabpanel"][data-lang="fa"] input`)).toHaveValue('برند ' + tag);
+    await page.locator(`${W} .setup-step[data-step="currency"]`).click();
+    await waitStep(page, 'currency');
+    await expect(page.locator(`${W} input[aria-label="موجودی اول"]`)).toHaveValue(/^(77|۷۷)$/);
+    await page.locator(`${W} .setup-step[data-step="payment"]`).click();
+    await waitStep(page, 'payment');
+    await expect(page.locator(`${W} [data-need] [data-value="yes"]`)).toHaveAttribute('aria-checked', 'true');
+    await page.locator(`${W} [data-method="bazaar"] [data-method-edit]`).click();
+    await expect(page.locator(`${W} [data-method="bazaar"] input[data-field="packageName"]`)).toHaveValue('ir.' + tag + '.game');
+    await page.locator(`${W} .setup-step[data-step="sms"]`).click();
+    await waitStep(page, 'sms');
+    await expect(page.locator(`${W} [data-need] [data-value="${smsActive ? 'yes' : 'no'}"]`)).toHaveAttribute('aria-checked', 'true');
+    await page.locator(`${W} .setup-step[data-step="email"]`).click();
+    await waitStep(page, 'email');
+    await expect(page.locator(`${W} input[aria-label="میزبان"]`)).toHaveValue('smtp.' + tag + '.test');
+  });
+
+  test('English and dark: keyboard through the step bar, Ctrl+Enter, English labels and errors, no sideways scroll at 390px', async ({ spawn }) => {
+    const page = await spawn({ signedIn: true, locale: 'en', mode: 'dark', width: 1280, height: 800 });
+    await open(page, '#/project-settings/setup');
+    await page.locator('[data-setup-open]').click();
+    await page.locator(`${W} .setup-step[data-step="brand"]`).click();
+    await leave(page);
+    await waitStep(page, 'brand');
+    await expect(page.locator(`${W} [data-setup-of]`)).toHaveText('Step 1 of 7');
+    await expect(page.locator(`${W} [data-setup-progress]`)).toContainText('steps done');
+    await page.locator(`${W} .setup-step[data-step="brand"]`).focus();
+    await page.keyboard.press('ArrowDown');
+    await expect(page.locator(`${W} .setup-step[data-step="languages"]`)).toBeFocused();
+    await page.keyboard.press('End');
+    await expect(page.locator(`${W} .setup-step[data-step="review"]`)).toBeFocused();
+    await page.keyboard.press('Home');
+    await expect(page.locator(`${W} .setup-step[data-step="brand"]`)).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await leave(page);
+    await waitStep(page, 'languages');
+    await expect(page.locator(`${W} [data-setup-next]`)).toHaveText('Continue');
+    await page.keyboard.press('Control+Enter');
+    await waitStep(page, 'currency');
+    await expect(page.locator(`${W} [data-setup-step="currency"] h2`)).toHaveText('Main game currency');
+    await page.locator(`${W} .setup-step[data-step="payment"]`).click();
+    await leave(page);
+    await waitStep(page, 'payment');
+    const yes = page.locator(`${W} [data-need] [data-value="yes"]`);
+    if ((await yes.getAttribute('aria-checked')) !== 'true') await yes.click();
+    const myket = page.locator(`${W} [data-method="myket"]`);
+    if (!(await myket.evaluate((el) => el.classList.contains('setup-method--on')))) await myket.locator('[data-pick-method="myket"]').click();
+    if ((await myket.locator('[data-method-edit]').getAttribute('aria-expanded')) !== 'true') await myket.locator('[data-method-edit]').click();
+    await myket.locator('input[data-field="packageName"]').fill('');
+    await page.keyboard.press('Control+Enter');
+    await expect(myket.locator('.eco-invalid')).toContainText('This field is required.');
+    await expect(page.locator(`${W} [data-setup-errors]`)).toContainText('missing');
+    expect(await page.evaluate(() => getComputedStyle(document.querySelector('.setup-window')!).backgroundColor)).not.toBe('rgb(255, 255, 255)');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator(`${W} [data-setup-next]`)).toBeInViewport();
+    await noHorizontalScroll(page);
+    await page.keyboard.press('Escape');
+    await page.locator('[data-economy="dialog"] [role="alertdialog"] button').last().click();
   });
 });

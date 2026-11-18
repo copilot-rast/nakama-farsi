@@ -833,7 +833,7 @@ function composePage(container, query) {
   load();
 }
 
-function providerField(f, cfg, onchange) {
+function providerField(f, cfg, onchange, kind) {
   var label = has('pv.field.' + f.name) ? t('pv.field.' + f.name) : f.name;
   var ctl;
   if (f.type === 'secretJson') {
@@ -849,7 +849,7 @@ function providerField(f, cfg, onchange) {
     ctl.classList.add('text-sm');
     if (f.type === 'secret') ctl.classList.add('eco-secret');
   }
-  var hintKey = f.type === 'secret' && cfg[f.name] ? 'pm.secret.hint' : has('pv.hint.' + f.name) ? 'pv.hint.' + f.name : null;
+  var hintKey = f.type === 'secret' && cfg[f.name] ? 'pm.secret.hint' : kind && has('pv.hint.' + kind + '.' + f.name) ? 'pv.hint.' + kind + '.' + f.name : has('pv.hint.' + f.name) ? 'pv.hint.' + f.name : null;
   return field(label, ctl, hintKey ? t(hintKey) : null, { optional: !f.required });
 }
 
@@ -857,7 +857,7 @@ function providerFieldsBoxes(kind, fields, cfg, fieldEls, onchange) {
   var main = [];
   var otp = [];
   (fields || []).forEach(function (f) {
-    var w = providerField(f, cfg, function () { onchange(f); });
+    var w = providerField(f, cfg, function () { onchange(f); }, kind);
     fieldEls[f.name] = w;
     (f.group === 'otp' ? otp : main).push({ f: f, el: w });
   });

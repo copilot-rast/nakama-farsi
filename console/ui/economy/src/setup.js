@@ -2,18 +2,6 @@ var SETUP_ORDER = ['brand', 'languages', 'currency', 'payment', 'sms', 'email', 
 var SETUP_ICONS = { brand: 'image', languages: 'languages', currency: 'currencies', payment: 'payments', sms: 'comments', email: 'send', review: 'check' };
 var SETUP_STATUS_COLOR = { pending: 'warning', in_progress: 'primary', completed: 'success', skipped: 'secondary' };
 var STEP_COLOR = { done: 'success', skipped: 'secondary', pending: 'warning' };
-var QUICK_LANGS = [
-  { code: 'fa', native: 'فارسی', dir: 'rtl', fa: 'فارسی', en: 'Persian' },
-  { code: 'en', native: 'English', dir: 'ltr', fa: 'انگلیسی', en: 'English' },
-  { code: 'ar', native: 'العربية', dir: 'rtl', fa: 'عربی', en: 'Arabic' },
-  { code: 'tr', native: 'Türkçe', dir: 'ltr', fa: 'ترکی', en: 'Turkish' },
-  { code: 'ru', native: 'Русский', dir: 'ltr', fa: 'روسی', en: 'Russian' },
-  { code: 'de', native: 'Deutsch', dir: 'ltr', fa: 'آلمانی', en: 'German' },
-  { code: 'fr', native: 'Français', dir: 'ltr', fa: 'فرانسوی', en: 'French' },
-  { code: 'es', native: 'Español', dir: 'ltr', fa: 'اسپانیایی', en: 'Spanish' },
-  { code: 'ur', native: 'اردو', dir: 'rtl', fa: 'اردو', en: 'Urdu' },
-  { code: 'zh', native: '中文', dir: 'ltr', fa: 'چینی', en: 'Chinese' }
-];
 var setupClaimFor = null;
 var wiz = null;
 
@@ -58,6 +46,7 @@ function openWizard(state, auto, step) {
   if (wiz) { goStep(step || wiz.step); return; }
   var dir = document.documentElement.getAttribute('dir') || 'ltr';
   var bar = h('ol', { class: 'setup-steps' });
+  bar.addEventListener('keydown', stepKeys);
   var meter = h('div', { class: 'setup-meter' });
   var body = h('div', { class: 'setup-main' });
   var footer = h('div', { class: 'setup-footer' });
@@ -85,8 +74,26 @@ function openWizard(state, auto, step) {
 }
 
 function trapKeys(e) {
-  if (e.key !== 'Tab' || !wiz || document.querySelector('[data-economy="dialog"]')) return;
-  trapTab(e, wiz.el);
+  if (!wiz || document.querySelector('[data-economy="dialog"]')) return;
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    var next = wiz.footer.querySelector('[data-setup-next]');
+    if (next && !next.disabled) { e.preventDefault(); next.click(); }
+    return;
+  }
+  if (e.key === 'Tab') trapTab(e, wiz.el);
+}
+
+function stepKeys(e) {
+  var keys = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1, Home: 'first', End: 'last' };
+  if (!(e.key in keys) || !e.target.classList.contains('setup-step')) return;
+  var list = Array.prototype.slice.call(wiz.bar.querySelectorAll('.setup-step'));
+  var i = list.indexOf(e.target);
+  var k = keys[e.key];
+  var rtl = (document.documentElement.getAttribute('dir') || 'ltr') === 'rtl';
+  if (rtl && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) k = -k;
+  var j = k === 'first' ? 0 : k === 'last' ? list.length - 1 : Math.max(0, Math.min(list.length - 1, i + k));
+  e.preventDefault();
+  list[j].focus();
 }
 
 function trapTab(e, root) {
@@ -166,8 +173,9 @@ function paintBar() {
   var finished = steps.filter(function (k) { return setupStepStatus(wiz.state, k) !== 'pending'; }).length;
   var i = Math.max(0, SETUP_ORDER.indexOf(wiz.step));
   clear(wiz.meter).appendChild(h('div', { class: 'setup-meter-text' },
-    h('b', { 'data-setup-of': '', text: t('setup.stepOf', { n: localDigits(i + 1), total: localDigits(SETUP_ORDER.length) }) }),
-    h('span', { class: 'tabular-nums', text: t('setup.progress', { n: localDigits(finished), total: localDigits(steps.length) }) })));
+    h('span', { class: 'tabular-nums', 'data-setup-progress': '', text: t('setup.progress.done', { n: localDigits(finished), total: localDigits(steps.length) }) })));
+  var of = wiz.body.querySelector('[data-setup-of]');
+  if (of) of.textContent = t('setup.stepOf', { n: localDigits(i + 1), total: localDigits(SETUP_ORDER.length) });
   wiz.meter.appendChild(h('div', { class: 'setup-meter-track', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(steps.length), 'aria-valuenow': String(finished), 'aria-label': t('setup.progress', { n: localDigits(finished), total: localDigits(steps.length) }) },
     h('div', { class: 'setup-meter-bar', style: 'width:' + Math.round(finished / steps.length * 100) + '%' })));
   var cur = wiz.bar.querySelector('.setup-step--on');
@@ -205,13 +213,16 @@ function renderStep(k) {
   var w = wiz;
   var st = k === 'review' ? null : setupStepStatus(w.state, k);
   var content = h('div', { class: 'setup-content' });
-  clear(w.body).appendChild(h('section', { class: 'setup-section', 'aria-labelledby': 'setup-step-title', 'data-setup-step': k },
+  var idx = SETUP_ORDER.indexOf(k);
+  clear(w.body).appendChild(h('section', { class: 'setup-section', 'aria-labelledby': 'setup-step-title', 'aria-describedby': 'setup-step-desc', 'data-setup-step': k },
     h('div', { class: 'setup-head' },
-      h('div', { class: 'setup-section-icon' }, icon(SETUP_ICONS[k], 'h-5 w-5')),
+      h('div', { class: 'setup-section-icon', 'aria-hidden': 'true' }, icon(SETUP_ICONS[k], 'h-5 w-5')),
       h('div', { class: 'min-w-0 flex-1' },
-        h('h2', { id: 'setup-step-title', tabindex: '-1', text: t('setup.step.' + k + '.title') }),
-        h('p', { text: t('setup.step.' + k + '.desc') })),
-      st && st !== 'pending' ? tag(t('setup.st.' + st), STEP_COLOR[st], 'shrink-0') : null),
+        h('div', { class: 'setup-eyebrow', 'data-setup-of': '', text: t('setup.stepOf', { n: localDigits(idx + 1), total: localDigits(SETUP_ORDER.length) }) }),
+        h('div', { class: 'setup-head-row' },
+          h('h2', { id: 'setup-step-title', tabindex: '-1', text: t('setup.step.' + k + '.title') }),
+          st && st !== 'pending' ? tag(t('setup.st.' + st), STEP_COLOR[st], 'shrink-0') : null),
+        h('p', { id: 'setup-step-desc', text: t('setup.step.' + k + '.desc') }))),
     h('div', { class: 'setup-body' }, content)));
   var ctl = STEP_BUILDERS[k](content, w);
   w.ctl = ctl;
@@ -233,7 +244,9 @@ function paintFooter(k, ctl) {
     putSetup({ steps: stepPatch(k, 'skipped') }).then(function () { goStep(nextOf(k), true); }, function (err) { setBusy(skip, false); toast('error', errorText(err)); });
   } });
   if (skip) skip.setAttribute('data-setup-skip', '');
-  var primary = button({ variant: 'primary', size: 'sm', icon: review ? 'check' : null, label: review ? t('setup.finish') : k === SETUP_ORDER[SETUP_ORDER.length - 2] ? t('setup.saveReview') : t('setup.saveNext'), onclick: function () {
+  var plain = ctl && ctl.instant;
+  var label = review ? t('setup.finish') : k === SETUP_ORDER[SETUP_ORDER.length - 2] ? t('setup.saveReview') : plain ? t('setup.next') : t('setup.saveNext');
+  var primary = button({ variant: 'primary', size: 'sm', icon: review ? 'check' : null, label: label, onclick: function () {
     setBusy(primary, true, t('saving'));
     Promise.resolve(ctl.save()).then(function (result) {
       if (!result || !wiz) { setBusy(primary, false); return; }
@@ -251,7 +264,10 @@ function paintFooter(k, ctl) {
   } });
   primary.setAttribute('data-setup-next', '');
   w.footer.appendChild(back);
-  w.footer.appendChild(h('div', { class: 'setup-footer-end' }, skip, primary));
+  w.footer.appendChild(h('div', { class: 'setup-footer-end' },
+    h('span', { class: 'setup-keys', 'aria-hidden': 'true', dir: 'ltr' }, h('kbd', { text: 'Ctrl' }), h('kbd', { text: 'Enter' })),
+    skip, primary));
+  primary.setAttribute('aria-keyshortcuts', 'Control+Enter');
 }
 
 function stepPatch(k, v) {
@@ -298,20 +314,22 @@ function stepBrand(box) {
 }
 
 function quickLangBody(q) {
-  var name = { fa: q.fa, en: q.en };
-  if (LANGS.def !== 'fa' && LANGS.def !== 'en') name[LANGS.def] = q.native;
-  Object.keys(name).forEach(function (k) { if (LANGS.codes.indexOf(k) === -1 && k !== q.code) delete name[k]; });
-  name[q.code] = q.native;
-  return { code: q.code, name: name, nativeName: q.native, direction: q.dir, isActive: true, isDefault: false, sort: LANGS.items.length + 1 };
+  var name = {};
+  Object.keys(q.name || {}).forEach(function (k) { if (LANGS.codes.indexOf(k) !== -1) name[k] = q.name[k]; });
+  if (!name[LANGS.def]) name[LANGS.def] = q.nativeName;
+  name[q.code] = q.nativeName;
+  return { code: q.code, name: name, nativeName: q.nativeName, direction: q.direction, isActive: true, isDefault: false, sort: LANGS.items.length + 1 };
 }
 
 function stepLanguages(box) {
   box.appendChild(stepSkeleton(3));
   var busy = false;
+  var known = [];
   function load() {
-    baseApi('GET', '/languages?limit=100').then(function (res) {
+    Promise.all([baseApi('GET', '/languages?limit=100'), baseApi('GET', '/languages/known').then(null, function () { return null; })]).then(function (all) {
       if (!box.isConnected) return;
-      paint((res && res.items) || []);
+      known = (all[1] && all[1].items) || [];
+      paint((all[0] && all[0].items) || []);
     }, function (err) { failBox(box, err, load); });
   }
   function act(p, done) {
@@ -345,10 +363,11 @@ function stepLanguages(box) {
     });
     var have = items.map(function (x) { return x.code; });
     var chips = h('div', { class: 'setup-chips' });
-    QUICK_LANGS.filter(function (q) { return have.indexOf(q.code) === -1; }).forEach(function (q) {
-      chips.appendChild(h('button', { type: 'button', class: 'setup-chip', 'data-add-lang': q.code, onclick: function () {
-        act(baseApi('POST', '/languages', quickLangBody(q)), t('setup.lang.added', { name: q.native }));
-      } }, icon('plus', 'h-3.5 w-3.5'), h('span', { dir: q.dir, text: q.native }), h('span', { class: 'setup-chip-code', dir: 'ltr', text: q.code })));
+    known.filter(function (q) { return have.indexOf(q.code) === -1; }).forEach(function (q) {
+      var title = (q.name && (q.name[lang()] || q.name.en)) || q.nativeName;
+      chips.appendChild(h('button', { type: 'button', class: 'setup-chip', 'data-add-lang': q.code, title: title, 'aria-label': t('setup.lang.add', { name: title }), onclick: function () {
+        act(baseApi('POST', '/languages', quickLangBody(q)), t('setup.lang.added', { name: q.nativeName }));
+      } }, icon('plus', 'h-3.5 w-3.5'), h('span', { dir: q.direction, text: q.nativeName }), h('span', { class: 'setup-chip-code', dir: 'ltr', text: q.code })));
     });
     clear(box).appendChild(card2(list));
     box.appendChild(card2([
@@ -358,7 +377,7 @@ function stepLanguages(box) {
     ], 'mt-4'));
   }
   load();
-  return { save: function () { return 'done'; }, dirty: function () { return false; } };
+  return { instant: true, save: function () { return 'done'; }, dirty: function () { return false; } };
 }
 
 var SETUP_CURRENCY_MAIN = [
@@ -368,7 +387,7 @@ var SETUP_CURRENCY_MAIN = [
 var SETUP_CURRENCY_MORE = [
   { type: 'row', fields: [
     { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true, keyRe: CURRENCY_KEY_RE, lockOnEdit: true },
-    { name: 'type', type: 'select', label: 'f.type', required: true, options: opts('type.', ['soft', 'hard']) }
+    { name: 'type', type: 'select', label: 'setup.cur.type', hint: 'setup.cur.type.hint', required: true, options: opts('setup.cur.type.', ['soft', 'hard']) }
   ] },
   { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true }
 ];
@@ -463,7 +482,25 @@ function needQuestion(labelKey, value, onchange) {
   return h('div', { class: 'setup-need-wrap' }, h('div', { class: 'setup-need' }, h('div', { class: 'setup-need-q', text: t(labelKey) }), seg), hint);
 }
 
-function sandboxBox(on, onchange, confirmOff) {
+function savedNeed(k, active) {
+  if (active) return 'yes';
+  return wiz && setupStepStatus(wiz.state, k) === 'skipped' ? 'no' : null;
+}
+
+function errorSummary(box, count) {
+  var el = h('div', { class: 'mb-4', role: 'alert', tabindex: '-1', 'data-setup-errors': '' }, notice('error', t('setup.err.fix', { n: localDigits(count) })));
+  box.appendChild(el);
+  try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
+  return el;
+}
+
+function requiredMissing(f, value, saved, sandbox) {
+  if (!f.required || f.type === 'bool') return false;
+  if ((f.type === 'secret' || f.type === 'secretJson') && (sandbox || saved)) return false;
+  return String(value == null ? '' : value).trim() === '';
+}
+
+function sandboxBox(on, onchange, confirmOff, channel) {
   var text = h('p', { class: 'text-xs mt-1.5' });
   var boxEl = h('div', { 'data-sandbox-box': '' });
   var sw = toggle(on, t('pv.sandbox'), function (v) {
@@ -480,7 +517,7 @@ function sandboxBox(on, onchange, confirmOff) {
   boxEl.appendChild(text);
   function paint() {
     boxEl.className = 'rounded-md px-3 py-2.5 mb-4 setup-sandbox ' + (on ? 'eco-sandbox-note' : 'eco-live-note');
-    text.textContent = on ? t('setup.sandbox.on') : t('setup.sandbox.off');
+    text.textContent = t('setup.sandbox.' + (on ? 'on' : 'off') + '.' + (channel || 'pay'));
   }
   paint();
   return boxEl;
@@ -501,11 +538,12 @@ function stepPayment(box) {
     var fieldEls = {};
     var fieldsBox = h('div', { class: 'setup-method-fields' });
     var sandboxField = (m.fields || []).filter(function (f) { return f.name === 'sandbox'; })[0];
-    if (sandboxField) fieldsBox.appendChild(sandboxBox(cfg.sandbox !== false, function (v) { cfg.sandbox = v; dirty = true; }, true));
+    if (sandboxField) fieldsBox.appendChild(sandboxBox(cfg.sandbox !== false, function (v) { cfg.sandbox = v; dirty = true; }, true, 'pay'));
     (m.fields || []).forEach(function (f) {
       if (f.type === 'bool') return;
       var label = has('pm.field.' + f.name) ? t('pm.field.' + f.name) : f.name;
       var ctl = textInput(cfg[f.name] == null ? '' : cfg[f.name], { ltr: true, mono: true, multiline: f.type === 'textarea', rows: 3, label: label, oninput: function (v) { cfg[f.name] = v; dirty = true; fieldEls[f.name].setError(''); } });
+      ctl.setAttribute('data-field', f.name);
       ctl.classList.add('text-sm');
       if (f.type === 'secret') ctl.classList.add('eco-secret');
       var hint = f.type === 'secret' && cfg[f.name] ? t('pm.secret.hint') : f.type === 'secret' && sandboxField ? t('setup.pay.secret.sandbox') : null;
@@ -527,7 +565,8 @@ function stepPayment(box) {
     check.setAttribute('data-pick-method', m.method);
     if (edit) edit.hidden = !picked[m.method];
     var el = h('div', { class: 'setup-method' + (picked[m.method] ? ' setup-method--on' : ''), 'data-method': m.method },
-      h('div', { class: 'setup-method-head' }, check,
+      h('div', { class: 'setup-method-head' },
+        h('div', { class: 'min-w-0 flex-1' }, check, has('setup.pay.m.' + m.method) ? h('p', { class: 'setup-method-desc', text: t('setup.pay.m.' + m.method) }) : null),
         h('div', { class: 'flex items-center gap-2 shrink-0' }, tag(m.configured ? t('pm.configured') : t('pm.notConfigured'), m.configured ? 'success' : 'secondary'), edit)),
       errBox,
       fieldsBox);
@@ -547,6 +586,7 @@ function stepPayment(box) {
     var list = h('div', { class: 'setup-methods', 'data-methods': '' });
     els = {};
     methods.forEach(function (m) { list.appendChild(methodCard(m)); });
+    if (!methods.length) list.appendChild(notice('info', t('setup.pay.empty')));
     var first = methods.filter(function (m) { return picked[m.method] && !m.configured && (m.fields || []).length; })[0];
     expand(first ? first.method : null);
     list.hidden = need !== 'yes';
@@ -565,7 +605,7 @@ function stepPayment(box) {
         cfgs[m.method] = clone(m.config || {}) || {};
         if (!m.configured && !m.isActive && (m.fields || []).some(function (f) { return f.name === 'sandbox'; })) cfgs[m.method].sandbox = true;
       });
-      need = methods.some(function (m) { return m.isActive; }) ? 'yes' : null;
+      need = savedNeed('payment', methods.some(function (m) { return m.isActive; }));
       paint();
     }, function (err) { failBox(box, err, load); });
   }
@@ -577,6 +617,28 @@ function stepPayment(box) {
       if (need === 'no') return 'skipped';
       var changed = methods.filter(function (m) { return picked[m.method] !== !!m.isActive || (picked[m.method] && JSON.stringify(cfgs[m.method]) !== JSON.stringify(m.config || {})); });
       if (!methods.some(function (m) { return picked[m.method]; })) { top.appendChild(h('div', { class: 'mb-4' }, notice('error', t('setup.pay.pickOne')))); return false; }
+      var bad = [];
+      methods.forEach(function (m) {
+        if (!picked[m.method]) return;
+        var e = els[m.method];
+        var cfg = cfgs[m.method];
+        var saved = m.config || {};
+        (m.fields || []).forEach(function (f) {
+          if (!e.fields[f.name]) return;
+          e.fields[f.name].setError('');
+          if (requiredMissing(f, cfg[f.name], f.type === 'secret' && saved[f.name], cfg.sandbox !== false && (m.fields || []).some(function (x) { return x.name === 'sandbox'; }))) {
+            e.fields[f.name].setError(t('setup.err.required'));
+            bad.push(m.method);
+          }
+        });
+      });
+      if (bad.length) {
+        expand(bad[0]);
+        errorSummary(top, bad.length);
+        var first = els[bad[0]].box.querySelector('[aria-invalid="true"], .eco-invalid input, .eco-invalid textarea');
+        if (first) first.focus();
+        return false;
+      }
       var failed = false;
       return changed.reduce(function (p, m) {
         return p.then(function () {
@@ -619,6 +681,10 @@ function stepProvider(channel) {
     var testBoxEl = h('div', { class: 'setup-test' });
     box.appendChild(questionSkeleton(1));
     function current() { return items.filter(function (p) { return p.kind === kind; })[0] || null; }
+    function hasOtp() {
+      var def = catalog.filter(function (k) { return k.channel === channel && k.kind === kind; })[0];
+      return !!def && (def.fields || []).some(function (f) { return f.group === 'otp'; });
+    }
     function buildForm2(keepTest) {
       var p = current();
       var def = catalog.filter(function (k) { return k.channel === channel && k.kind === kind; })[0] || { fields: [] };
@@ -626,14 +692,14 @@ function stepProvider(channel) {
       st = { sandbox: p ? !!p.sandbox : true };
       fieldEls = {};
       clear(formBox);
-      var sb = sandboxBox(st.sandbox, function (v) { st.sandbox = v; dirty = true; paintTest(); }, true);
+      var sb = sandboxBox(st.sandbox, function (v) { st.sandbox = v; dirty = true; paintTest(); }, true, channel);
       sb.classList.add('eco-span-all');
       formBox.appendChild(sb);
       var extra = [];
       var boxes = providerFieldsBoxes(kind, def.fields, cfg, fieldEls, function (f) { dirty = true; if (fieldEls[f.name]) fieldEls[f.name].setError(''); });
       boxes.main.forEach(function (x) { if (x.f.required) formBox.appendChild(x.el); else extra.push(x.el); });
-      if (extra.length) formBox.appendChild(h('div', { class: 'eco-span-all' }, setupMore(t('setup.pv.more.hint'), h('div', { class: 'setup-fields2' }, extra))));
-      if (boxes.otp) { boxes.otp.classList.add('eco-span-all'); formBox.appendChild(boxes.otp); }
+      if (boxes.otp) { boxes.otp.classList.add('eco-span-all'); extra.push(boxes.otp); }
+      if (extra.length) formBox.appendChild(h('div', { class: 'eco-span-all' }, setupMore(t(boxes.otp ? 'setup.pv.more.otp' : 'setup.pv.more.hint'), h('div', { class: 'setup-fields2' }, extra))));
       if (!p) formBox.appendChild(h('p', { class: 'eco-span-all text-xs text-secondary-500 dark:text-secondary-400 -mt-2 mb-2', 'data-pv-new': '', text: t('setup.pv.new') }));
       if (keepTest && p) testBoxEl.setAttribute('data-provider-id', p.id);
       else paintTest();
@@ -643,6 +709,13 @@ function stepProvider(channel) {
       Object.keys(fieldEls).forEach(function (k) { fieldEls[k].setError(''); });
       var p = current();
       var def = catalog.filter(function (k) { return k.channel === channel && k.kind === kind; })[0] || { fields: [] };
+      var bad = (def.fields || []).filter(function (f) { return fieldEls[f.name] && requiredMissing(f, cfg[f.name], p && p.config && p.config[f.name], st.sandbox); });
+      if (bad.length) {
+        bad.forEach(function (f) { fieldEls[f.name].setError(t('setup.err.required')); });
+        errorSummary(top, bad.length);
+        revealInvalid(formBox);
+        return Promise.resolve(false);
+      }
       var out = {};
       (def.fields || []).forEach(function (f) { if (cfg[f.name] !== undefined && cfg[f.name] !== null) out[f.name] = String(cfg[f.name]); });
       var body = { isActive: true, isDefault: true, sandbox: st.sandbox, config: out };
@@ -702,7 +775,7 @@ function stepProvider(channel) {
         h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', 'data-test-hint': live ? 'live' : 'sandbox', text: t(live ? 'setup.test.live' : 'setup.test.short') }),
         field(t('pv.test.to'), to),
         subject ? field(t('pv.test.subject'), subject, null, { optional: true }) : null,
-        channel === 'sms' ? otpTestToggle(msgField, state) : null,
+        channel === 'sms' && hasOtp() ? otpTestToggle(msgField, state) : null,
         msgField,
         h('div', { class: 'flex justify-end -mt-2' }, sendBtn),
         out
@@ -713,17 +786,17 @@ function stepProvider(channel) {
       var kinds = catalog.filter(function (k) { return k.channel === channel; });
       var seg = segmented(kinds.map(function (k) { return { value: k.kind, label: kindLabel(k.kind) }; }), kind, function (v) { kind = v; dirty = true; buildForm2(); clear(top); }, t('pv.kind'), 'md');
       seg.setAttribute('data-kind', '');
-      var yesBox = h('div', { class: 'setup-cols', hidden: need !== 'yes' },
+      var yesBox = kinds.length ? h('div', { class: 'setup-cols', hidden: need !== 'yes' },
         h('div', { class: 'min-w-0' },
-          h('div', { class: 'setup-kind', title: t('setup.pv.kind.hint') }, h('span', { class: 'setup-need-q', text: t('setup.pv.kind') }), seg),
+          h('div', { class: 'setup-kind' }, h('div', { class: 'min-w-0' }, h('span', { class: 'setup-need-q', text: t('setup.pv.kind') }), h('p', { class: 'setup-kind-hint', text: t('setup.pv.kind.hint') })), seg),
           top,
           formBox),
-        testBoxEl);
+        testBoxEl) : h('div', { hidden: need !== 'yes' }, notice('info', t('setup.pv.empty')));
       var noBox = h('div', { hidden: need !== 'no' }, notice('info', t('setup.' + channel + '.no')));
       clear(box).appendChild(needQuestion('setup.' + channel + '.need', need, function (v) { need = v; dirty = true; yesBox.hidden = v !== 'yes'; noBox.hidden = v !== 'no'; }));
       box.appendChild(noBox);
       box.appendChild(yesBox);
-      buildForm2();
+      if (kinds.length) buildForm2();
     }
     function load() {
       pubApi('GET', '/providers').then(function (res) {
@@ -732,7 +805,7 @@ function stepProvider(channel) {
         items = ((res && res.items) || []).filter(function (p) { return p.channel === channel; });
         var def = items.filter(function (p) { return p.isDefault; })[0] || items.filter(function (p) { return p.isActive; })[0] || items[0];
         kind = def ? def.kind : (catalog.filter(function (k) { return k.channel === channel; })[0] || {}).kind;
-        need = items.some(function (p) { return p.isActive; }) ? 'yes' : null;
+        need = savedNeed(channel, items.some(function (p) { return p.isActive; }));
         paint();
         dirty = false;
       }, function (err) { failBox(box, err, load); });

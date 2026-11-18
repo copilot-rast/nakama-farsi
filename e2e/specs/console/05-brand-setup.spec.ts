@@ -149,7 +149,7 @@ test.describe('brand and setup wizard', () => {
     expect(st.completedBy).toBe(ADMIN.user);
   });
 
-  test('SMS step: a new service is created by save and send test, the pattern fields are in view, and live mode keeps the button usable', async ({ page }) => {
+  test('SMS step: a new service is created by save and send test, the pattern fields sit under more settings, and live mode keeps the button usable', async ({ page }) => {
     await open(page, '#/project-settings/setup');
     await page.locator('[data-setup-open]').click();
     await page.locator(`${W} .setup-step[data-step="sms"]`).click();
@@ -157,9 +157,13 @@ test.describe('brand and setup wizard', () => {
     if (await page.locator(`${W} [data-need] [data-value="yes"]`).isVisible()) await page.locator(`${W} [data-need] [data-value="yes"]`).click();
     await page.locator(`${W} [data-kind] [data-value="smsir"]`).click();
     const otp = page.locator(`${W} [data-otp-fields="smsir"]`);
+    await expect(otp).toBeHidden();
+    await expect(page.locator(`${W} [data-setup-more] > summary`)).toContainText('پترن کد ورود');
+    await page.locator(`${W} [data-setup-more] > summary`).click();
     await expect(otp).toBeVisible();
     await expect(otp.locator('input[aria-label="شناسهٔ قالب sms.ir"]')).toBeVisible();
     await page.locator(`${W} [data-kind] [data-value="kavenegar"]`).click();
+    await page.locator(`${W} [data-setup-more] > summary`).click();
     await expect(page.locator(`${W} [data-otp-fields="kavenegar"] input[aria-label="نام پترن کد ورود"]`)).toBeVisible();
     const fresh = !(await pub.get('/providers')).items.some((p: any) => p.kind === 'kavenegar');
     if (fresh) await expect(page.locator(`${W} [data-pv-new]`)).toContainText('ذخیره و ارسال آزمایشی');

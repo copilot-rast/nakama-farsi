@@ -17,6 +17,7 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/languages", http.MethodGet, s.languageList},
 		{consolePrefix + "/languages", http.MethodPost, s.languageWrite(true)},
 		{consolePrefix + "/languages/coverage", http.MethodGet, s.languageCoverage},
+		{consolePrefix + "/languages/known", http.MethodGet, s.languageKnown},
 		{consolePrefix + "/languages/{id}", http.MethodGet, s.languageGet},
 		{consolePrefix + "/languages/{id}", http.MethodPut, s.languageWrite(false)},
 		{consolePrefix + "/languages/{id}", http.MethodDelete, s.languageDelete},
