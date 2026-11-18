@@ -693,8 +693,8 @@ function brandInfo() {
 function brandMark(cls) {
   var b = el('a', { class: cls || 'pl-brand', href: '#/', 'aria-label': pst('rail.home') });
   var info = brandInfo();
-  if (info.markUrl) b.appendChild(el('img', { src: info.markUrl, alt: '' }));
-  else b.innerHTML = plIcon('hexagon', 'pl-ic pl-ic-mark');
+  if (!info.markUrl) return null;
+  b.appendChild(el('img', { src: info.markUrl, alt: '' }));
   return b;
 }
 
@@ -758,7 +758,8 @@ function sideLinks(box, mode) {
 function buildRail(model, mode) {
   var nav = rail.el;
   nav.innerHTML = '';
-  nav.appendChild(brandMark());
+  var mark = brandMark();
+  if (mark) nav.appendChild(mark);
   modesOf(model).forEach(function (g) { nav.appendChild(modeItem(g, g === mode)); });
   nav.appendChild(el('div', { class: 'pl-grow' }));
   if (model.help) {
@@ -777,12 +778,14 @@ function buildSide(model, mode) {
   var p = rail.side;
   p.innerHTML = '';
   var info = brandInfo();
-  var name = info.name || info.shortName || 'Nakama';
+  var name = String(info.name || info.shortName || '').trim();
   var dark = root.classList.contains('dark');
   var logo = dark ? info.logoDarkUrl || info.logoUrl : info.logoUrl;
-  var ws = el('a', { class: 'pl-ws', href: '#/' },
-    logo ? el('img', { class: 'pl-ws-logo', src: logo, alt: name }) : el('span', { class: 'pl-ws-mark', text: String(name).trim().charAt(0) }),
-    el('span', { class: 'pl-ws-name' }, logo ? null : el('b', { text: name }), el('span', { text: pst('rail.console') })));
+  var head = logo ? el('img', { class: 'pl-ws-logo', src: logo, alt: name || pst('rail.console') })
+    : info.markUrl ? el('img', { class: 'pl-ws-mark pl-ws-mark--img', src: info.markUrl, alt: '' })
+    : name ? el('span', { class: 'pl-ws-mark', text: name.charAt(0) }) : null;
+  var ws = el('a', { class: 'pl-ws' + (head ? '' : ' pl-ws--plain'), href: '#/', 'data-pl-ws': name ? 'brand' : 'neutral' }, head,
+    el('span', { class: 'pl-ws-name' }, !logo && name ? el('b', { text: name }) : null, el('span', { text: pst('rail.console') })));
   p.appendChild(ws);
   var search = el('button', { type: 'button', class: 'pl-side-search', 'aria-haspopup': 'dialog', onclick: function () { closeSheet(); openPalette(); } });
   search.innerHTML = plIcon('search');

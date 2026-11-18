@@ -808,6 +808,7 @@ var MESSAGES = {
     'desc.brand': 'نام، لوگو و رنگ اصلی کنسول. صفحهٔ ورود و بازی‌ها هم همین را نشان می‌دهند.',
     'desc.setup': 'راهنمای راه‌اندازی کنسول را هر وقت خواستید از اینجا باز کنید.',
     'brand.signIn': 'برای ادامه به داشبورد {name} وارد شوید',
+    'brand.neutral': 'کنسول مدیریت',
     'brand.f.name': 'نام پروژه',
     'brand.f.name.hint': 'در نوار کناری، صفحهٔ ورود و عنوان مرورگر دیده می‌شود.',
     'brand.f.shortName': 'نام کوتاه',
@@ -1128,7 +1129,7 @@ var MESSAGES = {
     'ar.charset.any': 'هر حرفی (فارسی هم)',
     'ar.charset.latin': 'فقط لاتین',
     'f.ar.passwordMin': 'کمترین طول رمز',
-    'f.ar.passwordMin.hint': 'نکاما رمز کمتر از ۸ حرف را نمی‌پذیرد.',
+    'f.ar.passwordMin.hint': 'سرور رمز کمتر از ۸ حرف را نمی‌پذیرد.',
     'f.ar.passwordLetter': 'رمز حرف داشته باشد',
     'f.ar.passwordDigit': 'رمز عدد داشته باشد',
     'f.ar.displayNameMax': 'بیشترین طول نام نمایشی',
@@ -1275,7 +1276,7 @@ var MESSAGES = {
     'rs.lifted': 'محدودیت برداشته شد.',
     'code.END_REQUIRED': 'زمان پایان را انتخاب کنید.',
     'code.END_IN_PAST': 'زمان پایان باید در آینده باشد.',
-    'code.END_TOO_FAR': 'حداکثر ده سال؛ برای همیشه از مسدود کردن خود Nakama استفاده کنید.',
+    'code.END_TOO_FAR': 'حداکثر ده سال؛ برای همیشه از «مسدود کردن» در صفحهٔ بازیکن استفاده کنید.',
     'code.INVALID_END': 'تاریخ درست نیست.',
     'code.INVALID_RESTRICTION_KIND': 'نوع محدودیت درست نیست.',
     'code.NOT_ACTIVE': 'این محدودیت قبلاً تمام شده است.',
@@ -3364,7 +3365,7 @@ var MESSAGES = {
     'f.gm.minVersion': "کمترین نسخهٔ بازی",
     'f.gm.maxVersion': "بیشترین نسخهٔ بازی",
     'f.gm.board': "جدول امتیاز",
-    'f.gm.board.hint': "شناسهٔ یک جدول امتیاز نکاما؛ برنده‌ها یک امتیاز می‌گیرند.",
+    'f.gm.board.hint': "شناسهٔ یک جدول امتیاز؛ برنده‌ها یک امتیاز می‌گیرند.",
     'f.gm.settings': "تنظیمات",
     'code.INVALID_GAME_KEY': "کلید بازی درست نیست؛ حروف کوچک انگلیسی، عدد و _ ، با حرف شروع شود.",
     'code.PLAYERS_MAX_BELOW_MIN': "بیشترین بازیکن از کمترین کمتر است.",
@@ -6146,6 +6147,7 @@ var MESSAGES = {
     'desc.brand': 'The console name, logo and main color. The sign-in page and games show them too.',
     'desc.setup': 'Open the console setup guide from here whenever you need it.',
     'brand.signIn': 'Sign in to continue to the {name} dashboard',
+    'brand.neutral': 'Admin console',
     'brand.f.name': 'Project name',
     'brand.f.name.hint': 'Shown in the sidebar, on the sign-in page and in the browser tab.',
     'brand.f.shortName': 'Short name',
@@ -6466,7 +6468,7 @@ var MESSAGES = {
     'ar.charset.any': 'Any letters (Persian too)',
     'ar.charset.latin': 'Latin only',
     'f.ar.passwordMin': 'Minimum password length',
-    'f.ar.passwordMin.hint': 'Nakama never accepts passwords shorter than 8.',
+    'f.ar.passwordMin.hint': 'The server never accepts passwords shorter than 8.',
     'f.ar.passwordLetter': 'Password needs a letter',
     'f.ar.passwordDigit': 'Password needs a digit',
     'f.ar.displayNameMax': 'Maximum display name length',
@@ -6613,7 +6615,7 @@ var MESSAGES = {
     'rs.lifted': 'Restriction lifted.',
     'code.END_REQUIRED': 'Pick when it ends.',
     'code.END_IN_PAST': 'The end must be in the future.',
-    'code.END_TOO_FAR': 'At most ten years; use the Nakama ban for longer.',
+    'code.END_TOO_FAR': 'At most ten years; for longer use «Ban» on the player page.',
     'code.INVALID_END': 'This date is not valid.',
     'code.INVALID_RESTRICTION_KIND': 'Unknown restriction type.',
     'code.NOT_ACTIVE': 'This restriction has already ended.',
@@ -8702,7 +8704,7 @@ var MESSAGES = {
     'f.gm.minVersion': "Lowest app version",
     'f.gm.maxVersion': "Highest app version",
     'f.gm.board': "Leaderboard",
-    'f.gm.board.hint': "A Nakama leaderboard id; winners get one point.",
+    'f.gm.board.hint': "A leaderboard id; winners get one point.",
     'f.gm.settings': "Settings",
     'code.INVALID_GAME_KEY': "The game key is lowercase letters, digits and _, starting with a letter.",
     'code.PLAYERS_MAX_BELOW_MIN': "The most players is below the fewest.",
@@ -26797,12 +26799,89 @@ function applyAccent(hex) {
   startRecolor();
 }
 
+var NEUTRAL_TITLES = ['کنسول مدیریت', 'Admin console'];
+
+var NATIVE_EN = {
+  'Sign in to continue to the Nakama Dashboard': 'Sign in to continue to the admin console',
+  'The runtime modules are the core of Nakama. They are responsible for handling all the game logic, including matchmaking, leaderboards, tournaments, and more. You can use the runtime modules to create your own custom game logic and integrate it with Nakama.': 'The runtime modules are the core of the server. They are responsible for handling all the game logic, including matchmaking, leaderboards, tournaments, and more. You can use the runtime modules to create your own custom game logic and integrate it with the server.',
+  'Create your own custom game logic and integrate it with Nakama.': 'Create your own custom game logic and integrate it with the server.',
+  'Nakama includes a fast embedded code runtime enabling you to write custom logic as a JavaScript bundle, Go plugins, and Lua modules.': 'The server includes a fast embedded code runtime enabling you to write custom logic as a JavaScript bundle, Go plugins, and Lua modules.',
+  'Explore Nakama API and test Custom RPCs': 'Explore the server API and test custom RPCs',
+  'Receive latest updates to Nakama and other news.': 'Receive the latest updates and other news.',
+  'A list of all the users configured to use the Nakama Console, their permissions and management actions.': 'A list of all the users configured to use the admin console, their permissions and management actions.',
+  'A list of all the user permissions templates configured in the Nakama Console. These can be applied to users when creating or editing them.': 'A list of all the user permissions templates configured in the admin console. These can be applied to users when creating or editing them.',
+  'All the dates in the Nakama Console will be shown in the UTC timezone for all console users.': 'All the dates in the admin console will be shown in the UTC timezone for all console users.',
+  'Nakama has various configuration options to make it as flexible as possible for various use cases and deployment environments.': 'The server has various configuration options to make it as flexible as possible for various use cases and deployment environments.',
+  'Reset Nakama data': 'Reset server data',
+  'This action will delete all players, groups, chat, storage, payments, notifications and leaderboards from Nakama.': 'This action will delete all players, groups, chat, storage, payments, notifications and leaderboards from the server.',
+  'Delete all Nakama player data': 'Delete all player data',
+  'Your Nakama Console password has been reset.': 'Your admin console password has been reset.'
+};
+
+var NATIVE_SKIP = '[data-economy],[data-l10n-skip],code,pre,textarea,script,style,.monaco-editor';
+
+function neutralText(node) {
+  var v = node.nodeValue;
+  if (!v || v.indexOf('Nakama') === -1) return;
+  var el = node.parentElement;
+  if (!el || el.closest(NATIVE_SKIP)) return;
+  var key = v.replace(/\s+/g, ' ').trim();
+  var out = NATIVE_EN[key] ? v.replace(v.trim(), NATIVE_EN[key]) : v.replace(/\bthe Nakama (Console|Dashboard)\b/g, 'the admin console').replace(/\bNakama (Console|Dashboard)\b/g, 'Admin console');
+  if (out !== v) node.nodeValue = out;
+}
+
+function neutralTree(root) {
+  if (!root) return;
+  if (root.nodeType === 3) { neutralText(root); return; }
+  if (root.nodeType !== 1 && root.nodeType !== 9 && root.nodeType !== 11) return;
+  var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  var n;
+  while ((n = walker.nextNode())) neutralText(n);
+}
+
+function neutralMail(url) {
+  if (typeof url !== 'string' || url.indexOf('mailto:') !== 0) return url;
+  var q = url.indexOf('?');
+  if (q === -1) return url;
+  var params = new URLSearchParams(url.slice(q + 1));
+  var out = [];
+  params.forEach(function (v, k) {
+    v = v.replace(/Nakama Console/g, 'admin console').replace(/Thanks,\s*\n?\s*Heroic Labs/g, 'Thanks').replace(/\bNakama\b/g, 'server');
+    out.push(encodeURIComponent(k) + '=' + encodeURIComponent(v));
+  });
+  return url.slice(0, q + 1) + out.join('&');
+}
+
+var nativeObserver = null;
+
+function startNeutralNative() {
+  if (nativeObserver || lang() !== 'en' || !document.body) return;
+  neutralTree(document.body);
+  var open = window.open;
+  window.open = function (url) {
+    var args = Array.prototype.slice.call(arguments);
+    args[0] = neutralMail(url);
+    return open.apply(window, args);
+  };
+  nativeObserver = new MutationObserver(function (records) {
+    for (var i = 0; i < records.length; i++) {
+      var r = records[i];
+      if (r.type === 'characterData') neutralText(r.target);
+      else for (var j = 0; j < r.addedNodes.length; j++) neutralTree(r.addedNodes[j]);
+    }
+  });
+  nativeObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+}
+
 function brandTitle(v) {
   v = String(v == null ? '' : v);
+  if (!v.trim() || NEUTRAL_TITLES.indexOf(v.trim()) !== -1) {
+    BRAND.titleName = brandName() || t('brand.neutral');
+    return BRAND.titleName;
+  }
   if (BRAND.titleName) v = v.split(BRAND.titleName).join('Nakama');
-  var name = brandName();
+  var name = brandName() || t('brand.neutral');
   BRAND.titleName = name;
-  if (!name) return v;
   var parts = v.split(' | ');
   var last = parts.length - 1;
   parts[last] = parts[last].replace(/\bNakama\b/, name);
@@ -26836,7 +26915,8 @@ function brandLogoEl(b, sizeCls, compact) {
   var mark = b.markUrl;
   if (mark) wrap.appendChild(h('img', { src: mark, alt: compact ? alt : '', class: 'brand-logo-mark' }));
   var label = compact ? (b.shortName || name).slice(0, 2) : (name || b.shortName);
-  if (!mark || !compact) wrap.appendChild(h('span', { class: 'brand-logo-name', text: label || 'Nakama' }));
+  if (!label && compact) return wrap;
+  if (!mark || !compact) wrap.appendChild(h('span', { class: 'brand-logo-name', text: label || t('brand.neutral') }));
   return wrap;
 }
 
@@ -26844,12 +26924,7 @@ function placeLogo(anchor, b, compact) {
   var natives = [];
   for (var i = 0; i < anchor.children.length; i++) if (!anchor.children[i].hasAttribute('data-brand-logo')) natives.push(anchor.children[i]);
   var ours = anchor.querySelector(':scope > [data-brand-logo]');
-  var show = b && (b.logoUrl || b.markUrl || brandText(b.name) || b.shortName);
-  if (!show) {
-    if (ours) ours.remove();
-    natives.forEach(function (n) { if (n.hasAttribute('data-brand-hidden')) { n.style.display = ''; n.removeAttribute('data-brand-hidden'); } });
-    return;
-  }
+  b = b || {};
   var img = anchor.querySelector('img:not([data-brand-logo] img)');
   var size = img && /\bh-(\d+)\b/.exec(img.className) ? 'brand-h-' + /\bh-(\d+)\b/.exec(img.className)[1] : 'brand-h-7';
   var key = lang() + '|' + compact + '|' + size + '|' + JSON.stringify([b.name, b.shortName, b.logoUrl, b.logoDarkUrl, b.markUrl]);
@@ -26919,6 +26994,7 @@ function applyBrand() {
   }
   applyLogos(b);
   applyLogin(b);
+  startNeutralNative();
 }
 
 (function () {
@@ -26955,7 +27031,7 @@ function brandPreview(state) {
     ['light', 'dark'].forEach(function (mode) {
       var dark = mode === 'dark';
       var logoUrl = dark ? state.logoDarkUrl || state.logoUrl : state.logoUrl;
-      var name = brandText(state.name) || state.shortName || 'Nakama';
+      var name = brandText(state.name) || state.shortName || t('brand.neutral');
       var head = h('div', { class: 'brand-preview-head' });
       if (logoUrl) head.appendChild(h('img', { src: logoUrl, alt: '', class: 'brand-preview-logo' }));
       else {
@@ -28715,7 +28791,7 @@ function nativeLabels() {
   for (var i = 0; i < links.length; i++) {
     var a = links[i];
     if (!a.querySelector('img')) continue;
-    var label = brandName() || 'Nakama';
+    var label = brandName() || t('brand.neutral');
     if (a.getAttribute('aria-label') !== label) a.setAttribute('aria-label', label);
     if (a.getAttribute('tabindex') !== '-1') a.setAttribute('tabindex', '-1');
   }

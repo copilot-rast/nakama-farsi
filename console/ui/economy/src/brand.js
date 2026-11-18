@@ -185,12 +185,89 @@ function applyAccent(hex) {
   startRecolor();
 }
 
+var NEUTRAL_TITLES = ['کنسول مدیریت', 'Admin console'];
+
+var NATIVE_EN = {
+  'Sign in to continue to the Nakama Dashboard': 'Sign in to continue to the admin console',
+  'The runtime modules are the core of Nakama. They are responsible for handling all the game logic, including matchmaking, leaderboards, tournaments, and more. You can use the runtime modules to create your own custom game logic and integrate it with Nakama.': 'The runtime modules are the core of the server. They are responsible for handling all the game logic, including matchmaking, leaderboards, tournaments, and more. You can use the runtime modules to create your own custom game logic and integrate it with the server.',
+  'Create your own custom game logic and integrate it with Nakama.': 'Create your own custom game logic and integrate it with the server.',
+  'Nakama includes a fast embedded code runtime enabling you to write custom logic as a JavaScript bundle, Go plugins, and Lua modules.': 'The server includes a fast embedded code runtime enabling you to write custom logic as a JavaScript bundle, Go plugins, and Lua modules.',
+  'Explore Nakama API and test Custom RPCs': 'Explore the server API and test custom RPCs',
+  'Receive latest updates to Nakama and other news.': 'Receive the latest updates and other news.',
+  'A list of all the users configured to use the Nakama Console, their permissions and management actions.': 'A list of all the users configured to use the admin console, their permissions and management actions.',
+  'A list of all the user permissions templates configured in the Nakama Console. These can be applied to users when creating or editing them.': 'A list of all the user permissions templates configured in the admin console. These can be applied to users when creating or editing them.',
+  'All the dates in the Nakama Console will be shown in the UTC timezone for all console users.': 'All the dates in the admin console will be shown in the UTC timezone for all console users.',
+  'Nakama has various configuration options to make it as flexible as possible for various use cases and deployment environments.': 'The server has various configuration options to make it as flexible as possible for various use cases and deployment environments.',
+  'Reset Nakama data': 'Reset server data',
+  'This action will delete all players, groups, chat, storage, payments, notifications and leaderboards from Nakama.': 'This action will delete all players, groups, chat, storage, payments, notifications and leaderboards from the server.',
+  'Delete all Nakama player data': 'Delete all player data',
+  'Your Nakama Console password has been reset.': 'Your admin console password has been reset.'
+};
+
+var NATIVE_SKIP = '[data-economy],[data-l10n-skip],code,pre,textarea,script,style,.monaco-editor';
+
+function neutralText(node) {
+  var v = node.nodeValue;
+  if (!v || v.indexOf('Nakama') === -1) return;
+  var el = node.parentElement;
+  if (!el || el.closest(NATIVE_SKIP)) return;
+  var key = v.replace(/\s+/g, ' ').trim();
+  var out = NATIVE_EN[key] ? v.replace(v.trim(), NATIVE_EN[key]) : v.replace(/\bthe Nakama (Console|Dashboard)\b/g, 'the admin console').replace(/\bNakama (Console|Dashboard)\b/g, 'Admin console');
+  if (out !== v) node.nodeValue = out;
+}
+
+function neutralTree(root) {
+  if (!root) return;
+  if (root.nodeType === 3) { neutralText(root); return; }
+  if (root.nodeType !== 1 && root.nodeType !== 9 && root.nodeType !== 11) return;
+  var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  var n;
+  while ((n = walker.nextNode())) neutralText(n);
+}
+
+function neutralMail(url) {
+  if (typeof url !== 'string' || url.indexOf('mailto:') !== 0) return url;
+  var q = url.indexOf('?');
+  if (q === -1) return url;
+  var params = new URLSearchParams(url.slice(q + 1));
+  var out = [];
+  params.forEach(function (v, k) {
+    v = v.replace(/Nakama Console/g, 'admin console').replace(/Thanks,\s*\n?\s*Heroic Labs/g, 'Thanks').replace(/\bNakama\b/g, 'server');
+    out.push(encodeURIComponent(k) + '=' + encodeURIComponent(v));
+  });
+  return url.slice(0, q + 1) + out.join('&');
+}
+
+var nativeObserver = null;
+
+function startNeutralNative() {
+  if (nativeObserver || lang() !== 'en' || !document.body) return;
+  neutralTree(document.body);
+  var open = window.open;
+  window.open = function (url) {
+    var args = Array.prototype.slice.call(arguments);
+    args[0] = neutralMail(url);
+    return open.apply(window, args);
+  };
+  nativeObserver = new MutationObserver(function (records) {
+    for (var i = 0; i < records.length; i++) {
+      var r = records[i];
+      if (r.type === 'characterData') neutralText(r.target);
+      else for (var j = 0; j < r.addedNodes.length; j++) neutralTree(r.addedNodes[j]);
+    }
+  });
+  nativeObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+}
+
 function brandTitle(v) {
   v = String(v == null ? '' : v);
+  if (!v.trim() || NEUTRAL_TITLES.indexOf(v.trim()) !== -1) {
+    BRAND.titleName = brandName() || t('brand.neutral');
+    return BRAND.titleName;
+  }
   if (BRAND.titleName) v = v.split(BRAND.titleName).join('Nakama');
-  var name = brandName();
+  var name = brandName() || t('brand.neutral');
   BRAND.titleName = name;
-  if (!name) return v;
   var parts = v.split(' | ');
   var last = parts.length - 1;
   parts[last] = parts[last].replace(/\bNakama\b/, name);
@@ -224,7 +301,8 @@ function brandLogoEl(b, sizeCls, compact) {
   var mark = b.markUrl;
   if (mark) wrap.appendChild(h('img', { src: mark, alt: compact ? alt : '', class: 'brand-logo-mark' }));
   var label = compact ? (b.shortName || name).slice(0, 2) : (name || b.shortName);
-  if (!mark || !compact) wrap.appendChild(h('span', { class: 'brand-logo-name', text: label || 'Nakama' }));
+  if (!label && compact) return wrap;
+  if (!mark || !compact) wrap.appendChild(h('span', { class: 'brand-logo-name', text: label || t('brand.neutral') }));
   return wrap;
 }
 
@@ -232,12 +310,7 @@ function placeLogo(anchor, b, compact) {
   var natives = [];
   for (var i = 0; i < anchor.children.length; i++) if (!anchor.children[i].hasAttribute('data-brand-logo')) natives.push(anchor.children[i]);
   var ours = anchor.querySelector(':scope > [data-brand-logo]');
-  var show = b && (b.logoUrl || b.markUrl || brandText(b.name) || b.shortName);
-  if (!show) {
-    if (ours) ours.remove();
-    natives.forEach(function (n) { if (n.hasAttribute('data-brand-hidden')) { n.style.display = ''; n.removeAttribute('data-brand-hidden'); } });
-    return;
-  }
+  b = b || {};
   var img = anchor.querySelector('img:not([data-brand-logo] img)');
   var size = img && /\bh-(\d+)\b/.exec(img.className) ? 'brand-h-' + /\bh-(\d+)\b/.exec(img.className)[1] : 'brand-h-7';
   var key = lang() + '|' + compact + '|' + size + '|' + JSON.stringify([b.name, b.shortName, b.logoUrl, b.logoDarkUrl, b.markUrl]);
@@ -307,6 +380,7 @@ function applyBrand() {
   }
   applyLogos(b);
   applyLogin(b);
+  startNeutralNative();
 }
 
 (function () {
@@ -343,7 +417,7 @@ function brandPreview(state) {
     ['light', 'dark'].forEach(function (mode) {
       var dark = mode === 'dark';
       var logoUrl = dark ? state.logoDarkUrl || state.logoUrl : state.logoUrl;
-      var name = brandText(state.name) || state.shortName || 'Nakama';
+      var name = brandText(state.name) || state.shortName || t('brand.neutral');
       var head = h('div', { class: 'brand-preview-head' });
       if (logoUrl) head.appendChild(h('img', { src: logoUrl, alt: '', class: 'brand-preview-logo' }));
       else {

@@ -172,8 +172,9 @@ test('the password-reset email opened via mailto: is localized', () => {
   const url = forwarded[0];
   assert.ok(url.startsWith('mailto:a@b.c?'));
   const params = new URLSearchParams(url.slice(url.indexOf('?') + 1));
-  assert.equal(params.get('subject'), 'رمز عبور کنسول Nakama شما بازنشانی شد.');
-  assert.match(params.get('body'), /^رمز عبور کنسول Nakama شما توسط یکی از اعضای تیم بازنشانی شد\./);
+  assert.equal(params.get('subject'), 'رمز عبور کنسول مدیریت شما بازنشانی شد.');
+  assert.match(params.get('body'), /^رمز عبور کنسول مدیریت شما توسط یکی از اعضای تیم بازنشانی شد\./);
+  assert.doesNotMatch(params.get('body'), /Nakama|Heroic/);
   assert.match(params.get('body'), /\n\nhttps:\/\/console\.test\/#\/reset\?token=t1\n\n/);
   assert.doesNotMatch(params.get('body'), /[\u2066-\u2069]/);
   // Other URLs pass through unchanged.

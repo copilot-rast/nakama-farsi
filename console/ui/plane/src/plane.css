@@ -182,6 +182,17 @@ html.pl .pl-tb-end .pl-search {
   font-size: 13px;
 }
 
+.pl-ws-mark--img {
+  object-fit: cover;
+  background: transparent;
+}
+
+.pl-ws--plain .pl-ws-name span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-1);
+}
+
 .pl-ws-logo {
   max-width: 132px;
   max-height: 28px;

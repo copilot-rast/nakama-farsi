@@ -364,7 +364,7 @@ function nativeLabels() {
   for (var i = 0; i < links.length; i++) {
     var a = links[i];
     if (!a.querySelector('img')) continue;
-    var label = brandName() || 'Nakama';
+    var label = brandName() || t('brand.neutral');
     if (a.getAttribute('aria-label') !== label) a.setAttribute('aria-label', label);
     if (a.getAttribute('tabindex') !== '-1') a.setAttribute('tabindex', '-1');
   }
