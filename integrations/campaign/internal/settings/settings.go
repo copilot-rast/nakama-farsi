@@ -68,7 +68,14 @@ type Freeride struct {
 	RequestHours     int  `json:"requestHours"`
 }
 
+type Play struct {
+	CostCurrency string `json:"costCurrency"`
+	CostAmount   int64  `json:"costAmount"`
+	RefundOnWin  bool   `json:"refundOnWin"`
+}
+
 type All struct {
+	Play     Play     `json:"play"`
 	Attempts Attempts `json:"attempts"`
 	Stars    Stars    `json:"stars"`
 	Unlock   Unlock   `json:"unlock"`
@@ -99,14 +106,16 @@ const (
 )
 
 var (
-	KeyPattern   = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$`)
-	FieldPattern = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_]{0,39}$`)
-	EventPattern = regexp.MustCompile(`^[a-z][a-z0-9_.]{0,63}$`)
-	Ops          = map[string]bool{">=": true, ">": true, "<=": true, "<": true, "==": true, "!=": true}
+	KeyPattern      = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$`)
+	FieldPattern    = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_]{0,39}$`)
+	EventPattern    = regexp.MustCompile(`^[a-z][a-z0-9_.]{0,63}$`)
+	CurrencyPattern = regexp.MustCompile(`^[a-z0-9_]{2,32}$`)
+	Ops             = map[string]bool{">=": true, ">": true, "<=": true, "<": true, "==": true, "!=": true}
 )
 
 func Defaults() All {
 	return All{
+		Play:     Play{CostAmount: 1, RefundOnWin: true},
 		Attempts: Attempts{Hours: 24, GraceSeconds: 3, DefaultMinSeconds: 5, CloseOthers: true, KeepDays: 90},
 		Stars: Stars{
 			Rules: []StarRule{
@@ -173,6 +182,10 @@ func ValidateMultipliers(m []float64, maxStars int) bool {
 
 func (a All) Validate() (string, string) {
 	switch {
+	case a.Play.CostCurrency != "" && !CurrencyPattern.MatchString(a.Play.CostCurrency):
+		return "play.costCurrency", "INVALID_KEY"
+	case a.Play.CostAmount < 1 || a.Play.CostAmount > 1000000:
+		return "play.costAmount", "VALUE_OUT_OF_RANGE"
 	case a.Attempts.Hours < 1 || a.Attempts.Hours > 168:
 		return "attempts.hours", "VALUE_OUT_OF_RANGE"
 	case a.Attempts.DefaultMinSeconds < 0 || a.Attempts.DefaultMinSeconds > 3600:

@@ -35,7 +35,7 @@ type fixture struct {
 func newFixture(t *testing.T) *fixture {
 	db := plugintest.OpenDB(t)
 	f := &fixture{t: t, db: db, wallet: &plugintest.Wallet{DB: db}, clock: time.Now().UTC().Truncate(time.Second), levels: map[string]int{}}
-	f.s = &service{db: db, nk: f.wallet, logger: plugintest.Logger{}}
+	f.s = &service{db: db, nk: f.wallet, logger: plugintest.Logger{}, spend: economyhooks.SpendRegen, refund: economyhooks.RefundRegen}
 	f.s.now = func() time.Time { f.mu.Lock(); defer f.mu.Unlock(); return f.clock }
 	f.s.level = func(_ context.Context, userID, _ string) (int, error) {
 		f.mu.Lock()

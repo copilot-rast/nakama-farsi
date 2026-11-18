@@ -32,10 +32,13 @@ type service struct {
 	now    func() time.Time
 	level  func(ctx context.Context, userID, tableID string) (int, error)
 	prize  func(ctx context.Context, g economyhooks.PrizeGrant) (economyhooks.PrizeResult, error)
+	spend  func(ctx context.Context, userID, currency string, amount int64, sourceID string) (economyhooks.RegenSpend, error)
+	refund func(ctx context.Context, userID, currency, sourceID string) (economyhooks.RegenRefund, error)
 }
 
 func newService(db *sql.DB, nk runtime.NakamaModule, logger runtime.Logger) *service {
-	return &service{db: db, nk: nk, logger: logger, now: time.Now, level: economyhooks.Level, prize: economyhooks.GrantPrize}
+	return &service{db: db, nk: nk, logger: logger, now: time.Now, level: economyhooks.Level, prize: economyhooks.GrantPrize,
+		spend: economyhooks.SpendRegen, refund: economyhooks.RefundRegen}
 }
 
 func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {

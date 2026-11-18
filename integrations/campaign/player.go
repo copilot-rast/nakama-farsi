@@ -14,6 +14,7 @@ import (
 	"github.com/heroiclabs/nakama/v3/integrations/campaign/internal/settings"
 	"github.com/heroiclabs/nakama/v3/integrations/devkit/apierr"
 	"github.com/heroiclabs/nakama/v3/internal/campaignhooks"
+	"github.com/heroiclabs/nakama/v3/internal/economyhooks"
 	"github.com/heroiclabs/nakama/v3/internal/gameevents"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
@@ -223,16 +224,31 @@ func (s *service) rpcStart(ctx context.Context, userID, payload string) (any, er
 	now := s.now().UTC()
 	id := uuid.Must(uuid.NewV4()).String()
 	expires := now.Add(time.Duration(cfg.Attempts.Hours) * time.Hour)
+	var cost *playCost
+	var regen *economyhooks.Regen
+	var rawCost []byte
+	if currency, amount := stageCost(cfg, st); amount > 0 {
+		cost, regen, err = s.takeCost(ctx, userID, id, currency, amount)
+		if err != nil {
+			return nil, err
+		}
+		rawCost, _ = json.Marshal(cost)
+	}
 	err = s.inTx(ctx, func(tx *sql.Tx) error {
 		if cfg.Attempts.CloseOthers {
 			if _, err := tx.ExecContext(ctx, `UPDATE campaign_attempt SET status='closed', closed_at=$2 WHERE user_id=$1 AND status='open'`, userID, now); err != nil {
 				return err
 			}
 		}
-		_, err := tx.ExecContext(ctx, `INSERT INTO campaign_attempt (id, user_id, stage_id, started_at, expires_at) VALUES ($1,$2,$3,$4,$5)`, id, userID, st.ID, now, expires)
+		_, err := tx.ExecContext(ctx, `INSERT INTO campaign_attempt (id, user_id, stage_id, started_at, expires_at, play_cost) VALUES ($1,$2,$3,$4,$5,$6)`, id, userID, st.ID, now, expires, rawCost)
 		return err
 	})
 	if err != nil {
+		if cost != nil && cost.Spent > 0 {
+			if rerr := s.giveBack(ctx, userID, id, &refundRef{CurrencyKey: cost.CurrencyKey, Amount: cost.Spent, Via: cost.Via}); rerr != nil {
+				s.logger.Error("Campaign play cost of %s not returned after a failed start: %v", id, rerr)
+			}
+		}
 		return nil, err
 	}
 	if gameevents.Has() {
@@ -241,7 +257,14 @@ func (s *service) rpcStart(ctx context.Context, userID, payload string) (any, er
 			s.logger.Debug("Campaign start event not recorded: %v", errs)
 		}
 	}
-	return map[string]any{"attemptId": id, "stageKey": st.Key, "startedAt": now.Format(time.RFC3339Nano), "expiresAt": expires.Format(time.RFC3339), "timeLimitSeconds": st.TimeLimit}, nil
+	out := map[string]any{"attemptId": id, "stageKey": st.Key, "startedAt": now.Format(time.RFC3339Nano), "expiresAt": expires.Format(time.RFC3339), "timeLimitSeconds": st.TimeLimit, "playCost": nil}
+	if cost != nil {
+		out["playCost"] = cost
+		if regen != nil {
+			out["regen"] = regen
+		}
+	}
+	return out, nil
 }
 
 func (s *service) inTx(ctx context.Context, fn func(tx *sql.Tx) error) error {
@@ -317,6 +340,7 @@ type plan struct {
 	Reason     string           `json:"reason"`
 	SourceID   string           `json:"sourceId"`
 	Event      *eventRef        `json:"event,omitempty"`
+	Refund     *refundRef       `json:"refund,omitempty"`
 }
 
 type prizeRef struct {
@@ -389,9 +413,9 @@ func (s *service) complete(ctx context.Context, userID string, in completeIn) (a
 		done, status = nil, ""
 		var owner, stageID, stageKey string
 		var started, expires time.Time
-		var stored []byte
-		err := tx.QueryRowContext(ctx, `SELECT a.user_id::text, a.stage_id::text, s.key, a.started_at, a.expires_at, a.status, a.result FROM campaign_attempt a JOIN campaign_stage s ON s.id=a.stage_id WHERE a.id=$1 FOR UPDATE OF a`,
-			in.AttemptID).Scan(&owner, &stageID, &stageKey, &started, &expires, &status, &stored)
+		var stored, rawCost []byte
+		err := tx.QueryRowContext(ctx, `SELECT a.user_id::text, a.stage_id::text, s.key, a.started_at, a.expires_at, a.status, a.result, a.play_cost FROM campaign_attempt a JOIN campaign_stage s ON s.id=a.stage_id WHERE a.id=$1 FOR UPDATE OF a`,
+			in.AttemptID).Scan(&owner, &stageID, &stageKey, &started, &expires, &status, &stored, &rawCost)
 		if errors.Is(err, sql.ErrNoRows) || err == nil && (owner != userID || in.StageKey != "" && in.StageKey != stageKey) {
 			return apierr.NotFound("ATTEMPT_NOT_FOUND").WithField("attemptId")
 		}
@@ -449,7 +473,9 @@ func (s *service) complete(ctx context.Context, userID string, in completeIn) (a
 			return err
 		}
 		pl.GrantID = "campaign:" + in.AttemptID
+		pl.Refund = refundFor(cfg, in.Success, rawCost)
 		res["attemptId"] = in.AttemptID
+		res["playCostRefund"] = nil
 		rawRes, _ := json.Marshal(res)
 		rawPlan, _ := json.Marshal(pl)
 		stars, _ := res["stars"].(int)

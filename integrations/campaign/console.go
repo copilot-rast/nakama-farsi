@@ -72,8 +72,14 @@ func (s *service) settingsGet(w http.ResponseWriter, r *http.Request) {
 	if !metaOK {
 		_ = s.db.QueryRowContext(r.Context(), `SELECT EXISTS (SELECT 1 FROM economy_meta WHERE key=$1)`, cfg.XP.MetaKey).Scan(&metaOK)
 	}
+	costOK := cfg.Play.CostCurrency == ""
+	costRegen := false
+	if !costOK {
+		_ = s.db.QueryRowContext(r.Context(), `SELECT true, COALESCE(regen->>'enabled','false') = 'true' FROM economy_currency WHERE key=$1`, cfg.Play.CostCurrency).Scan(&costOK, &costRegen)
+	}
 	pluginkit.WriteJSON(w, http.StatusOK, map[string]any{"settings": cfg, "defaults": settings.Defaults(), "updatedBy": meta.UpdatedBy, "updatedAt": meta.UpdatedAt,
-		"economy": lvErr == nil || !errors.Is(lvErr, economyhooks.ErrNoLevels), "prizes": economyhooks.PrizesAvailable(), "xpMetaFound": metaOK})
+		"economy": lvErr == nil || !errors.Is(lvErr, economyhooks.ErrNoLevels), "prizes": economyhooks.PrizesAvailable(), "xpMetaFound": metaOK,
+		"regen": economyhooks.RegenAvailable(), "costCurrencyFound": costOK, "costCurrencyRegen": costRegen})
 }
 
 func (s *service) settingsPut(w http.ResponseWriter, r *http.Request) {

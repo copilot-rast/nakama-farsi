@@ -42,6 +42,15 @@ func (s *service) payPlan(ctx context.Context, userID string, pl *plan, res map[
 			}
 		}
 	}
+	if pl.Refund != nil && !pl.Refund.Done {
+		if err := s.giveBack(ctx, userID, strings.TrimPrefix(pl.GrantID, "campaign:"), pl.Refund); err != nil {
+			s.logger.Warn("Campaign play cost refund %s failed: %v", pl.GrantID, err)
+			ok = false
+		}
+	}
+	if pl.Refund != nil && pl.Refund.Done {
+		res["playCostRefund"] = map[string]any{"currencyKey": pl.Refund.CurrencyKey, "amount": pl.Refund.Refunded}
+	}
 	paid := []map[string]any{}
 	for i := range pl.Prizes {
 		pr := &pl.Prizes[i]
