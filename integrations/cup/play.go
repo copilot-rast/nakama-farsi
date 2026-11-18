@@ -178,7 +178,7 @@ func (s *service) rpcReady(ctx context.Context, userID, payload string) (any, er
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"matchId": out["matchId"], "status": out["status"], "gameNo": out["gameNo"], "gameMatchId": out["gameMatchId"], "launched": out["launched"]}, nil
+	return readyJSON(out), nil
 }
 
 func (s *service) rpcStart(ctx context.Context, userID, payload string) (any, error) {
@@ -195,5 +195,14 @@ func (s *service) rpcStart(ctx context.Context, userID, payload string) (any, er
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"matchId": out["matchId"], "status": out["status"], "gameNo": out["gameNo"], "gameMatchId": out["gameMatchId"], "launched": out["launched"]}, nil
+	return readyJSON(out), nil
+}
+
+func readyJSON(out map[string]any) map[string]any {
+	matchID, _ := out["matchId"].(string)
+	status, _ := out["status"].(string)
+	gameNo, _ := out["gameNo"].(int)
+	gameMatchID, _ := out["gameMatchId"].(string)
+	launched, _ := out["launched"].(bool)
+	return map[string]any{"matchId": matchID, "status": status, "gameNo": gameNo, "gameMatchId": gameMatchID, "launched": launched}
 }
