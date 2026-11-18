@@ -120,6 +120,11 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		return err
 	}
 	gamecatalog.SetProvider(gameProvider{s: svc})
+	economyhooks.SetLevelReader(svc.levelIn)
+	economyhooks.SetMethodReader(svc.methodSandboxes)
+	economyhooks.SetPrizeGranter(svc.grantPrizeHook)
+	economyhooks.SetMetaSettler(svc.settleMetasHook)
+	economyhooks.SetItemSaver(svc.saveItemHook)
 	playerevents.SetRecorder(svc.playerEventRecorder())
 	economyhooks.SetPrizeGranter(svc.grantPrizeHook)
 	go svc.reconcileLoop(ctx)

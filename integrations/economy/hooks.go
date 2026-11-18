@@ -11,6 +11,46 @@ import (
 	"github.com/heroiclabs/nakama/v3/internal/economyhooks"
 )
 
+func hookError(err error) error {
+	if r, ok := economyhooks.AsRefusal(err); ok {
+		return &appError{Code: r.Code, Message: r.Message, Status: r.Status, Meta: r.Meta}
+	}
+	return err
+}
+
+func (s *service) saveItemHook(ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
+	err := saveItem(s, ctx, tx, id, create, raw)
+	var ae *appError
+	if errors.As(err, &ae) {
+		return &economyhooks.Refusal{Status: ae.Status, Code: ae.Code, Message: ae.Message, Meta: map[string]any{"field": ae.Field}}
+	}
+	return err
+}
+
+func (s *service) levelIn(ctx context.Context, userID, tableID string) (int, error) {
+	return newLevelCache(s.db, userID).level(ctx, tableID)
+}
+
+func (s *service) methodSandboxes(ctx context.Context) (map[string]bool, error) {
+	active, err := s.activeMethods(ctx)
+	if err != nil {
+		return nil, err
+	}
+	out := map[string]bool{}
+	for m, pm := range active {
+		out[m] = pm.Config.flag("sandbox")
+	}
+	return out, nil
+}
+
+func itemIDs(defs []itemDef) []string {
+	ids := make([]string, 0, len(defs))
+	for _, d := range defs {
+		ids = append(ids, d.ID)
+	}
+	return ids
+}
+
 func (s *service) grantPrizeHook(ctx context.Context, g economyhooks.PrizeGrant) (economyhooks.PrizeResult, error) {
 	out := economyhooks.PrizeResult{Prizes: []map[string]any{}}
 	g.PrizeKey, g.GroupKey = strings.TrimSpace(g.PrizeKey), strings.TrimSpace(g.GroupKey)
@@ -82,4 +122,15 @@ func (s *service) grantPrizeHook(ctx context.Context, g economyhooks.PrizeGrant)
 		out.Prizes = append(out.Prizes, map[string]any{"id": r.id, "key": r.key, "items": items})
 	}
 	return out, nil
+}
+
+func (s *service) settleMetasHook(ctx context.Context, userID string, metaKeys []string) (map[string]any, error) {
+	ids, err := s.metaIDsByKey(ctx, metaKeys)
+	if err != nil {
+		return nil, err
+	}
+	out := newOutcome()
+	out.metaIDs = ids
+	s.settleOutcome(ctx, userID, out, 0)
+	return map[string]any{"levels": out.Levels, "claims": out.Claims}, nil
 }
