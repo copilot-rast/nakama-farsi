@@ -32,6 +32,7 @@ var DefaultModules = []Module{
 	{Name: "trophy", Dir: "integrations/trophy"},
 	{Name: "clan", Dir: "integrations/clan"},
 	{Name: "cup", Dir: "integrations/cup"},
+	{Name: "campaign", Dir: "integrations/campaign"},
 }
 
 type CodeInfo struct {
