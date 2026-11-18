@@ -1,6 +1,6 @@
 import { expect, test } from '../../lib/fixtures';
 import { base, deleteUser, devicePlayer, eco, rpc, uid } from '../../lib/api';
-import { cg } from '../../lib/campaign';
+import { type CampaignSnapshot, cg, restoreCampaignSettings, saveCampaignSettings } from '../../lib/campaign';
 import { sql } from '../../lib/db';
 import { field, open, panel, pickRef, root, rows, savePanel, search, settlePanel } from '../../lib/console';
 import { CONSOLE_URL } from '../../lib/env';
@@ -8,12 +8,12 @@ import { CONSOLE_URL } from '../../lib/env';
 const k = uid().replace(/_/g, '');
 const ids: Record<string, string> = {};
 const users: string[] = [];
-let rawSettings = '';
+let saved: CampaignSnapshot = null;
 
 test.describe.configure({ mode: 'serial' });
 
 test.beforeAll(async () => {
-  rawSettings = sql(`SELECT value::text FROM campaign_settings WHERE id=1`).trim();
+  saved = saveCampaignSettings();
   ids.gem = (await eco.post('/currencies', { key: k + 'g', name: { fa: 'الماس ' + k, en: 'Gem ' + k }, type: 'hard', defaultValue: 50, iconUrl: '', tagIds: [], metadata: {}, sort: 98 })).id;
   ids.heart = (await eco.post('/currencies', { key: k + 'h', name: { fa: 'جان ' + k, en: 'Heart ' + k }, type: 'soft', defaultValue: 5, iconUrl: '', tagIds: [], metadata: {}, sort: 99 })).id;
   ids.tag = (await base.post('/tags', { keyType: 'user', key: k + 'u', name: { fa: 'جان بی‌نهایت ' + k } })).id;
@@ -21,8 +21,7 @@ test.beforeAll(async () => {
 
 test.afterAll(async () => {
   for (const id of users) await deleteUser(id);
-  if (rawSettings) sql(`UPDATE campaign_settings SET value='${rawSettings.replace(/'/g, "''")}'::jsonb WHERE id=1`);
-  await cg.raw('GET', '/settings');
+  await restoreCampaignSettings(saved);
   for (const r of ['heart', 'gem']) if (ids[r]) await eco.del('/currencies/' + ids[r]);
   if (ids.tag) await base.del('/tags/' + ids.tag);
 });

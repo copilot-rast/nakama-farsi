@@ -1,13 +1,13 @@
 import { expect, test } from '../../lib/fixtures';
 import { deleteUser, devicePlayer, eco, rpc, uid, type Player } from '../../lib/api';
-import { cg, plainCampaign, removeCampaign } from '../../lib/campaign';
+import { type CampaignSnapshot, cg, plainCampaign, removeCampaign, restoreCampaignSettings, saveCampaignSettings } from '../../lib/campaign';
 import { errorOf } from '../../lib/leaderboardx';
 import { sql } from '../../lib/db';
 
 const k = uid().replace(/_/g, '');
 const users: string[] = [];
 const F: Record<string, any> = {};
-let rawSettings = '';
+let saved: CampaignSnapshot = null;
 
 test.describe.configure({ mode: 'serial' });
 
@@ -31,7 +31,7 @@ async function complete(p: Player, attemptId: string, body: any) {
 }
 
 test.beforeAll(async () => {
-  rawSettings = sql(`SELECT value::text FROM campaign_settings WHERE id=1`).trim();
+  saved = saveCampaignSettings();
   F.cur = 'e2e' + k + 'c';
   F.xpKey = 'e2e' + k + 'xp';
   await eco.post('/currencies', { key: F.cur, name: { fa: 'سکهٔ مرحله ' + k, en: 'Stage coin ' + k }, type: 'soft', defaultValue: 0, iconUrl: '', tagIds: [], metadata: {}, sort: 99 });
@@ -53,8 +53,7 @@ test.beforeAll(async () => {
 test.afterAll(async () => {
   for (const id of users) await deleteUser(id);
   removeCampaign('e2e_' + k);
-  if (rawSettings) sql(`UPDATE campaign_settings SET value='${rawSettings.replace(/'/g, "''")}'::jsonb WHERE id=1`);
-  await cg.raw('GET', '/settings');
+  await restoreCampaignSettings(saved);
   if (F.prize) { sql(`DELETE FROM economy_user_prize WHERE prize_id='${F.prize.id}'`); await eco.del('/prizes/' + F.prize.id); }
   sql(`DELETE FROM economy_user_meta WHERE meta_id IN (SELECT id FROM economy_meta WHERE key='${F.xpKey}')`);
   if (F.meta) await eco.del('/metas/' + F.meta.id);

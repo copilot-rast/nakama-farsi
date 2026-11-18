@@ -27,6 +27,24 @@ export function plainCampaign(s: any) {
   s.stars = { ...s.stars, rules: defaultStarRules(), multipliers: [0.2, 0.5, 1], repeatableMultipliers: [1, 1, 1], maxStars: 3, minOnSuccess: 1, missingField: 'pass' };
 }
 
+export type CampaignSnapshot = { value: string; by: string; at: string } | null;
+
+export function saveCampaignSettings(): CampaignSnapshot {
+  const row = sql(`SELECT json_build_object('value', value::text, 'by', updated_by, 'at', updated_at::text) FROM campaign_settings WHERE id=1`).trim();
+  return row ? JSON.parse(row) : null;
+}
+
+export async function restoreCampaignSettings(snap: CampaignSnapshot) {
+  const q = (v: string) => "'" + v.replace(/'/g, "''") + "'";
+  if (snap) {
+    await must(consoleApi('PUT', P + '/settings', JSON.parse(snap.value)));
+    sql(`UPDATE campaign_settings SET value=${q(snap.value)}::jsonb, updated_by=${q(snap.by)}, updated_at=${q(snap.at)}::timestamptz WHERE id=1`);
+  } else {
+    await must(consoleApi('PUT', P + '/settings', (await must<any>(consoleApi('GET', P + '/settings'))).defaults));
+    sql(`DELETE FROM campaign_settings WHERE id=1`);
+  }
+}
+
 export function removeCampaign(part: string) {
   sql(`DELETE FROM campaign_attempt WHERE stage_id IN (SELECT id FROM campaign_stage WHERE key LIKE '%${part}%');
     DELETE FROM campaign_user_stage WHERE stage_id IN (SELECT id FROM campaign_stage WHERE key LIKE '%${part}%');

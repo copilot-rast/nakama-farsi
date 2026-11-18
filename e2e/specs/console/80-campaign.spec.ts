@@ -1,7 +1,7 @@
 import { expect, test } from '../../lib/fixtures';
 import type { Page } from '@playwright/test';
 import { deleteUser, devicePlayer, eco, rpc, uid, type Player } from '../../lib/api';
-import { cg, plainCampaign, removeCampaign } from '../../lib/campaign';
+import { type CampaignSnapshot, cg, plainCampaign, removeCampaign, restoreCampaignSettings, saveCampaignSettings } from '../../lib/campaign';
 import { noHorizontalScroll } from '../../lib/console';
 import { sql } from '../../lib/db';
 import { CONSOLE_URL } from '../../lib/env';
@@ -9,7 +9,7 @@ import { CONSOLE_URL } from '../../lib/env';
 const k = uid().replace(/_/g, '');
 const F: Record<string, any> = {};
 const users: string[] = [];
-let rawSettings = '';
+let saved: CampaignSnapshot = null;
 const CH = 'e2e_' + k + '_story';
 const ST = 'e2e_' + k + '_chase';
 const ST2 = 'e2e_' + k + '_second';
@@ -28,7 +28,7 @@ async function openCampaign(page: Page, sub: string) {
 }
 
 test.beforeAll(async () => {
-  rawSettings = sql(`SELECT value::text FROM campaign_settings WHERE id=1`).trim();
+  saved = saveCampaignSettings();
   F.cur = 'e2e' + k + 'c';
   await eco.post('/currencies', { key: F.cur, name: { fa: 'سکهٔ کنسول ' + k, en: 'Console coin ' + k }, type: 'soft', defaultValue: 0, iconUrl: '', tagIds: [], metadata: {}, sort: 99 });
   F.prize = await eco.post('/prizes', { key: 'e2e_' + k + '_medal', name: { fa: 'مدال ' + k }, message: {}, tagIds: [], isRepeatable: true, metadata: {}, items: [{ type: 'currency', key: F.cur, action: 'add', value: 1 }] });
@@ -38,8 +38,7 @@ test.beforeAll(async () => {
 test.afterAll(async () => {
   for (const id of users) await deleteUser(id);
   removeCampaign('e2e_' + k);
-  if (rawSettings) sql(`UPDATE campaign_settings SET value='${rawSettings.replace(/'/g, "''")}'::jsonb WHERE id=1`);
-  await cg.raw('GET', '/settings');
+  await restoreCampaignSettings(saved);
   if (F.prize) { sql(`DELETE FROM economy_user_prize WHERE prize_id='${F.prize.id}'`); await eco.del('/prizes/' + F.prize.id); }
   const c = (await eco.get('/currencies?q=' + F.cur)).items?.find((x: any) => x.key === F.cur);
   if (c) await eco.del('/currencies/' + c.id);
