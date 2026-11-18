@@ -42,8 +42,8 @@ Chapters and stages take `[{type, key, value, table}]`, all must hold: `level` (
 | RPC | In | Out |
 |---|---|---|
 | `campaign_chapters` | `{lang?, chapter?}` | `{serverTime, xp, level, maxStars, chapters:[{key, name, description, iconUrl, address, sort, unlocked, locks, stars, maxStars, starPercent, milestones:[{percent, rewards, prizeKey, prizeGroupKey, claimed, reached}], stages:[{key, name, description, iconUrl, address, sort, mode, unlocked, locks, bestStars, completions, wins, bestSeconds, rewards:[{currencyKey, amount}], xp, tierPrizes, starMultipliers, claimed, claimedXp, timeLimitSeconds, rewardGroup, cooldownSeconds, dailyRewardLimit, nextRewardAt, rewardsLeftToday, metadata}]}], freeride:[{key, name, rewards, prizeKey, prizeGroupKey, xp, minLevel, rewardGroup, cooldownSeconds, dailyRewardLimit, nextRewardAt, rewardsLeftToday}]}` |
-| `campaign_attempt_start` | `{stageKey}` | `{attemptId, stageKey, startedAt, expiresAt, timeLimitSeconds}`; `STAGE_NOT_FOUND`, `STAGE_LOCKED` |
-| `campaign_attempt_complete` | `{attemptId, stageKey?, success, elapsedSeconds, healthPercent?, fields?}` | `{attemptId, stageKey, chapterKey, mode, success, stars, bestStars, previousBestStars, rewards, milestoneRewards, milestones, prizes:[{key, items, for}], pendingPrizes, xpGained, xp, level, levels?, rewardLimited, nextRewardAt, rewardsLeftToday, trophies?, serverSeconds, replayed}`; `ATTEMPT_REQUIRED`, `ATTEMPT_NOT_FOUND`, `ATTEMPT_CLOSED`, `ATTEMPT_EXPIRED`, `INVALID_RESULT`, `STAGE_FINISHED_TOO_FAST`, `STAGE_LOCKED`, `TOO_MANY_FIELDS`, `STAGE_BUSY` (409, send once more) |
+| `campaign_attempt_start` | `{stageKey}` | `{attemptId, stageKey, startedAt, expiresAt, timeLimitSeconds, playCost: {currencyKey, amount, spent, free, via} \| null, regen?}`; `STAGE_NOT_FOUND`, `STAGE_LOCKED`, `NOT_ENOUGH_PLAY_COST` (409, `meta {currencyKey, amount, value?, nextAt?, fullAt?, refillPrice?}`) |
+| `campaign_attempt_complete` | `{attemptId, stageKey?, success, elapsedSeconds, healthPercent?, fields?}` | `{attemptId, stageKey, chapterKey, mode, success, playCostRefund: {currencyKey, amount} | null, stars, bestStars, previousBestStars, rewards, milestoneRewards, milestones, prizes:[{key, items, for}], pendingPrizes, xpGained, xp, level, levels?, rewardLimited, nextRewardAt, rewardsLeftToday, trophies?, serverSeconds, replayed}`; `ATTEMPT_REQUIRED`, `ATTEMPT_NOT_FOUND`, `ATTEMPT_CLOSED`, `ATTEMPT_EXPIRED`, `INVALID_RESULT`, `STAGE_FINISHED_TOO_FAST`, `STAGE_LOCKED`, `TOO_MANY_FIELDS`, `STAGE_BUSY` (409, send once more) |
 | `campaign_freeride_claim` | `{key, requestId}` | `{key, requestId, rewards, xpGained, xp, level, prizes, nextRewardAt, rewardsLeftToday, replayed}`; `FREERIDE_NOT_FOUND`, `REQUEST_ID_REQUIRED`, `LEVEL_TOO_LOW`, `REWARD_LIMITED` (409, `meta.reason`, `nextRewardAt`, `rewardsLeftToday`) |
 
 `INVALID_RESULT` and `STAGE_FINISHED_TOO_FAST` are counted on the attempt (`rejected`, `last_reject`; shown on the player card and in the report). The attempt stays open, so a correct resend still works.
@@ -52,6 +52,9 @@ Chapters and stages take `[{type, key, value, table}]`, all must hold: `level` (
 
 | Key | Default | Choices |
 |---|---|---|
+| `play.costCurrency` | `""` | wallet currency taken at every start (empty = no cost, PP behaviour) |
+| `play.costAmount` | 1 | 1–1 000 000 per start; a stage's `metadata.playCost` (whole number ≥ 0, 0 = free) overrides it |
+| `play.refundOnWin` | true | a won run gives the cost back, once |
 | `attempts.hours` | 24 | 1–168: how long a started run can be completed |
 | `attempts.graceSeconds` | 3 | 0–120 added to the server clock and the time limit |
 | `attempts.defaultMinSeconds` | 5 | 0–3600: shortest won run of a stage without its own minimum |
@@ -77,6 +80,10 @@ Chapters and stages take `[{type, key, value, table}]`, all must hold: `level` (
 | `freeride.requireRequestId` | true | claims need a `requestId` |
 | `freeride.requestHours` | 24 | how long a claim answer is kept |
 
+### Play cost
+
+With `play.costCurrency` set, `campaign_attempt_start` spends the cost before it creates the attempt, through `economyhooks.SpendRegen` with source `campaign:<attemptId>` (regen currencies settle first; a player holding the currency's unlimited tag plays free). Without economy it is a plain wallet debit (grant id `campaign:<attemptId>:cost`). A refusal creates no attempt and answers `NOT_ENOUGH_PLAY_COST` with the next refill time. The cost is stored on the attempt (`campaign_attempt.play_cost`, migration `20270103000001-campaign-play-cost.sql`). A won completion with `play.refundOnWin` puts the refund in the payment plan, so it runs once with the other payments (and the payment worker retries it): `RefundRegen`, or a wallet credit with grant id `campaign:<attemptId>:refund`. Lost, abandoned, expired and closed attempts keep the cost. Server-owned stages started through `campaignhooks.Start` pay the cost too.
+
 ## Data model
 
 | Table | What |
@@ -85,7 +92,7 @@ Chapters and stages take `[{type, key, value, table}]`, all must hold: `level` (
 | `campaign_chapter` | key, translated name/description, icon url, Addressables address, sort, active, `unlock` rules, `milestones`, metadata |
 | `campaign_stage` | key (the game's stage id), chapter, texts, icon, address, sort, active, `mode`, `unlock` (null = default), time limit, min seconds, `star_rules` / `star_multipliers` (null = settings), `rewards`, `xp`, `tier_prizes`, reward group, cooldown, daily limit, `xp_when_limited`, metadata |
 | `campaign_freeride` | key, texts, rewards, prize / prize group, xp, reward group, cooldown, daily limit, min level |
-| `campaign_attempt` | id = attempt token, user, stage, server `started_at`, `expires_at`, `status open → paying → done` (or `closed`), stars, stored `result` and payment `plan`, `rejected` |
+| `campaign_attempt` | id = attempt token, user, stage, server `started_at`, `expires_at`, `status open → paying → done` (or `closed`), stars, stored `result` and payment `plan` (incl. the play cost refund), `rejected`, `play_cost` |
 | `campaign_user_stage` | best stars, `claimed` per currency, claimed XP, tiers paid, completions, wins, best seconds |
 | `campaign_user` / `campaign_user_chapter` | XP total / milestones paid |
 | `campaign_reward_group` | cooldown and daily cap state per group |
@@ -95,7 +102,7 @@ Economy: migration `20261204000000` adds `stage` (and `trophy`) to `economy_user
 
 ## Console («مرحله‌ها», `#/campaign/…`)
 
-A sidebar group (same shell pattern as the other plugin pages) with: **فصل‌ها** (order with ↑↓, unlock rules with a live sentence, star milestones with currencies and prize pickers, icon and address), **مرحله‌ها** (filter by chapter and kind, order within a chapter, editor with kind hints, time limit and minimum, own unlock rules or the default, own star rules with a live sentence per rule including custom game fields, multipliers, full reward + XP with a per-star payout preview, star prizes from economy's prize and prize group lists, cooldown / daily cap / reward group, metadata), **جایزهٔ گشت آزاد**, **گزارش مرحله‌ها** (7 / 30 / 90 days, by chapter: players, attempts, wins, completion rate, average best stars, drop-off from the previous story stage, refused results, KPI tiles) and **تنظیمات مرحله‌ها** (every setting above, warnings when economy or the XP meta is missing). The native player page gets a «پیشرفت مرحله‌ها» card: XP and level, each chapter's star bar, every stage with stars and wins, «از نو» per stage (keeps paid amounts unless «جایزه‌های گرفته‌شده هم پاک شود» is ticked) and the last attempts with refused results. fa/en, RTL, 390 px.
+A sidebar group (same shell pattern as the other plugin pages) with: **فصل‌ها** (order with ↑↓, unlock rules with a live sentence, star milestones with currencies and prize pickers, icon and address), **مرحله‌ها** (filter by chapter and kind, order within a chapter, editor with kind hints, time limit and minimum, own unlock rules or the default, own star rules with a live sentence per rule including custom game fields, multipliers, full reward + XP with a per-star payout preview, star prizes from economy's prize and prize group lists, cooldown / daily cap / reward group, metadata), **جایزهٔ گشت آزاد**, **گزارش مرحله‌ها** (7 / 30 / 90 days, by chapter: players, attempts, wins, completion rate, average best stars, drop-off from the previous story stage, refused results, KPI tiles) and **تنظیمات مرحله‌ها** (every setting above with «هزینهٔ بازی» first, warnings when economy, the XP meta or the cost currency is missing, a note when the cost currency does not regenerate). The native player page gets a «پیشرفت مرحله‌ها» card: XP and level, each chapter's star bar, every stage with stars and wins, «از نو» per stage (keeps paid amounts unless «جایزه‌های گرفته‌شده هم پاک شود» is ticked) and the last attempts with refused results. fa/en, RTL, 390 px.
 
 Console API under `/v2/console/base/campaign`: `settings` (GET/PUT), `refs` (economy and campaign keys for pickers), `chapters` (GET/POST, `order` PUT, `{id}` GET/PUT/DELETE — `IN_USE` while it has stages), `stages` (GET with `chapterId`, `mode`, `q`, paging; POST, `order`, `{id}` GET/PUT/DELETE — `IN_USE` once played), `freeride` (GET/POST, `{id}` PUT/DELETE), `players/{id}` (GET), `players/{id}/stages/{stageId}` (DELETE, `?claims=reset`), `report` (`days`, `chapterId`).
 

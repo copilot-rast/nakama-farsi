@@ -101,7 +101,7 @@ Language: every RPC that returns text accepts `lang` and returns resolved string
 | RPC | Input | Output |
 |---|---|---|
 | `economy_catalog` | `{categoryKey?, lang?}` | `{lang, currencies:[{key,name,type,iconUrl,categoryKey,tags}], categories:[{key,name,description,iconUrl,sort}], products:[{id,key,name,description,iconUrl,coverUrl,priceToman,finalToman,coinPrice,discountPercent,paymentMethods,sku,isSubscription,categoryKey,tags}]}` (active only, methods filtered to active methods) |
-| `economy_balances` | `{}` | `{wallet:{key:amount}, metas:{key:value} (non server_only), items:[…storage economy_items]}` |
+| `economy_balances` | `{}` | `{wallet:{key:amount}, metas:{key:value} (non server_only), items:[…storage economy_items], regen:[regen view]}` (regen currencies are settled first, so `wallet` already holds the gain) |
 | `economy_purchase_start` | `{productId, method, giftCode?, offerId?}` (with `offerId` the player's personal offer is sold at its frozen price, see «Personal offers») | gateway: `{paymentId, status:"redirect", redirectUrl}`; store: `{paymentId, status:"store", sku, developerPayload}`; in_app or free: `{paymentId, status:"success", rewards}` |
 | `economy_purchase_submit` | `{paymentId, token}` | `{paymentId, status, rewards?}` |
 | `economy_purchase_review` | `{method, sku, token}` | same as submit |
@@ -776,3 +776,54 @@ A look is resolved per category: worn items that are active, fit the avatar type
 
 «آواتارساز» hub in the economy sales group (`#/economy/avatar`): «دسته‌ها», «آیتم‌ها» (filters category, access, type, status; editor with look, how to get, allowed types and the unlock-condition panel), «نوع‌ها», «تنظیمات». Console API: CRUD `avatar-types`, `avatar-categories`, `avatar-items` (delete refused with `IN_USE` while bought or used), `GET/PUT /avatar-settings`, `GET /users/{userId}/avatars`.
 
+
+## Regenerating currencies (lives, energy)
+
+Any wallet currency can refill by itself over time. The setting lives on the currency row (`economy_currency.regen`, JSON, null = off), edited in the currency editor («پرشدن خودکار»). Migration `20270103000000-economy-regen.sql` (re-runnable) adds the column and three tables.
+
+### Settings (`regen` on `POST/PUT /currencies`)
+
+| Key | Default (editor) | Meaning |
+|---|---|---|
+| `enabled` | false | turn regen on |
+| `max` | 5 | regen fills up to this (1–1 000 000). Purchases, prizes and refunds of other sources may go above it |
+| `intervalSeconds` | 1800 | one unit per interval (1 s – 30 days) |
+| `clamp` | false | on the next read a value above `max` is cut back to `max` (ledger reason `regen_clamp`) |
+| `refillPrice` | null | `{currencyKey, amount}` for a full refill; another currency, amount ≥ 1; null = no refill |
+| `unlimitedTag` | "" | a base tag (key type `user`); while the player holds it unexpired, spends of this currency are free |
+
+A `PUT` without the `regen` field keeps the stored value (the setup wizard saves currencies without it); `regen: null` clears it. Errors: `INVALID_REGEN`, `INVALID_REGEN_MAX`, `INVALID_REGEN_INTERVAL`, `REFILL_SAME_CURRENCY`, `INVALID_KEY`, `INVALID_PRICE`, `CURRENCY_NOT_FOUND`, `TAG_NOT_FOUND`. The list filter `regen=true|false` and the list column «پرشدن خودکار» show it. `economy_catalog` currencies carry `regen: {max, intervalSeconds, refillPrice} | null`.
+
+The "unlimited lives for N minutes" buff is a timed player tag from a prize (`{type:"tag", key, action:"give"|"set", value: days}`); days take 4 decimals, so 30 minutes is `0.0208` (29.95 min) and the step is about 9 seconds.
+
+### Tables
+
+| Table | What |
+|---|---|
+| `economy_user_regen` | per player and currency: `anchor_at` (when the next unit started counting) and `last_value` (the value at the last settle) |
+| `economy_regen_spend` | one row per `(user_id, source_id)`: currency, amount, `free` (paid by the unlimited tag), `refunded`, `refunded_at` |
+| `economy_regen_refill` | one row per `(user_id, request_id)` with the stored answer |
+
+### Lazy settle
+
+There is no cron. Every read or spend locks the player's `users` row and settles: `n = floor((now − anchor) / interval)`, `gain = min(n, max − value)`, the gain is written to the wallet in the same transaction (`pluginkit.WalletTx`, ledger reason `regen`, `sourceType: "regen"`), and the anchor moves by `n × interval` (or to now when the value reaches `max`). While the value is at or above `max` the anchor follows now, so the first unit after a spend comes one interval after that spend. If the wallet dropped below `max` outside regen (a plain debit by another feature) since the last settle, the timer starts at that read (no instant refill). Spends through the hook or RPCs below all run inside the same lock, so parallel calls cannot double-spend.
+
+View: `{currencyKey, value, regen, max, intervalSeconds, nextAt, fullAt, unlimited, unlimitedUntil, refillPrice}`; `nextAt`/`fullAt` are null when full, `unlimitedUntil` is null for a tag without an end. A currency without regen answers `regen: false` with only `value` (and the unlimited flags if it has an unlimited tag).
+
+### Client RPCs
+
+| RPC | In | Out |
+|---|---|---|
+| `economy_regen_state` | `{currencies?: [key]}` (max 20; empty = every regen currency) | `{serverTime, currencies:[view]}`; `INVALID_KEY`, `CURRENCY_NOT_FOUND`, `TOO_MANY_CURRENCIES` |
+| `economy_regen_refill` | `{currencyKey, requestId}` | `{currencyKey, filled, paid:{currencyKey, amount}, state: view, wallet, replayed}`; idempotent per `requestId` (same answer, `replayed: true`); `REQUEST_ID_REQUIRED`, `REQUEST_ID_REUSED`, `REGEN_OFF`, `REFILL_OFF`, `ALREADY_FULL`, `INSUFFICIENT_BALANCE` |
+
+### Hooks for other plugins (`internal/economyhooks`)
+
+```go
+func RegenView(ctx context.Context, userID, currency string) (Regen, error)
+func SpendRegen(ctx context.Context, userID, currency string, amount int64, sourceID string) (RegenSpend, error)
+func RefundRegen(ctx context.Context, userID, currency, sourceID string) (RegenRefund, error)
+func RegenAvailable() bool
+```
+
+`RegenSpend{View, Spent, Free, Replayed}`, `RegenRefund{View, Refunded, Replayed, Found}`. Without economy they return `ErrNoRegen`. `SpendRegen` works for any currency (a currency without regen is a plain idempotent debit), is idempotent per `(user, sourceID)` (`SOURCE_REUSED` when the source spent another currency) and refuses with `*Refusal{Status: 409, Code: "NOT_ENOUGH_CURRENCY", Meta: {currencyKey, value, amount, nextAt, fullAt, refillPrice?}}`; a refused spend writes nothing but the settle. `RefundRegen` gives the spent amount back once per source (ledger `regen_refund`), never above `max` for a regen currency, nothing for a free spend; an unknown source answers `Found: false`. Validation errors come back as `*Refusal` too. Economy registers them in `InitModule` (`SetRegen`). The campaign plugin uses them for its play cost (`docs/campaign/spec.md`).
