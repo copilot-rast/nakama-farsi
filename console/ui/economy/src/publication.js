@@ -843,6 +843,7 @@ function providerField(f, cfg, onchange, kind) {
     return field(label, ctl, t(cfg[f.name] ? 'pm.secret.hint' : 'pv.hint.' + f.name), { optional: !f.required });
   }
   if (f.type === 'select') {
+    if (!cfg[f.name] && f.default) cfg[f.name] = f.default;
     ctl = selectInput(cfg[f.name] || f.default || '', (f.options || []).map(function (o) { return { value: o, label: has('pv.opt.' + o) ? t('pv.opt.' + o) : o }; }), function (x) { cfg[f.name] = x; onchange(); }, { placeholder: false, label: label });
   } else {
     ctl = textInput(cfg[f.name] == null ? '' : toLatinDigits(String(cfg[f.name])), { ltr: true, mono: true, label: label, inputmode: f.type === 'number' ? 'numeric' : f.type === 'email' ? 'email' : null, placeholder: f.default ? toLatinDigits(f.default) : null, oninput: function (x) { cfg[f.name] = f.type === 'number' ? toLatinDigits(x).trim() : x; onchange(); } });

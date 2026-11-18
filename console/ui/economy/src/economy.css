@@ -964,3 +964,7 @@ a.eco-ov-kpi:focus-visible,.eco-ov-tile:focus-visible,.eco-ov-legend-row:focus-v
   .setup-footer{flex-wrap:nowrap;gap:.5rem}
   .setup-footer-end{gap:.375rem}
 }
+.gap-px{gap:1px}
+.pt-3{padding-top:.75rem}
+.min-h-9{min-height:2.25rem}
+.hover\:underline:hover{text-decoration-line:underline}
