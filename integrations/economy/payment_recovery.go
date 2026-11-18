@@ -126,7 +126,7 @@ func (s *service) claimRewardRetry(ctx context.Context, st paymentSettings) (str
 	err := s.db.QueryRowContext(ctx, `UPDATE economy_payment SET grant_attempts=grant_attempts+1,
 		grant_retry_at=now() + make_interval(mins => $1::int * LEAST(power(2, LEAST(grant_attempts, 6))::int, 60))
 		WHERE id = (SELECT id FROM economy_payment WHERE status='success' AND NOT reward_granted AND refund_status IS NULL
-			AND COALESCE(outcome,'')<>'duplicate' AND friend_gift_id IS NULL AND method<>'in_app' AND grant_attempts < $2
+			AND COALESCE(outcome,'')<>'duplicate' AND friend_gift_id IS NULL AND grant_attempts < $2
 			AND (grant_retry_at IS NULL OR grant_retry_at <= now()) AND COALESCE(verified_at, updated_at) < now() - interval '30 seconds'
 			ORDER BY grant_retry_at NULLS FIRST, verified_at LIMIT 1 FOR UPDATE SKIP LOCKED)
 		AND NOT reward_granted RETURNING id::text`, st.RetryMinutes, st.MaxAttempts).Scan(&id)
@@ -169,7 +169,7 @@ func (s *service) grantPendingRewards(ctx context.Context, userID string) {
 		return
 	}
 	rows, err := s.db.QueryContext(ctx, `SELECT id::text FROM economy_payment WHERE user_id=$1 AND status='success' AND NOT reward_granted AND refund_status IS NULL
-		AND COALESCE(outcome,'')<>'duplicate' AND friend_gift_id IS NULL AND method<>'in_app' AND grant_attempts < $2
+		AND COALESCE(outcome,'')<>'duplicate' AND friend_gift_id IS NULL AND grant_attempts < $2
 		AND (grant_retry_at IS NULL OR grant_retry_at <= now()) ORDER BY verified_at LIMIT 3`, userID, st.MaxAttempts)
 	if err != nil {
 		return

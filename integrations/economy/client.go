@@ -544,10 +544,16 @@ func (s *service) startInApp(ctx context.Context, userID string, product product
 		if app, ok := asApp(err); ok {
 			code = app.Code
 		}
-		if code == "INSUFFICIENT_BALANCE" || code == "PRIZE_ALREADY_CLAIMED" || code == "PRIZE_ALREADY_OWNED" {
+		charged, cerr := s.inAppCharged(ctx, userID, id)
+		if cerr == nil && charged {
+			_, _ = s.db.ExecContext(ctx, `UPDATE economy_payment SET status='success', outcome='paid', reward_granted=false, reward_error=$2, verified_at=now(), updated_at=now() WHERE id=$1 AND status='pending'`, id, truncate(code, 500))
+			return map[string]any{"paymentId": id, "status": "success", "rewardGranted": false, "error": "REWARD_PENDING"}, nil
+		}
+		if cerr == nil {
 			if closed, _ := s.closePayment(ctx, id, "failed", code); closed {
 				s.releaseOffer(ctx, product)
 			}
+			_, _ = s.db.ExecContext(ctx, `DELETE FROM economy_user_prize WHERE source_type='payment' AND source_id=$1 AND NOT claimed`, id)
 		} else {
 			_, _ = s.db.ExecContext(ctx, `UPDATE economy_payment SET reward_error=$2, updated_at=now() WHERE id=$1`, id, truncate(code, 500))
 		}
@@ -557,6 +563,13 @@ func (s *service) startInApp(ctx context.Context, userID string, product product
 	s.offerBoughtEvent(ctx, id)
 	activity.Safe(ctx, s.db, s.logger, activity.FromContext(ctx, activity.Entry{UserID: userID, Kind: activity.KindPurchase, Action: "completed", RefID: id, Actor: "player", Data: map[string]any{"method": "in_app", "productKey": product.Key, "coins": product.CoinPrice.Amount, "currency": product.CoinPrice.CurrencyKey}}))
 	return map[string]any{"paymentId": id, "status": "success", "rewards": rewards, "purchaseMessage": s.purchaseMessage(ctx, userID, product, lang)}, nil
+}
+
+func (s *service) inAppCharged(ctx context.Context, userID, paymentID string) (bool, error) {
+	var charged bool
+	err := s.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_user_prize p JOIN wallet_ledger l ON l.user_id=p.user_id AND l.metadata->>'grantId'=p.id::text
+		WHERE p.source_type='payment' AND p.source_id=$2 AND p.user_id=$1)`, userID, paymentID).Scan(&charged)
+	return charged, err
 }
 
 func (s *service) purchaseMessage(ctx context.Context, userID string, p productView, want string) string {

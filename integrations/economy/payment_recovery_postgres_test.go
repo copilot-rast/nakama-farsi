@@ -239,3 +239,70 @@ func TestStoreSandboxFollowsCurrentSetting(t *testing.T) {
 		t.Fatalf("real payment closed = %+v", p)
 	}
 }
+
+func (h *harness) inAppOnceProduct(key string, oneTime bool) string {
+	h.t.Helper()
+	prize := h.coinPrize(key+"_coins", 100, !oneTime)
+	p := h.mustAPI(201, http.MethodPost, "/products", map[string]any{"key": key, "isActive": true, "name": map[string]string{"fa": key}, "prizeId": prize,
+		"paymentMethods": []string{"in_app"}, "coinPrice": map[string]any{"currencyKey": "coin", "amount": 30}, "isOneTime": oneTime})
+	return p["id"].(string)
+}
+
+func TestInAppFailedGrantFreesTheOneTimeProduct(t *testing.T) {
+	h := newPaymentHarness(t)
+	h.mustAPI(200, http.MethodPut, "/payment-methods/in_app", map[string]any{"isActive": true})
+	product := h.inAppOnceProduct("once_coins", true)
+	bob := h.user()
+	h.give(bob, 100)
+	start := h.wallet(bob)["coin"]
+
+	h.nk.failWallet = true
+	if c := h.rpcCode(bob, "economy_purchase_start", map[string]any{"productId": product, "method": "in_app"}); c == "" {
+		t.Fatal("grant failure not reported")
+	}
+	h.nk.failWallet = false
+	var failed, pending int
+	if err := h.s.db.QueryRowContext(h.ctx, `SELECT count(*) FILTER (WHERE status='failed' AND once_key IS NULL), count(*) FILTER (WHERE status='pending') FROM economy_payment WHERE user_id=$1`, bob).Scan(&failed, &pending); err != nil {
+		t.Fatal(err)
+	}
+	if failed != 1 || pending != 0 || h.wallet(bob)["coin"] != start {
+		t.Fatalf("after the failed grant: failed %d pending %d wallet %v", failed, pending, h.wallet(bob))
+	}
+	res := h.mustRPC(bob, "economy_purchase_start", map[string]any{"productId": product, "method": "in_app"})
+	if res["status"] != "success" || h.wallet(bob)["coin"] != start-30+100 {
+		t.Fatalf("second try = %v wallet %v", res, h.wallet(bob))
+	}
+	if c := h.rpcCode(bob, "economy_purchase_start", map[string]any{"productId": product, "method": "in_app"}); c != "PRODUCT_ALREADY_BOUGHT" && c != "PRIZE_ALREADY_CLAIMED" {
+		t.Fatalf("third try = %s", c)
+	}
+}
+
+func TestInAppChargedButUnfinishedGrantIsRetried(t *testing.T) {
+	h := newPaymentHarness(t)
+	h.mustAPI(200, http.MethodPut, "/payment-methods/in_app", map[string]any{"isActive": true})
+	product := h.inAppOnceProduct("charged_coins", true)
+	bob := h.user()
+	h.give(bob, 100)
+	start := h.wallet(bob)["coin"]
+
+	h.nk.failAfter = true
+	res := h.mustRPC(bob, "economy_purchase_start", map[string]any{"productId": product, "method": "in_app"})
+	h.nk.failAfter = false
+	id := res["paymentId"].(string)
+	if res["status"] != "success" || res["rewardGranted"] != false || res["error"] != "REWARD_PENDING" {
+		t.Fatalf("charged grant failure answer = %v", res)
+	}
+	if p := h.payment(id); p.Status != "success" || p.RewardGranted {
+		t.Fatalf("payment = %+v", p)
+	}
+	h.ageVerified(id)
+	if n, err := h.s.rewardRetryBatch(h.ctx); err != nil || n != 1 {
+		t.Fatalf("retry = %d %v", n, err)
+	}
+	if p := h.payment(id); !p.RewardGranted || h.wallet(bob)["coin"] != start-30+100 {
+		t.Fatalf("after retry = %+v wallet %v", p, h.wallet(bob))
+	}
+	if c := h.rpcCode(bob, "economy_purchase_start", map[string]any{"productId": product, "method": "in_app"}); c != "PRODUCT_ALREADY_BOUGHT" && c != "PRIZE_ALREADY_CLAIMED" {
+		t.Fatalf("buy again = %s", c)
+	}
+}
