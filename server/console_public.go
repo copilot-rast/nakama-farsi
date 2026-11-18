@@ -23,6 +23,7 @@ func isPublicConsoleHandler(pathPattern string, methods []string) bool {
 func publicConsoleHandler(handler func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Del(consoleUsernameHeader)
+		r.Header.Del(consoleAdminHeader)
 		r.Header.Del("Authorization")
 		handler(w, r)
 	}

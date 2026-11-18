@@ -336,3 +336,18 @@ func TestCheckACLHttpClansAndTrophies(t *testing.T) {
 		}
 	}
 }
+
+func TestHandoffReadableByEveryConsoleUser(t *testing.T) {
+	none := None()
+	for _, path := range []string{"/v2/console/base/handoff", "/v2/console/base/handoff/download"} {
+		if !CheckACLHttp(http.MethodGet, path, none) {
+			t.Fatalf("GET %s must be open to every signed-in console user", path)
+		}
+		if CheckACLHttp(http.MethodPut, path, none) {
+			t.Fatalf("PUT %s must not be open", path)
+		}
+	}
+	if CheckACLHttp(http.MethodGet, "/v2/console/base/handoff/other", none) {
+		t.Fatal("only the two handoff routes are open")
+	}
+}

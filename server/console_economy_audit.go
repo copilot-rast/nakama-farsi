@@ -15,6 +15,8 @@ import (
 
 const consoleUsernameHeader = "X-Nakama-Console-Username"
 
+const consoleAdminHeader = "X-Nakama-Console-Admin"
+
 type consoleModuleAudit struct {
 	prefix   string
 	label    string

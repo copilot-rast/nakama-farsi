@@ -282,10 +282,14 @@ func StartConsoleServer(logger *zap.Logger, startupLogger *zap.Logger, db *sql.D
 		}
 		return func(w http.ResponseWriter, r *http.Request) {
 			r.Header.Del(consoleUsernameHeader)
+			r.Header.Del(consoleAdminHeader)
 			r, success, code, message := checkAuthCustom(r, logger, config, r.Header.Get("Authorization"), method, path, sessionCache, loginAttemptCache)
 			if success {
 				if username, ok := r.Context().Value(ctxConsoleUsernameKey{}).(string); ok && username != "" {
 					r.Header.Set(consoleUsernameHeader, username)
+				}
+				if perm, ok := r.Context().Value(ctxConsoleUserAclKey{}).(acl.Permission); ok && perm.IsAdmin() {
+					r.Header.Set(consoleAdminHeader, "true")
 				}
 			}
 			if !success {

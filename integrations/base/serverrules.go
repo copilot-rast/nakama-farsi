@@ -13,6 +13,7 @@ import (
 	"github.com/heroiclabs/nakama/v3/internal/activity"
 	"github.com/heroiclabs/nakama/v3/internal/apidocs"
 	"github.com/heroiclabs/nakama/v3/internal/clusterkit"
+	"github.com/heroiclabs/nakama/v3/internal/handoffkit"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
 	"github.com/heroiclabs/nakama/v3/internal/rpcgate"
 	"github.com/heroiclabs/nakama/v3/internal/settingsrow"
@@ -50,10 +51,11 @@ type deleteRules struct {
 }
 
 type serverRules struct {
-	Maintenance   maintenanceRules `json:"maintenance"`
-	Storage       storageRules     `json:"storage"`
-	AccountDelete deleteRules      `json:"accountDelete"`
-	Docs          apidocs.Settings `json:"docs"`
+	Maintenance   maintenanceRules    `json:"maintenance"`
+	Storage       storageRules        `json:"storage"`
+	AccountDelete deleteRules         `json:"accountDelete"`
+	Docs          apidocs.Settings    `json:"docs"`
+	Handoff       handoffkit.Settings `json:"handoff"`
 }
 
 func defaultServerRules() serverRules {
@@ -62,6 +64,7 @@ func defaultServerRules() serverRules {
 		Storage:       storageRules{AllowCollections: []string{}},
 		AccountDelete: deleteRules{Enabled: true, Mode: "grace", GraceDays: 14},
 		Docs:          apidocs.DefaultSettings(),
+		Handoff:       handoffkit.DefaultSettings(),
 	}
 }
 
@@ -90,6 +93,11 @@ func (r serverRules) clean() (serverRules, error) {
 	if len(r.Maintenance.AllowRpcs) > 100 || len(r.Maintenance.AllowTags) > 50 || len(r.Storage.AllowCollections) > 100 {
 		return r, badRequest("TOO_MANY", "maintenance.allowRpcs", "too many entries")
 	}
+	h, ok := r.Handoff.Clean()
+	if !ok {
+		return r, badRequest("INVALID_RULE", "handoff.audience", "all or admins")
+	}
+	r.Handoff = h
 	switch r.AccountDelete.Mode {
 	case "grace", "immediate":
 	default:
@@ -376,6 +384,7 @@ func (s *service) serverRulesPut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	apidocs.Invalidate()
+	handoffkit.Invalidate()
 	s.serverRulesGet(w, r)
 }
 
