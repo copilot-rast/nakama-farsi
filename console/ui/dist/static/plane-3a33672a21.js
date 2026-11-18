@@ -23,7 +23,7 @@ var PL_MESSAGES = {
     'top.sdk': 'پکیج یونیتی',
     'top.sdkLabel': 'راهنمای نصب پکیج یونیتی (SDK)',
     'top.updatesLabel': '{n} تغییر تازه در ریپوی بالایی',
-    'group.developer': 'توسعه', 'group.quiz': 'آزمون‌ها', 'group.trophies': 'جام و لیگ', 'group.clans': 'کلن‌ها',
+    'group.developer': 'توسعه', 'group.quiz': 'آزمون‌ها', 'group.cups': 'تورنمنت‌ها', 'group.trophies': 'جام و لیگ', 'group.clans': 'کلن‌ها',
     'group.help': 'راهنما',
     'group.settings': 'تنظیمات',
     'settings.console': 'تنظیمات کنسول',
@@ -73,7 +73,7 @@ var PL_MESSAGES = {
     'top.sdk': 'Unity SDK',
     'top.sdkLabel': 'Unity SDK install guide',
     'top.updatesLabel': '{n} new changes in the parent repo',
-    'group.developer': 'Developer', 'group.quiz': 'Quizzes', 'group.trophies': 'Trophies', 'group.clans': 'Clans',
+    'group.developer': 'Developer', 'group.quiz': 'Quizzes', 'group.cups': 'Tournaments', 'group.trophies': 'Trophies', 'group.clans': 'Clans',
     'group.help': 'Help',
     'group.settings': 'Settings',
     'settings.console': 'Console settings',
@@ -503,6 +503,7 @@ function iconFor(href) {
   if (parts[0] === 'quiz') return QUIZ_ICON[parts[1] || 'packs'] || 'help';
   if (parts[0] === 'trophies') return TROPHY_ICON[parts[1] || 'leagues'] || 'trophy';
   if (parts[0] === 'clans') return CLAN_ICON[parts[1] || 'list'] || 'group';
+  if (parts[0] === 'cups') return CUP_ICON[parts[1] || 'list'] || 'medal';
   var key = parts.length > 1 && /^(economy|publication|moderation|support|system|settings)$/.test(parts[0]) ? parts[1] : parts[0] || '';
   return HREF_ICON[key] || 'page';
 }
@@ -512,7 +513,8 @@ window.NakamaPlane.iconFor = iconFor;
 var QUIZ_ICON = { packs: 'package', questions: 'help', missions: 'checklist', duels: 'users', 'duel-categories': 'layers', reports: 'flag', results: 'fileCode', 'import': 'cloudDown', stats: 'chart', settings: 'sliders' };
 var TROPHY_ICON = { leagues: 'ladder', players: 'trophy', seasons: 'calendar', settings: 'sliders' };
 var CLAN_ICON = { list: 'group', levels: 'layers', wars: 'shield', rounds: 'repeat', gallery: 'image', uploads: 'inbox', settings: 'sliders' };
-var GROUP_ICON = { quiz: 'help', trophies: 'trophy', clans: 'group', economy: 'coins', publication: 'megaphone', moderation: 'shield', support: 'buoy', system: 'cloudDown', developer: 'code', help: 'help', settings: 'settings' };
+var CUP_ICON = { list: 'medal', view: 'medal', templates: 'repeat', settings: 'sliders' };
+var GROUP_ICON = { quiz: 'help', cups: 'medal', trophies: 'trophy', clans: 'group', economy: 'coins', publication: 'megaphone', moderation: 'shield', support: 'buoy', system: 'cloudDown', developer: 'code', help: 'help', settings: 'settings' };
 
 function linkInfo(a) {
   var badgeEl = a.querySelector('.eco-nav-badge, .eco-nav-dot');

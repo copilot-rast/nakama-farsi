@@ -50,3 +50,5 @@ select 'clan war configs', count(*) from clan_war_config where key like 'e2e%';
 select 'clan war rounds', count(*) from clan_war_round where config_key like 'e2e%';
 select 'clans', count(*) from groups g join clan c on c.group_id = g.id where g.name like 'e2e%';
 select 'clan art', count(*) from clan_art where key like 'e2e%';
+select 'cups', count(*) from cup where name::text like '%e2e%';
+select 'cup templates', count(*) from cup_template where key like 'e2e%';

@@ -66,4 +66,5 @@ DO $$ BEGIN IF to_regclass('zz_e2e_backup.newsset') IS NOT NULL THEN DELETE FROM
 DO $$ BEGIN IF to_regclass('zz_e2e_backup.trset') IS NOT NULL THEN DELETE FROM trophy_settings; INSERT INTO trophy_settings SELECT * FROM zz_e2e_backup.trset; END IF; END $$;
 DO $$ BEGIN IF to_regclass('zz_e2e_backup.clset') IS NOT NULL THEN DELETE FROM clan_settings; INSERT INTO clan_settings SELECT * FROM zz_e2e_backup.clset; END IF; END $$;
 DO $$ BEGIN IF to_regclass('zz_e2e_backup.cllevel') IS NOT NULL THEN DELETE FROM clan_level; INSERT INTO clan_level SELECT * FROM zz_e2e_backup.cllevel; END IF; END $$;
+DO $$ BEGIN IF to_regclass('zz_e2e_backup.cupset') IS NOT NULL THEN DELETE FROM cup_settings; INSERT INTO cup_settings SELECT * FROM zz_e2e_backup.cupset; END IF; END $$;
 COMMIT;

@@ -28,4 +28,5 @@ select 'H-inset', md5(coalesce(string_agg(value::text, '|'),'')) from insights_s
 select 'H-newsset', md5(coalesce(string_agg(comments_per_minute||'/'||reactions_per_minute||unread_scope||show_expired::text||fill_default_lang::text||realtime_on_publish::text||notify_category_key||log_retention_days||'/'||log_payload_bytes||slug_style||public_enabled::text||public_base_url||public_path||rss_enabled::text||public_cache_seconds||site_title::text, '|'),'')) from publication_news_settings;
 select 'H-trset', md5(coalesce(string_agg(value::text, '|'),'')) from trophy_settings;
 select 'H-clset', md5(coalesce(string_agg(value::text, '|'),'')) from clan_settings;
+select 'H-cupset', md5(coalesce(string_agg(value::text, '|'),'')) from cup_settings;
 select 'H-cllevel', md5(coalesce(string_agg(level||'/'||xp||name::text||icon_url||member_cap||prize_key||perks::text, '|' ORDER BY level),'')) from clan_level;

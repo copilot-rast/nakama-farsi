@@ -1,0 +1,11 @@
+{
+  "name": "nakama-console-cup",
+  "private": true,
+  "description": "Knockout cup pages (cups list, cup editor, live bracket with admin actions, recurring templates, settings) injected into the prebuilt Nakama Console UI.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check"
+  }
+}
