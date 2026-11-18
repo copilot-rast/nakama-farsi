@@ -144,6 +144,8 @@ function main() {
   let html = original.replace(/<html[^>]*>/, `<html lang="${info.lang}" dir="${info.dir}">`);
   html = html.replace(/(<link[^>]*rel="stylesheet"[^>]*)href="(\/static\/index-[^"]+\.css)"/, `$1href="${logicalHref}" data-l10n-source="$2"`);
   html = html.replace(/([ \t]*)<script type="module"/, (m) => block + m);
+  html = html.replace(/[ \t]*<link[^>]*rel="(?:shortcut )?icon"[^>]*>\r?\n?/g, '');
+  html = html.replace(/<title>[^<]*<\/title>/, `<title>${info.title || ''}</title>`);
   const indexChanged = fs.readFileSync(INDEX, 'utf8') !== html;
 
   const previous = fs.existsSync(MANIFEST) ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8')).files : [];

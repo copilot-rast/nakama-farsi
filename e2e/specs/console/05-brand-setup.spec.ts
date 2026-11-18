@@ -69,7 +69,7 @@ test.describe('brand and setup wizard', () => {
     await expect.poll(async () => (await applied(page)).p500).toBe('5 150 105');
     const a = await applied(page);
     expect(a.title).toContain('ستاره‌چین ' + k);
-    expect(a.favicon).toMatch(/\/v2\/economy\/files\/.+\.svg$/);
+    expect(a.favicon).toBe('');
 
     await page.locator(`${W} li[data-lang="ar"] .x-toggle`).click();
     await expect.poll(async () => (await base.get('/languages/ar')).isActive).toBe(false);
@@ -218,7 +218,7 @@ test.describe('brand and setup wizard', () => {
     expect((await base.get('/setup')).status).toBe('completed');
   });
 
-  test('brand shows on sign-in, sidebar, title and favicon; reset brings Nakama back', async ({ spawn }) => {
+  test('brand shows on sign-in, sidebar and title, never as a favicon; reset brings the neutral console name back', async ({ spawn }) => {
     await base.put('/brand', {
       name: { fa: 'ستاره‌چین ' + k, en: 'Starpicker ' + k },
       shortName: 'ستاره',
@@ -257,7 +257,8 @@ test.describe('brand and setup wizard', () => {
     await expect(fresh.locator('[data-brand-logo],[data-brand-signin]')).toHaveCount(0);
     await expect(fresh.locator('h1').first()).toContainText('Nakama');
     await loginAs(fresh, ADMIN);
-    await expect.poll(async () => (await applied(fresh)).favicon).toBe('/favicon.ico');
+    expect((await applied(fresh)).favicon).toBe('');
+    expect((await fresh.request.get(CONSOLE_URL + '/favicon.ico')).status()).toBe(404);
     const after = await applied(fresh);
     expect(after.title).toContain('Nakama');
     expect(after.p500).toMatch(/107\s+89\s+238/);

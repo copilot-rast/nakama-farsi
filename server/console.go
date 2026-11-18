@@ -512,6 +512,10 @@ func registerDashboardHandlers(logger *zap.Logger, router *mux.Router) error {
 	}
 
 	router.Path("/").HandlerFunc(indexFn)
+	router.Path("/favicon.ico").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		w.WriteHeader(http.StatusNotFound)
+	})
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// get the absolute path to prevent directory traversal
 		path := r.URL.Path

@@ -185,22 +185,6 @@ function applyAccent(hex) {
   startRecolor();
 }
 
-function applyFavicon(url) {
-  var links = document.querySelectorAll('link[rel~="icon"]');
-  if (!links.length && url) {
-    var link = document.createElement('link');
-    link.rel = 'icon';
-    document.head.appendChild(link);
-    links = [link];
-  }
-  for (var i = 0; i < links.length; i++) {
-    var l = links[i];
-    if (!l.hasAttribute('data-brand-default')) l.setAttribute('data-brand-default', l.getAttribute('href') || '/favicon.ico');
-    var next = url || l.getAttribute('data-brand-default');
-    if (l.getAttribute('href') !== next) l.setAttribute('href', next);
-  }
-}
-
 function brandTitle(v) {
   v = String(v == null ? '' : v);
   if (BRAND.titleName) v = v.split(BRAND.titleName).join('Nakama');
@@ -319,7 +303,6 @@ function applyBrand() {
   if (BRAND.applied !== key) {
     BRAND.applied = key;
     applyAccent(b && b.accent);
-    applyFavicon(b && b.markUrl ? b.markUrl : '');
     refreshTitle();
   }
   applyLogos(b);
@@ -334,7 +317,6 @@ function applyBrand() {
   hookTitle();
   if (BRAND.data) {
     applyAccent(BRAND.data.accent);
-    applyFavicon(BRAND.data.markUrl || '');
     refreshTitle();
   }
   brandLoad();

@@ -816,8 +816,8 @@ var MESSAGES = {
     'brand.f.logo.hint': 'افقی و با پس‌زمینهٔ شفاف بهتر است.',
     'brand.f.logoDark': 'لوگو برای حالت تیره',
     'brand.f.logoDark.hint': 'اگر خالی بماند، همان لوگوی روشن نشان داده می‌شود.',
-    'brand.f.mark': 'نشان و فاوآیکن',
-    'brand.f.mark.hint': 'تصویر مربعی کوچک؛ در زبانهٔ مرورگر و نوار جمع‌شده دیده می‌شود.',
+    'brand.f.mark': 'نشان',
+    'brand.f.mark.hint': 'تصویر مربعی کوچک؛ بالای نوار کناری و در نوار جمع‌شده دیده می‌شود.',
     'brand.f.accent': 'رنگ اصلی',
     'brand.f.accent.hint': 'رنگ دکمه‌ها، پیوندها و منوی فعال. خالی یعنی رنگ پیش‌فرض.',
     'brand.f.accent.pick': 'انتخاب رنگ',
@@ -6154,8 +6154,8 @@ var MESSAGES = {
     'brand.f.logo.hint': 'A wide logo on a transparent background works best.',
     'brand.f.logoDark': 'Logo for dark mode',
     'brand.f.logoDark.hint': 'Leave empty to use the light logo.',
-    'brand.f.mark': 'Mark and favicon',
-    'brand.f.mark.hint': 'A small square image for the browser tab and the collapsed sidebar.',
+    'brand.f.mark': 'Mark',
+    'brand.f.mark.hint': 'A small square image at the top of the sidebar and in the collapsed sidebar.',
     'brand.f.accent': 'Main color',
     'brand.f.accent.hint': 'Used for buttons, links and the active menu item. Empty means the default color.',
     'brand.f.accent.pick': 'Pick a color',
@@ -26797,22 +26797,6 @@ function applyAccent(hex) {
   startRecolor();
 }
 
-function applyFavicon(url) {
-  var links = document.querySelectorAll('link[rel~="icon"]');
-  if (!links.length && url) {
-    var link = document.createElement('link');
-    link.rel = 'icon';
-    document.head.appendChild(link);
-    links = [link];
-  }
-  for (var i = 0; i < links.length; i++) {
-    var l = links[i];
-    if (!l.hasAttribute('data-brand-default')) l.setAttribute('data-brand-default', l.getAttribute('href') || '/favicon.ico');
-    var next = url || l.getAttribute('data-brand-default');
-    if (l.getAttribute('href') !== next) l.setAttribute('href', next);
-  }
-}
-
 function brandTitle(v) {
   v = String(v == null ? '' : v);
   if (BRAND.titleName) v = v.split(BRAND.titleName).join('Nakama');
@@ -26931,7 +26915,6 @@ function applyBrand() {
   if (BRAND.applied !== key) {
     BRAND.applied = key;
     applyAccent(b && b.accent);
-    applyFavicon(b && b.markUrl ? b.markUrl : '');
     refreshTitle();
   }
   applyLogos(b);
@@ -26946,7 +26929,6 @@ function applyBrand() {
   hookTitle();
   if (BRAND.data) {
     applyAccent(BRAND.data.accent);
-    applyFavicon(BRAND.data.markUrl || '');
     refreshTitle();
   }
   brandLoad();

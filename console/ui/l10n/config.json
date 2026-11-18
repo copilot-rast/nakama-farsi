@@ -7,6 +7,7 @@
       "short": "فا",
       "lang": "fa-IR",
       "dir": "rtl",
+      "title": "کنسول مدیریت",
       "switchLabel": "تغییر زبان به فارسی"
     },
     "en": {
@@ -14,6 +15,7 @@
       "short": "EN",
       "lang": "en",
       "dir": "ltr",
+      "title": "Admin console",
       "switchLabel": "Switch language to English"
     }
   },
