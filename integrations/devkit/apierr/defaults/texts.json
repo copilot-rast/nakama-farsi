@@ -43,6 +43,10 @@
     "en": "This already exists.",
     "fa": "این مورد از قبل وجود دارد."
   },
+  "ALREADY_FULL": {
+    "en": "It is already full.",
+    "fa": "از قبل پر است."
+  },
   "ALREADY_OWNED": {
     "en": "You already own this.",
     "fa": "این را از قبل دارید."
@@ -1555,6 +1559,18 @@
     "en": "The rating is not valid.",
     "fa": "امتیاز معتبر نیست."
   },
+  "INVALID_REGEN": {
+    "en": "The refill setting is not valid.",
+    "fa": "تنظیم پرشدن خودکار معتبر نیست."
+  },
+  "INVALID_REGEN_INTERVAL": {
+    "en": "The refill interval must be from 1 second to 30 days.",
+    "fa": "فاصلهٔ پرشدن باید از ۱ ثانیه تا ۳۰ روز باشد."
+  },
+  "INVALID_REGEN_MAX": {
+    "en": "The refill cap must be from 1 to 1,000,000.",
+    "fa": "سقف پرشدن باید از ۱ تا ۱٬۰۰۰٬۰۰۰ باشد."
+  },
   "INVALID_REPEAT_MINUTES": {
     "en": "The repeat time is not valid.",
     "fa": "زمان تکرار معتبر نیست."
@@ -1610,6 +1626,10 @@
   "INVALID_SKU": {
     "en": "The product code is not valid.",
     "fa": "کد محصول معتبر نیست."
+  },
+  "INVALID_SOURCE": {
+    "en": "The source id is not valid.",
+    "fa": "شناسهٔ منبع معتبر نیست."
   },
   "INVALID_STATUS": {
     "en": "The status is not valid.",
@@ -1922,6 +1942,14 @@
   "NOT_CANCELLABLE": {
     "en": "This cannot be cancelled.",
     "fa": "این مورد قابل لغو نیست."
+  },
+  "NOT_ENOUGH_CURRENCY": {
+    "en": "Not enough of this currency right now.",
+    "fa": "الان به اندازهٔ کافی از این ارز ندارید."
+  },
+  "NOT_ENOUGH_PLAY_COST": {
+    "en": "Not enough to start the stage; wait for a refill or buy one.",
+    "fa": "برای شروع مرحله کافی نیست؛ صبر کنید پر شود یا آن را بخرید."
   },
   "NOT_FOR_SALE": {
     "en": "This is not for sale.",
@@ -2583,6 +2611,18 @@
     "en": "This referrer has reached the limit.",
     "fa": "این معرف به سقف معرفی رسیده است."
   },
+  "REFILL_OFF": {
+    "en": "This currency cannot be refilled at once.",
+    "fa": "این ارز را نمی‌شود یکجا پر کرد."
+  },
+  "REFILL_SAME_CURRENCY": {
+    "en": "A refill cannot be paid with the same currency.",
+    "fa": "پر کردن را نمی‌شود با خود همین ارز خرید."
+  },
+  "REGEN_OFF": {
+    "en": "This currency does not refill over time.",
+    "fa": "این ارز با گذشت زمان پر نمی‌شود."
+  },
   "REPEAT_NEEDS_PERIOD": {
     "en": "Repeating needs a period.",
     "fa": "برای تکرار باید دوره تعیین شود."
@@ -2887,6 +2927,14 @@
     "en": "Choose a player.",
     "fa": "بازیکن را مشخص کنید."
   },
+  "SOURCE_CURRENCY_MISMATCH": {
+    "en": "This request spent another currency.",
+    "fa": "این درخواست ارز دیگری را خرج کرده است."
+  },
+  "SOURCE_REUSED": {
+    "en": "This request was already used for another currency.",
+    "fa": "این درخواست قبلاً برای ارز دیگری به کار رفته است."
+  },
   "SPONSOR_LINK_NOT_FOUND": {
     "en": "Sponsor link not found.",
     "fa": "پیوند حامی پیدا نشد."
@@ -3134,6 +3182,10 @@
   "TOO_MANY_CODES": {
     "en": "You asked for too many codes at once.",
     "fa": "تعداد کدهای درخواستی زیاد است."
+  },
+  "TOO_MANY_CURRENCIES": {
+    "en": "Ask for at most 20 currencies.",
+    "fa": "حداکثر ۲۰ ارز را بخواهید."
   },
   "TOO_MANY_DEPENDENCIES": {
     "en": "There are too many dependencies.",

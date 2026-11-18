@@ -64,6 +64,12 @@
       "quiz"
     ]
   },
+  "ALREADY_FULL": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
   "ALREADY_OWNED": {
     "status": 409,
     "modules": [
@@ -2226,6 +2232,24 @@
       "base"
     ]
   },
+  "INVALID_REGEN": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_REGEN_INTERVAL": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_REGEN_MAX": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "INVALID_REPEAT_MINUTES": {
     "status": 400,
     "modules": [
@@ -2306,6 +2330,12 @@
     ]
   },
   "INVALID_SKU": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_SOURCE": {
     "status": 400,
     "modules": [
       "economy"
@@ -2796,6 +2826,18 @@
     "status": 409,
     "modules": [
       "publication"
+    ]
+  },
+  "NOT_ENOUGH_CURRENCY": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "NOT_ENOUGH_PLAY_COST": {
+    "status": 409,
+    "modules": [
+      "campaign"
     ]
   },
   "NOT_FOR_SALE": {
@@ -3774,6 +3816,24 @@
       "economy"
     ]
   },
+  "REFILL_OFF": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "REFILL_SAME_CURRENCY": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "REGEN_OFF": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
   "REPEAT_NEEDS_PERIOD": {
     "status": 400,
     "modules": [
@@ -4240,6 +4300,18 @@
       "social"
     ]
   },
+  "SOURCE_CURRENCY_MISMATCH": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SOURCE_REUSED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
   "SPONSOR_LINK_NOT_FOUND": {
     "status": 404,
     "modules": [
@@ -4620,6 +4692,12 @@
     "status": 400,
     "modules": [
       "devkit"
+    ]
+  },
+  "TOO_MANY_CURRENCIES": {
+    "status": 400,
+    "modules": [
+      "economy"
     ]
   },
   "TOO_MANY_DEPENDENCIES": {
