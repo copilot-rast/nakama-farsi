@@ -41,4 +41,11 @@ Edit `general/handoff.json` (general) or `project/handoff.json` (fork) and add a
 
 - [x] Engine, endpoints, ACL, admin header, general content (nakama-farsi)
 - [x] Console header button (plane topbar `data-pl-handoff`) + side panel (`console/ui/economy/src/handoff.js`), Server rules section, e2e `79-handoff`
-- [ ] Forks: rakhtkan, combatrace, pp project parts; finteen, viralvanguard, soltan general only
+- [x] Forks merged at 723b1810 and recorded: rakhtkan, combatrace, pp (with project parts), finteen, viralvanguard, soltan (general only)
+- [x] e2e 79 + shell/nav specs green on nakama-farsi, Rakhtkan and PP local servers
+
+## Fork parts (sources moved in)
+
+- rakhtkan: `project/01-phase1` … `06-cup`, `07-api-docs` from `rakhtkan/handoff/*-md` (README → 00-overview, REQUIRED-INFO → 10-required-info with the server key replaced by a link to the console SDK page, cup examples → `06-cup/05-examples.md`). Left out: dev-test-data (test logins), front-test-data-request, DEPLOY-*, rakhtkan.env, the duplicate levels-xp file.
+- combatrace: `project/01-unity.md`, `02-heatmap-admin.md`. Left out: DEPLOY-FA (ops), gap-review-fa (internal, stale).
+- pp: `project/00-overview.html` … `10-errors.html` from `pp/handoff/pp-unity-guide-work/src` (server key removed, links rewritten). Left out: the older Markdown guides (superseded), migration note, legacy parity audit, analytics design note.
