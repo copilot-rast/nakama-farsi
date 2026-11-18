@@ -26,7 +26,7 @@ Notifications: `cup_round_started`, `cup_check_in`, `cup_opponent_ready`, `cup_m
 
 ## Console (`/v2/console/base/cups`, ACL `LEADERBOARD`)
 
-Cups list, create and edit, live bracket with admin actions, recurring templates, settings. Pages under «تورنمنت‌ها» (`#/cups/…`).
+Pages under «تورنمنت‌ها» (bundle `console/ui/cup`): `#/cups/list` (filters, search, create and edit with every rule), `#/cups/list/<id>` (live bracket refreshed every 5 seconds, match panel with games, force a result or void, players with remove, swap and disqualify, add a player by username or id, publish, start now, cancel with a reason and refunds, delete, payouts with retry), `#/cups/templates` (recurring templates, run now) and `#/cups/settings`. e2e `78-cups`.
 
 ## Data
 
