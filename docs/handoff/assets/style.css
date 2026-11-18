@@ -161,6 +161,9 @@ pre.oneline{white-space:pre-wrap;word-break:break-all;overflow-x:visible}
 .badge.general{background:var(--accent-soft);color:var(--accent);border-color:transparent}
 .badge.project{background:var(--ok-bg);border-color:var(--ok-line)}
 .nowrap{white-space:nowrap}
+.doc-group{margin:36px 0 0}
+.doc-group>.step-head{padding:0 4px;margin-bottom:0}
+.doc-group>.step-head h2{font-size:24px}
 .doc h3{font-size:19px;margin:26px 0 6px}
 .doc h4{font-size:17px;margin:20px 0 6px}
 .doc h5,.doc h6{font-size:15.5px;margin:16px 0 4px}

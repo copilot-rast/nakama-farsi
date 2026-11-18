@@ -226,7 +226,11 @@ func writePart(w *bytes.Buffer, id, title, summary string, sections []*Section, 
 		w.WriteString(`<p class="part-sub">` + html.EscapeString(summary) + "</p>\n")
 	}
 	for i, s := range sections {
-		w.WriteString(`<section class="step doc" id="` + html.EscapeString(s.ID) + `" data-scope="` + s.Scope + `"><div class="step-head"><div class="num">` + FaDigits(strconv.Itoa(start+i)) + `</div><div><h2>` + html.EscapeString(s.Title) + "</h2>")
+		cls := "step doc"
+		if strings.Contains(s.body, `class="step"`) {
+			cls = "doc doc-group"
+		}
+		w.WriteString(`<section class="` + cls + `" id="` + html.EscapeString(s.ID) + `" data-scope="` + s.Scope + `"><div class="step-head"><div class="num">` + FaDigits(strconv.Itoa(start+i)) + `</div><div><h2>` + html.EscapeString(s.Title) + "</h2>")
 		if s.Summary != "" {
 			w.WriteString(`<div class="sub">` + html.EscapeString(s.Summary) + "</div>")
 		}
