@@ -517,6 +517,8 @@ func offerMethods(p productView, price offerPrice, active map[string]paymentMeth
 			}
 		}
 		switch {
+		case isStripe(m):
+			continue
 		case m == "in_app":
 			if price.CoinAmount == nil || price.CoinCurrency == "" {
 				continue

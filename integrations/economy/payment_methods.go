@@ -15,14 +15,26 @@ type methodField struct {
 	Name     string `json:"name"`
 	Type     string `json:"type"`
 	Required bool   `json:"required"`
+	Default  string `json:"default,omitempty"`
+}
+
+func mf(name, typ string, required bool) methodField {
+	return methodField{Name: name, Type: typ, Required: required}
 }
 
 var methodFields = map[string][]methodField{
-	"zarinpal": {{"merchantId", "secret", true}, {"sandbox", "bool", false}},
-	"zibal":    {{"merchant", "secret", true}, {"sandbox", "bool", false}},
-	"bazaar":   {{"packageName", "text", true}, {"apiSecret", "secret", true}, {"rsaPublicKey", "textarea", false}, {"sandbox", "bool", false}},
-	"myket":    {{"packageName", "text", true}, {"accessToken", "secret", true}, {"rsaPublicKey", "textarea", false}, {"sandbox", "bool", false}},
-	"in_app":   {},
+	"zarinpal":    {mf("merchantId", "secret", true), mf("sandbox", "bool", false)},
+	"zibal":       {mf("merchant", "secret", true), mf("sandbox", "bool", false)},
+	"stripe":      {mf("secretKey", "secret", true), mf("webhookSecret", "secret", true), mf("publishableKey", "text", false), {Name: "currency", Type: "text", Default: defaultStripeCurrency}, mf("testMode", "bool", false)},
+	"bazaar":      {mf("packageName", "text", true), mf("apiSecret", "secret", true), mf("rsaPublicKey", "textarea", false), mf("sandbox", "bool", false)},
+	"myket":       {mf("packageName", "text", true), mf("accessToken", "secret", true), mf("rsaPublicKey", "textarea", false), mf("sandbox", "bool", false)},
+	"google_play": {mf("packageName", "text", true), mf("serviceAccountJson", "secretJson", true), mf("sandbox", "bool", false)},
+	"apple":       {mf("bundleId", "text", true), mf("sharedSecret", "secret", false), mf("issuerId", "text", false), mf("keyId", "text", false), mf("privateKeyP8", "secretText", false), mf("sandbox", "bool", false)},
+	"in_app":      {},
+}
+
+func secretType(typ string) bool {
+	return typ == "secret" || typ == "secretJson" || typ == "secretText"
 }
 
 type methodConfig map[string]any
@@ -37,18 +49,36 @@ func (c methodConfig) flag(name string) bool {
 	return v
 }
 
+func sandboxField(method string) string {
+	if isStripe(method) {
+		return "testMode"
+	}
+	return "sandbox"
+}
+
+func methodSandbox(method string, cfg methodConfig) bool {
+	return cfg.flag(sandboxField(method))
+}
+
+func fakeSandbox(method string) bool {
+	return !isAppStore(method) && !isStripe(method)
+}
+
 func methodConfigured(method string, cfg methodConfig) bool {
-	sandbox := cfg.flag("sandbox")
+	sandbox := methodSandbox(method, cfg) && fakeSandbox(method)
 	for _, f := range methodFields[method] {
 		if !f.Required {
 			continue
 		}
-		if sandbox && f.Type == "secret" {
+		if sandbox && secretType(f.Type) {
 			continue
 		}
 		if cfg.str(f.Name) == "" {
 			return false
 		}
+	}
+	if method == "apple" {
+		return cfg.str("sharedSecret") != "" || appleAPIKeys(cfg)
 	}
 	return true
 }
@@ -102,10 +132,10 @@ func (s *service) activeMethods(ctx context.Context) (map[string]paymentMethod, 
 func methodView(pm paymentMethod) map[string]any {
 	masked := map[string]any{}
 	for _, f := range methodFields[pm.Method] {
-		switch f.Type {
-		case "bool":
+		switch {
+		case f.Type == "bool":
 			masked[f.Name] = pm.Config.flag(f.Name)
-		case "secret":
+		case secretType(f.Type):
 			if pm.Config.str(f.Name) != "" {
 				masked[f.Name] = secretMask
 			} else {
@@ -113,13 +143,17 @@ func methodView(pm paymentMethod) map[string]any {
 			}
 		default:
 			masked[f.Name] = pm.Config.str(f.Name)
+			if masked[f.Name] == "" && f.Default != "" {
+				masked[f.Name] = f.Default
+			}
 		}
 	}
 	fields := methodFields[pm.Method]
 	if fields == nil {
 		fields = []methodField{}
 	}
-	return map[string]any{"method": pm.Method, "isActive": pm.Active, "configured": methodConfigured(pm.Method, pm.Config), "fields": fields, "config": masked}
+	return map[string]any{"method": pm.Method, "isActive": pm.Active, "configured": methodConfigured(pm.Method, pm.Config), "fields": fields, "config": masked,
+		"sandboxField": sandboxField(pm.Method), "sandboxNeedsKeys": !fakeSandbox(pm.Method)}
 }
 
 func (s *service) consoleMethodsList(w http.ResponseWriter, r *http.Request) {
@@ -152,7 +186,7 @@ func mergeMethodConfig(method string, old methodConfig, in map[string]any) (meth
 			next[f.Name] = b
 		default:
 			if !given || v == nil {
-				if f.Type == "secret" || !given {
+				if secretType(f.Type) || !given {
 					if old.str(f.Name) != "" {
 						next[f.Name] = old.str(f.Name)
 					}
@@ -164,10 +198,10 @@ func mergeMethodConfig(method string, old methodConfig, in map[string]any) (meth
 				return nil, badRequest("INVALID_VALUE", f.Name, "must be a string")
 			}
 			text = strings.TrimSpace(text)
-			if len(text) > 8192 {
+			if len(text) > 16384 {
 				return nil, badRequest("TEXT_TOO_LONG", f.Name, "value is too long")
 			}
-			if f.Type == "secret" && text == secretMask {
+			if secretType(f.Type) && text == secretMask {
 				if old.str(f.Name) != "" {
 					next[f.Name] = old.str(f.Name)
 				}
@@ -177,6 +211,9 @@ func mergeMethodConfig(method string, old methodConfig, in map[string]any) (meth
 				next[f.Name] = text
 			}
 		}
+	}
+	if err := checkMethodConfig(method, next); err != nil {
+		return nil, err
 	}
 	return next, nil
 }
@@ -228,7 +265,7 @@ func (s *service) consoleMethodUpdate(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 		view = methodView(paymentMethod{Method: method, Active: in.IsActive, Config: next})
-		sandboxOff = old.Config.flag("sandbox") && !next.flag("sandbox")
+		sandboxOff = methodSandbox(method, old.Config) && !methodSandbox(method, next)
 		return nil
 	})
 	if err != nil {
@@ -241,4 +278,33 @@ func (s *service) consoleMethodUpdate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	writeJSON(w, http.StatusOK, view)
+}
+
+func checkMethodConfig(method string, cfg methodConfig) error {
+	switch method {
+	case "google_play":
+		if raw := cfg.str("serviceAccountJson"); raw != "" {
+			if _, err := googleServiceAccount(raw); err != nil {
+				return badRequest("INVALID_VALUE", "serviceAccountJson", err.Error())
+			}
+		}
+	case "apple":
+		if raw := cfg.str("privateKeyP8"); raw != "" {
+			if _, err := parseAppleKey(raw); err != nil {
+				return badRequest("INVALID_VALUE", "privateKeyP8", "not a PKCS#8 EC private key (.p8)")
+			}
+		}
+		given := 0
+		for _, k := range []string{"issuerId", "keyId", "privateKeyP8"} {
+			if cfg.str(k) != "" {
+				given++
+			}
+		}
+		if given != 0 && given != 3 {
+			return badRequest("APPLE_API_KEYS_INCOMPLETE", "issuerId", "set issuerId, keyId and privateKeyP8 together, or none of them")
+		}
+	case "stripe":
+		return checkStripeConfig(cfg)
+	}
+	return nil
 }

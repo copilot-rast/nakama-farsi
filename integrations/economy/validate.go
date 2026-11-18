@@ -19,13 +19,21 @@ var (
 	giftCodePattern = regexp.MustCompile(`^[A-Z0-9_-]{3,32}$`)
 	skuPattern      = regexp.MustCompile(`^[A-Za-z0-9_.-]{1,128}$`)
 	numericPattern  = regexp.MustCompile(`^-?[0-9]{1,16}(\.[0-9]{1,4})?$`)
+
+	priceCurrencyPattern = regexp.MustCompile(`^[a-z]{3}$`)
 )
 
-var allMethods = []string{"zarinpal", "zibal", "bazaar", "myket", "in_app"}
+var allMethods = []string{"zarinpal", "zibal", "stripe", "bazaar", "myket", "google_play", "apple", "in_app"}
 
 func isGateway(method string) bool { return method == "zarinpal" || method == "zibal" }
 
-func isStore(method string) bool { return method == "bazaar" || method == "myket" }
+func isStore(method string) bool {
+	return method == "bazaar" || method == "myket" || method == "google_play" || method == "apple"
+}
+
+func isAppStore(method string) bool { return method == "google_play" || method == "apple" }
+
+func isStripe(method string) bool { return method == "stripe" }
 
 func validMethod(method string) bool {
 	for _, m := range allMethods {

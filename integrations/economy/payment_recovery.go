@@ -21,7 +21,13 @@ type paymentSettings struct {
 	OnceHoldMinutes   int    `json:"onceHoldMinutes"`
 	ExpiredReceipts   string `json:"expiredReceipts"`
 	CloseSandboxOnOff bool   `json:"closeSandboxOnOff"`
-	UpdatedAt         string `json:"updatedAt,omitempty"`
+
+	LiveAcceptsTestPurchases bool   `json:"liveAcceptsTestPurchases"`
+	AppStorePayload          string `json:"appStorePayload"`
+	StoreConsumed            string `json:"storeConsumed"`
+	GoogleAcknowledge        bool   `json:"googleAcknowledge"`
+	StripeToleranceSeconds   int    `json:"stripeToleranceSeconds"`
+	UpdatedAt                string `json:"updatedAt,omitempty"`
 }
 
 const consoleUsernameHeader = "X-Nakama-Console-Username"
@@ -31,6 +37,7 @@ func defaultPaymentSettings() paymentSettings {
 		RewardRetry: true, RetryMinutes: 2, MaxAttempts: 20, GrantOnNextCall: true,
 		PaidConflict: "refund", OncePending: "hold", OnceHoldMinutes: 15,
 		ExpiredReceipts: "verified", CloseSandboxOnOff: true,
+		AppStorePayload: "optional", StoreConsumed: "accept", GoogleAcknowledge: true, StripeToleranceSeconds: 300,
 	}
 }
 
@@ -63,6 +70,12 @@ func validatePaymentSettings(st paymentSettings) error {
 		return badRequest("INVALID_SETTING", "onceHoldMinutes", "must be 1 to 1440")
 	case st.ExpiredReceipts != "verified" && st.ExpiredReceipts != "refuse":
 		return badRequest("INVALID_SETTING", "expiredReceipts", "must be verified or refuse")
+	case st.AppStorePayload != "optional" && st.AppStorePayload != "required":
+		return badRequest("INVALID_SETTING", "appStorePayload", "must be optional or required")
+	case st.StoreConsumed != "accept" && st.StoreConsumed != "refuse":
+		return badRequest("INVALID_SETTING", "storeConsumed", "must be accept or refuse")
+	case st.StripeToleranceSeconds < 30 || st.StripeToleranceSeconds > 3600:
+		return badRequest("INVALID_SETTING", "stripeToleranceSeconds", "must be 30 to 3600")
 	}
 	return nil
 }
