@@ -330,6 +330,31 @@ var MESSAGES = {
     'col.name': 'نام',
     'col.type': 'نوع',
     'col.default': 'مقدار اولیه',
+    'col.regen': 'پرشدن خودکار',
+    'f.regen': 'پرشدن خودکار (مثل جان)',
+    'f.regen.enabled': 'با گذشت زمان خودش پر شود',
+    'f.regen.enabled.hint': 'هر چند وقت یک واحد اضافه می‌شود تا به سقف برسد. سرور حساب می‌کند؛ کار زمان‌بندی‌شده لازم نیست.',
+    'f.regen.max': 'سقف پرشدن',
+    'f.regen.max.hint': 'پرشدن خودکار تا این عدد. خرید و جایزه می‌تواند بیشتر کند.',
+    'f.regen.interval': 'هر چند ثانیه یک واحد',
+    'f.regen.interval.hint': 'مثلاً ۱۸۰۰ یعنی هر ۳۰ دقیقه یکی.',
+    'f.regen.clamp': 'بیشتر از سقف نماند',
+    'f.regen.clamp.hint': 'اگر خرید یا جایزه بیشتر از سقف داد، در خواندن بعدی به سقف برمی‌گردد.',
+    'f.regen.refillCurrency': 'پر کردن کامل با',
+    'f.regen.refillCurrency.hint': 'خالی یعنی بازیکن نمی‌تواند یکجا پر کند.',
+    'f.regen.refillAmount': 'قیمت پر کردن کامل',
+    'f.regen.unlimitedTag': 'تگ «بی‌نهایت»',
+    'f.regen.unlimitedTag.hint': 'تا وقتی بازیکن این تگ را دارد، خرج کردن این ارز رایگان است. تگ زمان‌دار را با جایزه بدهید.',
+    'regen.preview': 'هر {every} یک واحد؛ از صفر تا {max} در {full} پر می‌شود.',
+    'regen.cell': 'تا {max}، هر {every}',
+    'regen.span.sec': '{n} ثانیه',
+    'regen.span.min': '{n} دقیقه',
+    'regen.span.hour': '{n} ساعت',
+    'regen.span.day': '{n} روز',
+    'code.INVALID_REGEN': 'تنظیم پرشدن خودکار معتبر نیست.',
+    'code.INVALID_REGEN_MAX': 'سقف باید از ۱ تا ۱٬۰۰۰٬۰۰۰ باشد.',
+    'code.INVALID_REGEN_INTERVAL': 'فاصله باید از ۱ ثانیه تا ۳۰ روز باشد.',
+    'code.REFILL_SAME_CURRENCY': 'پر کردن را نمی‌شود با خود همین ارز خرید.',
     'col.sort': 'ترتیب',
     'col.items': 'آیتم‌ها',
     'col.price': 'قیمت',
@@ -5738,6 +5763,31 @@ var MESSAGES = {
     'col.name': 'Name',
     'col.type': 'Type',
     'col.default': 'Default',
+    'col.regen': 'Refills over time',
+    'f.regen': 'Refill over time (like lives)',
+    'f.regen.enabled': 'Refill by itself over time',
+    'f.regen.enabled.hint': 'One unit is added every interval until the cap. The server works it out on each read; no scheduled job.',
+    'f.regen.max': 'Refill cap',
+    'f.regen.max.hint': 'Refilling stops here. Purchases and prizes can go above it.',
+    'f.regen.interval': 'Seconds per unit',
+    'f.regen.interval.hint': 'For example 1800 means one every 30 minutes.',
+    'f.regen.clamp': 'Never stay above the cap',
+    'f.regen.clamp.hint': 'If a purchase or prize goes above the cap, the next read brings it back to the cap.',
+    'f.regen.refillCurrency': 'Full refill paid with',
+    'f.regen.refillCurrency.hint': 'Empty means players cannot refill at once.',
+    'f.regen.refillAmount': 'Full refill price',
+    'f.regen.unlimitedTag': 'Unlimited tag',
+    'f.regen.unlimitedTag.hint': 'While the player holds this tag, spending this currency is free. Give a timed tag from a prize.',
+    'regen.preview': 'One unit every {every}; empty to {max} in {full}.',
+    'regen.cell': 'Up to {max}, every {every}',
+    'regen.span.sec': '{n} s',
+    'regen.span.min': '{n} min',
+    'regen.span.hour': '{n} h',
+    'regen.span.day': '{n} days',
+    'code.INVALID_REGEN': 'The refill setting is not valid.',
+    'code.INVALID_REGEN_MAX': 'The cap must be from 1 to 1,000,000.',
+    'code.INVALID_REGEN_INTERVAL': 'The interval must be from 1 second to 30 days.',
+    'code.REFILL_SAME_CURRENCY': 'A refill cannot be paid with the same currency.',
     'col.sort': 'Sort',
     'col.items': 'Items',
     'col.price': 'Price',
@@ -13084,6 +13134,24 @@ function languagesChanged() {
   loadLanguages(true).then(function () { languageHooks.forEach(function (fn) { fn(); }); });
 }
 
+function regenOn(v) { return !!(v.regen && v.regen.enabled); }
+
+function regenSpan(sec) {
+  sec = Number(sec) || 0;
+  if (sec < 60) return t('regen.span.sec', { n: localDigits(sec) });
+  if (sec < 3600) return t('regen.span.min', { n: localDigits(Math.round(sec / 6) / 10) });
+  if (sec < 86400) return t('regen.span.hour', { n: localDigits(Math.round(sec / 360) / 10) });
+  return t('regen.span.day', { n: localDigits(Math.round(sec / 8640) / 10) });
+}
+
+function regenPreview(v) {
+  var r = v.regen || {};
+  var max = Number(r.max), every = Number(r.intervalSeconds);
+  if (!(max >= 1) || !(every >= 1)) return h('span', {});
+  return h('div', { class: 'eco-rule-preview text-sm rounded-md px-3 py-2', 'data-regen-preview': '' },
+    t('regen.preview', { every: regenSpan(every), max: localDigits(max), full: regenSpan(every * max) }));
+}
+
 var RESOURCES = {
   currencies: {
     filters: [{ name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'currency' } }],
@@ -13092,6 +13160,7 @@ var RESOURCES = {
       { label: 'col.type', render: function (it) { return tag(t('type.' + it.type), it.type === 'hard' ? 'warning' : 'primary'); }, width: 110 },
       { label: 'col.category', render: taxonomyCell, skeleton: '30%' },
       { label: 'col.default', render: function (it) { return numCell(it.defaultValue); }, width: 130 },
+      { label: 'col.regen', render: function (it) { return it.regen && it.regen.enabled ? tag(t('regen.cell', { max: localDigits(it.regen.max), every: regenSpan(it.regen.intervalSeconds) }), 'success') : ''; }, width: 170 },
       { label: 'col.sort', render: function (it) { return numCell(it.sort); }, width: 90 },
       { label: 'col.updated', render: function (it) { return dateCell(it.updatedAt); }, width: 190 }
     ],
@@ -13107,9 +13176,30 @@ var RESOURCES = {
         { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
       ] },
       { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
+      { type: 'heading', label: 'f.regen' },
+      { name: 'regen.enabled', type: 'bool', inline: true, label: 'f.regen.enabled', hint: 'f.regen.enabled.hint', empty: false },
+      { type: 'row', when: regenOn, fields: [
+        { name: 'regen.max', type: 'number', label: 'f.regen.max', hint: 'f.regen.max.hint', required: true, min: 1, max: 1000000, when: regenOn },
+        { name: 'regen.intervalSeconds', type: 'number', label: 'f.regen.interval', hint: 'f.regen.interval.hint', required: true, min: 1, max: 2592000, when: regenOn }
+      ] },
+      { name: 'regenPreview', type: 'static', readonly: true, live: true, when: regenOn, render: regenPreview },
+      { name: 'regen.clamp', type: 'bool', inline: true, label: 'f.regen.clamp', hint: 'f.regen.clamp.hint', empty: false, when: regenOn },
+      { type: 'row', when: regenOn, fields: [
+        { name: 'regen.refillPrice.currencyKey', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.regen.refillCurrency', hint: 'f.regen.refillCurrency.hint', optional: true, when: regenOn },
+        { name: 'regen.refillPrice.amount', type: 'number', label: 'f.regen.refillAmount', min: 1, optional: true, when: regenOn,
+          check: function (n, v) { var k = v.regen && v.regen.refillPrice && v.regen.refillPrice.currencyKey; return k && !(n >= 1) ? t('code.INVALID_PRICE') : null; } }
+      ] },
+      { name: 'regen.unlimitedTag', type: 'ref', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, valueKey: 'key', label: 'f.regen.unlimitedTag', hint: 'f.regen.unlimitedTag.hint', optional: true, when: regenOn },
       { name: 'metadata', type: 'json', label: 'f.metadata', optional: true, empty: {} }
     ],
-    defaults: function () { return { type: 'soft', name: {}, categoryId: null, tagIds: [], defaultValue: 0, sort: 0, metadata: {} }; }
+    defaults: function () { return { type: 'soft', name: {}, categoryId: null, tagIds: [], defaultValue: 0, sort: 0, metadata: {}, regen: { enabled: false, max: 5, intervalSeconds: 1800, clamp: false, refillPrice: null, unlimitedTag: '' } }; },
+    fixPayload: function (p) {
+      var r = p.regen;
+      if (!r || !r.enabled) { p.regen = null; return p; }
+      if (r.refillPrice && !r.refillPrice.currencyKey && r.refillPrice.amount == null) r.refillPrice = null;
+      if (!r.unlimitedTag) r.unlimitedTag = '';
+      return p;
+    }
   },
   metas: {
     columns: [

@@ -5,6 +5,12 @@ function campaignSettingsPage(root) {
       var notes = h('div', { class: 'flex flex-col gap-2' });
       if (d.economy === false) notes.appendChild(notice('warning', t('se.noEconomy')));
       if (d.xpMetaFound === false) notes.appendChild(notice('warning', t('se.metaMissing', { k: cur.xp.metaKey })));
+      var pl = cur.play || defs.play || { costCurrency: '', costAmount: 1, refundOnWin: true };
+      if (pl.costCurrency && d.costCurrencyFound === false) notes.appendChild(notice('warning', t('se.costMissing', { k: pl.costCurrency })));
+      else if (pl.costCurrency && d.costCurrencyRegen === false) notes.appendChild(notice('info', t('se.costNoRegen', { k: pl.costCurrency })));
+      var costCur = refSelect('currencies', pl.costCurrency, 'play.costCurrency', t('se.cost.none'));
+      var costAmount = numInput(pl.costAmount, 'play.costAmount');
+      var refundOnWin = check(pl.refundOnWin, t('se.refundOnWin'), 'play.refundOnWin');
       var a = cur.attempts, s = cur.stars, u = cur.unlock, r = cur.rewards, x = cur.xp, e = cur.events, f = cur.freeride;
       var hours = numInput(a.hours, 'attempts.hours'), grace = numInput(a.graceSeconds, 'attempts.graceSeconds'), keep = numInput(a.keepDays, 'attempts.keepDays'), minSec = numInput(a.defaultMinSeconds, 'attempts.defaultMinSeconds');
       var closeOthers = check(a.closeOthers, t('se.closeOthers'), 'attempts.closeOthers');
@@ -31,6 +37,8 @@ function campaignSettingsPage(root) {
       var grid = function () { return h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, Array.prototype.slice.call(arguments)); };
       return {
         el: [notes,
+          section(t('se.play'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: t('se.play.hint') }),
+            grid(field(t('se.costCurrency'), costCur), field(t('se.costAmount'), costAmount)), refundOnWin), 'play'),
           section(t('se.attempts'), h('div', {}, grid(field(t('se.hours'), hours), field(t('se.grace'), grace)), grid(field(t('se.keepDays'), keep), field(t('se.minSeconds'), minSec)), closeOthers), 'attempts'),
           section(t('se.stars'), h('div', {}, grid(field(t('se.maxStars'), maxStars), field(t('se.minOnSuccess'), minOn)), field(t('se.missing'), missing),
             h('div', { class: 'text-sm font-medium mb-1', text: t('se.multipliers') }), mult, h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('se.repeatMultipliers') }), rmult,
@@ -42,6 +50,7 @@ function campaignSettingsPage(root) {
           section(t('se.events'), h('div', {}, grid(field(t('se.economyEvent'), ecoEvent), field(t('se.analyticsEvent'), anEvent)), onFailure), 'events'),
           section(t('se.freeride'), h('div', {}, reqId, field(t('se.requestHours'), reqHours, null, 'cg-num')), 'freeride')],
         read: function (c) {
+          c.play = { costCurrency: costCur.value || '', costAmount: numberValue(costAmount), refundOnWin: refundOnWin.input.checked };
           c.attempts = { hours: numberValue(hours), graceSeconds: numberValue(grace), keepDays: numberValue(keep), defaultMinSeconds: numberValue(minSec), closeOthers: closeOthers.input.checked };
           c.stars = { maxStars: numberValue(maxStars), minOnSuccess: numberValue(minOn), missingField: missing.value, multipliers: mult.read(), repeatableMultipliers: rmult.read(), rules: rules.read() };
           c.unlock = { stageDefault: stageDefault.value, chapterDefault: chapterDefault.value, minStars: numberValue(minStars), showLocked: showLocked.input.checked };

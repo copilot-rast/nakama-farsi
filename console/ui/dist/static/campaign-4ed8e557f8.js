@@ -59,6 +59,10 @@ var CG_TEXT = {
     'se.milestoneModes': 'نوع مرحله‌هایی که در درصد ستارهٔ فصل حساب می‌شوند', 'se.xp': 'XP و سطح', 'se.metaKey': 'متای XP (اقتصاد)', 'se.metaKey.none': 'XP فقط در همین افزونه',
     'se.levelTable': 'جدول سطح', 'se.levelTable.main': 'جدول اصلی', 'se.metaMissing': 'متای {k} در اقتصاد نیست؛ XP فقط در همین افزونه جمع می‌شود.',
     'se.events': 'رویدادها', 'se.economyEvent': 'رویداد اقتصاد بعد از هر مرحله', 'se.analyticsEvent': 'رویداد تحلیل (کلید مرحله = context)', 'se.onFailure': 'برای باخت هم فرستاده شود',
+    'se.play': 'هزینهٔ بازی', 'se.play.hint': 'هر شروع مرحله این مقدار از ارز را کم می‌کند (مثلاً یک جان). مرحله با metadata.playCost می‌تواند مقدار خودش را داشته باشد؛ ۰ یعنی رایگان.',
+    'se.costCurrency': 'ارز هزینه', 'se.cost.none': 'بدون هزینه', 'se.costAmount': 'مقدار هر شروع', 'se.refundOnWin': 'اگر برد، هزینه برگردد',
+    'se.costMissing': 'ارز {k} در اقتصاد نیست؛ شروع مرحله رد می‌شود.', 'se.costNoRegen': 'ارز {k} پرشدن خودکار ندارد؛ هزینه مثل یک کسر ساده از کیف پول است.',
+    'code.NOT_ENOUGH_PLAY_COST': 'ارز کافی برای شروع مرحله نیست.',
     'se.freeride': 'گشت آزاد', 'se.requireRequestId': 'requestId برای گرفتن جایزه لازم باشد', 'se.requestHours': 'نگه‌داری جواب هر requestId (ساعت)',
     'se.noEconomy': 'افزونهٔ اقتصاد بارگذاری نشده؛ سطح و جایزه‌های اقتصاد کار نمی‌کنند.',
     'pc.title': 'پیشرفت مرحله‌ها', 'pc.xp': 'XP مرحله‌ها: {xp} · سطح {level}', 'pc.reset': 'از نو', 'pc.reset.confirm': 'پیشرفت مرحلهٔ «{name}» پاک شود؟',
@@ -131,6 +135,10 @@ var CG_TEXT = {
     'se.milestoneModes': 'Stage kinds counted in a chapter\'s star percent', 'se.xp': 'XP and level', 'se.metaKey': 'XP meta (economy)', 'se.metaKey.none': 'XP only in this plugin',
     'se.levelTable': 'Level table', 'se.levelTable.main': 'Main table', 'se.metaMissing': 'Economy has no meta {k}; XP is kept only in this plugin.',
     'se.events': 'Events', 'se.economyEvent': 'Economy event after each stage', 'se.analyticsEvent': 'Analytics event (stage key = context)', 'se.onFailure': 'Send them for lost runs too',
+    'se.play': 'Play cost', 'se.play.hint': 'Every stage start takes this much of the currency (a life, for example). A stage can set its own amount with metadata.playCost; 0 means free.',
+    'se.costCurrency': 'Cost currency', 'se.cost.none': 'No cost', 'se.costAmount': 'Amount per start', 'se.refundOnWin': 'Give it back on a win',
+    'se.costMissing': 'Currency {k} is not in economy; stage starts will be refused.', 'se.costNoRegen': 'Currency {k} does not refill over time; the cost is a plain wallet debit.',
+    'code.NOT_ENOUGH_PLAY_COST': 'Not enough currency to start the stage.',
     'se.freeride': 'Free ride', 'se.requireRequestId': 'A requestId is required to claim', 'se.requestHours': 'Keep the answer of each requestId (hours)',
     'se.noEconomy': 'The economy plugin is not loaded; levels and economy prizes do not work.',
     'pc.title': 'Stage progress', 'pc.xp': 'Stage XP: {xp} · level {level}', 'pc.reset': 'Reset', 'pc.reset.confirm': 'Clear the progress of “{name}”?',
@@ -1174,6 +1182,12 @@ function campaignSettingsPage(root) {
       var notes = h('div', { class: 'flex flex-col gap-2' });
       if (d.economy === false) notes.appendChild(notice('warning', t('se.noEconomy')));
       if (d.xpMetaFound === false) notes.appendChild(notice('warning', t('se.metaMissing', { k: cur.xp.metaKey })));
+      var pl = cur.play || defs.play || { costCurrency: '', costAmount: 1, refundOnWin: true };
+      if (pl.costCurrency && d.costCurrencyFound === false) notes.appendChild(notice('warning', t('se.costMissing', { k: pl.costCurrency })));
+      else if (pl.costCurrency && d.costCurrencyRegen === false) notes.appendChild(notice('info', t('se.costNoRegen', { k: pl.costCurrency })));
+      var costCur = refSelect('currencies', pl.costCurrency, 'play.costCurrency', t('se.cost.none'));
+      var costAmount = numInput(pl.costAmount, 'play.costAmount');
+      var refundOnWin = check(pl.refundOnWin, t('se.refundOnWin'), 'play.refundOnWin');
       var a = cur.attempts, s = cur.stars, u = cur.unlock, r = cur.rewards, x = cur.xp, e = cur.events, f = cur.freeride;
       var hours = numInput(a.hours, 'attempts.hours'), grace = numInput(a.graceSeconds, 'attempts.graceSeconds'), keep = numInput(a.keepDays, 'attempts.keepDays'), minSec = numInput(a.defaultMinSeconds, 'attempts.defaultMinSeconds');
       var closeOthers = check(a.closeOthers, t('se.closeOthers'), 'attempts.closeOthers');
@@ -1200,6 +1214,8 @@ function campaignSettingsPage(root) {
       var grid = function () { return h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, Array.prototype.slice.call(arguments)); };
       return {
         el: [notes,
+          section(t('se.play'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: t('se.play.hint') }),
+            grid(field(t('se.costCurrency'), costCur), field(t('se.costAmount'), costAmount)), refundOnWin), 'play'),
           section(t('se.attempts'), h('div', {}, grid(field(t('se.hours'), hours), field(t('se.grace'), grace)), grid(field(t('se.keepDays'), keep), field(t('se.minSeconds'), minSec)), closeOthers), 'attempts'),
           section(t('se.stars'), h('div', {}, grid(field(t('se.maxStars'), maxStars), field(t('se.minOnSuccess'), minOn)), field(t('se.missing'), missing),
             h('div', { class: 'text-sm font-medium mb-1', text: t('se.multipliers') }), mult, h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('se.repeatMultipliers') }), rmult,
@@ -1211,6 +1227,7 @@ function campaignSettingsPage(root) {
           section(t('se.events'), h('div', {}, grid(field(t('se.economyEvent'), ecoEvent), field(t('se.analyticsEvent'), anEvent)), onFailure), 'events'),
           section(t('se.freeride'), h('div', {}, reqId, field(t('se.requestHours'), reqHours, null, 'cg-num')), 'freeride')],
         read: function (c) {
+          c.play = { costCurrency: costCur.value || '', costAmount: numberValue(costAmount), refundOnWin: refundOnWin.input.checked };
           c.attempts = { hours: numberValue(hours), graceSeconds: numberValue(grace), keepDays: numberValue(keep), defaultMinSeconds: numberValue(minSec), closeOthers: closeOthers.input.checked };
           c.stars = { maxStars: numberValue(maxStars), minOnSuccess: numberValue(minOn), missingField: missing.value, multipliers: mult.read(), repeatableMultipliers: rmult.read(), rules: rules.read() };
           c.unlock = { stageDefault: stageDefault.value, chapterDefault: chapterDefault.value, minStars: numberValue(minStars), showLocked: showLocked.input.checked };
