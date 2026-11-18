@@ -28,6 +28,9 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/payments/{id}", http.MethodGet, s.consolePaymentGet},
 		{consolePrefix + "/payments/{id}/inquire", http.MethodPost, s.consolePaymentInquire},
 		{consolePrefix + "/payments/{id}/retry-grant", http.MethodPost, s.consolePaymentRetryGrant},
+		{consolePrefix + "/payments/{id}/refund", http.MethodPost, s.consolePaymentRefund},
+		{consolePrefix + "/payment-settings", http.MethodGet, s.consolePaymentSettingsGet},
+		{consolePrefix + "/payment-settings", http.MethodPut, s.consolePaymentSettingsPut},
 		{consolePrefix + "/users/{userId}", http.MethodGet, s.consoleUserGet},
 		{consolePrefix + "/users/{userId}/grant", http.MethodPost, s.consoleUserGrant},
 		{consolePrefix + "/uploads", http.MethodPost, s.consoleUpload},
@@ -77,7 +80,7 @@ const paymentAdminJSON = `jsonb_build_object('id',p.id,'userId',p.user_id,'usern
 	'method',p.method,'sandbox',p.sandbox,'status',p.status,'originalToman',p.original_toman,'finalToman',p.final_toman,'amountRial',p.amount_rial,
 	'coinCurrency',p.coin_currency,'coinAmount',p.coin_amount,'giftId',p.gift_id,'discountPercent',p.discount_percent,'authority',p.authority,'trackId',p.track_id,
 	'refId',p.ref_id,'storeToken',p.store_token,'cardMask',p.card_mask,'outcome',p.outcome,'error',p.error,'rewardGranted',p.reward_granted,'rewardError',p.reward_error,
-	'inquiryCount',p.inquiry_count,'inquiredAt',p.inquired_at,'verifiedAt',p.verified_at,'createdAt',p.created_at,'updatedAt',p.updated_at)`
+	'inquiryCount',p.inquiry_count,'grantAttempts',p.grant_attempts,'grantRetryAt',p.grant_retry_at,'refundStatus',p.refund_status,'refundNote',p.refund_note,'refundBy',p.refund_by,'refundAt',p.refund_at,'inquiredAt',p.inquired_at,'verifiedAt',p.verified_at,'createdAt',p.created_at,'updatedAt',p.updated_at)`
 
 const paymentAdminFrom = ` FROM economy_payment p LEFT JOIN users u ON u.id=p.user_id LEFT JOIN economy_product pr ON pr.id=p.product_id`
 
@@ -90,6 +93,14 @@ func (s *service) consolePaymentsList(w http.ResponseWriter, r *http.Request) {
 	}
 	if v := q.Get("method"); v != "" {
 		where.add("p.method = ?", v)
+	}
+	switch q.Get("reward") {
+	case "pending":
+		where.parts = append(where.parts, "(p.status = 'success' AND NOT p.reward_granted AND p.refund_status IS NULL)")
+	case "refund":
+		where.parts = append(where.parts, "p.refund_status = 'needed'")
+	case "settled":
+		where.parts = append(where.parts, "p.refund_status IN ('kept','refunded')")
 	}
 	if v := q.Get("userId"); v != "" {
 		if _, err := uuid.FromString(v); err != nil {
@@ -411,8 +422,6 @@ func (s *service) consoleSummary(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"counts": counts, "paymentsByStatus": byStatus, "paymentMethods": methods, "revenueDaily": daily})
 }
 
-// revenueDaily returns the last 30 calendar days, oldest first: live gateway and store revenue in toman,
-// successful live payments and every payment that day.
 func (s *service) revenueDaily(ctx context.Context) ([]map[string]any, error) {
 	rows, err := s.db.QueryContext(ctx, `SELECT to_char(d, 'YYYY-MM-DD'),
 		COALESCE(sum(p.final_toman) FILTER (WHERE p.status='success' AND NOT p.sandbox AND p.method IN ('zarinpal','zibal','bazaar','myket')),0),

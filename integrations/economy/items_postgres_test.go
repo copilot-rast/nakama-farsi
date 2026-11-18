@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"sync"
 	"testing"
+
+	"github.com/gofrs/uuid/v5"
 )
 
 func newItemHarness(t *testing.T) (*harness, string) {
@@ -345,7 +347,14 @@ func TestItemPrizesAndProductRules(t *testing.T) {
 	bob := h.user()
 	h.give(bob, 10)
 	a := h.mustRPC(bob, "economy_purchase_start", map[string]any{"productId": once["id"], "method": "bazaar"})["paymentId"].(string)
-	b := h.mustRPC(bob, "economy_purchase_start", map[string]any{"productId": once["id"], "method": "bazaar"})["paymentId"].(string)
+	if c := h.rpcCode(bob, "economy_purchase_start", map[string]any{"productId": once["id"], "method": "bazaar"}); c != "PAYMENT_IN_PROGRESS" {
+		t.Fatalf("second one-time store start = %s", c)
+	}
+	b := uuid.Must(uuid.NewV4()).String()
+	if _, err := h.s.db.ExecContext(h.ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial)
+		SELECT $2, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial FROM economy_payment WHERE id=$1`, a, b); err != nil {
+		t.Fatal(err)
+	}
 	wg = sync.WaitGroup{}
 	for _, id := range []string{a, b} {
 		wg.Add(1)

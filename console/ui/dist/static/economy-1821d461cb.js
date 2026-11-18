@@ -419,6 +419,51 @@ var MESSAGES = {
     'pay.inquire.done': 'استعلام انجام شد.',
     'pay.retry': 'دادن دوبارهٔ جایزه',
     'pay.retry.done': 'جایزه دوباره داده شد.',
+    'filter.reward': 'جایزه',
+    'pay.rewardf.pending': 'جایزه داده‌نشده',
+    'pay.rewardf.refund': 'منتظر بازگشت پول',
+    'pay.rewardf.settled': 'بسته‌شده با یادداشت',
+    'pay.refund.needed': 'بازگشت پول لازم',
+    'pay.refund.kept': 'بدون بازگشت پول',
+    'pay.refund.refunded': 'پول برگشت داده شد',
+    'pay.refund.none': 'ثبت نشده',
+    'pay.refund': 'بازگشت پول',
+    'pay.refund.status': 'وضعیت بازگشت پول',
+    'pay.refund.by': 'ثبت‌کننده',
+    'pay.refund.at': 'زمان بازگشت',
+    'pay.refund.note': 'یادداشت',
+    'pay.refund.note.ph': 'مثلاً: پول در پنل بازار برگشت داده شد.',
+    'pay.refund.hint': 'پول این پرداخت گرفته شده ولی جایزه داده نشده. اگر جایزه داده نمی‌شود، پول را در پنل بازار یا درگاه برگردانید و اینجا ثبت کنید.',
+    'pay.refund.markRefunded': 'ثبت بازگشت پول',
+    'pay.refund.markKept': 'بدون بازگشت پول',
+    'pay.grantAttempts': 'تلاش‌های دادن جایزه',
+    'pay.grantRetryAt': 'تلاش بعدی',
+    'nav.payment-settings': 'تنظیمات',
+    'desc.payment-settings': 'تلاش دوباره برای جایزه، خرید دوم محصول یک‌بارمصرف، رسیدهای منقضی و حالت تست.',
+    'f.ps.retry': 'تلاش خودکار برای دادن جایزه',
+    'f.ps.retry.hint': 'اگر پول گرفته شده ولی جایزه داده نشده، سرور خودش دوباره تلاش می‌کند.',
+    'f.ps.retryMinutes': 'فاصلهٔ اولین تلاش (دقیقه)',
+    'f.ps.retryMinutes.hint': 'هر تلاش ناموفق این فاصله را دو برابر می‌کند، تا ۶۰ برابر.',
+    'f.ps.maxAttempts': 'بیشترین تعداد تلاش',
+    'f.ps.maxAttempts.hint': 'بعد از این تعداد، فقط ادمین می‌تواند جایزه را بدهد.',
+    'f.ps.nextCall': 'دادن جایزه در درخواست بعدی بازیکن',
+    'f.ps.nextCall.hint': 'وقتی بازیکن موجودی یا وضعیت خرید را می‌خواند، جایزهٔ داده‌نشده دوباره امتحان می‌شود.',
+    'f.ps.conflict': 'پرداختی که جایزه‌اش را بازیکن از قبل دارد',
+    'f.ps.conflict.hint': 'برای PRODUCT_ALREADY_BOUGHT و PRIZE_ALREADY_OWNED بعد از گرفتن پول.',
+    'ps.conflict.refund': 'در فهرست بازگشت پول بیاید',
+    'ps.conflict.keep': 'فقط ثبت شود',
+    'f.ps.once': 'محصول یک‌بارمصرف با پرداخت باز',
+    'f.ps.once.hint': 'وقتی بازیکن پرداخت قبلی همین محصول را هنوز تمام نکرده است.',
+    'ps.once.hold': 'تا زمان مشخص رد شود',
+    'ps.once.replace': 'پرداخت قبلی بسته شود',
+    'f.ps.onceHold': 'زمان نگه داشتن (دقیقه)',
+    'f.ps.onceHold.hint': 'بعد از این زمان، پرداخت باز قبلی بسته می‌شود و خرید تازه شروع می‌شود.',
+    'f.ps.expired': 'رسید پرداخت منقضی',
+    'f.ps.expired.hint': 'رسید حالت تست برای پرداخت منقضی همیشه رد می‌شود.',
+    'ps.expired.verified': 'اگر بازار تأیید کرد، قبول شود',
+    'ps.expired.refuse': 'همیشه رد شود',
+    'f.ps.sandbox': 'بستن پرداخت‌های تست با خاموش شدن حالت تست',
+    'f.ps.sandbox.hint': 'پرداخت‌های باز حالت تست بسته می‌شوند و رسید تست دیگر قبول نمی‌شود.',
     'pay.request': 'درخواست',
     'pay.response': 'پاسخ',
     'pay.duration': '{n} میلی‌ثانیه',
@@ -5782,6 +5827,51 @@ var MESSAGES = {
     'pay.inquire.done': 'Inquiry done.',
     'pay.retry': 'Retry reward',
     'pay.retry.done': 'Reward granted again.',
+    'filter.reward': 'Reward',
+    'pay.rewardf.pending': 'Reward not granted',
+    'pay.rewardf.refund': 'Waiting for refund',
+    'pay.rewardf.settled': 'Closed with a note',
+    'pay.refund.needed': 'Refund needed',
+    'pay.refund.kept': 'No refund',
+    'pay.refund.refunded': 'Refunded',
+    'pay.refund.none': 'Not set',
+    'pay.refund': 'Refund',
+    'pay.refund.status': 'Refund status',
+    'pay.refund.by': 'Marked by',
+    'pay.refund.at': 'Refunded at',
+    'pay.refund.note': 'Note',
+    'pay.refund.note.ph': 'For example: refunded in the Bazaar panel.',
+    'pay.refund.hint': 'The money was taken but no reward was given. If the reward cannot be given, refund in the store or gateway panel and record it here.',
+    'pay.refund.markRefunded': 'Mark refunded',
+    'pay.refund.markKept': 'No refund',
+    'pay.grantAttempts': 'Reward attempts',
+    'pay.grantRetryAt': 'Next attempt',
+    'nav.payment-settings': 'Settings',
+    'desc.payment-settings': 'Reward retry, second starts of one-time products, expired receipts and test mode.',
+    'f.ps.retry': 'Retry rewards automatically',
+    'f.ps.retry.hint': 'When money was taken but the reward failed, the server tries again by itself.',
+    'f.ps.retryMinutes': 'First retry after (minutes)',
+    'f.ps.retryMinutes.hint': 'Each failed try doubles the wait, up to 60 times.',
+    'f.ps.maxAttempts': 'Most attempts',
+    'f.ps.maxAttempts.hint': 'After this many tries only an admin can grant the reward.',
+    'f.ps.nextCall': 'Grant on the next player call',
+    'f.ps.nextCall.hint': 'When the player reads balances or a purchase status, a pending reward is tried again.',
+    'f.ps.conflict': 'Paid but the player already owns it',
+    'f.ps.conflict.hint': 'For PRODUCT_ALREADY_BOUGHT and PRIZE_ALREADY_OWNED after the money was taken.',
+    'ps.conflict.refund': 'Add to the refund list',
+    'ps.conflict.keep': 'Only record it',
+    'f.ps.once': 'One-time product with an open payment',
+    'f.ps.once.hint': 'When the player has not finished an earlier payment for the same product.',
+    'ps.once.hold': 'Refuse for a while',
+    'ps.once.replace': 'Close the earlier payment',
+    'f.ps.onceHold': 'Hold time (minutes)',
+    'f.ps.onceHold.hint': 'After this time the earlier open payment is closed and a new one starts.',
+    'f.ps.expired': 'Receipts for expired payments',
+    'f.ps.expired.hint': 'Test-mode receipts for expired payments are always refused.',
+    'ps.expired.verified': 'Accept when the store confirms it',
+    'ps.expired.refuse': 'Always refuse',
+    'f.ps.sandbox': 'Close test payments when test mode is turned off',
+    'f.ps.sandbox.hint': 'Open test-mode payments are closed and test receipts stop working.',
     'pay.request': 'Request',
     'pay.response': 'Response',
     'pay.duration': '{n} ms',
@@ -13270,7 +13360,7 @@ var RESOURCES = {
 };
 
 var SECTIONS = {
-  economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'offers', 'entry-offers', 'offer-preview', 'offer-report', 'offer-settings', 'tag-discounts', 'tag-discount-preview', 'tag-discount-settings', 'friend-gifts', 'friend-gift-rules', 'friend-gift-settings', 'friend-gift-report', 'items', 'avatar-categories', 'avatar-items', 'avatar-types', 'avatar-settings', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments'],
+  economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'offers', 'entry-offers', 'offer-preview', 'offer-report', 'offer-settings', 'tag-discounts', 'tag-discount-preview', 'tag-discount-settings', 'friend-gifts', 'friend-gift-rules', 'friend-gift-settings', 'friend-gift-report', 'items', 'avatar-categories', 'avatar-items', 'avatar-types', 'avatar-settings', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments', 'payment-settings'],
   publication: ['faqs', 'news', 'news-review', 'news-sources', 'news-ingest', 'news-reactions', 'news-settings', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'activity'],
   support: ['tickets', 'live-chat'],
@@ -13287,6 +13377,7 @@ var HUBS = {
   'tag-discounts': { section: 'economy', tabs: [['tag-discounts', ''], ['tag-discount-preview', 'preview'], ['tag-discount-settings', 'settings']] },
   'friend-gifts': { section: 'economy', tabs: [['friend-gifts', ''], ['friend-gift-rules', 'rules'], ['friend-gift-settings', 'settings'], ['friend-gift-report', 'report']] },
   prizes: { section: 'economy', tabs: [['prizes', ''], ['prize-groups', 'groups']] },
+  payments: { section: 'economy', tabs: [['payments', ''], ['payment-settings', 'settings']] },
   'chat-quota': { section: 'moderation', tabs: [['chat-quota', ''], ['chat-quota-settings', 'settings'], ['chat-quota-report', 'report']] },
   avatar: { section: 'economy', tabs: [['avatar-categories', ''], ['avatar-items', 'items'], ['avatar-types', 'types'], ['avatar-settings', 'settings']] },
   stickers: { section: 'moderation', tabs: [['sticker-packs', ''], ['sticker-settings', 'settings']] },
@@ -13595,6 +13686,7 @@ var PAYMENT_LIST = {
   filters: [
     { name: 'status', label: 'filter.status', options: opts('status.', ['pending', 'success', 'failed', 'expired']) },
     { name: 'method', label: 'filter.method', options: opts('method.', METHODS) },
+    { name: 'reward', label: 'filter.reward', options: opts('pay.rewardf.', ['pending', 'refund', 'settled']) },
     { name: 'userId', label: 'filter.user', type: 'text' }
   ],
   columns: [
@@ -13610,7 +13702,8 @@ var PAYMENT_LIST = {
 function paymentStatus(it) {
   return h('div', { class: 'flex flex-wrap gap-1' },
     tag(t('status.' + it.status), STATUS_COLOR[it.status]),
-    it.status === 'success' && !it.rewardGranted ? tag(t('pay.reward.notGranted'), 'error') : null);
+    it.status === 'success' && !it.rewardGranted && !it.refundStatus ? tag(t('pay.reward.notGranted'), 'error') : null,
+    it.refundStatus ? tag(t('pay.refund.' + it.refundStatus), it.refundStatus === 'needed' ? 'warning' : 'secondary') : null);
 }
 
 function dl(rows) {
@@ -13661,7 +13754,7 @@ function paymentDetail(container, id) {
     var gateway = GATEWAYS.indexOf(p.method) !== -1;
     var actions = h('div', { class: 'flex flex-wrap gap-2' });
     if (p.status === 'pending' && gateway) actions.appendChild(button({ variant: 'primary', size: 'page', icon: 'refresh', label: t('pay.inquire'), onclick: function (e) { act(e.currentTarget, 'inquire', 'pay.inquire.done'); } }));
-    if (p.status === 'success' && (!p.rewardGranted || p.rewardError)) actions.appendChild(button({ variant: 'primary', size: 'page', icon: 'prizes', label: t('pay.retry'), onclick: function (e) { act(e.currentTarget, 'retry-grant', 'pay.retry.done'); } }));
+    if (p.status === 'success' && !p.rewardGranted && !p.refundStatus) actions.appendChild(button({ variant: 'primary', size: 'page', icon: 'prizes', label: t('pay.retry'), onclick: function (e) { act(e.currentTarget, 'retry-grant', 'pay.retry.done'); } }));
     clear(frame.actions).appendChild(actions);
     frame.actions.appendChild(backBtn);
 
@@ -13671,8 +13764,11 @@ function paymentDetail(container, id) {
       ['pay.reward', tag(p.rewardGranted ? t('pay.reward.granted') : t('pay.reward.notGranted'), p.rewardGranted ? 'success' : 'secondary')],
       ['pay.reward.error', p.rewardError ? h('span', { class: 'text-error-600 dark:text-error-400', text: p.rewardError }) : null],
       ['pay.error', p.error ? h('span', { class: 'text-error-600 dark:text-error-400', text: p.error }) : null],
-      ['pay.outcome', p.outcome ? mono(p.outcome) : null]
+      ['pay.outcome', p.outcome ? mono(p.outcome) : null],
+      ['pay.grantAttempts', p.status === 'success' && !p.rewardGranted ? h('span', { class: 'tabular-nums', text: fmtNum(p.grantAttempts || 0) }) : null],
+      ['pay.grantRetryAt', p.status === 'success' && !p.rewardGranted && p.grantRetryAt ? dateCell(p.grantRetryAt) : null]
     ])));
+    if (p.status === 'success' && !p.rewardGranted) grid.appendChild(refundSection(p));
     grid.appendChild(section('pay.amounts', dl([
       ['pay.original', p.originalToman != null ? h('span', { class: 'tabular-nums', text: t('toman', { n: p.originalToman }) }) : null],
       ['pay.discount', p.discountPercent ? h('span', { text: t('percent', { n: p.discountPercent }) }) : null],
@@ -13724,6 +13820,32 @@ function paymentDetail(container, id) {
     var sec = section('pay.logs', logBody);
     sec.classList.add('eco-span-all');
     grid.appendChild(sec);
+  }
+
+  function refundSection(p) {
+    var note = textInput(p.refundNote || '', { multiline: true, rows: 3, label: t('pay.refund.note'), placeholder: t('pay.refund.note.ph') });
+    function save(btn, status) {
+      setBusy(btn, true);
+      api('POST', '/payments/' + encodeURIComponent(id) + '/refund', { status: status, note: note.value }).then(function () {
+        toast('success', t('saved'));
+        load();
+      }, function (err) {
+        setBusy(btn, false);
+        toast('error', errorText(err));
+      });
+    }
+    var buttons = h('div', { class: 'flex flex-wrap gap-2 mt-3' },
+      button({ variant: 'primary', size: 'sm', label: t('pay.refund.markRefunded'), onclick: function (e) { save(e.currentTarget, 'refunded'); } }),
+      button({ variant: 'secondary', size: 'sm', label: t('pay.refund.markKept'), onclick: function (e) { save(e.currentTarget, 'kept'); } }));
+    return section('pay.refund', h('div', {},
+      dl([
+        ['pay.refund.status', tag(t('pay.refund.' + (p.refundStatus || 'none')), p.refundStatus === 'needed' ? 'warning' : 'secondary')],
+        ['pay.refund.by', p.refundBy ? h('span', { text: p.refundBy }) : null],
+        ['pay.refund.at', p.refundAt ? dateCell(p.refundAt) : null]
+      ]),
+      h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-2', text: t('pay.refund.hint') }),
+      field(t('pay.refund.note'), note),
+      buttons));
   }
 
   function act(btn, path, doneKey) {
@@ -14088,7 +14210,7 @@ function ovStatus(by, grantErrors) {
   box.appendChild(h('div', { class: 'eco-ov-status-head' }, h('span', { class: 'eco-ov-h3', text: t('ov.status') }), h('span', { class: 'eco-ov-muted tabular-nums', text: t('ov.status.total', { n: localDigits(fmtNum(total)) }) })));
   box.appendChild(barEl);
   box.appendChild(legend);
-  if (grantErrors) box.appendChild(h('a', { href: hashFor('payments', null, { status: 'success' }), class: 'eco-ov-alertrow', 'data-ov-grant-errors': '' },
+  if (grantErrors) box.appendChild(h('a', { href: hashFor('payments', null, { reward: 'pending' }), class: 'eco-ov-alertrow', 'data-ov-grant-errors': '' },
     icon('alert', 'h-4 w-4'), h('span', { text: t('ov.grantErrors.n', { n: localDigits(fmtNum(grantErrors)) }) })));
   return box;
 }
@@ -14199,6 +14321,40 @@ function overviewPage(container) {
   }
   load();
 }
+
+var PAYMENT_SETTINGS_FIELDS = [
+  { name: 'rewardRetry', type: 'bool', inline: true, label: 'f.ps.retry', hint: 'f.ps.retry.hint' },
+  { type: 'row', fields: [
+    { name: 'retryMinutes', type: 'number', label: 'f.ps.retryMinutes', hint: 'f.ps.retryMinutes.hint', required: true, min: 1, max: 1440 },
+    { name: 'maxAttempts', type: 'number', label: 'f.ps.maxAttempts', hint: 'f.ps.maxAttempts.hint', required: true, min: 1, max: 1000 }
+  ] },
+  { name: 'grantOnNextCall', type: 'bool', inline: true, label: 'f.ps.nextCall', hint: 'f.ps.nextCall.hint' },
+  { name: 'paidConflict', type: 'select', label: 'f.ps.conflict', hint: 'f.ps.conflict.hint', required: true, noPlaceholder: true, options: opts('ps.conflict.', ['refund', 'keep']) },
+  { type: 'row', fields: [
+    { name: 'oncePending', type: 'select', label: 'f.ps.once', hint: 'f.ps.once.hint', required: true, noPlaceholder: true, options: opts('ps.once.', ['hold', 'replace']) },
+    { name: 'onceHoldMinutes', type: 'number', label: 'f.ps.onceHold', hint: 'f.ps.onceHold.hint', required: true, min: 1, max: 1440 }
+  ] },
+  { name: 'expiredReceipts', type: 'select', label: 'f.ps.expired', hint: 'f.ps.expired.hint', required: true, noPlaceholder: true, options: opts('ps.expired.', ['verified', 'refuse']) },
+  { name: 'closeSandboxOnOff', type: 'bool', inline: true, label: 'f.ps.sandbox', hint: 'f.ps.sandbox.hint' }
+];
+
+function paymentSettingsCall(method, path, body) {
+  return api(method, path, body).then(function (res) { return Object.assign({}, (res && res.settings) || {}); });
+}
+
+function paymentSettingsPage(container) {
+  var frame = pageFrame(t('nav.payment-settings'), t('desc.payment-settings'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(paymentSettingsCall, '/payment-settings', null, PAYMENT_SETTINGS_FIELDS, { id: 'payments', fixPayload: function (p) {
+    delete p.updatedAt;
+    ['retryMinutes', 'maxAttempts', 'onceHoldMinutes'].forEach(function (k) { p[k] = Number(p[k]); });
+    return p;
+  } });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
+CUSTOM_PAGES['payment-settings'] = function (root) { paymentSettingsPage(root); };
 
 var CHANNELS = ['in_app', 'push', 'push_in_app', 'sms', 'email'];
 var CHANNEL_ICON = { in_app: 'notifications', push: 'push', push_in_app: 'push', sms: 'comments', email: 'send' };

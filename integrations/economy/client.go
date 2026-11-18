@@ -238,6 +238,7 @@ func (s *service) rpcBalances(ctx context.Context, userID, payload string) (any,
 	if err := s.ensureDefaults(ctx, userID); err != nil {
 		return nil, err
 	}
+	s.grantPendingRewards(ctx, userID)
 	wallet, err := s.userWallet(ctx, userID)
 	if err != nil {
 		return nil, err
@@ -410,10 +411,6 @@ func (s *service) rpcPurchaseStart(ctx context.Context, userID, payload string) 
 	return s.purchaseStart(ctx, userID, in)
 }
 
-// purchaseStart starts a shop purchase. With offerId it sells the player's
-// personal offer: the frozen offer price replaces the product price, the
-// offer's own audience replaces the product audience and the offer limit
-// applies on top of the product rules.
 func (s *service) purchaseStart(ctx context.Context, userID string, in purchaseInput) (any, error) {
 	if err := s.ensureDefaults(ctx, userID); err != nil {
 		return nil, err
@@ -587,9 +584,13 @@ func (s *service) startStore(ctx context.Context, userID string, product product
 	if product.offer != nil && product.offer.Final != nil {
 		final = *product.offer.Final
 	}
-	if _, err := s.db.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial, discount_percent, user_offer_id, friend_gift_id)
-		VALUES ($1,$2,$3,$4,$5,'pending',$6,$7,$8,$9,$10,$11)`, id, userID, product.ID, pm.Method, pm.Config.flag("sandbox"), price, final, final*10, product.DiscountPercent, product.offerID(), product.friendGiftID()); err != nil {
+	once := paymentOnceKey(product, userID)
+	if err := s.freeOnceKey(ctx, once); err != nil {
 		return nil, err
+	}
+	if _, err := s.db.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial, discount_percent, user_offer_id, friend_gift_id, once_key)
+		VALUES ($1,$2,$3,$4,$5,'pending',$6,$7,$8,$9,$10,$11,$12)`, id, userID, product.ID, pm.Method, pm.Config.flag("sandbox"), price, final, final*10, product.DiscountPercent, product.offerID(), product.friendGiftID(), once); err != nil {
+		return nil, onceInsertError(err)
 	}
 	return map[string]any{"paymentId": id, "status": "store", "sku": sku, "developerPayload": id}, nil
 }
@@ -609,6 +610,10 @@ func (s *service) startGateway(ctx context.Context, userID string, product produ
 	percent := product.DiscountPercent
 	id := uuid.Must(uuid.NewV4()).String()
 	sandbox := pm.Config.flag("sandbox")
+	once := paymentOnceKey(product, userID)
+	if err := s.freeOnceKey(ctx, once); err != nil {
+		return nil, err
+	}
 	err := s.inTx(ctx, func(tx *sql.Tx) error {
 		var giftID any
 		if strings.TrimSpace(giftCode) != "" {
@@ -626,9 +631,9 @@ func (s *service) startGateway(ctx context.Context, userID string, product produ
 		if final != 0 && final < 100 {
 			return badRequest("PRICE_TOO_LOW", "giftCode", "the final price must be 0 or at least 100 Toman")
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial, gift_id, discount_percent, user_offer_id, friend_gift_id)
-			VALUES ($1,$2,$3,$4,$5,'pending',$6,$7,$8,$9,$10,$11,$12)`, id, userID, product.ID, pm.Method, sandbox, original, final, final*10, giftID, percent, product.offerID(), product.friendGiftID()); err != nil {
-			return err
+		if _, err := tx.ExecContext(ctx, `INSERT INTO economy_payment (id, user_id, product_id, method, sandbox, status, original_toman, final_toman, amount_rial, gift_id, discount_percent, user_offer_id, friend_gift_id, once_key)
+			VALUES ($1,$2,$3,$4,$5,'pending',$6,$7,$8,$9,$10,$11,$12,$13)`, id, userID, product.ID, pm.Method, sandbox, original, final, final*10, giftID, percent, product.offerID(), product.friendGiftID(), once); err != nil {
+			return onceInsertError(err)
 		}
 		if giftID != nil {
 			if _, err := tx.ExecContext(ctx, `INSERT INTO economy_gift_use (id, gift_id, user_id, payment_id, status) VALUES ($1,$2,$3,$4,'reserved')`,
@@ -710,7 +715,7 @@ func (s *service) rpcPurchaseSubmit(ctx context.Context, userID, payload string)
 	if product, err = s.paymentProduct(ctx, p.ID, product); err != nil {
 		return nil, err
 	}
-	return s.settleStore(ctx, p, product, token, p.Sandbox)
+	return s.settleStore(ctx, p, product, token)
 }
 
 func (s *service) rpcPurchaseReview(ctx context.Context, userID, payload string) (any, error) {
@@ -805,6 +810,12 @@ func (s *service) rpcPurchaseReview(ctx context.Context, userID, payload string)
 		return nil, conflict("DEVELOPER_PAYLOAD_MISMATCH", "the purchase does not belong to this account")
 	}
 	s.logExchange(ctx, p.ID, "store_validate", check.Exchange)
+	if p.Sandbox != pm.Config.flag("sandbox") && p.Status != "success" {
+		return nil, conflict("PAYMENT_CLOSED", "this payment was started in another store mode")
+	}
+	if err := s.expiredAllowed(ctx, p, pm.Config.flag("sandbox")); err != nil {
+		return nil, err
+	}
 	return s.finishStore(ctx, p, product, token, check)
 }
 
@@ -836,7 +847,7 @@ func (s *service) storeCheck(ctx context.Context, pm paymentMethod, sandbox bool
 	return check, nil
 }
 
-func (s *service) settleStore(ctx context.Context, p payment, product productView, token string, sandbox bool) (any, error) {
+func (s *service) settleStore(ctx context.Context, p payment, product productView, token string) (any, error) {
 	if p.Status == "success" {
 		if p.StoreToken.Valid && (p.StoreToken.String == token || strings.HasPrefix(p.StoreToken.String, token+"#")) {
 			return s.storeResult(ctx, p)
@@ -848,6 +859,18 @@ func (s *service) settleStore(ctx context.Context, p payment, product productVie
 	}
 	pm, err := s.loadMethod(ctx, s.db, p.Method)
 	if err != nil {
+		return nil, err
+	}
+	sandbox := pm.Config.flag("sandbox")
+	if p.Sandbox && !sandbox {
+		_, _ = s.closePayment(ctx, p.ID, "failed", "SANDBOX_OFF")
+		return nil, conflict("PAYMENT_CLOSED", "this test payment was closed when test mode was turned off")
+	}
+	if !p.Sandbox && sandbox {
+		s.notePending(ctx, p.ID, "STORE_MODE_CHANGED")
+		return nil, fail(http.StatusServiceUnavailable, "STORE_MODE_CHANGED", "", "the store is in test mode; this payment is checked when test mode is off")
+	}
+	if err := s.expiredAllowed(ctx, p, sandbox); err != nil {
 		return nil, err
 	}
 	if !methodConfigured(p.Method, pm.Config) && !sandbox {
@@ -924,6 +947,12 @@ func (s *service) finishStore(ctx context.Context, p payment, product productVie
 
 func (s *service) storeResult(ctx context.Context, p payment) (any, error) {
 	out := map[string]any{"paymentId": p.ID, "status": p.Status, "rewardGranted": p.RewardGranted}
+	if p.Status == "success" && !p.RewardGranted {
+		out["error"] = "REWARD_PENDING"
+		if p.RewardError.Valid && paidConflictCode(p.RewardError.String) {
+			out["error"] = p.RewardError.String
+		}
+	}
 	if p.RewardGranted {
 		var raw string
 		if err := s.db.QueryRowContext(ctx, `SELECT rewards::text FROM economy_user_prize WHERE source_type='payment' AND source_id=$1 AND claimed`, p.ID).Scan(&raw); err == nil {
@@ -949,6 +978,12 @@ func (s *service) rpcPurchaseStatus(ctx context.Context, userID, payload string)
 	}
 	if p.UserID != userID {
 		return nil, notFound("PAYMENT_NOT_FOUND")
+	}
+	if p.Status == "success" && !p.RewardGranted {
+		s.grantPendingRewards(ctx, userID)
+		if p, err = s.loadPayment(ctx, s.db, p.ID); err != nil {
+			return nil, err
+		}
 	}
 	out := map[string]any{"paymentId": p.ID, "status": p.Status, "rewardGranted": p.RewardGranted}
 	if p.Error.Valid && p.Error.String != "" {

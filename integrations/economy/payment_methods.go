@@ -196,6 +196,7 @@ func (s *service) consoleMethodUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var view map[string]any
+	sandboxOff := false
 	err := s.inTx(r.Context(), func(tx *sql.Tx) error {
 		if _, err := tx.ExecContext(r.Context(), `INSERT INTO economy_payment_method (method) VALUES ($1) ON CONFLICT (method) DO NOTHING`, method); err != nil {
 			return err
@@ -227,11 +228,17 @@ func (s *service) consoleMethodUpdate(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 		view = methodView(paymentMethod{Method: method, Active: in.IsActive, Config: next})
+		sandboxOff = old.Config.flag("sandbox") && !next.flag("sandbox")
 		return nil
 	})
 	if err != nil {
 		s.writeError(w, err)
 		return
+	}
+	if sandboxOff {
+		if st, err := loadPaymentSettings(r.Context(), s.db); err == nil && st.CloseSandboxOnOff {
+			view["closedSandboxPayments"] = s.closeSandboxPending(r.Context(), method)
+		}
 	}
 	writeJSON(w, http.StatusOK, view)
 }

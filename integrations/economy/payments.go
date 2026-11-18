@@ -85,7 +85,6 @@ type productView struct {
 	giftID             string
 }
 
-// friendGiftID is the friend gift a purchase pays for, or nil.
 func (p productView) friendGiftID() any {
 	if p.giftID == "" {
 		return nil
@@ -228,6 +227,7 @@ func (s *service) grantPayment(ctx context.Context, id string) ([]prizeItem, err
 		return nil, conflict("PAYMENT_NOT_SUCCESSFUL", "payment is not successful")
 	}
 	if p.Outcome == "duplicate" {
+		s.notePaidConflict(ctx, p.ID, "PRODUCT_ALREADY_BOUGHT")
 		return nil, conflict("PRODUCT_ALREADY_BOUGHT", "this one-time product was already delivered by another payment; refund this one")
 	}
 	product, err := s.loadProduct(ctx, s.db, p.ProductID)
@@ -260,6 +260,9 @@ func (s *service) grantPayment(ctx context.Context, id string) ([]prizeItem, err
 			code = app.Code
 		}
 		_, _ = s.db.ExecContext(ctx, `UPDATE economy_payment SET reward_error=$2, updated_at=now() WHERE id=$1 AND reward_granted=false`, p.ID, truncate(code, 500))
+		if paidConflictCode(code) && p.Method != "in_app" {
+			s.notePaidConflict(ctx, p.ID, code)
+		}
 		return nil, err
 	}
 	if first {
@@ -443,6 +446,11 @@ func (s *service) reconcileLoop(ctx context.Context) {
 				s.logger.Warn("Economy reconciler failed: %v", err)
 			} else if n > 0 {
 				s.logger.Info("Economy reconciler checked %d payments", n)
+			}
+			if n, err := s.rewardRetryBatch(ctx); err != nil {
+				s.logger.Warn("Economy reward retry failed: %v", err)
+			} else if n > 0 {
+				s.logger.Info("Economy reward retry tried %d payments", n)
 			}
 		}
 	}
