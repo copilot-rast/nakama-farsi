@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid/v5"
-	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/internal/activity"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
+	"github.com/heroiclabs/nakama/v3/internal/pluginkit"
 	"github.com/heroiclabs/nakama/v3/internal/tagdiscount"
 )
 
@@ -564,16 +564,12 @@ func (s *service) walletChange(ctx context.Context, tx *sql.Tx, userID, grantID 
 	if len(changes) == 0 {
 		return nil
 	}
-	applied, err := walletAlreadyApplied(ctx, tx, userID, grantID)
-	if err != nil || applied {
-		return err
-	}
-	md := map[string]any{"module": "economy", "grantId": grantID}
+	md := map[string]any{"module": "economy"}
 	for k, v := range meta {
 		md[k] = v
 	}
-	if _, _, err := s.nk.MultiUpdate(ctx, nil, nil, nil, []*runtime.WalletUpdate{{UserID: userID, Changeset: changes, Metadata: md}}, true); err != nil {
-		var neg *runtime.WalletNegativeError
+	if err := pluginkit.WalletTx(ctx, tx, userID, grantID, changes, md); err != nil {
+		var neg *pluginkit.ErrInsufficient
 		if errors.As(err, &neg) {
 			return fail(http.StatusPaymentRequired, "INSUFFICIENT_BALANCE", "", "not enough "+neg.Path)
 		}

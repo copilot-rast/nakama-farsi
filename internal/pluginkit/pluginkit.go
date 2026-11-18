@@ -152,6 +152,9 @@ func Debit(ctx context.Context, nk runtime.NakamaModule, q Queryer, userID, gran
 	if len(changes) == 0 {
 		return nil
 	}
+	if tx, ok := q.(*sql.Tx); ok {
+		return WalletTx(ctx, tx, userID, grantID, changes, meta)
+	}
 	applied, err := WalletApplied(ctx, q, userID, grantID)
 	if err != nil || applied {
 		return err
@@ -168,4 +171,53 @@ func Debit(ctx context.Context, nk runtime.NakamaModule, q Queryer, userID, gran
 		return err
 	}
 	return nil
+}
+
+type TxQueryer interface {
+	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
+	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
+}
+
+func WalletTx(ctx context.Context, tx TxQueryer, userID, grantID string, changes map[string]int64, meta map[string]any) error {
+	clean := map[string]int64{}
+	for k, v := range changes {
+		if v != 0 {
+			clean[k] = v
+		}
+	}
+	if len(clean) == 0 {
+		return nil
+	}
+	var raw []byte
+	if err := tx.QueryRowContext(ctx, `SELECT wallet FROM users WHERE id=$1 FOR UPDATE`, userID).Scan(&raw); err != nil {
+		return err
+	}
+	applied, err := WalletApplied(ctx, tx, userID, grantID)
+	if err != nil || applied {
+		return err
+	}
+	wallet := map[string]int64{}
+	if len(raw) > 0 {
+		if err := json.Unmarshal(raw, &wallet); err != nil {
+			return err
+		}
+	}
+	for k, v := range clean {
+		if wallet[k]+v < 0 {
+			return &ErrInsufficient{Path: k}
+		}
+		wallet[k] += v
+	}
+	md := map[string]any{"grantId": grantID}
+	for k, v := range meta {
+		md[k] = v
+	}
+	walletJSON, _ := json.Marshal(wallet)
+	changeJSON, _ := json.Marshal(clean)
+	metaJSON, _ := json.Marshal(md)
+	if _, err := tx.ExecContext(ctx, `UPDATE users SET update_time=now(), wallet=$2 WHERE id=$1`, userID, walletJSON); err != nil {
+		return err
+	}
+	_, err = tx.ExecContext(ctx, `INSERT INTO wallet_ledger (id, user_id, changeset, metadata) VALUES (gen_random_uuid(), $1, $2, $3)`, userID, changeJSON, metaJSON)
+	return err
 }
