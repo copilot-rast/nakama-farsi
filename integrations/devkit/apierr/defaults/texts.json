@@ -407,9 +407,17 @@
     "en": "The message is too long.",
     "fa": "متن پیام خیلی طولانی است."
   },
+  "BOTS_DISABLED": {
+    "en": "Playing against the computer is off.",
+    "fa": "بازی با رایانه خاموش است."
+  },
   "CANCELED": {
     "en": "The request was cancelled.",
     "fa": "درخواست لغو شد."
+  },
+  "CANNOT_INVITE_SELF": {
+    "en": "You cannot invite yourself.",
+    "fa": "نمی‌توانید خودتان را دعوت کنید."
   },
   "CANNOT_RATE": {
     "en": "You cannot rate this.",
@@ -702,6 +710,10 @@
   "CLAN_WAR_SIGNUP_CLOSED": {
     "en": "Signup for this war is closed.",
     "fa": "ثبت‌نام این جنگ بسته است."
+  },
+  "CODE_JOIN_DISABLED": {
+    "en": "Joining with a code is off.",
+    "fa": "ورود با کد خاموش است."
   },
   "CODE_NOT_FOUND": {
     "en": "This code is not valid.",
@@ -1099,6 +1111,10 @@
     "en": "This free ride reward was not found.",
     "fa": "این جایزهٔ گشت آزاد پیدا نشد."
   },
+  "FRIEND_ROOMS_DISABLED": {
+    "en": "Private matches are off for this game.",
+    "fa": "بازی خصوصی برای این بازی خاموش است."
+  },
   "FROM_LEVEL_REQUIRED": {
     "en": "Send the current upgrade level.",
     "fa": "سطح فعلی ارتقا را بفرستید."
@@ -1114,6 +1130,10 @@
   "GAME_NOT_FOUND": {
     "en": "Game not found.",
     "fa": "بازی پیدا نشد."
+  },
+  "GAME_NOT_REALTIME": {
+    "en": "This game has no live matches.",
+    "fa": "این بازی مسابقهٔ زنده ندارد."
   },
   "GATEWAY_REQUEST_FAILED": {
     "en": "The payment service did not answer. Please try again.",
@@ -1875,6 +1895,10 @@
     "en": "The match was cancelled.",
     "fa": "مسابقه لغو شد."
   },
+  "MATCH_CREATE_FAILED": {
+    "en": "The match could not be made. Try again.",
+    "fa": "بازی ساخته نشد. دوباره تلاش کنید."
+  },
   "MATCH_MISMATCH": {
     "en": "This does not belong to this match.",
     "fa": "این مورد مربوط به این مسابقه نیست."
@@ -1943,6 +1967,10 @@
     "en": "This cannot be cancelled.",
     "fa": "این مورد قابل لغو نیست."
   },
+  "NOT_DECLINABLE": {
+    "en": "This invite can no longer be declined.",
+    "fa": "این دعوت دیگر رد شدنی نیست."
+  },
   "NOT_ENOUGH_CURRENCY": {
     "en": "Not enough of this currency right now.",
     "fa": "الان به اندازهٔ کافی از این ارز ندارید."
@@ -1959,9 +1987,17 @@
     "en": "Not found.",
     "fa": "پیدا نشد."
   },
+  "NOT_FRIENDS": {
+    "en": "You can only invite a friend.",
+    "fa": "فقط دوستانتان را می‌توانید دعوت کنید."
+  },
   "NOT_HELD": {
     "en": "You do not have this.",
     "fa": "این مورد را ندارید."
+  },
+  "NOT_INVITED": {
+    "en": "This room is for another player.",
+    "fa": "این اتاق برای بازیکن دیگری است."
   },
   "NOT_IN_MATCH": {
     "en": "You are not in this match.",
@@ -2038,6 +2074,10 @@
   "OTP_UNAVAILABLE": {
     "en": "Sending codes is not available right now.",
     "fa": "ارسال کد فعلاً ممکن نیست."
+  },
+  "OWN_ROOM": {
+    "en": "This is your own room.",
+    "fa": "این اتاق خودتان است."
   },
   "PACK_ACTIVATE_DENIED": {
     "en": "This tool may not activate packs; activate it in the console.",

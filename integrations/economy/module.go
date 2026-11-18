@@ -105,6 +105,11 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 			return err
 		}
 	}
+	for name, fn := range svc.gameRoomRPCs() {
+		if err := initializer.RegisterRpc(name, svc.chanceRPC(fn)); err != nil {
+			return err
+		}
+	}
 	for name, fn := range svc.chanceRPCs() {
 		if err := initializer.RegisterRpc(name, svc.chanceRPC(fn)); err != nil {
 			return err

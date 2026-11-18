@@ -470,6 +470,12 @@
       "base"
     ]
   },
+  "BOTS_DISABLED": {
+    "status": 403,
+    "modules": [
+      "economy"
+    ]
+  },
   "CANCELED": {
     "status": 499,
     "modules": [
@@ -477,6 +483,12 @@
       "devkit",
       "economy",
       "publication"
+    ]
+  },
+  "CANNOT_INVITE_SELF": {
+    "status": 400,
+    "modules": [
+      "economy"
     ]
   },
   "CANNOT_RATE": {
@@ -919,6 +931,12 @@
     "status": 409,
     "modules": [
       "clan"
+    ]
+  },
+  "CODE_JOIN_DISABLED": {
+    "status": 403,
+    "modules": [
+      "economy"
     ]
   },
   "CODE_NOT_FOUND": {
@@ -1508,6 +1526,12 @@
       "campaign"
     ]
   },
+  "FRIEND_ROOMS_DISABLED": {
+    "status": 403,
+    "modules": [
+      "economy"
+    ]
+  },
   "FROM_LEVEL_REQUIRED": {
     "status": 400,
     "modules": [
@@ -1523,13 +1547,20 @@
   "GAME_KEY_REQUIRED": {
     "status": 400,
     "modules": [
-      "base"
+      "base",
+      "economy"
     ]
   },
   "GAME_NOT_FOUND": {
     "status": 404,
     "modules": [
       "base",
+      "economy"
+    ]
+  },
+  "GAME_NOT_REALTIME": {
+    "status": 400,
+    "modules": [
       "economy"
     ]
   },
@@ -2722,6 +2753,12 @@
       "economy"
     ]
   },
+  "MATCH_CREATE_FAILED": {
+    "status": 503,
+    "modules": [
+      "economy"
+    ]
+  },
   "MATCH_MISMATCH": {
     "status": 409,
     "modules": [
@@ -2825,7 +2862,14 @@
   "NOT_CANCELLABLE": {
     "status": 409,
     "modules": [
+      "economy",
       "publication"
+    ]
+  },
+  "NOT_DECLINABLE": {
+    "status": 409,
+    "modules": [
+      "economy"
     ]
   },
   "NOT_ENOUGH_CURRENCY": {
@@ -2854,8 +2898,20 @@
       "publication"
     ]
   },
+  "NOT_FRIENDS": {
+    "status": 403,
+    "modules": [
+      "economy"
+    ]
+  },
   "NOT_HELD": {
     "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "NOT_INVITED": {
+    "status": 403,
     "modules": [
       "economy"
     ]
@@ -2964,6 +3020,12 @@
     "status": 503,
     "modules": [
       "publication"
+    ]
+  },
+  "OWN_ROOM": {
+    "status": 400,
+    "modules": [
+      "economy"
     ]
   },
   "PACK_ACTIVATE_DENIED": {
