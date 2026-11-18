@@ -14,6 +14,8 @@ import (
 	"time"
 )
 
+const ConsolePlaceholder = "{{CONSOLE_URL}}"
+
 type Options struct {
 	ConsoleURL  string
 	Commit      string
@@ -87,14 +89,18 @@ func (b *Bundle) resolver(from *Section) linkResolver {
 	}
 }
 
-func (b *Bundle) prepare() {
+func (b *Bundle) prepare(consoleURL string) {
+	console := "#"
+	if consoleURL != "" {
+		console = html.EscapeString(strings.TrimRight(consoleURL, "/"))
+	}
 	for _, s := range b.Sections() {
 		if s.kind == ".md" {
 			title, body := renderMarkdown(s.body, s.ID, b.resolver(s))
 			if s.Title == "" {
 				s.Title = title
 			}
-			s.body = body
+			s.body = strings.ReplaceAll(body, ConsolePlaceholder, console)
 			s.kind = "rendered"
 			continue
 		}
@@ -108,6 +114,7 @@ func (b *Bundle) prepare() {
 				}
 				return v
 			})
+			body = strings.ReplaceAll(body, ConsolePlaceholder, console)
 			s.body = preRe.ReplaceAllStringFunc(body, func(v string) string {
 				code := preRe.FindStringSubmatch(v)[2]
 				cls := ""
@@ -125,7 +132,7 @@ func (b *Bundle) prepare() {
 }
 
 func Render(assets fs.FS, b *Bundle, o Options) ([]byte, error) {
-	b.prepare()
+	b.prepare(o.ConsoleURL)
 	css, err := fs.ReadFile(assets, "assets/style.css")
 	if err != nil {
 		return nil, err
@@ -153,8 +160,8 @@ func Render(assets fs.FS, b *Bundle, o Options) ([]byte, error) {
 	w.WriteString(fonts.String())
 	w.Write(css)
 	w.WriteString("</style>\n</head>\n<body>\n")
-	w.WriteString(`<button class="theme" type="button" data-theme-toggle aria-label="روشن یا تیره">تیره / روشن</button>` + "\n")
 	w.WriteString(`<div class="wrap">` + "\n<header>\n")
+	w.WriteString(`<button class="theme" type="button" data-theme-toggle aria-label="روشن یا تیره">تیره / روشن</button>` + "\n")
 	w.WriteString("<h1>راهنمای تیم فرانت: " + esc(projectTitle) + "</h1>\n")
 	meta := "ساخته‌شده در " + Jalali(o.GeneratedAt)
 	if o.Commit != "" {
@@ -170,7 +177,7 @@ func Render(assets fs.FS, b *Bundle, o Options) ([]byte, error) {
 		w.WriteString(`<li><a href="#part-project">بخش اختصاصی: ` + esc(b.Project.Meta.Title) + `</a>` + tocList(b.Project.Sections) + "</li>\n")
 	}
 	w.WriteString("</ol>\n</nav>\n")
-	w.WriteString(`<section class="step" id="changes"><div class="step-head"><div class="num">✓</div><div><h2>تازه‌ها</h2><div class="sub">جدیدترین تغییر بالاست</div></div></div>` + "\n")
+	w.WriteString(`<section class="step" id="changes"><div class="step-head"><div class="num">۰</div><div><h2>تازه‌ها</h2><div class="sub">جدیدترین تغییر بالاست</div></div></div>` + "\n")
 	w.WriteString(`<div class="tablewrap"><table class="changes"><thead><tr><th>تاریخ</th><th>تغییر</th><th>بخش</th></tr></thead><tbody>` + "\n")
 	for _, e := range b.Changelog() {
 		title := esc(e.Title)
@@ -192,7 +199,7 @@ func Render(assets fs.FS, b *Bundle, o Options) ([]byte, error) {
 		w.WriteString(`<div class="note" data-no-project>این پروژه هنوز بخش اختصاصی ندارد. هر چه لازم دارید فعلاً در بخش عمومی است.</div>` + "\n")
 	}
 	if o.ConsoleURL != "" {
-		w.WriteString(`<div class="warn">کلیدها و رمزها داخل این فایل نیستند. کلید سرور را از مدیر سرور بگیرید؛ راه تنظیمش در <a href="` + esc(strings.TrimRight(o.ConsoleURL, "/")) + `/#/sdk" target="_blank" rel="noopener">صفحهٔ SDK کنسول</a> آمده است.</div>` + "\n")
+		w.WriteString(`<div class="warn">کلیدها و رمزها داخل این فایل نیستند. کلید سرور را از مدیر سرور بگیرید؛ راه تنظیمش در <a href="` + esc(strings.TrimRight(o.ConsoleURL, "/")) + `/#/system/sdk" target="_blank" rel="noopener">صفحهٔ SDK کنسول</a> آمده است.</div>` + "\n")
 	}
 	w.WriteString("<footer>این فایل را کنسول مدیریت ساخته است. نسخهٔ تازه را از همان‌جا بگیرید.</footer>\n</div>\n<script>\n")
 	w.Write(js)
@@ -219,7 +226,11 @@ func writePart(w *bytes.Buffer, id, title, summary string, sections []*Section, 
 		w.WriteString(`<p class="part-sub">` + html.EscapeString(summary) + "</p>\n")
 	}
 	for i, s := range sections {
-		w.WriteString(`<section class="step doc" id="` + html.EscapeString(s.ID) + `" data-scope="` + s.Scope + `"><div class="step-head"><div class="num">` + FaDigits(strconv.Itoa(start+i)) + `</div><div><h2>` + html.EscapeString(s.Title) + "</h2>")
+		cls := "step doc"
+		if strings.Contains(s.body, `class="step"`) {
+			cls = "doc doc-group"
+		}
+		w.WriteString(`<section class="` + cls + `" id="` + html.EscapeString(s.ID) + `" data-scope="` + s.Scope + `"><div class="step-head"><div class="num">` + FaDigits(strconv.Itoa(start+i)) + `</div><div><h2>` + html.EscapeString(s.Title) + "</h2>")
 		if s.Summary != "" {
 			w.WriteString(`<div class="sub">` + html.EscapeString(s.Summary) + "</div>")
 		}

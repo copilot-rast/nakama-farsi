@@ -349,8 +349,8 @@ var RESOURCES = {
         { name: 'coinPrice.amount', type: 'number', label: 'f.coinPrice.amount', required: true, min: 1, when: function (v) { return hasAny(v.paymentMethods, ['in_app']); } }
       ] },
       { type: 'row', when: function (v) { return hasAny(v.paymentMethods, STORES); }, fields: [
-        { name: 'sku.bazaar', type: 'text', ltr: true, label: 'f.sku.bazaar', required: true, when: function (v) { return hasAny(v.paymentMethods, ['bazaar']); } },
-        { name: 'sku.myket', type: 'text', ltr: true, label: 'f.sku.myket', required: true, when: function (v) { return hasAny(v.paymentMethods, ['myket']); } }
+        { name: 'sku.bazaar', type: 'text', ltr: true, label: 'f.sku.bazaar', hint: 'f.sku.price.hint', required: true, when: function (v) { return hasAny(v.paymentMethods, ['bazaar']); } },
+        { name: 'sku.myket', type: 'text', ltr: true, label: 'f.sku.myket', hint: 'f.sku.price.hint', required: true, when: function (v) { return hasAny(v.paymentMethods, ['myket']); } }
       ] },
       { type: 'row', when: function (v) { return hasAny(v.paymentMethods, ['google_play', 'apple']); }, fields: [
         { name: 'sku.google_play', type: 'text', ltr: true, label: 'f.sku.google_play', required: true, when: function (v) { return hasAny(v.paymentMethods, ['google_play']); } },

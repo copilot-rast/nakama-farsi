@@ -312,6 +312,21 @@ html[dir="rtl"] .pl-seg-ind {
   color: var(--ink-1);
 }
 
+.pl-handoff {
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.pl-handoff:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.pl-handoff[hidden] {
+  display: none;
+}
+
 .pl-status:hover,
 .pl-status[aria-expanded="true"] {
   background: var(--capsule-hi);

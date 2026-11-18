@@ -31,6 +31,7 @@ type fakeNakama struct {
 	storage    map[string]map[string]string
 	calls      int
 	failWallet bool
+	failAfter  bool
 }
 
 func (n *fakeNakama) MultiUpdate(ctx context.Context, _ []*runtime.AccountUpdate, writes []*runtime.StorageWrite, _ []*runtime.StorageDelete, wallets []*runtime.WalletUpdate, ledger bool) ([]*api.StorageObjectAck, []*runtime.WalletUpdateResult, error) {
@@ -76,6 +77,9 @@ func (n *fakeNakama) MultiUpdate(ctx context.Context, _ []*runtime.AccountUpdate
 	}
 	n.mu.Lock()
 	defer n.mu.Unlock()
+	if n.failAfter && len(wallets) > 0 {
+		return nil, nil, errors.New("connection lost after the wallet write")
+	}
 	for _, w := range writes {
 		if n.storage[w.UserID] == nil {
 			n.storage[w.UserID] = map[string]string{}

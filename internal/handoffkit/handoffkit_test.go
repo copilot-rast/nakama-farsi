@@ -1,6 +1,8 @@
 package handoffkit
 
 import (
+	"html"
+	"regexp"
 	"strings"
 	"testing"
 	"testing/fstest"
@@ -31,7 +33,7 @@ func TestMarkdown(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	b.prepare()
+	b.prepare("")
 	s := b.General.Sections[0]
 	if s.Title != "Title" {
 		t.Fatalf("title %q", s.Title)
@@ -59,7 +61,7 @@ func TestBundleAndChangelog(t *testing.T) {
 		"general/handoff.json":  {Data: []byte(`{"title":"G","changelog":[{"date":"2026-11-10","title":"old general","section":"01-a.md"},{"date":"2026-11-20","title":"new general"}]}`)},
 		"general/01-a.md":       {Data: []byte("# A\ntext\n")},
 		"project/handoff.json":  {Data: []byte(`{"name":"Demo Game","title":"دمو","changelog":[{"date":"2026-11-15","title":"project entry","section":"guide/01.html"}]}`)},
-		"project/guide/01.html": {Data: []byte("---\ntitle: P\n---\n<header><h1>x</h1></header>\n<p><a href=\"../01-a.md\">a</a> <a href=\"https://e.x\">e</a></p>\n<pre><code>var a = 1;</code></pre>\n")},
+		"project/guide/01.html": {Data: []byte("---\ntitle: P\n---\n<header><h1>x</h1></header>\n<p><a href=\"{{CONSOLE_URL}}/#/system/sdk\">sdk</a> <a href=\"../01-a.md\">a</a> <a href=\"https://e.x\">e</a></p>\n<pre><code>var a = 1;</code></pre>\n")},
 	}
 	b, err := Load(files)
 	if err != nil {
@@ -74,7 +76,7 @@ func TestBundleAndChangelog(t *testing.T) {
 		t.Fatal(err)
 	}
 	h := string(out)
-	for _, want := range []string{`id="part-general"`, `id="part-project"`, "بخش اختصاصی: دمو", `id="p-guide-01"`, `href="#p-guide-01"`, "<span class=\"lang\">C#</span>", "https://console.example/#/sdk", "@font-face", "۲۷ آبان ۱۴۰۵"} {
+	for _, want := range []string{`id="part-general"`, `id="part-project"`, "بخش اختصاصی: دمو", `id="p-guide-01"`, `href="#p-guide-01"`, "<span class=\"lang\">C#</span>", "https://console.example/#/system/sdk", `<a href="https://console.example/#/system/sdk">sdk</a>`, "@font-face", "۲۷ آبان ۱۴۰۵"} {
 		if !strings.Contains(h, want) {
 			t.Errorf("missing %q", want)
 		}
@@ -128,5 +130,35 @@ func TestSettings(t *testing.T) {
 	}
 	if _, ok := (Settings{Audience: "everyone"}).Clean(); ok {
 		t.Fatal("bad audience accepted")
+	}
+}
+
+func TestShippedContent(t *testing.T) {
+	b, err := Load(content.FS)
+	if err != nil {
+		t.Fatal(err)
+	}
+	out, err := Render(content.FS, b, Options{ConsoleURL: "https://console.example", GeneratedAt: time.Now()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := string(out)
+	if m := regexp.MustCompile(`href="[^"#:]*\.(md|html)(#[^"]*)?"`).FindAllString(h, 5); len(m) > 0 {
+		t.Errorf("links to source files left: %v", m)
+	}
+	if m := regexp.MustCompile(`[0-9a-f]{64}`).FindString(h); m != "" {
+		t.Errorf("a 64-hex key is in the file: %s…", m[:8])
+	}
+	if strings.Contains(h, ConsolePlaceholder) {
+		t.Error("console placeholder left")
+	}
+	ids := map[string]bool{}
+	for _, m := range regexp.MustCompile(` id="([^"]+)"`).FindAllStringSubmatch(h, -1) {
+		ids[m[1]] = true
+	}
+	for _, m := range regexp.MustCompile(`href="#([^"]+)"`).FindAllStringSubmatch(h, -1) {
+		if !ids[html.UnescapeString(m[1])] && !ids[m[1]] {
+			t.Errorf("anchor #%s has no target", m[1])
+		}
 	}
 }

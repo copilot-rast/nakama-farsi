@@ -665,7 +665,7 @@ func itemPublic(d itemDef, langs *localized.Set, lang string) itemView {
 		"id": d.ID, "key": d.Key, "type": d.TypeKey, "typeName": langs.Resolve(d.TypeName, lang), "name": langs.Resolve(d.Name, lang),
 		"description": langs.Resolve(d.Description, lang), "iconUrl": d.IconURL, "imageUrl": d.ImageURL, "soundUrl": d.SoundURL, "rarity": d.Rarity,
 		"categoryKey": d.CategoryKey, "tags": tags, "parentKey": d.ParentKey, "requiresKey": d.RequiresKey, "isStarter": d.IsStarter,
-		"unlockLevel": d.unlock(), "price": d.Price, "maxUpgradeLevel": len(d.Upgrades), "services": services, "metadata": meta, "sort": d.Sort, "isActive": d.IsActive,
+		"unlockLevel": d.unlock(), "price": d.Price, "maxUpgradeLevel": len(d.Upgrades), "services": services, "metadata": meta, "sort": d.Sort, "isActive": d.IsActive, "saleStopped": !d.IsActive,
 	}
 }
 

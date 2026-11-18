@@ -315,6 +315,7 @@ var MESSAGES = {
     'f.priceMinor.hint': 'مثلاً ۱۹۹ یعنی ۱٫۹۹ دلار.',
     'f.priceCurrency': 'واحد پول قیمت',
     'f.priceCurrency.hint': 'کد سه‌حرفی، مثل usd. باید با واحد پول استرایپ یکی باشد.',
+    'f.sku.price.hint': 'بازیکن قیمتی را می‌پردازد که برای این SKU در پنل فروشگاه گذاشته‌اید. فروشگاه مبلغ را به سرور نمی‌گوید، پس آن را با قیمت تومانی همین‌جا یکی نگه دارید.',
     'f.isSubscription': 'اشتراکی',
     'f.isSubscription.hint': 'در بازار، گوگل‌پلی و اپل پشتیبانی می‌شود.',
     'f.prize': 'جایزه',
@@ -3985,6 +3986,35 @@ var MESSAGES = {
     'f.sr.docs.enabled.hint': "صفحهٔ ‎/docs‎ و فایل ‎/docs/openapi.json‎ روی آدرس API سرور. تیم فرانت مدل‌ها و تابع‌ها را با Orval از همین فایل می‌سازد.",
     'f.sr.docs.login': "فقط با ورود به کنسول",
     'f.sr.docs.login.hint': "مرورگر نام کاربری و رمز مدیر کنسول را می‌پرسد. ابزارها باید هدر Authorization با توکن کنسول بفرستند.",
+    'sr.h.handoff': "راهنمای فرانت",
+    'f.sr.handoff.enabled': "دکمهٔ راهنمای فرانت در نوار بالا",
+    'f.sr.handoff.enabled.hint': "تیم فرانت از این دکمه یک فایل HTML می‌گیرد: بخش عمومی، بخش اختصاصی همین پروژه و فهرست تازه‌ها. دانلود فقط با ورود به کنسول است.",
+    'f.sr.handoff.audience': "چه کسانی ببینند",
+    'f.sr.handoff.audience.hint': "اگر «فقط مدیرها» باشد، بقیهٔ کاربران کنسول دکمه را نمی‌بینند.",
+    'sr.handoff.all': "همهٔ کاربران کنسول",
+    'sr.handoff.admins': "فقط مدیرها",
+    'hf.title': "راهنمای فرانت",
+    'hf.intro': "یک فایل HTML که بدون اینترنت باز می‌شود. بخش عمومی همهٔ پروژه‌ها و بخش اختصاصی همین پروژه را با هم دارد.",
+    'hf.download': "دانلود فایل راهنما",
+    'hf.downloading': "در حال ساخت فایل…",
+    'hf.downloaded': "فایل راهنما دانلود شد.",
+    'hf.general': "بخش عمومی",
+    'hf.project': "بخش اختصاصی",
+    'hf.forAll': "برای همهٔ پروژه‌ها",
+    'hf.forProject': "فقط برای همین پروژه",
+    'hf.sections': "{n} بخش",
+    'hf.noProject': "این پروژه هنوز بخش اختصاصی ندارد. فایل فعلاً فقط بخش عمومی را دارد.",
+    'hf.keys': "کلیدها و رمزها داخل فایل نیستند. کلید سرور را از مدیر سرور بگیرید.",
+    'hf.changes': "تازه‌ها",
+    'hf.changes.hint': "جدیدترین تغییر بالاست.",
+    'hf.filter.all': "همه",
+    'hf.filter.general': "عمومی",
+    'hf.filter.project': "اختصاصی",
+    'hf.empty': "هنوز تغییری ثبت نشده است.",
+    'hf.loadFailed': "راهنما بار نشد.",
+    'hf.retry': "دوباره",
+    'code.HANDOFF_OFF': "مدیر سرور راهنمای فرانت را خاموش کرده است.",
+    'code.HANDOFF_ADMINS_ONLY': "راهنمای فرانت فقط برای مدیرهای کنسول است.",
     'code.MAINTENANCE': "بازی در حال تعمیر است.",
     'desc.sdk': "پکیج یونیتی این سرور: چه چیزهایی دارد، چطور نصب می‌شود و اولین کدها.",
     'sdk.what': "این پکیج چیست؟",
@@ -5796,6 +5826,7 @@ var MESSAGES = {
     'f.priceMinor.hint': 'For example 199 means 1.99 USD.',
     'f.priceCurrency': 'Price currency',
     'f.priceCurrency.hint': 'Three-letter code such as usd. Must match the Stripe currency.',
+    'f.sku.price.hint': 'The player pays the price set for this SKU in the store console. The store does not tell the server the amount, so keep it equal to the Toman price here.',
     'f.isSubscription': 'Subscription',
     'f.isSubscription.hint': 'Supported on Bazaar, Google Play and Apple.',
     'f.prize': 'Prize',
@@ -9466,6 +9497,35 @@ var MESSAGES = {
     'f.sr.docs.enabled.hint': "The /docs page and /docs/openapi.json on the server API address. The front team builds models and functions from this file with Orval.",
     'f.sr.docs.login': "Console login required",
     'f.sr.docs.login.hint': "The browser asks for the console admin username and password. Tools must send an Authorization header with a console token.",
+    'sr.h.handoff': "Front-end handoff",
+    'f.sr.handoff.enabled': "Front-end handoff button in the top bar",
+    'f.sr.handoff.enabled.hint': "The front team gets one HTML file from this button: the general part, this project's own part and the list of changes. The download needs a console login.",
+    'f.sr.handoff.audience': "Who sees it",
+    'f.sr.handoff.audience.hint': "With \"Admins only\", other console users do not see the button.",
+    'sr.handoff.all': "Every console user",
+    'sr.handoff.admins': "Admins only",
+    'hf.title': "Front-end handoff",
+    'hf.intro': "One HTML file that opens offline. It holds the general part for every project and this project's own part.",
+    'hf.download': "Download the handoff file",
+    'hf.downloading': "Building the file…",
+    'hf.downloaded': "The handoff file was downloaded.",
+    'hf.general': "General part",
+    'hf.project': "Project part",
+    'hf.forAll': "For every project",
+    'hf.forProject': "For this project only",
+    'hf.sections': "{n} sections",
+    'hf.noProject': "This project has no own part yet. The file holds the general part only for now.",
+    'hf.keys': "Keys and passwords are not in the file. Ask the server admin for the server key.",
+    'hf.changes': "What's new",
+    'hf.changes.hint': "Newest change first.",
+    'hf.filter.all': "All",
+    'hf.filter.general': "General",
+    'hf.filter.project': "Project",
+    'hf.empty': "No changes yet.",
+    'hf.loadFailed': "The handoff did not load.",
+    'hf.retry': "Retry",
+    'code.HANDOFF_OFF': "The server admin turned the front-end handoff off.",
+    'code.HANDOFF_ADMINS_ONLY': "The front-end handoff is for console admins only.",
     'code.MAINTENANCE': "The game is under maintenance.",
     'desc.sdk': "This server's Unity package: what it has, how to install it and the first lines of code.",
     'sdk.what': "What is it?",
@@ -13375,8 +13435,8 @@ var RESOURCES = {
         { name: 'coinPrice.amount', type: 'number', label: 'f.coinPrice.amount', required: true, min: 1, when: function (v) { return hasAny(v.paymentMethods, ['in_app']); } }
       ] },
       { type: 'row', when: function (v) { return hasAny(v.paymentMethods, STORES); }, fields: [
-        { name: 'sku.bazaar', type: 'text', ltr: true, label: 'f.sku.bazaar', required: true, when: function (v) { return hasAny(v.paymentMethods, ['bazaar']); } },
-        { name: 'sku.myket', type: 'text', ltr: true, label: 'f.sku.myket', required: true, when: function (v) { return hasAny(v.paymentMethods, ['myket']); } }
+        { name: 'sku.bazaar', type: 'text', ltr: true, label: 'f.sku.bazaar', hint: 'f.sku.price.hint', required: true, when: function (v) { return hasAny(v.paymentMethods, ['bazaar']); } },
+        { name: 'sku.myket', type: 'text', ltr: true, label: 'f.sku.myket', hint: 'f.sku.price.hint', required: true, when: function (v) { return hasAny(v.paymentMethods, ['myket']); } }
       ] },
       { type: 'row', when: function (v) { return hasAny(v.paymentMethods, ['google_play', 'apple']); }, fields: [
         { name: 'sku.google_play', type: 'text', ltr: true, label: 'f.sku.google_play', required: true, when: function (v) { return hasAny(v.paymentMethods, ['google_play']); } },
@@ -25362,6 +25422,159 @@ function sdkPage(container) {
 
 CUSTOM_PAGES['sdk'] = function (root) { sdkPage(root); };
 
+ICONS['handoff'] = '<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/>';
+PH_ICONS['handoff'] = '<path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/>';
+
+var HANDOFF = { meta: null, at: 0, loading: null, panel: null, listeners: [] };
+
+function handoffNotify() {
+  HANDOFF.listeners.forEach(function (fn) { try { fn(HANDOFF.meta); } catch (e) { return; } });
+}
+
+function handoffLoad(force) {
+  if (!token()) { HANDOFF.meta = null; handoffNotify(); return Promise.resolve(null); }
+  if (!force && HANDOFF.meta && Date.now() - HANDOFF.at < 15000) return Promise.resolve(HANDOFF.meta);
+  if (HANDOFF.loading) return HANDOFF.loading;
+  HANDOFF.loading = baseApi('GET', '/handoff').then(function (m) {
+    HANDOFF.meta = m || null;
+    HANDOFF.at = Date.now();
+    HANDOFF.loading = null;
+    handoffNotify();
+    return HANDOFF.meta;
+  }, function (err) {
+    HANDOFF.loading = null;
+    if (err && (err.status === 401 || err.status === 403 || err.status === 404)) { HANDOFF.meta = null; handoffNotify(); }
+    throw err;
+  });
+  return HANDOFF.loading;
+}
+
+function handoffTitle(entry) {
+  if (!entry) return '';
+  return lang() === 'fa' ? (entry.title || entry.titleEn || '') : (entry.titleEn || entry.title || '');
+}
+
+function handoffDate(d) {
+  return fmtDate(String(d) + 'T12:00:00Z', false);
+}
+
+function handoffDownload(btn) {
+  setBusy(btn, true, t('hf.downloading'));
+  var headers = { Accept: 'text/html' };
+  var tk = token();
+  if (tk) headers.Authorization = 'Bearer ' + tk;
+  return fetch(BASE_BASE + '/handoff/download', { headers: headers, credentials: 'same-origin' }).then(function (res) {
+    if (res.status === 401) { toLogin(); throw new ApiError(401, 'UNAUTHENTICATED', ''); }
+    if (!res.ok) {
+      return res.json().catch(function () { return {}; }).then(function (d) { throw new ApiError(res.status, d && d.error, d && d.message); });
+    }
+    var cd = res.headers.get('Content-Disposition') || '';
+    var m = /filename="([^"]+)"/.exec(cd);
+    var name = m ? m[1] : ((HANDOFF.meta && HANDOFF.meta.fileName) || 'handoff.html');
+    return res.blob().then(function (blob) {
+      var url = URL.createObjectURL(blob);
+      var a = h('a', { href: url, download: name, class: 'hidden', 'data-handoff-file': name });
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 4000);
+      toast('success', t('hf.downloaded'));
+    });
+  }, function () { throw new ApiError(0, 'NETWORK', ''); }).catch(function (err) {
+    toast('error', errorText(err));
+  }).then(function () { setBusy(btn, false); });
+}
+
+function handoffPart(label, title, count, scope) {
+  return h('div', { class: 'eco-hf-part', 'data-handoff-part': scope },
+    h('span', { class: 'eco-hf-part-label', text: label }),
+    h('span', { class: 'eco-hf-part-title', text: title }),
+    h('span', { class: 'eco-hf-part-n', text: t('hf.sections', { n: count }) }));
+}
+
+function handoffChanges(meta) {
+  var all = meta.changelog || [];
+  var hasProject = !!meta.project;
+  var filter = 'all';
+  var list = h('ol', { class: 'eco-hf-list', 'data-handoff-changes': '', 'aria-live': 'polite' });
+  function paint() {
+    clear(list);
+    var rows = all.filter(function (e) { return filter === 'all' || e.scope === filter; });
+    if (!rows.length) { list.appendChild(h('li', { class: 'py-6' }, emptyBlock(t('hf.empty')))); return; }
+    rows.forEach(function (e) {
+      list.appendChild(h('li', { class: 'eco-hf-row', 'data-scope': e.scope },
+        h('time', { class: 'eco-hf-date', datetime: e.date, text: handoffDate(e.date) }),
+        h('span', { class: 'eco-hf-text', text: handoffTitle(e) }),
+        tag(t(e.scope === 'project' ? 'hf.filter.project' : 'hf.filter.general'), e.scope === 'project' ? 'warning' : 'secondary')));
+    });
+  }
+  var opts = [{ value: 'all', label: t('hf.filter.all') }, { value: 'general', label: t('hf.filter.general') }];
+  if (hasProject) opts.push({ value: 'project', label: t('hf.filter.project') });
+  var seg = segmented(opts, filter, function (v) { filter = v; paint(); }, t('hf.changes'));
+  seg.setAttribute('data-handoff-filter', '');
+  paint();
+  return h('section', { class: 'eco-hf-changes', 'aria-labelledby': 'eco-hf-changes' },
+    h('div', { class: 'eco-hf-head' },
+      h('div', {},
+        h('h3', { id: 'eco-hf-changes', class: 'eco-hf-h', text: t('hf.changes') }),
+        h('p', { class: 'eco-hf-muted', text: t('hf.changes.hint') })),
+      seg),
+    list);
+}
+
+function handoffBody(body, meta, dl) {
+  clear(body);
+  var counts = { general: 0, project: 0 };
+  (meta.sections || []).forEach(function (s) { counts[s.scope] = (counts[s.scope] || 0) + 1; });
+  var parts = h('div', { class: 'eco-hf-parts' },
+    handoffPart(t('hf.forAll'), handoffTitle(meta.general) || t('hf.general'), counts.general, 'general'),
+    meta.project ? handoffPart(t('hf.forProject'), t('hf.project') + ': ' + handoffTitle(meta.project), counts.project, 'project') : null);
+  body.appendChild(h('div', { class: 'eco-hf', 'data-handoff-panel': '' },
+    h('p', { class: 'eco-hf-intro', text: t('hf.intro') }),
+    parts,
+    meta.project ? null : h('div', { 'data-handoff-no-project': '' }, notice('info', t('hf.noProject'))),
+    h('div', { class: 'eco-hf-get' },
+      h('div', { class: 'eco-hf-get-row' }, dl, h('span', { class: 'eco-hf-file' }, mono(meta.fileName || ''))),
+      h('p', { class: 'eco-hf-muted', text: t('hf.keys') })),
+    handoffChanges(meta)));
+}
+
+function handoffOpen() {
+  if (HANDOFF.panel) return;
+  var body = h('div', { class: 'flex flex-col gap-3' }, bar('40%'), bar('70%'), bar('90%'), bar('60%'));
+  var dl = button({ variant: 'primary', size: 'footer', icon: 'handoff', label: t('hf.download'), onclick: function () { handoffDownload(dl); } });
+  dl.setAttribute('data-handoff-download', '');
+  var opener = document.activeElement;
+  function close() {
+    if (!HANDOFF.panel) return;
+    document.removeEventListener('keydown', esc, true);
+    HANDOFF.panel.remove();
+    HANDOFF.panel = null;
+    if (opener && opener.focus) opener.focus();
+  }
+  function esc(e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } }
+  var closeBtn = button({ variant: 'ghost', size: 'footer', label: t('close'), onclick: close });
+  HANDOFF.panel = sidePanel(t('hf.title'), body, closeBtn, close);
+  HANDOFF.panel.setAttribute('data-handoff', '');
+  document.body.appendChild(HANDOFF.panel);
+  document.addEventListener('keydown', esc, true);
+  function show(meta) {
+    if (!HANDOFF.panel) return;
+    if (!meta || !meta.visible) {
+      clear(body).appendChild(notice('warning', t('code.' + ((meta && meta.reason) || 'HANDOFF_OFF'))));
+      return;
+    }
+    handoffBody(body, meta, dl);
+    dl.focus();
+  }
+  handoffLoad(true).then(show, function (err) {
+    if (!HANDOFF.panel) return;
+    clear(body).appendChild(notice('error', t('hf.loadFailed') + ' ' + errorText(err), button({ variant: 'link', size: 'sm', label: t('hf.retry'), onclick: function () { close(); handoffOpen(); } })));
+  });
+}
+
+window.addEventListener('hashchange', function () { handoffLoad(false).catch(function () { return null; }); });
+window.addEventListener('nakama-console:ready', function () { handoffLoad(false).catch(function () { return null; }); });
+
 ICONS['server-rules'] = '<path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/>';
 PH_ICONS['server-rules'] = '<path d="M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.27,47,25.53a8,8,0,0,0,4.2,0c1-.26,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm0,72c0,37.07-13.66,67.16-40.6,89.42A129.3,129.3,0,0,1,128,223.62a128.25,128.25,0,0,1-38.92-21.81C61.82,179.51,48,149.3,48,112l0-56,160,0ZM82.34,141.66a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32l-56,56a8,8,0,0,1-11.32,0Z"/>';
 
@@ -25394,6 +25607,11 @@ var SR_FIELDS = [
   { type: 'row', fields: [
     { name: 'docs.enabled', type: 'bool', inline: true, label: 'f.sr.docs.enabled', hint: 'f.sr.docs.enabled.hint' },
     { name: 'docs.consoleLogin', type: 'bool', inline: true, label: 'f.sr.docs.login', hint: 'f.sr.docs.login.hint', when: function (v) { return (v.docs || {}).enabled !== false; } }
+  ] },
+  { type: 'heading', label: 'sr.h.handoff' },
+  { type: 'row', fields: [
+    { name: 'handoff.enabled', type: 'bool', inline: true, label: 'f.sr.handoff.enabled', hint: 'f.sr.handoff.enabled.hint' },
+    { name: 'handoff.audience', type: 'select', label: 'f.sr.handoff.audience', hint: 'f.sr.handoff.audience.hint', required: true, options: function () { return [{ value: 'all', label: t('sr.handoff.all') }, { value: 'admins', label: t('sr.handoff.admins') }]; }, when: function (v) { return (v.handoff || {}).enabled !== false; } }
   ] }
 ];
 
@@ -25407,6 +25625,8 @@ function srCall(method, path, body) {
     v.storage.allowCollections = (v.storage.allowCollections || []).map(function (x) { return { v: x }; });
     v.accountDelete = Object.assign({ enabled: true, mode: 'grace', graceDays: 14 }, v.accountDelete || {});
     v.docs = Object.assign({ enabled: true, consoleLogin: false }, v.docs || {});
+    v.handoff = Object.assign({ enabled: true, audience: 'all' }, v.handoff || {});
+    if (method === 'PUT') handoffLoad(true).catch(function () { return null; });
     return v;
   });
 }
@@ -29920,7 +30140,13 @@ window.NakamaConsole = {
     return { name: brandName(), shortName: b.shortName || '', markUrl: b.markUrl || '', logoUrl: b.logoUrl || '', logoDarkUrl: b.logoDarkUrl || '' };
   },
   toggleTheme: function () { toggleTheme(); },
-  isDark: function () { return isDarkTheme(); }
+  isDark: function () { return isDarkTheme(); },
+  handoff: {
+    state: function () { return HANDOFF.meta ? { visible: !!HANDOFF.meta.visible, project: HANDOFF.meta.project ? handoffTitle(HANDOFF.meta.project) : '', changes: (HANDOFF.meta.changelog || []).length } : null; },
+    open: function () { handoffOpen(); },
+    refresh: function () { return handoffLoad(true).catch(function () { return null; }); },
+    onChange: function (fn) { if (typeof fn === 'function') HANDOFF.listeners.push(fn); }
+  }
 };
 
 if (legacyHash(location.hash) || /^#\/(economy|publication|moderation|support|system|project-settings)(\/|\?|$)/.test(location.hash)) {

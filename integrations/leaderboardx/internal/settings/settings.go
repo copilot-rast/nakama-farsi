@@ -41,6 +41,8 @@ type Scores struct {
 
 	PlayerPerMinute int `json:"playerPerMinute"`
 
+	ClientMaxPerWrite int64 `json:"clientMaxPerWrite"`
+
 	LogDays int `json:"logDays"`
 }
 
@@ -79,6 +81,9 @@ const (
 
 	GroupDraw = "draw"
 	GroupAll  = "all"
+
+	DefaultClientMaxPerWrite = 1000000
+	DefaultNotifyCode        = 2301
 )
 
 var (
@@ -90,9 +95,9 @@ func Defaults() All {
 	return All{
 		Display: Display{TopLimit: 50, MaxLimit: 200, AroundLimit: 5, ShowDisplayName: true, ShowUpcoming: true, ShowEndedDays: 3},
 		Rewards: Rewards{PayMode: PayAuto, ClaimDays: 7, Stack: StackFirst, PrizeGroupMode: GroupDraw, MaxTries: 8, CatchUpDays: 7},
-		Scores:  Scores{RequireRequestID: true, PlayerPerMinute: 60, LogDays: 30},
+		Scores:  Scores{RequireRequestID: true, PlayerPerMinute: 60, ClientMaxPerWrite: DefaultClientMaxPerWrite, LogDays: 30},
 		History: History{KeepDays: 365, PlayerLimit: 20, WinnersLimit: 100},
-		Events:  Events{EconomyEvent: "leaderboard_ranked", AnalyticsEvent: "leaderboard_ranked", Notify: true},
+		Events:  Events{EconomyEvent: "leaderboard_ranked", AnalyticsEvent: "leaderboard_ranked", Notify: true, NotifyCode: DefaultNotifyCode},
 	}
 }
 
@@ -106,6 +111,13 @@ func oneOf(v string, list ...string) bool {
 }
 
 func between(v, lo, hi int) bool { return v >= lo && v <= hi }
+
+func (e Events) Code() int {
+	if e.NotifyCode == 0 {
+		return DefaultNotifyCode
+	}
+	return e.NotifyCode
+}
 
 func (a All) Validate() (string, string) {
 	switch {
@@ -131,6 +143,8 @@ func (a All) Validate() (string, string) {
 		return "rewards.catchUpDays", "VALUE_OUT_OF_RANGE"
 	case !between(a.Scores.PlayerPerMinute, 0, 10000):
 		return "scores.playerPerMinute", "VALUE_OUT_OF_RANGE"
+	case a.Scores.ClientMaxPerWrite < 0 || a.Scores.ClientMaxPerWrite > 1e15:
+		return "scores.clientMaxPerWrite", "VALUE_OUT_OF_RANGE"
 	case !between(a.Scores.LogDays, 1, 365):
 		return "scores.logDays", "VALUE_OUT_OF_RANGE"
 	case !between(a.History.KeepDays, 0, 3650):

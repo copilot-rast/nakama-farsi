@@ -241,6 +241,15 @@ func (s *service) grantPayment(ctx context.Context, id string) ([]prizeItem, err
 	if giftID := s.paymentGiftID(ctx, p.ID); giftID != "" {
 		return s.friendGiftPaid(ctx, p, product, giftID)
 	}
+	if p.Method == "in_app" {
+		charged, err := s.inAppCharged(ctx, p.UserID, p.ID)
+		if err != nil {
+			return nil, err
+		}
+		if !charged {
+			return nil, conflict("PAYMENT_NOT_CHARGED", "this coin payment took no coins, so it gives no reward")
+		}
+	}
 	first := false
 	rewards, err := s.grant(ctx, grantRequest{
 		UserID: p.UserID, PrizeID: product.PrizeID, SourceType: "payment", SourceID: p.ID, Reason: "purchase", CheckItems: product.CheckContents,

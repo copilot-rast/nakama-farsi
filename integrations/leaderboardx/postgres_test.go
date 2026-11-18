@@ -596,3 +596,22 @@ func TestWindowEndClosesFinalPeriod(t *testing.T) {
 		t.Fatalf("ended view: %v %v", view, err)
 	}
 }
+
+func TestClientScoresUseTheGlobalCapWhenTheBoardHasNone(t *testing.T) {
+	f := newFixture(t)
+	_, key := f.board(map[string]any{"operator": "best", "source": map[string]any{"type": "client", "calc": "value", "multiplier": 1}})
+	u := f.user()
+	if _, err := f.rpc(f.s.rpcSubmit, u, map[string]any{"key": key, "score": settings.DefaultClientMaxPerWrite + 1, "requestId": "g1"}); code(err) != "LEADERBOARD_SCORE_TOO_HIGH" {
+		t.Fatalf("above the default cap: %v", err)
+	}
+	if _, err := f.rpc(f.s.rpcSubmit, u, map[string]any{"key": key, "score": settings.DefaultClientMaxPerWrite, "requestId": "g2"}); err != nil {
+		t.Fatalf("at the cap: %v", err)
+	}
+	f.settings(func(a *settings.All) { a.Scores.ClientMaxPerWrite = 0 })
+	if _, err := f.rpc(f.s.rpcSubmit, u, map[string]any{"key": key, "score": settings.DefaultClientMaxPerWrite * 5, "requestId": "g3"}); err != nil {
+		t.Fatalf("cap off: %v", err)
+	}
+	if c := settings.Defaults().Events.Code(); c != settings.DefaultNotifyCode || (settings.Events{}).Code() != settings.DefaultNotifyCode || (settings.Events{NotifyCode: 7}).Code() != 7 {
+		t.Fatalf("notify code = %d", c)
+	}
+}

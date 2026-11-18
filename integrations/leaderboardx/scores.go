@@ -225,6 +225,11 @@ func (s *service) rpcSubmit(ctx context.Context, userID, payload string) (any, e
 			return nil, apierr.TooManyRequests("LEADERBOARD_RATE_LIMITED", 60)
 		}
 	}
+	if b.Limits.MaxPerWrite <= 0 && cfg.Scores.ClientMaxPerWrite > 0 {
+		capped := *b
+		capped.Limits.MaxPerWrite = cfg.Scores.ClientMaxPerWrite
+		b = &capped
+	}
 	res, err := s.addScore(ctx, b, userID, "client", "c:"+userID+":"+req, *in.Score, int64(math.Round(in.Subscore)))
 	if err != nil {
 		return nil, err

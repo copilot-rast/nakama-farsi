@@ -579,7 +579,13 @@ window.NakamaConsole = {
     return { name: brandName(), shortName: b.shortName || '', markUrl: b.markUrl || '', logoUrl: b.logoUrl || '', logoDarkUrl: b.logoDarkUrl || '' };
   },
   toggleTheme: function () { toggleTheme(); },
-  isDark: function () { return isDarkTheme(); }
+  isDark: function () { return isDarkTheme(); },
+  handoff: {
+    state: function () { return HANDOFF.meta ? { visible: !!HANDOFF.meta.visible, project: HANDOFF.meta.project ? handoffTitle(HANDOFF.meta.project) : '', changes: (HANDOFF.meta.changelog || []).length } : null; },
+    open: function () { handoffOpen(); },
+    refresh: function () { return handoffLoad(true).catch(function () { return null; }); },
+    onChange: function (fn) { if (typeof fn === 'function') HANDOFF.listeners.push(fn); }
+  }
 };
 
 if (legacyHash(location.hash) || /^#\/(economy|publication|moderation|support|system|project-settings)(\/|\?|$)/.test(location.hash)) {
