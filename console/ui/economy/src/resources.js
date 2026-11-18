@@ -209,8 +209,8 @@ function regenOn(v) { return !!(v.regen && v.regen.enabled); }
 function regenSpan(sec) {
   sec = Number(sec) || 0;
   if (sec < 60) return t('regen.span.sec', { n: localDigits(sec) });
-  if (sec < 3600) return t('regen.span.min', { n: localDigits(Math.round(sec / 6) / 10) });
-  if (sec < 86400) return t('regen.span.hour', { n: localDigits(Math.round(sec / 360) / 10) });
+  if (sec < 7200) return t('regen.span.min', { n: localDigits(Math.round(sec / 6) / 10) });
+  if (sec < 172800) return t('regen.span.hour', { n: localDigits(Math.round(sec / 360) / 10) });
   return t('regen.span.day', { n: localDigits(Math.round(sec / 8640) / 10) });
 }
 
