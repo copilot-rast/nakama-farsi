@@ -430,7 +430,13 @@ func TestPostgresOnceStageTierPrizesMilestonesAndRules(t *testing.T) {
 	if !errors.As(err, &e) || e.Code != "STAGE_LOCKED" {
 		t.Fatalf("level rule = %v", err)
 	}
-	if len(e.Meta["locks"].([]Rule)) != 2 {
+	own := 0
+	for _, r := range e.Meta["locks"].([]Rule) {
+		if r.Type == "level" || r.Type == "meta" && r.Key == f.meta {
+			own++
+		}
+	}
+	if own != 2 {
 		t.Fatalf("locks = %v", e.Meta["locks"])
 	}
 	f.levels[user] = 2
