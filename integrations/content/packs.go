@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"path"
 	"regexp"
 	"sort"
@@ -40,8 +41,14 @@ type packFileIn struct {
 	Size   int64  `json:"size"`
 }
 
+const (
+	KindAddressables = "addressables"
+	KindFiles        = "files"
+)
+
 type pack struct {
 	ID            string     `json:"id"`
+	Kind          string     `json:"kind"`
 	Platform      string     `json:"platform"`
 	Version       string     `json:"version"`
 	MinAppVersion string     `json:"minAppVersion"`
@@ -62,12 +69,12 @@ type pack struct {
 	ActivatedBy   string     `json:"activatedBy"`
 }
 
-const packCols = `id::text, platform, version, min_app_version, max_app_version, status, active, catalog_path, hash_path, catalog_hash, file_count, total_bytes, note, created_by, created_at, completed_at, expires_at, activated_at, activated_by`
+const packCols = `id::text, kind, platform, version, min_app_version, max_app_version, status, active, catalog_path, hash_path, catalog_hash, file_count, total_bytes, note, created_by, created_at, completed_at, expires_at, activated_at, activated_by`
 
 func scanPack(sc interface{ Scan(...any) error }) (pack, error) {
 	var p pack
 	var completed, expires, activated sql.NullTime
-	err := sc.Scan(&p.ID, &p.Platform, &p.Version, &p.MinAppVersion, &p.MaxAppVersion, &p.Status, &p.Active, &p.CatalogPath, &p.HashPath, &p.CatalogHash, &p.FileCount, &p.TotalBytes, &p.Note, &p.CreatedBy, &p.CreatedAt, &completed, &expires, &activated, &p.ActivatedBy)
+	err := sc.Scan(&p.ID, &p.Kind, &p.Platform, &p.Version, &p.MinAppVersion, &p.MaxAppVersion, &p.Status, &p.Active, &p.CatalogPath, &p.HashPath, &p.CatalogHash, &p.FileCount, &p.TotalBytes, &p.Note, &p.CreatedBy, &p.CreatedAt, &completed, &expires, &activated, &p.ActivatedBy)
 	if completed.Valid {
 		t := completed.Time
 		p.CompletedAt = &t
@@ -188,6 +195,40 @@ func contentType(p string) string {
 		return "text/plain; charset=utf-8"
 	case ".xml":
 		return "application/xml"
+	case ".webp":
+		return "image/webp"
+	case ".png":
+		return "image/png"
+	case ".jpg", ".jpeg":
+		return "image/jpeg"
+	case ".gif":
+		return "image/gif"
+	case ".avif":
+		return "image/avif"
+	case ".ogg", ".oga":
+		return "audio/ogg"
+	case ".mp3":
+		return "audio/mpeg"
+	case ".wav":
+		return "audio/wav"
+	case ".m4a":
+		return "audio/mp4"
+	case ".mp4":
+		return "video/mp4"
+	case ".webm":
+		return "video/webm"
+	case ".woff2":
+		return "font/woff2"
+	case ".woff":
+		return "font/woff"
+	case ".ttf":
+		return "font/ttf"
+	case ".otf":
+		return "font/otf"
+	case ".wasm":
+		return "application/wasm"
+	case ".riv":
+		return "application/octet-stream"
 	}
 	return "application/octet-stream"
 }
@@ -202,6 +243,7 @@ func partsFor(size int64, partBytes int) int {
 }
 
 type packCreateIn struct {
+	Kind          string       `json:"kind"`
 	Platform      string       `json:"platform"`
 	Version       string       `json:"version"`
 	MinAppVersion string       `json:"minAppVersion"`
@@ -226,7 +268,13 @@ func (s *service) createPack(ctx context.Context, in packCreateIn, actor string)
 	in.MinAppVersion = strings.TrimSpace(in.MinAppVersion)
 	in.MaxAppVersion = strings.TrimSpace(in.MaxAppVersion)
 	in.Note = strings.TrimSpace(in.Note)
+	in.Kind = strings.TrimSpace(in.Kind)
+	if in.Kind == "" {
+		in.Kind = KindAddressables
+	}
 	switch {
+	case in.Kind != KindAddressables && in.Kind != KindFiles:
+		return nil, apierr.BadRequest("PACK_INVALID").WithField("kind")
 	case in.Platform == "":
 		return nil, apierr.BadRequest("PLATFORM_REQUIRED").WithField("platform")
 	case !cfg.PlatformAllowed(in.Platform):
@@ -278,9 +326,12 @@ func (s *service) createPack(ctx context.Context, in packCreateIn, actor string)
 	if total > cfg.MaxPackBytes {
 		return nil, apierr.BadRequest("PACK_TOO_LARGE").With("max", cfg.MaxPackBytes).With("size", total)
 	}
-	catalog, hashPath, err := findCatalog(files, cfg)
-	if err != nil {
-		return nil, err
+	catalog, hashPath := "", ""
+	if in.Kind == KindAddressables {
+		var err error
+		if catalog, hashPath, err = findCatalog(files, cfg); err != nil {
+			return nil, err
+		}
 	}
 	sort.Slice(files, func(i, j int) bool { return files[i].Path < files[j].Path })
 	shaSize := map[string]int64{}
@@ -305,15 +356,15 @@ func (s *service) createPack(ctx context.Context, in packCreateIn, actor string)
 		if _, err := tx.ExecContext(ctx, `DELETE FROM content_pack_file WHERE pack_id=$1`, id); err != nil {
 			return nil, err
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE content_pack SET min_app_version=$2, max_app_version=$3, note=$4, catalog_path=$5, hash_path=$6, file_count=$7, total_bytes=$8, created_by=$9, expires_at=now() + make_interval(hours => $10) WHERE id=$1`,
-			id, in.MinAppVersion, in.MaxAppVersion, in.Note, catalog, hashPath, len(files), total, actor, cfg.UploadHours); err != nil {
+		if _, err := tx.ExecContext(ctx, `UPDATE content_pack SET min_app_version=$2, max_app_version=$3, note=$4, catalog_path=$5, hash_path=$6, file_count=$7, total_bytes=$8, created_by=$9, expires_at=now() + make_interval(hours => $10), kind=$11 WHERE id=$1`,
+			id, in.MinAppVersion, in.MaxAppVersion, in.Note, catalog, hashPath, len(files), total, actor, cfg.UploadHours, in.Kind); err != nil {
 			return nil, err
 		}
 	case isNoRows(err):
 		id = uuid.Must(uuid.NewV4()).String()
-		if _, err := tx.ExecContext(ctx, `INSERT INTO content_pack (id, platform, version, min_app_version, max_app_version, status, catalog_path, hash_path, file_count, total_bytes, note, created_by, expires_at)
-			VALUES ($1,$2,$3,$4,$5,'uploading',$6,$7,$8,$9,$10,$11, now() + make_interval(hours => $12))`,
-			id, in.Platform, in.Version, in.MinAppVersion, in.MaxAppVersion, catalog, hashPath, len(files), total, in.Note, actor, cfg.UploadHours); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO content_pack (id, platform, version, min_app_version, max_app_version, status, catalog_path, hash_path, file_count, total_bytes, note, created_by, expires_at, kind)
+			VALUES ($1,$2,$3,$4,$5,'uploading',$6,$7,$8,$9,$10,$11, now() + make_interval(hours => $12), $13)`,
+			id, in.Platform, in.Version, in.MinAppVersion, in.MaxAppVersion, catalog, hashPath, len(files), total, in.Note, actor, cfg.UploadHours, in.Kind); err != nil {
 			if uniqueViolation(err) {
 				return nil, apierr.Conflict("PACK_VERSION_EXISTS").With("platform", in.Platform).With("version", in.Version)
 			}
@@ -742,13 +793,52 @@ func indexView(p *pack, base string) any {
 		return nil
 	}
 	root := base + publicPrefix + "/files/" + p.ID
-	out := map[string]any{"id": p.ID, "platform": p.Platform, "version": p.Version, "minAppVersion": p.MinAppVersion, "maxAppVersion": p.MaxAppVersion,
+	out := map[string]any{"id": p.ID, "kind": p.Kind, "platform": p.Platform, "version": p.Version, "minAppVersion": p.MinAppVersion, "maxAppVersion": p.MaxAppVersion,
 		"baseUrl": root, "catalogUrl": root + "/" + p.CatalogPath, "catalogPath": p.CatalogPath, "hashUrl": "", "catalogHash": p.CatalogHash,
 		"fileCount": p.FileCount, "totalBytes": p.TotalBytes, "activatedAt": p.ActivatedAt}
 	if p.HashPath != "" {
 		out["hashUrl"] = root + "/" + p.HashPath
 	}
+	if p.Kind == KindFiles {
+		out["catalogUrl"] = ""
+	}
 	return out
+}
+
+func (s *service) indexOf(ctx context.Context, p *pack, base string) (any, error) {
+	view := indexView(p, base)
+	if p == nil || p.Kind != KindFiles {
+		return view, nil
+	}
+	rows, err := s.db.QueryContext(ctx, `SELECT path, sha256, size FROM content_pack_file WHERE pack_id=$1 ORDER BY path`, p.ID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	root := base + publicPrefix + "/files/" + p.ID + "/"
+	files := []map[string]any{}
+	for rows.Next() {
+		var fp, sha string
+		var size int64
+		if err := rows.Scan(&fp, &sha, &size); err != nil {
+			return nil, err
+		}
+		files = append(files, map[string]any{"path": fp, "url": root + escapePath(fp), "sha256": sha, "size": size, "contentType": contentType(fp), "version": p.Version})
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	m := view.(map[string]any)
+	m["files"] = files
+	return m, nil
+}
+
+func escapePath(p string) string {
+	parts := strings.Split(p, "/")
+	for i, seg := range parts {
+		parts[i] = url.PathEscape(seg)
+	}
+	return strings.Join(parts, "/")
 }
 
 type indexIn struct {
@@ -785,7 +875,11 @@ func (s *service) rpcCatalog(ctx context.Context, _ string, payload string) (any
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"platform": in.Platform, "appVersion": in.AppVersion, "pack": indexView(p, s.indexBase(ctx))}, nil
+	view, err := s.indexOf(ctx, p, s.indexBase(ctx))
+	if err != nil {
+		return nil, err
+	}
+	return map[string]any{"platform": in.Platform, "appVersion": in.AppVersion, "pack": view}, nil
 }
 
 func (s *service) httpContentIndex(w http.ResponseWriter, r *http.Request) {
@@ -804,7 +898,12 @@ func (s *service) httpContentIndex(w http.ResponseWriter, r *http.Request) {
 		s.httpFail(w, r, err)
 		return
 	}
-	body, _ := json.Marshal(map[string]any{"platform": in.Platform, "appVersion": in.AppVersion, "pack": indexView(p, s.publicBase(r))})
+	view, err := s.indexOf(r.Context(), p, s.publicBase(r))
+	if err != nil {
+		s.httpFail(w, r, err)
+		return
+	}
+	body, _ := json.Marshal(map[string]any{"platform": in.Platform, "appVersion": in.AppVersion, "pack": view})
 	sum := sha256.Sum256(body)
 	etag := `"` + hex.EncodeToString(sum[:16]) + `"`
 	w.Header().Set("ETag", etag)

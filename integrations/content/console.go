@@ -209,7 +209,12 @@ func (s *service) packPreview(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, err)
 		return
 	}
-	pluginkit.WriteJSON(w, http.StatusOK, map[string]any{"platform": in.Platform, "appVersion": in.AppVersion, "pack": indexView(p, s.indexBaseFor(r))})
+	view, err := s.indexOf(r.Context(), p, s.indexBaseFor(r))
+	if err != nil {
+		s.fail(w, err)
+		return
+	}
+	pluginkit.WriteJSON(w, http.StatusOK, map[string]any{"platform": in.Platform, "appVersion": in.AppVersion, "pack": view})
 }
 
 func (s *service) packCreate(w http.ResponseWriter, r *http.Request) {

@@ -78,8 +78,13 @@ func (u upload) list() []packFileIn {
 
 func (f *fixture) uploadPack(platform, version, min, max string, u upload, activate bool) pack {
 	f.t.Helper()
+	return f.uploadKind("", platform, version, min, max, u, activate)
+}
+
+func (f *fixture) uploadKind(kind, platform, version, min, max string, u upload, activate bool) pack {
+	f.t.Helper()
 	ctx := context.Background()
-	out, err := f.s.createPack(ctx, packCreateIn{Platform: platform, Version: version, MinAppVersion: min, MaxAppVersion: max, Files: u.list()}, "t")
+	out, err := f.s.createPack(ctx, packCreateIn{Kind: kind, Platform: platform, Version: version, MinAppVersion: min, MaxAppVersion: max, Files: u.list()}, "t")
 	if err != nil {
 		f.t.Fatal(err)
 	}

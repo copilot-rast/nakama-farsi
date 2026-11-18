@@ -3557,6 +3557,10 @@ var MESSAGES = {
     'ct.uploaded': "بسته آپلود شد.",
     'ct.pack': "بستهٔ محتوا",
     'ct.f.platform': "پلتفرم",
+    'ct.f.kind': "نوع بسته",
+    'ct.kind.addressables': "Addressables یونیتی (با کاتالوگ)",
+    'ct.kind.files': "فایل‌های ساده (وب: riv، webp، ogg، json)",
+    'ct.kind.files.hint': "کاتالوگ لازم نیست؛ content_catalog فهرست فایل‌ها را با نشانی، هش و حجم می‌دهد.",
     'ct.f.version': "نسخهٔ بسته",
     'ct.f.version.hint': "برای هر پلتفرم یکتا، مثل 1.0.3",
     'ct.f.min': "از نسخهٔ برنامه",
@@ -8990,6 +8994,10 @@ var MESSAGES = {
     'ct.uploaded': "Pack uploaded.",
     'ct.pack': "Content pack",
     'ct.f.platform': "Platform",
+    'ct.f.kind': "Pack kind",
+    'ct.kind.addressables': "Unity Addressables (with a catalog)",
+    'ct.kind.files': "Plain files (web: riv, webp, ogg, json)",
+    'ct.kind.files.hint': "No catalog needed; content_catalog lists every file with its URL, hash and size.",
     'ct.f.version': "Pack version",
     'ct.f.version.hint': "Unique per platform, for example 1.0.3",
     'ct.f.min': "From app version",
@@ -25436,6 +25444,7 @@ function ctPackPanel(id, onchange) {
       body.appendChild(h('div', { class: 'flex flex-wrap items-center gap-2' },
         h('span', { class: 'text-lg font-semibold', dir: 'ltr', text: p.platform + ' · ' + p.version }), ctStatus(p, false)));
       body.appendChild(dl([
+        ['ct.f.kind', h('span', { text: t('ct.kind.' + (p.kind || 'addressables')) })],
         ['ct.f.range', h('span', { dir: 'auto', text: ctRange(p) })],
         ['ct.f.catalog', p.catalogPath ? ctLtr(p.catalogPath) : null],
         ['ct.f.hash', p.catalogHash ? ctLtr(p.catalogHash) : null],
@@ -25503,13 +25512,15 @@ function ctCommonRoot(paths) {
 }
 
 function ctUploadPanel(info, onDone) {
-  var state = { platform: info.platforms[0] || 'Android', version: '', minAppVersion: '', maxAppVersion: '', note: '', activate: true, files: [], busy: false };
+  var state = { kind: 'addressables', platform: info.platforms[0] || 'Android', version: '', minAppVersion: '', maxAppVersion: '', note: '', activate: true, files: [], busy: false };
   var body = h('div', { 'data-ct-upload': '' });
   var footer = h('div', { class: 'flex gap-2 w-full items-center justify-end' });
   ctOpenPanel('content/upload', t('ct.upload'), body, footer, function () { if (!state.busy) closePanel(); });
   var top = h('div', {});
   var platform = selectInput(state.platform, info.platforms.map(function (p) { return { value: p, label: p }; }), function (v) { state.platform = v; summary(); }, { label: t('ct.f.platform'), placeholder: false });
   platform.setAttribute('data-ct-field', 'platform');
+  var kind = selectInput(state.kind, ['addressables', 'files'].map(function (k) { return { value: k, label: t('ct.kind.' + k) }; }), function (v) { state.kind = v; summary(); }, { label: t('ct.f.kind'), placeholder: false });
+  kind.setAttribute('data-ct-field', 'kind');
   var version = textInput('', { ltr: true, mono: true, label: t('ct.f.version'), placeholder: '1.0.0', oninput: function (v) { state.version = toLatinDigits(v).trim(); } });
   version.setAttribute('data-ct-field', 'version');
   var minV = textInput('', { ltr: true, mono: true, label: t('ct.f.min'), placeholder: '1.0', oninput: function (v) { state.minAppVersion = toLatinDigits(v).trim(); } });
@@ -25567,7 +25578,8 @@ function ctUploadPanel(info, onDone) {
     var size = state.files.reduce(function (a, f) { return a + f.file.size; }, 0);
     var cats = catalogOf();
     sum.appendChild(h('p', { class: 'tabular-nums', text: t('ct.filesN', { n: fmtNum(state.files.length), size: ctBytes(size) }) }));
-    if (cats.length === 1) sum.appendChild(h('p', { class: 'text-secondary-500' }, h('span', { text: t('ct.catalogFound') + ' ' }), ctLtr(cats[0].path)));
+    if (state.kind === 'files') sum.appendChild(h('p', { class: 'text-secondary-500', text: t('ct.kind.files.hint') }));
+    else if (cats.length === 1) sum.appendChild(h('p', { class: 'text-secondary-500' }, h('span', { text: t('ct.catalogFound') + ' ' }), ctLtr(cats[0].path)));
     else sum.appendChild(h('div', { class: 'mt-2' }, notice('warning', t(cats.length ? 'code.PACK_CATALOG_AMBIGUOUS' : 'code.PACK_CATALOG_MISSING'))));
   }
   function setProgress(done, total, text) {
@@ -25576,6 +25588,7 @@ function ctUploadPanel(info, onDone) {
     progText.textContent = text;
   }
   body.appendChild(h('div', {}, top,
+    field(t('ct.f.kind'), kind),
     h('div', { class: 'eco-form-row' }, field(t('ct.f.platform'), platform), field(t('ct.f.version'), version, t('ct.f.version.hint'))),
     h('div', { class: 'eco-form-row' }, field(t('ct.f.min'), minV, t('ct.f.min.hint'), { optional: true }), field(t('ct.f.max'), maxV, null, { optional: true })),
     field(t('ct.f.note'), note, null, { optional: true }),
@@ -25615,7 +25628,7 @@ function ctUploadPanel(info, onDone) {
     var packId = null;
     hashNext().then(function () {
       setProgress(0, 1, t('ct.step.plan'));
-      return baseApi('POST', '/content/packs', { platform: state.platform, version: state.version, minAppVersion: state.minAppVersion, maxAppVersion: state.maxAppVersion, note: state.note.trim(), files: list });
+      return baseApi('POST', '/content/packs', { kind: state.kind, platform: state.platform, version: state.version, minAppVersion: state.minAppVersion, maxAppVersion: state.maxAppVersion, note: state.note.trim(), files: list });
     }).then(function (res) {
       packId = res.pack.id;
       var jobs = [];
