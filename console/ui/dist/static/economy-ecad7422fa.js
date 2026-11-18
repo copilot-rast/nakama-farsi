@@ -309,6 +309,7 @@ var MESSAGES = {
     'f.paymentMethods': 'روش‌های پرداخت',
     'f.sku.bazaar': 'SKU بازار',
     'f.sku.myket': 'SKU مایکت',
+    'f.sku.price.hint': 'بازیکن قیمتی را می‌پردازد که برای این SKU در پنل فروشگاه گذاشته‌اید. فروشگاه مبلغ را به سرور نمی‌گوید، پس آن را با قیمت تومانی همین‌جا یکی نگه دارید.',
     'f.isSubscription': 'اشتراکی',
     'f.isSubscription.hint': 'فقط در بازار پشتیبانی می‌شود.',
     'f.prize': 'جایزه',
@@ -5746,6 +5747,7 @@ var MESSAGES = {
     'f.paymentMethods': 'Payment methods',
     'f.sku.bazaar': 'Bazaar SKU',
     'f.sku.myket': 'Myket SKU',
+    'f.sku.price.hint': 'The player pays the price set for this SKU in the store console. The store does not tell the server the amount, so keep it equal to the Toman price here.',
     'f.isSubscription': 'Subscription',
     'f.isSubscription.hint': 'Supported on Bazaar only.',
     'f.prize': 'Prize',
@@ -13241,8 +13243,8 @@ var RESOURCES = {
         { name: 'coinPrice.amount', type: 'number', label: 'f.coinPrice.amount', required: true, min: 1, when: function (v) { return hasAny(v.paymentMethods, ['in_app']); } }
       ] },
       { type: 'row', when: function (v) { return hasAny(v.paymentMethods, STORES); }, fields: [
-        { name: 'sku.bazaar', type: 'text', ltr: true, label: 'f.sku.bazaar', required: true, when: function (v) { return hasAny(v.paymentMethods, ['bazaar']); } },
-        { name: 'sku.myket', type: 'text', ltr: true, label: 'f.sku.myket', required: true, when: function (v) { return hasAny(v.paymentMethods, ['myket']); } }
+        { name: 'sku.bazaar', type: 'text', ltr: true, label: 'f.sku.bazaar', hint: 'f.sku.price.hint', required: true, when: function (v) { return hasAny(v.paymentMethods, ['bazaar']); } },
+        { name: 'sku.myket', type: 'text', ltr: true, label: 'f.sku.myket', hint: 'f.sku.price.hint', required: true, when: function (v) { return hasAny(v.paymentMethods, ['myket']); } }
       ] },
       { name: 'isSubscription', type: 'bool', inline: true, label: 'f.isSubscription', hint: 'f.isSubscription.hint', empty: false, when: function (v) { return hasAny(v.paymentMethods, ['bazaar']); } },
       { type: 'heading', label: 'f.icon' },
