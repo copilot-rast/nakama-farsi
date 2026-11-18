@@ -16,7 +16,14 @@ test.describe('unity sdk guide', () => {
     await expect(root(page).locator('h1')).toHaveText('پکیج یونیتی');
     await expect(guide.locator('[data-sdk-step]')).toHaveCount(8);
     await expect(guide.locator('[data-sdk-step="1"] .eco-sdk-n')).toHaveText('۱');
-    await expect(guide.locator('[data-sdk-step="3"] pre')).toHaveText('"com.nakamafarsi.unity": "git@github.com:copilot-rast/nakama-farsi-unity.git?path=/Packages/Nakama#dev"');
+    await expect(guide.locator('[data-sdk-step="3"] pre')).toHaveText('"com.nakamafarsi.unity": "https://github.com/copilot-rast/nakama-farsi-unity.git?path=/Packages/Nakama#dev"');
+    await expect(guide).not.toContainText('SSH');
+    await expect(guide).not.toContainText('خصوصی');
+    const copy = guide.locator('[data-sdk-step="3"] [data-up-copy]');
+    await expect(copy).toHaveText('کپی');
+    const pre = guide.locator('[data-sdk-step="3"] pre');
+    expect(await pre.evaluate((e) => getComputedStyle(e).whiteSpace)).toBe('pre-wrap');
+    expect(await pre.evaluate((e) => e.scrollWidth - e.clientWidth)).toBeLessThanOrEqual(1);
     await expect(guide.locator('[data-sdk-step="1"] a')).toHaveAttribute('href', 'https://github.com/copilot-rast/nakama-farsi-unity');
     await expect(guide.locator('[data-sdk-step="6"]')).toContainText('Build for Bazaar');
     await expect(guide.locator('[data-sdk-step="5"] pre').first()).toContainText('NakamaFarsiRunner.Initialize');
@@ -43,6 +50,10 @@ test.describe('unity sdk guide', () => {
     await expect(btn).toHaveAttribute('aria-label', 'Unity SDK install guide');
     await expect(root(m).locator('h1')).toHaveText('Unity SDK');
     await expect(root(m).locator('[data-sdk-step="2"]')).toContainText('Unity 2021.3 or newer');
+    await expect(root(m).locator('[data-sdk-step="2"]')).not.toContainText('SSH');
+    await expect(root(m).locator('[data-sdk-step="3"] [data-up-copy]')).toHaveText('Copy');
+    const pre = root(m).locator('[data-sdk-step="3"] pre');
+    expect(await pre.evaluate((e) => e.scrollWidth - e.clientWidth)).toBeLessThanOrEqual(1);
     await noHorizontalScroll(m);
   });
 });
