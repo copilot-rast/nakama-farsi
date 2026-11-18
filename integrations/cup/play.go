@@ -199,10 +199,23 @@ func (s *service) rpcStart(ctx context.Context, userID, payload string) (any, er
 }
 
 func readyJSON(out map[string]any) map[string]any {
-	matchID, _ := out["matchId"].(string)
-	status, _ := out["status"].(string)
-	gameNo, _ := out["gameNo"].(int)
-	gameMatchID, _ := out["gameMatchId"].(string)
-	launched, _ := out["launched"].(bool)
+	var matchID, status, gameMatchID string
+	var gameNo int
+	var launched bool
+	if v, ok := out["matchId"].(string); ok {
+		matchID = v
+	}
+	if v, ok := out["status"].(string); ok {
+		status = v
+	}
+	if v, ok := out["gameNo"].(int); ok {
+		gameNo = v
+	}
+	if v, ok := out["gameMatchId"].(string); ok {
+		gameMatchID = v
+	}
+	if v, ok := out["launched"].(bool); ok {
+		launched = v
+	}
 	return map[string]any{"matchId": matchID, "status": status, "gameNo": gameNo, "gameMatchId": gameMatchID, "launched": launched}
 }
