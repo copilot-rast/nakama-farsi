@@ -59,6 +59,7 @@ Chapters and stages take `[{type, key, value, table}]`, all must hold: `level` (
 | `attempts.graceSeconds` | 3 | 0–120 added to the server clock and the time limit |
 | `attempts.defaultMinSeconds` | 5 | 0–3600: shortest won run of a stage without its own minimum |
 | `attempts.closeOthers` | true | a start closes the player's other open attempts |
+| `attempts.serverClosesOthers` | false | a stage started by the server (campaignhooks.Start, e.g. a quiz pack) also closes the other open attempts |
 | `attempts.keepDays` | 90 | finished attempts kept (0 = forever) |
 | `stars.rules` | legacy rules | star rules (see above) |
 | `stars.multipliers` / `stars.repeatableMultipliers` | 0.2, 0.5, 1 / 1, 1, 1 | one per star, 0–10 |

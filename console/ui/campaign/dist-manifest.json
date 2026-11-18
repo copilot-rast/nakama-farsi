@@ -1,9 +1,9 @@
 {
   "note": "Files generated in console/ui/dist by scripts/build.mjs.",
   "files": [
+    "static/campaign-261c46298c.js",
+    "static/campaign-261c46298c.js.gz",
     "static/campaign-3faf8a806a.css",
-    "static/campaign-3faf8a806a.css.gz",
-    "static/campaign-4ed8e557f8.js",
-    "static/campaign-4ed8e557f8.js.gz"
+    "static/campaign-3faf8a806a.css.gz"
   ]
 }

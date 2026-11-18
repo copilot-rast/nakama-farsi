@@ -201,8 +201,12 @@ func (s *service) rpcStart(ctx context.Context, userID, payload string) (any, er
 	if err := apierr.Decode(payload, &in); err != nil {
 		return nil, err
 	}
-	in.StageKey = strings.TrimSpace(in.StageKey)
-	if in.StageKey == "" {
+	return s.start(ctx, userID, in.StageKey, false)
+}
+
+func (s *service) start(ctx context.Context, userID, stageKey string, server bool) (any, error) {
+	stageKey = strings.TrimSpace(stageKey)
+	if stageKey == "" {
 		return nil, apierr.BadRequest("STAGE_KEY_REQUIRED").WithField("stageKey")
 	}
 	cfg := s.settings(ctx)
@@ -210,7 +214,7 @@ func (s *service) rpcStart(ctx context.Context, userID, payload string) (any, er
 	if err != nil {
 		return nil, err
 	}
-	st := cat.byKey[in.StageKey]
+	st := cat.byKey[stageKey]
 	if st == nil {
 		return nil, apierr.NotFound("STAGE_NOT_FOUND").WithField("stageKey")
 	}
@@ -235,7 +239,7 @@ func (s *service) rpcStart(ctx context.Context, userID, payload string) (any, er
 		rawCost, _ = json.Marshal(cost)
 	}
 	err = s.inTx(ctx, func(tx *sql.Tx) error {
-		if cfg.Attempts.CloseOthers {
+		if cfg.Attempts.CloseOthers && (!server || cfg.Attempts.ServerClosesOthers) {
 			if _, err := tx.ExecContext(ctx, `UPDATE campaign_attempt SET status='closed', closed_at=$2 WHERE user_id=$1 AND status='open'`, userID, now); err != nil {
 				return err
 			}
@@ -313,8 +317,7 @@ func (s *service) rpcComplete(ctx context.Context, userID, payload string) (any,
 }
 
 func (s *service) hookStart(ctx context.Context, userID, stageKey string) (string, error) {
-	raw, _ := json.Marshal(map[string]string{"stageKey": stageKey})
-	out, err := s.rpcStart(ctx, userID, string(raw))
+	out, err := s.start(ctx, userID, stageKey, true)
 	if err != nil {
 		return "", err
 	}

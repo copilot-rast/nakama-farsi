@@ -22,11 +22,12 @@ type StarRule struct {
 }
 
 type Attempts struct {
-	Hours             int     `json:"hours"`
-	GraceSeconds      int     `json:"graceSeconds"`
-	DefaultMinSeconds float64 `json:"defaultMinSeconds"`
-	CloseOthers       bool    `json:"closeOthers"`
-	KeepDays          int     `json:"keepDays"`
+	Hours              int     `json:"hours"`
+	GraceSeconds       int     `json:"graceSeconds"`
+	DefaultMinSeconds  float64 `json:"defaultMinSeconds"`
+	CloseOthers        bool    `json:"closeOthers"`
+	ServerClosesOthers bool    `json:"serverClosesOthers"`
+	KeepDays           int     `json:"keepDays"`
 }
 
 type Stars struct {

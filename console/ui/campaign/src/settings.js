@@ -13,7 +13,7 @@ function campaignSettingsPage(root) {
       var refundOnWin = check(pl.refundOnWin, t('se.refundOnWin'), 'play.refundOnWin');
       var a = cur.attempts, s = cur.stars, u = cur.unlock, r = cur.rewards, x = cur.xp, e = cur.events, f = cur.freeride;
       var hours = numInput(a.hours, 'attempts.hours'), grace = numInput(a.graceSeconds, 'attempts.graceSeconds'), keep = numInput(a.keepDays, 'attempts.keepDays'), minSec = numInput(a.defaultMinSeconds, 'attempts.defaultMinSeconds');
-      var closeOthers = check(a.closeOthers, t('se.closeOthers'), 'attempts.closeOthers');
+      var closeOthers = check(a.closeOthers, t('se.closeOthers'), 'attempts.closeOthers'), serverCloses = check(a.serverClosesOthers, t('se.serverClosesOthers'), 'attempts.serverClosesOthers');
       var maxStars = numInput(s.maxStars, 'stars.maxStars'), minOn = numInput(s.minOnSuccess, 'stars.minOnSuccess');
       var missing = select(s.missingField, opt('se.missing.', ['pass', 'fail']), { name: 'stars.missingField' });
       var mult = multiplierInputs(s.multipliers, s.maxStars, 'multipliers');
@@ -39,7 +39,7 @@ function campaignSettingsPage(root) {
         el: [notes,
           section(t('se.play'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: t('se.play.hint') }),
             grid(field(t('se.costCurrency'), costCur), field(t('se.costAmount'), costAmount)), refundOnWin), 'play'),
-          section(t('se.attempts'), h('div', {}, grid(field(t('se.hours'), hours), field(t('se.grace'), grace)), grid(field(t('se.keepDays'), keep), field(t('se.minSeconds'), minSec)), closeOthers), 'attempts'),
+          section(t('se.attempts'), h('div', {}, grid(field(t('se.hours'), hours), field(t('se.grace'), grace)), grid(field(t('se.keepDays'), keep), field(t('se.minSeconds'), minSec)), closeOthers, serverCloses), 'attempts'),
           section(t('se.stars'), h('div', {}, grid(field(t('se.maxStars'), maxStars), field(t('se.minOnSuccess'), minOn)), field(t('se.missing'), missing),
             h('div', { class: 'text-sm font-medium mb-1', text: t('se.multipliers') }), mult, h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('se.repeatMultipliers') }), rmult,
             h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('se.rules') }), rules), 'stars'),
@@ -51,7 +51,7 @@ function campaignSettingsPage(root) {
           section(t('se.freeride'), h('div', {}, reqId, field(t('se.requestHours'), reqHours, null, 'cg-num')), 'freeride')],
         read: function (c) {
           c.play = { costCurrency: costCur.value || '', costAmount: numberValue(costAmount), refundOnWin: refundOnWin.input.checked };
-          c.attempts = { hours: numberValue(hours), graceSeconds: numberValue(grace), keepDays: numberValue(keep), defaultMinSeconds: numberValue(minSec), closeOthers: closeOthers.input.checked };
+          c.attempts = { hours: numberValue(hours), graceSeconds: numberValue(grace), keepDays: numberValue(keep), defaultMinSeconds: numberValue(minSec), closeOthers: closeOthers.input.checked, serverClosesOthers: serverCloses.input.checked };
           c.stars = { maxStars: numberValue(maxStars), minOnSuccess: numberValue(minOn), missingField: missing.value, multipliers: mult.read(), repeatableMultipliers: rmult.read(), rules: rules.read() };
           c.unlock = { stageDefault: stageDefault.value, chapterDefault: chapterDefault.value, minStars: numberValue(minStars), showLocked: showLocked.input.checked };
           c.rewards = { replayMode: replay.value, dayZone: zone.value.trim(), prizeGroupMode: groupMode.value,

@@ -462,3 +462,36 @@ func TestPostgresStarDefaultsMissingHealthAndMinTime(t *testing.T) {
 		t.Fatalf("nextLevelXp missing: %v", out)
 	}
 }
+
+func TestPostgresServerStartKeepsOtherAttemptsOpen(t *testing.T) {
+	f := newFixture(t)
+	ch := f.chapter(map[string]any{})
+	mission := f.stage(ch, map[string]any{"mode": "repeatable", "rewards": map[string]any{"currencies": map[string]int64{f.coin: 10}}})
+	quiz := f.stage(ch, map[string]any{"mode": "repeatable"})
+	user := f.user()
+	saved := f.start(user, mission)
+	if _, err := f.s.hookStart(context.Background(), user, quiz); err != nil {
+		t.Fatal(err)
+	}
+	f.advance(10 * time.Second)
+	if _, err := f.complete(user, saved, true, 10, 100); err != nil {
+		t.Fatalf("saved result after a server start = %v", err)
+	}
+
+	f.settings(func(a *settings.All) { a.Attempts.ServerClosesOthers = true })
+	saved = f.start(user, mission)
+	if _, err := f.s.hookStart(context.Background(), user, quiz); err != nil {
+		t.Fatal(err)
+	}
+	f.advance(10 * time.Second)
+	if _, err := f.complete(user, saved, true, 10, 100); code(err) != "ATTEMPT_CLOSED" {
+		t.Fatalf("serverClosesOthers on = %v", err)
+	}
+
+	f.settings(func(a *settings.All) {})
+	saved = f.start(user, mission)
+	f.start(user, quiz)
+	if _, err := f.complete(user, saved, true, 10, 100); code(err) != "ATTEMPT_CLOSED" {
+		t.Fatalf("a client start still closes others = %v", err)
+	}
+}

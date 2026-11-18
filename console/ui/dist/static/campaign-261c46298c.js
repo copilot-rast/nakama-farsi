@@ -47,7 +47,7 @@ var CG_TEXT = {
     'fr.new': 'جایزهٔ تازه', 'fr.delete': 'جایزهٔ {key} حذف شود؟', 'fr.limits': '{c} · {d}', 'fr.cooldown': 'هر {n} ثانیه', 'fr.daily': '{n} بار در روز', 'fr.noLimit': 'بدون سقف',
     'rp.days': 'بازهٔ زمانی', 'rp.d': '{n} روز', 'rp.stage': 'مرحله', 'rp.players': 'بازیکن', 'rp.attempts': 'تلاش', 'rp.wins': 'برد', 'rp.rate': 'نرخ تمام کردن',
     'rp.avgStars': 'میانگین ستاره', 'rp.drop': 'ریزش از مرحلهٔ قبل', 'rp.rejected': 'نتیجهٔ ردشده', 'rp.kpi.players': 'بازیکن‌ها', 'rp.kpi.attempts': 'تلاش‌ها', 'rp.kpi.wins': 'بردها', 'rp.kpi.rejected': 'نتیجه‌های ردشده',
-    'se.attempts': 'تلاش و زمان', 'se.hours': 'مهلت ارسال نتیجه (ساعت)', 'se.grace': 'حاشیهٔ زمان (ثانیه)', 'se.minSeconds': 'کمترین زمان مرحله (ثانیه، برای مرحله‌ای که زمان خودش را ندارد)', 'se.closeOthers': 'شروع مرحلهٔ تازه، تلاش‌های باز دیگر را ببندد',
+    'se.attempts': 'تلاش و زمان', 'se.hours': 'مهلت ارسال نتیجه (ساعت)', 'se.grace': 'حاشیهٔ زمان (ثانیه)', 'se.minSeconds': 'کمترین زمان مرحله (ثانیه، برای مرحله‌ای که زمان خودش را ندارد)', 'se.closeOthers': 'شروع مرحلهٔ تازه، تلاش‌های باز دیگر را ببندد', 'se.serverClosesOthers': 'شروع مرحله از سمت سرور (مثل بستهٔ آزمون) هم تلاش‌های باز دیگر را ببندد',
     'se.keepDays': 'نگه‌داری تلاش‌های تمام‌شده (روز، ۰ = همیشه)', 'se.stars': 'ستاره و ضریب جایزه', 'se.maxStars': 'بیشترین ستاره', 'se.minOnSuccess': 'ستارهٔ برد بدون قانون برقرار',
     'se.missing': 'شرط روی فیلدی که بازی نفرستاده', 'se.missing.pass': 'برقرار حساب شود', 'se.missing.fail': 'برقرار نباشد', 'se.multipliers': 'ضریب‌های مرحلهٔ داستانی و یک‌باره',
     'se.repeatMultipliers': 'ضریب‌های مرحلهٔ تکرارشونده', 'se.rules': 'قانون‌های پیش‌فرض ستاره', 'se.unlock': 'باز شدن', 'se.stageDefault': 'مرحلهٔ داستانی بی‌شرط باز می‌شود وقتی',
@@ -123,7 +123,7 @@ var CG_TEXT = {
     'fr.new': 'New reward', 'fr.delete': 'Delete reward {key}?', 'fr.limits': '{c} · {d}', 'fr.cooldown': 'every {n} s', 'fr.daily': '{n} a day', 'fr.noLimit': 'no cap',
     'rp.days': 'Period', 'rp.d': '{n} days', 'rp.stage': 'Stage', 'rp.players': 'Players', 'rp.attempts': 'Attempts', 'rp.wins': 'Wins', 'rp.rate': 'Completion rate',
     'rp.avgStars': 'Average stars', 'rp.drop': 'Drop-off from the previous stage', 'rp.rejected': 'Refused results', 'rp.kpi.players': 'Players', 'rp.kpi.attempts': 'Attempts', 'rp.kpi.wins': 'Wins', 'rp.kpi.rejected': 'Refused results',
-    'se.attempts': 'Attempts and timing', 'se.hours': 'Time to send a result (hours)', 'se.grace': 'Time grace (seconds)', 'se.minSeconds': 'Shortest stage time (seconds, for stages without their own)', 'se.closeOthers': 'Starting a stage closes the player\'s other open attempts',
+    'se.attempts': 'Attempts and timing', 'se.hours': 'Time to send a result (hours)', 'se.grace': 'Time grace (seconds)', 'se.minSeconds': 'Shortest stage time (seconds, for stages without their own)', 'se.closeOthers': 'Starting a stage closes the player\'s other open attempts', 'se.serverClosesOthers': 'A stage started by the server (such as a quiz pack) also closes the other open attempts',
     'se.keepDays': 'Keep finished attempts (days, 0 = forever)', 'se.stars': 'Stars and reward multipliers', 'se.maxStars': 'Most stars', 'se.minOnSuccess': 'Stars of a win that matches no rule',
     'se.missing': 'A condition on a field the game did not send', 'se.missing.pass': 'holds', 'se.missing.fail': 'does not hold', 'se.multipliers': 'Multipliers of story and one-time stages',
     'se.repeatMultipliers': 'Multipliers of repeatable stages', 'se.rules': 'Default star rules', 'se.unlock': 'Unlocking', 'se.stageDefault': 'A story stage without rules opens when',
@@ -1190,7 +1190,7 @@ function campaignSettingsPage(root) {
       var refundOnWin = check(pl.refundOnWin, t('se.refundOnWin'), 'play.refundOnWin');
       var a = cur.attempts, s = cur.stars, u = cur.unlock, r = cur.rewards, x = cur.xp, e = cur.events, f = cur.freeride;
       var hours = numInput(a.hours, 'attempts.hours'), grace = numInput(a.graceSeconds, 'attempts.graceSeconds'), keep = numInput(a.keepDays, 'attempts.keepDays'), minSec = numInput(a.defaultMinSeconds, 'attempts.defaultMinSeconds');
-      var closeOthers = check(a.closeOthers, t('se.closeOthers'), 'attempts.closeOthers');
+      var closeOthers = check(a.closeOthers, t('se.closeOthers'), 'attempts.closeOthers'), serverCloses = check(a.serverClosesOthers, t('se.serverClosesOthers'), 'attempts.serverClosesOthers');
       var maxStars = numInput(s.maxStars, 'stars.maxStars'), minOn = numInput(s.minOnSuccess, 'stars.minOnSuccess');
       var missing = select(s.missingField, opt('se.missing.', ['pass', 'fail']), { name: 'stars.missingField' });
       var mult = multiplierInputs(s.multipliers, s.maxStars, 'multipliers');
@@ -1216,7 +1216,7 @@ function campaignSettingsPage(root) {
         el: [notes,
           section(t('se.play'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: t('se.play.hint') }),
             grid(field(t('se.costCurrency'), costCur), field(t('se.costAmount'), costAmount)), refundOnWin), 'play'),
-          section(t('se.attempts'), h('div', {}, grid(field(t('se.hours'), hours), field(t('se.grace'), grace)), grid(field(t('se.keepDays'), keep), field(t('se.minSeconds'), minSec)), closeOthers), 'attempts'),
+          section(t('se.attempts'), h('div', {}, grid(field(t('se.hours'), hours), field(t('se.grace'), grace)), grid(field(t('se.keepDays'), keep), field(t('se.minSeconds'), minSec)), closeOthers, serverCloses), 'attempts'),
           section(t('se.stars'), h('div', {}, grid(field(t('se.maxStars'), maxStars), field(t('se.minOnSuccess'), minOn)), field(t('se.missing'), missing),
             h('div', { class: 'text-sm font-medium mb-1', text: t('se.multipliers') }), mult, h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('se.repeatMultipliers') }), rmult,
             h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('se.rules') }), rules), 'stars'),
@@ -1228,7 +1228,7 @@ function campaignSettingsPage(root) {
           section(t('se.freeride'), h('div', {}, reqId, field(t('se.requestHours'), reqHours, null, 'cg-num')), 'freeride')],
         read: function (c) {
           c.play = { costCurrency: costCur.value || '', costAmount: numberValue(costAmount), refundOnWin: refundOnWin.input.checked };
-          c.attempts = { hours: numberValue(hours), graceSeconds: numberValue(grace), keepDays: numberValue(keep), defaultMinSeconds: numberValue(minSec), closeOthers: closeOthers.input.checked };
+          c.attempts = { hours: numberValue(hours), graceSeconds: numberValue(grace), keepDays: numberValue(keep), defaultMinSeconds: numberValue(minSec), closeOthers: closeOthers.input.checked, serverClosesOthers: serverCloses.input.checked };
           c.stars = { maxStars: numberValue(maxStars), minOnSuccess: numberValue(minOn), missingField: missing.value, multipliers: mult.read(), repeatableMultipliers: rmult.read(), rules: rules.read() };
           c.unlock = { stageDefault: stageDefault.value, chapterDefault: chapterDefault.value, minStars: numberValue(minStars), showLocked: showLocked.input.checked };
           c.rewards = { replayMode: replay.value, dayZone: zone.value.trim(), prizeGroupMode: groupMode.value,
