@@ -66,14 +66,14 @@ func voiceHarness(t *testing.T) (*harness, *voiceNakama) {
 	h.s.nk = vn
 	h.s.voiceKey = []byte("0123456789abcdef0123456789abcdef")
 	h.s.voiceHTTP = &http.Client{Timeout: 2 * time.Second}
-	for _, q := range []string{`UPDATE base_voice_settings SET enabled=false, provider='', config='{}', secrets_sealed='', ttl_seconds=600, open_rooms=false, can_publish=true WHERE id=1`,
+	for _, q := range []string{`UPDATE base_voice_settings SET enabled=false, provider='', config='{}', secrets_sealed='', ttl_seconds=600, open_rooms=false, can_publish=true, user_tokens=false, user_token_ttl_seconds=300, user_tokens_per_minute=10 WHERE id=1`,
 		`DELETE FROM cluster_rate_limit WHERE key LIKE 'voice-%'`, `DELETE FROM base_restriction`} {
 		if _, err := h.s.db.Exec(q); err != nil {
 			t.Fatal(err)
 		}
 	}
 	t.Cleanup(func() {
-		h.s.db.Exec(`UPDATE base_voice_settings SET enabled=false, provider='', config='{}', secrets_sealed='', updated_by='' WHERE id=1`)
+		h.s.db.Exec(`UPDATE base_voice_settings SET enabled=false, provider='', config='{}', secrets_sealed='', user_tokens=false, user_token_ttl_seconds=300, user_tokens_per_minute=10, updated_by='' WHERE id=1`)
 		h.s.db.Exec(`DELETE FROM cluster_rate_limit WHERE key LIKE 'voice-%'`)
 	})
 	return h, vn

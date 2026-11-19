@@ -68,8 +68,22 @@ type liveKitClaims struct {
 
 func boolPtr(b bool) *bool { return &b }
 
+type jwtHeader struct {
+	Alg string `json:"alg"`
+	Typ string `json:"typ"`
+	Kid string `json:"kid,omitempty"`
+}
+
 func signHS256(claims any, secret string) (string, error) {
-	head := base64.RawURLEncoding.EncodeToString([]byte(`{"alg":"HS256","typ":"JWT"}`))
+	return signHS256Kid("", claims, secret)
+}
+
+func signHS256Kid(kid string, claims any, secret string) (string, error) {
+	rawHead, err := json.Marshal(jwtHeader{Alg: "HS256", Typ: "JWT", Kid: kid})
+	if err != nil {
+		return "", err
+	}
+	head := base64.RawURLEncoding.EncodeToString(rawHead)
 	body, err := json.Marshal(claims)
 	if err != nil {
 		return "", err

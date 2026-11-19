@@ -747,6 +747,34 @@
     "en": "Your comment is too long.",
     "fa": "نظر شما خیلی طولانی است."
   },
+  "COMMS_APP_ID_INVALID": {
+    "en": "The comms app ID must be a UUID.",
+    "fa": "شناسهٔ برنامهٔ comms باید یک UUID باشد."
+  },
+  "COMMS_ISSUER_INVALID": {
+    "en": "The token issuer must be 1 to 255 characters.",
+    "fa": "صادرکنندهٔ توکن باید ۱ تا ۲۵۵ نویسه باشد."
+  },
+  "COMMS_KEY_ID_INVALID": {
+    "en": "The token key ID must be 1 to 128 characters without spaces.",
+    "fa": "شناسهٔ کلید توکن باید ۱ تا ۱۲۸ نویسه بدون فاصله باشد."
+  },
+  "COMMS_PROVIDER_REQUIRED": {
+    "en": "comms user tokens need the comms provider.",
+    "fa": "توکن کاربر comms فقط با سرویس comms کار می‌کند."
+  },
+  "COMMS_SECRET_TOO_LONG": {
+    "en": "The token secret must be at most 512 bytes.",
+    "fa": "رمز توکن باید حداکثر ۵۱۲ بایت باشد."
+  },
+  "COMMS_SECRET_TOO_SHORT": {
+    "en": "The token secret must be at least 32 bytes.",
+    "fa": "رمز توکن باید دست‌کم ۳۲ بایت باشد."
+  },
+  "COMMS_TOKEN_RATE_LIMITED": {
+    "en": "Too many comms token requests. Please wait a little.",
+    "fa": "درخواست‌های توکن comms زیاد شد. کمی صبر کنید."
+  },
   "CONTENT_INDEX_PRIVATE": {
     "en": "The content index needs a player session.",
     "fa": "فهرست محتوا بدون ورود بازیکن بسته است."

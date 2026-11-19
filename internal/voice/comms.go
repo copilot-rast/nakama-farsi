@@ -21,11 +21,19 @@ func init() {
 			{Name: "url", Kind: "url", Required: true},
 			{Name: "publicUrl", Kind: "url"},
 			{Name: "serverKey", Kind: "text", Secret: true, Required: true},
+			{Name: "appId", Kind: "text"},
+			{Name: "tokenIssuer", Kind: "text"},
+			{Name: "tokenKeyId", Kind: "text"},
+			{Name: "tokenSecret", Kind: "text", Secret: true},
 		},
+		Check: checkUserTokenFields,
 		New: func(cfg Config, client *http.Client) (Provider, error) {
 			p := &comms{base: strings.TrimRight(cfg.Get("url"), "/"), public: strings.TrimRight(cfg.Get("publicUrl"), "/"), key: cfg.Get("serverKey"), client: client}
 			if p.base == "" || p.key == "" {
 				return nil, &ProviderError{Code: "VOICE_NOT_CONFIGURED"}
+			}
+			if signer, err := NewUserTokenSigner(cfg); err == nil {
+				p.user = &signer
 			}
 			if p.public == "" {
 				p.public = p.base
@@ -39,7 +47,15 @@ type comms struct {
 	base   string
 	public string
 	key    string
+	user   *UserTokenSigner
 	client *http.Client
+}
+
+func PublicURL(cfg Config) string {
+	if v := strings.TrimRight(cfg.Get("publicUrl"), "/"); v != "" {
+		return v
+	}
+	return strings.TrimRight(cfg.Get("url"), "/")
 }
 
 type commsError struct {
@@ -187,10 +203,17 @@ func (c *comms) Test(ctx context.Context) error {
 	err = c.call(ctx, http.MethodGet, roomPath("nakama-test-"+randomID()), nil, nil)
 	var ce *commsError
 	if errors.As(err, &ce) && ce.status == http.StatusNotFound {
+		err = nil
+	}
+	if err != nil {
+		return mapComms(err)
+	}
+	if c.user == nil {
 		return nil
 	}
-	if err == nil {
-		return nil
+	token, _, err := c.user.Sign(UserTokenTestSubject, "Nakama connection test", time.Minute, time.Now())
+	if err != nil {
+		return err
 	}
-	return mapComms(err)
+	return ExchangeUserToken(ctx, c.client, c.base, token)
 }

@@ -25,6 +25,9 @@ const (
 	voiceTestWindow  = time.Minute
 	voicePlayersMax  = 100
 
+	commsUserTokenLimit = 10
+	commsUserTokenTTL   = 300
+
 	streamModeMatchRelayed       = 5
 	streamModeMatchAuthoritative = 6
 	streamModeParty              = 7
@@ -48,12 +51,15 @@ type voiceSettings struct {
 	ListenOnly []string          `json:"listenOnlyTagIds"`
 	PerMinute  int               `json:"tokensPerMinute"`
 	MaxPlayers int               `json:"maxRoomPlayers"`
+	UserTokens bool              `json:"userTokens"`
+	UserTTL    int               `json:"userTokenTtlSeconds"`
+	UserPerMin int               `json:"userTokensPerMinute"`
 	UpdatedBy  string            `json:"updatedBy"`
 	UpdatedAt  time.Time         `json:"updatedAt"`
 }
 
 func defaultVoiceSettings() voiceSettings {
-	return voiceSettings{Config: map[string]string{}, Secrets: map[string]string{}, TTLSeconds: 600, CanPublish: true, Allowed: []string{}, ListenOnly: []string{}, PerMinute: voiceTokenLimit}
+	return voiceSettings{Config: map[string]string{}, Secrets: map[string]string{}, TTLSeconds: 600, CanPublish: true, Allowed: []string{}, ListenOnly: []string{}, PerMinute: voiceTokenLimit, UserTTL: commsUserTokenTTL, UserPerMin: commsUserTokenLimit}
 }
 
 func (s *service) configureVoice(env map[string]string) {
@@ -68,8 +74,8 @@ func (s *service) configureVoice(env map[string]string) {
 func (s *service) loadVoiceSettings(ctx context.Context, q queryer) (voiceSettings, error) {
 	out := defaultVoiceSettings()
 	var cfg, sealed, allowed, listen string
-	err := q.QueryRowContext(ctx, `SELECT enabled, provider, config::text, secrets_sealed, ttl_seconds, open_rooms, can_publish, to_jsonb(allowed_tag_ids)::text, to_jsonb(listen_only_tag_ids)::text, tokens_per_minute, max_room_players, updated_by, updated_at FROM base_voice_settings WHERE id=1`).
-		Scan(&out.Enabled, &out.Provider, &cfg, &sealed, &out.TTLSeconds, &out.OpenRooms, &out.CanPublish, &allowed, &listen, &out.PerMinute, &out.MaxPlayers, &out.UpdatedBy, &out.UpdatedAt)
+	err := q.QueryRowContext(ctx, `SELECT enabled, provider, config::text, secrets_sealed, ttl_seconds, open_rooms, can_publish, to_jsonb(allowed_tag_ids)::text, to_jsonb(listen_only_tag_ids)::text, tokens_per_minute, max_room_players, user_tokens, user_token_ttl_seconds, user_tokens_per_minute, updated_by, updated_at FROM base_voice_settings WHERE id=1`).
+		Scan(&out.Enabled, &out.Provider, &cfg, &sealed, &out.TTLSeconds, &out.OpenRooms, &out.CanPublish, &allowed, &listen, &out.PerMinute, &out.MaxPlayers, &out.UserTokens, &out.UserTTL, &out.UserPerMin, &out.UpdatedBy, &out.UpdatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
 		return out, nil
 	}
@@ -115,6 +121,7 @@ func (v voiceSettings) view() map[string]any {
 	}
 	return map[string]any{"enabled": v.Enabled, "provider": v.Provider, "config": v.Config, "secrets": masked, "ttlSeconds": v.TTLSeconds,
 		"openRooms": v.OpenRooms, "canPublish": v.CanPublish, "allowedTagIds": v.Allowed, "listenOnlyTagIds": v.ListenOnly, "tokensPerMinute": v.PerMinute, "maxRoomPlayers": v.MaxPlayers,
+		"userTokens": v.UserTokens, "userTokenTtlSeconds": v.UserTTL, "userTokensPerMinute": v.UserPerMin, "userTokenReady": v.Provider == voice.KindComms && voice.UserTokenReady(voice.Config{Values: v.Config, Secrets: v.Secrets}),
 		"updatedBy": v.UpdatedBy, "updatedAt": v.UpdatedAt}
 }
 
@@ -141,7 +148,7 @@ func (s *service) voiceSettingsGet(w http.ResponseWriter, r *http.Request) {
 func (s *service) voiceMerge(old voiceSettings, in voiceSettings) (voiceSettings, error) {
 	in.Provider = strings.TrimSpace(in.Provider)
 	out := voiceSettings{Enabled: in.Enabled, Provider: in.Provider, Config: map[string]string{}, Secrets: map[string]string{}, TTLSeconds: in.TTLSeconds, OpenRooms: in.OpenRooms, CanPublish: in.CanPublish,
-		Allowed: []string{}, ListenOnly: []string{}, PerMinute: in.PerMinute, MaxPlayers: in.MaxPlayers}
+		Allowed: []string{}, ListenOnly: []string{}, PerMinute: in.PerMinute, MaxPlayers: in.MaxPlayers, UserTokens: in.UserTokens, UserTTL: in.UserTTL, UserPerMin: in.UserPerMin}
 	if out.TTLSeconds < 60 || out.TTLSeconds > 86400 {
 		return out, badRequest("INVALID_RULE", "ttlSeconds", "between 60 and 86400 seconds")
 	}
@@ -150,6 +157,12 @@ func (s *service) voiceMerge(old voiceSettings, in voiceSettings) (voiceSettings
 	}
 	if out.MaxPlayers < 0 || out.MaxPlayers > 1000 {
 		return out, badRequest("INVALID_RULE", "maxRoomPlayers", "between 0 and 1000")
+	}
+	if out.UserTTL < 60 || out.UserTTL > 600 {
+		return out, badRequest("INVALID_RULE", "userTokenTtlSeconds", "between 60 and 600 seconds")
+	}
+	if out.UserPerMin < 1 || out.UserPerMin > 600 {
+		return out, badRequest("INVALID_RULE", "userTokensPerMinute", "between 1 and 600")
 	}
 	for _, list := range []struct {
 		field string
@@ -172,7 +185,13 @@ func (s *service) voiceMerge(old voiceSettings, in voiceSettings) (voiceSettings
 		if out.Enabled {
 			return out, badRequest("VOICE_PROVIDER_REQUIRED", "provider", "pick a voice server first")
 		}
+		if out.UserTokens {
+			return out, badRequest("COMMS_PROVIDER_REQUIRED", "provider", "comms user tokens need the comms provider")
+		}
 		return out, nil
+	}
+	if out.UserTokens && out.Provider != voice.KindComms {
+		return out, badRequest("COMMS_PROVIDER_REQUIRED", "provider", "comms user tokens need the comms provider")
 	}
 	spec, ok := voice.Lookup(out.Provider)
 	if !ok {
@@ -203,6 +222,15 @@ func (s *service) voiceMerge(old voiceSettings, in voiceSettings) (voiceSettings
 			return out, badRequest(fe.Code, fe.Field, fe.Message)
 		}
 		return out, err
+	}
+	if out.UserTokens {
+		if _, err := voice.NewUserTokenSigner(voice.Config{Values: out.Config, Secrets: out.Secrets}); err != nil {
+			var fe *voice.FieldError
+			if errors.As(err, &fe) {
+				return out, badRequest(fe.Code, fe.Field, fe.Message)
+			}
+			return out, err
+		}
 	}
 	if len(out.Secrets) > 0 && s.voiceKey == nil {
 		return out, badRequest("VOICE_SEAL_UNAVAILABLE", "provider", "ECONOMY_SECRET_KEY is needed to keep provider secrets")
@@ -249,12 +277,13 @@ func (s *service) voiceSettingsPut(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	cfg, _ := json.Marshal(next.Config)
-	_, err = s.db.ExecContext(r.Context(), `INSERT INTO base_voice_settings (id, enabled, provider, config, secrets_sealed, ttl_seconds, open_rooms, can_publish, allowed_tag_ids, listen_only_tag_ids, tokens_per_minute, max_room_players, updated_by, updated_at)
-		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,now())
+	_, err = s.db.ExecContext(r.Context(), `INSERT INTO base_voice_settings (id, enabled, provider, config, secrets_sealed, ttl_seconds, open_rooms, can_publish, allowed_tag_ids, listen_only_tag_ids, tokens_per_minute, max_room_players, user_tokens, user_token_ttl_seconds, user_tokens_per_minute, updated_by, updated_at)
+		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,now())
 		ON CONFLICT (id) DO UPDATE SET enabled=EXCLUDED.enabled, provider=EXCLUDED.provider, config=EXCLUDED.config, secrets_sealed=EXCLUDED.secrets_sealed,
 		ttl_seconds=EXCLUDED.ttl_seconds, open_rooms=EXCLUDED.open_rooms, can_publish=EXCLUDED.can_publish, allowed_tag_ids=EXCLUDED.allowed_tag_ids,
-		listen_only_tag_ids=EXCLUDED.listen_only_tag_ids, tokens_per_minute=EXCLUDED.tokens_per_minute, max_room_players=EXCLUDED.max_room_players, updated_by=EXCLUDED.updated_by, updated_at=now()`,
-		next.Enabled, next.Provider, string(cfg), sealed, next.TTLSeconds, next.OpenRooms, next.CanPublish, next.Allowed, next.ListenOnly, next.PerMinute, next.MaxPlayers, consoleUser(r))
+		listen_only_tag_ids=EXCLUDED.listen_only_tag_ids, tokens_per_minute=EXCLUDED.tokens_per_minute, max_room_players=EXCLUDED.max_room_players,
+		user_tokens=EXCLUDED.user_tokens, user_token_ttl_seconds=EXCLUDED.user_token_ttl_seconds, user_tokens_per_minute=EXCLUDED.user_tokens_per_minute, updated_by=EXCLUDED.updated_by, updated_at=now()`,
+		next.Enabled, next.Provider, string(cfg), sealed, next.TTLSeconds, next.OpenRooms, next.CanPublish, next.Allowed, next.ListenOnly, next.PerMinute, next.MaxPlayers, next.UserTokens, next.UserTTL, next.UserPerMin, consoleUser(r))
 	if err != nil {
 		s.writeError(w, err)
 		return
@@ -324,6 +353,9 @@ func (s *service) voiceTest(w http.ResponseWriter, r *http.Request) {
 		cancel()
 	}
 	out := map[string]any{"provider": target.Provider, "ms": time.Since(start).Milliseconds(), "ok": err == nil}
+	if target.Provider == voice.KindComms {
+		out["userToken"] = voice.UserTokenReady(voice.Config{Values: target.Config, Secrets: target.Secrets})
+	}
 	if err != nil {
 		code, status := voiceErrorCode(err)
 		out["code"] = code
@@ -566,4 +598,46 @@ func (s *service) rpcVoiceToken(ctx context.Context, userID, payload string) (an
 	}
 	return map[string]any{"enabled": true, "provider": grant.Provider, "url": grant.URL, "token": grant.Token, "room": grant.Room, "identity": grant.Identity,
 		"expiresAt": grant.ExpiresAt.UTC().Format(time.RFC3339), "canPublish": canPublish, "gameKey": target.gameKey}, nil
+}
+
+func (s *service) rpcCommsUserToken(ctx context.Context, userID, payload string) (any, error) {
+	var in struct{}
+	if err := decodeStrict(payload, &in); err != nil {
+		return nil, err
+	}
+	settings, err := s.loadVoiceSettings(ctx, s.db)
+	if err != nil {
+		if errors.Is(err, errVoiceSeal) {
+			s.logger.Warn("Base comms user token: %v", err)
+			return map[string]any{"enabled": false, "reason": "COMMS_NOT_CONFIGURED"}, nil
+		}
+		return nil, err
+	}
+	if !settings.UserTokens {
+		return map[string]any{"enabled": false, "reason": "COMMS_TOKENS_DISABLED"}, nil
+	}
+	cfg := voice.Config{Values: settings.Config, Secrets: settings.Secrets}
+	if settings.Provider != voice.KindComms {
+		return map[string]any{"enabled": false, "reason": "COMMS_NOT_CONFIGURED"}, nil
+	}
+	signer, err := voice.NewUserTokenSigner(cfg)
+	if err != nil {
+		s.logger.Warn("Base comms user token: %v", err)
+		return map[string]any{"enabled": false, "reason": "COMMS_NOT_CONFIGURED"}, nil
+	}
+	d, err := clusterkit.Allow(ctx, s.db, "voice-comms-user:"+userID, int64(settings.UserPerMin), voiceTokenWindow)
+	if err != nil {
+		return nil, err
+	}
+	if !d.Allowed {
+		return nil, fail(http.StatusTooManyRequests, "COMMS_TOKEN_RATE_LIMITED", "", "too many comms token requests, wait a minute")
+	}
+	var name string
+	_ = s.db.QueryRowContext(ctx, `SELECT COALESCE(NULLIF(display_name,''), username) FROM users WHERE id=$1`, userID).Scan(&name)
+	token, exp, err := signer.Sign(userID, name, time.Duration(settings.UserTTL)*time.Second, time.Now())
+	if err != nil {
+		code, _ := voiceErrorCode(err)
+		return nil, runtime.NewError(code, int(codes.Internal))
+	}
+	return map[string]any{"enabled": true, "url": voice.PublicURL(cfg), "appId": signer.AppID, "token": token, "expiresAt": exp.UTC().Format(time.RFC3339)}, nil
 }

@@ -2,9 +2,10 @@
   "name": "general",
   "title": "بخش عمومی",
   "titleEn": "General part",
-  "summary": "برای همهٔ پروژه‌ها: اتصال، RPCها، خطاها، مستندات API و پکیج یونیتی.",
-  "summaryEn": "For every project: connecting, RPCs, errors, API docs and the Unity package.",
+  "summary": "برای همهٔ پروژه‌ها: اتصال، RPCها، خطاها، مستندات API، پکیج یونیتی و توکن کاربر comms.",
+  "summaryEn": "For every project: connecting, RPCs, errors, API docs, the Unity package and the comms user token.",
   "changelog": [
+    {"date": "2026-11-19", "title": "توکن کاربر comms برای چت، تماس و جلسه با RPC comms_user_token", "titleEn": "comms user token for chat, calls and meetings through the comms_user_token RPC", "section": "06-comms-user-token.md"},
     {"date": "2026-11-18", "title": "راهنمای فرانت از نوار بالای کنسول دانلود می‌شود", "titleEn": "The front-end handoff downloads from the console header", "section": "01-this-file.md"},
     {"date": "2026-11-18", "title": "کدهای پرداخت تازه: پرداخت باز، پرداخت منقضی، حالت آزمایشی فروشگاه", "titleEn": "New payment codes: open payment, expired payment, store test mode", "section": "04-errors.md"},
     {"date": "2026-11-18", "title": "پکیج یونیتی از مخزن عمومی HTTPS نصب می‌شود", "titleEn": "The Unity package installs from the public HTTPS repository", "section": "05-unity-sdk.md"},

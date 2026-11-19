@@ -4074,6 +4074,32 @@ var MESSAGES = {
     'f.vc.comms.publicUrl.hint': 'نشانی‌ای که بازی با آن به comms وصل می‌شود. خالی یعنی همان نشانی بالا.',
     'f.vc.comms.serverKey': 'کلید سرور (ck_…)',
     'f.vc.comms.serverKey.hint': 'کلید برنامه در comms. رمزنگاری‌شده نگه داشته می‌شود و دیگر نشان داده نمی‌شود.',
+    'vc.ut': 'توکن کاربر comms (چت، تماس و جلسه)',
+    'vc.ut.about': 'این سرور برای بازیکنِ واردشده یک توکن کوتاه‌عمر امضا می‌کند (HS256 با کلید و رمز زیر). بازی آن را با RPC comms_user_token می‌گیرد و در comms با POST /v1/sessions عوض می‌کند. به روشن بودن چت صوتی ربطی ندارد.',
+    'f.vc.ut.enabled': 'توکن کاربر comms روشن باشد',
+    'f.vc.ut.enabled.hint': 'خاموش که باشد، comms_user_token جواب «خاموش است» می‌دهد. برای روشن کردن، چهار فیلد پایین لازم است.',
+    'f.vc.comms.appId': 'شناسهٔ برنامه (App ID)',
+    'f.vc.comms.appId.hint': 'همان Comms__AppId؛ یک UUID. در توکن به‌عنوان aud می‌رود.',
+    'f.vc.comms.tokenIssuer': 'صادرکنندهٔ توکن (issuer)',
+    'f.vc.comms.tokenIssuer.hint': 'همان issuer که برنامه در comms با آن ثبت شده. در توکن به‌عنوان iss می‌رود.',
+    'f.vc.comms.tokenKeyId': 'شناسهٔ کلید توکن (kid)',
+    'f.vc.comms.tokenKeyId.hint': 'همان Comms__TokenKeyId؛ تا ۱۲۸ نویسه بدون فاصله. در سرآیند توکن می‌رود.',
+    'f.vc.comms.tokenSecret': 'رمز توکن',
+    'f.vc.comms.tokenSecret.hint': 'همان Comms__TokenSecret؛ دست‌کم ۳۲ بایت. رمزنگاری‌شده نگه داشته می‌شود و دیگر نشان داده نمی‌شود.',
+    'f.vc.ut.ttl': 'عمر توکن کاربر (ثانیه)',
+    'f.vc.ut.ttl.hint': 'از ۶۰ تا ۶۰۰ ثانیه؛ پیش‌فرض ۳۰۰. توکن فقط برای ساختن نشست است و بعد از آن لازم نیست.',
+    'f.vc.ut.perMinute': 'توکن کاربر در دقیقه برای هر بازیکن',
+    'f.vc.ut.perMinute.hint': 'از ۱ تا ۶۰۰؛ پیش‌فرض ۱۰.',
+    'vc.ut.state.on': 'توکن کاربر comms روشن است.',
+    'vc.ut.state.incomplete': 'توکن کاربر comms روشن است ولی تنظیمش کامل نیست.',
+    'vc.ut.test.ok': 'توکن کاربر را هم comms پذیرفت.',
+    'code.COMMS_PROVIDER_REQUIRED': 'توکن کاربر فقط با سرویس comms کار می‌کند.',
+    'code.COMMS_APP_ID_INVALID': 'شناسهٔ برنامه باید یک UUID باشد.',
+    'code.COMMS_ISSUER_INVALID': 'صادرکننده باید ۱ تا ۲۵۵ نویسه باشد.',
+    'code.COMMS_KEY_ID_INVALID': 'شناسهٔ کلید باید ۱ تا ۱۲۸ نویسهٔ لاتین بدون فاصله باشد.',
+    'code.COMMS_SECRET_TOO_SHORT': 'رمز توکن باید دست‌کم ۳۲ بایت باشد.',
+    'code.COMMS_SECRET_TOO_LONG': 'رمز توکن باید حداکثر ۵۱۲ بایت باشد.',
+    'code.COMMS_USER_TOKEN_REFUSED': 'comms توکن کاربر را نپذیرفت؛ شناسهٔ برنامه، صادرکننده، kid و رمز را بررسی کنید.',
     'f.vc.perMinute': 'توکن در دقیقه برای هر بازیکن',
     'f.vc.perMinute.hint': 'از ۱ تا ۶۰۰.',
     'f.vc.maxPlayers': 'بیشترین بازیکن در اتاق ویس',
@@ -9585,6 +9611,32 @@ var MESSAGES = {
     'f.vc.comms.publicUrl.hint': 'The address games use to reach comms. Empty means the address above.',
     'f.vc.comms.serverKey': 'Server key (ck_…)',
     'f.vc.comms.serverKey.hint': 'The app key in comms. Kept sealed and never shown again.',
+    'vc.ut': 'comms user tokens (chat, calls and meetings)',
+    'vc.ut.about': 'This server signs a short-lived token for the signed-in player (HS256 with the key and secret below). The game gets it with the comms_user_token RPC and exchanges it at POST /v1/sessions in comms. It works whether voice chat is on or off.',
+    'f.vc.ut.enabled': 'comms user tokens on',
+    'f.vc.ut.enabled.hint': 'When off, comms_user_token answers that it is off. Turning it on needs the four fields below.',
+    'f.vc.comms.appId': 'App ID',
+    'f.vc.comms.appId.hint': 'The Comms__AppId value, a UUID. Sent as aud in the token.',
+    'f.vc.comms.tokenIssuer': 'Token issuer',
+    'f.vc.comms.tokenIssuer.hint': 'The issuer the app is registered with in comms. Sent as iss in the token.',
+    'f.vc.comms.tokenKeyId': 'Token key ID (kid)',
+    'f.vc.comms.tokenKeyId.hint': 'The Comms__TokenKeyId value, up to 128 characters without spaces. Sent in the token header.',
+    'f.vc.comms.tokenSecret': 'Token secret',
+    'f.vc.comms.tokenSecret.hint': 'The Comms__TokenSecret value, at least 32 bytes. Kept sealed and never shown again.',
+    'f.vc.ut.ttl': 'User token lifetime (seconds)',
+    'f.vc.ut.ttl.hint': '60 to 600 seconds; default 300. The token only opens a session and is not needed after that.',
+    'f.vc.ut.perMinute': 'User tokens per minute per player',
+    'f.vc.ut.perMinute.hint': '1 to 600; default 10.',
+    'vc.ut.state.on': 'comms user tokens are on.',
+    'vc.ut.state.incomplete': 'comms user tokens are on but not fully set up.',
+    'vc.ut.test.ok': 'comms accepted the user token too.',
+    'code.COMMS_PROVIDER_REQUIRED': 'User tokens work only with the comms provider.',
+    'code.COMMS_APP_ID_INVALID': 'The app ID must be a UUID.',
+    'code.COMMS_ISSUER_INVALID': 'The issuer must be 1 to 255 characters.',
+    'code.COMMS_KEY_ID_INVALID': 'The key ID must be 1 to 128 Latin characters without spaces.',
+    'code.COMMS_SECRET_TOO_SHORT': 'The token secret must be at least 32 bytes.',
+    'code.COMMS_SECRET_TOO_LONG': 'The token secret must be at most 512 bytes.',
+    'code.COMMS_USER_TOKEN_REFUSED': 'comms refused the user token; check the app ID, issuer, kid and secret.',
     'f.vc.perMinute': 'Tokens per minute per player',
     'f.vc.perMinute.hint': '1 to 600.',
     'f.vc.maxPlayers': 'Most players in a voice room',
@@ -27132,6 +27184,11 @@ function voiceFields(values) {
     out.push({ type: 'heading', label: 'vc.provider.' + p.kind, when: when });
     out.push({ name: 'about.' + p.kind, type: 'static', readonly: true, when: when, render: function () { return notice('info', t('vc.about.' + p.kind)); } });
     p.fields.forEach(function (f) {
+      if (p.kind === 'comms' && f.name === 'appId') {
+        out.push({ type: 'heading', label: 'vc.ut', when: when });
+        out.push({ name: 'about.ut', type: 'static', readonly: true, when: when, render: function () { return notice('info', t('vc.ut.about')); } });
+        out.push({ name: 'userTokens', type: 'bool', inline: true, label: 'f.vc.ut.enabled', hint: 'f.vc.ut.enabled.hint', when: when });
+      }
       var name = 'p.' + p.kind + '.' + f.name;
       var label = 'f.vc.' + p.kind + '.' + f.name;
       if (f.secret) {
@@ -27140,6 +27197,12 @@ function voiceFields(values) {
         out.push({ name: name, type: 'text', ltr: true, label: label, hint: label + '.hint', required: !!f.required, optional: !f.required, when: when });
       }
     });
+    if (p.kind === 'comms') {
+      out.push({ type: 'row', when: when, fields: [
+        { name: 'userTokenTtlSeconds', type: 'number', label: 'f.vc.ut.ttl', hint: 'f.vc.ut.ttl.hint', required: true, min: 60, max: 600, when: when },
+        { name: 'userTokensPerMinute', type: 'number', label: 'f.vc.ut.perMinute', hint: 'f.vc.ut.perMinute.hint', required: true, min: 1, max: 600, when: when }
+      ] });
+    }
   });
   out.push({ type: 'heading', label: 'vc.rules' });
   out.push({ type: 'row', fields: [
@@ -27170,11 +27233,14 @@ function voiceValues(data) {
   if (!v.ttlSeconds) v.ttlSeconds = 600;
   if (!v.tokensPerMinute) v.tokensPerMinute = 30;
   if (v.maxRoomPlayers == null) v.maxRoomPlayers = 0;
+  if (!v.userTokenTtlSeconds) v.userTokenTtlSeconds = 300;
+  if (!v.userTokensPerMinute) v.userTokensPerMinute = 10;
+  v.userTokens = !!v.userTokens;
   return v;
 }
 
 function voicePayload(values, raw) {
-  var out = { enabled: !!raw.enabled, provider: raw.provider || '', ttlSeconds: Number(raw.ttlSeconds) || 0, canPublish: !!raw.canPublish, openRooms: !!raw.openRooms, tokensPerMinute: Number(raw.tokensPerMinute) || 30, maxRoomPlayers: Number(raw.maxRoomPlayers) || 0, allowedTagIds: raw.allowedTagIds || [], listenOnlyTagIds: raw.listenOnlyTagIds || [], config: {}, secrets: {} };
+  var out = { enabled: !!raw.enabled, provider: raw.provider || '', ttlSeconds: Number(raw.ttlSeconds) || 0, canPublish: !!raw.canPublish, openRooms: !!raw.openRooms, tokensPerMinute: Number(raw.tokensPerMinute) || 30, maxRoomPlayers: Number(raw.maxRoomPlayers) || 0, allowedTagIds: raw.allowedTagIds || [], listenOnlyTagIds: raw.listenOnlyTagIds || [], userTokens: raw.provider === 'comms' && !!raw.userTokens, userTokenTtlSeconds: Number(raw.userTokenTtlSeconds) || 300, userTokensPerMinute: Number(raw.userTokensPerMinute) || 10, config: {}, secrets: {} };
   var spec = (values.providers || []).filter(function (p) { return p.kind === out.provider; })[0];
   if (spec) {
     spec.fields.forEach(function (f) {
@@ -27197,13 +27263,17 @@ function voiceErrorField(err, provider, providers) {
 
 function voiceState(v) {
   if (v.canSeal === false) return notice('warning', t('vc.state.noSeal'));
-  if (!v.enabled) return notice('secondary', t('vc.state.off'));
-  if (!v.provider) return notice('error', t('vc.state.noProvider'));
-  return notice('success', t('vc.state.on', { name: t('vc.provider.' + v.provider) }));
+  var main;
+  if (!v.enabled) main = notice('secondary', t('vc.state.off'));
+  else if (!v.provider) main = notice('error', t('vc.state.noProvider'));
+  else main = notice('success', t('vc.state.on', { name: t('vc.provider.' + v.provider) }));
+  if (!v.userTokens) return main;
+  var ut = h('div', { class: 'mt-2', 'data-voice-ut-state': '' }, v.userTokenReady ? notice('success', t('vc.ut.state.on')) : notice('error', t('vc.ut.state.incomplete')));
+  return h('div', {}, main, ut);
 }
 
 function voiceTestResult(res) {
-  if (res.ok) return notice('success', t('vc.test.ok', { name: t('vc.provider.' + res.provider), ms: fmtNum(res.ms || 0) }));
+  if (res.ok) return notice('success', t('vc.test.ok', { name: t('vc.provider.' + res.provider), ms: fmtNum(res.ms || 0) }) + (res.userToken ? ' ' + t('vc.ut.test.ok') : ''));
   var code = res.code || 'VOICE_PROVIDER_ERROR';
   return notice('error', (has('code.' + code) ? t('code.' + code) : code) + (res.status ? ' (' + fmtNum(res.status) + ')' : ''));
 }
