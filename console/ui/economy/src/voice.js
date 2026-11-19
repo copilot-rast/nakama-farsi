@@ -20,6 +20,11 @@ function voiceFields(values) {
     out.push({ type: 'heading', label: 'vc.provider.' + p.kind, when: when });
     out.push({ name: 'about.' + p.kind, type: 'static', readonly: true, when: when, render: function () { return notice('info', t('vc.about.' + p.kind)); } });
     p.fields.forEach(function (f) {
+      if (p.kind === 'comms' && f.name === 'appId') {
+        out.push({ type: 'heading', label: 'vc.ut', when: when });
+        out.push({ name: 'about.ut', type: 'static', readonly: true, when: when, render: function () { return notice('info', t('vc.ut.about')); } });
+        out.push({ name: 'userTokens', type: 'bool', inline: true, label: 'f.vc.ut.enabled', hint: 'f.vc.ut.enabled.hint', when: when });
+      }
       var name = 'p.' + p.kind + '.' + f.name;
       var label = 'f.vc.' + p.kind + '.' + f.name;
       if (f.secret) {
@@ -28,6 +33,12 @@ function voiceFields(values) {
         out.push({ name: name, type: 'text', ltr: true, label: label, hint: label + '.hint', required: !!f.required, optional: !f.required, when: when });
       }
     });
+    if (p.kind === 'comms') {
+      out.push({ type: 'row', when: when, fields: [
+        { name: 'userTokenTtlSeconds', type: 'number', label: 'f.vc.ut.ttl', hint: 'f.vc.ut.ttl.hint', required: true, min: 60, max: 600, when: when },
+        { name: 'userTokensPerMinute', type: 'number', label: 'f.vc.ut.perMinute', hint: 'f.vc.ut.perMinute.hint', required: true, min: 1, max: 600, when: when }
+      ] });
+    }
   });
   out.push({ type: 'heading', label: 'vc.rules' });
   out.push({ type: 'row', fields: [
@@ -58,11 +69,14 @@ function voiceValues(data) {
   if (!v.ttlSeconds) v.ttlSeconds = 600;
   if (!v.tokensPerMinute) v.tokensPerMinute = 30;
   if (v.maxRoomPlayers == null) v.maxRoomPlayers = 0;
+  if (!v.userTokenTtlSeconds) v.userTokenTtlSeconds = 300;
+  if (!v.userTokensPerMinute) v.userTokensPerMinute = 10;
+  v.userTokens = !!v.userTokens;
   return v;
 }
 
 function voicePayload(values, raw) {
-  var out = { enabled: !!raw.enabled, provider: raw.provider || '', ttlSeconds: Number(raw.ttlSeconds) || 0, canPublish: !!raw.canPublish, openRooms: !!raw.openRooms, tokensPerMinute: Number(raw.tokensPerMinute) || 30, maxRoomPlayers: Number(raw.maxRoomPlayers) || 0, allowedTagIds: raw.allowedTagIds || [], listenOnlyTagIds: raw.listenOnlyTagIds || [], config: {}, secrets: {} };
+  var out = { enabled: !!raw.enabled, provider: raw.provider || '', ttlSeconds: Number(raw.ttlSeconds) || 0, canPublish: !!raw.canPublish, openRooms: !!raw.openRooms, tokensPerMinute: Number(raw.tokensPerMinute) || 30, maxRoomPlayers: Number(raw.maxRoomPlayers) || 0, allowedTagIds: raw.allowedTagIds || [], listenOnlyTagIds: raw.listenOnlyTagIds || [], userTokens: raw.provider === 'comms' && !!raw.userTokens, userTokenTtlSeconds: Number(raw.userTokenTtlSeconds) || 300, userTokensPerMinute: Number(raw.userTokensPerMinute) || 10, config: {}, secrets: {} };
   var spec = (values.providers || []).filter(function (p) { return p.kind === out.provider; })[0];
   if (spec) {
     spec.fields.forEach(function (f) {
@@ -85,13 +99,17 @@ function voiceErrorField(err, provider, providers) {
 
 function voiceState(v) {
   if (v.canSeal === false) return notice('warning', t('vc.state.noSeal'));
-  if (!v.enabled) return notice('secondary', t('vc.state.off'));
-  if (!v.provider) return notice('error', t('vc.state.noProvider'));
-  return notice('success', t('vc.state.on', { name: t('vc.provider.' + v.provider) }));
+  var main;
+  if (!v.enabled) main = notice('secondary', t('vc.state.off'));
+  else if (!v.provider) main = notice('error', t('vc.state.noProvider'));
+  else main = notice('success', t('vc.state.on', { name: t('vc.provider.' + v.provider) }));
+  if (!v.userTokens) return main;
+  var ut = h('div', { class: 'mt-2', 'data-voice-ut-state': '' }, v.userTokenReady ? notice('success', t('vc.ut.state.on')) : notice('error', t('vc.ut.state.incomplete')));
+  return h('div', {}, main, ut);
 }
 
 function voiceTestResult(res) {
-  if (res.ok) return notice('success', t('vc.test.ok', { name: t('vc.provider.' + res.provider), ms: fmtNum(res.ms || 0) }));
+  if (res.ok) return notice('success', t('vc.test.ok', { name: t('vc.provider.' + res.provider), ms: fmtNum(res.ms || 0) }) + (res.userToken ? ' ' + t('vc.ut.test.ok') : ''));
   var code = res.code || 'VOICE_PROVIDER_ERROR';
   return notice('error', (has('code.' + code) ? t('code.' + code) : code) + (res.status ? ' (' + fmtNum(res.status) + ')' : ''));
 }

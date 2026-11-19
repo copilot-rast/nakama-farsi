@@ -1,7 +1,3 @@
-// Package voice issues voice chat tokens through pluggable providers. A
-// provider is one file that calls Register in init with its Spec; the
-// console form, the settings check and the token call all read the registry,
-// so nothing else changes when a provider is added.
 package voice
 
 import (
@@ -67,6 +63,7 @@ func (c Config) Get(name string) string {
 type Spec struct {
 	Kind   string
 	Fields []Field
+	Check  func(cfg Config) error
 	New    func(cfg Config, client *http.Client) (Provider, error)
 }
 
@@ -133,6 +130,9 @@ func Validate(kind string, cfg Config) error {
 				return &FieldError{Code: "INVALID_URL", Field: f.Name, Message: "a ws(s) or http(s) address"}
 			}
 		}
+	}
+	if spec.Check != nil {
+		return spec.Check(cfg)
 	}
 	return nil
 }

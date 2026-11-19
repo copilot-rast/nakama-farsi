@@ -988,6 +988,48 @@
       "publication"
     ]
   },
+  "COMMS_APP_ID_INVALID": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "COMMS_ISSUER_INVALID": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "COMMS_KEY_ID_INVALID": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "COMMS_PROVIDER_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "COMMS_SECRET_TOO_LONG": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "COMMS_SECRET_TOO_SHORT": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "COMMS_TOKEN_RATE_LIMITED": {
+    "status": 429,
+    "modules": [
+      "base"
+    ]
+  },
   "CONTENT_INDEX_PRIVATE": {
     "status": 403,
     "modules": [
