@@ -129,6 +129,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	}
 	gamecatalog.SetProvider(gameProvider{s: svc})
 	economyhooks.SetLevelReader(svc.levelIn)
+	economyhooks.SetLevelProgressReader(svc.levelProgressHook)
 	economyhooks.SetMethodReader(svc.methodSandboxes)
 	economyhooks.SetPrizeGranter(svc.grantPrizeHook)
 	economyhooks.SetMetaSettler(svc.settleMetasHook)

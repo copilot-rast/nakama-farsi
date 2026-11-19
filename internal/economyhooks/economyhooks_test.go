@@ -57,6 +57,9 @@ func TestReadersUnavailableWithoutEconomy(t *testing.T) {
 	if _, err := Methods(context.Background()); !errors.Is(err, ErrNoMethods) {
 		t.Fatalf("methods err = %v", err)
 	}
+	if _, err := LevelProgressOf(context.Background(), "u", "xp"); !errors.Is(err, ErrNoLevels) {
+		t.Fatalf("level progress err = %v", err)
+	}
 }
 
 func TestGrantPrizeAndSettleMetasNeedEconomy(t *testing.T) {

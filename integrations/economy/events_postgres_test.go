@@ -1,12 +1,14 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 	"sync"
 	"testing"
 	"time"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/economyhooks"
 )
 
 func newEventHarness(t *testing.T) *harness {
@@ -394,6 +396,15 @@ func TestMetaRulesAndLevelTables(t *testing.T) {
 	if n := h.count(`SELECT value::int FROM economy_user_meta m JOIN economy_meta x ON x.id=m.meta_id WHERE x.key='level' AND user_id=$1`, user); n != 2 {
 		t.Fatalf("level meta = %d", n)
 	}
+	if p, err := h.s.levelProgressHook(h.ctx, user, "levels"); err != nil || p.Level != 2 || p.Value != 120 || p.LevelStart != 100 || p.Next == nil || *p.Next != 300 || p.MaxLevel != 5 {
+		t.Fatalf("progress at level 2 = %+v %v", p, err)
+	}
+	if p, err := h.s.levelProgressHook(h.ctx, h.user(), "levels"); err != nil || p.Level != 1 || p.Value != 0 || p.Next == nil || *p.Next != 100 {
+		t.Fatalf("a new player is on the zero-threshold level = %+v %v", p, err)
+	}
+	if _, err := h.s.levelProgressHook(h.ctx, user, "missing"); !errors.Is(err, economyhooks.ErrNoLevelTable) {
+		t.Fatalf("unknown table = %v", err)
+	}
 	if _, err := h.s.recordEvent(h.ctx, eventInput{UserID: user, Key: "round_finished", Value: ptr(40), Source: "server"}); err != nil {
 		t.Fatal(err)
 	}
@@ -419,6 +430,9 @@ func TestMetaRulesAndLevelTables(t *testing.T) {
 	out, _ = h.s.recordEvent(h.ctx, eventInput{UserID: user, Key: "round_finished", Value: ptr(150), Source: "server"})
 	if n := h.count(`SELECT level FROM economy_user_level WHERE user_id=$1`, user); n != 5 {
 		t.Fatalf("700 xp is level 4 whose prize adds 300 xp, which cascades to level 5: got %d (%+v)", n, out.Levels)
+	}
+	if p, err := h.s.levelProgressHook(h.ctx, user, "levels"); err != nil || p.Level != 5 || p.Next != nil || p.LevelStart != 900 {
+		t.Fatalf("progress at the last level = %+v %v", p, err)
 	}
 	if n := h.count(`SELECT count(*) FROM economy_reward_claim WHERE kind='level' AND user_id=$1`, user); n != 3 {
 		t.Fatalf("level claims = %d", n)

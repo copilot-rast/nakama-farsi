@@ -429,3 +429,36 @@ func Balances(ctx context.Context, userID string) (map[string]any, error) {
 	}
 	return fn(ctx, userID)
 }
+
+type LevelProgress struct {
+	TableKey   string
+	Level      int
+	MaxLevel   int
+	Value      float64
+	LevelStart float64
+	Next       *float64
+}
+
+type LevelProgressReader func(ctx context.Context, userID, tableKey string) (LevelProgress, error)
+
+var (
+	ErrNoLevelTable = errors.New("level table not found or inactive")
+
+	progressReader LevelProgressReader
+)
+
+func SetLevelProgressReader(fn LevelProgressReader) {
+	mu.Lock()
+	defer mu.Unlock()
+	progressReader = fn
+}
+
+func LevelProgressOf(ctx context.Context, userID, tableKey string) (LevelProgress, error) {
+	mu.RLock()
+	fn := progressReader
+	mu.RUnlock()
+	if fn == nil {
+		return LevelProgress{}, ErrNoLevels
+	}
+	return fn(ctx, userID, tableKey)
+}

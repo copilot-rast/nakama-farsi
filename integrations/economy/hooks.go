@@ -134,3 +134,53 @@ func (s *service) settleMetasHook(ctx context.Context, userID string, metaKeys [
 	s.settleOutcome(ctx, userID, out, 0)
 	return map[string]any{"levels": out.Levels, "claims": out.Claims}, nil
 }
+
+func (s *service) levelProgressHook(ctx context.Context, userID, tableKey string) (economyhooks.LevelProgress, error) {
+	out := economyhooks.LevelProgress{TableKey: tableKey}
+	var tableID string
+	err := s.db.QueryRowContext(ctx, `SELECT t.id::text, COALESCE((SELECT value FROM economy_user_meta WHERE user_id=$2 AND meta_id=m.id), m.default_value)::float8,
+			COALESCE((SELECT level FROM economy_user_level WHERE user_id=$2 AND table_id=t.id), 0)
+		FROM economy_level_table t JOIN economy_meta m ON m.id=t.meta_id WHERE t.key=$1 AND t.is_active`, tableKey, userID).Scan(&tableID, &out.Value, &out.Level)
+	if errors.Is(err, sql.ErrNoRows) {
+		return out, economyhooks.ErrNoLevelTable
+	}
+	if err != nil {
+		return out, err
+	}
+	rows, err := s.db.QueryContext(ctx, `SELECT level, threshold::float8 FROM economy_level_step WHERE table_id=$1 ORDER BY level`, tableID)
+	if err != nil {
+		return out, err
+	}
+	defer rows.Close()
+	type step struct {
+		level     int
+		threshold float64
+	}
+	var steps []step
+	for rows.Next() {
+		var st step
+		if err := rows.Scan(&st.level, &st.threshold); err != nil {
+			return out, err
+		}
+		steps = append(steps, st)
+		if st.level > out.MaxLevel {
+			out.MaxLevel = st.level
+		}
+		if out.Level == 0 && st.threshold <= 0 && st.level > out.Level {
+			out.Level = st.level
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return out, err
+	}
+	for _, st := range steps {
+		if st.level == out.Level {
+			out.LevelStart = st.threshold
+		}
+		if st.level > out.Level && (out.Next == nil || st.threshold < *out.Next) {
+			v := st.threshold
+			out.Next = &v
+		}
+	}
+	return out, nil
+}
