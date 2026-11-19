@@ -35,6 +35,9 @@ var SR_FIELDS = [
   { type: 'row', fields: [
     { name: 'handoff.enabled', type: 'bool', inline: true, label: 'f.sr.handoff.enabled', hint: 'f.sr.handoff.enabled.hint' },
     { name: 'handoff.audience', type: 'select', label: 'f.sr.handoff.audience', hint: 'f.sr.handoff.audience.hint', required: true, options: function () { return [{ value: 'all', label: t('sr.handoff.all') }, { value: 'admins', label: t('sr.handoff.admins') }]; }, when: function (v) { return (v.handoff || {}).enabled !== false; } }
+  ] },
+  { type: 'row', fields: [
+    { name: 'handoff.showServerKey', type: 'bool', inline: true, label: 'f.sr.handoff.key', hint: 'f.sr.handoff.key.hint' }
   ] }
 ];
 
@@ -48,7 +51,7 @@ function srCall(method, path, body) {
     v.storage.allowCollections = (v.storage.allowCollections || []).map(function (x) { return { v: x }; });
     v.accountDelete = Object.assign({ enabled: true, mode: 'grace', graceDays: 14 }, v.accountDelete || {});
     v.docs = Object.assign({ enabled: true, consoleLogin: false }, v.docs || {});
-    v.handoff = Object.assign({ enabled: true, audience: 'all' }, v.handoff || {});
+    v.handoff = Object.assign({ enabled: true, audience: 'all', showServerKey: true }, v.handoff || {});
     if (method === 'PUT') handoffLoad(true).catch(function () { return null; });
     return v;
   });

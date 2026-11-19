@@ -30,6 +30,22 @@ func (s *service) handoffAccess(r *http.Request) (handoffkit.Settings, string) {
 	return set, ""
 }
 
+func (s *service) handoffServer() handoffkit.Server {
+	out := handoffkit.Server{Env: s.env}
+	if s.config != nil && s.config.GetSocket() != nil {
+		out.ServerKey = s.config.GetSocket().GetServerKey()
+	}
+	return out
+}
+
+func (s *service) connectionGet(w http.ResponseWriter, r *http.Request) {
+	set := handoffkit.LoadSettings(r.Context(), s.db)
+	if !handoffAdmin(r) && set.Audience == handoffkit.AudienceAdmins {
+		set.ShowServerKey = false
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"connection": handoffkit.Resolve(s.handoffServer(), set), "showServerKey": set.ShowServerKey})
+}
+
 func (s *service) handoffGet(w http.ResponseWriter, r *http.Request) {
 	set, refused := s.handoffAccess(r)
 	out := map[string]any{"visible": refused == "", "settings": set, "admin": handoffAdmin(r)}
@@ -59,11 +75,13 @@ func (s *service) handoffGet(w http.ResponseWriter, r *http.Request) {
 	out["changelog"] = b.Changelog()
 	out["fileName"] = handoffkit.FileName(b, time.Now())
 	out["commit"] = buildinfo.Get().Commit
+	out["connection"] = handoffkit.Resolve(s.handoffServer(), set)
 	writeJSON(w, http.StatusOK, out)
 }
 
 func (s *service) handoffDownload(w http.ResponseWriter, r *http.Request) {
-	if _, refused := s.handoffAccess(r); refused != "" {
+	set, refused := s.handoffAccess(r)
+	if refused != "" {
 		s.writeError(w, fail(http.StatusForbidden, refused, "", "the handoff download is not available for this console user"))
 		return
 	}
@@ -73,7 +91,7 @@ func (s *service) handoffDownload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	now := time.Now()
-	raw, err := handoffkit.Render(content.FS, b, handoffkit.Options{ConsoleURL: requestOrigin(r), Commit: buildinfo.Get().Commit, GeneratedAt: now})
+	raw, err := handoffkit.Render(content.FS, b, handoffkit.Options{ConsoleURL: requestOrigin(r), Commit: buildinfo.Get().Commit, GeneratedAt: now, Connection: handoffkit.Resolve(s.handoffServer(), set)})
 	if err != nil {
 		s.writeError(w, err)
 		return

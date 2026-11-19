@@ -2,6 +2,7 @@ package handoffkit
 
 import (
 	"html"
+	"io/fs"
 	"regexp"
 	"strings"
 	"testing"
@@ -33,7 +34,7 @@ func TestMarkdown(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	b.prepare("")
+	b.prepare("", Connection{})
 	s := b.General.Sections[0]
 	if s.Title != "Title" {
 		t.Fatalf("title %q", s.Title)
@@ -149,8 +150,8 @@ func TestShippedContent(t *testing.T) {
 	if m := regexp.MustCompile(`[0-9a-f]{64}`).FindString(h); m != "" {
 		t.Errorf("a 64-hex key is in the file: %s…", m[:8])
 	}
-	if strings.Contains(h, ConsolePlaceholder) {
-		t.Error("console placeholder left")
+	if strings.Contains(h, ConsolePlaceholder) || strings.Contains(h, "{{SERVER_") {
+		t.Error("placeholder left")
 	}
 	ids := map[string]bool{}
 	for _, m := range regexp.MustCompile(` id="([^"]+)"`).FindAllStringSubmatch(h, -1) {
@@ -160,5 +161,138 @@ func TestShippedContent(t *testing.T) {
 		if !ids[html.UnescapeString(m[1])] && !ids[m[1]] {
 			t.Errorf("anchor #%s has no target", m[1])
 		}
+	}
+}
+
+const liveKey = "4f1c9a0e7b2d4c6e8a1f3b5d7c9e0a2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c"
+
+func TestSourcesKeepPlaceholdersOnly(t *testing.T) {
+	hex := regexp.MustCompile(`[0-9a-f]{64}`)
+	seen := false
+	err := fs.WalkDir(content.FS, ".", func(name string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() || !(strings.HasSuffix(name, ".md") || strings.HasSuffix(name, ".html") || strings.HasSuffix(name, ".json")) {
+			return err
+		}
+		raw, err := fs.ReadFile(content.FS, name)
+		if err != nil {
+			return err
+		}
+		if hex.Match(raw) {
+			t.Errorf("%s holds a 64-hex key", name)
+		}
+		if strings.Contains(string(raw), DefaultServerKey) && !strings.HasSuffix(name, "PROGRESS.md") {
+			t.Errorf("%s holds the default key", name)
+		}
+		seen = seen || strings.Contains(string(raw), KeyPlaceholder)
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !seen {
+		t.Error("no source uses the server key placeholder")
+	}
+}
+
+func renderShipped(t *testing.T, c Connection) string {
+	t.Helper()
+	b, err := Load(content.FS)
+	if err != nil {
+		t.Fatal(err)
+	}
+	out, err := Render(content.FS, b, Options{ConsoleURL: "https://console.example", GeneratedAt: time.Now(), Connection: c})
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := string(out)
+	if strings.Contains(h, "{{SERVER_") {
+		t.Error("placeholder left")
+	}
+	return h
+}
+
+func TestRenderShowsLiveKey(t *testing.T) {
+	set := DefaultSettings()
+	c := Resolve(Server{ServerKey: liveKey, Env: map[string]string{EnvPublicHost: "api.game.test"}}, set)
+	h := renderShipped(t, c)
+	for _, want := range []string{
+		`data-connection data-key-shown="true" data-host-set="true"`,
+		`<td data-server-key>`,
+		"new Client(&#39;" + liveKey + "&#39;, &#39;api.game.test&#39;, &#39;443&#39;, true)",
+		"<code>https://api.game.test</code>",
+		`<a href="#connection">`,
+	} {
+		if !strings.Contains(h, want) {
+			t.Errorf("missing %q", want)
+		}
+	}
+	if strings.Contains(h, "data-default-key") || strings.Contains(h, codeAskKey) {
+		t.Error("default-key warning or ask marker with a live key")
+	}
+}
+
+func TestRenderHidesKeyWhenOff(t *testing.T) {
+	set := DefaultSettings()
+	set.ShowServerKey = false
+	h := renderShipped(t, Resolve(Server{ServerKey: liveKey}, set))
+	if strings.Contains(h, liveKey) || strings.Contains(h, liveKey[:16]) {
+		t.Fatal("key in the file while showServerKey is off")
+	}
+	for _, want := range []string{`data-key-hidden`, codeAskKey, codeAskHost, "data-host-missing", "HANDOFF_PUBLIC_HOST", textAskKey} {
+		if !strings.Contains(h, want) {
+			t.Errorf("missing %q", want)
+		}
+	}
+}
+
+func TestRenderWarnsOnDefaultKey(t *testing.T) {
+	h := renderShipped(t, Resolve(Server{ServerKey: DefaultServerKey}, DefaultSettings()))
+	if !strings.Contains(h, "data-default-key") || !strings.Contains(h, "<code>defaultkey</code>") {
+		t.Fatal("default key warning missing")
+	}
+	set := DefaultSettings()
+	set.ShowServerKey = false
+	if strings.Contains(renderShipped(t, Resolve(Server{ServerKey: DefaultServerKey}, set)), "data-default-key") {
+		t.Fatal("default key named while hidden")
+	}
+}
+
+func TestResolve(t *testing.T) {
+	cases := []struct {
+		env  map[string]string
+		url  string
+		host string
+		port int
+		ssl  bool
+	}{
+		{map[string]string{EnvPublicHost: "api.game.test"}, "https://api.game.test", "api.game.test", 443, true},
+		{map[string]string{EnvPublicHost: "api.game.test", EnvPublicSSL: "false"}, "http://api.game.test", "api.game.test", 80, false},
+		{map[string]string{EnvPublicHost: "api.game.test", EnvPublicPort: "7350", EnvPublicSSL: "0"}, "http://api.game.test:7350", "api.game.test", 7350, false},
+		{map[string]string{EnvPublicHost: "https://api.game.test:8443/"}, "https://api.game.test:8443", "api.game.test", 8443, true},
+		{map[string]string{EnvPublicBase: "http://100.106.1.79:7450"}, "http://100.106.1.79:7450", "100.106.1.79", 7450, false},
+		{map[string]string{EnvPublicBase: "https://api.example.com"}, "", "", 0, false},
+		{map[string]string{EnvPublicHost: "bad host<x>"}, "", "", 0, false},
+	}
+	for _, c := range cases {
+		got := Resolve(Server{ServerKey: "k", Env: c.env}, DefaultSettings())
+		if got.URL != c.url || got.Host != c.host || got.Port != c.port || got.SSL != c.ssl || got.HostSet != (c.host != "") {
+			t.Errorf("%v: got %+v", c.env, got)
+		}
+		if got.ServerKey != "k" || !got.KeyShown {
+			t.Errorf("%v: key not shown", c.env)
+		}
+	}
+	off := DefaultSettings()
+	off.ShowServerKey = false
+	if c := Resolve(Server{ServerKey: "k"}, off); c.ServerKey != "" || c.KeyShown {
+		t.Fatal("key kept while off")
+	}
+}
+
+func TestApplyEscapes(t *testing.T) {
+	c := Connection{ServerKey: `a"<b>`, KeyShown: true}
+	out := c.Apply(`<p>{{SERVER_KEY}} <code>{{SERVER_HOST}}</code> {{SERVER_HOST}}</p>`)
+	if !strings.Contains(out, "a&#34;&lt;b&gt;") || !strings.Contains(out, "<code>"+codeAskHost+"</code>") || !strings.Contains(out, textAskHost) {
+		t.Fatal(out)
 	}
 }

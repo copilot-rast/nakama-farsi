@@ -3993,6 +3993,8 @@ var MESSAGES = {
     'f.sr.handoff.audience.hint': "اگر «فقط مدیرها» باشد، بقیهٔ کاربران کنسول دکمه را نمی‌بینند.",
     'sr.handoff.all': "همهٔ کاربران کنسول",
     'sr.handoff.admins': "فقط مدیرها",
+    'f.sr.handoff.key': "نمایش کلید سرور در راهنما و صفحهٔ SDK",
+    'f.sr.handoff.key.hint': "کلید سرور (socket.server_key) همین سرور در فایل راهنما و صفحهٔ SDK نشان داده می‌شود. اگر خاموش باشد، جای آن «از مدیر سرور بگیرید» می‌آید.",
     'hf.title': "راهنمای فرانت",
     'hf.intro': "یک فایل HTML که بدون اینترنت باز می‌شود. بخش عمومی همهٔ پروژه‌ها و بخش اختصاصی همین پروژه را با هم دارد.",
     'hf.download': "دانلود فایل راهنما",
@@ -4005,6 +4007,7 @@ var MESSAGES = {
     'hf.sections': "{n} بخش",
     'hf.noProject': "این پروژه هنوز بخش اختصاصی ندارد. فایل فعلاً فقط بخش عمومی را دارد.",
     'hf.keys': "کلیدها و رمزها داخل فایل نیستند. کلید سرور را از مدیر سرور بگیرید.",
+    'hf.keys.shown': "کلید سرور در فایل هست. کلید HTTP و رمزهای کنسول داخل فایل نیستند.",
     'hf.changes': "تازه‌ها",
     'hf.changes.hint': "جدیدترین تغییر بالاست.",
     'hf.filter.all': "همه",
@@ -4036,9 +4039,21 @@ var MESSAGES = {
     'sdk.config': "تنظیم",
     'sdk.config.text': "از منوی Tools › Nakama Farsi › Create SDK Config فایل تنظیمات را بسازید و این‌ها را پر کنید:",
     'sdk.config.url': "آدرس سرور: آدرس API بازی، همان که بازی به آن وصل می‌شود (نه آدرس این کنسول)",
-    'sdk.config.key': "کلید سرور (server key): از مدیر سرور بگیرید",
+    'sdk.config.key': "کلید سرور (server key): در کادر «اطلاعات اتصال» پایین همین بخش",
     'sdk.config.lang': "زبان: fa",
     'sdk.config.link': "لینک برگشت پرداخت: فقط اگر زرین‌پال یا زیبال دارید، مثل mygame://payment",
+    'cn.title': "اطلاعات اتصال",
+    'cn.url': "آدرس سرور بازی",
+    'cn.host': "میزبان (host)",
+    'cn.port': "پورت",
+    'cn.ssl': "SSL",
+    'cn.key': "کلید سرور (server key)",
+    'cn.key.hidden': "از مدیر سرور بگیرید",
+    'cn.host.ask': "مدیر سرور تعیین می‌کند",
+    'cn.host.missing': "آدرس عمومی سرور تنظیم نشده است. مدیر سرور آن را با HANDOFF_PUBLIC_HOST، HANDOFF_PUBLIC_PORT و HANDOFF_PUBLIC_SSL تنظیم می‌کند.",
+    'cn.default': "این سرور هنوز کلید پیش‌فرض defaultkey را دارد. برای آزمایش مشکلی نیست، ولی سرور اصلی (production) باید کلید دیگری داشته باشد.",
+    'cn.copyOf': "کپی {name}",
+    'cn.loadFailed': "اطلاعات اتصال بار نشد.",
     'sdk.start': "شروع سریع",
     'sdk.start.text': "بعد از ورود، نشست ذخیره و خودکار تمدید می‌شود و سوکت خودش وصل می‌شود.",
     'sdk.phone.text': "ورود پیامکی:",
@@ -9530,6 +9545,8 @@ var MESSAGES = {
     'f.sr.handoff.audience.hint': "With \"Admins only\", other console users do not see the button.",
     'sr.handoff.all': "Every console user",
     'sr.handoff.admins': "Admins only",
+    'f.sr.handoff.key': "Show the server key in the handoff and the SDK page",
+    'f.sr.handoff.key.hint': "This server's key (socket.server_key) is shown in the handoff file and on the SDK page. When off, \"ask the server admin\" is shown instead.",
     'hf.title': "Front-end handoff",
     'hf.intro': "One HTML file that opens offline. It holds the general part for every project and this project's own part.",
     'hf.download': "Download the handoff file",
@@ -9542,6 +9559,7 @@ var MESSAGES = {
     'hf.sections': "{n} sections",
     'hf.noProject': "This project has no own part yet. The file holds the general part only for now.",
     'hf.keys': "Keys and passwords are not in the file. Ask the server admin for the server key.",
+    'hf.keys.shown': "The server key is in the file. The HTTP key and console passwords are not.",
     'hf.changes': "What's new",
     'hf.changes.hint': "Newest change first.",
     'hf.filter.all': "All",
@@ -9573,9 +9591,21 @@ var MESSAGES = {
     'sdk.config': "Set up",
     'sdk.config.text': "Create the settings file with Tools › Nakama Farsi › Create SDK Config and fill in:",
     'sdk.config.url': "Server URL: the game API address the game connects to (not this console)",
-    'sdk.config.key': "Server key: ask the server admin",
+    'sdk.config.key': "Server key: in the Connection info box below",
     'sdk.config.lang': "Language: fa",
     'sdk.config.link': "Payment return link: only with ZarinPal or Zibal, for example mygame://payment",
+    'cn.title': "Connection info",
+    'cn.url': "Game server URL",
+    'cn.host': "Host",
+    'cn.port': "Port",
+    'cn.ssl': "SSL",
+    'cn.key': "Server key",
+    'cn.key.hidden': "Ask the server admin",
+    'cn.host.ask': "Set by the server admin",
+    'cn.host.missing': "The public server address is not set. The server admin sets it with HANDOFF_PUBLIC_HOST, HANDOFF_PUBLIC_PORT and HANDOFF_PUBLIC_SSL.",
+    'cn.default': "This server still uses the default key defaultkey. That is fine for testing, but production must use another key.",
+    'cn.copyOf': "Copy {name}",
+    'cn.loadFailed': "The connection info did not load.",
     'sdk.start': "Quick start",
     'sdk.start.text': "After sign-in the session is saved and refreshed by itself, and the socket connects on its own.",
     'sdk.phone.text': "Phone sign-in:",
@@ -25448,6 +25478,47 @@ function sdkCode(text) {
     h('div', { class: 'eco-sdk-copy' }, btn));
 }
 
+function connCopy(text, label) {
+  var btn = button({ variant: 'muted', size: 'sm', icon: 'copy', label: t('sdk.copy'), onclick: function () {
+    copyText(text).then(function () { toast('success', t('up.copied')); }, function () { toast('error', t('up.copyFailed')); });
+  } });
+  btn.setAttribute('data-conn-copy', '');
+  btn.setAttribute('aria-label', t('cn.copyOf', { name: label }));
+  return btn;
+}
+
+function connRow(name, label, value, copy) {
+  var val = value == null
+    ? h('span', { class: 'eco-conn-ask', text: t(name === 'key' ? 'cn.key.hidden' : 'cn.host.ask') })
+    : h('code', { class: 'eco-conn-val font-mono text-xs', dir: 'ltr', 'data-l10n-skip': '', text: String(value) });
+  return h('div', { class: 'eco-conn-row', 'data-conn': name },
+    h('dt', { class: 'eco-conn-label', text: label }),
+    h('dd', { class: 'eco-conn-cell' }, val, value != null && copy ? connCopy(String(value), label) : null));
+}
+
+function connectionView(c) {
+  c = c || {};
+  var rows = h('dl', { class: 'eco-conn-list' },
+    connRow('url', t('cn.url'), c.hostSet ? c.url : null, true),
+    c.hostSet ? connRow('host', t('cn.host'), c.host, true) : null,
+    c.hostSet ? connRow('port', t('cn.port'), String(c.port), false) : null,
+    c.hostSet ? connRow('ssl', t('cn.ssl'), String(!!c.ssl), false) : null,
+    connRow('key', t('cn.key'), c.keyShown ? c.serverKey : null, true));
+  return h('div', { class: 'eco-conn flex flex-col gap-2', 'data-connection': '', 'data-key-shown': String(!!c.keyShown), 'data-host-set': String(!!c.hostSet) },
+    rows,
+    c.keyShown && c.defaultKey ? h('div', { 'data-default-key': '' }, notice('warning', t('cn.default'))) : null,
+    c.hostSet ? null : h('div', { 'data-host-missing': '' }, notice('info', t('cn.host.missing'))));
+}
+
+function sdkConnection(slot) {
+  clear(slot).appendChild(h('div', { class: 'flex flex-col gap-2' }, bar('60%'), bar('80%')));
+  baseApi('GET', '/handoff/connection').then(function (res) {
+    clear(slot).appendChild(connectionView(res && res.connection));
+  }, function (err) {
+    clear(slot).appendChild(notice('error', t('cn.loadFailed') + ' ' + errorText(err)));
+  });
+}
+
 function sdkPage(container) {
   var frame = pageFrame(t('nav.sdk'), t('desc.sdk'));
   clear(container).appendChild(frame.el);
@@ -25456,6 +25527,7 @@ function sdkPage(container) {
   var phone = 'var sent   = await client.Phone.RequestCodeAsync("09121234567");\nvar result = await client.Phone.VerifyAsync(sent.Phone, code);';
   var pay = 'await NakamaFarsiStore.SetupAsync(client);\nvar store = await NakamaFarsiStore.BuyAsync(productId);\n\nvar web = await NakamaFarsiGateway.BuyAsync(productId, PaymentMethods.ZarinPal);\nvar coins = await client.Payments.BuyAsync(productId, PaymentMethods.Coins);';
   var chat = 'var room = await client.Chat.JoinRoomAsync("lobby");\nawait client.Chat.SendTextAsync(room.Id, "salam");\nawait client.Chat.SendStickerAsync(room.Id, "happy/smile");';
+  var connSlot = h('div', { 'data-sdk-connection': '' });
   var repoLink = h('a', { href: SDK_WEB, target: '_blank', rel: 'noopener', class: 'eco-link font-mono text-sm', dir: 'ltr', text: SDK_WEB });
   var box = h('div', { class: 'flex flex-col gap-4 eco-sdk', 'data-sdk-page': '' },
     sdkSection(1, t('sdk.what'), h('div', { class: 'flex flex-col gap-3' },
@@ -25464,12 +25536,13 @@ function sdkPage(container) {
       h('div', { class: 'flex flex-wrap items-center gap-2 text-sm' }, h('span', { class: 'text-secondary-500', text: t('sdk.repo') }), repoLink))),
     sdkSection(2, t('sdk.need'), sdkList(['sdk.need.unity', 'sdk.need.git'])),
     sdkSection(3, t('sdk.install'), h('div', { class: 'flex flex-col gap-3' }, sdkText('sdk.install.text'), sdkCode(manifest), notice('warning', t('sdk.install.warn'))))
-    , sdkSection(4, t('sdk.config'), h('div', { class: 'flex flex-col gap-3' }, sdkText('sdk.config.text'), sdkList(['sdk.config.url', 'sdk.config.key', 'sdk.config.lang', 'sdk.config.link'])))
+    , sdkSection(4, t('sdk.config'), h('div', { class: 'flex flex-col gap-3' }, sdkText('sdk.config.text'), sdkList(['sdk.config.url', 'sdk.config.key', 'sdk.config.lang', 'sdk.config.link']), connSlot))
     , sdkSection(5, t('sdk.start'), h('div', { class: 'flex flex-col gap-3' }, sdkText('sdk.start.text'), sdkCode(setup), sdkText('sdk.phone.text'), sdkCode(phone)))
     , sdkSection(6, t('sdk.pay'), h('div', { class: 'flex flex-col gap-3' }, sdkText('sdk.pay.text'), sdkCode(pay), sdkList(['sdk.pay.bazaar', 'sdk.pay.switch', 'sdk.pay.test'])))
     , sdkSection(7, t('sdk.chat'), h('div', { class: 'flex flex-col gap-3' }, sdkText('sdk.chat.text'), sdkCode(chat)))
     , sdkSection(8, t('sdk.errors'), sdkText('sdk.errors.text')));
   frame.content.appendChild(box);
+  sdkConnection(connSlot);
 }
 
 CUSTOM_PAGES['sdk'] = function (root) { sdkPage(root); };
@@ -25584,9 +25657,12 @@ function handoffBody(body, meta, dl) {
     h('p', { class: 'eco-hf-intro', text: t('hf.intro') }),
     parts,
     meta.project ? null : h('div', { 'data-handoff-no-project': '' }, notice('info', t('hf.noProject'))),
+    h('section', { class: 'eco-hf-conn', 'aria-labelledby': 'eco-hf-conn' },
+      h('h3', { id: 'eco-hf-conn', class: 'eco-hf-h', text: t('cn.title') }),
+      connectionView(meta.connection)),
     h('div', { class: 'eco-hf-get' },
       h('div', { class: 'eco-hf-get-row' }, dl, h('span', { class: 'eco-hf-file' }, mono(meta.fileName || ''))),
-      h('p', { class: 'eco-hf-muted', text: t('hf.keys') })),
+      h('p', { class: 'eco-hf-muted', text: t(meta.connection && meta.connection.keyShown ? 'hf.keys.shown' : 'hf.keys') })),
     handoffChanges(meta)));
 }
 
@@ -25664,6 +25740,9 @@ var SR_FIELDS = [
   { type: 'row', fields: [
     { name: 'handoff.enabled', type: 'bool', inline: true, label: 'f.sr.handoff.enabled', hint: 'f.sr.handoff.enabled.hint' },
     { name: 'handoff.audience', type: 'select', label: 'f.sr.handoff.audience', hint: 'f.sr.handoff.audience.hint', required: true, options: function () { return [{ value: 'all', label: t('sr.handoff.all') }, { value: 'admins', label: t('sr.handoff.admins') }]; }, when: function (v) { return (v.handoff || {}).enabled !== false; } }
+  ] },
+  { type: 'row', fields: [
+    { name: 'handoff.showServerKey', type: 'bool', inline: true, label: 'f.sr.handoff.key', hint: 'f.sr.handoff.key.hint' }
   ] }
 ];
 
@@ -25677,7 +25756,7 @@ function srCall(method, path, body) {
     v.storage.allowCollections = (v.storage.allowCollections || []).map(function (x) { return { v: x }; });
     v.accountDelete = Object.assign({ enabled: true, mode: 'grace', graceDays: 14 }, v.accountDelete || {});
     v.docs = Object.assign({ enabled: true, consoleLogin: false }, v.docs || {});
-    v.handoff = Object.assign({ enabled: true, audience: 'all' }, v.handoff || {});
+    v.handoff = Object.assign({ enabled: true, audience: 'all', showServerKey: true }, v.handoff || {});
     if (method === 'PUT') handoffLoad(true).catch(function () { return null; });
     return v;
   });

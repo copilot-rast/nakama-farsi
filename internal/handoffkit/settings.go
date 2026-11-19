@@ -14,12 +14,13 @@ const (
 )
 
 type Settings struct {
-	Enabled  bool   `json:"enabled"`
-	Audience string `json:"audience"`
+	Enabled       bool   `json:"enabled"`
+	Audience      string `json:"audience"`
+	ShowServerKey bool   `json:"showServerKey"`
 }
 
 func DefaultSettings() Settings {
-	return Settings{Enabled: true, Audience: AudienceAll}
+	return Settings{Enabled: true, Audience: AudienceAll, ShowServerKey: true}
 }
 
 func (s Settings) Clean() (Settings, bool) {

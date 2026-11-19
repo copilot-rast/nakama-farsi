@@ -83,7 +83,7 @@ for name in "${runtime_env[@]}"; do
 done
 while IFS='=' read -r name _; do
     case $name in
-        GAME_* | BLOCKWORLD_* | ECONOMY_PENDING_TTL_MINUTES | PUBLICATION_AUTO_EVERY_SECONDS) args+=(--runtime.env "$name=${!name}") ;;
+        GAME_* | BLOCKWORLD_* | HANDOFF_PUBLIC_* | ECONOMY_PENDING_TTL_MINUTES | PUBLICATION_AUTO_EVERY_SECONDS) args+=(--runtime.env "$name=${!name}") ;;
     esac
 done < <(env)
 

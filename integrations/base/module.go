@@ -24,6 +24,8 @@ type service struct {
 	updates    updatesConfig
 	voiceKey   []byte
 	voiceHTTP  *http.Client
+	config     runtime.Config
+	env        map[string]string
 }
 
 func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {
@@ -34,6 +36,12 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	}
 	svc.configureUpdates(env)
 	svc.configureVoice(env)
+	svc.env = env
+	if cfg, err := initializer.GetConfig(); err == nil {
+		svc.config = cfg
+	} else {
+		logger.Warn("Base handoff cannot read the server config: %v", err)
+	}
 	for name, fn := range svc.clientRPCs() {
 		limit := 16384
 		if name == "base_support_upload_part" {

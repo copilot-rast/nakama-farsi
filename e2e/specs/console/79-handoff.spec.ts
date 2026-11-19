@@ -3,15 +3,20 @@ import { expect, test } from '../../lib/fixtures';
 import { noHorizontalScroll, open, root, settle, toasts } from '../../lib/console';
 import { base, consoleApi } from '../../lib/api';
 import { bearerOf, dropConsoleUser, makeConsoleUser, signIn } from '../../lib/support';
-import { CONSOLE_URL } from '../../lib/env';
+import { CONSOLE_URL, SERVER_KEY } from '../../lib/env';
 
 const SECRET = /[0-9a-f]{64}|NAKAMA_CONSOLE_PASSWORD=|http_key\s*[:=]\s*\S|RkFront-Test/;
+
+function withoutKey(html: string) {
+  return html.split(SERVER_KEY).join('');
+}
 
 async function rules() {
   return base.get('/server-rules');
 }
 
-async function setHandoff(handoff: { enabled: boolean; audience: string }) {
+async function setHandoff(h: { enabled: boolean; audience: string; showServerKey?: boolean }) {
+  const handoff = { showServerKey: true, ...h };
   const cur = await rules();
   delete cur.updatedAt;
   delete cur.updatedBy;
@@ -31,7 +36,7 @@ test.describe('front-end handoff', () => {
     expect((await fetch(CONSOLE_URL + '/v2/console/base/handoff')).status).toBe(401);
     const meta = await base.get('/handoff');
     expect(meta.visible).toBe(true);
-    expect(meta.settings).toEqual({ enabled: true, audience: 'all' });
+    expect(meta.settings).toEqual({ enabled: true, audience: 'all', showServerKey: true });
     const general = meta.changelog.filter((e: any) => e.scope === 'general');
     expect(general.length).toBeGreaterThan(0);
     const dates = meta.changelog.map((e: any) => e.date);
@@ -43,7 +48,7 @@ test.describe('front-end handoff', () => {
     expect(html).toContain('id="part-general"');
     expect(html).toContain('@font-face{font-family:Vazirmatn');
     expect(html).not.toMatch(/<link[^>]+href="http|<script[^>]+src=/);
-    expect(html).not.toMatch(SECRET);
+    expect(withoutKey(html)).not.toMatch(SECRET);
     if (meta.project) {
       expect(html).toContain('id="part-project"');
       expect(meta.changelog.some((e: any) => e.scope === 'project')).toBe(true);
@@ -98,7 +103,7 @@ test.describe('front-end handoff', () => {
     const html = fs.readFileSync(await dl.path(), 'utf8');
     expect(html).toContain('id="part-general"');
     expect(html).toContain('id="changes"');
-    expect(html).not.toMatch(SECRET);
+    expect(withoutKey(html)).not.toMatch(SECRET);
     if (meta.project) expect(html).toContain('id="part-project"');
     const changeRows = html.match(/<tr data-scope="(general|project)">/g) || [];
     expect(changeRows.length).toBe(meta.changelog.length);
@@ -106,6 +111,67 @@ test.describe('front-end handoff', () => {
     await page.keyboard.press('Escape');
     await expect(page.locator('[data-handoff]')).toHaveCount(0);
     await expect(btn).toBeFocused();
+  });
+
+  test('the live server key is in the panel, the file and the SDK page; off hides it everywhere', async ({ page }) => {
+    const meta = await base.get('/handoff');
+    expect(meta.connection.keyShown).toBe(true);
+    expect(meta.connection.serverKey).toBe(SERVER_KEY);
+    expect(meta.connection.defaultKey).toBe(SERVER_KEY === 'defaultkey');
+    const res = await consoleApi('GET', '/v2/console/base/handoff/download');
+    const html = String(res.data);
+    expect(html).not.toContain('{{SERVER_');
+    expect(html).toContain('<section class="step" id="connection" data-connection data-key-shown="true"');
+    expect(html).toContain('<td data-server-key>');
+    expect(html).toContain('new Client(&#39;' + SERVER_KEY + '&#39;, ');
+    expect(html).toContain('<li><a href="#connection">');
+    if (SERVER_KEY === 'defaultkey') expect(html).toContain('data-default-key');
+    else expect(html).not.toContain('data-default-key');
+    if (meta.connection.hostSet) expect(html).toContain(meta.connection.url);
+    else expect(html).toContain('data-host-missing');
+
+    await open(page, '#/economy/overview');
+    await page.locator('button[data-pl-handoff]').click();
+    const box = page.locator('[data-handoff-panel] [data-connection]');
+    await expect(box).toHaveAttribute('data-key-shown', 'true');
+    await expect(box.locator('[data-conn="key"] code')).toHaveText(SERVER_KEY);
+    await expect(box.locator('[data-conn="key"] [data-conn-copy]')).toBeVisible();
+    await page.keyboard.press('Escape');
+
+    await open(page, '#/system/sdk');
+    const sdk = root(page).locator('[data-sdk-connection] [data-connection]');
+    await expect(sdk.locator('[data-conn="key"] code')).toHaveText(SERVER_KEY);
+    await expect(root(page).locator('[data-sdk-page]')).not.toContainText('از مدیر سرور بگیرید');
+    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => null);
+    await sdk.locator('[data-conn="key"] [data-conn-copy]').click();
+    await expect(toasts(page).first()).toBeVisible();
+
+    await setHandoff({ enabled: true, audience: 'all', showServerKey: false });
+    try {
+      const off = await base.get('/handoff');
+      expect(off.settings.showServerKey).toBe(false);
+      expect(off.connection.keyShown).toBe(false);
+      expect(off.connection.serverKey).toBeUndefined();
+      const offHtml = String((await consoleApi('GET', '/v2/console/base/handoff/download')).data);
+      expect(offHtml).not.toContain(SERVER_KEY);
+      expect(offHtml).toContain('data-key-hidden');
+      expect(offHtml).toContain('ASK_THE_SERVER_ADMIN');
+      expect(offHtml).not.toContain('{{SERVER_');
+      expect(offHtml).not.toMatch(SECRET);
+      const conn = await base.get('/handoff/connection');
+      expect(conn.connection.serverKey).toBeUndefined();
+      await open(page, '#/economy/overview');
+      await open(page, '#/system/sdk');
+      const hidden = root(page).locator('[data-sdk-connection] [data-connection]');
+      await expect(hidden).toHaveAttribute('data-key-shown', 'false');
+      await expect(hidden.locator('[data-conn="key"]')).toContainText('از مدیر سرور بگیرید');
+      await expect(hidden.locator('[data-conn="key"] [data-conn-copy]')).toHaveCount(0);
+      await expect(root(page).locator('[data-sdk-page]')).not.toContainText(SERVER_KEY);
+      await open(page, '#/system/server-rules');
+      await expect(root(page).locator('[data-settings-form="server-rules"]')).toContainText('نمایش کلید سرور در راهنما و صفحهٔ SDK');
+    } finally {
+      await setHandoff({ enabled: true, audience: 'all' });
+    }
   });
 
   test('the downloaded file opens offline: RTL, light and dark, no sideways scroll on a phone', async ({ spawn }) => {
@@ -141,6 +207,10 @@ test.describe('front-end handoff', () => {
       expect(meta.data).toMatchObject({ visible: false, reason: 'HANDOFF_ADMINS_ONLY' });
       expect(meta.data.changelog).toBeUndefined();
       expect((await consoleApi('GET', '/v2/console/base/handoff/download', undefined, bearer)).status).toBe(403);
+      const conn = await consoleApi('GET', '/v2/console/base/handoff/connection', undefined, bearer);
+      expect(conn.status).toBe(200);
+      expect(conn.data.connection.keyShown).toBe(false);
+      expect(JSON.stringify(conn.data)).not.toContain(SERVER_KEY);
       await expect(p.locator('button[data-pl-handoff]')).toBeHidden();
       expect((await consoleApi('PUT', '/v2/console/base/server-rules', {}, bearer)).status).toBe(403);
       await setHandoff({ enabled: true, audience: 'all' });

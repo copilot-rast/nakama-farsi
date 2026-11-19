@@ -153,6 +153,7 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/updates/settings", http.MethodPut, s.updatesSettingsPut},
 		{consolePrefix + "/handoff", http.MethodGet, s.handoffGet},
 		{consolePrefix + "/handoff/download", http.MethodGet, s.handoffDownload},
+		{consolePrefix + "/handoff/connection", http.MethodGet, s.connectionGet},
 	}
 	for _, res := range []resource{categoriesResource, tagsResource} {
 		base := consolePrefix + "/" + res.name

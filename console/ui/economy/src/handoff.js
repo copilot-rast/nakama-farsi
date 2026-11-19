@@ -108,9 +108,12 @@ function handoffBody(body, meta, dl) {
     h('p', { class: 'eco-hf-intro', text: t('hf.intro') }),
     parts,
     meta.project ? null : h('div', { 'data-handoff-no-project': '' }, notice('info', t('hf.noProject'))),
+    h('section', { class: 'eco-hf-conn', 'aria-labelledby': 'eco-hf-conn' },
+      h('h3', { id: 'eco-hf-conn', class: 'eco-hf-h', text: t('cn.title') }),
+      connectionView(meta.connection)),
     h('div', { class: 'eco-hf-get' },
       h('div', { class: 'eco-hf-get-row' }, dl, h('span', { class: 'eco-hf-file' }, mono(meta.fileName || ''))),
-      h('p', { class: 'eco-hf-muted', text: t('hf.keys') })),
+      h('p', { class: 'eco-hf-muted', text: t(meta.connection && meta.connection.keyShown ? 'hf.keys.shown' : 'hf.keys') })),
     handoffChanges(meta)));
 }
 

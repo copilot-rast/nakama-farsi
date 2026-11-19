@@ -190,6 +190,9 @@ services:
       ECONOMY_PUBLIC_BASE_URL: ${ECONOMY_PUBLIC_BASE_URL:-https://nakama.dastar.dev}
       ECONOMY_WEB_REDIRECT_URL: ${ECONOMY_WEB_REDIRECT_URL:-https://nakama.dastar.dev/stargame/?payment={paymentId}&success={success}}
       ECONOMY_DEEP_LINK: ${ECONOMY_DEEP_LINK:-nakama://payment?success={success}&paymentId={paymentId}}
+      HANDOFF_PUBLIC_HOST: ${HANDOFF_PUBLIC_HOST:-}
+      HANDOFF_PUBLIC_PORT: ${HANDOFF_PUBLIC_PORT:-}
+      HANDOFF_PUBLIC_SSL: ${HANDOFF_PUBLIC_SSL:-}
       STARGAME_SEED: ${STARGAME_SEED:-true}
       STORAGE_DRIVER: ${STORAGE_DRIVER:-local}
       STORAGE_S3_ENDPOINT: ${STORAGE_S3_ENDPOINT:-}

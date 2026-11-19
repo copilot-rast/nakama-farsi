@@ -16,10 +16,13 @@ import (
 
 const ConsolePlaceholder = "{{CONSOLE_URL}}"
 
+var topAnchors = map[string]bool{"changes": true, "connection": true}
+
 type Options struct {
 	ConsoleURL  string
 	Commit      string
 	GeneratedAt time.Time
+	Connection  Connection
 }
 
 var (
@@ -70,6 +73,9 @@ func (b *Bundle) resolver(from *Section) linkResolver {
 			if frag == "" {
 				return "", false
 			}
+			if topAnchors[frag] {
+				return "#" + frag, true
+			}
 			return "#" + from.ID + "-" + frag, true
 		}
 		p := path.Clean(path.Join(path.Dir(from.Path), file))
@@ -89,7 +95,7 @@ func (b *Bundle) resolver(from *Section) linkResolver {
 	}
 }
 
-func (b *Bundle) prepare(consoleURL string) {
+func (b *Bundle) prepare(consoleURL string, conn Connection) {
 	console := "#"
 	if consoleURL != "" {
 		console = html.EscapeString(strings.TrimRight(consoleURL, "/"))
@@ -100,7 +106,7 @@ func (b *Bundle) prepare(consoleURL string) {
 			if s.Title == "" {
 				s.Title = title
 			}
-			s.body = strings.ReplaceAll(body, ConsolePlaceholder, console)
+			s.body = conn.Apply(strings.ReplaceAll(body, ConsolePlaceholder, console))
 			s.kind = "rendered"
 			continue
 		}
@@ -115,6 +121,7 @@ func (b *Bundle) prepare(consoleURL string) {
 				return v
 			})
 			body = strings.ReplaceAll(body, ConsolePlaceholder, console)
+			body = conn.Apply(body)
 			s.body = preRe.ReplaceAllStringFunc(body, func(v string) string {
 				code := preRe.FindStringSubmatch(v)[2]
 				cls := ""
@@ -132,7 +139,7 @@ func (b *Bundle) prepare(consoleURL string) {
 }
 
 func Render(assets fs.FS, b *Bundle, o Options) ([]byte, error) {
-	b.prepare(o.ConsoleURL)
+	b.prepare(o.ConsoleURL, o.Connection)
 	css, err := fs.ReadFile(assets, "assets/style.css")
 	if err != nil {
 		return nil, err
@@ -172,6 +179,7 @@ func Render(assets fs.FS, b *Bundle, o Options) ([]byte, error) {
 	w.WriteString("</header>\n")
 	w.WriteString(`<nav class="toc" aria-label="فهرست"><h2>فهرست</h2>` + "\n<ol>\n")
 	w.WriteString(`<li><a href="#changes">تازه‌ها</a></li>` + "\n")
+	w.WriteString(`<li><a href="#connection">اطلاعات اتصال</a></li>` + "\n")
 	w.WriteString(`<li><a href="#part-general">بخش عمومی</a>` + tocList(b.General.Sections) + "</li>\n")
 	if b.Project != nil {
 		w.WriteString(`<li><a href="#part-project">بخش اختصاصی: ` + esc(b.Project.Meta.Title) + `</a>` + tocList(b.Project.Sections) + "</li>\n")
@@ -191,16 +199,21 @@ func Render(assets fs.FS, b *Bundle, o Options) ([]byte, error) {
 		w.WriteString(`<tr data-scope="` + e.Scope + `"><td class="nowrap">` + jalaliString(e.Date) + "</td><td>" + title + "</td><td>" + badge + "</td></tr>\n")
 	}
 	w.WriteString("</tbody></table></div>\n</section>\n")
-	writePart(&w, "part-general", "بخش عمومی", b.General.Meta.Summary, b.General.Sections, 1)
+	writePart(&w, "part-general", "بخش عمومی", b.General.Meta.Summary, connectionBlock(o.Connection), b.General.Sections, 1)
 	if b.Project != nil {
-		writePart(&w, "part-project", "بخش اختصاصی: "+b.Project.Meta.Title, b.Project.Meta.Summary, b.Project.Sections, len(b.General.Sections)+1)
+		writePart(&w, "part-project", "بخش اختصاصی: "+b.Project.Meta.Title, b.Project.Meta.Summary, "", b.Project.Sections, len(b.General.Sections)+1)
 	} else {
 		w.WriteString(`<h2 class="part" id="part-project">بخش اختصاصی</h2>` + "\n")
 		w.WriteString(`<div class="note" data-no-project>این پروژه هنوز بخش اختصاصی ندارد. هر چه لازم دارید فعلاً در بخش عمومی است.</div>` + "\n")
 	}
-	if o.ConsoleURL != "" {
-		w.WriteString(`<div class="warn">کلیدها و رمزها داخل این فایل نیستند. کلید سرور را از مدیر سرور بگیرید؛ راه تنظیمش در <a href="` + esc(strings.TrimRight(o.ConsoleURL, "/")) + `/#/system/sdk" target="_blank" rel="noopener">صفحهٔ SDK کنسول</a> آمده است.</div>` + "\n")
+	keys := "کلید HTTP، رمز کنسول و کلیدهای دیگر داخل این فایل نیستند."
+	if !o.Connection.KeyShown {
+		keys = "کلیدها و رمزها داخل این فایل نیستند. کلید سرور را از مدیر سرور بگیرید."
 	}
+	if o.ConsoleURL != "" {
+		keys += ` کلید سرور در <a href="` + esc(strings.TrimRight(o.ConsoleURL, "/")) + `/#/system/sdk" target="_blank" rel="noopener">صفحهٔ SDK کنسول</a> هم هست.`
+	}
+	w.WriteString(`<div class="warn">` + keys + "</div>\n")
 	w.WriteString("<footer>این فایل را کنسول مدیریت ساخته است. نسخهٔ تازه را از همان‌جا بگیرید.</footer>\n</div>\n<script>\n")
 	w.Write(js)
 	w.WriteString("</script>\n</body>\n</html>\n")
@@ -220,11 +233,12 @@ func tocList(sections []*Section) string {
 	return b.String()
 }
 
-func writePart(w *bytes.Buffer, id, title, summary string, sections []*Section, start int) {
+func writePart(w *bytes.Buffer, id, title, summary, intro string, sections []*Section, start int) {
 	w.WriteString(`<h2 class="part" id="` + id + `">` + html.EscapeString(title) + "</h2>\n")
 	if summary != "" {
 		w.WriteString(`<p class="part-sub">` + html.EscapeString(summary) + "</p>\n")
 	}
+	w.WriteString(intro)
 	for i, s := range sections {
 		cls := "step doc"
 		if strings.Contains(s.body, `class="step"`) {

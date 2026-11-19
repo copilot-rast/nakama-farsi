@@ -23,6 +23,16 @@ summary: یک خط زیر عنوان
 
 Without `title` the first `# ` heading is the title. `{{CONSOLE_URL}}` in a section becomes the console address at download time (e.g. `{{CONSOLE_URL}}/#/system/sdk`). Links to other source files (`../phase1/README.md#anchor`) become in-file anchors.
 
+Connection placeholders, filled from the running server at download time (sources keep only the placeholders, never a real key):
+
+| Placeholder | Value |
+| --- | --- |
+| `{{SERVER_KEY}}` | `socket.server_key` of the running server; "ask the admin" when `handoff.showServerKey` is off |
+| `{{SERVER_HOST}}`, `{{SERVER_PORT}}`, `{{SERVER_SSL}}` | `HANDOFF_PUBLIC_HOST` / `_PORT` / `_SSL`; without them the host of `ECONOMY_PUBLIC_BASE_URL`; port 443 with SSL, 80 without; SSL defaults to true |
+| `{{SERVER_URL}}` | `http(s)://host[:port]` from the same values |
+
+Inside code (`` `x` `` or code blocks) an unknown value becomes an ASCII marker (`ASK_THE_SERVER_ADMIN`, `API_HOST_FROM_ADMIN`); in text it becomes a Persian "ask the admin" note. `[text](#connection)` and `[text](#changes)` link to the connection box and the change list. A test fails if a source contains a 64-hex key.
+
 ## Add a changelog entry
 
 Edit `general/handoff.json` (general) or `project/handoff.json` (fork) and add an entry at the top of `changelog`:
@@ -35,7 +45,7 @@ Edit `general/handoff.json` (general) or `project/handoff.json` (fork) and add a
 
 ## Settings (Server rules › Front-end handoff)
 
-`handoff.enabled` (default on) and `handoff.audience` (`all` default, or `admins`). Stored in `base_server_rules`.
+`handoff.enabled` (default on), `handoff.audience` (`all` default, or `admins`) and `handoff.showServerKey` (default on). Stored in `base_server_rules`. The console SDK page reads the same values from `GET /v2/console/base/handoff/connection` (any console login; the key only when `showServerKey` is on and the audience lets the user in).
 
 ## Progress
 

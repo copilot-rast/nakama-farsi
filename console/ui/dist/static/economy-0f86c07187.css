@@ -996,3 +996,15 @@ a.eco-ov-kpi:focus-visible,.eco-ov-tile:focus-visible,.eco-ov-legend-row:focus-v
 .dark .eco-hf-row{border-color:rgb(var(--secondary-color-800))}
 .dark .eco-hf-text{color:rgb(var(--secondary-color-100))}
 @media (max-width:480px){.eco-hf-row{flex-wrap:wrap;gap:.25rem .75rem}.eco-hf-text{flex-basis:100%;order:3}}
+.eco-hf-conn{display:flex;flex-direction:column;gap:.5rem}
+.eco-conn-list{display:flex;flex-direction:column;border:1px solid rgb(var(--secondary-color-200));border-radius:.5rem;margin:0}
+.eco-conn-row{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .75rem;padding:.5rem .75rem;border-bottom:1px solid rgb(var(--secondary-color-100))}
+.eco-conn-row:last-child{border-bottom:0}
+.eco-conn-label{flex:0 0 9rem;font-size:.8125rem;color:rgb(var(--secondary-color-600))}
+.eco-conn-cell{flex:1 1 12rem;min-width:0;display:flex;align-items:center;gap:.5rem;margin:0}
+.eco-conn-val{min-width:0;overflow-wrap:anywhere;word-break:break-all;color:rgb(var(--secondary-color-900))}
+.eco-conn-ask{font-size:.8125rem;color:rgb(var(--secondary-color-500))}
+.dark .eco-conn-list{border-color:rgb(var(--secondary-color-700))}
+.dark .eco-conn-row{border-color:rgb(var(--secondary-color-800))}
+.dark .eco-conn-label,.dark .eco-conn-ask{color:rgb(var(--secondary-color-400))}
+.dark .eco-conn-val{color:rgb(var(--secondary-color-50))}
