@@ -32,20 +32,20 @@ ARG BUILD_DATE=
 COPY . .
 
 RUN sh build/buildinfo.sh > /go/buildinfo.ldflags && cat /go/buildinfo.ldflags | tr ' ' '\n' | grep -v '^-X$' | grep -v 'Upstream=' | sed 's/^/buildinfo: /'
-RUN go build -o /go/build-out/nakama -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "-s -w -X main.version=local $(cat /go/buildinfo.ldflags)"
-RUN go build -buildmode=plugin -o /go/build-out/modules/base.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/base
-RUN go build -buildmode=plugin -o /go/build-out/modules/economy.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/economy
-RUN go build -buildmode=plugin -o /go/build-out/modules/publication.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/publication
-RUN go build -buildmode=plugin -o /go/build-out/modules/leaderboardx.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/leaderboardx
-RUN go build -buildmode=plugin -o /go/build-out/modules/content.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/content
-RUN go build -buildmode=plugin -o /go/build-out/modules/insights.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/insights
-RUN go build -buildmode=plugin -o /go/build-out/modules/quiz.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/quiz
-RUN go build -buildmode=plugin -o /go/build-out/modules/trophy.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/trophy
-RUN go build -buildmode=plugin -o /go/build-out/modules/clan.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/clan
-RUN go build -buildmode=plugin -o /go/build-out/modules/cup.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/cup
-RUN go build -buildmode=plugin -o /go/build-out/modules/campaign.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/campaign
-RUN go build -buildmode=plugin -o /go/build-out/modules/stargame.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./samples/stargame
-RUN go run -mod=vendor ./tools/rpcschema -root . -openapi /go/build-out/modules/openapi.json -buildflag=-buildmode=plugin -buildflag=-trimpath -buildflag=-mod=vendor "-buildflag=-gcflags=-trimpath $PWD" "-buildflag=-asmflags=-trimpath $PWD"
+RUN --mount=type=cache,target=/root/.cache/go-build go build -o /go/build-out/nakama -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "-s -w -X main.version=local $(cat /go/buildinfo.ldflags)"
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/base.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/base
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/economy.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/economy
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/publication.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/publication
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/leaderboardx.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/leaderboardx
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/content.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/content
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/insights.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/insights
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/quiz.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/quiz
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/trophy.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/trophy
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/clan.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/clan
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/cup.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/cup
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/campaign.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/campaign
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/stargame.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./samples/stargame
+RUN --mount=type=cache,target=/root/.cache/go-build go run -mod=vendor ./tools/rpcschema -root . -openapi /go/build-out/modules/openapi.json -buildflag=-buildmode=plugin -buildflag=-trimpath -buildflag=-mod=vendor "-buildflag=-gcflags=-trimpath $PWD" "-buildflag=-asmflags=-trimpath $PWD"
 
 FROM ${DEBIAN_IMAGE}
 
