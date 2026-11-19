@@ -283,7 +283,7 @@ func TestPostgresStarsDifferencePayoutResendAndUnlocks(t *testing.T) {
 	view := roundTrip(must(f.s.rpcChapters(context.Background(), user, `{}`)))
 	var mine map[string]any
 	for _, c := range view["chapters"].([]any) {
-		if c.(map[string]any)["stages"].([]any)[0].(map[string]any)["key"] == s1 {
+		if st := c.(map[string]any)["stages"].([]any); len(st) > 0 && st[0].(map[string]any)["key"] == s1 {
 			mine = c.(map[string]any)
 		}
 	}
