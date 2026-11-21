@@ -341,11 +341,14 @@ func (s *service) gameEvent(ctx context.Context, ev gameevents.Event) (any, erro
 	return nil, err
 }
 
-func (s *service) sessionEvent(ctx context.Context, userID, sessionID, name, platform, version string, seconds *int64) {
+func (s *service) sessionEvent(ctx context.Context, userID, game, sessionID, name, platform, version string, seconds *int64) {
 	if !s.settings(ctx).Events.SessionEvents {
 		return
 	}
-	e := insightsapi.Event{Key: "sess:" + userID + ":" + sessionID + ":" + name, UserID: userID, SessionID: sessionID, Name: name, Platform: platform, AppVersion: version, Source: "server"}
+	if !events.GamePattern.MatchString(game) {
+		game = ""
+	}
+	e := insightsapi.Event{Key: "sess:" + userID + ":" + sessionID + ":" + name, UserID: userID, Game: game, SessionID: sessionID, Name: name, Platform: platform, AppVersion: version, Source: "server"}
 	if seconds != nil {
 		e.Value = insightsapi.Num(float64(*seconds))
 	}

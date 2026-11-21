@@ -32,11 +32,12 @@ func newFixture(t *testing.T) *fixture {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f := &fixture{t: t, s: &service{db: db, logger: plugintest.Logger{}, store: store}, prefix: plugintest.Key("it"), at: time.Date(2026, 6, 1, 9, 0, 0, 0, time.UTC)}
+	f := &fixture{t: t, s: newService(db, plugintest.Logger{}, store), prefix: plugintest.Key("it"), at: time.Date(2026, 6, 1, 9, 0, 0, 0, time.UTC)}
 	f.s.now = func() time.Time { return f.at }
 	t.Cleanup(func() {
 		_, _ = db.Exec(`DELETE FROM insights_heatmap_map WHERE key LIKE $1`, f.prefix+"%")
 		_, _ = db.Exec(`DELETE FROM insights_settings WHERE id=1`)
+		_, _ = db.Exec(`DELETE FROM insights_outbox`)
 		settings.Invalidate()
 	})
 	f.settings(func(*settings.All) {})

@@ -176,7 +176,10 @@ CREATE TABLE IF NOT EXISTS insights_import_run (
 
 CREATE INDEX IF NOT EXISTS insights_import_run_connector_idx ON insights_import_run (connector_id, started_at DESC);
 
+ALTER TABLE insights_session ADD COLUMN IF NOT EXISTS game TEXT NOT NULL DEFAULT '';
+
 -- +migrate Down
+ALTER TABLE insights_session DROP COLUMN IF EXISTS game;
 DROP TABLE IF EXISTS insights_import_run;
 DROP TABLE IF EXISTS insights_connector;
 DROP TABLE IF EXISTS insights_funnel;

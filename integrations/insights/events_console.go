@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -275,6 +276,21 @@ func (s *service) sessionTimeline(w http.ResponseWriter, r *http.Request) {
 		}
 		matched = "time"
 	}
+	rank := func(n string) int {
+		switch n {
+		case "session_start":
+			return 0
+		case "session_end":
+			return 2
+		}
+		return 1
+	}
+	sort.SliceStable(list, func(i, j int) bool {
+		if !list[i].At.Equal(list[j].At) {
+			return list[i].At.Before(list[j].At)
+		}
+		return rank(list[i].Name) < rank(list[j].Name)
+	})
 	out := map[string]any{"session": map[string]any{"id": id, "userId": uid, "sessionId": client, "day": day, "startedAt": started, "lastSeenAt": last, "endedAt": nil, "seconds": nil, "platform": platform, "appVersion": version},
 		"events": list, "matchedBy": matched}
 	if ended.Valid {
