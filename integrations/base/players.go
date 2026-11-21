@@ -30,7 +30,7 @@ const playerTagsJSON = `COALESCE((SELECT jsonb_agg(jsonb_build_object('id',t.id,
 
 const activeRestrictionJSON = `(SELECT jsonb_build_object('id',r.id,'endsAt',r.ends_at,'reason',r.reason) FROM base_restriction r WHERE r.user_id=u.id AND r.kind=%s AND r.status='active' AND r.ends_at > now() ORDER BY r.ends_at DESC LIMIT 1)`
 
-var playerJSON = `jsonb_build_object('id',u.id,'username',u.username,'displayName',u.display_name,'avatarUrl',u.avatar_url,'createTime',u.create_time,'banned',u.disable_time > '1970-01-01 00:00:00+00','tags',` + playerTagsJSON +
+var playerJSON = `jsonb_build_object('id',u.id,'username',u.username,'displayName',u.display_name,'avatarUrl',u.avatar_url,'createTime',u.create_time,'code',(SELECT pc.code FROM base_player_code pc WHERE pc.user_id=u.id),'banned',u.disable_time > '1970-01-01 00:00:00+00','tags',` + playerTagsJSON +
 	`,'suspension',` + strings.Replace(activeRestrictionJSON, "%s", "'suspend'", 1) + `,'mute',` + strings.Replace(activeRestrictionJSON, "%s", "'mute'", 1) + `)`
 
 const restrictionJSON = `jsonb_build_object('id',r.id,'userId',r.user_id,'username',COALESCE(u.username,''),'displayName',COALESCE(u.display_name,''),'kind',r.kind,
@@ -44,7 +44,8 @@ func (s *service) playerList(w http.ResponseWriter, r *http.Request) {
 	if p.Q != "" {
 		n := where.next()
 		where.args = append(where.args, likePattern(p.Q))
-		cond := "(u.username ILIKE " + n + " OR u.display_name ILIKE " + n
+		where.args = append(where.args, normalizePlayerCode(p.Q))
+		cond := "(u.username ILIKE " + n + " OR u.display_name ILIKE " + n + " OR EXISTS (SELECT 1 FROM base_player_code pc WHERE pc.user_id=u.id AND pc.code = $" + itoa(len(where.args)) + ")"
 		if _, err := uuid.FromString(p.Q); err == nil {
 			where.args = append(where.args, p.Q)
 			cond += " OR u.id = $" + itoa(len(where.args)) + "::uuid"

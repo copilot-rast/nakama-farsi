@@ -35,3 +35,7 @@ CREATE TABLE zz_e2e_backup.clset AS SELECT * FROM clan_settings;
 CREATE TABLE zz_e2e_backup.cllevel AS SELECT * FROM clan_level;
 CREATE TABLE zz_e2e_backup.cupset AS SELECT * FROM cup_settings;
 SELECT 'backed up', (SELECT count(*) FROM zz_e2e_backup.pm), (SELECT count(*) FROM zz_e2e_backup.pv), (SELECT count(*) FROM zz_e2e_backup.lang), (SELECT count(*) FROM zz_e2e_backup.cur);
+DROP TABLE IF EXISTS zz_e2e_backup.unameset, zz_e2e_backup.pcodeset, zz_e2e_backup.fsugset;
+CREATE TABLE zz_e2e_backup.unameset AS SELECT * FROM base_username_settings;
+CREATE TABLE zz_e2e_backup.pcodeset AS SELECT * FROM base_player_code_settings;
+CREATE TABLE zz_e2e_backup.fsugset AS SELECT * FROM base_friend_suggest_settings;

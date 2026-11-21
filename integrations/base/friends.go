@@ -48,6 +48,10 @@ type friendRules struct {
 	FriendsBonusMeta    string    `json:"friendsBonusMeta"`
 	MatchPolicy         string    `json:"matchPolicy"`
 	OverLimit           string    `json:"overLimit"`
+	NotifyDeclined      bool      `json:"notifyDeclined"`
+	NotifyRemoved       bool      `json:"notifyRemoved"`
+	PresenceFriendsOnly bool      `json:"presenceFriendsOnly"`
+	DMFriendsOnly       bool      `json:"dmFriendsOnly"`
 	UpdatedBy           string    `json:"updatedBy,omitempty"`
 	UpdatedAt           time.Time `json:"updatedAt"`
 }
@@ -58,13 +62,14 @@ var (
 )
 
 func defaultFriendRules() friendRules {
-	return friendRules{DailyRequests: 20, MatchPolicy: "priority", OverLimit: "refuse"}
+	return friendRules{DailyRequests: 20, MatchPolicy: "priority", OverLimit: "refuse", NotifyDeclined: true, NotifyRemoved: true}
 }
 
 func loadFriendRules(ctx context.Context, q queryer) (friendRules, error) {
 	r := defaultFriendRules()
-	err := q.QueryRowContext(ctx, `SELECT daily_requests, max_friends, expiry_days, reject_cooldown_hours, requests_bonus_meta, friends_bonus_meta, match_policy, over_limit, updated_by, updated_at FROM base_friend_rules WHERE id=1`).
-		Scan(&r.DailyRequests, &r.MaxFriends, &r.ExpiryDays, &r.RejectCooldownHours, &r.RequestsBonusMeta, &r.FriendsBonusMeta, &r.MatchPolicy, &r.OverLimit, &r.UpdatedBy, &r.UpdatedAt)
+	err := q.QueryRowContext(ctx, `SELECT daily_requests, max_friends, expiry_days, reject_cooldown_hours, requests_bonus_meta, friends_bonus_meta, match_policy, over_limit, notify_declined, notify_removed, presence_friends_only, dm_friends_only, updated_by, updated_at FROM base_friend_rules WHERE id=1`).
+		Scan(&r.DailyRequests, &r.MaxFriends, &r.ExpiryDays, &r.RejectCooldownHours, &r.RequestsBonusMeta, &r.FriendsBonusMeta, &r.MatchPolicy, &r.OverLimit,
+			&r.NotifyDeclined, &r.NotifyRemoved, &r.PresenceFriendsOnly, &r.DMFriendsOnly, &r.UpdatedBy, &r.UpdatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
 		return defaultFriendRules(), nil
 	}
@@ -137,12 +142,14 @@ func (s *service) friendRulesPut(w http.ResponseWriter, r *http.Request) {
 		s.writeError(w, err)
 		return
 	}
-	_, err = s.db.ExecContext(r.Context(), `INSERT INTO base_friend_rules (id, daily_requests, max_friends, expiry_days, reject_cooldown_hours, requests_bonus_meta, friends_bonus_meta, match_policy, over_limit, updated_by, updated_at)
-		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$9,now())
+	_, err = s.db.ExecContext(r.Context(), `INSERT INTO base_friend_rules (id, daily_requests, max_friends, expiry_days, reject_cooldown_hours, requests_bonus_meta, friends_bonus_meta, match_policy, over_limit, notify_declined, notify_removed, presence_friends_only, dm_friends_only, updated_by, updated_at)
+		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$10,$11,$12,$13,$9,now())
 		ON CONFLICT (id) DO UPDATE SET daily_requests=EXCLUDED.daily_requests, max_friends=EXCLUDED.max_friends, expiry_days=EXCLUDED.expiry_days,
 		reject_cooldown_hours=EXCLUDED.reject_cooldown_hours, requests_bonus_meta=EXCLUDED.requests_bonus_meta, friends_bonus_meta=EXCLUDED.friends_bonus_meta,
-		match_policy=EXCLUDED.match_policy, over_limit=EXCLUDED.over_limit, updated_by=EXCLUDED.updated_by, updated_at=now()`,
-		rules.DailyRequests, rules.MaxFriends, rules.ExpiryDays, rules.RejectCooldownHours, rules.RequestsBonusMeta, rules.FriendsBonusMeta, rules.MatchPolicy, rules.OverLimit, consoleUser(r))
+		match_policy=EXCLUDED.match_policy, over_limit=EXCLUDED.over_limit, notify_declined=EXCLUDED.notify_declined, notify_removed=EXCLUDED.notify_removed,
+		presence_friends_only=EXCLUDED.presence_friends_only, dm_friends_only=EXCLUDED.dm_friends_only, updated_by=EXCLUDED.updated_by, updated_at=now()`,
+		rules.DailyRequests, rules.MaxFriends, rules.ExpiryDays, rules.RejectCooldownHours, rules.RequestsBonusMeta, rules.FriendsBonusMeta, rules.MatchPolicy, rules.OverLimit, consoleUser(r),
+		rules.NotifyDeclined, rules.NotifyRemoved, rules.PresenceFriendsOnly, rules.DMFriendsOnly)
 	if err != nil {
 		s.writeError(w, err)
 		return
@@ -483,6 +490,7 @@ func (s *service) afterAddFriends(ctx context.Context, _ runtime.Logger, _ *sql.
 	if _, err := s.db.ExecContext(ctx, `DELETE FROM base_friend_rejection WHERE rejecter_id=$1::uuid AND requester_id = ANY($2::uuid[])`, userID, ids); err != nil {
 		s.logger.Warn("Base friend rejections not cleared: %v", err)
 	}
+	s.dropSuggestionPairs(ctx, userID, ids)
 	return nil
 }
 
@@ -496,9 +504,13 @@ func (s *service) beforeDeleteFriends(ctx context.Context, _ runtime.Logger, _ *
 		return nil, s.hookFailure(err)
 	}
 	rejected := []string{}
+	removed := []string{}
 	for _, t := range targets {
-		if t.Mine == edgeReceived {
+		switch t.Mine {
+		case edgeReceived:
 			rejected = append(rejected, t.ID)
+		case edgeFriend:
+			removed = append(removed, t.ID)
 		}
 	}
 	if len(rejected) > 0 {
@@ -507,6 +519,7 @@ func (s *service) beforeDeleteFriends(ctx context.Context, _ runtime.Logger, _ *
 			return nil, s.hookFailure(err)
 		}
 	}
+	s.friendEdgeNotices(ctx, userID, rejected, removed)
 	return in, nil
 }
 
@@ -655,6 +668,8 @@ func (s *service) rpcFriendRules(ctx context.Context, userID, payload string) (a
 		"tier":                tier,
 		"overLimit":           rules.OverLimit,
 		"timeZone":            zone.String(),
+		"presenceFriendsOnly": rules.PresenceFriendsOnly,
+		"dmFriendsOnly":       rules.DMFriendsOnly,
 	}, nil
 }
 

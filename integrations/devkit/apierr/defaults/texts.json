@@ -431,6 +431,10 @@
     "en": "You cannot report yourself.",
     "fa": "نمی‌توانید خودتان را گزارش کنید."
   },
+  "CANNOT_TARGET_SELF": {
+    "en": "This is your own account.",
+    "fa": "این حساب خودت است."
+  },
   "CATEGORY_ALWAYS_ON": {
     "en": "This category cannot be turned off.",
     "fa": "این دسته را نمی‌شود خاموش کرد."
@@ -1138,6 +1142,10 @@
   "FREERIDE_NOT_FOUND": {
     "en": "This free ride reward was not found.",
     "fa": "این جایزهٔ گشت آزاد پیدا نشد."
+  },
+  "FRIENDSHIP_REQUIRED": {
+    "en": "Private chat is only between friends.",
+    "fa": "پیام خصوصی فقط بین دوستان است."
   },
   "FRIEND_ROOMS_DISABLED": {
     "en": "Private matches are off for this game.",
@@ -2323,6 +2331,10 @@
     "en": "The maximum players is below the minimum.",
     "fa": "بیشینه بازیکن از کمینه کمتر است."
   },
+  "PLAYER_CODE_NOT_FOUND": {
+    "en": "No player has this code.",
+    "fa": "بازیکنی با این کد پیدا نشد."
+  },
   "PLAY_CONFLICT": {
     "en": "Another play is in progress.",
     "fa": "یک بازی دیگر در جریان است."
@@ -3471,6 +3483,10 @@
     "en": "The link is too long.",
     "fa": "پیوند خیلی طولانی است."
   },
+  "USERNAME_CHANGE_COOLDOWN": {
+    "en": "You can change your username again after {cooldownEndsAt}.",
+    "fa": "نام کاربری را تا {cooldownEndsAt} نمی‌توانی دوباره عوض کنی."
+  },
   "USERNAME_DOUBLE_SEPARATOR": {
     "en": "Two dots or underscores cannot come together.",
     "fa": "دو نقطه یا زیرخط نباید پشت هم بیاید."
@@ -3482,6 +3498,10 @@
   "USERNAME_MUST_START_WITH_LETTER": {
     "en": "The username must start with a letter.",
     "fa": "نام کاربری باید با حرف شروع شود."
+  },
+  "USERNAME_PRICE_CHANGED": {
+    "en": "The price of a username change is now {cost}.",
+    "fa": "هزینهٔ تغییر نام کاربری عوض شده است: {cost}."
   },
   "USERNAME_REQUIRED": {
     "en": "Enter a username.",
@@ -3506,6 +3526,10 @@
   "USERNAME_TOO_SHORT": {
     "en": "The username is too short.",
     "fa": "نام کاربری خیلی کوتاه است."
+  },
+  "USERNAME_UNCHANGED": {
+    "en": "Choose a different username.",
+    "fa": "نام کاربری تازه با نام فعلی یکی است."
   },
   "USERS_NOT_FOUND": {
     "en": "Some players were not found.",

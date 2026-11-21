@@ -17,7 +17,7 @@ select 'H-canned', md5(coalesce(string_agg(id::text||key||title::text||body::tex
 select 'H-cfgkey', md5(coalesce(string_agg(id::text||key||type||description||value::text||rules::text||is_active::text||version::text, '|' order by id),'')) from base_config_key;
 select 'H-refset', md5(coalesce(string_agg(is_enabled::text||new_account_days||'/'||coalesce(referrer_prize_id::text,'')||coalesce(referee_prize_id::text,'')||coalesce(goal_event_type_id::text,'')||goal_measure||goal_value::text||max_per_referrer||'/'||daily_per_referrer||one_per_device::text||one_per_phone::text||hold_flagged::text, '|'),'')) from economy_referral_settings;
 select 'H-updset', md5(coalesce(string_agg(enabled::text||provider||repo||'/'||branch||interval_hours::text||token_sealed, '|'),'')) from base_updates_settings;
-select 'H-frules', md5(coalesce(string_agg(daily_requests||'/'||max_friends||'/'||expiry_days||'/'||reject_cooldown_hours||requests_bonus_meta||'/'||friends_bonus_meta||match_policy||over_limit, '|'),'')) from base_friend_rules;
+select 'H-frules', md5(coalesce(string_agg(daily_requests||'/'||max_friends||'/'||expiry_days||'/'||reject_cooldown_hours||requests_bonus_meta||'/'||friends_bonus_meta||match_policy||over_limit||notify_declined::text||notify_removed::text||presence_friends_only::text||dm_friends_only::text, '|'),'')) from base_friend_rules;
 select 'H-vset', md5(coalesce(string_agg(enabled::text||provider||config::text||secrets_sealed||ttl_seconds||open_rooms::text||can_publish::text||allowed_tag_ids::text||listen_only_tag_ids::text||tokens_per_minute||'/'||max_room_players||'/'||user_tokens::text||user_token_ttl_seconds||'/'||user_tokens_per_minute, '|'),'')) from base_voice_settings;
 select 'H-rrules', md5(coalesce(string_agg(per_hour||'/'||duplicate_hours||'/'||min_account_hours||note_required::text||trusted_tag_ids::text||trusted_per_hour, '|'),'')) from base_report_rules;
 select 'H-offset', md5(coalesce(string_agg(settings::text, '|'),'')) from economy_offer_settings;
@@ -30,3 +30,6 @@ select 'H-trset', md5(coalesce(string_agg(value::text, '|'),'')) from trophy_set
 select 'H-clset', md5(coalesce(string_agg(value::text, '|'),'')) from clan_settings;
 select 'H-cupset', md5(coalesce(string_agg(value::text, '|'),'')) from cup_settings;
 select 'H-cllevel', md5(coalesce(string_agg(level||'/'||xp||name::text||icon_url||member_cap||prize_key||perks::text, '|' ORDER BY level),'')) from clan_level;
+select 'H-unameset', md5(coalesce(string_agg(value::text, '|'),'')) from base_username_settings;
+select 'H-pcodeset', md5(coalesce(string_agg(value::text, '|'),'')) from base_player_code_settings;
+select 'H-fsugset', md5(coalesce(string_agg(value::text, '|'),'')) from base_friend_suggest_settings;

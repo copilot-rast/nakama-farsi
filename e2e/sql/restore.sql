@@ -68,3 +68,6 @@ DO $$ BEGIN IF to_regclass('zz_e2e_backup.clset') IS NOT NULL THEN DELETE FROM c
 DO $$ BEGIN IF to_regclass('zz_e2e_backup.cllevel') IS NOT NULL THEN DELETE FROM clan_level; INSERT INTO clan_level SELECT * FROM zz_e2e_backup.cllevel; END IF; END $$;
 DO $$ BEGIN IF to_regclass('zz_e2e_backup.cupset') IS NOT NULL THEN DELETE FROM cup_settings; INSERT INTO cup_settings SELECT * FROM zz_e2e_backup.cupset; END IF; END $$;
 COMMIT;
+DO $$ BEGIN IF to_regclass('zz_e2e_backup.unameset') IS NOT NULL THEN DELETE FROM base_username_settings; INSERT INTO base_username_settings SELECT * FROM zz_e2e_backup.unameset; END IF; END $$;
+DO $$ BEGIN IF to_regclass('zz_e2e_backup.pcodeset') IS NOT NULL THEN DELETE FROM base_player_code_settings; INSERT INTO base_player_code_settings SELECT * FROM zz_e2e_backup.pcodeset; END IF; END $$;
+DO $$ BEGIN IF to_regclass('zz_e2e_backup.fsugset') IS NOT NULL THEN DELETE FROM base_friend_suggest_settings; INSERT INTO base_friend_suggest_settings SELECT * FROM zz_e2e_backup.fsugset; END IF; END $$;

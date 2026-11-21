@@ -509,6 +509,12 @@
       "base"
     ]
   },
+  "CANNOT_TARGET_SELF": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
   "CATEGORY_ALWAYS_ON": {
     "status": 400,
     "modules": [
@@ -1334,6 +1340,7 @@
   "CURRENCY_IS_NOT_ENOUGH": {
     "status": 409,
     "modules": [
+      "base",
       "economy"
     ]
   },
@@ -1346,12 +1353,14 @@
   "CURRENCY_NOT_FOUND": {
     "status": 400,
     "modules": [
+      "base",
       "economy"
     ]
   },
   "CURRENCY_REQUIRED": {
     "status": 400,
     "modules": [
+      "base",
       "inventoryx"
     ]
   },
@@ -1566,6 +1575,12 @@
     "status": 404,
     "modules": [
       "campaign"
+    ]
+  },
+  "FRIENDSHIP_REQUIRED": {
+    "status": 403,
+    "modules": [
+      "base"
     ]
   },
   "FRIEND_ROOMS_DISABLED": {
@@ -2759,6 +2774,7 @@
   "LEVEL_TABLE_NOT_FOUND": {
     "status": 400,
     "modules": [
+      "base",
       "economy",
       "publication"
     ]
@@ -3381,6 +3397,12 @@
     "status": 400,
     "modules": [
       "economy"
+    ]
+  },
+  "PLAYER_CODE_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
     ]
   },
   "PLAY_CONFLICT": {
@@ -5140,16 +5162,36 @@
       "publication"
     ]
   },
+  "USERNAME_CHANGE_COOLDOWN": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "USERNAME_PRICE_CHANGED": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
   "USERNAME_REQUIRED": {
     "status": 400,
     "modules": [
-      "account"
+      "account",
+      "base"
     ]
   },
   "USERNAME_TAKEN": {
     "status": 409,
     "modules": [
-      "account"
+      "account",
+      "base"
+    ]
+  },
+  "USERNAME_UNCHANGED": {
+    "status": 400,
+    "modules": [
+      "base"
     ]
   },
   "USERS_NOT_FOUND": {
