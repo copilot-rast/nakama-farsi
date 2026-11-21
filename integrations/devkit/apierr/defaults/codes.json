@@ -554,6 +554,12 @@
       "publication"
     ]
   },
+  "CHANCE_PRICE_CHANGED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
   "CHANCE_TOTAL_LIMIT": {
     "status": 409,
     "modules": [
@@ -1744,6 +1750,12 @@
       "inventoryx"
     ]
   },
+  "INFINITY_NEEDS_CYCLE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "INSUFFICIENT_BALANCE": {
     "status": 402,
     "modules": [
@@ -1984,6 +1996,12 @@
       "publication"
     ]
   },
+  "INVALID_INFINITY_RANGE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "INVALID_INTERVAL": {
     "status": 400,
     "modules": [
@@ -2212,6 +2230,12 @@
       "publication"
     ]
   },
+  "INVALID_PITY": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "INVALID_PLACEMENT": {
     "status": 400,
     "modules": [
@@ -2244,6 +2268,12 @@
     ]
   },
   "INVALID_PRICE_AMOUNT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_PRICE_LADDER": {
     "status": 400,
     "modules": [
       "economy"
@@ -2403,6 +2433,18 @@
     ]
   },
   "INVALID_SKU": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_SLOT_KIND": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_SLOT_RANGE": {
     "status": 400,
     "modules": [
       "economy"
@@ -2583,6 +2625,12 @@
       "publication"
     ]
   },
+  "INVALID_WEEK_LENGTH": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "INVALID_WEEK_START": {
     "status": 400,
     "modules": [
@@ -2635,6 +2683,12 @@
       "economy"
     ]
   },
+  "JACKPOT_NOT_FOR_SLOTS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "KEY_EXISTS": {
     "status": 409,
     "modules": [
@@ -2651,6 +2705,12 @@
     "status": 400,
     "modules": [
       "publication"
+    ]
+  },
+  "LADDER_NEEDS_PRICE": {
+    "status": 400,
+    "modules": [
+      "economy"
     ]
   },
   "LANGUAGE_ACTIVE": {
@@ -3001,6 +3061,12 @@
       "base",
       "economy",
       "publication"
+    ]
+  },
+  "ONE_JACKPOT": {
+    "status": 400,
+    "modules": [
+      "economy"
     ]
   },
   "ONE_ROOM_PRIZE": {
@@ -3368,6 +3434,18 @@
     "status": 503,
     "modules": [
       "account"
+    ]
+  },
+  "PITY_NEEDS_JACKPOT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PITY_NOT_FOR_SLOTS": {
+    "status": 400,
+    "modules": [
+      "economy"
     ]
   },
   "PLATFORM_REQUIRED": {
@@ -4128,6 +4206,12 @@
       "economy"
     ]
   },
+  "SLOTS_ALL_ZERO": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "SOCIAL_ACCEPT_REQUIRED": {
     "status": 400,
     "modules": [
@@ -4812,6 +4896,12 @@
   },
   "TOO_MANY_EVENTS": {
     "status": 429,
+    "modules": [
+      "economy"
+    ]
+  },
+  "TOO_MANY_EXTRAS": {
+    "status": 400,
     "modules": [
       "economy"
     ]
