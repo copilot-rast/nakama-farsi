@@ -521,7 +521,7 @@ func (s *service) consoleGameRegistry(w http.ResponseWriter, r *http.Request) {
 }
 
 const gameMatchAdminJSON = `jsonb_build_object('id',m.id,'gameKey',m.game_key,'gameName',g.name,'roomKey',m.room_key,'status',m.status,'players',m.players,'winners',to_jsonb(m.winners),
-	'createdAt',m.created_at,'startedAt',m.started_at,'endedAt',m.ended_at,'endReason',m.end_reason,'forcedBy',m.forced_by,'note',m.note,'results',m.results,'actions',m.actions,
+	'createdAt',m.created_at,'startedAt',m.started_at,'endedAt',m.ended_at,'endReason',m.end_reason,'forcedBy',m.forced_by,'note',m.note,'results',m.results,'summary',m.summary,'actions',m.actions,
 	'bots',(SELECT count(*) FROM economy_game_entry e WHERE e.match_id=m.id AND e.bot),
 	'fees',(SELECT COALESCE(sum((e.fee->>'amount')::bigint),0) FROM economy_game_entry e WHERE e.match_id=m.id AND e.status='paid'),
 	'refunds',(SELECT count(*) FROM economy_game_entry e WHERE e.match_id=m.id AND e.status='refunded'))::text`
