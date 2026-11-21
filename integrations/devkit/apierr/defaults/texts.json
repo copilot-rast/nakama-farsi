@@ -1919,6 +1919,10 @@
     "en": "This is in use and cannot be removed.",
     "fa": "این مورد در حال استفاده است و حذف نمی‌شود."
   },
+  "ITEMKIND_REF_MISSING": {
+    "en": "A card this entry refers to is not on the server yet.",
+    "fa": "کارتی که این ورودی به آن ارجاع می‌دهد هنوز روی سرور نیست."
+  },
   "ITEMS_REQUIRED": {
     "en": "Please add at least one item.",
     "fa": "لطفاً دست‌کم یک آیتم اضافه کنید."
@@ -1930,6 +1934,10 @@
   "ITEM_NOT_FOUND": {
     "en": "Item not found.",
     "fa": "آیتم پیدا نشد."
+  },
+  "ITEM_NOT_OWNED": {
+    "en": "You do not own this item.",
+    "fa": "این آیتم را ندارید."
   },
   "ITEM_TYPE_NOT_FOUND": {
     "en": "Item type not found.",
@@ -2338,6 +2346,10 @@
   "PARTY_NOT_FOUND": {
     "en": "Party not found.",
     "fa": "گروه بازی پیدا نشد."
+  },
+  "PART_VEHICLE_NOT_OWNED": {
+    "en": "Buy the car of this part first.",
+    "fa": "اول باید ماشینِ این قطعه را داشته باشید."
   },
   "PASSWORD_CHANGED_MEANWHILE": {
     "en": "The password was changed meanwhile; try again.",
@@ -3210,6 +3222,14 @@
   "STAGE_FINISHED_TOO_FAST": {
     "en": "The stage cannot be finished this fast; the result was not accepted.",
     "fa": "این مرحله در این زمان کوتاه تمام نمی‌شود؛ نتیجه پذیرفته نشد."
+  },
+  "STAGE_ITEM_NOT_ALLOWED": {
+    "en": "This item is not allowed in this stage.",
+    "fa": "این آیتم در این مرحله مجاز نیست."
+  },
+  "STAGE_ITEM_REQUIRED": {
+    "en": "This stage needs an item (for example a car) to start.",
+    "fa": "برای شروع این مرحله باید یک آیتم (مثلاً ماشین) انتخاب کنید."
   },
   "STAGE_KEY_REQUIRED": {
     "en": "A stage key is required.",

@@ -2802,6 +2802,12 @@
       "publication"
     ]
   },
+  "ITEMKIND_REF_MISSING": {
+    "status": 409,
+    "modules": [
+      "assets"
+    ]
+  },
   "ITEMS_REQUIRED": {
     "status": 400,
     "modules": [
@@ -2819,6 +2825,12 @@
     "modules": [
       "economy",
       "inventoryx"
+    ]
+  },
+  "ITEM_NOT_OWNED": {
+    "status": 403,
+    "modules": [
+      "campaign"
     ]
   },
   "ITEM_REQUIRED": {
@@ -3454,6 +3466,12 @@
     "status": 400,
     "modules": [
       "base"
+    ]
+  },
+  "PART_VEHICLE_NOT_OWNED": {
+    "status": 409,
+    "modules": [
+      "economy"
     ]
   },
   "PASSWORD_CHANGED_MEANWHILE": {
@@ -4743,6 +4761,18 @@
     ]
   },
   "STAGE_FINISHED_TOO_FAST": {
+    "status": 400,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "STAGE_ITEM_NOT_ALLOWED": {
+    "status": 403,
+    "modules": [
+      "campaign"
+    ]
+  },
+  "STAGE_ITEM_REQUIRED": {
     "status": 400,
     "modules": [
       "campaign"
