@@ -125,6 +125,27 @@ RESOURCES['chance-games'] = {
     { name: 'stats', type: 'static', readonly: true, render: chanceStats },
     { type: 'heading', label: 'ch.h.table' },
     { name: 'prizeType', type: 'select', label: 'f.ch.prizeType', hint: 'f.ch.prizeType.hint', required: true, noPlaceholder: true, refresh: true, options: opts('ch.type.', CHANCE_PRIZE_TYPES) },
+    { name: 'prize', type: 'rows', when: chNotSlots, addLabel: 'ch.row.add', emptyText: 'ch.row.empty', min: 1, max: 50, empty: [], refresh: true,
+      newRow: function (rows) {
+        var left = Math.round((100 - chanceSum(rows)) * 10000) / 10000;
+        return { chance: left > 0 ? left : 0, prizeId: null, prizeGroupId: null };
+      },
+      check: function (rows) {
+        var total = chanceSum(rows);
+        if (Math.round(total * 10000) !== 1000000) return { index: rows.length - 1, message: t('code.TOTAL_CHANCE_MUST_BE_100') + ' ' + t('ch.sum', { n: fmtNum(total) }) };
+        return null;
+      },
+      columns: [
+        { name: 'chance', type: 'number', int: false, label: 'f.ch.chance', required: true, min: 0, max: 100 },
+        { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.ch.prize', optional: true },
+        { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.ch.group', optional: true }
+      ] },
+    { name: 'sum', type: 'static', readonly: true, live: true, when: chNotSlots, render: chanceSumBlock },
+    { type: 'row', when: chNotSlots, fields: [
+      { name: 'jackpotRow', type: 'number', label: 'f.ch.jackpot', hint: 'f.ch.jackpot.hint', optional: true, min: 1, max: 50, when: chNotSlots },
+      { name: 'pityThreshold', type: 'number', label: 'f.ch.pity', hint: 'f.ch.pity.hint', optional: true, min: 1, max: 100000, when: chNotSlots }
+    ] },
+    { name: 'rowsHint', type: 'static', readonly: true, when: chNotSlots, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('ch.rows.hint') }); } },
     { name: 'slots', type: 'rows', addLabel: 'ch.slot.add', emptyText: 'ch.row.empty', min: 1, max: 50, empty: [], when: chSlots,
       newRow: function () { return { chance: 50, kind: 'currency', currencyId: null, min: 1, max: 1, prizeId: null, prizeGroupId: null }; },
       check: function (rows) {
@@ -149,27 +170,6 @@ RESOURCES['chance-games'] = {
       ] },
     { name: 'slotsHint', type: 'static', readonly: true, when: chSlots, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-ch-slots-hint': '', text: t('ch.slots.hint') }); } },
     { name: 'rerollEmpty', type: 'bool', inline: true, label: 'f.ch.reroll', hint: 'f.ch.reroll.hint', when: chSlots },
-    { name: 'prize', type: 'rows', when: chNotSlots, addLabel: 'ch.row.add', emptyText: 'ch.row.empty', min: 1, max: 50, empty: [], refresh: true,
-      newRow: function (rows) {
-        var left = Math.round((100 - chanceSum(rows)) * 10000) / 10000;
-        return { chance: left > 0 ? left : 0, prizeId: null, prizeGroupId: null };
-      },
-      check: function (rows) {
-        var total = chanceSum(rows);
-        if (Math.round(total * 10000) !== 1000000) return { index: rows.length - 1, message: t('code.TOTAL_CHANCE_MUST_BE_100') + ' ' + t('ch.sum', { n: fmtNum(total) }) };
-        return null;
-      },
-      columns: [
-        { name: 'chance', type: 'number', int: false, label: 'f.ch.chance', required: true, min: 0, max: 100 },
-        { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.ch.prize', optional: true },
-        { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.ch.group', optional: true }
-      ] },
-    { name: 'sum', type: 'static', readonly: true, live: true, when: chNotSlots, render: chanceSumBlock },
-    { type: 'row', when: chNotSlots, fields: [
-      { name: 'jackpotRow', type: 'number', label: 'f.ch.jackpot', hint: 'f.ch.jackpot.hint', optional: true, min: 1, max: 50, when: chNotSlots },
-      { name: 'pityThreshold', type: 'number', label: 'f.ch.pity', hint: 'f.ch.pity.hint', optional: true, min: 1, max: 100000, when: chNotSlots }
-    ] },
-    { name: 'rowsHint', type: 'static', readonly: true, when: chNotSlots, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('ch.rows.hint') }); } },
     { type: 'heading', label: 'ch.h.play' },
     { name: 'intervalTime', type: 'number', label: 'f.ch.interval', hint: 'f.ch.interval.hint', optional: true, min: 1, max: 525600 },
     { type: 'row', fields: [
@@ -208,7 +208,7 @@ RESOURCES['chance-games'] = {
       v.slots = rows.map(function (r) { return { chance: r.chance, kind: r.kind || 'prize', currencyId: r.currencyId || null, min: r.min || null, max: r.max || null, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
       v.prize = [{ chance: 100, prizeId: null, prizeGroupId: null }];
     } else {
-      v.slots = [];
+      if (!v.slots || !v.slots.length) v.slots = [{ chance: 70, kind: 'currency', currencyId: null, min: 120, max: 180, prizeId: null, prizeGroupId: null }];
       v.prize = rows.map(function (r) { return { chance: r.chance, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
     }
     if (v.rerollEmpty == null) v.rerollEmpty = true;
