@@ -262,7 +262,7 @@ func TestBotConsoleBulkImportStatusTopup(t *testing.T) {
 	h := newSettleHarness(t)
 	h.ludoGame([]map[string]any{{"key": "r1"}, {"key": "r2"}}, nil)
 	out := h.mustAPI(200, http.MethodPost, "/bots/bulk", map[string]any{"count": 5, "prefix": "tbot", "levelMin": 2, "levelMax": 25,
-		"bands": []map[string]any{{"min": 2, "max": 5, "template": "easy"}, {"min": 6, "max": 10, "template": "normal"}, {"min": 11, "max": 25, "template": "hard"}},
+		"bands":  []map[string]any{{"min": 2, "max": 5, "template": "easy"}, {"min": 6, "max": 10, "template": "normal"}, {"min": 11, "max": 25, "template": "hard"}},
 		"wallet": map[string]int64{"coin": 100000}, "rooms": []map[string]any{{"game": "tst_board", "room": "r1"}}})
 	if out["created"] != float64(5) {
 		t.Fatalf("bulk %v", out)
