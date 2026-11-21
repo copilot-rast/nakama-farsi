@@ -180,12 +180,12 @@ func (s *service) rpcChapters(ctx context.Context, userID, payload string) (any,
 				"cooldownSeconds": st.Cooldown, "dailyRewardLimit": st.DailyLimit, "nextRewardAt": iso(nextRewardAt(g, st.Cooldown, now)),
 				"rewardsLeftToday": rewardsLeft(g, st.DailyLimit, now, loc), "metadata": st.Metadata, "completedBy": owned(ctx, st.Key),
 				"starRules": s.starRules(cfg, st), "starTemplate": st.StarTemplate, "minSeconds": minSecondsOf(cfg, st), "noReplayAfterWin": st.NoReplay, "replayable": replayable(st, r),
-				"settings": settings.Resolve(cfg.Fields.Stage, ch.Key, st.Settings, resolveText),
+				"settings": settings.Resolve(cfg.Fields.Stage, settings.ScopeOf(ch.Key, ch.Metadata), st.Settings, resolveText),
 			})
 		}
 		chapters = append(chapters, map[string]any{"key": ch.Key, "name": text(langs, lang, ch.Name), "description": text(langs, lang, ch.Description), "iconUrl": ch.IconURL,
 			"address": ch.Address, "sort": ch.Sort, "unlocked": len(locks) == 0, "locks": locks, "stars": earned, "maxStars": max, "starPercent": math.Round(pct*100) / 100,
-			"milestones": milestones, "stages": stages, "metadata": ch.Metadata, "settings": settings.Resolve(cfg.Fields.Chapter, ch.Key, ch.Settings, resolveText)})
+			"milestones": milestones, "stages": stages, "metadata": ch.Metadata, "settings": settings.Resolve(cfg.Fields.Chapter, settings.ScopeOf(ch.Key, ch.Metadata), ch.Settings, resolveText)})
 	}
 	rides := []map[string]any{}
 	where := `is_active`

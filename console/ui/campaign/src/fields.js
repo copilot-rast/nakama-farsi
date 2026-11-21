@@ -1,5 +1,11 @@
-function cgAppliesTo(d, chapterKey) {
-  return !d.chapters || !d.chapters.length || d.chapters.indexOf(chapterKey) !== -1;
+function cgAppliesTo(d, scope) {
+  var keys = d.chapters || [], kinds = d.kinds || [];
+  if (!keys.length && !kinds.length) return true;
+  return keys.indexOf(scope.key) !== -1 || (!!scope.kind && kinds.indexOf(scope.kind) !== -1);
+}
+
+function cgScope(c) {
+  return { key: (c && c.key) || '', kind: (c && c.metadata && c.metadata.kind) || '' };
 }
 
 function cgDefaultText(d) {
@@ -10,13 +16,13 @@ function cgDefaultText(d) {
   return String(d.default);
 }
 
-function fieldsForm(defs, values, chapterKey, prefix) {
+function fieldsForm(defs, values, scope, prefix) {
   values = values || {};
   prefix = prefix || 'settings';
   var box = h('div', { class: 'cg-fields', 'data-campaign-fields': prefix });
   var readers = [];
   (defs || []).forEach(function (d) {
-    if (chapterKey !== null && !cgAppliesTo(d, chapterKey)) return;
+    if (scope && !cgAppliesTo(d, scope)) return;
     var label = textOf(d.label, d.key);
     var hint = textOf(d.hint, '');
     var name = prefix + '.' + d.key;

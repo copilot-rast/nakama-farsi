@@ -157,6 +157,7 @@ func TestPostgresTemplatesCriteriaReplayLockAndStageFields(t *testing.T) {
 				{Key: "enemies", Type: settings.FieldList, Fields: []settings.FieldDef{{Key: "speedMax", Type: settings.FieldNumber}}},
 			}},
 			{Key: "quizOnly", Type: settings.FieldBool, Chapters: []string{"pt_quiz_only"}},
+			{Key: "trigger", Type: settings.FieldBool, Kinds: []string{"poi"}, Default: true},
 		}
 		a.Fields.Chapter = []settings.FieldDef{{Key: "offerEvery", Type: settings.FieldInteger, Default: 120.0}}
 	})
@@ -187,6 +188,15 @@ func TestPostgresTemplatesCriteriaReplayLockAndStageFields(t *testing.T) {
 	}
 	if _, ok := set["quizOnly"]; ok {
 		t.Fatalf("chapter-only field leaked: %v", set)
+	}
+	if _, ok := set["trigger"]; ok {
+		t.Fatalf("poi-only field leaked: %v", set)
+	}
+	poiKey := plugintest.Key("pt_ch")
+	poi := f.chapter(map[string]any{"key": poiKey, "metadata": map[string]any{"kind": "poi"}})
+	village := f.stage(poi, map[string]any{"settings": map[string]any{"trigger": false}})
+	if got := findStage(findChapter(f.chapters(user), poiKey), village)["settings"].(map[string]any)["trigger"]; got != false {
+		t.Fatalf("poi kind field = %v", got)
 	}
 	m := set["missions"].([]any)[0].(map[string]any)
 	if m["mode"] != "capture" || m["enemies"].([]any)[0].(map[string]any)["speedMax"] != 170.0 {

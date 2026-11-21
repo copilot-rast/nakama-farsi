@@ -82,7 +82,7 @@ Chapters and stages take `[{type, key, value, table}]`, all must hold: `level` (
 | `freeride.requestHours` | 24 | how long a claim answer is kept |
 | `freeride.tableEnabled` | false | the separate `campaign_freeride` table path; off = `freeride[]` is empty and `campaign_freeride_claim` answers `FREERIDE_NOT_FOUND` (free ride runs as repeatable stages) |
 | `stars.templates` | `base`, `race`, `stealth`, `quest` | named star rule sets a stage can pick (`starTemplate`); base = time + health + `timesSeen` (missing passes), race = no health, stealth = no time, quest = base |
-| `fields.stage` / `fields.chapter` | `[]` | field definitions for the stage / chapter `settings` form (types `number`, `integer`, `bool`, `text`, `i18n`, `select`, `tags`, `list` up to 3 levels; `default`, `min`, `max`, `options`, `maxItems`, `chapters`) |
+| `fields.stage` / `fields.chapter` | `[]` | field definitions for the stage / chapter `settings` form (types `number`, `integer`, `bool`, `text`, `i18n`, `select`, `tags`, `list` up to 3 levels; `default`, `min`, `max`, `options`, `maxItems`, `chapters` (chapter keys), `kinds` (chapter `metadata.kind`, e.g. every `poi` chapter)) |
 
 ### Stage settings, templates and result details (2026-11-22)
 

@@ -6,12 +6,27 @@ import (
 	"unicode/utf8"
 )
 
-func Applies(d FieldDef, chapterKey string) bool {
-	if len(d.Chapters) == 0 {
+type Scope struct {
+	Key  string
+	Kind string
+}
+
+func ScopeOf(key string, metadata map[string]any) Scope {
+	kind, _ := metadata["kind"].(string)
+	return Scope{Key: key, Kind: kind}
+}
+
+func Applies(d FieldDef, sc Scope) bool {
+	if len(d.Chapters) == 0 && len(d.Kinds) == 0 {
 		return true
 	}
 	for _, c := range d.Chapters {
-		if c == chapterKey {
+		if c == sc.Key {
+			return true
+		}
+	}
+	for _, k := range d.Kinds {
+		if k == sc.Kind && k != "" {
 			return true
 		}
 	}
@@ -156,7 +171,7 @@ func CleanValue(d FieldDef, v any, depth int) (any, string) {
 			if !ok {
 				return nil, "INVALID_FIELD_VALUE"
 			}
-			clean, _, code := cleanValues(d.Fields, "", m, depth+1, false)
+			clean, _, code := cleanValues(d.Fields, Scope{}, m, depth+1, false)
 			if code != "" {
 				return nil, code
 			}
@@ -167,15 +182,15 @@ func CleanValue(d FieldDef, v any, depth int) (any, string) {
 	return nil, "INVALID_FIELD_TYPE"
 }
 
-func CleanValues(defs []FieldDef, chapterKey string, in map[string]any) (map[string]any, string, string) {
-	return cleanValues(defs, chapterKey, in, 1, true)
+func CleanValues(defs []FieldDef, sc Scope, in map[string]any) (map[string]any, string, string) {
+	return cleanValues(defs, sc, in, 1, true)
 }
 
-func cleanValues(defs []FieldDef, chapterKey string, in map[string]any, depth int, top bool) (map[string]any, string, string) {
+func cleanValues(defs []FieldDef, sc Scope, in map[string]any, depth int, top bool) (map[string]any, string, string) {
 	out := map[string]any{}
 	known := map[string]FieldDef{}
 	for _, d := range defs {
-		if !top || Applies(d, chapterKey) {
+		if !top || Applies(d, sc) {
 			known[d.Key] = d
 		}
 	}
@@ -196,14 +211,14 @@ func cleanValues(defs []FieldDef, chapterKey string, in map[string]any, depth in
 	return out, "", ""
 }
 
-func Resolve(defs []FieldDef, chapterKey string, stored map[string]any, text func(map[string]string) string) map[string]any {
-	return resolve(defs, chapterKey, stored, text, true)
+func Resolve(defs []FieldDef, sc Scope, stored map[string]any, text func(map[string]string) string) map[string]any {
+	return resolve(defs, sc, stored, text, true)
 }
 
-func resolve(defs []FieldDef, chapterKey string, stored map[string]any, text func(map[string]string) string, top bool) map[string]any {
+func resolve(defs []FieldDef, sc Scope, stored map[string]any, text func(map[string]string) string, top bool) map[string]any {
 	out := map[string]any{}
 	for _, d := range defs {
-		if top && !Applies(d, chapterKey) {
+		if top && !Applies(d, sc) {
 			continue
 		}
 		v, ok := stored[d.Key]
@@ -232,7 +247,7 @@ func resolve(defs []FieldDef, chapterKey string, stored map[string]any, text fun
 			if list, ok := v.([]any); ok {
 				for _, x := range list {
 					if m, ok := x.(map[string]any); ok {
-						items = append(items, resolve(d.Fields, chapterKey, m, text, false))
+						items = append(items, resolve(d.Fields, sc, m, text, false))
 					}
 				}
 			}

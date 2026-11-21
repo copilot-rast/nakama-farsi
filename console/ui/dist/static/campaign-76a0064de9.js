@@ -87,7 +87,7 @@ var CG_TEXT = {
     'se.tableEnabled': 'جدول جدای جایزهٔ گشت آزاد روشن باشد', 'se.tableEnabledHint': 'خاموش یعنی گشت آزاد فقط از مسیر مرحله‌های تکرارشونده می‌گذرد و campaign_freeride_claim پاسخ FREERIDE_NOT_FOUND می‌دهد.',
     'se.templates': 'قالب‌های قانون ستاره', 'se.templatesHint': 'هر مرحله می‌تواند یکی از این قالب‌ها را بگیرد. پایه: زمان و سلامت و دفعهٔ دیده شدن. مسابقه: بدون سلامت. مخفی: بدون زمان. کوئست: مثل پایه.',
     'se.addTemplate': 'قالب تازه', 'se.fields': 'فیلدهای مرحله و فصل', 'se.fieldsJson': 'تعریف فیلدها (JSON)',
-    'se.fieldsHint': 'از روی این تعریف، فرم «تنظیمات مأموریت» در هر مرحله و «تنظیمات فصل» ساخته می‌شود. نوع‌ها: number، integer، bool، text، i18n، select، tags، list. با chapters فیلد فقط در همان فصل‌ها دیده می‌شود.',
+    'se.fieldsHint': 'از روی این تعریف، فرم «تنظیمات مأموریت» در هر مرحله و «تنظیمات فصل» ساخته می‌شود. نوع‌ها: number، integer، bool، text، i18n، select، tags، list. با chapters فیلد فقط در همان فصل‌ها دیده می‌شود و با kinds فقط در فصل‌هایی که metadata.kind آن‌ها در فهرست است (مثلاً همهٔ فصل‌های POI).',
     'star.missing': 'اگر بازی نفرستاد', 'star.missing.default': 'طبق تنظیمات', 'star.missing.pass': 'قبول', 'star.missing.fail': 'رد',
     'star.f.timesSeen': 'دفعهٔ دیده شدن', 'star.ifMissing': ' (اگر نیامد: قبول)',
     'code.INVALID_FIELD_VALUE': 'مقدار این فیلد درست نیست.', 'code.UNKNOWN_FIELD': 'این فیلد تعریف نشده است.', 'code.INVALID_TEMPLATE': 'این قالب ستاره پیدا نشد.',
@@ -182,7 +182,7 @@ var CG_TEXT = {
     'se.tableEnabled': 'Separate free ride reward table on', 'se.tableEnabledHint': 'Off means free ride only goes through repeatable stages and campaign_freeride_claim answers FREERIDE_NOT_FOUND.',
     'se.templates': 'Star rule templates', 'se.templatesHint': 'Each stage can pick one template. Base: time, health and times seen. Race: no health. Stealth: no time. Quest: like Base.',
     'se.addTemplate': 'New template', 'se.fields': 'Stage and chapter fields', 'se.fieldsJson': 'Field definitions (JSON)',
-    'se.fieldsHint': 'The Mission settings form of each stage and the Chapter settings form are built from this. Types: number, integer, bool, text, i18n, select, tags, list. With chapters a field shows only in those chapters.',
+    'se.fieldsHint': 'The Mission settings form of each stage and the Chapter settings form are built from this. Types: number, integer, bool, text, i18n, select, tags, list. With chapters a field shows only in those chapters, with kinds only in chapters whose metadata.kind is listed (for example every POI chapter).',
     'star.missing': 'If the game does not send it', 'star.missing.default': 'As in the settings', 'star.missing.pass': 'Pass', 'star.missing.fail': 'Fail',
     'star.f.timesSeen': 'Times seen', 'star.ifMissing': ' (missing: pass)',
     'code.INVALID_FIELD_VALUE': 'This field value is not valid.', 'code.UNKNOWN_FIELD': 'This field is not defined.', 'code.INVALID_TEMPLATE': 'This star template was not found.',
@@ -828,8 +828,14 @@ function stars(n, max) {
   return h('span', { class: 'cg-stars', 'data-campaign-stars': String(n), 'aria-label': String(n), text: s });
 }
 
-function cgAppliesTo(d, chapterKey) {
-  return !d.chapters || !d.chapters.length || d.chapters.indexOf(chapterKey) !== -1;
+function cgAppliesTo(d, scope) {
+  var keys = d.chapters || [], kinds = d.kinds || [];
+  if (!keys.length && !kinds.length) return true;
+  return keys.indexOf(scope.key) !== -1 || (!!scope.kind && kinds.indexOf(scope.kind) !== -1);
+}
+
+function cgScope(c) {
+  return { key: (c && c.key) || '', kind: (c && c.metadata && c.metadata.kind) || '' };
 }
 
 function cgDefaultText(d) {
@@ -840,13 +846,13 @@ function cgDefaultText(d) {
   return String(d.default);
 }
 
-function fieldsForm(defs, values, chapterKey, prefix) {
+function fieldsForm(defs, values, scope, prefix) {
   values = values || {};
   prefix = prefix || 'settings';
   var box = h('div', { class: 'cg-fields', 'data-campaign-fields': prefix });
   var readers = [];
   (defs || []).forEach(function (d) {
-    if (chapterKey !== null && !cgAppliesTo(d, chapterKey)) return;
+    if (scope && !cgAppliesTo(d, scope)) return;
     var label = textOf(d.label, d.key);
     var hint = textOf(d.hint, '');
     var name = prefix + '.' + d.key;
@@ -1011,7 +1017,7 @@ function chapterForm(c, done, cfgRes) {
   var rules = ruleEditor(c.unlock, 'chapter');
   var milestones = milestoneRows(c.milestones);
   var defs = (cfgRes && cfgRes.settings.fields && cfgRes.settings.fields.chapter) || [];
-  var setForm = fieldsForm(defs, c.settings || {}, c.key || '');
+  var setForm = fieldsForm(defs, c.settings || {}, cgScope(c));
   var meta = input(JSON.stringify(c.metadata || {}, null, 2), { name: 'metadata', ltr: true, mono: true, multiline: true, rows: 4 });
   var msg = h('div', {});
   var body = h('div', { 'data-campaign-form': 'chapter' }, field(t('f.key'), key), name, desc, h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.icon'), icon), field(t('f.address'), address)), active,
@@ -1147,13 +1153,13 @@ function stageEditor(s, chapters, done, chapterId) {
     var template = select(s.starTemplate || '', [{ value: '', label: t('tpl.none') }].concat(templates.map(function (x) { return { value: x.key, label: textOf(x.name, x.key) + ' · ' + x.key }; })), { name: 'starTemplate', label: t('tpl.label') });
     var templateBox = h('div', {}, field(t('tpl.label'), template, t('tpl.hint')), h('ul', { class: 'text-sm flex flex-col gap-1 mb-3', 'data-campaign-template-rules': '' }));
     var noReplay = check(s.noReplayAfterWin, t('st.noReplay'), 'noReplayAfterWin');
-    var chapterKeyOf = function (id) { var c = chapters.filter(function (x) { return x.id === id; })[0]; return c ? c.key : ''; };
+    var scopeOf = function (id) { return cgScope(chapters.filter(function (x) { return x.id === id; })[0]); };
     var settingsHolder = h('div', { 'data-campaign-stage-settings': '' });
     var settingsForm = null;
     var stageDefs = (cfg.fields && cfg.fields.stage) || [];
     function paintSettings() {
       var keep = settingsForm ? settingsForm.read() : (s.settings || {});
-      settingsForm = fieldsForm(stageDefs, keep, chapterKeyOf(chapter.value));
+      settingsForm = fieldsForm(stageDefs, keep, scopeOf(chapter.value));
       clear(settingsHolder).appendChild(settingsForm.empty ? h('p', { class: 'text-sm text-secondary-500', text: t('fd.none') }) : settingsForm);
     }
     chapter.addEventListener('change', paintSettings);

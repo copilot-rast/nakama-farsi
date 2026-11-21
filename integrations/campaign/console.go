@@ -342,7 +342,7 @@ func (s *service) chapterSave(w http.ResponseWriter, r *http.Request) {
 		_ = s.db.QueryRowContext(ctx, `SELECT key FROM campaign_chapter WHERE id::text=$1`, id).Scan(&chKey)
 	}
 	cfg := s.settings(ctx)
-	clean, f, code := settings.CleanValues(cfg.Fields.Chapter, chKey, in.Settings)
+	clean, f, code := settings.CleanValues(cfg.Fields.Chapter, settings.ScopeOf(chKey, in.Metadata), in.Settings)
 	if code != "" {
 		s.fail(w, bad(code, "settings."+f))
 		return
@@ -516,9 +516,12 @@ func (s *service) stageSave(w http.ResponseWriter, r *http.Request) {
 	}
 	var exists bool
 	var chKey string
+	var chMeta []byte
 	if _, err := uuid.FromString(in.ChapterID); err == nil {
-		exists = s.db.QueryRowContext(ctx, `SELECT key FROM campaign_chapter WHERE id=$1`, in.ChapterID).Scan(&chKey) == nil
+		exists = s.db.QueryRowContext(ctx, `SELECT key, metadata FROM campaign_chapter WHERE id=$1`, in.ChapterID).Scan(&chKey, &chMeta) == nil
 	}
+	chMetaMap := map[string]any{}
+	unmarshal(chMeta, &chMetaMap)
 	if !exists {
 		s.fail(w, bad("CHAPTER_NOT_FOUND", "chapterId"))
 		return
@@ -633,7 +636,7 @@ func (s *service) stageSave(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, bad("INVALID_TEMPLATE", "starTemplate"))
 		return
 	}
-	clean, f, code := settings.CleanValues(cfg.Fields.Stage, chKey, in.Settings)
+	clean, f, code := settings.CleanValues(cfg.Fields.Stage, settings.ScopeOf(chKey, chMetaMap), in.Settings)
 	if code != "" {
 		s.fail(w, bad(code, "settings."+f))
 		return

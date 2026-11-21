@@ -90,6 +90,7 @@ type FieldDef struct {
 	Fields   []FieldDef        `json:"fields,omitempty"`
 	MaxItems int               `json:"maxItems,omitempty"`
 	Chapters []string          `json:"chapters,omitempty"`
+	Kinds    []string          `json:"kinds,omitempty"`
 }
 
 type Fields struct {
@@ -376,6 +377,11 @@ func ValidateFields(defs []FieldDef, depth int) (string, string) {
 		for _, c := range d.Chapters {
 			if !KeyPattern.MatchString(c) {
 				return f + ".chapters", "INVALID_KEY"
+			}
+		}
+		for _, c := range d.Kinds {
+			if !KeyPattern.MatchString(c) {
+				return f + ".kinds", "INVALID_KEY"
 			}
 		}
 		if d.Type == FieldList {

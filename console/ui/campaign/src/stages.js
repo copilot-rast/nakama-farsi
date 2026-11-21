@@ -110,13 +110,13 @@ function stageEditor(s, chapters, done, chapterId) {
     var template = select(s.starTemplate || '', [{ value: '', label: t('tpl.none') }].concat(templates.map(function (x) { return { value: x.key, label: textOf(x.name, x.key) + ' · ' + x.key }; })), { name: 'starTemplate', label: t('tpl.label') });
     var templateBox = h('div', {}, field(t('tpl.label'), template, t('tpl.hint')), h('ul', { class: 'text-sm flex flex-col gap-1 mb-3', 'data-campaign-template-rules': '' }));
     var noReplay = check(s.noReplayAfterWin, t('st.noReplay'), 'noReplayAfterWin');
-    var chapterKeyOf = function (id) { var c = chapters.filter(function (x) { return x.id === id; })[0]; return c ? c.key : ''; };
+    var scopeOf = function (id) { return cgScope(chapters.filter(function (x) { return x.id === id; })[0]); };
     var settingsHolder = h('div', { 'data-campaign-stage-settings': '' });
     var settingsForm = null;
     var stageDefs = (cfg.fields && cfg.fields.stage) || [];
     function paintSettings() {
       var keep = settingsForm ? settingsForm.read() : (s.settings || {});
-      settingsForm = fieldsForm(stageDefs, keep, chapterKeyOf(chapter.value));
+      settingsForm = fieldsForm(stageDefs, keep, scopeOf(chapter.value));
       clear(settingsHolder).appendChild(settingsForm.empty ? h('p', { class: 'text-sm text-secondary-500', text: t('fd.none') }) : settingsForm);
     }
     chapter.addEventListener('change', paintSettings);

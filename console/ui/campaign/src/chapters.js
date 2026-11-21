@@ -75,7 +75,7 @@ function chapterForm(c, done, cfgRes) {
   var rules = ruleEditor(c.unlock, 'chapter');
   var milestones = milestoneRows(c.milestones);
   var defs = (cfgRes && cfgRes.settings.fields && cfgRes.settings.fields.chapter) || [];
-  var setForm = fieldsForm(defs, c.settings || {}, c.key || '');
+  var setForm = fieldsForm(defs, c.settings || {}, cgScope(c));
   var meta = input(JSON.stringify(c.metadata || {}, null, 2), { name: 'metadata', ltr: true, mono: true, multiline: true, rows: 4 });
   var msg = h('div', {});
   var body = h('div', { 'data-campaign-form': 'chapter' }, field(t('f.key'), key), name, desc, h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.icon'), icon), field(t('f.address'), address)), active,
