@@ -124,3 +124,4 @@
 .ia-tl-item{display:grid;grid-template-columns:4.5rem minmax(0,1fr);gap:.5rem;align-items:start}
 .ia-tl-time{padding-top:.125rem}
 @media (max-width:640px){.ia-barrow{grid-template-columns:1fr auto}.ia-bartrack{grid-column:1/-1;order:3}.ia-tl-item{grid-template-columns:1fr}}
+.ia-split{display:grid;gap:1rem;align-items:start}@media (min-width:1024px){.ia-split{grid-template-columns:16rem minmax(0,1fr)}}

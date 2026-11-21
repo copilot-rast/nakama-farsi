@@ -216,7 +216,7 @@ function funnelPanel(fn, after) {
 function funnelsPage(root) {
   var q = insQuery();
   var frame = dashFrame(root, 'insights/funnels', [button({ label: t('fn.new'), variant: 'primary', data: { 'ins-funnel-new': '' }, onclick: function () { funnelPanel(null, function (f) { setQuery(Object.assign({}, q, { funnel: f ? f.id : '' })); }); } })]);
-  var layout = h('div', { class: 'grid gap-4 lg:grid-cols-[16rem_1fr]' });
+  var layout = h('div', { class: 'ia-split' });
   var list = h('div', { class: 'flex flex-col gap-1', 'data-ins-funnels': '' });
   var body = h('div', { class: 'flex flex-col gap-4' });
   frame.content.appendChild(filterBar(q));

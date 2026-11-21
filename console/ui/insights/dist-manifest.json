@@ -1,9 +1,9 @@
 {
   "note": "Files generated in console/ui/dist by scripts/build.mjs.",
   "files": [
-    "static/insights-50d84167b0.css",
-    "static/insights-50d84167b0.css.gz",
-    "static/insights-82e4c20443.js",
-    "static/insights-82e4c20443.js.gz"
+    "static/insights-1a63811daf.js",
+    "static/insights-1a63811daf.js.gz",
+    "static/insights-c1ad866c98.css",
+    "static/insights-c1ad866c98.css.gz"
   ]
 }
