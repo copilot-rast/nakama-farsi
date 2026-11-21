@@ -5909,7 +5909,297 @@ var MESSAGES = {
     'code.AVATAR_PRICE_REQUIRED': "ارز قیمت را انتخاب کنید.",
     'code.AVATAR_CATEGORY_NOT_FOUND': "دسته پیدا نشد.",
     'code.AVATAR_TYPE_NOT_FOUND': "نوع آواتار پیدا نشد.",
-    'code.TOO_MANY_TYPES': "حداکثر ۵۰ نوع."
+    'code.TOO_MANY_TYPES': "حداکثر ۵۰ نوع.",
+    'nav.bots': "ربات‌ها",
+    'nav.game-matches': "مسابقه‌ها",
+    'desc.bots': "حساب‌های رباتی که صندلی‌های خالی مسابقه را پر می‌کنند: سطح، قالب رفتار، اتاق‌ها، ظاهر و کیف پول.",
+    'desc.game-matches': "همهٔ مسابقه‌های بازی‌های آنلاین: صف، در حال بازی، تمام‌شده و لغوشده، با بازیکن‌ها، ورودی، جایزه و رویدادهای هر مسابقه.",
+    'empty.hint.bots': "با «ساخت گروهی» یا «ورود از CSV» ربات بسازید.",
+    'empty.hint.game-matches': "وقتی بازیکن‌ها بازی کنند، مسابقه‌ها این‌جا می‌آیند.",
+    'search.bots': "جست‌وجوی نام، شناسه یا یادداشت",
+    'search.game-matches': "جست‌وجوی شناسهٔ مسابقه یا کلید بازی",
+    'col.bt.bot': "ربات",
+    'col.bt.level': "سطح",
+    'col.bt.template': "قالب",
+    'col.bt.rooms': "اتاق‌ها",
+    'col.bt.wallet': "کیف پول",
+    'col.bt.games': "بازی‌ها",
+    'col.gmm.match': "مسابقه",
+    'col.gmm.players': "بازیکن‌ها",
+    'filter.bt.template': "قالب",
+    'filter.bt.game': "کلید بازی",
+    'filter.bt.room': "کلید اتاق",
+    'filter.bt.minLevel': "کمترین سطح",
+    'filter.bt.maxLevel': "بیشترین سطح",
+    'filter.bt.sort': "ترتیب",
+    'filter.gmm.game': "کلید بازی",
+    'filter.gmm.user': "شناسهٔ بازیکن",
+    'bt.sort.level': "سطح بالاتر",
+    'bt.sort.games': "بیشترین بازی",
+    'bt.sort.recent': "تازه‌ترین بازی",
+    'bt.on': "روشن",
+    'bt.off': "خاموش",
+    'bt.banned': "مسدود",
+    'bt.select': "انتخاب {name}",
+    'bt.rooms.any': "همهٔ اتاق‌ها",
+    'bt.games': "{n} بازی",
+    'bt.kpi.total': "همهٔ ربات‌ها",
+    'bt.kpi.on': "روشن",
+    'bt.kpi.off': "خاموش",
+    'bt.kpi.template': "قالب {name}",
+    'bt.enable': "روشن کن",
+    'bt.disable': "خاموش کن",
+    'bt.topup.sel': "شارژ کیف پول انتخاب‌شده‌ها",
+    'bt.status.done': "{n} ربات به‌روز شد.",
+    'bt.bulk': "ساخت گروهی",
+    'bt.import': "ورود از CSV",
+    'bt.topup': "شارژ کیف پول",
+    'bt.edit': "ویرایش ربات",
+    'bt.source.console': "ساخته در کنسول",
+    'bt.source.bulk': "ساخت گروهی",
+    'bt.source.import': "ورود از CSV",
+    'bt.source.legacy-pool': "مخزن قدیمی",
+    'bt.updatedBy': "آخرین تغییر: {by}",
+    'bt.room.add': "افزودن اتاق",
+    'bt.wallet.add': "افزودن ارز",
+    'bt.wallet.empty': "ارزی ثبت نشده",
+    'bt.look.add': "افزودن جایگاه",
+    'bt.look.empty': "ظاهر پیش‌فرض",
+    'bt.band.add': "افزودن بازهٔ سطح",
+    'bt.bands.empty': "همه با یک قالب",
+    'bt.line': "سطر {n}",
+    'bt.bulk.note': "یا تعداد و پیشوند نام بدهید یا فهرست نام‌ها را، هر نام در یک سطر.",
+    'bt.bulk.go': "بساز",
+    'bt.bulk.done': "{n} ربات ساخته شد.",
+    'bt.import.note': "سطر اول ستون‌هاست: username لازم است؛ level، template، displayName، avatarUrl، note، rooms (مثل mench:board1_2p;mench:)، ستون‌های look.avatar و ستون هر کلید ارز (مثل coin) اختیاری‌اند.",
+    'bt.import.dry': "پیش‌نمایش",
+    'bt.import.go': "ورود",
+    'bt.import.preview': "{n} سطر درست و {bad} سطر مشکل‌دار.",
+    'bt.scope.all': "همهٔ ربات‌ها",
+    'bt.scope.selected': "{n} ربات انتخاب‌شده",
+    'bt.topup.go': "شارژ کن",
+    'bt.topup.done': "کیف پول {n} ربات شارژ شد.",
+    'f.bt.enabled': "روشن",
+    'f.bt.enabled.hint': "ربات خاموش برای پر کردن صندلی انتخاب نمی‌شود.",
+    'f.bt.level': "سطح ثابت",
+    'f.bt.template': "قالب رفتار",
+    'f.bt.template.hint': "کلید قالب بازی، مثل easy، normal یا hard.",
+    'f.bt.username': "نام کاربری",
+    'f.bt.displayName': "نام نمایشی",
+    'f.bt.avatarUrl': "نشانی تصویر",
+    'f.bt.note': "یادداشت",
+    'f.bt.rooms': "اتاق‌ها",
+    'f.bt.rooms.hint': "خالی یعنی همهٔ اتاق‌ها؛ اتاق خالی یعنی همهٔ اتاق‌های آن بازی.",
+    'f.bt.game': "بازی",
+    'f.bt.room': "اتاق",
+    'f.bt.wallet': "کیف پول",
+    'f.bt.wallet.hint': "موجودی هر ارز دقیقاً روی همین عدد گذاشته می‌شود.",
+    'f.bt.currency': "ارز",
+    'f.bt.amount': "مقدار",
+    'f.bt.look': "ظاهر",
+    'f.bt.look.hint': "جایگاه و کلید آیتم، مثل avatar و avatar-boy.",
+    'f.bt.look.slot': "جایگاه",
+    'f.bt.look.item': "کلید آیتم",
+    'f.bt.count': "تعداد",
+    'f.bt.count.hint': "حداکثر ۵۰۰۰ در هر بار.",
+    'f.bt.prefix': "پیشوند نام",
+    'f.bt.prefix.hint': "به آن عدد تصادفی اضافه می‌شود.",
+    'f.bt.names': "فهرست نام‌ها",
+    'f.bt.names.hint': "اگر پر باشد، تعداد و پیشوند نادیده گرفته می‌شوند.",
+    'f.bt.levelMin': "کمترین سطح",
+    'f.bt.levelMax': "بیشترین سطح",
+    'f.bt.levelCsv.hint': "برای سطرهایی که ستون level ندارند.",
+    'f.bt.bands': "قالب بر اساس سطح",
+    'f.bt.bands.hint': "مثل ۲ تا ۵ easy، ۶ تا ۱۰ normal و ۱۱ تا ۲۵ hard.",
+    'f.bt.band.min': "از سطح",
+    'f.bt.band.max': "تا سطح",
+    'f.bt.csv': "متن CSV",
+    'f.bt.csv.hint': "فایل را انتخاب کنید یا متن را این‌جا بچسبانید.",
+    'f.bt.scope': "کدام ربات‌ها",
+    'f.bt.below': "فقط موجودی کمتر از",
+    'f.bt.below.hint': "خالی یعنی کمتر از مقدار شارژ.",
+    'f.bt.topAmount': "موجودی تازه",
+    'f.bt.topAmount.hint': "موجودی این ارز روی این عدد گذاشته می‌شود.",
+    'gst.title': "آمار بازی",
+    'gst.add': "افزودن بازی",
+    'gst.edit': "ویرایش آمار بازی",
+    'gst.editBtn': "ویرایش",
+    'gst.none': "هنوز بازی نکرده.",
+    'gst.line': "{games} بازی، {wins} برد، {losses} باخت، {forfeits} ترک، {timeouts} وقت تمام",
+    'gst.hm': "{h} ساعت و {m} دقیقه",
+    'gst.m': "{m} دقیقه",
+    'gst.note': "عددها جای آمار فعلی را می‌گیرند؛ تعداد بازی از برد، باخت و وقت تمام حساب می‌شود.",
+    'f.gst.game': "کلید بازی",
+    'f.gst.wins': "برد",
+    'f.gst.losses': "باخت",
+    'f.gst.forfeits': "ترک بازی",
+    'f.gst.timeouts': "وقت تمام",
+    'f.gst.playtime': "زمان بازی (ثانیه)",
+    'f.gst.winnings': "بردها به ارز",
+    'gmm.title': "مسابقه",
+    'gmm.info': "مشخصات",
+    'gmm.game': "بازی و اتاق",
+    'gmm.id': "شناسه",
+    'gmm.players.label': "بازیکن‌ها",
+    'gmm.players': "{n} نفر، {bots} ربات",
+    'gmm.fees': "جمع ورودی",
+    'gmm.refunds': "برگشت ورودی",
+    'gmm.actions': "رویدادها",
+    'gmm.forcedBy': "پایان یا لغو به دست",
+    'gmm.note': "دلیل",
+    'gmm.created': "ساخته شد",
+    'gmm.started': "شروع",
+    'gmm.ended': "پایان",
+    'gmm.entries': "بازیکن‌ها",
+    'gmm.entries.none': "هنوز کسی وارد نشده.",
+    'gmm.bot': "ربات",
+    'gmm.released': "آزاد برای بازی دیگر",
+    'gmm.fee': "ورودی {v}",
+    'gmm.won': "برد {v}",
+    'gmm.forced': "دستی",
+    'gmm.results': "نتیجه‌ها",
+    'gmm.status.open': "در صف",
+    'gmm.status.started': "در حال بازی",
+    'gmm.status.finished': "تمام‌شده",
+    'gmm.status.cancelled': "لغوشده",
+    'gmm.entry.paid': "پرداخت‌شده",
+    'gmm.entry.free': "رایگان",
+    'gmm.entry.refunded': "برگشت‌خورده",
+    'gmm.entry.left': "رفته",
+    'gmm.entry.pending': "در انتظار",
+    'gmm.result.won': "برنده",
+    'gmm.result.lost': "بازنده",
+    'gmm.result.forfeit': "ترک بازی",
+    'gmm.result.timeout': "وقت تمام",
+    'gmm.result.refunded': "برگشت ورودی",
+    'gmm.prize.pending': "جایزه در راه",
+    'gmm.prize.paid': "جایزه داده شد",
+    'gmm.end': "پایان با برنده",
+    'gmm.end.text': "مسابقه با برندهٔ انتخاب‌شده تمام می‌شود و ورودی‌ها مثل پایان عادی تسویه می‌شوند. بقیه بازنده حساب می‌شوند.",
+    'gmm.end.winner': "برنده",
+    'gmm.end.ok': "پایان بده",
+    'gmm.end.done': "مسابقه تمام شد.",
+    'gmm.reason': "دلیل",
+    'gmm.cancel': "لغو و برگشت ورودی",
+    'gmm.cancel.open': "مسابقه لغو می‌شود و ورودی همه برمی‌گردد.",
+    'gmm.cancel.started': "مسابقه در حال بازی است. با لغو، بازی برای همه بسته می‌شود و ورودی همه برمی‌گردد؛ برنده‌ای ندارد.",
+    'gmm.cancel.ok': "لغو کن",
+    'gmm.cancel.done': "لغو شد؛ ورودی {n} نفر برگشت.",
+    'gmm.live': "وضعیت زنده",
+    'gmm.timeline': "رویدادهای مسابقه",
+    'gmm.timeline.count': "{n} از {total}",
+    'gmm.timeline.none': "رویدادی ثبت نشده.",
+    'gmm.more': "بیشتر",
+    'gmm.reason.finished': "پایان عادی",
+    'gmm.reason.fast-match': "مسابقهٔ سریع",
+    'gmm.reason.forfeit-force-end': "ترک همهٔ آدم‌ها",
+    'gmm.reason.admin-force-end': "پایان دستی",
+    'gmm.reason.admin-cancel': "لغو دستی",
+    'gmm.reason.cancelled': "لغو",
+    'gmm.reason.no_opponent': "حریف نیامد",
+    'gmm.reason.BOT_POOL_UNAVAILABLE': "ربات کافی نبود",
+    'gmm.reason.server_stop': "خاموش شدن سرور",
+    'gmm.reason.host_left': "میزبان رفت",
+    'gmm.reason.empty': "اتاق خالی",
+    'gmm.reason.declined': "دعوت رد شد",
+    'gmm.kind.created': "ساخت مسابقه",
+    'gmm.kind.started': "شروع",
+    'gmm.kind.join': "ورود",
+    'gmm.kind.leave': "خروج",
+    'gmm.kind.botSeated': "نشستن ربات",
+    'gmm.kind.rollDice': "تاس",
+    'gmm.kind.reroll': "تاس دوباره",
+    'gmm.kind.movePiece': "حرکت مهره",
+    'gmm.kind.passTurn': "رد نوبت",
+    'gmm.kind.expireRerollWindow': "پایان مهلت تاس دوباره",
+    'gmm.kind.turnFinished': "پایان نوبت",
+    'gmm.kind.turnFinishTimeout': "پایان خودکار نوبت",
+    'gmm.kind.forfeit': "ترک بازی",
+    'gmm.kind.afk': "غیبت",
+    'gmm.kind.disconnected': "قطع اتصال",
+    'gmm.kind.reconnected': "وصل دوباره",
+    'gmm.kind.startFastMatchVote': "شروع رأی سریع",
+    'gmm.kind.castFastMatchVote': "رأی",
+    'gmm.kind.resolveFastMatchVote': "نتیجهٔ رأی",
+    'gmm.kind.forfeitForceEnd': "پایان با ترک همه",
+    'gmm.kind.adminForceEnd': "پایان دستی",
+    'gmm.kind.ended': "پایان",
+    'gmm.kind.cancelled': "لغو",
+    'gmm.kind.return-afk': "برگشت از غیبت",
+    'f.gm.oneMatch': "هر بازیکن فقط یک مسابقه",
+    'f.gm.oneMatch.hint': "تا مسابقهٔ قبلی تمام نشده یا آن را ترک نکرده، به مسابقهٔ دیگری راه داده نمی‌شود.",
+    'f.gm.room.play': "صندلی‌ها، ربات و تسویه",
+    'gm.play.sum.players': "{n} نفره",
+    'gm.play.sum.humans': "{n} آدم",
+    'gm.play.sum.fill': "ربات بعد از {n} ثانیه",
+    'gm.play.sum.pot': "{n}٪ ورودی‌ها به برنده",
+    'gm.play.sum.botsPay': "ربات ورودی می‌دهد",
+    'gm.play.sum.overdraft': "بدهی مجاز",
+    'gm.play.sum.np': "تازه‌واردها به جای {room}",
+    'gm.play.sum.off': "خاموش",
+    'gm.play.sum.none': "پیش‌فرض بازی",
+    'gm.play.payout.prize': "جایزهٔ ثابت اتاق",
+    'gm.play.payout.pot': "درصدی از جمع ورودی‌ها",
+    'f.gm.play.players': "تعداد صندلی",
+    'f.gm.play.players.hint': "خالی یعنی بیشترین بازیکن بازی.",
+    'f.gm.play.humans': "صندلی آدم‌ها",
+    'f.gm.play.humans.hint': "بقیهٔ صندلی‌ها با ربات پر می‌شوند؛ خالی یعنی همه.",
+    'f.gm.play.fill': "پر کردن با ربات بعد از (ثانیه)",
+    'f.gm.play.fill.hint': "سرور صندلی‌های خالی را بعد از این زمان با ربات پر می‌کند؛ صفر یعنی هیچ‌وقت.",
+    'f.gm.play.template': "قالب ربات‌ها",
+    'f.gm.play.template.hint': "خالی یعنی قالب خود هر ربات.",
+    'f.gm.play.botsPay': "ربات‌ها از کیف پول خود ورودی بدهند",
+    'f.gm.play.botsPay.hint': "ورودی ربات‌ها هم به جمع ورودی اضافه می‌شود.",
+    'f.gm.play.payout': "تسویه",
+    'f.gm.play.percent': "درصد برنده",
+    'f.gm.play.percent.hint': "از جمع ورودی‌های پرداخت‌شده.",
+    'f.gm.play.loserPrize': "جایزهٔ بازنده",
+    'f.gm.play.loserPrize.hint': "هر بازنده (نه ترک بازی) این جایزه را می‌گیرد.",
+    'f.gm.play.winnerXp': "تجربهٔ برنده",
+    'f.gm.play.loserXp': "تجربهٔ بازنده",
+    'f.gm.play.overdraft': "ورودی حتی با موجودی کم",
+    'f.gm.play.overdraft.hint': "اگر روشن باشد، کیف پول بازیکن می‌تواند منفی شود.",
+    'f.gm.play.np': "فقط تازه‌واردها",
+    'f.gm.play.np.hint': "بازیکنی که هنوز برد و باخت ندارد این اتاق را به جای اتاق دیگری می‌بیند.",
+    'f.gm.play.replaces': "به جای اتاق",
+    'f.gm.play.replaces.hint': "کلید یکی از اتاق‌های دیگر این بازی.",
+    'f.gm.play.disabled': "اتاق خاموش",
+    'f.gm.play.disabled.hint': "اتاق خاموش نه دیده می‌شود نه می‌شود واردش شد.",
+    'code.INVALID_ROOM_PLAYERS': "تعداد صندلی اتاق از ۲ تا بیشترین بازیکن بازی است.",
+    'code.INVALID_HUMAN_SEATS': "صندلی آدم‌ها از ۱ تا صندلی‌های اتاق است.",
+    'code.INVALID_BOT_FILL': "زمان پر کردن با ربات از ۰ تا ۶۰۰ ثانیه است.",
+    'code.INVALID_BOT_TEMPLATE': "کلید قالب حداکثر ۶۴ حرف است.",
+    'code.INVALID_PAYOUT': "تسویه یا جایزهٔ ثابت است یا درصدی از ورودی‌ها.",
+    'code.INVALID_PAYOUT_PERCENT': "درصد برنده از ۰ تا ۱۰۰ است.",
+    'code.POT_NEEDS_ENTRY_FEE': "تسویهٔ درصدی ورودی لازم دارد.",
+    'code.INVALID_XP': "تجربه عدد صحیح از ۰ تا ۱۰۰۰۰۰۰ است.",
+    'code.REPLACES_REQUIRED': "اتاق تازه‌واردها باید جای یکی از اتاق‌های دیگر این بازی را بگیرد.",
+    'code.REPLACES_NEW_PLAYER_ROOM': "اتاق تازه‌واردها نمی‌تواند جای اتاق تازه‌وارد دیگری را بگیرد.",
+    'code.REPLACES_TAKEN': "اتاق تازه‌وارد دیگری جای همین اتاق را گرفته.",
+    'code.INVALID_COUNT': "هر بار ۱ تا ۵۰۰۰ ربات.",
+    'code.PREFIX_REQUIRED': "پیشوند نام یا فهرست نام‌ها را بدهید.",
+    'code.IDS_REQUIRED': "یک یا چند ربات را انتخاب کنید.",
+    'code.INVALID_CSV': "متن CSV خوانده نشد.",
+    'code.USERNAME_COLUMN_REQUIRED': "سطر اول باید ستون username داشته باشد.",
+    'code.TOO_MANY_ROWS': "هر فایل حداکثر ۵۰۰۰ ربات.",
+    'code.INVALID_WALLET': "موجودی باید کلید ارز و عدد صفر یا بیشتر باشد.",
+    'code.INVALID_LOOK': "کلید جایگاه حداکثر ۶۴ و کلید آیتم حداکثر ۱۲۸ حرف است.",
+    'code.ROOM_NOT_FOUND': "این اتاق پیدا نشد.",
+    'code.GAME_NOT_FOUND': "این بازی پیدا نشد.",
+    'code.BOT_NOT_FOUND': "این ربات پیدا نشد.",
+    'code.WINNER_REQUIRED': "برنده را انتخاب کنید.",
+    'code.WINNER_NOT_SEATED': "این بازیکن در مسابقه نیست.",
+    'code.MATCH_NOT_STARTED': "مسابقه هنوز شروع نشده؛ به جای پایان، لغوش کنید.",
+    'code.MATCH_FINISHED': "این مسابقه تمام شده است.",
+    'code.MATCH_CANCELLED': "این مسابقه لغو شده است.",
+    'code.MATCH_NOT_LIVE': "این مسابقه الان روی سرور در حال اجرا نیست.",
+    'code.NO_LIVE_VIEW': "این بازی وضعیت زنده‌اش را نشان نمی‌دهد.",
+    'code.NOT_ENDABLE': "مسابقه پایان را نپذیرفت.",
+    'code.ACTIVE_MATCH_EXISTS': "بازیکن مسابقهٔ نیمه‌کاره‌ای دارد.",
+    'code.VETERAN_ROOM_FORBIDDEN': "این اتاق فقط برای تازه‌واردهاست.",
+    'code.NEW_PLAYER_ROOM_REQUIRED': "تازه‌واردها از اتاق تازه‌واردها شروع می‌کنند.",
+    'code.ROOM_DISABLED': "این اتاق فعلاً خاموش است.",
+    'code.INVALID_STAT': "آمار عدد صحیح صفر یا بیشتر است."
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -11722,7 +12012,297 @@ var MESSAGES = {
     'code.AVATAR_PRICE_REQUIRED': "Pick the price currency.",
     'code.AVATAR_CATEGORY_NOT_FOUND': "Category not found.",
     'code.AVATAR_TYPE_NOT_FOUND': "Avatar type not found.",
-    'code.TOO_MANY_TYPES': "At most 50 types."
+    'code.TOO_MANY_TYPES': "At most 50 types.",
+    'nav.bots': "Bots",
+    'nav.game-matches': "Matches",
+    'desc.bots': "Bot accounts that fill empty match seats: level, behaviour template, rooms, look and wallet.",
+    'desc.game-matches': "Every online game match: waiting, playing, finished and cancelled, with players, fees, prizes and the event log.",
+    'empty.hint.bots': "Create bots with «Create in bulk» or «Import CSV».",
+    'empty.hint.game-matches': "Matches show up here once players play.",
+    'search.bots': "Search name, id or note",
+    'search.game-matches': "Search match id or game key",
+    'col.bt.bot': "Bot",
+    'col.bt.level': "Level",
+    'col.bt.template': "Template",
+    'col.bt.rooms': "Rooms",
+    'col.bt.wallet': "Wallet",
+    'col.bt.games': "Games",
+    'col.gmm.match': "Match",
+    'col.gmm.players': "Players",
+    'filter.bt.template': "Template",
+    'filter.bt.game': "Game key",
+    'filter.bt.room': "Room key",
+    'filter.bt.minLevel': "Min level",
+    'filter.bt.maxLevel': "Max level",
+    'filter.bt.sort': "Sort",
+    'filter.gmm.game': "Game key",
+    'filter.gmm.user': "Player id",
+    'bt.sort.level': "Highest level",
+    'bt.sort.games': "Most games",
+    'bt.sort.recent': "Played recently",
+    'bt.on': "On",
+    'bt.off': "Off",
+    'bt.banned': "Banned",
+    'bt.select': "Select {name}",
+    'bt.rooms.any': "Any room",
+    'bt.games': "{n} games",
+    'bt.kpi.total': "All bots",
+    'bt.kpi.on': "On",
+    'bt.kpi.off': "Off",
+    'bt.kpi.template': "Template {name}",
+    'bt.enable': "Turn on",
+    'bt.disable': "Turn off",
+    'bt.topup.sel': "Top up selected",
+    'bt.status.done': "{n} bots updated.",
+    'bt.bulk': "Create in bulk",
+    'bt.import': "Import CSV",
+    'bt.topup': "Top up wallets",
+    'bt.edit': "Edit bot",
+    'bt.source.console': "Made in the console",
+    'bt.source.bulk': "Bulk created",
+    'bt.source.import': "CSV import",
+    'bt.source.legacy-pool': "Legacy pool",
+    'bt.updatedBy': "Last change: {by}",
+    'bt.room.add': "Add room",
+    'bt.wallet.add': "Add currency",
+    'bt.wallet.empty': "No currency",
+    'bt.look.add': "Add slot",
+    'bt.look.empty': "Default look",
+    'bt.band.add': "Add level band",
+    'bt.bands.empty': "One template for all",
+    'bt.line': "Line {n}",
+    'bt.bulk.note': "Give a count and a name prefix, or a list of names, one per line.",
+    'bt.bulk.go': "Create",
+    'bt.bulk.done': "{n} bots created.",
+    'bt.import.note': "The first line is the header: username is required; level, template, displayName, avatarUrl, note, rooms (like mench:board1_2p;mench:), look.avatar style columns and one column per currency key (like coin) are optional.",
+    'bt.import.dry': "Preview",
+    'bt.import.go': "Import",
+    'bt.import.preview': "{n} good lines and {bad} with problems.",
+    'bt.scope.all': "All bots",
+    'bt.scope.selected': "{n} selected bots",
+    'bt.topup.go': "Top up",
+    'bt.topup.done': "{n} bot wallets topped up.",
+    'f.bt.enabled': "On",
+    'f.bt.enabled.hint': "A bot that is off is never seated.",
+    'f.bt.level': "Fixed level",
+    'f.bt.template': "Behaviour template",
+    'f.bt.template.hint': "The game template key, like easy, normal or hard.",
+    'f.bt.username': "Username",
+    'f.bt.displayName': "Display name",
+    'f.bt.avatarUrl': "Avatar URL",
+    'f.bt.note': "Note",
+    'f.bt.rooms': "Rooms",
+    'f.bt.rooms.hint': "Empty means every room; an empty room means every room of that game.",
+    'f.bt.game': "Game",
+    'f.bt.room': "Room",
+    'f.bt.wallet': "Wallet",
+    'f.bt.wallet.hint': "Each currency is set to exactly this amount.",
+    'f.bt.currency': "Currency",
+    'f.bt.amount': "Amount",
+    'f.bt.look': "Look",
+    'f.bt.look.hint': "Slot and item key, like avatar and avatar-boy.",
+    'f.bt.look.slot': "Slot",
+    'f.bt.look.item': "Item key",
+    'f.bt.count': "Count",
+    'f.bt.count.hint': "At most 5000 at a time.",
+    'f.bt.prefix': "Name prefix",
+    'f.bt.prefix.hint': "A random number is added.",
+    'f.bt.names': "Names",
+    'f.bt.names.hint': "When filled, count and prefix are ignored.",
+    'f.bt.levelMin': "Min level",
+    'f.bt.levelMax': "Max level",
+    'f.bt.levelCsv.hint': "For lines without a level column.",
+    'f.bt.bands': "Template by level",
+    'f.bt.bands.hint': "Like 2 to 5 easy, 6 to 10 normal and 11 to 25 hard.",
+    'f.bt.band.min': "From level",
+    'f.bt.band.max': "To level",
+    'f.bt.csv': "CSV text",
+    'f.bt.csv.hint': "Pick a file or paste the text here.",
+    'f.bt.scope': "Which bots",
+    'f.bt.below': "Only below",
+    'f.bt.below.hint': "Empty means below the top up amount.",
+    'f.bt.topAmount': "New balance",
+    'f.bt.topAmount.hint': "The balance is set to this amount.",
+    'gst.title': "Game stats",
+    'gst.add': "Add game",
+    'gst.edit': "Edit game stats",
+    'gst.editBtn': "Edit",
+    'gst.none': "No games yet.",
+    'gst.line': "{games} games, {wins} wins, {losses} losses, {forfeits} forfeits, {timeouts} timeouts",
+    'gst.hm': "{h} h {m} min",
+    'gst.m': "{m} min",
+    'gst.note': "The numbers replace the current stats; games are counted from wins, losses and timeouts.",
+    'f.gst.game': "Game key",
+    'f.gst.wins': "Wins",
+    'f.gst.losses': "Losses",
+    'f.gst.forfeits': "Forfeits",
+    'f.gst.timeouts': "Timeouts",
+    'f.gst.playtime': "Play time (seconds)",
+    'f.gst.winnings': "Winnings",
+    'gmm.title': "Match",
+    'gmm.info': "Details",
+    'gmm.game': "Game and room",
+    'gmm.id': "Id",
+    'gmm.players.label': "Players",
+    'gmm.players': "{n} players, {bots} bots",
+    'gmm.fees': "Fees",
+    'gmm.refunds': "Refunds",
+    'gmm.actions': "Events",
+    'gmm.forcedBy': "Ended or cancelled by",
+    'gmm.note': "Reason",
+    'gmm.created': "Created",
+    'gmm.started': "Started",
+    'gmm.ended': "Ended",
+    'gmm.entries': "Players",
+    'gmm.entries.none': "Nobody joined yet.",
+    'gmm.bot': "Bot",
+    'gmm.released': "Free to play elsewhere",
+    'gmm.fee': "Fee {v}",
+    'gmm.won': "Won {v}",
+    'gmm.forced': "By staff",
+    'gmm.results': "Results",
+    'gmm.status.open': "Waiting",
+    'gmm.status.started': "Playing",
+    'gmm.status.finished': "Finished",
+    'gmm.status.cancelled': "Cancelled",
+    'gmm.entry.paid': "Paid",
+    'gmm.entry.free': "Free",
+    'gmm.entry.refunded': "Refunded",
+    'gmm.entry.left': "Left",
+    'gmm.entry.pending': "Pending",
+    'gmm.result.won': "Won",
+    'gmm.result.lost': "Lost",
+    'gmm.result.forfeit': "Forfeit",
+    'gmm.result.timeout': "Timeout",
+    'gmm.result.refunded': "Refunded",
+    'gmm.prize.pending': "Prize pending",
+    'gmm.prize.paid': "Prize paid",
+    'gmm.end': "End with a winner",
+    'gmm.end.text': "The match ends with the chosen winner and is settled like a normal end. Everyone else loses.",
+    'gmm.end.winner': "Winner",
+    'gmm.end.ok': "End match",
+    'gmm.end.done': "The match ended.",
+    'gmm.reason': "Reason",
+    'gmm.cancel': "Cancel and refund",
+    'gmm.cancel.open': "The match is cancelled and every fee goes back.",
+    'gmm.cancel.started': "The match is being played. Cancelling closes it for everyone and refunds every fee; nobody wins.",
+    'gmm.cancel.ok': "Cancel match",
+    'gmm.cancel.done': "Cancelled; {n} fees refunded.",
+    'gmm.live': "Live state",
+    'gmm.timeline': "Match events",
+    'gmm.timeline.count': "{n} of {total}",
+    'gmm.timeline.none': "No events.",
+    'gmm.more': "More",
+    'gmm.reason.finished': "Finished",
+    'gmm.reason.fast-match': "Fast match",
+    'gmm.reason.forfeit-force-end': "Every human forfeited",
+    'gmm.reason.admin-force-end': "Ended by staff",
+    'gmm.reason.admin-cancel': "Cancelled by staff",
+    'gmm.reason.cancelled': "Cancelled",
+    'gmm.reason.no_opponent': "No opponent",
+    'gmm.reason.BOT_POOL_UNAVAILABLE': "Not enough bots",
+    'gmm.reason.server_stop': "Server stopped",
+    'gmm.reason.host_left': "Host left",
+    'gmm.reason.empty': "Empty room",
+    'gmm.reason.declined': "Invite declined",
+    'gmm.kind.created': "Created",
+    'gmm.kind.started': "Started",
+    'gmm.kind.join': "Joined",
+    'gmm.kind.leave': "Left",
+    'gmm.kind.botSeated': "Bot seated",
+    'gmm.kind.rollDice': "Roll",
+    'gmm.kind.reroll': "Reroll",
+    'gmm.kind.movePiece': "Move",
+    'gmm.kind.passTurn': "Pass",
+    'gmm.kind.expireRerollWindow': "Reroll window closed",
+    'gmm.kind.turnFinished': "Turn finished",
+    'gmm.kind.turnFinishTimeout': "Turn auto-finished",
+    'gmm.kind.forfeit': "Forfeit",
+    'gmm.kind.afk': "AFK",
+    'gmm.kind.disconnected': "Disconnected",
+    'gmm.kind.reconnected': "Reconnected",
+    'gmm.kind.startFastMatchVote': "Fast vote started",
+    'gmm.kind.castFastMatchVote': "Vote",
+    'gmm.kind.resolveFastMatchVote': "Vote result",
+    'gmm.kind.forfeitForceEnd': "Ended after forfeits",
+    'gmm.kind.adminForceEnd': "Ended by staff",
+    'gmm.kind.ended': "Ended",
+    'gmm.kind.cancelled': "Cancelled",
+    'gmm.kind.return-afk': "Back from AFK",
+    'f.gm.oneMatch': "One match per player",
+    'f.gm.oneMatch.hint': "A player cannot join another match until the current one ends or they forfeit it.",
+    'f.gm.room.play': "Seats, bots and payout",
+    'gm.play.sum.players': "{n} players",
+    'gm.play.sum.humans': "{n} humans",
+    'gm.play.sum.fill': "Bots after {n} s",
+    'gm.play.sum.pot': "{n}% of fees to the winner",
+    'gm.play.sum.botsPay': "Bots pay the fee",
+    'gm.play.sum.overdraft': "Overdraft",
+    'gm.play.sum.np': "New players instead of {room}",
+    'gm.play.sum.off': "Off",
+    'gm.play.sum.none': "Game defaults",
+    'gm.play.payout.prize': "Room prize",
+    'gm.play.payout.pot': "Share of the fees",
+    'f.gm.play.players': "Seats",
+    'f.gm.play.players.hint': "Empty means the game's most players.",
+    'f.gm.play.humans': "Human seats",
+    'f.gm.play.humans.hint': "The other seats are bots; empty means all seats.",
+    'f.gm.play.fill': "Fill with bots after (seconds)",
+    'f.gm.play.fill.hint': "The server fills empty seats with bots after this time; 0 means never.",
+    'f.gm.play.template': "Bot template",
+    'f.gm.play.template.hint': "Empty means each bot's own template.",
+    'f.gm.play.botsPay': "Bots pay the fee from their wallet",
+    'f.gm.play.botsPay.hint': "Bot fees are added to the pot too.",
+    'f.gm.play.payout': "Payout",
+    'f.gm.play.percent': "Winner share",
+    'f.gm.play.percent.hint': "Of the fees that were paid.",
+    'f.gm.play.loserPrize': "Loser prize",
+    'f.gm.play.loserPrize.hint': "Each loser, not a forfeit, gets this prize.",
+    'f.gm.play.winnerXp': "Winner XP",
+    'f.gm.play.loserXp': "Loser XP",
+    'f.gm.play.overdraft': "Allow overdraft",
+    'f.gm.play.overdraft.hint': "When on, the wallet may go below zero.",
+    'f.gm.play.np': "New players only",
+    'f.gm.play.np.hint': "Players with no wins or losses see this room instead of another one.",
+    'f.gm.play.replaces': "Instead of room",
+    'f.gm.play.replaces.hint': "The key of another room of this game.",
+    'f.gm.play.disabled': "Room off",
+    'f.gm.play.disabled.hint': "A room that is off is hidden and cannot be joined.",
+    'code.INVALID_ROOM_PLAYERS': "Room seats are from 2 to the game's most players.",
+    'code.INVALID_HUMAN_SEATS': "Human seats are from 1 to the room seats.",
+    'code.INVALID_BOT_FILL': "Bot fill is 0 to 600 seconds.",
+    'code.INVALID_BOT_TEMPLATE': "The template key is at most 64 characters.",
+    'code.INVALID_PAYOUT': "Payout is a room prize or a share of the fees.",
+    'code.INVALID_PAYOUT_PERCENT': "The winner share is 0 to 100 percent.",
+    'code.POT_NEEDS_ENTRY_FEE': "A share of the fees needs an entry fee.",
+    'code.INVALID_XP': "XP is a whole number from 0 to 1000000.",
+    'code.REPLACES_REQUIRED': "A new player room replaces another room of this game.",
+    'code.REPLACES_NEW_PLAYER_ROOM': "A new player room cannot replace another new player room.",
+    'code.REPLACES_TAKEN': "Another new player room already replaces this room.",
+    'code.INVALID_COUNT': "1 to 5000 bots at a time.",
+    'code.PREFIX_REQUIRED': "Give a name prefix or a list of names.",
+    'code.IDS_REQUIRED': "Pick one or more bots.",
+    'code.INVALID_CSV': "The CSV could not be read.",
+    'code.USERNAME_COLUMN_REQUIRED': "The header needs a username column.",
+    'code.TOO_MANY_ROWS': "At most 5000 bots per file.",
+    'code.INVALID_WALLET': "A wallet needs a currency key and an amount of 0 or more.",
+    'code.INVALID_LOOK': "Slot keys are at most 64 and item keys at most 128 characters.",
+    'code.ROOM_NOT_FOUND': "Room not found.",
+    'code.GAME_NOT_FOUND': "Game not found.",
+    'code.BOT_NOT_FOUND': "Bot not found.",
+    'code.WINNER_REQUIRED': "Pick the winner.",
+    'code.WINNER_NOT_SEATED': "This player is not in the match.",
+    'code.MATCH_NOT_STARTED': "The match has not started; cancel it instead.",
+    'code.MATCH_FINISHED': "This match has already finished.",
+    'code.MATCH_CANCELLED': "This match was cancelled.",
+    'code.MATCH_NOT_LIVE': "This match is not running on the server now.",
+    'code.NO_LIVE_VIEW': "This game does not share its live state.",
+    'code.NOT_ENDABLE': "The match refused to end.",
+    'code.ACTIVE_MATCH_EXISTS': "The player has another match going.",
+    'code.VETERAN_ROOM_FORBIDDEN': "This room is only for new players.",
+    'code.NEW_PLAYER_ROOM_REQUIRED': "New players start in the new player rooms.",
+    'code.ROOM_DISABLED': "This room is switched off for now.",
+    'code.INVALID_STAT': "Stats are whole numbers of 0 or more."
   }
 };
 
@@ -25856,6 +26436,755 @@ RESOURCES.games = {
   afterSave: function () { GAME_REG.at = 0; forgetRefs('games'); }
 };
 
+PH_ICONS.bots = '<path d="M200,48H136V16a8,8,0,0,0-16,0V48H56A32,32,0,0,0,24,80V192a32,32,0,0,0,32,32H200a32,32,0,0,0,32-32V80A32,32,0,0,0,200,48Zm16,144a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V80A16,16,0,0,1,56,64H200a16,16,0,0,1,16,16Zm-52-56H92a28,28,0,0,0,0,56h72a28,28,0,0,0,0-56Zm-24,16v24H116V152ZM80,164a12,12,0,0,1,12-12h8v24H92A12,12,0,0,1,80,164Zm84,12h-8V152h8a12,12,0,0,1,0,24ZM72,108a12,12,0,1,1,12,12A12,12,0,0,1,72,108Zm88,0a12,12,0,1,1,12,12A12,12,0,0,1,160,108Z"/>';
+PH_ICONS['game-matches'] = '<path d="M232,64H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8,8V64H24A16,16,0,0,0,8,80V96a40,40,0,0,0,40,40h3.65A80.13,80.13,0,0,0,120,191.61V216H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16H136V191.58c31.94-3.23,58.44-25.64,68.08-55.58H208a40,40,0,0,0,40-40V80A16,16,0,0,0,232,64ZM48,120A24,24,0,0,1,24,96V80H48v32q0,4,.39,8Zm144-8.9c0,35.52-29,64.64-64,64.9a64,64,0,0,1-64-64V56H192ZM232,96a24,24,0,0,1-24,24h-.5a81.81,81.81,0,0,0,.5-8.9V80h24Z"/>';
+
+SECTIONS.economy.push('game-matches', 'bots');
+NAV.economy.forEach(function (g) { if (g && g.id === 'play') g.items.splice(g.items.indexOf('games') + 1, 0, 'game-matches', 'bots'); });
+
+var BOT_SEL = { ids: {}, page: [], bar: null, reload: null };
+var GM_STATUSES = ['open', 'started', 'finished', 'cancelled'];
+
+function walletMap(rows) {
+  var out = {};
+  (rows || []).forEach(function (r) { if (r && r.currency && r.amount != null && r.amount !== '') out[r.currency] = Number(r.amount); });
+  return out;
+}
+
+function walletRows(map) {
+  return Object.keys(map || {}).map(function (k) { return { currency: k, amount: map[k] }; });
+}
+
+function walletText(w) {
+  var keys = Object.keys(w || {});
+  if (!keys.length) return t('none');
+  return keys.map(function (k) { return fmtNum(w[k]) + ' ' + keyName('currency', k); }).join('، ');
+}
+
+function roomsText(rooms) {
+  if (!rooms || !rooms.length) return t('bt.rooms.any');
+  return rooms.map(function (r) { return r.game + (r.room ? '/' + r.room : ''); }).join('، ');
+}
+
+function botCheck(it) {
+  var box = checkbox(!!BOT_SEL.ids[it.userId], '', function (on) {
+    if (on) BOT_SEL.ids[it.userId] = true;
+    else delete BOT_SEL.ids[it.userId];
+    if (BOT_SEL.bar) BOT_SEL.bar.paint();
+  });
+  box.setAttribute('aria-label', t('bt.select', { name: it.username }));
+  box.setAttribute('data-bot-select', it.userId);
+  return box;
+}
+
+LISTS.bots = {
+  path: 'bots',
+  create: function () {
+    var wrap = h('div', { class: 'flex flex-wrap gap-2' },
+      button({ variant: 'primary', size: 'page', icon: 'plus', label: t('bt.bulk'), onclick: botBulkPanel }),
+      button({ variant: 'ghost', size: 'page', icon: 'upload', label: t('bt.import'), onclick: botImportPanel }),
+      button({ variant: 'ghost', size: 'page', icon: 'currencies', label: t('bt.topup'), onclick: function () { botTopupPanel(Object.keys(BOT_SEL.ids)); } }));
+    wrap.querySelectorAll('button')[0].setAttribute('data-bot-action', 'bulk');
+    wrap.querySelectorAll('button')[1].setAttribute('data-bot-action', 'import');
+    wrap.querySelectorAll('button')[2].setAttribute('data-bot-action', 'topup');
+    return wrap;
+  },
+  top: function () { return botKpis(); },
+  onItems: function (items) { BOT_SEL.page = items; keyNames(); },
+  onRow: function (it) { botEditPanel(it.userId); },
+  filters: [
+    { name: 'enabled', label: 'filter.status', options: function () { return [{ value: 'true', label: t('bt.on') }, { value: 'false', label: t('bt.off') }]; } },
+    { name: 'template', label: 'filter.bt.template', type: 'text' },
+    { name: 'game', label: 'filter.bt.game', type: 'text' },
+    { name: 'room', label: 'filter.bt.room', type: 'text' },
+    { name: 'minLevel', label: 'filter.bt.minLevel', type: 'text' },
+    { name: 'maxLevel', label: 'filter.bt.maxLevel', type: 'text' },
+    { name: 'sort', label: 'filter.bt.sort', options: function () { return ['level', 'games', 'recent'].map(function (s) { return { value: s, label: t('bt.sort.' + s) }; }); } }
+  ],
+  columns: [
+    { label: 'col.select', render: botCheck, width: 48 },
+    { label: 'col.bt.bot', render: function (it) {
+      return h('div', { class: 'min-w-0', 'data-bot-row': it.userId },
+        h('div', { class: 'font-medium truncate', dir: 'auto', text: it.displayName || it.username }),
+        h('div', { class: 'text-secondary-500 flex items-center gap-2 min-w-0' }, it.displayName ? h('span', { class: 'truncate', dir: 'auto', text: it.username }) : null, mono(String(it.userId).slice(0, 8))));
+    }, skeleton: '40%' },
+    { label: 'col.bt.level', render: function (it) { return h('span', { class: 'tabular-nums', 'data-bot-level': '', text: fmtNum(it.level) }); }, width: 70 },
+    { label: 'col.bt.template', render: function (it) { return it.template ? mono(it.template) : h('span', { class: 'text-secondary-400', text: t('none') }); }, width: 110 },
+    { label: 'col.bt.rooms', render: function (it) { return h('span', { class: 'text-sm', dir: 'ltr', text: roomsText(it.rooms) }); }, skeleton: '30%' },
+    { label: 'col.bt.wallet', render: function (it) { return withKeyNames(function () { return h('span', { class: 'text-sm tabular-nums', text: walletText(it.wallet) }); }); }, skeleton: '30%' },
+    { label: 'col.bt.games', render: function (it) {
+      return h('div', { class: 'flex flex-col text-sm' }, h('span', { class: 'tabular-nums', text: t('bt.games', { n: fmtNum(it.games || 0) }) }),
+        it.lastUsedAt ? h('span', { class: 'text-xs text-secondary-500', text: fmtDate(it.lastUsedAt) }) : null);
+    }, width: 140 },
+    { label: 'col.status', render: function (it) {
+      return h('div', { class: 'flex flex-wrap gap-1' }, it.enabled ? tag(t('bt.on'), 'success') : tag(t('bt.off'), 'secondary'), it.banned ? tag(t('bt.banned'), 'error') : null);
+    }, width: 120 }
+  ]
+};
+
+function botKpis() {
+  var box = h('div', { class: 'eco-stat-grid mb-4', 'data-bot-kpis': '' }, [1, 2, 3].map(function () { return card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('6rem'), bar('3rem', 'h-7'))); }));
+  Promise.all([api('GET', '/bots?limit=1'), api('GET', '/bots?limit=1&enabled=true')]).then(function (r) {
+    clear(box);
+    var total = r[0].total || 0, on = r[1].total || 0;
+    var a = statCard(t('bt.kpi.total'), total, null, null); a.setAttribute('data-bot-kpi', 'total'); box.appendChild(a);
+    var b = statCard(t('bt.kpi.on'), on, null, null); b.setAttribute('data-bot-kpi', 'enabled'); box.appendChild(b);
+    var c = statCard(t('bt.kpi.off'), total - on, null, null); c.setAttribute('data-bot-kpi', 'disabled'); box.appendChild(c);
+    var first = (r[0].items || [])[0];
+    if (!first) return;
+    api('GET', '/bots/' + encodeURIComponent(first.userId)).then(function (d) {
+      var tpl = (d.summary && d.summary.templates) || {};
+      Object.keys(tpl).sort().forEach(function (k) {
+        var s = statCard(t('bt.kpi.template', { name: k || t('none') }), tpl[k], null, hashFor('bots', null, { template: k }));
+        s.setAttribute('data-bot-kpi', 'template-' + (k || 'none'));
+        box.appendChild(s);
+      });
+    }, function () {});
+  }, function () { clear(box); });
+  return box;
+}
+
+function botBulkBar(reload) {
+  var count = h('span', { class: 'text-sm font-medium tabular-nums', 'aria-live': 'polite', 'data-bot-selected': '' });
+  function run(enabled, btn) {
+    var ids = Object.keys(BOT_SEL.ids);
+    if (!ids.length) return;
+    setBusy(btn, true, t('saving'));
+    api('POST', '/bots/status', { ids: ids, enabled: enabled }).then(function (res) {
+      setBusy(btn, false);
+      toast('success', t('bt.status.done', { n: fmtNum(res.updated) }));
+      BOT_SEL.ids = {};
+      paint();
+      reload();
+    }, function (err) { setBusy(btn, false); toast('error', errorText(err)); });
+  }
+  var on = button({ variant: 'primary', size: 'sm', label: t('bt.enable'), onclick: function (e) { run(true, e.currentTarget); } });
+  var off = button({ variant: 'danger', size: 'sm', label: t('bt.disable'), onclick: function (e) { run(false, e.currentTarget); } });
+  var top = button({ variant: 'ghost', size: 'sm', icon: 'currencies', label: t('bt.topup.sel'), onclick: function () { botTopupPanel(Object.keys(BOT_SEL.ids)); } });
+  on.setAttribute('data-bot-bulk', 'enable');
+  off.setAttribute('data-bot-bulk', 'disable');
+  top.setAttribute('data-bot-bulk', 'topup');
+  var pageAll = button({ variant: 'link', size: 'sm', label: t('pl.bulk.page'), onclick: function () { BOT_SEL.page.forEach(function (it) { BOT_SEL.ids[it.userId] = true; }); paint(); reload(); } });
+  pageAll.setAttribute('data-bot-bulk', 'page');
+  var none = button({ variant: 'ghost', size: 'sm', label: t('pl.bulk.clear'), onclick: function () { BOT_SEL.ids = {}; paint(); reload(); } });
+  var el = h('div', { class: 'eco-bulk rounded-md border border-secondary-200 dark:border-secondary-700 p-3 mb-3', 'data-bot-bulkbar': '' },
+    h('div', { class: 'flex flex-wrap items-center gap-2' }, count, pageAll, none, h('span', { class: 'flex-1' }), on, off, top));
+  function paint() {
+    var n = Object.keys(BOT_SEL.ids).length;
+    count.textContent = n ? t('pl.bulk.selected', { n: n }) : t('pl.bulk.none');
+    on.disabled = off.disabled = top.disabled = !n;
+  }
+  el.paint = paint;
+  paint();
+  return el;
+}
+
+function botsPage(container, query, ctx) {
+  BOT_SEL.ids = {};
+  var list = listPage(container, 'bots', query, ctx);
+  BOT_SEL.reload = list.reload;
+  var bar = botBulkBar(function () { list.reload(); });
+  BOT_SEL.bar = bar;
+  var table2 = container.querySelector('.eco-filters');
+  var anchor = table2 ? table2.closest('.flex.flex-col.items-start') : null;
+  if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(bar, anchor.nextSibling);
+  return list;
+}
+
+CUSTOM_PAGES.bots = function (root, route, ctl, ctx) { ctl.list = botsPage(root, route.query || {}, ctx); };
+
+var BOT_ROOM_COLS = [
+  { name: 'game', type: 'text', ltr: true, mono: true, label: 'f.bt.game', required: true },
+  { name: 'room', type: 'text', ltr: true, mono: true, label: 'f.bt.room', optional: true }
+];
+var BOT_WALLET_COLS = [
+  { name: 'currency', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.bt.currency', required: true },
+  { name: 'amount', type: 'number', label: 'f.bt.amount', required: true, min: 0, max: 1000000000000 }
+];
+var BOT_BAND_COLS = [
+  { name: 'min', type: 'number', label: 'f.bt.band.min', required: true, min: 1, max: 1000 },
+  { name: 'max', type: 'number', label: 'f.bt.band.max', optional: true, min: 0, max: 1000 },
+  { name: 'template', type: 'text', ltr: true, mono: true, label: 'f.bt.template', required: true }
+];
+
+function botFieldsCommon() {
+  return [
+    { name: 'rooms', type: 'rows', label: 'f.bt.rooms', hint: 'f.bt.rooms.hint', addLabel: 'bt.room.add', emptyText: 'bt.rooms.any', max: 50, empty: [], columns: BOT_ROOM_COLS, newRow: function () { return { game: '', room: '' }; } },
+    { name: 'wallet', type: 'rows', label: 'f.bt.wallet', hint: 'f.bt.wallet.hint', addLabel: 'bt.wallet.add', emptyText: 'bt.wallet.empty', max: 20, empty: [], columns: BOT_WALLET_COLS, newRow: function () { return { currency: null, amount: null }; } }
+  ];
+}
+
+function cleanBotRooms(rows) {
+  return (rows || []).filter(function (r) { return r && r.game; }).map(function (r) { return { game: r.game, room: r.room || '' }; });
+}
+
+function lookMap(rows) {
+  var out = {};
+  (rows || []).forEach(function (r) { if (r && r.slot && r.item) out[r.slot] = r.item; });
+  return out;
+}
+
+function panelOpen(title, body, footer) {
+  var close = function () { document.removeEventListener('keydown', esc, true); el.remove(); };
+  var esc = function (e) { if (e.key === 'Escape') { e.preventDefault(); close(); } };
+  var el = sidePanel(title, body, footer, close);
+  document.addEventListener('keydown', esc, true);
+  document.body.appendChild(el);
+  return close;
+}
+
+function botEditPanel(id) {
+  var body = h('div', { class: 'flex flex-col gap-4', 'data-bot-edit': id }, h('div', { class: 'flex flex-col gap-3' }, bar('60%'), bar('80%'), bar('40%')));
+  var footer = h('div', { class: 'flex gap-4 w-full items-center justify-end' });
+  var close = panelOpen(t('bt.edit'), body, footer);
+  api('GET', '/bots/' + encodeURIComponent(id)).then(function (b) {
+    var values = { enabled: !!b.enabled, level: b.level, template: b.template || '', username: b.username, displayName: b.displayName || '', avatarUrl: b.avatarUrl || '', note: b.note || '',
+      rooms: (b.rooms || []).map(function (r) { return { game: r.game, room: r.room || '' }; }),
+      look: Object.keys(b.look || {}).map(function (k) { return { slot: k, item: b.look[k] }; }), wallet: walletRows(b.wallet) };
+    var form = buildForm([
+      { type: 'row', fields: [
+        { name: 'enabled', type: 'bool', inline: true, label: 'f.bt.enabled', hint: 'f.bt.enabled.hint' },
+        { name: 'level', type: 'number', label: 'f.bt.level', required: true, min: 1, max: 1000 }
+      ] },
+      { type: 'row', fields: [
+        { name: 'template', type: 'text', ltr: true, label: 'f.bt.template', hint: 'f.bt.template.hint', optional: true },
+        { name: 'username', type: 'text', ltr: true, label: 'f.bt.username', required: true }
+      ] },
+      { type: 'row', fields: [
+        { name: 'displayName', type: 'text', label: 'f.bt.displayName', optional: true },
+        { name: 'avatarUrl', type: 'text', ltr: true, label: 'f.bt.avatarUrl', optional: true }
+      ] },
+      { name: 'note', type: 'textarea', label: 'f.bt.note', optional: true },
+      botFieldsCommon()[0],
+      { name: 'look', type: 'rows', label: 'f.bt.look', hint: 'f.bt.look.hint', addLabel: 'bt.look.add', emptyText: 'bt.look.empty', max: 20, empty: [],
+        columns: [{ name: 'slot', type: 'text', ltr: true, mono: true, label: 'f.bt.look.slot', required: true }, { name: 'item', type: 'text', ltr: true, mono: true, label: 'f.bt.look.item', required: true }],
+        newRow: function () { return { slot: '', item: '' }; } },
+      botFieldsCommon()[1]
+    ], values);
+    clear(body);
+    body.appendChild(h('div', { class: 'flex flex-wrap gap-2 text-sm text-secondary-600 dark:text-secondary-300' }, mono(b.userId), tag(t('bt.source.' + (b.source || 'console')), 'secondary'),
+      h('span', { class: 'tabular-nums', text: t('bt.games', { n: fmtNum(b.games || 0) }) }), b.updatedBy ? h('span', { text: t('bt.updatedBy', { by: b.updatedBy }) }) : null));
+    body.appendChild(form.el);
+    body.appendChild(gameStatsPanel(b.userId));
+    var save = button({ variant: 'primary', size: 'footer', label: t('save'), onclick: function () {
+      if (!form.validate()) return;
+      var p = form.payload();
+      var payload = { enabled: !!p.enabled, level: Number(p.level), template: (p.template || '').trim(), username: (p.username || '').trim(), displayName: (p.displayName || '').trim(),
+        avatarUrl: (p.avatarUrl || '').trim(), note: p.note || '', rooms: cleanBotRooms(p.rooms), look: lookMap(p.look), wallet: walletMap(p.wallet) };
+      setBusy(save, true, t('saving'));
+      api('PUT', '/bots/' + encodeURIComponent(id), payload).then(function () {
+        toast('success', t('saved'));
+        close();
+        if (BOT_SEL.reload) BOT_SEL.reload();
+      }, function (err) {
+        setBusy(save, false);
+        if (!form.showServerError(err)) toast('error', errorText(err));
+      });
+    } });
+    save.setAttribute('data-bot-save', '');
+    clear(footer).appendChild(button({ variant: 'ghost', size: 'footer', label: t('cancel'), onclick: close }));
+    footer.appendChild(save);
+  }, function (err) { clear(body).appendChild(notice('error', errorText(err))); });
+}
+
+function problemList(problems) {
+  if (!problems || !problems.length) return null;
+  var ul = h('ul', { class: 'flex flex-col gap-1 text-sm', 'data-bot-problems': String(problems.length) });
+  problems.slice(0, 200).forEach(function (p) {
+    ul.appendChild(h('li', { class: 'flex flex-wrap gap-2', 'data-bot-problem': p.code },
+      h('span', { class: 'tabular-nums text-secondary-500', text: t('bt.line', { n: fmtNum(p.line) }) }),
+      h('span', { dir: 'auto', class: 'font-medium', text: p.username || '' }),
+      h('span', { class: 'text-error-600 dark:text-error-400', text: has('code.' + p.code) ? t('code.' + p.code) : p.code })));
+  });
+  return ul;
+}
+
+function bandsPayload(rows) {
+  return (rows || []).filter(function (r) { return r && r.min != null && r.template; }).map(function (r) { return { min: Number(r.min), max: r.max == null || r.max === '' ? 0 : Number(r.max), template: r.template }; });
+}
+
+function botBulkPanel() {
+  var values = { count: 10, prefix: '', names: '', levelMin: 2, levelMax: 25, template: 'normal', bands: [], rooms: [], wallet: [], note: '' };
+  var form = buildForm([
+    { type: 'row', fields: [
+      { name: 'count', type: 'number', label: 'f.bt.count', hint: 'f.bt.count.hint', optional: true, min: 1, max: 5000 },
+      { name: 'prefix', type: 'text', ltr: true, label: 'f.bt.prefix', hint: 'f.bt.prefix.hint', optional: true }
+    ] },
+    { name: 'names', type: 'textarea', label: 'f.bt.names', hint: 'f.bt.names.hint', optional: true },
+    { type: 'row', fields: [
+      { name: 'levelMin', type: 'number', label: 'f.bt.levelMin', required: true, min: 1, max: 1000 },
+      { name: 'levelMax', type: 'number', label: 'f.bt.levelMax', required: true, min: 1, max: 1000 }
+    ] },
+    { name: 'template', type: 'text', ltr: true, label: 'f.bt.template', hint: 'f.bt.template.hint', optional: true },
+    { name: 'bands', type: 'rows', label: 'f.bt.bands', hint: 'f.bt.bands.hint', addLabel: 'bt.band.add', emptyText: 'bt.bands.empty', max: 20, empty: [], columns: BOT_BAND_COLS, newRow: function () { return { min: null, max: null, template: '' }; } },
+    botFieldsCommon()[0],
+    botFieldsCommon()[1],
+    { name: 'note', type: 'text', label: 'f.bt.note', optional: true }
+  ], values);
+  var result = h('div', { 'data-bot-bulk-result': '' });
+  var body = h('div', { class: 'flex flex-col gap-4', 'data-bot-bulk-form': '' }, notice('info', t('bt.bulk.note')), form.el, result);
+  var close;
+  var save = button({ variant: 'primary', size: 'footer', icon: 'plus', label: t('bt.bulk.go'), onclick: function () {
+    if (!form.validate()) return;
+    var p = form.payload();
+    var names = String(p.names || '').split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+    var payload = { count: Number(p.count) || 0, prefix: (p.prefix || '').trim(), names: names, levelMin: Number(p.levelMin), levelMax: Number(p.levelMax), template: (p.template || '').trim(),
+      bands: bandsPayload(p.bands), rooms: cleanBotRooms(p.rooms), wallet: walletMap(p.wallet), note: p.note || '' };
+    setBusy(save, true, t('saving'));
+    api('POST', '/bots/bulk', payload).then(function (res) {
+      setBusy(save, false);
+      clear(result).appendChild(notice('success', t('bt.bulk.done', { n: fmtNum(res.created) })));
+      append(result, problemList(res.problems));
+      if (BOT_SEL.reload) BOT_SEL.reload();
+    }, function (err) {
+      setBusy(save, false);
+      if (!form.showServerError(err)) clear(result).appendChild(notice('error', errorText(err)));
+    });
+  } });
+  save.setAttribute('data-bot-bulk-go', '');
+  close = panelOpen(t('bt.bulk'), body, h('div', { class: 'flex gap-4 w-full items-center justify-end' }, button({ variant: 'ghost', size: 'footer', label: t('close'), onclick: function () { close(); } }), save));
+}
+
+function botImportPanel() {
+  var values = { csv: '', levelMin: 2, levelMax: 25, template: 'normal', bands: [] };
+  var form = buildForm([
+    { name: 'csv', type: 'textarea', ltr: true, label: 'f.bt.csv', hint: 'f.bt.csv.hint', required: true },
+    { type: 'row', fields: [
+      { name: 'levelMin', type: 'number', label: 'f.bt.levelMin', hint: 'f.bt.levelCsv.hint', required: true, min: 1, max: 1000 },
+      { name: 'levelMax', type: 'number', label: 'f.bt.levelMax', required: true, min: 1, max: 1000 }
+    ] },
+    { name: 'template', type: 'text', ltr: true, label: 'f.bt.template', hint: 'f.bt.template.hint', optional: true },
+    { name: 'bands', type: 'rows', label: 'f.bt.bands', hint: 'f.bt.bands.hint', addLabel: 'bt.band.add', emptyText: 'bt.bands.empty', max: 20, empty: [], columns: BOT_BAND_COLS, newRow: function () { return { min: null, max: null, template: '' }; } }
+  ], values);
+  var file = h('input', { type: 'file', accept: '.csv,text/csv', class: 'text-sm', 'data-bot-csv-file': '', 'aria-label': t('f.bt.csv') });
+  file.addEventListener('change', function () {
+    var f = file.files && file.files[0];
+    if (!f) return;
+    f.text().then(function (txt) {
+      values.csv = txt;
+      var ta = form.el.querySelector('textarea');
+      if (ta) ta.value = txt;
+    });
+  });
+  var result = h('div', { 'data-bot-import-result': '' });
+  var body = h('div', { class: 'flex flex-col gap-4', 'data-bot-import-form': '' }, notice('info', t('bt.import.note')), file, form.el, result);
+  var close;
+  var go = button({ variant: 'primary', size: 'footer', label: t('bt.import.go'), disabled: true, onclick: function () { send(false, go); } });
+  go.setAttribute('data-bot-import-go', '');
+  var dry = button({ variant: 'ghost', size: 'footer', label: t('bt.import.dry'), onclick: function () { send(true, dry); } });
+  dry.setAttribute('data-bot-import-dry', '');
+  function send(dryRun, btn) {
+    if (!form.validate()) return;
+    var p = form.payload();
+    setBusy(btn, true, t('saving'));
+    api('POST', '/bots/import', { csv: values.csv || p.csv, levelMin: Number(p.levelMin), levelMax: Number(p.levelMax), template: (p.template || '').trim(), bands: bandsPayload(p.bands), dryRun: dryRun }).then(function (res) {
+      setBusy(btn, false);
+      clear(result);
+      if (dryRun) {
+        result.appendChild(notice(res.problems && res.problems.length ? 'warning' : 'success', t('bt.import.preview', { n: fmtNum(res.valid), bad: fmtNum((res.problems || []).length) })));
+        go.disabled = !res.valid;
+      } else {
+        result.appendChild(notice('success', t('bt.bulk.done', { n: fmtNum(res.created) })));
+        go.disabled = true;
+        if (BOT_SEL.reload) BOT_SEL.reload();
+      }
+      append(result, problemList(res.problems));
+    }, function (err) {
+      setBusy(btn, false);
+      if (!form.showServerError(err)) clear(result).appendChild(notice('error', errorText(err)));
+    });
+  }
+  close = panelOpen(t('bt.import'), body, h('div', { class: 'flex gap-4 w-full items-center justify-end' }, button({ variant: 'ghost', size: 'footer', label: t('close'), onclick: function () { close(); } }), dry, go));
+}
+
+function botTopupPanel(ids) {
+  var values = { scope: ids && ids.length ? 'selected' : 'all', currency: null, below: null, amount: null };
+  var form = buildForm([
+    { name: 'scope', type: 'select', noPlaceholder: true, label: 'f.bt.scope', options: function () {
+      var o = [{ value: 'all', label: t('bt.scope.all') }];
+      if (ids && ids.length) o.unshift({ value: 'selected', label: t('bt.scope.selected', { n: fmtNum(ids.length) }) });
+      return o;
+    } },
+    { name: 'currency', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.bt.currency', required: true },
+    { type: 'row', fields: [
+      { name: 'below', type: 'number', label: 'f.bt.below', hint: 'f.bt.below.hint', optional: true, min: 0, max: 1000000000000 },
+      { name: 'amount', type: 'number', label: 'f.bt.topAmount', hint: 'f.bt.topAmount.hint', required: true, min: 1, max: 1000000000000 }
+    ] }
+  ], values);
+  var result = h('div', { 'data-bot-topup-result': '' });
+  var body = h('div', { class: 'flex flex-col gap-4', 'data-bot-topup-form': '' }, form.el, result);
+  var close;
+  var go = button({ variant: 'primary', size: 'footer', label: t('bt.topup.go'), onclick: function () {
+    if (!form.validate()) return;
+    var p = form.payload();
+    setBusy(go, true, t('saving'));
+    api('POST', '/bots/topup', { ids: p.scope === 'selected' ? ids : [], all: p.scope === 'all', currency: p.currency, below: p.below == null ? 0 : Number(p.below), amount: Number(p.amount) }).then(function (res) {
+      setBusy(go, false);
+      clear(result).appendChild(notice('success', t('bt.topup.done', { n: fmtNum(res.toppedUp) })));
+      if (BOT_SEL.reload) BOT_SEL.reload();
+    }, function (err) {
+      setBusy(go, false);
+      if (!form.showServerError(err)) clear(result).appendChild(notice('error', errorText(err)));
+    });
+  } });
+  go.setAttribute('data-bot-topup-go', '');
+  close = panelOpen(t('bt.topup'), body, h('div', { class: 'flex gap-4 w-full items-center justify-end' }, button({ variant: 'ghost', size: 'footer', label: t('close'), onclick: function () { close(); } }), go));
+}
+
+function fmtSeconds(s) {
+  s = Number(s) || 0;
+  var hrs = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+  return hrs ? t('gst.hm', { h: fmtNum(hrs), m: fmtNum(m) }) : t('gst.m', { m: fmtNum(m) });
+}
+
+function gameStatsPanel(userId) {
+  var body = h('div', { class: 'flex flex-col gap-2' }, bar('60%'));
+  var box = h('section', { class: 'border border-secondary-200 dark:border-secondary-700 rounded-md p-3', 'data-game-stats': userId },
+    h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-2' }, h('h3', { class: 'font-medium flex items-center gap-2' }, icon('games', 'h-4 w-4'), h('span', { text: t('gst.title') })),
+      (function () { var b = button({ variant: 'link', size: 'sm', icon: 'plus', label: t('gst.add'), onclick: function () { statsEditor(userId, null, load); } }); b.setAttribute('data-game-stats-add', ''); return b; })()),
+    body);
+  function load() {
+    api('GET', '/game-stats?userId=' + encodeURIComponent(userId)).then(function (res) {
+      clear(body);
+      var items = res.items || [];
+      if (!items.length) { body.appendChild(h('p', { class: 'text-sm text-secondary-500', text: t('gst.none') })); return; }
+      items.forEach(function (s) {
+        var edit = button({ variant: 'link', size: 'sm', label: t('gst.editBtn'), onclick: function () { statsEditor(userId, s, load); } });
+        edit.setAttribute('data-game-stats-edit', s.game);
+        body.appendChild(h('div', { class: 'flex flex-wrap items-center gap-2 text-sm tabular-nums', 'data-game-stats-row': s.game },
+          mono(s.game),
+          h('span', { text: t('gst.line', { games: fmtNum(s.totalGames), wins: fmtNum(s.wins), losses: fmtNum(s.losses), forfeits: fmtNum(s.forfeits), timeouts: fmtNum(s.timeouts) }) }),
+          h('span', { class: 'text-secondary-500', text: fmtSeconds(s.playtimeSeconds) }),
+          withKeyNames(function () { return h('span', { class: 'text-secondary-500', text: walletText(s.winnings) }); }),
+          h('span', { class: 'flex-1' }), edit));
+      });
+    }, function (err) { clear(body).appendChild(notice('error', errorText(err))); });
+  }
+  load();
+  return box;
+}
+
+function statsEditor(userId, cur, done) {
+  var values = { game: cur ? cur.game : '', wins: cur ? cur.wins : 0, losses: cur ? cur.losses : 0, forfeits: cur ? cur.forfeits : 0, timeouts: cur ? cur.timeouts : 0,
+    playtimeSeconds: cur ? cur.playtimeSeconds : 0, winnings: walletRows(cur ? cur.winnings : {}) };
+  var form = buildForm([
+    { name: 'game', type: 'key', label: 'f.gst.game', required: true, lockOnEdit: !!cur },
+    { type: 'row', fields: [{ name: 'wins', type: 'number', label: 'f.gst.wins', required: true, min: 0, max: 2147483647 }, { name: 'losses', type: 'number', label: 'f.gst.losses', required: true, min: 0, max: 2147483647 }] },
+    { type: 'row', fields: [{ name: 'forfeits', type: 'number', label: 'f.gst.forfeits', required: true, min: 0, max: 2147483647 }, { name: 'timeouts', type: 'number', label: 'f.gst.timeouts', required: true, min: 0, max: 2147483647 }] },
+    { name: 'playtimeSeconds', type: 'number', label: 'f.gst.playtime', required: true, min: 0, max: 2147483647 },
+    { name: 'winnings', type: 'rows', label: 'f.gst.winnings', addLabel: 'bt.wallet.add', emptyText: 'bt.wallet.empty', max: 20, empty: [], columns: BOT_WALLET_COLS, newRow: function () { return { currency: null, amount: null }; } }
+  ], values);
+  if (cur) { var k = form.el.querySelector('input'); if (k) { k.readOnly = true; k.classList.add('eco-readonly'); } }
+  var body = h('div', { class: 'flex flex-col gap-4', 'data-game-stats-form': '' }, notice('info', t('gst.note')), form.el);
+  var close;
+  var save = button({ variant: 'primary', size: 'footer', label: t('save'), onclick: function () {
+    if (!form.validate()) return;
+    var p = form.payload();
+    setBusy(save, true, t('saving'));
+    api('PUT', '/game-stats/' + encodeURIComponent(userId) + '/' + encodeURIComponent(p.game), { wins: Number(p.wins), losses: Number(p.losses), forfeits: Number(p.forfeits), timeouts: Number(p.timeouts),
+      playtimeSeconds: Number(p.playtimeSeconds), winnings: walletMap(p.winnings) }).then(function () {
+      toast('success', t('saved'));
+      close();
+      done();
+    }, function (err) { setBusy(save, false); if (!form.showServerError(err)) toast('error', errorText(err)); });
+  } });
+  save.setAttribute('data-game-stats-save', '');
+  close = panelOpen(t('gst.edit'), body, h('div', { class: 'flex gap-4 w-full items-center justify-end' }, button({ variant: 'ghost', size: 'footer', label: t('cancel'), onclick: function () { close(); } }), save));
+}
+
+var GST_CARD = { id: null, el: null };
+
+function playerGameStatsCard() {
+  var id = playerCardRoute();
+  var existing = document.querySelector('[data-player-game-stats]');
+  if (!id || !token() || !aclCan('HIRO_ECONOMY', 0)) { if (existing) existing.remove(); return; }
+  var main = null;
+  var mains = document.querySelectorAll('#main > main');
+  for (var i = 0; i < mains.length; i++) if (mains[i].style.display !== 'none') main = mains[i];
+  var grid = main && main.querySelector('div.flex.flex-col.flex-1.min-w-0 > div.grid.grid-cols-1.gap-4');
+  if (!grid) return;
+  var key = lang() + '|' + id;
+  if (existing && existing.getAttribute('data-key') === key && existing.parentNode === grid) return;
+  if (existing) existing.remove();
+  var cardEl = h('section', { class: 'flex flex-col dark:bg-secondary-800 rounded-md shadow bg-white px-4 py-3', 'data-player-game-stats': '', 'data-key': key, 'data-economy': 'player-game-stats', 'data-l10n-skip': '', dir: document.documentElement.getAttribute('dir') || 'ltr' }, gameStatsPanel(id));
+  grid.appendChild(cardEl);
+  GST_CARD.id = id;
+}
+
+function gmStatusTag(s) {
+  var c = { open: 'warning', started: 'primary', finished: 'success', cancelled: 'secondary' }[s] || 'secondary';
+  return tag(t('gmm.status.' + s), c);
+}
+
+LISTS['game-matches'] = {
+  path: 'game-matches',
+  noCreate: true,
+  rowHref: function (it) { return hashFor('game-matches', it.id, lastQuery['game-matches'] || {}); },
+  filters: [
+    { name: 'status', label: 'filter.status', options: function () { return GM_STATUSES.map(function (s) { return { value: s, label: t('gmm.status.' + s) }; }); } },
+    { name: 'gameKey', label: 'filter.gmm.game', type: 'text' },
+    { name: 'userId', label: 'filter.gmm.user', type: 'text' }
+  ],
+  columns: [
+    { label: 'col.gmm.match', render: function (it) {
+      return h('div', { class: 'min-w-0', 'data-gm-match': it.id }, h('div', { class: 'font-medium truncate', text: (i18nText(it.gameName) || it.gameKey) + (it.roomKey ? ' · ' + it.roomKey : '') }), mono(String(it.id).slice(0, 13)));
+    }, skeleton: '40%' },
+    { label: 'col.gmm.players', render: function (it) {
+      return h('span', { class: 'tabular-nums text-sm', text: t('gmm.players', { n: fmtNum(it.players || 0), bots: fmtNum(it.bots || 0) }) });
+    }, width: 130 },
+    { label: 'col.status', render: function (it) {
+      return h('div', { class: 'flex flex-wrap gap-1' }, gmStatusTag(it.status), it.endReason ? tag(gmReason(it.endReason), 'secondary') : null, it.forcedBy ? tag(t('gmm.forced'), 'warning') : null);
+    }, width: 220 },
+    { label: 'col.created', render: function (it) { return dateCell(it.createdAt); }, width: 150 }
+  ]
+};
+
+function gmReason(r) {
+  return has('gmm.reason.' + r) ? t('gmm.reason.' + r) : r;
+}
+
+CUSTOM_PAGES['game-matches'] = function (root, route, ctl, ctx) {
+  if (route.id) gameMatchDetail(root, route.id);
+  else ctl.list = listPage(root, 'game-matches', route.query || {}, ctx);
+};
+
+function gameMatchDetail(container, id) {
+  var backBtn = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('back'), onclick: function () { go('game-matches', null, lastQuery['game-matches'] || {}); } });
+  var frame = pageFrame(t('gmm.title'), null, null);
+  frame.actions.appendChild(backBtn);
+  clear(container).appendChild(frame.el);
+  var grid = h('div', { class: 'eco-detail-grid', 'data-gm-detail': id });
+  frame.content.appendChild(grid);
+  grid.appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('40%'), bar('70%'), bar('50%')), 'eco-span-all'));
+  function load() {
+    api('GET', '/game-matches/' + encodeURIComponent(id)).then(render, function (err) { clear(grid).appendChild(errorBlock(err, load)); });
+  }
+  function render(m) {
+    clear(grid);
+    var actions = h('div', { class: 'flex flex-wrap gap-2' });
+    if (m.status === 'started') {
+      var end = button({ variant: 'primary', size: 'page', icon: 'prizes', label: t('gmm.end'), onclick: function () { endDialog(m); } });
+      end.setAttribute('data-gm-action', 'end');
+      actions.appendChild(end);
+      var live = button({ variant: 'ghost', size: 'page', icon: 'refresh', label: t('gmm.live'), onclick: function () { liveDialog(m.id); } });
+      live.setAttribute('data-gm-action', 'live');
+      actions.appendChild(live);
+    }
+    if (m.status === 'open' || m.status === 'started') {
+      var cancel = button({ variant: 'danger', size: 'page', icon: 'trash', label: t('gmm.cancel'), onclick: function () { cancelDialog(m); } });
+      cancel.setAttribute('data-gm-action', 'cancel');
+      actions.appendChild(cancel);
+    }
+    clear(frame.actions).appendChild(actions);
+    frame.actions.appendChild(backBtn);
+    grid.appendChild(section('gmm.info', dl([
+      ['col.status', h('div', { class: 'flex flex-wrap gap-1' }, gmStatusTag(m.status), m.endReason ? tag(gmReason(m.endReason), 'secondary') : null)],
+      ['gmm.game', h('span', {}, mono(m.gameKey), m.roomKey ? h('span', { text: ' / ' }) : null, m.roomKey ? mono(m.roomKey) : null)],
+      ['gmm.id', mono(m.id)],
+      ['gmm.players.label', h('span', { class: 'tabular-nums', text: t('gmm.players', { n: fmtNum(m.players || 0), bots: fmtNum(m.bots || 0) }) })],
+      ['gmm.fees', h('span', { class: 'tabular-nums', text: fmtNum(m.fees || 0) })],
+      ['gmm.refunds', m.refunds ? h('span', { class: 'tabular-nums', text: fmtNum(m.refunds) }) : null],
+      ['gmm.actions', h('span', { class: 'tabular-nums', text: fmtNum(m.actions || 0) })],
+      ['gmm.forcedBy', m.forcedBy ? h('span', { 'data-gm-forced': '', text: m.forcedBy }) : null],
+      ['gmm.note', m.note ? h('span', { dir: 'auto', text: m.note }) : null],
+      ['gmm.created', dateCell(m.createdAt)],
+      ['gmm.started', m.startedAt ? dateCell(m.startedAt) : null],
+      ['gmm.ended', m.endedAt ? dateCell(m.endedAt) : null]
+    ])));
+    var rows = (m.entries || []).map(function (e) {
+      var fee = e.fee && e.fee.amount ? fmtNum(e.fee.amount) + ' ' + keyName('currency', e.fee.currencyKey) : '';
+      var won = e.amount && e.amount.amount ? fmtNum(e.amount.amount) + ' ' + keyName('currency', e.amount.currencyKey) : '';
+      return h('div', { class: 'flex flex-wrap items-center gap-2 py-2 border-b border-secondary-200 dark:border-secondary-700 text-sm', 'data-gm-entry': e.userId },
+        e.rank ? h('span', { class: 'tabular-nums text-secondary-500 w-6', text: localDigits(e.rank) }) : null,
+        playerLink(e.userId, e.username, 'font-medium'), e.bot ? tag(t('gmm.bot'), 'secondary') : null,
+        tag(t('gmm.entry.' + e.status), e.status === 'refunded' ? 'warning' : 'secondary'),
+        e.result ? tag(t('gmm.result.' + e.result), e.result === 'won' ? 'success' : e.result === 'forfeit' ? 'error' : 'secondary') : null,
+        e.released ? tag(t('gmm.released'), 'secondary') : null,
+        fee ? h('span', { class: 'tabular-nums text-secondary-500', text: t('gmm.fee', { v: fee }) }) : null,
+        won ? h('span', { class: 'tabular-nums text-success-600', text: t('gmm.won', { v: won }) }) : null,
+        e.prizeStatus && e.prizeStatus !== 'none' ? tag(t('gmm.prize.' + e.prizeStatus), 'primary') : null,
+        e.error ? h('span', { class: 'text-error-600 dark:text-error-400', text: e.error }) : null);
+    });
+    grid.appendChild(section('gmm.entries', withKeyNames(function () { return rows.length ? h('div', {}, rows) : h('p', { class: 'text-sm text-secondary-500', text: t('gmm.entries.none') }); })));
+    if (m.results) grid.appendChild(card(h('div', { class: 'p-4' }, h('h2', { class: 'text-lg font-medium mb-3', text: t('gmm.results') }), jsonBlock(m.results)), 'eco-span-all'));
+    grid.appendChild(timeline(m.id));
+  }
+  function endDialog(m) {
+    var seated = (m.entries || []).filter(function (e) { return e.status === 'paid' || e.status === 'free'; });
+    var vals = { winner: seated[0] ? seated[0].userId : null, reason: '' };
+    var sel = selectInput(vals.winner, seated.map(function (e) { return { value: e.userId, label: (e.username || e.userId) + (e.bot ? ' · ' + t('gmm.bot') : '') }; }), function (v) { vals.winner = v; }, { placeholder: false, label: t('gmm.end.winner') });
+    sel.setAttribute('data-gm-winner', '');
+    var reason = textInput('', { label: t('gmm.reason'), oninput: function (v) { vals.reason = v; } });
+    reason.setAttribute('data-gm-reason', '');
+    confirmModal({ title: t('gmm.end'), text: t('gmm.end.text'), icon: 'prizes', ok: t('gmm.end.ok'), body: h('div', { class: 'mt-3 flex flex-col gap-2' }, field(t('gmm.end.winner'), sel), field(t('gmm.reason'), reason, null, { optional: true })) }).then(function (ok) {
+      if (!ok) return;
+      api('POST', '/game-matches/' + encodeURIComponent(m.id) + '/end', { winnerUserId: vals.winner, reason: vals.reason.trim() }).then(function () {
+        toast('success', t('gmm.end.done'));
+        setTimeout(load, 400);
+      }, function (err) { toast('error', errorText(err)); });
+    });
+  }
+  function cancelDialog(m) {
+    var vals = { reason: '' };
+    var reason = textInput('', { label: t('gmm.reason'), oninput: function (v) { vals.reason = v; } });
+    confirmModal({ title: t('gmm.cancel'), text: t(m.status === 'started' ? 'gmm.cancel.started' : 'gmm.cancel.open'), danger: true, ok: t('gmm.cancel.ok'), body: h('div', { class: 'mt-3' }, field(t('gmm.reason'), reason, null, { optional: true })) }).then(function (ok) {
+      if (!ok) return;
+      api('POST', '/game-matches/' + encodeURIComponent(m.id) + '/cancel', { reason: vals.reason.trim() }).then(function (res) {
+        toast('success', t('gmm.cancel.done', { n: fmtNum(res.refunded || 0) }));
+        setTimeout(load, 400);
+      }, function (err) { toast('error', errorText(err)); });
+    });
+  }
+  load();
+}
+
+function liveDialog(id) {
+  var body = h('div', { 'data-gm-live': id }, bar('60%'));
+  var close;
+  function load() {
+    api('GET', '/game-matches/' + encodeURIComponent(id) + '/live').then(function (res) { clear(body).appendChild(jsonBlock(res)); }, function (err) { clear(body).appendChild(notice('error', errorText(err))); });
+  }
+  var again = button({ variant: 'ghost', size: 'footer', icon: 'refresh', label: t('refresh'), onclick: load });
+  close = panelOpen(t('gmm.live'), body, h('div', { class: 'flex gap-4 w-full items-center justify-end' }, again, button({ variant: 'primary', size: 'footer', label: t('close'), onclick: function () { close(); } })));
+  load();
+}
+
+function timeline(id) {
+  var list = h('ol', { class: 'flex flex-col', 'data-gm-timeline': id });
+  var more = button({ variant: 'link', size: 'sm', label: t('gmm.more'), onclick: function () { load(); } });
+  more.setAttribute('data-gm-more', '');
+  var count = h('span', { class: 'text-sm text-secondary-500 tabular-nums' });
+  var after = 0;
+  function load() {
+    setBusy(more, true);
+    api('GET', '/game-matches/' + encodeURIComponent(id) + '/actions?after=' + after + '&limit=200').then(function (res) {
+      setBusy(more, false);
+      (res.items || []).forEach(function (a) {
+        after = Math.max(after, a.seq);
+        list.appendChild(h('li', { class: 'flex flex-wrap items-start gap-2 py-1.5 border-b border-secondary-200 dark:border-secondary-700 text-sm', 'data-gm-action-row': a.kind },
+          h('span', { class: 'tabular-nums text-secondary-500 w-10', text: localDigits(a.seq) }),
+          tag(has('gmm.kind.' + a.kind) ? t('gmm.kind.' + a.kind) : a.kind, 'secondary'),
+          a.userId ? playerLink(a.userId, a.username) : null,
+          a.data && Object.keys(a.data).length ? h('span', { class: 'font-mono text-xs text-secondary-600 dark:text-secondary-300 break-all min-w-0 flex-1', dir: 'ltr', text: JSON.stringify(a.data) }) : h('span', { class: 'flex-1' }),
+          h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: fmtDate(a.at, true) })));
+      });
+      count.textContent = t('gmm.timeline.count', { n: fmtNum(after), total: fmtNum(res.total || 0) });
+      more.hidden = after >= (res.total || 0);
+      if (!list.children.length) list.appendChild(h('li', { class: 'text-sm text-secondary-500', text: t('gmm.timeline.none') }));
+    }, function (err) { setBusy(more, false); toast('error', errorText(err)); });
+  }
+  load();
+  return card(h('div', { class: 'p-4' }, h('div', { class: 'flex items-center justify-between gap-2 mb-3' }, h('h2', { class: 'text-lg font-medium', text: t('gmm.timeline') }), count), list, h('div', { class: 'mt-2' }, more)), 'eco-span-all');
+}
+
+function roomPlayEditor(cur, change, row) {
+  var vals = Object.assign({ players: null, humanSeats: null, botFillSeconds: null, botTemplate: '', botsPay: false, payout: 'prize', payoutPercent: null, loserPrizeId: null, winnerXp: null, loserXp: null,
+    overdraft: false, newPlayersOnly: false, replaces: '', disabled: false }, cur || {});
+  var summary = h('span', { class: 'text-sm text-secondary-700 dark:text-secondary-200 min-w-0', 'data-gm-play-summary': '' });
+  var panel = h('div', { class: 'mt-3 pt-3 border-t border-secondary-200 dark:border-secondary-700', hidden: true, 'data-gm-play-panel': '' });
+  var form = null;
+  function text() {
+    var p = [];
+    if (vals.players) p.push(t('gm.play.sum.players', { n: fmtNum(vals.players) }));
+    if (vals.humanSeats) p.push(t('gm.play.sum.humans', { n: fmtNum(vals.humanSeats) }));
+    if (vals.botFillSeconds) p.push(t('gm.play.sum.fill', { n: fmtNum(vals.botFillSeconds) }));
+    if (vals.payout === 'pot') p.push(t('gm.play.sum.pot', { n: fmtNum(vals.payoutPercent || 0) }));
+    if (vals.botsPay) p.push(t('gm.play.sum.botsPay'));
+    if (vals.overdraft) p.push(t('gm.play.sum.overdraft'));
+    if (vals.newPlayersOnly) p.push(t('gm.play.sum.np', { room: vals.replaces || t('none') }));
+    if (vals.disabled) p.push(t('gm.play.sum.off'));
+    return p.length ? p.join(' · ') : t('gm.play.sum.none');
+  }
+  function paint() {
+    summary.textContent = text();
+    toggleBtn.querySelector('[data-label]').textContent = t(panel.hidden ? 'gm.req.edit' : 'gm.req.close');
+  }
+  function emit() { change(Object.assign({}, vals)); paint(); }
+  var toggleBtn = h('button', { type: 'button', class: 'inline-flex items-center gap-1 text-sm font-medium text-primary-700 dark:text-primary-300 hover:underline shrink-0 min-h-9 px-1', 'data-gm-play-toggle': '',
+    onclick: function () {
+      if (!form) {
+        form = buildForm([
+          { type: 'row', fields: [
+            { name: 'players', type: 'number', label: 'f.gm.play.players', hint: 'f.gm.play.players.hint', optional: true, min: 2, max: 100 },
+            { name: 'humanSeats', type: 'number', label: 'f.gm.play.humans', hint: 'f.gm.play.humans.hint', optional: true, min: 1, max: 100 }
+          ] },
+          { type: 'row', fields: [
+            { name: 'botFillSeconds', type: 'number', label: 'f.gm.play.fill', hint: 'f.gm.play.fill.hint', optional: true, min: 0, max: 600 },
+            { name: 'botTemplate', type: 'text', ltr: true, label: 'f.gm.play.template', hint: 'f.gm.play.template.hint', optional: true }
+          ] },
+          { name: 'botsPay', type: 'bool', inline: true, label: 'f.gm.play.botsPay', hint: 'f.gm.play.botsPay.hint' },
+          { type: 'row', fields: [
+            { name: 'payout', type: 'select', noPlaceholder: true, label: 'f.gm.play.payout', options: function () { return [{ value: 'prize', label: t('gm.play.payout.prize') }, { value: 'pot', label: t('gm.play.payout.pot') }]; } },
+            { name: 'payoutPercent', type: 'number', label: 'f.gm.play.percent', hint: 'f.gm.play.percent.hint', required: true, min: 0, max: 100, when: function (v) { return v.payout === 'pot'; } }
+          ] },
+          { name: 'loserPrizeId', type: 'ref', resource: 'prizes', label: 'f.gm.play.loserPrize', hint: 'f.gm.play.loserPrize.hint', optional: true },
+          { type: 'row', fields: [
+            { name: 'winnerXp', type: 'number', label: 'f.gm.play.winnerXp', optional: true, min: 0, max: 1000000 },
+            { name: 'loserXp', type: 'number', label: 'f.gm.play.loserXp', optional: true, min: 0, max: 1000000 }
+          ] },
+          { name: 'overdraft', type: 'bool', inline: true, label: 'f.gm.play.overdraft', hint: 'f.gm.play.overdraft.hint' },
+          { name: 'newPlayersOnly', type: 'bool', inline: true, label: 'f.gm.play.np', hint: 'f.gm.play.np.hint' },
+          { name: 'replaces', type: 'text', ltr: true, label: 'f.gm.play.replaces', hint: 'f.gm.play.replaces.hint', required: true, when: function (v) { return v.newPlayersOnly; } },
+          { name: 'disabled', type: 'bool', inline: true, label: 'f.gm.play.disabled', hint: 'f.gm.play.disabled.hint' }
+        ], vals, { onchange: emit });
+        panel.appendChild(form.el);
+        panel.addEventListener('input', function () { setTimeout(emit, 0); });
+        panel.addEventListener('change', function () { setTimeout(emit, 0); });
+        panel.addEventListener('click', function () { setTimeout(emit, 0); });
+      }
+      panel.hidden = !panel.hidden;
+      paint();
+    } }, icon('gear', 'h-4 w-4'), h('span', { 'data-label': '' }));
+  var box = h('div', { class: 'border border-dashed border-secondary-300 dark:border-secondary-600 rounded-md px-3 py-2', 'data-gm-play': '' },
+    h('div', { class: 'flex flex-wrap items-center justify-between gap-2' }, h('div', { class: 'flex items-center gap-2 min-w-0' }, icon('bots', 'h-4 w-4 shrink-0 text-secondary-500'), summary), toggleBtn), panel);
+  paint();
+  box.validate = function () {
+    if (!form) return null;
+    if (!form.validate()) { panel.hidden = false; paint(); return t('err.form'); }
+    return null;
+  };
+  return box;
+}
+
+function roomPlayFrom(r) {
+  return { players: r.players || null, humanSeats: r.humanSeats || null, botFillSeconds: r.botFillSeconds || null, botTemplate: r.botTemplate || '', botsPay: !!r.botsPay,
+    payout: r.payout === 'pot' ? 'pot' : 'prize', payoutPercent: r.payoutPercent == null ? null : r.payoutPercent, loserPrizeId: r.loserPrizeId || null, winnerXp: r.winnerXp || null,
+    loserXp: r.loserXp || null, overdraft: !!r.overdraft, newPlayersOnly: !!r.newPlayersOnly, replaces: r.replaces || '', disabled: !!r.disabled };
+}
+
+function roomPlayTo(p) {
+  p = p || {};
+  var num = function (v) { return v == null || v === '' ? null : Number(v); };
+  return { players: num(p.players), humanSeats: num(p.humanSeats), botFillSeconds: num(p.botFillSeconds), botTemplate: p.botTemplate || '', botsPay: !!p.botsPay,
+    payout: p.payout === 'pot' ? 'pot' : 'prize', payoutPercent: p.payout === 'pot' ? num(p.payoutPercent) : null, loserPrizeId: p.loserPrizeId || '', winnerXp: num(p.winnerXp), loserXp: num(p.loserXp),
+    overdraft: !!p.overdraft, newPlayersOnly: !!p.newPlayersOnly, replaces: p.newPlayersOnly ? (p.replaces || '') : '', disabled: !!p.disabled };
+}
+
+(function () {
+  var g = RESOURCES.games;
+  var rooms = g.fields.filter(function (f) { return f.name === 'rooms'; })[0];
+  rooms.columns.push({ name: 'play', type: 'custom', label: 'f.gm.room.play', optional: true, wide: true, build: roomPlayEditor });
+  var bots = g.fields.filter(function (f) { return f.name === 'botsAllowed'; })[0];
+  g.fields.splice(g.fields.indexOf(bots) + 1, 0, { name: 'oneMatchPerPlayer', type: 'bool', inline: true, label: 'f.gm.oneMatch', hint: 'f.gm.oneMatch.hint' });
+  var defaults = g.defaults, toForm = g.toForm, fixPayload = g.fixPayload, newRow = rooms.newRow;
+  rooms.newRow = function (rows) { var r = newRow(rows); r.play = roomPlayFrom({}); return r; };
+  g.defaults = function (q) { var v = defaults(q); v.oneMatchPerPlayer = false; return v; };
+  g.toForm = function (v) {
+    var raw = (v.rooms || []).slice();
+    var out = toForm(v);
+    out.rooms.forEach(function (r, i) { r.play = roomPlayFrom(raw[i] || {}); });
+    out.oneMatchPerPlayer = !!v.oneMatchPerPlayer;
+    return out;
+  };
+  g.fixPayload = function (p) {
+    var plays = (p.rooms || []).map(function (r) { return r.play; });
+    var out = fixPayload(p);
+    out.rooms = out.rooms.map(function (r, i) { return Object.assign(r, roomPlayTo(plays[i])); });
+    out.oneMatchPerPlayer = !!p.oneMatchPerPlayer;
+    return out;
+  };
+})();
+
 var UPDATES = { summary: null, at: 0, busy: false };
 var UP_AREA_ICON = { migrations: 'database', core: 'server', plugins: 'puzzle', console: 'dashboard', deps: 'package', build: 'code', e2e: 'checklist', docs: 'book', other: 'files' };
 var UP_WARN_ICON = { migrations: 'database', migrationsChanged: 'database', env: 'key', goVersion: 'cpu', deps: 'package', breaking: 'warn' };
@@ -30838,6 +32167,7 @@ function nativeTweaks() {
   playerFriendGiftsCard();
   playerChatQuotaCard();
   playerSocialCard();
+  playerGameStatsCard();
 }
 
 var ROOT_ID = 'economy-root';

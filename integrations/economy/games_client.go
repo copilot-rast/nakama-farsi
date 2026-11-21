@@ -187,8 +187,12 @@ func (s *service) gameView(ctx context.Context, g *gameRecord, lk *gameLookups) 
 		return nil, err
 	}
 	rooms := []map[string]any{}
-	for i := range g.Rooms {
-		r := g.Rooms[i]
+	order, isNew, err := s.roomsFor(ctx, lk.userID, g, lk.path)
+	if err != nil {
+		return nil, err
+	}
+	npOffered := len(s.newPlayerRooms(g)) > 0 && pathOr(lk.path) == gamecatalog.PathMatchmaking
+	for _, r := range order {
 		el := eligibilityFor(lk, g.Requirements, &r)
 		if el.hidden {
 			continue
@@ -216,6 +220,8 @@ func (s *service) gameView(ctx context.Context, g *gameRecord, lk *gameLookups) 
 		if prize != nil {
 			room["prize"] = prize
 		}
+		s.roomExtras(ctx, lk, g, r, room)
+		room["joinable"] = !(isNew && npOffered) || r.NewPlayersOnly
 		rooms = append(rooms, room)
 	}
 	def, registered := gamecatalog.Lookup(g.Key)
@@ -224,6 +230,7 @@ func (s *service) gameView(ctx context.Context, g *gameRecord, lk *gameLookups) 
 		"iconUrl": g.IconURL, "category": nil, "tags": g.Tags, "minPlayers": g.MinPlayers, "maxPlayers": g.MaxPlayers,
 		"turnSeconds": g.TurnSeconds, "matchSeconds": g.MatchSeconds, "botsAllowed": g.BotsAllowed, "leaderboardId": g.LeaderboardID,
 		"rooms": rooms, "settings": g.Settings, "sort": g.Sort, "voice": g.Voice, "realtime": registered && def.Realtime, "multiplayer": g.MaxPlayers > 1, "level": lk.level,
+		"oneMatchPerPlayer": g.OneMatch, "newPlayer": isNew,
 	}
 	if !g.Active {
 		view["maintenance"] = lk.langs.Resolve(g.Maintenance, lk.lang)

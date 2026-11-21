@@ -32,6 +32,48 @@ type Room struct {
 	PrizeGroupID string            `json:"prizeGroupId,omitempty"`
 	MinLevel     int               `json:"minLevel,omitempty"`
 	Requirements *Requirements     `json:"requirements,omitempty"`
+
+	Players        int    `json:"players,omitempty"`
+	HumanSeats     int    `json:"humanSeats,omitempty"`
+	BotFillSeconds int    `json:"botFillSeconds,omitempty"`
+	BotTemplate    string `json:"botTemplate,omitempty"`
+	BotsPay        bool   `json:"botsPay,omitempty"`
+	Payout         string `json:"payout,omitempty"`
+	PayoutPercent  int    `json:"payoutPercent,omitempty"`
+	LoserPrizeID   string `json:"loserPrizeId,omitempty"`
+	WinnerXP       int    `json:"winnerXp,omitempty"`
+	LoserXP        int    `json:"loserXp,omitempty"`
+	Overdraft      bool   `json:"overdraft,omitempty"`
+	NewPlayersOnly bool   `json:"newPlayersOnly,omitempty"`
+	Replaces       string `json:"replaces,omitempty"`
+	Disabled       bool   `json:"disabled,omitempty"`
+}
+
+const (
+	PayoutPrize = "prize"
+	PayoutPot   = "pot"
+)
+
+func (r *Room) Seats(g *Game) int {
+	if r != nil && r.Players > 0 {
+		return r.Players
+	}
+	if g != nil && g.MaxPlayers > 0 {
+		return g.MaxPlayers
+	}
+	return 2
+}
+
+func (r *Room) Humans(g *Game) int {
+	seats := r.Seats(g)
+	if r == nil || r.HumanSeats <= 0 || r.HumanSeats > seats {
+		return seats
+	}
+	return r.HumanSeats
+}
+
+func (r *Room) PotMode() bool {
+	return r != nil && r.Payout == PayoutPot
 }
 
 // Entry paths. A requirement set applies to the paths it lists (none listed = every path).
@@ -135,6 +177,7 @@ type Game struct {
 	MatchSeconds  int               `json:"matchSeconds,omitempty"`
 	BotsAllowed   bool              `json:"botsAllowed"`
 	LeaderboardID string            `json:"leaderboardId,omitempty"`
+	OneMatch      bool              `json:"oneMatchPerPlayer"`
 	Rooms         []Room            `json:"rooms"`
 	Requirements  *Requirements     `json:"requirements,omitempty"`
 	Settings      map[string]any    `json:"settings"`
@@ -200,6 +243,7 @@ type Entry struct {
 	Room    string
 	UserID  string
 	Path    string
+	Bot     bool
 }
 
 type EntryResult struct {
@@ -212,10 +256,14 @@ type EntryResult struct {
 }
 
 type Payout struct {
-	UserID  string           `json:"userId"`
-	PrizeID string           `json:"prizeId,omitempty"`
-	Rewards []map[string]any `json:"rewards"`
-	Error   string           `json:"error,omitempty"`
+	UserID   string           `json:"userId"`
+	Status   string           `json:"status,omitempty"`
+	Rank     int              `json:"rank,omitempty"`
+	PrizeID  string           `json:"prizeId,omitempty"`
+	Amount   *Fee             `json:"amount,omitempty"`
+	Refunded *Fee             `json:"refunded,omitempty"`
+	Rewards  []map[string]any `json:"rewards"`
+	Error    string           `json:"error,omitempty"`
 }
 
 type Error struct {
@@ -246,6 +294,12 @@ type Provider interface {
 	Start(ctx context.Context, matchID string) error
 	Cancel(ctx context.Context, matchID string) (int, error)
 	Finish(ctx context.Context, matchID string, winners []string) ([]Payout, error)
+	Settle(ctx context.Context, st Settlement) ([]Payout, error)
+	Void(ctx context.Context, matchID, reason, by string) (int, error)
+	Release(ctx context.Context, matchID, userID string) error
+	Active(ctx context.Context, userID string) (*ActiveMatch, error)
+	Bots(ctx context.Context, q BotQuery) ([]Bot, error)
+	Log(ctx context.Context, matchID string, actions []Action) error
 }
 
 // Checker is implemented by providers that can tell whether a player may enter a room without

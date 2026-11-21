@@ -62,6 +62,7 @@ type gameRecord struct {
 	Sort          int                       `json:"sort"`
 	Voice         bool                      `json:"voiceEnabled"`
 	Requirements  *gamecatalog.Requirements `json:"requirements"`
+	OneMatch      bool                      `json:"oneMatchPerPlayer"`
 }
 
 const gameRecordJSON = `jsonb_build_object('id',t.id,'key',t.key,'isActive',t.is_active,'name',t.name,'description',t.description,'maintenance',t.maintenance,'iconUrl',t.icon_url,
@@ -70,7 +71,7 @@ const gameRecordJSON = `jsonb_build_object('id',t.id,'key',t.key,'isActive',t.is
 	'tags',(SELECT COALESCE(jsonb_agg(g.key ORDER BY g.key),'[]'::jsonb) FROM base_tag g WHERE g.id::text = ANY(t.tag_ids)),
 	'minPlayers',t.min_players,'maxPlayers',t.max_players,'turnSeconds',COALESCE(t.turn_seconds,0),'matchSeconds',COALESCE(t.match_seconds,0),'botsAllowed',t.bots_allowed,
 	'rooms',t.rooms,'leaderboardId',COALESCE(t.leaderboard_id,''),'platforms',to_jsonb(t.platforms),'minVersion',COALESCE(t.min_version,''),'maxVersion',COALESCE(t.max_version,''),
-	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled,'requirements',t.requirements)`
+	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled,'requirements',t.requirements,'oneMatchPerPlayer',t.one_match)`
 
 type gameCache struct {
 	mu      sync.Mutex
@@ -156,7 +157,7 @@ func (g *gameRecord) public() *gamecatalog.Game {
 	rooms := make([]gamecatalog.Room, len(g.Rooms))
 	copy(rooms, g.Rooms)
 	return &gamecatalog.Game{ID: g.ID, Key: g.Key, Active: g.Active, Name: map[string]string(g.Name), MinPlayers: g.MinPlayers, MaxPlayers: g.MaxPlayers,
-		TurnSeconds: g.TurnSeconds, MatchSeconds: g.MatchSeconds, BotsAllowed: g.BotsAllowed, LeaderboardID: g.LeaderboardID, Rooms: rooms, Settings: settings, Requirements: g.Requirements}
+		TurnSeconds: g.TurnSeconds, MatchSeconds: g.MatchSeconds, BotsAllowed: g.BotsAllowed, LeaderboardID: g.LeaderboardID, OneMatch: g.OneMatch, Rooms: rooms, Settings: settings, Requirements: g.Requirements}
 }
 
 func (g *gameRecord) room(key string) (*gamecatalog.Room, error) {
@@ -179,6 +180,17 @@ func (g *gameRecord) room(key string) (*gamecatalog.Room, error) {
 		}
 	}
 	return nil, notFound("ROOM_NOT_FOUND")
+}
+
+func (g *gameRecord) liveRoom(key string) (*gamecatalog.Room, error) {
+	r, err := g.room(key)
+	if err != nil {
+		return nil, err
+	}
+	if r.Disabled {
+		return nil, conflict("ROOM_DISABLED", "this room is switched off for now")
+	}
+	return r, nil
 }
 
 func versionParts(v string) ([]int64, string, bool) {
@@ -330,9 +342,17 @@ func (s *service) gameJoinCheck(ctx context.Context, userID, key, roomKey, platf
 	if g.MaxPlayers < 2 {
 		return nil, badRequest("SINGLE_PLAYER_GAME", "game", "this game is played alone; it has no matchmaking")
 	}
-	room, err := g.room(roomKey)
+	room, err := g.liveRoom(roomKey)
 	if err != nil {
 		return nil, err
+	}
+	if err := s.newPlayerGate(ctx, userID, g, room, path); err != nil {
+		return nil, err
+	}
+	if g.OneMatch {
+		if err := s.oneMatchGate(ctx, userID, ""); err != nil {
+			return nil, err
+		}
 	}
 	level, err := s.playerLevel(ctx, userID)
 	if err != nil {
@@ -350,7 +370,7 @@ func (s *service) gameJoinCheck(ctx context.Context, userID, key, roomKey, platf
 	if len(rc.Missing) > 0 {
 		return nil, s.requirementsError(ctx, userID, lang, g, room, path, rc)
 	}
-	if room.EntryFee != nil && room.EntryFee.Amount > 0 {
+	if room.EntryFee != nil && room.EntryFee.Amount > 0 && !room.Overdraft {
 		if err := s.ensureDefaults(ctx, userID); err != nil {
 			return nil, err
 		}
@@ -365,7 +385,7 @@ func (s *service) gameJoinCheck(ctx context.Context, userID, key, roomKey, platf
 		}
 	}
 	def, _ := gamecatalog.Lookup(g.Key)
-	t := &gameTicket{Game: g.Key, Room: room.Key, Query: ticketQuery(g.Key, room.Key), MinCount: g.MinPlayers, MaxCount: g.MaxPlayers,
+	t := &gameTicket{Game: g.Key, Room: room.Key, Query: ticketQuery(g.Key, room.Key), MinCount: g.MinPlayers, MaxCount: room.Seats(g.public()),
 		StringProperties: map[string]string{"game": g.Key}, NumericProperties: map[string]float64{"level": float64(level)}, EntryFee: room.EntryFee, Realtime: def.Realtime, Level: level, Path: path}
 	for _, r := range rc.Sets {
 		t.Consumes = t.Consumes || r.Consumes()
@@ -423,8 +443,20 @@ func (s *service) gameEnter(ctx context.Context, e gamecatalog.Entry) (gamecatal
 	if err != nil {
 		return res, err
 	}
+	bot := e.Bot && s.isBot(ctx, e.UserID)
+	if e.Bot && !bot {
+		return res, badRequest("NOT_A_BOT", "userId", "this account is not a bot")
+	}
 	sets := reqSets(g.Requirements, room, path)
-	if room.MinLevel > 0 || len(sets) > 0 {
+	if bot {
+		sets = nil
+	}
+	if !bot && g.OneMatch {
+		if err := s.oneMatchGate(ctx, e.UserID, matchID); err != nil {
+			return res, err
+		}
+	}
+	if !bot && (room.MinLevel > 0 || len(sets) > 0) {
 		level, err := s.playerLevel(ctx, e.UserID)
 		if err != nil {
 			return res, err
@@ -449,7 +481,8 @@ func (s *service) gameEnter(ctx context.Context, e gamecatalog.Entry) (gamecatal
 		}
 	}
 	var tickets *gameTickets
-	if room.EntryFee != nil && room.EntryFee.Amount > 0 {
+	charge := room.EntryFee != nil && room.EntryFee.Amount > 0 && (!bot || room.BotsPay)
+	if charge && !bot {
 		if err := s.ensureDefaults(ctx, e.UserID); err != nil {
 			return res, err
 		}
@@ -465,7 +498,7 @@ func (s *service) gameEnter(ctx context.Context, e gamecatalog.Entry) (gamecatal
 		if gameKey != g.Key || roomKey != room.Key {
 			return conflict("MATCH_MISMATCH", "this match belongs to another game or room")
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO economy_game_entry (match_id, user_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`, matchID, e.UserID); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO economy_game_entry (match_id, user_id, bot) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING`, matchID, e.UserID, bot); err != nil {
 			return err
 		}
 		var entryStatus string
@@ -488,15 +521,22 @@ func (s *service) gameEnter(ctx context.Context, e gamecatalog.Entry) (gamecatal
 		if !g.Active {
 			return s.gameDisabled(ctx, g, e.UserID, "")
 		}
+		if room.Disabled {
+			return conflict("ROOM_DISABLED", "this room is switched off for now")
+		}
 		if entryStatus != "pending" {
 			attempt++
 		}
 		next := "free"
 		var feeJSON any
-		if room.EntryFee != nil && room.EntryFee.Amount > 0 {
+		if charge {
 			fee := gameFee{CurrencyKey: room.EntryFee.CurrencyKey, Amount: room.EntryFee.Amount}
-			if err := s.walletChange(ctx, tx, e.UserID, gameGrantID(matchID, e.UserID, "fee", strconv.Itoa(attempt)), map[string]int64{fee.CurrencyKey: -fee.Amount}, map[string]any{
-				"reason": gameEntryReason, "sourceType": gameSourceType, "sourceId": matchID, "game": g.Key, "room": room.Key, "part": "debit",
+			change := s.walletChange
+			if room.Overdraft && !bot {
+				change = s.walletChangeOverdraft
+			}
+			if err := change(ctx, tx, e.UserID, gameGrantID(matchID, e.UserID, "fee", strconv.Itoa(attempt)), map[string]int64{fee.CurrencyKey: -fee.Amount}, map[string]any{
+				"reason": gameEntryReason, "sourceType": gameSourceType, "sourceId": matchID, "game": g.Key, "room": room.Key, "part": "debit", "bot": bot,
 			}); err != nil {
 				return err
 			}
@@ -507,6 +547,11 @@ func (s *service) gameEnter(ctx context.Context, e gamecatalog.Entry) (gamecatal
 			res.Fee = &gamecatalog.Fee{CurrencyKey: fee.CurrencyKey, Amount: fee.Amount}
 		}
 		var ticketsJSON any
+		if bot {
+			if _, err := tx.ExecContext(ctx, `UPDATE economy_bot SET games=games+1, last_used_at=now() WHERE user_id=$1`, e.UserID); err != nil {
+				return err
+			}
+		}
 		for _, r := range sets {
 			if r.Consumes() {
 				t, err := consumeTickets(ctx, tx, e.UserID, sets)
@@ -546,7 +591,7 @@ func (s *service) gameEnter(ctx context.Context, e gamecatalog.Entry) (gamecatal
 		return res, err
 	}
 	s.logTickets(ctx, e.UserID, matchID, g.Key, room.Key, "game_ticket", tickets)
-	if res.Charged {
+	if res.Charged && !bot {
 		activity.Safe(ctx, s.db, s.logger, activity.Entry{UserID: e.UserID, Kind: activity.KindPrize, Action: "game_entry", RefID: matchID, Actor: "system",
 			Data: map[string]any{"game": g.Key, "room": room.Key, "currency": res.Fee.CurrencyKey, "amount": res.Fee.Amount}})
 	}
@@ -655,6 +700,10 @@ func (s *service) gameStart(ctx context.Context, matchID string) error {
 }
 
 func (s *service) gameCancel(ctx context.Context, matchID string) (int, error) {
+	return s.cancelMatch(ctx, matchID, false, "", "")
+}
+
+func (s *service) cancelMatch(ctx context.Context, matchID string, force bool, reason, by string) (int, error) {
 	matchID, err := cleanMatchID(matchID)
 	if err != nil {
 		return 0, err
@@ -672,10 +721,12 @@ func (s *service) gameCancel(ctx context.Context, matchID string) (int, error) {
 			return err
 		}
 		cancelledGame = gameKey
-		switch status {
-		case "cancelled":
+		switch {
+		case status == "cancelled":
 			return nil
-		case "started", "finished":
+		case status == "finished" && force:
+			return conflict("MATCH_FINISHED", "this match has already finished")
+		case (status == "started" && !force) || status == "finished":
 			return conflict("MATCH_STARTED", "a match that has started cannot be cancelled")
 		}
 		type row struct {
@@ -715,7 +766,7 @@ func (s *service) gameCancel(ctx context.Context, matchID string) (int, error) {
 				refunded++
 			}
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE economy_game_match SET status='cancelled', ended_at=now() WHERE id=$1`, matchID); err != nil {
+		if _, err := tx.ExecContext(ctx, `UPDATE economy_game_match SET status='cancelled', ended_at=now(), end_reason=COALESCE(NULLIF($2,''), end_reason, 'cancelled'), forced_by=NULLIF($3,'') WHERE id=$1`, matchID, reason, by); err != nil {
 			return err
 		}
 		_, err = s.refreshPlayers(ctx, tx, matchID)
@@ -962,6 +1013,7 @@ func (s *service) matchmakerMatched(ctx context.Context, logger runtime.Logger, 
 }
 
 func (s *service) sweepGames(ctx context.Context) {
+	s.sweepGameHistory(ctx)
 	if _, err := s.db.ExecContext(ctx, `DELETE FROM economy_game_entry WHERE (match_id, user_id) IN (SELECT e.match_id, e.user_id FROM economy_game_entry e
 		JOIN economy_game_match m ON m.id=e.match_id WHERE m.status IN ('finished','cancelled') AND NOT EXISTS (SELECT 1 FROM users u WHERE u.id = e.user_id) LIMIT 500)`); err != nil {
 		s.logger.Warn("Economy game entry sweep failed: %v", err)

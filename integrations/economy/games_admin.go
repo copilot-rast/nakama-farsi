@@ -17,7 +17,7 @@ import (
 const gameAdminJSON = `jsonb_build_object('id',t.id,'key',t.key,'isActive',t.is_active,'name',t.name,'description',t.description,'maintenance',t.maintenance,'iconUrl',t.icon_url,
 	'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'minPlayers',t.min_players,'maxPlayers',t.max_players,'turnSeconds',t.turn_seconds,'matchSeconds',t.match_seconds,
 	'botsAllowed',t.bots_allowed,'rooms',t.rooms,'leaderboardId',t.leaderboard_id,'platforms',to_jsonb(t.platforms),'minVersion',t.min_version,'maxVersion',t.max_version,
-	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled,'voiceMaxPlayers',t.voice_max_players,'requirements',t.requirements,'createdAt',t.created_at,'updatedAt',t.updated_at,
+	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled,'voiceMaxPlayers',t.voice_max_players,'requirements',t.requirements,'oneMatchPerPlayer',t.one_match,'createdAt',t.created_at,'updatedAt',t.updated_at,
 	'matches',(SELECT count(*) FROM economy_game_match m WHERE m.game_key=t.key),
 	'finished',(SELECT count(*) FROM economy_game_match m WHERE m.game_key=t.key AND m.status='finished'),
 	'cancelled',(SELECT count(*) FROM economy_game_match m WHERE m.game_key=t.key AND m.status='cancelled'),
@@ -51,6 +51,21 @@ type gameRoomInput struct {
 	PrizeGroupID string          `json:"prizeGroupId"`
 	MinLevel     json.RawMessage `json:"minLevel"`
 	Requirements *gameReqInput   `json:"requirements"`
+
+	Players        json.RawMessage `json:"players"`
+	HumanSeats     json.RawMessage `json:"humanSeats"`
+	BotFillSeconds json.RawMessage `json:"botFillSeconds"`
+	BotTemplate    string          `json:"botTemplate"`
+	BotsPay        bool            `json:"botsPay"`
+	Payout         string          `json:"payout"`
+	PayoutPercent  json.RawMessage `json:"payoutPercent"`
+	LoserPrizeID   string          `json:"loserPrizeId"`
+	WinnerXP       json.RawMessage `json:"winnerXp"`
+	LoserXP        json.RawMessage `json:"loserXp"`
+	Overdraft      bool            `json:"overdraft"`
+	NewPlayersOnly bool            `json:"newPlayersOnly"`
+	Replaces       string          `json:"replaces"`
+	Disabled       bool            `json:"disabled"`
 }
 
 func optionalInt(raw json.RawMessage, field, code, msg string, min, max int) (*int, error) {
@@ -65,7 +80,7 @@ func optionalInt(raw json.RawMessage, field, code, msg string, min, max int) (*i
 	return &n, nil
 }
 
-func cleanGameRooms(ctx context.Context, tx *sql.Tx, langs *localized.Set, in []gameRoomInput) ([]gamecatalog.Room, error) {
+func cleanGameRooms(ctx context.Context, tx *sql.Tx, langs *localized.Set, in []gameRoomInput, maxPlayers int) ([]gamecatalog.Room, error) {
 	if len(in) > maxGameRooms {
 		return nil, badRequest("TOO_MANY_ROOMS", "rooms", "at most 20 rooms")
 	}
@@ -139,9 +154,123 @@ func cleanGameRooms(ctx context.Context, tx *sql.Tx, langs *localized.Set, in []
 		if room.Requirements, err = cleanGameRequirements(ctx, tx, langs, field+".requirements", r.Requirements, true); err != nil {
 			return nil, err
 		}
+		if err := cleanRoomPlay(ctx, tx, field, r, &room, maxPlayers); err != nil {
+			return nil, err
+		}
 		out = append(out, room)
 	}
+	keys := map[string]gamecatalog.Room{}
+	for _, r := range out {
+		keys[r.Key] = r
+	}
+	for i, r := range out {
+		if !r.NewPlayersOnly {
+			continue
+		}
+		field := "rooms[" + strconv.Itoa(i) + "]"
+		target, ok := keys[r.Replaces]
+		if r.Replaces == "" || !ok {
+			return nil, badRequest("REPLACES_REQUIRED", field, "a new player room replaces one of the other rooms of this game")
+		}
+		if target.NewPlayersOnly {
+			return nil, badRequest("REPLACES_NEW_PLAYER_ROOM", field, "a new player room cannot replace another new player room")
+		}
+		for j, o := range out {
+			if j != i && o.NewPlayersOnly && !o.Disabled && !r.Disabled && o.Replaces == r.Replaces {
+				return nil, badRequest("REPLACES_TAKEN", field, "another new player room already replaces this room")
+			}
+		}
+	}
 	return out, nil
+}
+
+func cleanRoomPlay(ctx context.Context, tx *sql.Tx, field string, r gameRoomInput, room *gamecatalog.Room, maxPlayers int) error {
+	players, err := optionalInt(r.Players, field, "INVALID_ROOM_PLAYERS", "the room players are from 2 to the game's most players", 2, 100)
+	if err != nil {
+		return err
+	}
+	if players != nil {
+		if maxPlayers > 0 && *players > maxPlayers {
+			return badRequest("INVALID_ROOM_PLAYERS", field, "the room players are from 2 to the game's most players")
+		}
+		room.Players = *players
+	}
+	humans, err := optionalInt(r.HumanSeats, field, "INVALID_HUMAN_SEATS", "human seats are from 1 to the room players", 1, 100)
+	if err != nil {
+		return err
+	}
+	if humans != nil {
+		seats := room.Players
+		if seats == 0 {
+			seats = maxPlayers
+		}
+		if seats > 0 && *humans > seats {
+			return badRequest("INVALID_HUMAN_SEATS", field, "human seats are from 1 to the room players")
+		}
+		room.HumanSeats = *humans
+	}
+	fill, err := optionalInt(r.BotFillSeconds, field, "INVALID_BOT_FILL", "bot fill is 0 to 600 seconds", 0, 600)
+	if err != nil {
+		return err
+	}
+	if fill != nil {
+		room.BotFillSeconds = *fill
+	}
+	room.BotTemplate = strings.TrimSpace(r.BotTemplate)
+	if len(room.BotTemplate) > 64 {
+		return badRequest("INVALID_BOT_TEMPLATE", field, "at most 64 characters")
+	}
+	room.BotsPay, room.Overdraft, room.Disabled = r.BotsPay, r.Overdraft, r.Disabled
+	switch strings.TrimSpace(r.Payout) {
+	case "", gamecatalog.PayoutPrize:
+		room.Payout = ""
+	case gamecatalog.PayoutPot:
+		room.Payout = gamecatalog.PayoutPot
+		pct, err := optionalInt(r.PayoutPercent, field, "INVALID_PAYOUT_PERCENT", "the payout is 0 to 100 percent of the pot", 0, 100)
+		if err != nil {
+			return err
+		}
+		if pct == nil {
+			return badRequest("INVALID_PAYOUT_PERCENT", field, "the payout is 0 to 100 percent of the pot")
+		}
+		if room.EntryFee == nil {
+			return badRequest("POT_NEEDS_ENTRY_FEE", field, "a pot payout needs an entry fee")
+		}
+		room.PayoutPercent = *pct
+	default:
+		return badRequest("INVALID_PAYOUT", field, "prize or pot")
+	}
+	if id := strings.TrimSpace(r.LoserPrizeID); id != "" {
+		ref, err := refExists(ctx, tx, "economy_prize", field, "PRIZE_NOT_FOUND", id, true)
+		if err != nil {
+			return err
+		}
+		var repeatable bool
+		if err := tx.QueryRowContext(ctx, `SELECT is_repeatable FROM economy_prize WHERE id=$1`, *ref).Scan(&repeatable); err != nil {
+			return err
+		}
+		if !repeatable {
+			return badRequest("PRIZE_NOT_REPEATABLE", field, "a loser prize is paid on every loss, so the prize must be repeatable")
+		}
+		room.LoserPrizeID = *ref
+	}
+	for _, x := range []struct {
+		raw json.RawMessage
+		dst *int
+	}{{r.WinnerXP, &room.WinnerXP}, {r.LoserXP, &room.LoserXP}} {
+		v, err := optionalInt(x.raw, field, "INVALID_XP", "xp is a whole number from 0 to 1000000", 0, 1000000)
+		if err != nil {
+			return err
+		}
+		if v != nil {
+			*x.dst = *v
+		}
+	}
+	room.NewPlayersOnly = r.NewPlayersOnly
+	if room.NewPlayersOnly {
+		room.Replaces = strings.TrimSpace(r.Replaces)
+	}
+	return nil
 }
 
 func saveGame(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
@@ -169,6 +298,7 @@ func saveGame(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 		VoiceEnabled  *bool           `json:"voiceEnabled"`
 		VoiceMax      *int            `json:"voiceMaxPlayers"`
 		Requirements  *gameReqInput   `json:"requirements"`
+		OneMatch      bool            `json:"oneMatchPerPlayer"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -239,7 +369,7 @@ func saveGame(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	if err != nil {
 		return err
 	}
-	rooms, err := cleanGameRooms(ctx, tx, langs, in.Rooms)
+	rooms, err := cleanGameRooms(ctx, tx, langs, in.Rooms, hi)
 	if err != nil {
 		return err
 	}
@@ -322,9 +452,9 @@ func saveGame(s *service, ctx context.Context, tx *sql.Tx, id string, create boo
 	}
 	return execSave(ctx, tx, "economy_game", id, create,
 		[]string{"key", "is_active", "name", "description", "maintenance", "icon_url", "category_id", "tag_ids", "min_players", "max_players", "turn_seconds", "match_seconds",
-			"bots_allowed", "rooms", "leaderboard_id", "platforms", "min_version", "max_version", "settings", "sort", "voice_enabled", "voice_max_players", "requirements"},
+			"bots_allowed", "rooms", "leaderboard_id", "platforms", "min_version", "max_version", "settings", "sort", "voice_enabled", "voice_max_players", "requirements", "one_match"},
 		[]any{key, in.IsActive, i18nJSON(name), i18nJSON(desc), i18nJSON(maint), icon, cat, tags, lo, hi, turn, limit,
-			in.BotsAllowed, string(roomsJSON), board, platforms, minV, maxV, settingsRaw, in.Sort, in.VoiceEnabled == nil || *in.VoiceEnabled, voiceMax, reqJSON})
+			in.BotsAllowed, string(roomsJSON), board, platforms, minV, maxV, settingsRaw, in.Sort, in.VoiceEnabled == nil || *in.VoiceEnabled, voiceMax, reqJSON, in.OneMatch})
 }
 
 func (s *service) gameConsoleRoutes() []consoleRoute {
@@ -391,7 +521,8 @@ func (s *service) consoleGameRegistry(w http.ResponseWriter, r *http.Request) {
 }
 
 const gameMatchAdminJSON = `jsonb_build_object('id',m.id,'gameKey',m.game_key,'gameName',g.name,'roomKey',m.room_key,'status',m.status,'players',m.players,'winners',to_jsonb(m.winners),
-	'createdAt',m.created_at,'startedAt',m.started_at,'endedAt',m.ended_at,
+	'createdAt',m.created_at,'startedAt',m.started_at,'endedAt',m.ended_at,'endReason',m.end_reason,'forcedBy',m.forced_by,'note',m.note,'results',m.results,'actions',m.actions,
+	'bots',(SELECT count(*) FROM economy_game_entry e WHERE e.match_id=m.id AND e.bot),
 	'fees',(SELECT COALESCE(sum((e.fee->>'amount')::bigint),0) FROM economy_game_entry e WHERE e.match_id=m.id AND e.status='paid'),
 	'refunds',(SELECT count(*) FROM economy_game_entry e WHERE e.match_id=m.id AND e.status='refunded'))::text`
 
@@ -435,8 +566,14 @@ func (s *service) consoleGameMatch(w http.ResponseWriter, r *http.Request) {
 	}
 	out := map[string]any{}
 	_ = json.Unmarshal([]byte(raw), &out)
+	var summary sql.NullString
+	_ = s.db.QueryRowContext(r.Context(), `SELECT summary::text FROM economy_game_match WHERE id=$1`, id).Scan(&summary)
+	out["summary"] = nil
+	if summary.Valid {
+		out["summary"] = json.RawMessage(summary.String)
+	}
 	rows, err := s.db.QueryContext(r.Context(), `SELECT jsonb_build_object('userId',e.user_id,'username',u.username,'status',e.status,'fee',e.fee,'prizeId',e.prize_id,'prizeStatus',e.prize_status,
-		'path',e.path,'tickets',e.tickets,'error',e.error,'createdAt',e.created_at,'updatedAt',e.updated_at)::text FROM economy_game_entry e LEFT JOIN users u ON u.id=e.user_id WHERE e.match_id=$1 ORDER BY e.created_at, e.user_id`, id)
+		'path',e.path,'tickets',e.tickets,'error',e.error,'bot',e.bot,'released',e.released,'result',e.result,'rank',e.rank,'amount',e.amount,'createdAt',e.created_at,'updatedAt',e.updated_at)::text FROM economy_game_entry e LEFT JOIN users u ON u.id=e.user_id WHERE e.match_id=$1 ORDER BY e.created_at, e.user_id`, id)
 	if err != nil {
 		s.writeError(w, err)
 		return
@@ -453,13 +590,4 @@ func (s *service) consoleGameMatch(w http.ResponseWriter, r *http.Request) {
 	}
 	out["entries"] = entries
 	writeJSON(w, http.StatusOK, out)
-}
-
-func (s *service) consoleGameMatchCancel(w http.ResponseWriter, r *http.Request) {
-	n, err := s.gameCancel(r.Context(), pathVar(r, "id"))
-	if err != nil {
-		s.writeError(w, err)
-		return
-	}
-	writeJSON(w, http.StatusOK, map[string]any{"refunded": n})
 }

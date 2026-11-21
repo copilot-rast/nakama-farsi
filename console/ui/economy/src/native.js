@@ -388,4 +388,5 @@ function nativeTweaks() {
   playerFriendGiftsCard();
   playerChatQuotaCard();
   playerSocialCard();
+  playerGameStatsCard();
 }
