@@ -7,15 +7,20 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/heroiclabs/nakama-common/api"
 	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/integrations/devkit/apierr"
+	"github.com/heroiclabs/nakama/v3/integrations/insights/internal/events"
 	"github.com/heroiclabs/nakama/v3/integrations/insights/internal/settings"
 	"github.com/heroiclabs/nakama/v3/internal/clusterkit"
+	"github.com/heroiclabs/nakama/v3/internal/gameevents"
+	"github.com/heroiclabs/nakama/v3/internal/insightsapi"
 	"github.com/heroiclabs/nakama/v3/internal/objectstore"
 	"github.com/heroiclabs/nakama/v3/internal/pluginkit"
+	"github.com/heroiclabs/nakama/v3/internal/secretbox"
 )
 
 const (
@@ -24,10 +29,21 @@ const (
 )
 
 type service struct {
-	db     *sql.DB
-	logger runtime.Logger
-	store  objectstore.Store
-	now    func() time.Time
+	db         *sql.DB
+	logger     runtime.Logger
+	store      objectstore.Store
+	now        func() time.Time
+	cat        catalogCache
+	stores     storeManager
+	wake       chan struct{}
+	pending    atomic.Int64
+	secretKey  []byte
+	importWake chan struct{}
+	httpClient *http.Client
+}
+
+func newService(db *sql.DB, logger runtime.Logger, files objectstore.Store) *service {
+	return &service{db: db, logger: logger, store: files, now: time.Now, wake: make(chan struct{}, 1), importWake: make(chan struct{}, 1), httpClient: &http.Client{Timeout: 2 * time.Minute}}
 }
 
 func storageDir(env map[string]string, args []string) string {
@@ -56,7 +72,13 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err != nil {
 		return err
 	}
-	svc := &service{db: db, logger: logger, store: store, now: time.Now}
+	svc := newService(db, logger, store)
+	if secret, err := secretbox.Secret(env); err == nil {
+		if key, err := storageBox.DeriveKey(secret, "insights-secrets"); err == nil {
+			svc.secretKey = key
+		}
+	}
+	apierr.Register("insights", errorDefaults())
 	for name, fn := range svc.clientRPCs() {
 		if err := initializer.RegisterRpc(name, apierr.RPC(db, apierr.RPCOptions{Logger: logger, MaxPayload: maxPayload}, fn)); err != nil {
 			return err
@@ -71,7 +93,11 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := svc.registerConsoleHTTP(initializer); err != nil {
 		return err
 	}
+	insightsapi.Register(svc.serverSink)
+	gameevents.Subscribe("insights", svc.gameEvent)
 	go svc.loop(ctx)
+	go svc.eventLoop(ctx)
+	go svc.connectorLoop(ctx)
 	logger.Info("Insights module registered (%d client RPCs, heatmap traces in %s storage)", len(svc.clientRPCs()), store.Driver())
 	return nil
 }
@@ -81,6 +107,7 @@ func (s *service) clientRPCs() map[string]apierr.Handler {
 		"insights_config":  s.rpcConfig,
 		"insights_session": s.rpcSession,
 		"insights_heatmap": s.rpcHeatmap,
+		"insights_send":    s.rpcSend,
 	}
 }
 
@@ -92,7 +119,7 @@ func (s *service) settings(ctx context.Context) settings.All {
 	return cfg
 }
 
-func (s *service) rpcConfig(ctx context.Context, _ string, _ string) (any, error) {
+func (s *service) rpcConfig(ctx context.Context, _ string, payload string) (any, error) {
 	cfg := s.settings(ctx)
 	maps := []string{}
 	rows, err := s.db.QueryContext(ctx, `SELECT key FROM insights_heatmap_map WHERE enabled ORDER BY key LIMIT 500`)
@@ -105,7 +132,21 @@ func (s *service) rpcConfig(ctx context.Context, _ string, _ string) (any, error
 		}
 		rows.Close()
 	}
+	game := ""
+	var in struct {
+		Game string `json:"game"`
+	}
+	if apierr.Decode(payload, &in) == nil && events.GamePattern.MatchString(in.Game) {
+		game = in.Game
+	}
+	ev := cfg.Events
+	evOut := map[string]any{"enabled": ev.Enabled, "maxBatch": ev.MaxBatch, "maxTags": ev.MaxTags, "maxNameLength": ev.MaxNameLength, "flushSeconds": ev.FlushSeconds,
+		"maxQueue": ev.MaxQueue, "game": game}
+	for k, v := range s.clientCatalog(ctx, game) {
+		evOut[k] = v
+	}
 	return map[string]any{
+		"events":   evOut,
 		"sessions": map[string]any{"source": cfg.Sessions.Source, "pingSeconds": cfg.Sessions.PingSeconds, "timeoutSeconds": cfg.Sessions.TimeoutSeconds},
 		"heatmap": map[string]any{"enabled": cfg.Heatmap.Enabled, "maxPoints": cfg.Heatmap.MaxPoints, "maxBytes": cfg.Heatmap.MaxBytes,
 			"unknownMaps": cfg.Heatmap.UnknownMaps, "maps": maps, "format": "t,x,z,player,kmh"},

@@ -12,6 +12,7 @@ import (
 
 	"github.com/gofrs/uuid/v5"
 	"github.com/heroiclabs/nakama/v3/integrations/devkit/apierr"
+	"github.com/heroiclabs/nakama/v3/integrations/insights/internal/events"
 	"github.com/heroiclabs/nakama/v3/integrations/insights/internal/settings"
 )
 
@@ -25,6 +26,7 @@ type sessionIn struct {
 	Device     string   `json:"device"`
 	OS         string   `json:"os"`
 	Seconds    *float64 `json:"seconds"`
+	Game       string   `json:"game"`
 }
 
 type queryer interface {
@@ -83,7 +85,23 @@ func (s *service) session(ctx context.Context, userID string, in sessionIn, sour
 	var started time.Time
 	var ended sql.NullTime
 	var secs sql.NullInt64
-	err = tx.QueryRowContext(ctx, `SELECT id::text, started_at, ended_at, seconds FROM insights_session WHERE user_id=$1 AND client_id=$2 FOR UPDATE`, userID, in.SessionID).Scan(&id, &started, &ended, &secs)
+	if !events.GamePattern.MatchString(in.Game) {
+		in.Game = ""
+	}
+	var storedGame, storedPlatform, storedVersion string
+	err = tx.QueryRowContext(ctx, `SELECT id::text, started_at, ended_at, seconds, game, platform, app_version FROM insights_session WHERE user_id=$1 AND client_id=$2 FOR UPDATE`, userID, in.SessionID).Scan(&id, &started, &ended, &secs, &storedGame, &storedPlatform, &storedVersion)
+	evPlatform, evVersion := in.Platform, in.AppVersion
+	if err == nil {
+		if in.Game == "" {
+			in.Game = storedGame
+		}
+		if evPlatform == "" {
+			evPlatform = storedPlatform
+		}
+		if evVersion == "" {
+			evVersion = storedVersion
+		}
+	}
 	created := false
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
@@ -104,8 +122,8 @@ func (s *service) session(ctx context.Context, userID string, in sessionIn, sour
 			started = now.Add(-time.Duration(math.Min(*in.Seconds, float64(cfg.Sessions.MaxSeconds)) * float64(time.Second)))
 		}
 		id = uuid.Must(uuid.NewV4()).String()
-		if _, err := tx.ExecContext(ctx, `INSERT INTO insights_session (id, user_id, client_id, source, day, started_at, last_seen_at, app_version, platform, device, os)
-			VALUES ($1,$2,$3,$4,$5::date,$6,$7,$8,$9,$10,$11)`, id, userID, in.SessionID, source, day, started, now, in.AppVersion, in.Platform, in.Device, in.OS); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO insights_session (id, user_id, client_id, source, day, started_at, last_seen_at, app_version, platform, device, os, game)
+			VALUES ($1,$2,$3,$4,$5::date,$6,$7,$8,$9,$10,$11,$12)`, id, userID, in.SessionID, source, day, started, now, in.AppVersion, in.Platform, in.Device, in.OS, in.Game); err != nil {
 			return nil, err
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO insights_player (user_id, first_day, first_at, last_day, app_version, platform) VALUES ($1,$2::date,$3,$2::date,$4,$5)
@@ -154,6 +172,13 @@ func (s *service) session(ctx context.Context, userID string, in sessionIn, sour
 	}
 	if err := tx.Commit(); err != nil {
 		return nil, err
+	}
+	if created {
+		s.sessionEvent(ctx, userID, in.Game, in.SessionID, "session_start", strings.ToLower(evPlatform), evVersion, nil)
+	}
+	if in.Event == "end" {
+		n, _ := out["seconds"].(int64)
+		s.sessionEvent(ctx, userID, in.Game, in.SessionID, "session_end", strings.ToLower(evPlatform), evVersion, &n)
 	}
 	return out, nil
 }
@@ -257,7 +282,18 @@ func (s *service) closeIdle(ctx context.Context, cfg settings.All) (int, error) 
 		if err := tx.Commit(); err != nil {
 			return closed, err
 		}
+		s.idleEnded(ctx, o.id)
 		closed++
 	}
 	return closed, nil
+}
+
+func (s *service) idleEnded(ctx context.Context, id string) {
+	var uid, client, platform, version, game string
+	var secs sql.NullInt64
+	if err := s.db.QueryRowContext(ctx, `SELECT user_id::text, client_id, platform, app_version, seconds, game FROM insights_session WHERE id=$1`, id).Scan(&uid, &client, &platform, &version, &secs, &game); err != nil {
+		return
+	}
+	n := secs.Int64
+	s.sessionEvent(ctx, uid, game, client, "session_end", strings.ToLower(platform), version, &n)
 }

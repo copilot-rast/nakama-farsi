@@ -49,6 +49,7 @@ Status: **fixed** = changed in phase 0b; **safe** = already correct on N nodes, 
 | stargame | `samples/stargame/seed.go:173` | Seed on every node start | Concurrent starts | One transaction, every insert `ON CONFLICT DO NOTHING` in a fixed order; covered by the existing 4-way concurrent `TestSeedPostgres` | safe |
 | stargame | `samples/stargame/main.go:79`, `:96` | Rounds | — | Stored in Nakama storage with version checks (`ErrStorageRejectedVersion`) | safe |
 | stargame | `samples/stargame/web.go` | Embedded static files | — | Read-only, built into the plugin | safe |
+| insights | `integrations/insights/events_*.go` (game analytics) | Event delivery, store handle, importers, rate limits | — | Outbox rows claimed with `FOR UPDATE SKIP LOCKED`, a 60 s claim lease and a claim token that guards the delete; store writes idempotent on the event id; each node opens the store itself and reopens it when `insights_storage.updated_at` changes (checked every 10 s); connectors claimed with `FOR UPDATE SKIP LOCKED` and a renewed lease; rate limits on `cluster_rate_limit`; sweeps under `insights-event-sweep`; catalog cache 5 s TTL | safe |
 
 No plugin uses match listing, `MatchSignal`, the matchmaker, parties or `sync.Once`; there are no timers besides the worker tickers listed above and no in-memory caches, counters or maps that hold shared state.
 
