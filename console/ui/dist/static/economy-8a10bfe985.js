@@ -276,6 +276,8 @@ var MESSAGES = {
 
     'f.key': 'کلید',
     'f.key.hint': 'شناسهٔ ثابت در کد بازی؛ بعداً عوضش نکنید.',
+    'f.key.camel.hint': "شناسهٔ ثابت در کد بازی؛ بعداً عوضش نکنید. حرف بزرگ بعد از حرف اول هم مجاز است (مثل diceSkin).",
+    'err.key.camel': "با حرف کوچک انگلیسی یا عدد شروع کنید؛ بعد حرف کوچک یا بزرگ، عدد، _ . یا - (تا ۶۴ کاراکتر).",
     'f.key.locked': 'کلید بعد از ساخت عوض نمی‌شود.',
     'f.type': 'نوع',
     'f.sort': 'ترتیب',
@@ -390,6 +392,8 @@ var MESSAGES = {
     'item.meta': 'متا',
     'item.storage': 'آیتم ذخیره‌سازی',
     'action.add': 'افزودن',
+    'action.random': "تصادفی",
+    'action.open': "باز کردن",
     'action.set': 'تنظیم',
     'action.give': 'دادن',
     'active': 'فعال',
@@ -496,6 +500,8 @@ var MESSAGES = {
     'f.ps.onceHold.hint': 'بعد از این زمان، پرداخت باز قبلی بسته می‌شود و خرید تازه شروع می‌شود.',
     'f.ps.expired': 'رسید پرداخت منقضی',
     'f.ps.expired.hint': 'رسید حالت تست برای پرداخت منقضی همیشه رد می‌شود.',
+    'f.ps.pending': "مهلت پرداخت باز (دقیقه)",
+    'f.ps.pending.hint': "پرداختی که در این مدت تمام نشود منقضی می‌شود. ۰ یعنی مقدار پیش‌فرض سرور (ECONOMY_PENDING_TTL_MINUTES).",
     'ps.expired.verified': 'اگر بازار تأیید کرد، قبول شود',
     'ps.expired.refuse': 'همیشه رد شود',
     'f.ps.sandbox': 'بستن پرداخت‌های تست با خاموش شدن حالت تست',
@@ -1251,6 +1257,8 @@ var MESSAGES = {
     'f.otp.phoneDaily': 'کد در روز برای هر شماره',
     'f.otp.ipHourly': 'کد در ساعت برای هر IP',
     'f.otp.ipHourly.hint': 'جلوی ساختن انبوه کد از یک جا را می‌گیرد.',
+    'f.otp.userHourly': "کد در ساعت برای هر حساب",
+    'f.otp.userHourly.hint': "سقف درخواست کد از یک حساب (مثلاً برای وصل کردن شماره). ۰ یعنی همان سقف IP.",
     'f.otp.message': 'متن پیامک',
     'f.otp.message.hint': '{code} جای کد است و باید در هر زبان باشد. {minutes} زمان اعتبار و {app} نام برند است.',
     'code.DAILY_BELOW_HOURLY': 'سقف روزانه نمی‌تواند از سقف ساعتی کمتر باشد.',
@@ -1796,6 +1804,22 @@ var MESSAGES = {
     'f.ch.max': "بیشینه",
     'f.ch.reroll': "اگر هیچ خانه‌ای نیامد دوباره قرعه بکش",
     'f.ch.reroll.hint': "روشن (پیشنهادی): صندوق هیچ‌وقت خالی باز نمی‌شود.",
+    'f.ch.rerollCap': "سقف تلاش دوباره",
+    'f.ch.rerollCap.hint': "چند بار صندوق خالی دوباره چرخانده شود. خالی یعنی ۱۰۰۰.",
+    'f.ch.freeReset': "نوبت رایگان",
+    'f.ch.freeReset.hint': "«بعد از فاصله» یعنی چند دقیقه بعد از نوبت رایگان قبلی. «روزانه» یعنی یک نوبت رایگان در هر روز، که با شروع روز تازه برمی‌گردد.",
+    'ch.freeReset.interval': "بعد از فاصله",
+    'ch.freeReset.daily': "روزانه",
+    'f.ch.freeFirst': "اول نوبت رایگان",
+    'f.ch.freeFirst.hint': "تا وقتی نوبت رایگان امروز مانده، بازی با بلیت رد می‌شود (کد CHANCE_PRICE_CHANGED با قیمت ۰).",
+    'f.ch.dayZone': "منطقهٔ زمانی روز",
+    'f.ch.dayZone.hint': "برای سقف روزانه، پلکان قیمت و نوبت رایگان روزانه. خالی یعنی منطقهٔ زمانی پروژه.",
+    'f.ch.dayStart': "شروع روز (دقیقه بعد از نیمه‌شب)",
+    'f.ch.dayStart.hint': "۰ یعنی نیمه‌شب. ۹۰ یعنی ساعت ۰۱:۳۰.",
+    'f.ch.minLevel': "کمترین سطح",
+    'f.ch.minLevel.hint': "بازیکن پایین‌تر از این سطح نمی‌تواند بازی کند (کد CHANCE_LOCKED). ۰ یعنی بدون شرط.",
+    'f.ch.levelTable': "جدول سطح",
+    'f.ch.levelTable.hint': "خالی یعنی جدول سطح اصلی.",
     'f.ch.jackpot': "ردیف جایزهٔ بزرگ",
     'f.ch.jackpot.hint': "شمارهٔ ردیفی که جایزهٔ بزرگ است (از ۱). خالی یعنی جایزهٔ بزرگ ندارد.",
     'f.ch.pity': "تضمین جایزهٔ بزرگ بعد از",
@@ -1810,10 +1834,34 @@ var MESSAGES = {
     'item.booster.multiplier': "ضریب",
     'item.booster.minutes': "مدت (دقیقه)",
     'item.booster.hint': "رویدادهایی که این متا را زیاد می‌کنند در این مدت ضرب می‌شوند. چند افزایش‌دهنده روی هم ضرب نمی‌شوند؛ تازه‌ترین ضریب می‌ماند.",
+    'item.chest': "باز کردن صندوق",
+    'item.chest.times': "چند بار",
+    'item.chest.hint': "همان لحظهٔ گرفتن جایزه، صندوق (بازی شانس با خانه‌های مستقل) باز می‌شود و نتیجه‌اش در همین جایزه پرداخت می‌شود.",
+    'item.chest.range': "صندوق ۱ تا ۲۰ بار باز می‌شود.",
+    'item.random.min': "کمترین",
+    'item.random.max': "بیشترین",
+    'item.random.hint': "مقدار هنگام گرفتن جایزه به‌طور تصادفی بین این دو انتخاب می‌شود.",
+    'item.random.range': "کمترین باید ۰ یا بیشتر و بیشترین بزرگ‌تر از ۰ و دست‌کم برابر کمترین باشد.",
     'item.booster.range': "ضریب از ۱٫۰۱ تا ۱۰۰ و مدت از ۱ تا ۵۲۵۶۰۰ دقیقه",
     'sk.miss.week_start': "برگشت به اول همان هفته",
     'f.sk.weekLength': "طول هفته (روز)",
     'f.sk.weekLength.hint': "با غیبت، بازیکن به روز اولِ همین هفته برمی‌گردد؛ مثلاً با طول ۷، غیبت در روز ۱۲ یعنی روز ۸.",
+    'f.sk.dayZone': "منطقهٔ زمانی روز",
+    'f.sk.dayZone.hint': "خالی یعنی منطقهٔ زمانی پروژه.",
+    'f.sk.dayStart': "شروع روز (دقیقه بعد از نیمه‌شب)",
+    'f.sk.dayStart.hint': "روز زنجیره از این ساعت عوض می‌شود. ۹۰ یعنی ساعت ۰۱:۳۰.",
+    'f.sk.claimWindow': "مهلت گرفتن جایزه",
+    'f.sk.claimWindow.hint': "«تا آخر همان روز» یعنی جایزهٔ هر روز فقط تا پایان همان روز گرفتنی است و بعد از آن از دست می‌رود.",
+    'sk.claimWindow.open': "همیشه باز",
+    'sk.claimWindow.period': "تا آخر همان روز",
+    'f.sk.signupDelay': "تأخیر بعد از ثبت‌نام (روز)",
+    'f.sk.signupDelay.hint': "در این چند روز اول، زنجیره جلو می‌رود ولی جایزه‌ای ساخته نمی‌شود. ۱ یعنی از روز بعد از ثبت‌نام.",
+    'f.sk.infMode': "جایزهٔ مرحلهٔ بی‌پایان",
+    'f.sk.infMode.hint': "«پرداخت مستقیم» ارز را همان لحظه می‌دهد. «جایزهٔ گرفتنی» یک جایزه می‌سازد که بازیکن باید بگیرد.",
+    'sk.infMode.pay': "پرداخت مستقیم",
+    'sk.infMode.claim': "جایزهٔ گرفتنی",
+    'f.sk.infPrize': "جایزهٔ هر روز بی‌پایان",
+    'f.sk.infPrize.hint': "برای مبلغ تصادفی، در جایزه یک ارز با عمل «تصادفی» بگذارید.",
     'sk.h.extras': "روزهای ویژه",
     'sk.extras.note': "جایزهٔ اضافه در این روزها، فقط اگر بازیکن بدون غیبت به آن روز رسیده باشد.",
     'sk.x.add': "روز ویژهٔ تازه",
@@ -2398,6 +2446,13 @@ var MESSAGES = {
     'f.fr.presenceFriends.hint': "بازیکن فقط وضعیت آنلاین دوستانش را می‌بیند و دنبال‌کردن دیگران نادیده گرفته می‌شود.",
     'f.fr.dmFriends': "پیام خصوصی فقط بین دوستان",
     'f.fr.dmFriends.hint': "باز کردن گفتگوی خصوصی و فرستادن پیام خصوصی فقط بین دو دوست ممکن است.",
+    'fr.day': "روز اجتماعی",
+    'f.fr.dayZone': "منطقهٔ زمانی روز",
+    'f.fr.dayZone.hint': "مثل UTC یا Asia/Tehran. خالی یعنی منطقهٔ زمانی پروژه. سقف درخواست روزانه، پیشنهاد دوست و حضور روزانه با این روز حساب می‌شوند.",
+    'f.fr.dayStart': "شروع روز (دقیقه بعد از نیمه‌شب)",
+    'f.fr.dayStart.hint': "۰ یعنی نیمه‌شب. ۹۰ یعنی ساعت ۰۱:۳۰.",
+    'f.fr.botDecline': "رد خودکار درخواست به ربات (ساعت)",
+    'f.fr.botDecline.hint': "درخواست دوستی که به یک ربات فرستاده شده بعد از این چند ساعت خودبه‌خود رد می‌شود و بازیکن می‌تواند دوباره بفرستد. ۰ یعنی خاموش.",
     'un.title': "تغییر نام کاربری",
     'un.desc': "بار اول رایگان، بعد با قیمت پله‌ای. کنسول هم می‌تواند نام را بدون هزینه عوض کند و همه در تاریخچه می‌مانند.",
     'f.un.enabled': "قانون تغییر نام روشن باشد",
@@ -4662,6 +4717,10 @@ var MESSAGES = {
     'of.trigger.tag.say': "وقتی بازیکن این برچسب را بگیرد.",
     'of.trigger.account_days.say': "وقتی {n} روز از ساخت حساب بگذرد.",
     'of.trigger.lapsed.say': "وقتی بازیکن بعد از دست‌کم {n} روز غیبت برگردد.",
+    'of.trigger.game': "بعد از بازی تمام‌شده",
+    'of.trigger.game.say': "وقتی بازیکن {n} بازی را تمام کرده باشد (برد، باخت یا تمام شدن وقت؛ ترک بازی حساب نمی‌شود). شمارش همان لحظهٔ پایان بازی شروع می‌شود.",
+    'f.of.triggerGame': "بازی",
+    'f.of.triggerGame.hint': "خالی یعنی همهٔ بازی‌ها.",
     'f.of.triggerValue': "عدد شرط",
     'f.of.triggerTag': "برچسب بازیکن",
     'of.timer.say': "بعد از آن {time} فرصت دارد.",
@@ -4700,6 +4759,21 @@ var MESSAGES = {
     'f.os.tag': "برچسب بازیکن",
     'f.os.weighting': "روش انتخاب",
     'f.os.weighting.hint': "وزنی: به نسبت وزن. یکسان: همه هم‌شانس. اولویت: سنگین‌ترها اول.",
+    'os.weighting.scored': "امتیازی",
+    'os.score.note': "هر پیشنهاد برای هر بازیکن امتیاز می‌گیرد: توان خرید با قیمت اصلی، کمیابی (metadata.rarity)، چند روز از آخرین نمایش گذشته و تازگی (metadata.createdAt یا زمان ساخت). بعد به نسبت امتیاز و با بذر «شناسهٔ بازیکن:تاریخ روز» قرعه کشیده می‌شود. وزن پیشنهادها و «بدون تکرار» در این حالت به کار نمی‌روند.",
+    'f.os.score.affordable': "امتیاز توان خرید",
+    'f.os.score.recency': "امتیاز ندیدن اخیر",
+    'f.os.score.newness': "امتیاز تازگی",
+    'f.os.score.recencyDays': "روزهای ندیدن کامل",
+    'f.os.score.recencyDays.hint': "بعد از این چند روز، امتیاز ندیدن اخیر کامل می‌شود.",
+    'f.os.score.newDays': "روزهای تازه بودن",
+    'f.os.score.newDays.hint': "۰ یعنی امتیاز تازگی خاموش.",
+    'f.os.score.floor': "کمترین امتیاز",
+    'f.os.score.rarity': "امتیاز کمیابی",
+    'f.os.score.rarity.hint': "مثل common=10, uncommon=10, rare=13, epic=13",
+    'f.os.score.rarityUnset': "امتیاز بدون کمیابی",
+    'f.os.coinFloor': "کمترین قیمت سکه‌ای بعد از تخفیف",
+    'f.os.coinFloor.hint': "قیمت سکه‌ای پیشنهاد بعد از تخفیف از این کمتر نمی‌شود. ۰ یعنی بدون کف.",
     'os.weighting.weighted': "وزنی",
     'os.weighting.uniform': "یکسان",
     'os.weighting.priority': "اولویت",
@@ -6384,6 +6458,8 @@ var MESSAGES = {
 
     'f.key': 'Key',
     'f.key.hint': 'Stable ID used by the game code; do not change it later.',
+    'f.key.camel.hint': "Stable ID used by the game code; do not change it later. Capital letters are allowed after the first character (for example diceSkin).",
+    'err.key.camel': "Start with a lowercase letter or digit, then lower- or upper-case letters, digits, _ . or - (up to 64).",
     'f.key.locked': 'The key cannot change after creation.',
     'f.type': 'Type',
     'f.sort': 'Sort order',
@@ -6498,6 +6574,8 @@ var MESSAGES = {
     'item.meta': 'Meta',
     'item.storage': 'Storage item',
     'action.add': 'Add',
+    'action.random': "Random",
+    'action.open': "Open",
     'action.set': 'Set',
     'action.give': 'Give',
     'active': 'Active',
@@ -6604,6 +6682,8 @@ var MESSAGES = {
     'f.ps.onceHold.hint': 'After this time the earlier open payment is closed and a new one starts.',
     'f.ps.expired': 'Receipts for expired payments',
     'f.ps.expired.hint': 'Test-mode receipts for expired payments are always refused.',
+    'f.ps.pending': "Open payment lifetime (minutes)",
+    'f.ps.pending.hint': "A payment not finished in this time expires. 0 uses the server default (ECONOMY_PENDING_TTL_MINUTES).",
     'ps.expired.verified': 'Accept when the store confirms it',
     'ps.expired.refuse': 'Always refuse',
     'f.ps.sandbox': 'Close test payments when test mode is turned off',
@@ -7359,6 +7439,8 @@ var MESSAGES = {
     'f.otp.phoneDaily': 'Codes per number per day',
     'f.otp.ipHourly': 'Codes per IP per hour',
     'f.otp.ipHourly.hint': 'Stops one place from asking for many codes.',
+    'f.otp.userHourly': "Codes per account per hour",
+    'f.otp.userHourly.hint': "How many codes one account can ask for in an hour (for example to link a phone). 0 uses the IP limit.",
     'f.otp.message': 'SMS text',
     'f.otp.message.hint': '{code} is the code and must be in every language. {minutes} is the lifetime and {app} the brand name.',
     'code.DAILY_BELOW_HOURLY': 'The daily limit cannot be lower than the hourly limit.',
@@ -7904,6 +7986,22 @@ var MESSAGES = {
     'f.ch.max': "Max",
     'f.ch.reroll': "Roll again when no slot comes up",
     'f.ch.reroll.hint': "On (recommended): a chest never opens empty.",
+    'f.ch.rerollCap': "Re-roll cap",
+    'f.ch.rerollCap.hint': "How many times an empty chest is rolled again. Empty means 1000.",
+    'f.ch.freeReset': "Free turn",
+    'f.ch.freeReset.hint': "After an interval means some minutes after the last free turn. Daily means one free turn each day, back when the next day starts.",
+    'ch.freeReset.interval': "After an interval",
+    'ch.freeReset.daily': "Daily",
+    'f.ch.freeFirst': "Free turn first",
+    'f.ch.freeFirst.hint': "While today's free turn is left, a ticket play is refused (code CHANCE_PRICE_CHANGED with price 0).",
+    'f.ch.dayZone': "Day time zone",
+    'f.ch.dayZone.hint': "For the daily cap, the price ladder and the daily free turn. Empty uses the project time zone.",
+    'f.ch.dayStart': "Day starts at (minutes after midnight)",
+    'f.ch.dayStart.hint': "0 is midnight. 90 is 01:30.",
+    'f.ch.minLevel': "Minimum level",
+    'f.ch.minLevel.hint': "Players below this level cannot play (code CHANCE_LOCKED). 0 means no gate.",
+    'f.ch.levelTable': "Level table",
+    'f.ch.levelTable.hint': "Empty uses the main level table.",
     'f.ch.jackpot': "Jackpot row",
     'f.ch.jackpot.hint': "The number of the jackpot row (from 1). Empty means no jackpot.",
     'f.ch.pity': "Force the jackpot after",
@@ -7918,10 +8016,34 @@ var MESSAGES = {
     'item.booster.multiplier': "Multiplier",
     'item.booster.minutes': "Length (minutes)",
     'item.booster.hint': "Events that add to this meta are multiplied for this long. Boosters do not stack; the newest multiplier wins.",
+    'item.chest': "Open a chest",
+    'item.chest.times': "Times",
+    'item.chest.hint': "The chest (a chance game with independent slots) opens when the prize is received, and its result is paid in the same prize.",
+    'item.chest.range': "A chest opens 1 to 20 times.",
+    'item.random.min': "Min",
+    'item.random.max': "Max",
+    'item.random.hint': "The amount is picked at random between these two when the prize is received.",
+    'item.random.range': "Min must be 0 or more, and max above 0 and at least min.",
     'item.booster.range': "multiplier from 1.01 to 100 and length from 1 to 525600 minutes",
     'sk.miss.week_start': "Back to the start of the week",
     'f.sk.weekLength': "Week length (days)",
     'f.sk.weekLength.hint': "A missed day sends the player back to the first day of the current week; with 7, missing on day 12 means day 8.",
+    'f.sk.dayZone': "Day time zone",
+    'f.sk.dayZone.hint': "Empty uses the project time zone.",
+    'f.sk.dayStart': "Day starts at (minutes after midnight)",
+    'f.sk.dayStart.hint': "The streak day turns at this time. 90 is 01:30.",
+    'f.sk.claimWindow': "Claim window",
+    'f.sk.claimWindow.hint': "Same day only means each day's reward can be claimed only until that day ends, then it is lost.",
+    'sk.claimWindow.open': "Always open",
+    'sk.claimWindow.period': "Same day only",
+    'f.sk.signupDelay': "Delay after sign-up (days)",
+    'f.sk.signupDelay.hint': "In these first days the streak still moves but makes no reward. 1 means from the day after sign-up.",
+    'f.sk.infMode': "Infinity reward",
+    'f.sk.infMode.hint': "Pay now credits the currency at once. Claimable prize makes a reward the player must claim.",
+    'sk.infMode.pay': "Pay now",
+    'sk.infMode.claim': "Claimable prize",
+    'f.sk.infPrize': "Prize for each infinity day",
+    'f.sk.infPrize.hint': "For a random amount, give the prize a currency entry with the random action.",
     'sk.h.extras': "Special days",
     'sk.extras.note': "An extra prize on these days, only when the player reached the day without missing one.",
     'sk.x.add': "New special day",
@@ -8506,6 +8628,13 @@ var MESSAGES = {
     'f.fr.presenceFriends.hint': "Players see only their friends online status; following anyone else is ignored.",
     'f.fr.dmFriends': "Private chat only between friends",
     'f.fr.dmFriends.hint': "Opening a private chat and sending private messages works only between two friends.",
+    'fr.day': "Social day",
+    'f.fr.dayZone': "Day time zone",
+    'f.fr.dayZone.hint': "For example UTC or Asia/Tehran. Empty uses the project time zone. The daily request cap, friend suggestions and daily presence use this day.",
+    'f.fr.dayStart': "Day starts at (minutes after midnight)",
+    'f.fr.dayStart.hint': "0 is midnight. 90 is 01:30.",
+    'f.fr.botDecline': "Auto-decline requests to bots (hours)",
+    'f.fr.botDecline.hint': "A friend request sent to a bot is declined by itself after this many hours, and the player can send it again. 0 turns this off.",
     'un.title': "Username change",
     'un.desc': "The first change is free, then a price ladder. The console can rename for free; every change is kept in the history.",
     'f.un.enabled': "Username change rules are on",
@@ -10770,6 +10899,10 @@ var MESSAGES = {
     'of.trigger.tag.say': "When the player gets this tag.",
     'of.trigger.account_days.say': "When the account is {n} days old.",
     'of.trigger.lapsed.say': "When the player comes back after at least {n} days away.",
+    'of.trigger.game': "After finished matches",
+    'of.trigger.game.say': "When the player has finished {n} matches (win, loss or time out; leaving does not count). The timer starts the moment the match ends.",
+    'f.of.triggerGame': "Game",
+    'f.of.triggerGame.hint': "Empty counts every game.",
     'f.of.triggerValue': "Number",
     'f.of.triggerTag': "Player tag",
     'of.timer.say': "Then it lasts {time}.",
@@ -10808,6 +10941,21 @@ var MESSAGES = {
     'f.os.tag': "Player tag",
     'f.os.weighting': "Selection",
     'f.os.weighting.hint': "Weighted: by weight. Uniform: equal chance. Priority: heaviest first.",
+    'os.weighting.scored': "Scored",
+    'os.score.note': "Each offer gets a score per player: can afford it at full price, rarity (metadata.rarity), days since it was last shown, and newness (metadata.createdAt or creation time). The draw is by score with the seed player id:day date. Offer weights and no-repeat are not used in this mode.",
+    'f.os.score.affordable': "Affordable score",
+    'f.os.score.recency': "Not-seen-lately score",
+    'f.os.score.newness': "Newness score",
+    'f.os.score.recencyDays': "Days for full not-seen score",
+    'f.os.score.recencyDays.hint': "After this many days the not-seen score is full.",
+    'f.os.score.newDays': "Days counted as new",
+    'f.os.score.newDays.hint': "0 turns the newness score off.",
+    'f.os.score.floor': "Lowest score",
+    'f.os.score.rarity': "Rarity scores",
+    'f.os.score.rarity.hint': "For example common=10, uncommon=10, rare=13, epic=13",
+    'f.os.score.rarityUnset': "Score without rarity",
+    'f.os.coinFloor': "Lowest coin price after discount",
+    'f.os.coinFloor.hint': "An offer's coin price after discount never goes below this. 0 means no floor.",
     'os.weighting.weighted': "Weighted",
     'os.weighting.uniform': "Uniform",
     'os.weighting.priority': "Priority",
@@ -13143,6 +13291,7 @@ function confirmModal(opts) {
 
 var KEY_RE = /^[a-z0-9][a-z0-9_.-]{0,63}$/;
 var CURRENCY_KEY_RE = /^[a-z0-9_]{2,32}$/;
+var TAXONOMY_KEY_RE = /^[a-z0-9][A-Za-z0-9_.-]{0,63}$/;
 var CODE_RE = /^[A-Z0-9_-]{3,32}$/;
 var refCache = {};
 
@@ -13969,7 +14118,7 @@ function actionsEditor(value, onchange) {
   return el;
 }
 
-var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'], item: ['give'], achievement: ['give'], tag: ['give', 'set'], booster: ['give', 'set'] };
+var ITEM_ACTIONS = { currency: ['add', 'random'], meta: ['add', 'set'], storage: ['give'], item: ['give'], achievement: ['give'], tag: ['give', 'set'], booster: ['give', 'set'], chest: ['open'] };
 
 function itemsEditor(value, onchange) {
   var rows = (value || []).map(function (r) { return Object.assign({}, r); });
@@ -13981,11 +14130,11 @@ function itemsEditor(value, onchange) {
     errors = [];
     if (!rows.length) listEl.appendChild(h('div', { class: 'text-sm text-secondary-500 dark:text-secondary-400 border border-dashed border-secondary-300 dark:border-secondary-700 rounded-md px-3 py-4 text-center', text: t('f.items.empty') }));
     rows.forEach(function (row, idx) {
-      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'achievement', 'tag', 'booster', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
+      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'achievement', 'tag', 'booster', 'chest', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
         row.type = v;
         row.key = '';
         row.action = (ITEM_ACTIONS[v] || ['add'])[0];
-        row.value = v === 'storage' ? {} : v === 'booster' ? { multiplier: 2, minutes: 60 } : v === 'item' || v === 'achievement' ? 1 : v === 'tag' ? 30 : 0;
+        row.value = v === 'storage' ? {} : v === 'booster' ? { multiplier: 2, minutes: 60 } : v === 'item' || v === 'achievement' || v === 'chest' ? 1 : v === 'tag' ? 30 : 0;
         render();
         emit();
       }, { placeholder: false, label: t('f.item.type') });
@@ -13998,13 +14147,20 @@ function itemsEditor(value, onchange) {
       } else if (row.type === 'achievement') {
         keyCtl = refPicker({ resource: 'achievements', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
         keyCtl.setAttribute('data-achievement-picker', '');
+      } else if (row.type === 'chest') {
+        keyCtl = refPicker({ resource: 'chance-games', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
+        keyCtl.setAttribute('data-chest-picker', '');
       } else if (row.type === 'tag') {
         keyCtl = refPicker({ resource: 'tags', api: baseApi, filter: { keyType: 'user' }, valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
         keyCtl.setAttribute('data-tag-picker', '');
       } else {
         keyCtl = refPicker({ resource: row.type === 'meta' || row.type === 'booster' ? 'metas' : 'currencies', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
       }
-      var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t((row.type === 'tag' || row.type === 'booster' ? 'action.tag.' : 'action.') + k) }; }), function (v) { row.action = v; emit(); }, { placeholder: false, label: t('f.item.action') });
+      var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t((row.type === 'tag' || row.type === 'booster' ? 'action.tag.' : 'action.') + k) }; }), function (v) {
+        row.action = v;
+        if (row.type === 'currency') { row.value = v === 'random' ? { min: 1, max: 10 } : 0; render(); }
+        emit();
+      }, { placeholder: false, label: t('f.item.action') });
       var valCtl;
       if (row.type === 'item' || row.type === 'achievement') {
         valCtl = h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300 py-2', text: t('item.' + row.type + '.once') });
@@ -14020,6 +14176,16 @@ function itemsEditor(value, onchange) {
           numberInput(bv.multiplier, { int: false, label: t('item.booster.multiplier'), oninput: function (v) { bv.multiplier = parseNumber(v, false); emit(); } }),
           numberInput(bv.minutes, { int: true, label: t('item.booster.minutes'), oninput: function (v) { bv.minutes = parseNumber(v, true); emit(); } }),
           h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('item.booster.hint') }));
+      } else if (row.type === 'currency' && row.action === 'random') {
+        var rv = row.value && typeof row.value === 'object' ? row.value : { min: 1, max: 10 };
+        row.value = rv;
+        valCtl = h('div', { class: 'flex flex-col gap-1', 'data-random-value': '' },
+          numberInput(rv.min, { int: true, label: t('item.random.min'), oninput: function (v) { rv.min = parseNumber(v, true); emit(); } }),
+          numberInput(rv.max, { int: true, label: t('item.random.max'), oninput: function (v) { rv.max = parseNumber(v, true); emit(); } }),
+          h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('item.random.hint') }));
+      } else if (row.type === 'chest') {
+        valCtl = h('div', { class: 'flex flex-col gap-1', 'data-chest-value': '' }, numberInput(row.value, { int: true, label: t('item.chest.times'), oninput: function (v) { row.value = parseNumber(v, true); emit(); } }),
+          h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('item.chest.hint') }));
       } else if (row.type === 'tag') {
         valCtl = h('div', { class: 'flex flex-col gap-1' }, numberInput(row.value, { int: false, label: t('item.tag.days'), oninput: function (v) { row._raw = v; row.value = parseNumber(v, false); emit(); } }),
           h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-tag-days-hint': '', text: t('item.tag.days.hint') }));
@@ -14056,7 +14222,9 @@ function itemsEditor(value, onchange) {
       if (!r.key) msg = t('f.item.key') + ': ' + t('err.required');
       else if (r.type === 'storage' && (r._bad || r.value === null || typeof r.value !== 'object')) msg = t('err.json');
       else if (r.type === 'booster' && (!r.value || !(Number(r.value.multiplier) >= 1.01 && Number(r.value.multiplier) <= 100) || !(Number(r.value.minutes) >= 1 && Number(r.value.minutes) <= 525600))) msg = t('item.booster.range');
-      else if (r.type !== 'storage' && r.type !== 'item' && r.type !== 'achievement' && r.type !== 'booster' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
+      else if (r.type === 'currency' && r.action === 'random' && (!r.value || !(Number(r.value.min) >= 0) || !(Number(r.value.max) >= Number(r.value.min)) || !(Number(r.value.max) > 0))) msg = t('item.random.range');
+      else if (r.type === 'chest' && !(Number(r.value) >= 1 && Number(r.value) <= 20)) msg = t('item.chest.range');
+      else if (r.type !== 'storage' && r.type !== 'item' && r.type !== 'achievement' && r.type !== 'booster' && !(r.type === 'currency' && r.action === 'random') && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
       else if (r.type === 'tag' && (Number(r.value) < 0 || Number(r.value) > 36500)) msg = t('item.tag.days') + ': ' + t('item.tag.days.range');
       e.el.textContent = msg;
       e.el.hidden = !msg;
@@ -14716,7 +14884,7 @@ var RESOURCES = {
     ],
     fields: [
       { type: 'row', fields: [
-        { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
+        { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.camel.hint', required: true, keyRe: TAXONOMY_KEY_RE, keyErr: 'err.key.camel' },
         { name: 'keyType', type: 'select', label: 'f.keyType', hint: 'f.keyType.category.hint', required: true, options: keyTypeOptions('categories') }
       ] },
       tr('name', { required: true, max: 128 }),
@@ -15804,6 +15972,7 @@ var PAYMENT_SETTINGS_FIELDS = [
     { name: 'oncePending', type: 'select', label: 'f.ps.once', hint: 'f.ps.once.hint', required: true, noPlaceholder: true, options: opts('ps.once.', ['hold', 'replace']) },
     { name: 'onceHoldMinutes', type: 'number', label: 'f.ps.onceHold', hint: 'f.ps.onceHold.hint', required: true, min: 1, max: 1440 }
   ] },
+  { name: 'pendingMinutes', type: 'number', label: 'f.ps.pending', hint: 'f.ps.pending.hint', required: true, min: 0, max: 10080 },
   { name: 'expiredReceipts', type: 'select', label: 'f.ps.expired', hint: 'f.ps.expired.hint', required: true, noPlaceholder: true, options: opts('ps.expired.', ['verified', 'refuse']) },
   { name: 'closeSandboxOnOff', type: 'bool', inline: true, label: 'f.ps.sandbox', hint: 'f.ps.sandbox.hint' },
   { type: 'heading', label: 'f.ps.stores' },
@@ -15825,7 +15994,7 @@ function paymentSettingsPage(container) {
   clear(container).appendChild(frame.el);
   var page = apiPage(paymentSettingsCall, '/payment-settings', null, PAYMENT_SETTINGS_FIELDS, { id: 'payments', fixPayload: function (p) {
     delete p.updatedAt;
-    ['retryMinutes', 'maxAttempts', 'onceHoldMinutes', 'stripeToleranceSeconds'].forEach(function (k) { p[k] = Number(p[k]); });
+    ['retryMinutes', 'maxAttempts', 'onceHoldMinutes', 'stripeToleranceSeconds', 'pendingMinutes'].forEach(function (k) { p[k] = Number(p[k]); });
     return p;
   } });
   frame.content.appendChild(page.el);
@@ -17384,7 +17553,10 @@ function otpFields(values) {
       { name: 'phoneHourly', type: 'number', label: 'f.otp.phoneHourly', required: true, min: 1, max: 100 },
       { name: 'phoneDaily', type: 'number', label: 'f.otp.phoneDaily', required: true, min: 1, max: 500, check: function (v, vals) { return v != null && vals.phoneHourly != null && Number(v) < Number(vals.phoneHourly) ? t('code.DAILY_BELOW_HOURLY') : null; } }
     ] },
-    { name: 'ipHourly', type: 'number', label: 'f.otp.ipHourly', hint: 'f.otp.ipHourly.hint', required: true, min: 1, max: 10000 },
+    { type: 'row', fields: [
+      { name: 'ipHourly', type: 'number', label: 'f.otp.ipHourly', hint: 'f.otp.ipHourly.hint', required: true, min: 1, max: 10000 },
+      { name: 'userHourly', type: 'number', label: 'f.otp.userHourly', hint: 'f.otp.userHourly.hint', required: true, min: 0, max: 10000 }
+    ] },
     { type: 'heading', label: 'otp.message' },
     tr('message', { label: 'f.otp.message', hint: 'f.otp.message.hint', multiline: true, rows: 3, required: true, max: 300 })
   ];
@@ -18896,6 +19068,14 @@ RESOURCES.streaks = {
       { name: 'missAction', type: 'select', label: 'f.sk.miss', required: true, refresh: true, options: opts('sk.miss.', ['reset', 'step_back', 'week_start']) }
     ] },
     { name: 'weekLength', type: 'number', label: 'f.sk.weekLength', hint: 'f.sk.weekLength.hint', required: true, min: 1, max: 365, when: function (v) { return v.missAction === 'week_start'; } },
+    { type: 'row', fields: [
+      { name: 'dayZone', type: 'text', ltr: true, label: 'f.sk.dayZone', hint: 'f.sk.dayZone.hint', optional: true },
+      { name: 'dayStartMinute', type: 'number', label: 'f.sk.dayStart', hint: 'f.sk.dayStart.hint', required: true, min: 0, max: 1439 }
+    ] },
+    { type: 'row', fields: [
+      { name: 'claimWindow', type: 'select', label: 'f.sk.claimWindow', hint: 'f.sk.claimWindow.hint', required: true, noPlaceholder: true, options: opts('sk.claimWindow.', ['open', 'period']) },
+      { name: 'signupDelayDays', type: 'number', label: 'f.sk.signupDelay', hint: 'f.sk.signupDelay.hint', required: true, min: 0, max: 365 }
+    ] },
     { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' },
     { type: 'heading', label: 'sk.h.rewards' },
     { name: 'rewards', type: 'rows', addLabel: 'sk.add', emptyText: 'sk.empty', max: 365,
@@ -18943,19 +19123,28 @@ RESOURCES.streaks = {
       ] },
     { type: 'heading', label: 'sk.h.infinity' },
     { name: 'infinity', type: 'bool', inline: true, label: 'f.sk.infinity', hint: 'f.sk.infinity.hint', refresh: true },
-    { type: 'row', when: function (v) { return !!v.infinity; }, fields: [
-      { name: 'infinityCurrency', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.sk.infCurrency', required: true, when: function (v) { return !!v.infinity; } },
-      { name: 'infinityMin', type: 'number', label: 'f.sk.infMin', required: true, min: 1, when: function (v) { return !!v.infinity; } },
-      { name: 'infinityMax', type: 'number', label: 'f.sk.infMax', required: true, min: 1, when: function (v) { return !!v.infinity; } }
+    { name: 'infinityMode', type: 'select', label: 'f.sk.infMode', hint: 'f.sk.infMode.hint', required: true, noPlaceholder: true, refresh: true, options: opts('sk.infMode.', ['pay', 'claim']), when: function (v) { return !!v.infinity; } },
+    { name: 'infinityPrizeId', type: 'ref', resource: 'prizes', label: 'f.sk.infPrize', hint: 'f.sk.infPrize.hint', required: true, when: function (v) { return !!v.infinity && v.infinityMode === 'claim'; } },
+    { type: 'row', when: function (v) { return !!v.infinity && v.infinityMode !== 'claim'; }, fields: [
+      { name: 'infinityCurrency', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.sk.infCurrency', required: true, when: function (v) { return !!v.infinity && v.infinityMode !== 'claim'; } },
+      { name: 'infinityMin', type: 'number', label: 'f.sk.infMin', required: true, min: 1, when: function (v) { return !!v.infinity && v.infinityMode !== 'claim'; } },
+      { name: 'infinityMax', type: 'number', label: 'f.sk.infMax', required: true, min: 1, when: function (v) { return !!v.infinity && v.infinityMode !== 'claim'; } }
     ] }
   ],
-  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', weekLength: 7, isActive: true, sort: 0, rewards: [], milestones: [], extras: [], repayAfterFall: false, infinity: false, infinityCurrency: null, infinityMin: 150, infinityMax: 180 }; },
+  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', weekLength: 7, isActive: true, sort: 0, rewards: [], milestones: [], extras: [], repayAfterFall: false, infinity: false, infinityCurrency: null, infinityMin: 150, infinityMax: 180, infinityMode: 'pay', infinityPrizeId: null, dayZone: '', dayStartMinute: 0, claimWindow: 'open', signupDelayDays: 0 }; },
   fixPayload: function (p) {
     if (p.sort == null) p.sort = 0;
     if (!p.weekLength) p.weekLength = 7;
     p.infinity = !!p.infinity;
-    if (!p.infinity) { p.infinityCurrency = ''; p.infinityMin = 0; p.infinityMax = 0; }
+    p.infinityMode = p.infinityMode || 'pay';
+    if (!p.infinity || p.infinityMode === 'claim') { p.infinityCurrency = ''; p.infinityMin = 0; p.infinityMax = 0; }
+    if (!p.infinity || p.infinityMode !== 'claim') p.infinityPrizeId = '';
+    p.infinityPrizeId = p.infinityPrizeId || '';
     p.infinityCurrency = p.infinityCurrency || '';
+    p.dayZone = (p.dayZone || '').trim();
+    p.dayStartMinute = Number(p.dayStartMinute) || 0;
+    p.signupDelayDays = Number(p.signupDelayDays) || 0;
+    p.claimWindow = p.claimWindow || 'open';
     p.extras = p.extras || [];
     delete p.extrasNote;
     return p;
@@ -19624,8 +19813,8 @@ ICONS['offer-settings'] = '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 
 ICONS['offer-preview'] = '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>';
 ICONS['offer-report'] = '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>';
 
-var OFFER_TRIGGERS = ['first_entry', 'level', 'meta', 'tag', 'account_days', 'lapsed'];
-var OFFER_TRIGGER_VALUE = { level: 1, meta: 1, account_days: 1, lapsed: 1 };
+var OFFER_TRIGGERS = ['first_entry', 'level', 'meta', 'tag', 'account_days', 'lapsed', 'game'];
+var OFFER_TRIGGER_VALUE = { level: 1, meta: 1, account_days: 1, lapsed: 1, game: 1 };
 var OFFER_REASON_COLOR = { picked: 'success', recent: 'warning', kept: 'primary' };
 
 function offerMinutes(n) {
@@ -19662,6 +19851,10 @@ function offerStatusCell(it) {
     it.productActive === false ? tag(t('of.offerOnly'), 'secondary') : null,
     ended ? tag(t('ev.ended'), 'secondary') : null);
 }
+
+var osLastScore = null;
+
+function osScored(v) { return v.weighting === 'scored'; }
 
 function offerTriggerText(it) {
   var tt = it.triggerType || 'first_entry';
@@ -19746,7 +19939,7 @@ function offerDefaults(kind) {
     var v = { key: '', name: {}, description: {}, badge: {}, productId: (query && query.productId) || null, priceMode: 'discount', discountPercent: 20, priceToman: null, coinPrice: null, sku: {},
       purchaseLimit: 1, weight: 10, audienceTagIds: [], excludeTagIds: [], minLevel: 0, maxLevel: null, levelTableId: null, metaConditions: [], minAccountDays: null, maxAccountDays: null,
       startsAt: null, endsAt: null, isActive: true, sort: 0, metadata: {} };
-    if (kind === 'entry') Object.assign(v, { triggerType: 'first_entry', triggerValue: null, triggerLevelTable: null, triggerMetaId: null, triggerTagId: null, durationMinutes: 1440, repeat: 'once', cooldownHours: 168, maxTriggers: null });
+    if (kind === 'entry') Object.assign(v, { triggerType: 'first_entry', triggerValue: null, triggerLevelTable: null, triggerMetaId: null, triggerTagId: null, triggerGame: null, durationMinutes: 1440, repeat: 'once', cooldownHours: 168, maxTriggers: null });
     return v;
   };
 }
@@ -19759,6 +19952,7 @@ function offerToForm(v) {
     v.triggerLevelTable = v.triggerType === 'level' ? v.triggerRef || null : null;
     v.triggerMetaId = v.triggerType === 'meta' ? v.triggerRef || null : null;
     v.triggerTagId = v.triggerType === 'tag' ? v.triggerRef || null : null;
+    v.triggerGame = v.triggerType === 'game' ? v.triggerRef || null : null;
   }
   return v;
 }
@@ -19774,12 +19968,13 @@ function offerFixPayload(kind) {
     p.sku = sku;
     p.metaConditions = (p.metaConditions || []).map(function (c) { return { metaId: c.metaId, operator: c.operator || 'gte', value: c.value }; });
     if (kind === 'entry') {
-      p.triggerRef = p.triggerType === 'level' ? p.triggerLevelTable || '' : p.triggerType === 'meta' ? p.triggerMetaId || '' : p.triggerType === 'tag' ? p.triggerTagId || '' : '';
+      p.triggerRef = p.triggerType === 'level' ? p.triggerLevelTable || '' : p.triggerType === 'meta' ? p.triggerMetaId || '' : p.triggerType === 'tag' ? p.triggerTagId || '' : p.triggerType === 'game' ? p.triggerGame || '' : '';
       if (!OFFER_TRIGGER_VALUE[p.triggerType]) p.triggerValue = null;
       if (p.repeat !== 'cooldown') p.maxTriggers = null;
       delete p.triggerLevelTable;
       delete p.triggerMetaId;
       delete p.triggerTagId;
+      delete p.triggerGame;
     }
     return p;
   };
@@ -19810,6 +20005,7 @@ RESOURCES['entry-offers'] = {
     { name: 'triggerLevelTable', type: 'ref', resource: 'level-tables', label: 'f.of.levelTable', hint: 'f.of.levelTable.hint', optional: true, when: function (v) { return v.triggerType === 'level'; } },
     { name: 'triggerMetaId', type: 'ref', resource: 'metas', label: 'f.rel.meta', required: true, when: function (v) { return v.triggerType === 'meta'; } },
     { name: 'triggerTagId', type: 'ref', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.of.triggerTag', required: true, when: function (v) { return v.triggerType === 'tag'; } },
+    { name: 'triggerGame', type: 'ref', resource: 'games', valueKey: 'key', label: 'f.of.triggerGame', hint: 'f.of.triggerGame.hint', optional: true, when: function (v) { return v.triggerType === 'game'; } },
     { name: 'triggerSay', type: 'static', readonly: true, live: true, render: function (v) {
       return h('p', { class: 'eco-rule-preview text-sm rounded-md px-3 py-2', 'data-offer-trigger-say': v.triggerType || '', text: offerTriggerText(v) + ' ' + t('of.timer.say', { time: offerMinutes(v.durationMinutes) }) });
     } },
@@ -19850,9 +20046,25 @@ var OFFER_SETTINGS_FIELDS = [
       { name: 'count', type: 'number', label: 'f.os.count', required: true, min: 0, max: 20 }
     ] },
   { type: 'row', fields: [
-    { name: 'weighting', type: 'select', label: 'f.os.weighting', hint: 'f.os.weighting.hint', required: true, noPlaceholder: true, options: opts('os.weighting.', ['weighted', 'uniform', 'priority']) },
+    { name: 'weighting', type: 'select', label: 'f.os.weighting', hint: 'f.os.weighting.hint', required: true, noPlaceholder: true, refresh: true, options: opts('os.weighting.', ['weighted', 'uniform', 'priority', 'scored']) },
     { name: 'noRepeatDays', type: 'number', label: 'f.os.noRepeatDays', hint: 'f.os.noRepeatDays.hint', required: true, min: 0, max: 365 }
   ] },
+  { name: 'scoreNote', type: 'static', readonly: true, when: osScored, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-os-scored': '', text: t('os.score.note') }); } },
+  { type: 'row', when: osScored, fields: [
+    { name: 'score.affordable', type: 'number', int: false, label: 'f.os.score.affordable', required: true, min: 0, max: 1000, when: osScored },
+    { name: 'score.recency', type: 'number', int: false, label: 'f.os.score.recency', required: true, min: 0, max: 1000, when: osScored },
+    { name: 'score.newness', type: 'number', int: false, label: 'f.os.score.newness', required: true, min: 0, max: 1000, when: osScored }
+  ] },
+  { type: 'row', when: osScored, fields: [
+    { name: 'score.recencyDays', type: 'number', label: 'f.os.score.recencyDays', hint: 'f.os.score.recencyDays.hint', required: true, min: 1, max: 365, when: osScored },
+    { name: 'score.newDays', type: 'number', label: 'f.os.score.newDays', hint: 'f.os.score.newDays.hint', required: true, min: 0, max: 90, when: osScored },
+    { name: 'score.floor', type: 'number', int: false, label: 'f.os.score.floor', required: true, min: 1, max: 1000, when: osScored }
+  ] },
+  { type: 'row', when: osScored, fields: [
+    { name: 'score.rarityText', type: 'text', ltr: true, label: 'f.os.score.rarity', hint: 'f.os.score.rarity.hint', optional: true, when: osScored },
+    { name: 'score.rarityUnset', type: 'number', int: false, label: 'f.os.score.rarityUnset', required: true, min: 0, max: 1000, when: osScored }
+  ] },
+  { name: 'coinPriceFloor', type: 'number', label: 'f.os.coinFloor', hint: 'f.os.coinFloor.hint', required: true, min: 0, max: 1000000 },
   { name: 'fillWithRepeats', type: 'bool', inline: true, label: 'f.os.fillWithRepeats', hint: 'f.os.fillWithRepeats.hint' },
   { name: 'boughtCooldownDays', type: 'number', label: 'f.os.boughtCooldown', hint: 'f.os.boughtCooldown.hint', required: true, min: -1, max: 3650 },
   { name: 'excludeOwned', type: 'bool', inline: true, label: 'f.os.excludeOwned', hint: 'f.os.excludeOwned.hint' },
@@ -19885,6 +20097,10 @@ function offerSettingsCall(method, path, body) {
     st.periodStart = res && res.periodStart;
     st.periodEnd = res && res.periodEnd;
     if (!st.rerollCost) st.rerollCost = { currencyKey: null, amount: null };
+    st.score = Object.assign({}, st.score || {});
+    osLastScore = JSON.parse(JSON.stringify(st.score));
+    st.score.rarityText = Object.keys(st.score.rarity || {}).map(function (k) { return k + '=' + st.score.rarity[k]; }).join(', ');
+    if (st.coinPriceFloor == null) st.coinPriceFloor = 0;
     return st;
   });
 }
@@ -19899,6 +20115,21 @@ function offerSettingsPage(container) {
     delete p.periodSay;
     if (!p.rerollCost || !p.rerollCost.currencyKey) p.rerollCost = null;
     p.countByTag = (p.countByTag || []).map(function (r) { return { tagId: r.tagId, count: Number(r.count) }; });
+    var sc = Object.assign({}, p.score || {});
+    var dflt = Object.assign({ affordable: 20, recency: 18, newness: 16, recencyDays: 7, newDays: 7, floor: 1, rarityUnset: 0 }, osLastScore || {});
+    var rar = {};
+    if (sc.rarityText == null) rar = Object.assign({}, (osLastScore && osLastScore.rarity) || { common: 10, uncommon: 10, rare: 13, epic: 13 });
+    else String(sc.rarityText).split(/[,،\n]+/).forEach(function (part) {
+      var kv = part.split('=');
+      var k = (kv[0] || '').trim();
+      if (k && kv.length > 1) rar[k] = Number(toLatinDigits(kv[1].trim()));
+    });
+    delete sc.rarityText;
+    sc.rarity = rar;
+    ['affordable', 'recency', 'newness', 'recencyDays', 'newDays', 'floor', 'rarityUnset'].forEach(function (k) { sc[k] = sc[k] === null || sc[k] === undefined || sc[k] === '' || isNaN(Number(sc[k])) ? dflt[k] : Number(sc[k]); });
+    p.score = sc;
+    p.coinPriceFloor = Number(p.coinPriceFloor) || 0;
+    delete p.scoreNote;
     return p;
   } });
   frame.content.appendChild(page.el);
@@ -25776,9 +26007,16 @@ RESOURCES['chance-games'] = {
         { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.ch.group', optional: true }
       ] },
     { name: 'slotsHint', type: 'static', readonly: true, when: chSlots, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-ch-slots-hint': '', text: t('ch.slots.hint') }); } },
-    { name: 'rerollEmpty', type: 'bool', inline: true, label: 'f.ch.reroll', hint: 'f.ch.reroll.hint', when: chSlots },
+    { type: 'row', fields: [
+      { name: 'rerollEmpty', type: 'bool', inline: true, label: 'f.ch.reroll', hint: 'f.ch.reroll.hint', when: chSlots },
+      { name: 'rerollCap', type: 'number', label: 'f.ch.rerollCap', hint: 'f.ch.rerollCap.hint', optional: true, min: 1, max: 100000, when: chSlots }
+    ] },
     { type: 'heading', label: 'ch.h.play' },
-    { name: 'intervalTime', type: 'number', label: 'f.ch.interval', hint: 'f.ch.interval.hint', optional: true, min: 1, max: 525600 },
+    { type: 'row', fields: [
+      { name: 'freeReset', type: 'select', label: 'f.ch.freeReset', hint: 'f.ch.freeReset.hint', required: true, noPlaceholder: true, options: function () { return ['interval', 'daily'].map(function (k) { return { value: k, label: t('ch.freeReset.' + k) }; }); } },
+      { name: 'intervalTime', type: 'number', label: 'f.ch.interval', hint: 'f.ch.interval.hint', optional: true, min: 1, max: 525600 }
+    ] },
+    { name: 'freeFirst', type: 'bool', inline: true, label: 'f.ch.freeFirst', hint: 'f.ch.freeFirst.hint' },
     { type: 'row', fields: [
       { name: 'price.currencyId', type: 'ref', resource: 'currencies', label: 'f.ch.currency', optional: true,
         check: function (v, vals) { var a = vals.price && vals.price.amount; return (v && (a == null || a === '')) || (!v && a != null && a !== '') ? t('code.INVALID_PRICE_PAYLOAD') : null; } },
@@ -25787,7 +26025,7 @@ RESOURCES['chance-games'] = {
     { name: 'ladderText', type: 'text', ltr: true, label: 'f.ch.ladder', hint: 'f.ch.ladder.hint', optional: true },
     { name: 'revealAck', type: 'bool', inline: true, label: 'f.ch.revealAck', hint: 'f.ch.revealAck.hint' },
     { name: 'playHint', type: 'static', readonly: true, live: true, render: function (v) {
-      var none = !v.intervalTime && !(v.price && v.price.currencyId);
+      var none = !v.intervalTime && v.freeReset !== 'daily' && !(v.price && v.price.currencyId);
       return h('p', { class: 'text-xs ' + (none ? 'text-error-600 dark:text-error-400' : 'text-secondary-500 dark:text-secondary-400'), 'data-ch-play-hint': none ? 'none' : '', text: none ? t('code.INTERVAL_OR_PRICE_REQUIRED') : t('ch.play.hint') });
     } },
     { type: 'heading', label: 'ch.h.limits' },
@@ -25795,13 +26033,21 @@ RESOURCES['chance-games'] = {
       { name: 'dailyLimit', type: 'number', label: 'f.ch.dailyLimit', hint: 'f.ch.dailyLimit.hint', optional: true, min: 1, max: 100000 },
       { name: 'totalLimit', type: 'number', label: 'f.ch.totalLimit', hint: 'f.ch.totalLimit.hint', optional: true, min: 1, max: 10000000 }
     ] },
+    { type: 'row', fields: [
+      { name: 'dayZone', type: 'text', ltr: true, label: 'f.ch.dayZone', hint: 'f.ch.dayZone.hint', optional: true },
+      { name: 'dayStartMinute', type: 'number', label: 'f.ch.dayStart', hint: 'f.ch.dayStart.hint', required: true, min: 0, max: 1439 }
+    ] },
+    { type: 'row', fields: [
+      { name: 'minLevel', type: 'number', label: 'f.ch.minLevel', hint: 'f.ch.minLevel.hint', required: true, min: 0, max: 100000 },
+      { name: 'levelTableId', type: 'ref', resource: 'level-tables', label: 'f.ch.levelTable', hint: 'f.ch.levelTable.hint', optional: true }
+    ] },
     { name: 'showOdds', type: 'bool', inline: true, label: 'f.ch.showOdds', hint: 'f.ch.showOdds.hint' },
     { type: 'heading', label: 'ch.h.more' },
     { name: 'metadata', type: 'json', label: 'f.metadata', hint: 'f.ch.metadata.hint', optional: true, empty: {} },
     { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
   ],
   defaults: function () {
-    return { key: '', isActive: true, name: {}, description: {}, kind: 'wheel', prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null }, dailyLimit: null, totalLimit: null, showOdds: true, ladderText: '', revealAck: false, rerollEmpty: true, jackpotRow: null, pityThreshold: null,
+    return { key: '', isActive: true, name: {}, description: {}, kind: 'wheel', prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null }, dailyLimit: null, totalLimit: null, showOdds: true, ladderText: '', revealAck: false, rerollEmpty: true, jackpotRow: null, pityThreshold: null, rerollCap: null, freeReset: 'interval', freeFirst: false, dayZone: '', dayStartMinute: 0, minLevel: 0, levelTableId: null,
       slots: [{ chance: 70, kind: 'currency', currencyId: null, min: 120, max: 180, prizeId: null, prizeGroupId: null }],
       prize: [{ chance: 30, prizeId: null, prizeGroupId: null }, { chance: 40, prizeId: null, prizeGroupId: null }, { chance: 30, prizeId: null, prizeGroupId: null }] };
   },
@@ -25819,6 +26065,10 @@ RESOURCES['chance-games'] = {
       v.prize = rows.map(function (r) { return { chance: r.chance, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
     }
     if (v.rerollEmpty == null) v.rerollEmpty = true;
+    if (!v.freeReset) v.freeReset = 'interval';
+    if (v.dayStartMinute == null) v.dayStartMinute = 0;
+    if (v.minLevel == null) v.minLevel = 0;
+    if (v.dayZone == null) v.dayZone = '';
     return v;
   },
   fixPayload: function (p) {
@@ -25841,6 +26091,13 @@ RESOURCES['chance-games'] = {
     p.priceLadder = chLadder(p.ladderText);
     p.revealAck = !!p.revealAck;
     p.rerollEmpty = p.rerollEmpty !== false;
+    if (p.rerollCap === '' || p.rerollCap === undefined || p.prizeType !== 'slots') p.rerollCap = null;
+    p.freeReset = p.freeReset || 'interval';
+    p.freeFirst = !!p.freeFirst;
+    p.dayZone = (p.dayZone || '').trim();
+    p.dayStartMinute = Number(p.dayStartMinute) || 0;
+    p.minLevel = Number(p.minLevel) || 0;
+    if (!p.levelTableId) p.levelTableId = null;
     delete p.slots; delete p.ladderText; delete p.jackpotRow; delete p.slotsHint;
     if (!p.price || !p.price.currencyId) p.price = null;
     if (p.intervalTime === '' || p.intervalTime === undefined) p.intervalTime = null;
@@ -29607,13 +29864,20 @@ FRIEND_FIELDS.push(
   { type: 'row', fields: [
     { name: 'presenceFriendsOnly', type: 'bool', inline: true, label: 'f.fr.presenceFriends', hint: 'f.fr.presenceFriends.hint' },
     { name: 'dmFriendsOnly', type: 'bool', inline: true, label: 'f.fr.dmFriends', hint: 'f.fr.dmFriends.hint' }
-  ] }
+  ] },
+  { type: 'heading', label: 'fr.day' },
+  { type: 'row', fields: [
+    { name: 'dayZone', type: 'text', ltr: true, label: 'f.fr.dayZone', hint: 'f.fr.dayZone.hint', optional: true },
+    { name: 'dayStartMinute', type: 'number', label: 'f.fr.dayStart', hint: 'f.fr.dayStart.hint', required: true, min: 0, max: 1439 }
+  ] },
+  { name: 'botDeclineHours', type: 'number', label: 'f.fr.botDecline', hint: 'f.fr.botDecline.hint', required: true, min: 0, max: 8760 }
 );
 
 function friendRulesPayload(p) {
   return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0,
     requestsBonusMeta: p.requestsBonusMeta || '', friendsBonusMeta: p.friendsBonusMeta || '', matchPolicy: p.matchPolicy || 'priority', overLimit: p.overLimit || 'refuse',
-    notifyDeclined: !!p.notifyDeclined, notifyRemoved: !!p.notifyRemoved, presenceFriendsOnly: !!p.presenceFriendsOnly, dmFriendsOnly: !!p.dmFriendsOnly };
+    notifyDeclined: !!p.notifyDeclined, notifyRemoved: !!p.notifyRemoved, presenceFriendsOnly: !!p.presenceFriendsOnly, dmFriendsOnly: !!p.dmFriendsOnly,
+    dayZone: (p.dayZone || '').trim(), dayStartMinute: Number(p.dayStartMinute) || 0, botDeclineHours: Number(p.botDeclineHours) || 0 };
 }
 
 function unLadder(text) {

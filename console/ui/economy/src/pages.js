@@ -983,6 +983,7 @@ var PAYMENT_SETTINGS_FIELDS = [
     { name: 'oncePending', type: 'select', label: 'f.ps.once', hint: 'f.ps.once.hint', required: true, noPlaceholder: true, options: opts('ps.once.', ['hold', 'replace']) },
     { name: 'onceHoldMinutes', type: 'number', label: 'f.ps.onceHold', hint: 'f.ps.onceHold.hint', required: true, min: 1, max: 1440 }
   ] },
+  { name: 'pendingMinutes', type: 'number', label: 'f.ps.pending', hint: 'f.ps.pending.hint', required: true, min: 0, max: 10080 },
   { name: 'expiredReceipts', type: 'select', label: 'f.ps.expired', hint: 'f.ps.expired.hint', required: true, noPlaceholder: true, options: opts('ps.expired.', ['verified', 'refuse']) },
   { name: 'closeSandboxOnOff', type: 'bool', inline: true, label: 'f.ps.sandbox', hint: 'f.ps.sandbox.hint' },
   { type: 'heading', label: 'f.ps.stores' },
@@ -1004,7 +1005,7 @@ function paymentSettingsPage(container) {
   clear(container).appendChild(frame.el);
   var page = apiPage(paymentSettingsCall, '/payment-settings', null, PAYMENT_SETTINGS_FIELDS, { id: 'payments', fixPayload: function (p) {
     delete p.updatedAt;
-    ['retryMinutes', 'maxAttempts', 'onceHoldMinutes', 'stripeToleranceSeconds'].forEach(function (k) { p[k] = Number(p[k]); });
+    ['retryMinutes', 'maxAttempts', 'onceHoldMinutes', 'stripeToleranceSeconds', 'pendingMinutes'].forEach(function (k) { p[k] = Number(p[k]); });
     return p;
   } });
   frame.content.appendChild(page.el);

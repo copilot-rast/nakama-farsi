@@ -5,8 +5,8 @@ ICONS['offer-settings'] = '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 
 ICONS['offer-preview'] = '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>';
 ICONS['offer-report'] = '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>';
 
-var OFFER_TRIGGERS = ['first_entry', 'level', 'meta', 'tag', 'account_days', 'lapsed'];
-var OFFER_TRIGGER_VALUE = { level: 1, meta: 1, account_days: 1, lapsed: 1 };
+var OFFER_TRIGGERS = ['first_entry', 'level', 'meta', 'tag', 'account_days', 'lapsed', 'game'];
+var OFFER_TRIGGER_VALUE = { level: 1, meta: 1, account_days: 1, lapsed: 1, game: 1 };
 var OFFER_REASON_COLOR = { picked: 'success', recent: 'warning', kept: 'primary' };
 
 function offerMinutes(n) {
@@ -43,6 +43,10 @@ function offerStatusCell(it) {
     it.productActive === false ? tag(t('of.offerOnly'), 'secondary') : null,
     ended ? tag(t('ev.ended'), 'secondary') : null);
 }
+
+var osLastScore = null;
+
+function osScored(v) { return v.weighting === 'scored'; }
 
 function offerTriggerText(it) {
   var tt = it.triggerType || 'first_entry';
@@ -127,7 +131,7 @@ function offerDefaults(kind) {
     var v = { key: '', name: {}, description: {}, badge: {}, productId: (query && query.productId) || null, priceMode: 'discount', discountPercent: 20, priceToman: null, coinPrice: null, sku: {},
       purchaseLimit: 1, weight: 10, audienceTagIds: [], excludeTagIds: [], minLevel: 0, maxLevel: null, levelTableId: null, metaConditions: [], minAccountDays: null, maxAccountDays: null,
       startsAt: null, endsAt: null, isActive: true, sort: 0, metadata: {} };
-    if (kind === 'entry') Object.assign(v, { triggerType: 'first_entry', triggerValue: null, triggerLevelTable: null, triggerMetaId: null, triggerTagId: null, durationMinutes: 1440, repeat: 'once', cooldownHours: 168, maxTriggers: null });
+    if (kind === 'entry') Object.assign(v, { triggerType: 'first_entry', triggerValue: null, triggerLevelTable: null, triggerMetaId: null, triggerTagId: null, triggerGame: null, durationMinutes: 1440, repeat: 'once', cooldownHours: 168, maxTriggers: null });
     return v;
   };
 }
@@ -140,6 +144,7 @@ function offerToForm(v) {
     v.triggerLevelTable = v.triggerType === 'level' ? v.triggerRef || null : null;
     v.triggerMetaId = v.triggerType === 'meta' ? v.triggerRef || null : null;
     v.triggerTagId = v.triggerType === 'tag' ? v.triggerRef || null : null;
+    v.triggerGame = v.triggerType === 'game' ? v.triggerRef || null : null;
   }
   return v;
 }
@@ -155,12 +160,13 @@ function offerFixPayload(kind) {
     p.sku = sku;
     p.metaConditions = (p.metaConditions || []).map(function (c) { return { metaId: c.metaId, operator: c.operator || 'gte', value: c.value }; });
     if (kind === 'entry') {
-      p.triggerRef = p.triggerType === 'level' ? p.triggerLevelTable || '' : p.triggerType === 'meta' ? p.triggerMetaId || '' : p.triggerType === 'tag' ? p.triggerTagId || '' : '';
+      p.triggerRef = p.triggerType === 'level' ? p.triggerLevelTable || '' : p.triggerType === 'meta' ? p.triggerMetaId || '' : p.triggerType === 'tag' ? p.triggerTagId || '' : p.triggerType === 'game' ? p.triggerGame || '' : '';
       if (!OFFER_TRIGGER_VALUE[p.triggerType]) p.triggerValue = null;
       if (p.repeat !== 'cooldown') p.maxTriggers = null;
       delete p.triggerLevelTable;
       delete p.triggerMetaId;
       delete p.triggerTagId;
+      delete p.triggerGame;
     }
     return p;
   };
@@ -191,6 +197,7 @@ RESOURCES['entry-offers'] = {
     { name: 'triggerLevelTable', type: 'ref', resource: 'level-tables', label: 'f.of.levelTable', hint: 'f.of.levelTable.hint', optional: true, when: function (v) { return v.triggerType === 'level'; } },
     { name: 'triggerMetaId', type: 'ref', resource: 'metas', label: 'f.rel.meta', required: true, when: function (v) { return v.triggerType === 'meta'; } },
     { name: 'triggerTagId', type: 'ref', resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', label: 'f.of.triggerTag', required: true, when: function (v) { return v.triggerType === 'tag'; } },
+    { name: 'triggerGame', type: 'ref', resource: 'games', valueKey: 'key', label: 'f.of.triggerGame', hint: 'f.of.triggerGame.hint', optional: true, when: function (v) { return v.triggerType === 'game'; } },
     { name: 'triggerSay', type: 'static', readonly: true, live: true, render: function (v) {
       return h('p', { class: 'eco-rule-preview text-sm rounded-md px-3 py-2', 'data-offer-trigger-say': v.triggerType || '', text: offerTriggerText(v) + ' ' + t('of.timer.say', { time: offerMinutes(v.durationMinutes) }) });
     } },
@@ -231,9 +238,25 @@ var OFFER_SETTINGS_FIELDS = [
       { name: 'count', type: 'number', label: 'f.os.count', required: true, min: 0, max: 20 }
     ] },
   { type: 'row', fields: [
-    { name: 'weighting', type: 'select', label: 'f.os.weighting', hint: 'f.os.weighting.hint', required: true, noPlaceholder: true, options: opts('os.weighting.', ['weighted', 'uniform', 'priority']) },
+    { name: 'weighting', type: 'select', label: 'f.os.weighting', hint: 'f.os.weighting.hint', required: true, noPlaceholder: true, refresh: true, options: opts('os.weighting.', ['weighted', 'uniform', 'priority', 'scored']) },
     { name: 'noRepeatDays', type: 'number', label: 'f.os.noRepeatDays', hint: 'f.os.noRepeatDays.hint', required: true, min: 0, max: 365 }
   ] },
+  { name: 'scoreNote', type: 'static', readonly: true, when: osScored, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-os-scored': '', text: t('os.score.note') }); } },
+  { type: 'row', when: osScored, fields: [
+    { name: 'score.affordable', type: 'number', int: false, label: 'f.os.score.affordable', required: true, min: 0, max: 1000, when: osScored },
+    { name: 'score.recency', type: 'number', int: false, label: 'f.os.score.recency', required: true, min: 0, max: 1000, when: osScored },
+    { name: 'score.newness', type: 'number', int: false, label: 'f.os.score.newness', required: true, min: 0, max: 1000, when: osScored }
+  ] },
+  { type: 'row', when: osScored, fields: [
+    { name: 'score.recencyDays', type: 'number', label: 'f.os.score.recencyDays', hint: 'f.os.score.recencyDays.hint', required: true, min: 1, max: 365, when: osScored },
+    { name: 'score.newDays', type: 'number', label: 'f.os.score.newDays', hint: 'f.os.score.newDays.hint', required: true, min: 0, max: 90, when: osScored },
+    { name: 'score.floor', type: 'number', int: false, label: 'f.os.score.floor', required: true, min: 1, max: 1000, when: osScored }
+  ] },
+  { type: 'row', when: osScored, fields: [
+    { name: 'score.rarityText', type: 'text', ltr: true, label: 'f.os.score.rarity', hint: 'f.os.score.rarity.hint', optional: true, when: osScored },
+    { name: 'score.rarityUnset', type: 'number', int: false, label: 'f.os.score.rarityUnset', required: true, min: 0, max: 1000, when: osScored }
+  ] },
+  { name: 'coinPriceFloor', type: 'number', label: 'f.os.coinFloor', hint: 'f.os.coinFloor.hint', required: true, min: 0, max: 1000000 },
   { name: 'fillWithRepeats', type: 'bool', inline: true, label: 'f.os.fillWithRepeats', hint: 'f.os.fillWithRepeats.hint' },
   { name: 'boughtCooldownDays', type: 'number', label: 'f.os.boughtCooldown', hint: 'f.os.boughtCooldown.hint', required: true, min: -1, max: 3650 },
   { name: 'excludeOwned', type: 'bool', inline: true, label: 'f.os.excludeOwned', hint: 'f.os.excludeOwned.hint' },
@@ -266,6 +289,10 @@ function offerSettingsCall(method, path, body) {
     st.periodStart = res && res.periodStart;
     st.periodEnd = res && res.periodEnd;
     if (!st.rerollCost) st.rerollCost = { currencyKey: null, amount: null };
+    st.score = Object.assign({}, st.score || {});
+    osLastScore = JSON.parse(JSON.stringify(st.score));
+    st.score.rarityText = Object.keys(st.score.rarity || {}).map(function (k) { return k + '=' + st.score.rarity[k]; }).join(', ');
+    if (st.coinPriceFloor == null) st.coinPriceFloor = 0;
     return st;
   });
 }
@@ -280,6 +307,21 @@ function offerSettingsPage(container) {
     delete p.periodSay;
     if (!p.rerollCost || !p.rerollCost.currencyKey) p.rerollCost = null;
     p.countByTag = (p.countByTag || []).map(function (r) { return { tagId: r.tagId, count: Number(r.count) }; });
+    var sc = Object.assign({}, p.score || {});
+    var dflt = Object.assign({ affordable: 20, recency: 18, newness: 16, recencyDays: 7, newDays: 7, floor: 1, rarityUnset: 0 }, osLastScore || {});
+    var rar = {};
+    if (sc.rarityText == null) rar = Object.assign({}, (osLastScore && osLastScore.rarity) || { common: 10, uncommon: 10, rare: 13, epic: 13 });
+    else String(sc.rarityText).split(/[,،\n]+/).forEach(function (part) {
+      var kv = part.split('=');
+      var k = (kv[0] || '').trim();
+      if (k && kv.length > 1) rar[k] = Number(toLatinDigits(kv[1].trim()));
+    });
+    delete sc.rarityText;
+    sc.rarity = rar;
+    ['affordable', 'recency', 'newness', 'recencyDays', 'newDays', 'floor', 'rarityUnset'].forEach(function (k) { sc[k] = sc[k] === null || sc[k] === undefined || sc[k] === '' || isNaN(Number(sc[k])) ? dflt[k] : Number(sc[k]); });
+    p.score = sc;
+    p.coinPriceFloor = Number(p.coinPriceFloor) || 0;
+    delete p.scoreNote;
     return p;
   } });
   frame.content.appendChild(page.el);

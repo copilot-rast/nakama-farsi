@@ -9,13 +9,20 @@ FRIEND_FIELDS.push(
   { type: 'row', fields: [
     { name: 'presenceFriendsOnly', type: 'bool', inline: true, label: 'f.fr.presenceFriends', hint: 'f.fr.presenceFriends.hint' },
     { name: 'dmFriendsOnly', type: 'bool', inline: true, label: 'f.fr.dmFriends', hint: 'f.fr.dmFriends.hint' }
-  ] }
+  ] },
+  { type: 'heading', label: 'fr.day' },
+  { type: 'row', fields: [
+    { name: 'dayZone', type: 'text', ltr: true, label: 'f.fr.dayZone', hint: 'f.fr.dayZone.hint', optional: true },
+    { name: 'dayStartMinute', type: 'number', label: 'f.fr.dayStart', hint: 'f.fr.dayStart.hint', required: true, min: 0, max: 1439 }
+  ] },
+  { name: 'botDeclineHours', type: 'number', label: 'f.fr.botDecline', hint: 'f.fr.botDecline.hint', required: true, min: 0, max: 8760 }
 );
 
 function friendRulesPayload(p) {
   return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0,
     requestsBonusMeta: p.requestsBonusMeta || '', friendsBonusMeta: p.friendsBonusMeta || '', matchPolicy: p.matchPolicy || 'priority', overLimit: p.overLimit || 'refuse',
-    notifyDeclined: !!p.notifyDeclined, notifyRemoved: !!p.notifyRemoved, presenceFriendsOnly: !!p.presenceFriendsOnly, dmFriendsOnly: !!p.dmFriendsOnly };
+    notifyDeclined: !!p.notifyDeclined, notifyRemoved: !!p.notifyRemoved, presenceFriendsOnly: !!p.presenceFriendsOnly, dmFriendsOnly: !!p.dmFriendsOnly,
+    dayZone: (p.dayZone || '').trim(), dayStartMinute: Number(p.dayStartMinute) || 0, botDeclineHours: Number(p.botDeclineHours) || 0 };
 }
 
 function unLadder(text) {

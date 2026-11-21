@@ -169,9 +169,16 @@ RESOURCES['chance-games'] = {
         { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.ch.group', optional: true }
       ] },
     { name: 'slotsHint', type: 'static', readonly: true, when: chSlots, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-ch-slots-hint': '', text: t('ch.slots.hint') }); } },
-    { name: 'rerollEmpty', type: 'bool', inline: true, label: 'f.ch.reroll', hint: 'f.ch.reroll.hint', when: chSlots },
+    { type: 'row', fields: [
+      { name: 'rerollEmpty', type: 'bool', inline: true, label: 'f.ch.reroll', hint: 'f.ch.reroll.hint', when: chSlots },
+      { name: 'rerollCap', type: 'number', label: 'f.ch.rerollCap', hint: 'f.ch.rerollCap.hint', optional: true, min: 1, max: 100000, when: chSlots }
+    ] },
     { type: 'heading', label: 'ch.h.play' },
-    { name: 'intervalTime', type: 'number', label: 'f.ch.interval', hint: 'f.ch.interval.hint', optional: true, min: 1, max: 525600 },
+    { type: 'row', fields: [
+      { name: 'freeReset', type: 'select', label: 'f.ch.freeReset', hint: 'f.ch.freeReset.hint', required: true, noPlaceholder: true, options: function () { return ['interval', 'daily'].map(function (k) { return { value: k, label: t('ch.freeReset.' + k) }; }); } },
+      { name: 'intervalTime', type: 'number', label: 'f.ch.interval', hint: 'f.ch.interval.hint', optional: true, min: 1, max: 525600 }
+    ] },
+    { name: 'freeFirst', type: 'bool', inline: true, label: 'f.ch.freeFirst', hint: 'f.ch.freeFirst.hint' },
     { type: 'row', fields: [
       { name: 'price.currencyId', type: 'ref', resource: 'currencies', label: 'f.ch.currency', optional: true,
         check: function (v, vals) { var a = vals.price && vals.price.amount; return (v && (a == null || a === '')) || (!v && a != null && a !== '') ? t('code.INVALID_PRICE_PAYLOAD') : null; } },
@@ -180,7 +187,7 @@ RESOURCES['chance-games'] = {
     { name: 'ladderText', type: 'text', ltr: true, label: 'f.ch.ladder', hint: 'f.ch.ladder.hint', optional: true },
     { name: 'revealAck', type: 'bool', inline: true, label: 'f.ch.revealAck', hint: 'f.ch.revealAck.hint' },
     { name: 'playHint', type: 'static', readonly: true, live: true, render: function (v) {
-      var none = !v.intervalTime && !(v.price && v.price.currencyId);
+      var none = !v.intervalTime && v.freeReset !== 'daily' && !(v.price && v.price.currencyId);
       return h('p', { class: 'text-xs ' + (none ? 'text-error-600 dark:text-error-400' : 'text-secondary-500 dark:text-secondary-400'), 'data-ch-play-hint': none ? 'none' : '', text: none ? t('code.INTERVAL_OR_PRICE_REQUIRED') : t('ch.play.hint') });
     } },
     { type: 'heading', label: 'ch.h.limits' },
@@ -188,13 +195,21 @@ RESOURCES['chance-games'] = {
       { name: 'dailyLimit', type: 'number', label: 'f.ch.dailyLimit', hint: 'f.ch.dailyLimit.hint', optional: true, min: 1, max: 100000 },
       { name: 'totalLimit', type: 'number', label: 'f.ch.totalLimit', hint: 'f.ch.totalLimit.hint', optional: true, min: 1, max: 10000000 }
     ] },
+    { type: 'row', fields: [
+      { name: 'dayZone', type: 'text', ltr: true, label: 'f.ch.dayZone', hint: 'f.ch.dayZone.hint', optional: true },
+      { name: 'dayStartMinute', type: 'number', label: 'f.ch.dayStart', hint: 'f.ch.dayStart.hint', required: true, min: 0, max: 1439 }
+    ] },
+    { type: 'row', fields: [
+      { name: 'minLevel', type: 'number', label: 'f.ch.minLevel', hint: 'f.ch.minLevel.hint', required: true, min: 0, max: 100000 },
+      { name: 'levelTableId', type: 'ref', resource: 'level-tables', label: 'f.ch.levelTable', hint: 'f.ch.levelTable.hint', optional: true }
+    ] },
     { name: 'showOdds', type: 'bool', inline: true, label: 'f.ch.showOdds', hint: 'f.ch.showOdds.hint' },
     { type: 'heading', label: 'ch.h.more' },
     { name: 'metadata', type: 'json', label: 'f.metadata', hint: 'f.ch.metadata.hint', optional: true, empty: {} },
     { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
   ],
   defaults: function () {
-    return { key: '', isActive: true, name: {}, description: {}, kind: 'wheel', prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null }, dailyLimit: null, totalLimit: null, showOdds: true, ladderText: '', revealAck: false, rerollEmpty: true, jackpotRow: null, pityThreshold: null,
+    return { key: '', isActive: true, name: {}, description: {}, kind: 'wheel', prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null }, dailyLimit: null, totalLimit: null, showOdds: true, ladderText: '', revealAck: false, rerollEmpty: true, jackpotRow: null, pityThreshold: null, rerollCap: null, freeReset: 'interval', freeFirst: false, dayZone: '', dayStartMinute: 0, minLevel: 0, levelTableId: null,
       slots: [{ chance: 70, kind: 'currency', currencyId: null, min: 120, max: 180, prizeId: null, prizeGroupId: null }],
       prize: [{ chance: 30, prizeId: null, prizeGroupId: null }, { chance: 40, prizeId: null, prizeGroupId: null }, { chance: 30, prizeId: null, prizeGroupId: null }] };
   },
@@ -212,6 +227,10 @@ RESOURCES['chance-games'] = {
       v.prize = rows.map(function (r) { return { chance: r.chance, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
     }
     if (v.rerollEmpty == null) v.rerollEmpty = true;
+    if (!v.freeReset) v.freeReset = 'interval';
+    if (v.dayStartMinute == null) v.dayStartMinute = 0;
+    if (v.minLevel == null) v.minLevel = 0;
+    if (v.dayZone == null) v.dayZone = '';
     return v;
   },
   fixPayload: function (p) {
@@ -234,6 +253,13 @@ RESOURCES['chance-games'] = {
     p.priceLadder = chLadder(p.ladderText);
     p.revealAck = !!p.revealAck;
     p.rerollEmpty = p.rerollEmpty !== false;
+    if (p.rerollCap === '' || p.rerollCap === undefined || p.prizeType !== 'slots') p.rerollCap = null;
+    p.freeReset = p.freeReset || 'interval';
+    p.freeFirst = !!p.freeFirst;
+    p.dayZone = (p.dayZone || '').trim();
+    p.dayStartMinute = Number(p.dayStartMinute) || 0;
+    p.minLevel = Number(p.minLevel) || 0;
+    if (!p.levelTableId) p.levelTableId = null;
     delete p.slots; delete p.ladderText; delete p.jackpotRow; delete p.slotsHint;
     if (!p.price || !p.price.currencyId) p.price = null;
     if (p.intervalTime === '' || p.intervalTime === undefined) p.intervalTime = null;

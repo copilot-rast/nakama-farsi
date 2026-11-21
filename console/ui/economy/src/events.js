@@ -445,6 +445,14 @@ RESOURCES.streaks = {
       { name: 'missAction', type: 'select', label: 'f.sk.miss', required: true, refresh: true, options: opts('sk.miss.', ['reset', 'step_back', 'week_start']) }
     ] },
     { name: 'weekLength', type: 'number', label: 'f.sk.weekLength', hint: 'f.sk.weekLength.hint', required: true, min: 1, max: 365, when: function (v) { return v.missAction === 'week_start'; } },
+    { type: 'row', fields: [
+      { name: 'dayZone', type: 'text', ltr: true, label: 'f.sk.dayZone', hint: 'f.sk.dayZone.hint', optional: true },
+      { name: 'dayStartMinute', type: 'number', label: 'f.sk.dayStart', hint: 'f.sk.dayStart.hint', required: true, min: 0, max: 1439 }
+    ] },
+    { type: 'row', fields: [
+      { name: 'claimWindow', type: 'select', label: 'f.sk.claimWindow', hint: 'f.sk.claimWindow.hint', required: true, noPlaceholder: true, options: opts('sk.claimWindow.', ['open', 'period']) },
+      { name: 'signupDelayDays', type: 'number', label: 'f.sk.signupDelay', hint: 'f.sk.signupDelay.hint', required: true, min: 0, max: 365 }
+    ] },
     { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' },
     { type: 'heading', label: 'sk.h.rewards' },
     { name: 'rewards', type: 'rows', addLabel: 'sk.add', emptyText: 'sk.empty', max: 365,
@@ -492,19 +500,28 @@ RESOURCES.streaks = {
       ] },
     { type: 'heading', label: 'sk.h.infinity' },
     { name: 'infinity', type: 'bool', inline: true, label: 'f.sk.infinity', hint: 'f.sk.infinity.hint', refresh: true },
-    { type: 'row', when: function (v) { return !!v.infinity; }, fields: [
-      { name: 'infinityCurrency', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.sk.infCurrency', required: true, when: function (v) { return !!v.infinity; } },
-      { name: 'infinityMin', type: 'number', label: 'f.sk.infMin', required: true, min: 1, when: function (v) { return !!v.infinity; } },
-      { name: 'infinityMax', type: 'number', label: 'f.sk.infMax', required: true, min: 1, when: function (v) { return !!v.infinity; } }
+    { name: 'infinityMode', type: 'select', label: 'f.sk.infMode', hint: 'f.sk.infMode.hint', required: true, noPlaceholder: true, refresh: true, options: opts('sk.infMode.', ['pay', 'claim']), when: function (v) { return !!v.infinity; } },
+    { name: 'infinityPrizeId', type: 'ref', resource: 'prizes', label: 'f.sk.infPrize', hint: 'f.sk.infPrize.hint', required: true, when: function (v) { return !!v.infinity && v.infinityMode === 'claim'; } },
+    { type: 'row', when: function (v) { return !!v.infinity && v.infinityMode !== 'claim'; }, fields: [
+      { name: 'infinityCurrency', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.sk.infCurrency', required: true, when: function (v) { return !!v.infinity && v.infinityMode !== 'claim'; } },
+      { name: 'infinityMin', type: 'number', label: 'f.sk.infMin', required: true, min: 1, when: function (v) { return !!v.infinity && v.infinityMode !== 'claim'; } },
+      { name: 'infinityMax', type: 'number', label: 'f.sk.infMax', required: true, min: 1, when: function (v) { return !!v.infinity && v.infinityMode !== 'claim'; } }
     ] }
   ],
-  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', weekLength: 7, isActive: true, sort: 0, rewards: [], milestones: [], extras: [], repayAfterFall: false, infinity: false, infinityCurrency: null, infinityMin: 150, infinityMax: 180 }; },
+  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', weekLength: 7, isActive: true, sort: 0, rewards: [], milestones: [], extras: [], repayAfterFall: false, infinity: false, infinityCurrency: null, infinityMin: 150, infinityMax: 180, infinityMode: 'pay', infinityPrizeId: null, dayZone: '', dayStartMinute: 0, claimWindow: 'open', signupDelayDays: 0 }; },
   fixPayload: function (p) {
     if (p.sort == null) p.sort = 0;
     if (!p.weekLength) p.weekLength = 7;
     p.infinity = !!p.infinity;
-    if (!p.infinity) { p.infinityCurrency = ''; p.infinityMin = 0; p.infinityMax = 0; }
+    p.infinityMode = p.infinityMode || 'pay';
+    if (!p.infinity || p.infinityMode === 'claim') { p.infinityCurrency = ''; p.infinityMin = 0; p.infinityMax = 0; }
+    if (!p.infinity || p.infinityMode !== 'claim') p.infinityPrizeId = '';
+    p.infinityPrizeId = p.infinityPrizeId || '';
     p.infinityCurrency = p.infinityCurrency || '';
+    p.dayZone = (p.dayZone || '').trim();
+    p.dayStartMinute = Number(p.dayStartMinute) || 0;
+    p.signupDelayDays = Number(p.signupDelayDays) || 0;
+    p.claimWindow = p.claimWindow || 'open';
     p.extras = p.extras || [];
     delete p.extrasNote;
     return p;

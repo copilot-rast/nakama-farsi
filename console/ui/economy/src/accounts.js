@@ -498,7 +498,10 @@ function otpFields(values) {
       { name: 'phoneHourly', type: 'number', label: 'f.otp.phoneHourly', required: true, min: 1, max: 100 },
       { name: 'phoneDaily', type: 'number', label: 'f.otp.phoneDaily', required: true, min: 1, max: 500, check: function (v, vals) { return v != null && vals.phoneHourly != null && Number(v) < Number(vals.phoneHourly) ? t('code.DAILY_BELOW_HOURLY') : null; } }
     ] },
-    { name: 'ipHourly', type: 'number', label: 'f.otp.ipHourly', hint: 'f.otp.ipHourly.hint', required: true, min: 1, max: 10000 },
+    { type: 'row', fields: [
+      { name: 'ipHourly', type: 'number', label: 'f.otp.ipHourly', hint: 'f.otp.ipHourly.hint', required: true, min: 1, max: 10000 },
+      { name: 'userHourly', type: 'number', label: 'f.otp.userHourly', hint: 'f.otp.userHourly.hint', required: true, min: 0, max: 10000 }
+    ] },
     { type: 'heading', label: 'otp.message' },
     tr('message', { label: 'f.otp.message', hint: 'f.otp.message.hint', multiline: true, rows: 3, required: true, max: 300 })
   ];

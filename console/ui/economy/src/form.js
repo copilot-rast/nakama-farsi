@@ -1,5 +1,6 @@
 var KEY_RE = /^[a-z0-9][a-z0-9_.-]{0,63}$/;
 var CURRENCY_KEY_RE = /^[a-z0-9_]{2,32}$/;
+var TAXONOMY_KEY_RE = /^[a-z0-9][A-Za-z0-9_.-]{0,63}$/;
 var CODE_RE = /^[A-Z0-9_-]{3,32}$/;
 var refCache = {};
 
@@ -826,7 +827,7 @@ function actionsEditor(value, onchange) {
   return el;
 }
 
-var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'], item: ['give'], achievement: ['give'], tag: ['give', 'set'], booster: ['give', 'set'] };
+var ITEM_ACTIONS = { currency: ['add', 'random'], meta: ['add', 'set'], storage: ['give'], item: ['give'], achievement: ['give'], tag: ['give', 'set'], booster: ['give', 'set'], chest: ['open'] };
 
 function itemsEditor(value, onchange) {
   var rows = (value || []).map(function (r) { return Object.assign({}, r); });
@@ -838,11 +839,11 @@ function itemsEditor(value, onchange) {
     errors = [];
     if (!rows.length) listEl.appendChild(h('div', { class: 'text-sm text-secondary-500 dark:text-secondary-400 border border-dashed border-secondary-300 dark:border-secondary-700 rounded-md px-3 py-4 text-center', text: t('f.items.empty') }));
     rows.forEach(function (row, idx) {
-      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'achievement', 'tag', 'booster', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
+      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'achievement', 'tag', 'booster', 'chest', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
         row.type = v;
         row.key = '';
         row.action = (ITEM_ACTIONS[v] || ['add'])[0];
-        row.value = v === 'storage' ? {} : v === 'booster' ? { multiplier: 2, minutes: 60 } : v === 'item' || v === 'achievement' ? 1 : v === 'tag' ? 30 : 0;
+        row.value = v === 'storage' ? {} : v === 'booster' ? { multiplier: 2, minutes: 60 } : v === 'item' || v === 'achievement' || v === 'chest' ? 1 : v === 'tag' ? 30 : 0;
         render();
         emit();
       }, { placeholder: false, label: t('f.item.type') });
@@ -855,13 +856,20 @@ function itemsEditor(value, onchange) {
       } else if (row.type === 'achievement') {
         keyCtl = refPicker({ resource: 'achievements', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
         keyCtl.setAttribute('data-achievement-picker', '');
+      } else if (row.type === 'chest') {
+        keyCtl = refPicker({ resource: 'chance-games', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
+        keyCtl.setAttribute('data-chest-picker', '');
       } else if (row.type === 'tag') {
         keyCtl = refPicker({ resource: 'tags', api: baseApi, filter: { keyType: 'user' }, valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
         keyCtl.setAttribute('data-tag-picker', '');
       } else {
         keyCtl = refPicker({ resource: row.type === 'meta' || row.type === 'booster' ? 'metas' : 'currencies', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
       }
-      var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t((row.type === 'tag' || row.type === 'booster' ? 'action.tag.' : 'action.') + k) }; }), function (v) { row.action = v; emit(); }, { placeholder: false, label: t('f.item.action') });
+      var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t((row.type === 'tag' || row.type === 'booster' ? 'action.tag.' : 'action.') + k) }; }), function (v) {
+        row.action = v;
+        if (row.type === 'currency') { row.value = v === 'random' ? { min: 1, max: 10 } : 0; render(); }
+        emit();
+      }, { placeholder: false, label: t('f.item.action') });
       var valCtl;
       if (row.type === 'item' || row.type === 'achievement') {
         valCtl = h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300 py-2', text: t('item.' + row.type + '.once') });
@@ -877,6 +885,16 @@ function itemsEditor(value, onchange) {
           numberInput(bv.multiplier, { int: false, label: t('item.booster.multiplier'), oninput: function (v) { bv.multiplier = parseNumber(v, false); emit(); } }),
           numberInput(bv.minutes, { int: true, label: t('item.booster.minutes'), oninput: function (v) { bv.minutes = parseNumber(v, true); emit(); } }),
           h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('item.booster.hint') }));
+      } else if (row.type === 'currency' && row.action === 'random') {
+        var rv = row.value && typeof row.value === 'object' ? row.value : { min: 1, max: 10 };
+        row.value = rv;
+        valCtl = h('div', { class: 'flex flex-col gap-1', 'data-random-value': '' },
+          numberInput(rv.min, { int: true, label: t('item.random.min'), oninput: function (v) { rv.min = parseNumber(v, true); emit(); } }),
+          numberInput(rv.max, { int: true, label: t('item.random.max'), oninput: function (v) { rv.max = parseNumber(v, true); emit(); } }),
+          h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('item.random.hint') }));
+      } else if (row.type === 'chest') {
+        valCtl = h('div', { class: 'flex flex-col gap-1', 'data-chest-value': '' }, numberInput(row.value, { int: true, label: t('item.chest.times'), oninput: function (v) { row.value = parseNumber(v, true); emit(); } }),
+          h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('item.chest.hint') }));
       } else if (row.type === 'tag') {
         valCtl = h('div', { class: 'flex flex-col gap-1' }, numberInput(row.value, { int: false, label: t('item.tag.days'), oninput: function (v) { row._raw = v; row.value = parseNumber(v, false); emit(); } }),
           h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-tag-days-hint': '', text: t('item.tag.days.hint') }));
@@ -913,7 +931,9 @@ function itemsEditor(value, onchange) {
       if (!r.key) msg = t('f.item.key') + ': ' + t('err.required');
       else if (r.type === 'storage' && (r._bad || r.value === null || typeof r.value !== 'object')) msg = t('err.json');
       else if (r.type === 'booster' && (!r.value || !(Number(r.value.multiplier) >= 1.01 && Number(r.value.multiplier) <= 100) || !(Number(r.value.minutes) >= 1 && Number(r.value.minutes) <= 525600))) msg = t('item.booster.range');
-      else if (r.type !== 'storage' && r.type !== 'item' && r.type !== 'achievement' && r.type !== 'booster' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
+      else if (r.type === 'currency' && r.action === 'random' && (!r.value || !(Number(r.value.min) >= 0) || !(Number(r.value.max) >= Number(r.value.min)) || !(Number(r.value.max) > 0))) msg = t('item.random.range');
+      else if (r.type === 'chest' && !(Number(r.value) >= 1 && Number(r.value) <= 20)) msg = t('item.chest.range');
+      else if (r.type !== 'storage' && r.type !== 'item' && r.type !== 'achievement' && r.type !== 'booster' && !(r.type === 'currency' && r.action === 'random') && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
       else if (r.type === 'tag' && (Number(r.value) < 0 || Number(r.value) > 36500)) msg = t('item.tag.days') + ': ' + t('item.tag.days.range');
       e.el.textContent = msg;
       e.el.hidden = !msg;

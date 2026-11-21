@@ -427,7 +427,7 @@ var RESOURCES = {
     ],
     fields: [
       { type: 'row', fields: [
-        { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.hint', required: true },
+        { name: 'key', type: 'key', label: 'f.key', hint: 'f.key.camel.hint', required: true, keyRe: TAXONOMY_KEY_RE, keyErr: 'err.key.camel' },
         { name: 'keyType', type: 'select', label: 'f.keyType', hint: 'f.keyType.category.hint', required: true, options: keyTypeOptions('categories') }
       ] },
       tr('name', { required: true, max: 128 }),
