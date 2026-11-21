@@ -183,7 +183,7 @@ func TestGameOneMatchOverdraftNewPlayersAndVoid(t *testing.T) {
 	h.give(vet, 100)
 	view := h.mustRPC(fresh, "economy_game", map[string]any{"key": "tst_board"})
 	rooms := view["rooms"].([]any)
-	if len(rooms) != 1 || rooms[0].(map[string]any)["key"] != "starter" || view["newPlayer"] != true {
+	if len(rooms) != 1 || rooms[0].(map[string]any)["key"] != "starter" || view["newPlayer"] != true || rooms[0].(map[string]any)["joinable"] != true {
 		t.Fatalf("a new player sees the starter room in the board1 slot: %v", rooms)
 	}
 	vview := h.mustRPC(vet, "economy_game", map[string]any{"key": "tst_board"})

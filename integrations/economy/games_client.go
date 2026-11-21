@@ -191,6 +191,7 @@ func (s *service) gameView(ctx context.Context, g *gameRecord, lk *gameLookups) 
 	if err != nil {
 		return nil, err
 	}
+	npOffered := len(s.newPlayerRooms(g)) > 0 && pathOr(lk.path) == gamecatalog.PathMatchmaking
 	for _, r := range order {
 		el := eligibilityFor(lk, g.Requirements, &r)
 		if el.hidden {
@@ -220,6 +221,7 @@ func (s *service) gameView(ctx context.Context, g *gameRecord, lk *gameLookups) 
 			room["prize"] = prize
 		}
 		s.roomExtras(ctx, lk, g, r, room)
+		room["joinable"] = !(isNew && npOffered) || r.NewPlayersOnly
 		rooms = append(rooms, room)
 	}
 	def, registered := gamecatalog.Lookup(g.Key)
