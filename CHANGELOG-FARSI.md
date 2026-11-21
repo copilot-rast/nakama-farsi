@@ -7,6 +7,10 @@ Releases are tagged on `main` as `v3.42-fa.N`: the upstream version this fork is
 ## [Unreleased] — on `dev`, based on heroiclabs/nakama `37618ad4` (3.42.0 + master of 2026-11-12)
 
 ### Added
+- Username change policy (off by default): first change free, a price ladder in an economy currency (defaults 50, 100, 200, 400, 800 gems), hours between changes, `base_username_quote`, `base_username_change {username, expectedCost?}`, UpdateAccount charges the same way, staff rename from the player card without price or wait, history of every change (`base_username_change` table) and an `account` activity entry.
+- Player codes: every account gets a short public code (6 upper-case letters and digits by default, set in «قوانین حساب») from a database trigger; `base_my_code`, `base_player_codes`, `base_user_by_code` with the relationship and online state for friends; friend RPCs take `codes`; console player search finds codes.
+- Friend notices and privacy: inbox notices 1130 (request declined) and 1131 (removed as a friend), each with its own switch (on); «وضعیت آنلاین فقط برای دوستان» filters StatusFollow and «پیام خصوصی فقط بین دوستان» refuses DM joins and messages with `FRIENDSHIP_REQUIRED` (both off).
+- Friend suggestions: a daily list per player from co-players (recorded from finished games registry matches), mutual friends, similar activity (presence days) and an optional level table, with visible and reserve sizes, quotas, fading after repeated shows, live co-play patch, admin settings and a rebuild from the player card; `base_friend_suggestions`.
 - Persian console: fa-IR with RTL and Persian digits, the Plane look (rail, sidebar per section, Yekan Bakh, Phosphor icons, light and dark), Ctrl K page search, branding and a first-login setup wizard, one project settings window with every section.
 - Accounts: phone and SMS login with sandbox codes, account rules, app versions with forced update, countries.
 - Players and chat: player tags, suspensions, mutes and warnings, a Persian-aware word filter, player reports.

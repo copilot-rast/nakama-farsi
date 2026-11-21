@@ -604,3 +604,38 @@ A sticker is a chat message whose content has `sticker: "<pack>/<sticker>"`. The
 ## Avatar builder
 
 Moved to the economy plugin as the avatar designer (see `docs/economy/spec.md`, «Avatar designer»). Migration `20261228000000-economy-avatar.sql` copies the parts, options, settings and saved looks; the `base_avatar*` tables are kept untouched and the RPCs `base_avatar`, `base_avatar_save` and `base_avatar_get` keep their shapes, now served by the economy plugin on the player's active avatar.
+
+## Username change, player codes, friend notices and suggestions (mench social, 2026-11-21)
+
+Behaviour and defaults were taken from the legacy Ludo backend (user-management `change-username.handler.ts`, `User.uniqueId`, social-management friend suggestions and co-play). Migration `20270106000000-base-social-extras.sql`.
+
+### Username change (`usernames.go`, settings `base_username_settings`)
+
+- Settings: `enabled` [off], `firstFree` [on], `currency` [`gem`], `ladder` [50, 100, 200, 400, 800], `cooldownHours` [0]. The nth paid change costs `ladder[min(paid, len-1)]`.
+- One transaction: lock the user row, check the account rules, unchanged and taken names, the wait, the price (and `expectedCost`), debit through `pluginkit.WalletTx` (grant id `username:<change id>`, ledger reason `username_change`), update `users.username`, write `base_username_change`, update `base_username_state` (free used, paid count, last change). A unique violation rolls the debit back.
+- `beforeUpdateAccount` runs the same path when the policy is on, so HTTP and `base_account_update` pay the same.
+- Staff rename (`POST /players/{id}/username`) skips price and wait and leaves the counters alone; source `admin` with the console user. Every change writes an `account` activity entry.
+- Refusals are JSON messages `{code, message, lang, meta}`: `USERNAME_UNCHANGED`, `USERNAME_TAKEN`, `USERNAME_CHANGE_COOLDOWN {cooldownEndsAt}`, `USERNAME_PRICE_CHANGED {cost, currency, expected}`, `CURRENCY_IS_NOT_ENOUGH {currencyKey, amount, balance}`.
+
+### Player codes (`playercode.go`, `base_player_code`, settings `base_player_code_settings`)
+
+- Trigger `base_player_code_assign` on `users` insert calls `base_new_player_code()` (length [6], alphabet [A–Z 0–9], 20 tries, one more character every 5 collisions). The migration backfills existing accounts. `playerCode()` assigns lazily if a row is missing.
+- Lookups are upper-cased and trimmed. Console player list search matches codes; `playerJSON` carries `code`.
+
+### Friend notices and friends-only rules (`friendextras.go`, columns on `base_friend_rules`)
+
+- `beforeDeleteFriends` already knows declined (`invite received`) and removed (`friend`) edges; it now sends persistent notices 1130 / 1131 (switches `notify_declined`, `notify_removed`, on) and, for a decline, a same-day suggestion skip for the requester.
+- `presence_friends_only` [off]: before `StatusFollow` keeps only friend ids. `dm_friends_only` [off]: before `ChannelJoin` type 2 and before `ChannelMessageSend` on a `4.` channel refuse non-friends with `FRIENDSHIP_REQUIRED`.
+
+### Friend suggestions (`suggestions.go`)
+
+- Co-play: a leased loop (20 s) reads finished `economy_game_match` rows after a cursor (`base_coplay_cursor`, starts 30 days back) and upserts every ordered pair of entries (`pending`, `paid`, `free`, `left`) into `base_coplay`.
+- Presence days: session start writes `base_presence_day` (project day).
+- Generation per project day: pools co-play (last `lookbackDays` [30]), mutual friends, activity buckets over `presenceDays` [7] (daily/regular/casual, within one bucket), level table within `levelDelta` [2] when `levelTable` is set; exclusions: any edge either way, same-day skips, banned, candidates with `candidateMaxFriends` [50] friends. Quotas co-play 20, mutual 15, activity 10, level 5, then leftovers up to `visible` [50] + `reserve` [20]; slots after the co-play quota are shuffled; scores fade by half per day after `decayAfter` [4] shows.
+- The first list read of a day counts one show for the visible rows. A finished match puts the co-players at the top of today's list (`livePatch` [on]). Sending a request removes the pair from both lists and compacts slots.
+- Console: `GET/PUT /friend-suggestions/settings`, `GET /players/{id}/friend-suggestions` (visible, reserve with score and shows, recent co-play), `POST /players/{id}/friend-suggestions/regenerate`.
+
+### Console
+
+- «قوانین حساب» adds the username change and player code forms; «دوستی» adds the privacy switches and the friend suggestion form.
+- The native player page gets a card «حساب و دوستی»: code, next price, username history, staff rename, suggestions with reserve and co-play, rebuild.

@@ -5,6 +5,10 @@
   "summary": "برای همهٔ پروژه‌ها: اتصال، RPCها، خطاها، مستندات API، پکیج یونیتی و توکن کاربر comms.",
   "summaryEn": "For every project: connecting, RPCs, errors, API docs, the Unity package and the comms user token.",
   "changelog": [
+    {"date": "2026-11-21", "title": "پیشنهاد دوستی از هم‌بازی‌ها و دوستان مشترک با base_friend_suggestions", "titleEn": "Friend suggestions from co-players and mutual friends through base_friend_suggestions", "section": "10-friend-suggestions.md"},
+    {"date": "2026-11-21", "title": "اعلان رد درخواست و حذف از دوستان، وضعیت آنلاین و پیام خصوصی فقط بین دوستان", "titleEn": "Notices for a declined request and a removed friend, online status and private chat for friends only", "section": "09-friend-notices-privacy.md"},
+    {"date": "2026-11-21", "title": "کد کوتاه بازیکن، پیدا کردن با کد و افزودن دوست با کد", "titleEn": "Short player code, lookup by code and adding friends by code", "section": "08-player-code.md"},
+    {"date": "2026-11-21", "title": "تغییر نام کاربری با قیمت پله‌ای و فاصلهٔ زمانی", "titleEn": "Username change with a price ladder and a cooldown", "section": "07-username-change.md"},
     {"date": "2026-11-19", "title": "اطلاعات اتصال بالای بخش عمومی: آدرس سرور و کلید سرور همین سرور", "titleEn": "Connection info at the top of the general part: this server's address and server key", "section": "02-connect.md"},
     {"date": "2026-11-19", "title": "توکن کاربر comms برای چت، تماس و جلسه با RPC comms_user_token", "titleEn": "comms user token for chat, calls and meetings through the comms_user_token RPC", "section": "06-comms-user-token.md"},
     {"date": "2026-11-18", "title": "راهنمای فرانت از نوار بالای کنسول دانلود می‌شود", "titleEn": "The front-end handoff downloads from the console header", "section": "01-this-file.md"},
