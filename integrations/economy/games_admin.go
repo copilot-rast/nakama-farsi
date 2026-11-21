@@ -521,7 +521,7 @@ func (s *service) consoleGameRegistry(w http.ResponseWriter, r *http.Request) {
 }
 
 const gameMatchAdminJSON = `jsonb_build_object('id',m.id,'gameKey',m.game_key,'gameName',g.name,'roomKey',m.room_key,'status',m.status,'players',m.players,'winners',to_jsonb(m.winners),
-	'createdAt',m.created_at,'startedAt',m.started_at,'endedAt',m.ended_at,'endReason',m.end_reason,'forcedBy',m.forced_by,'note',m.note,'results',m.results,'summary',m.summary,'actions',m.actions,
+	'createdAt',m.created_at,'startedAt',m.started_at,'endedAt',m.ended_at,'endReason',m.end_reason,'forcedBy',m.forced_by,'note',m.note,'results',m.results,'actions',m.actions,
 	'bots',(SELECT count(*) FROM economy_game_entry e WHERE e.match_id=m.id AND e.bot),
 	'fees',(SELECT COALESCE(sum((e.fee->>'amount')::bigint),0) FROM economy_game_entry e WHERE e.match_id=m.id AND e.status='paid'),
 	'refunds',(SELECT count(*) FROM economy_game_entry e WHERE e.match_id=m.id AND e.status='refunded'))::text`
@@ -566,6 +566,12 @@ func (s *service) consoleGameMatch(w http.ResponseWriter, r *http.Request) {
 	}
 	out := map[string]any{}
 	_ = json.Unmarshal([]byte(raw), &out)
+	var summary sql.NullString
+	_ = s.db.QueryRowContext(r.Context(), `SELECT summary::text FROM economy_game_match WHERE id=$1`, id).Scan(&summary)
+	out["summary"] = nil
+	if summary.Valid {
+		out["summary"] = json.RawMessage(summary.String)
+	}
 	rows, err := s.db.QueryContext(r.Context(), `SELECT jsonb_build_object('userId',e.user_id,'username',u.username,'status',e.status,'fee',e.fee,'prizeId',e.prize_id,'prizeStatus',e.prize_status,
 		'path',e.path,'tickets',e.tickets,'error',e.error,'bot',e.bot,'released',e.released,'result',e.result,'rank',e.rank,'amount',e.amount,'createdAt',e.created_at,'updatedAt',e.updated_at)::text FROM economy_game_entry e LEFT JOIN users u ON u.id=e.user_id WHERE e.match_id=$1 ORDER BY e.created_at, e.user_id`, id)
 	if err != nil {
