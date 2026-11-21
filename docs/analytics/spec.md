@@ -254,6 +254,31 @@ The old «Insights» pages in the economy bundle (overview, sessions, heatmaps, 
 
 `docs/handoff/general/07-analytics-events.md`: the standard, `insights_send` over the socket with the batch format, queueing and retry rules, `insights_config` hints, examples (nakama-js), error codes. Unity: list of what `nakama-unity` needs (not changed in this work).
 
-## Progress
+## Progress (2026-11-21, branch `analytics`)
 
-See the bottom of this file, updated per commit.
+Built:
+
+- Event standard: `integrations/insights/internal/events` (name + tags + value, legacy path with catalog `pathGroups`, GameAnalytics typed events, policies, client time window). Unit tests.
+- Server helper `internal/insightsapi` (`Send`, `Path`, `Tags`, `Num`); insights registers the sink and subscribes to `gameevents`; session RPC and socket sessions write `session_start` / `session_end` (sessions now store `game`).
+- Client RPC `insights_send` with receipts, database rate limits, backlog guard; `insights_config` carries the event hints and catalog.
+- Outbox `insights_outbox` + worker on every node (`FOR UPDATE SKIP LOCKED`, claim token, backoff, dead rows, retry/discard in the console), event sweep under a lease.
+- Store drivers: Nakama Postgres (default) and external PostgreSQL (shared SQL, `Ensure` creates the schema), ClickHouse (HTTP interface, bound parameters, `ReplacingMergeTree`, `windowFunnel`), MongoDB (own OP_MSG/BSON/SCRAM-SHA-256 client in `internal/mongowire`, aggregation pipelines, funnels and retention computed in Go). Secrets sealed with `internal/secretbox`.
+- Queries: explorer (metric × up to 4 group-bys × bucket × tag filters), activity (DAU/WAU/MAU/new/returning), retention summary + cohorts (classic/rolling), funnels, event log with cursor, values, session timelines.
+- Importers: `ga4_bigquery`, `ga4_data`, `gameanalytics` (S3 raw export), connector table with leases and runs.
+- Console bundle `console/ui/insights` (section «آنالیتیکس بازی»), every page listed above, CSV export, fa/en with Persian digits.
+- Client handoff `docs/handoff/general/07-analytics-events.md`.
+
+Tested:
+
+- Go: events, store (Postgres contract on a disposable DB for both Postgres drivers; the same contract against an in-memory MongoDB wire server; ClickHouse against a fake HTTP server checking SQL and bound parameters), mongowire (BSON, RFC 7677 SCRAM vector, auth/insert/aggregate against a fake server), importers (fake Google token + BigQuery + Data API, fake S3), plugin (ingest, duplicates, rate limit, backlog, catalog policies, server helper, game events, outbox while the store is down then switch to an external Postgres schema, dashboards API, connector run).
+- e2e `88-game-analytics` (catalog from the console, 4 device players over HTTP RPC, overview, active users, CSV, retention, explorer, funnel editor and result, session timeline, storage test, settings validation, imports form, mobile width, English).
+- Real run: nakama-js client over the socket (`insights_session`, `insights_send` incl. duplicate batches, `insights_config`), then console API checks (explorer by tag combinations and by user, activity, retention, funnel, session timeline, empty outbox).
+
+Not tested live: ClickHouse, MongoDB, GA4 (BigQuery and Data API), GameAnalytics S3 export: no servers or credentials on this Mac.
+
+Left:
+
+- PP: forward PP's `analytics_track` events into the new store from PP's ingest (`insightsapi.Send` with the typed events), done in the PP fork on merge.
+- Copying history between stores when the driver changes.
+- The old economy-bundle «Insights» overview/sessions tabs overlap the new section (owner decision to remove them).
+- Unity wrappers (list in the handoff part).
