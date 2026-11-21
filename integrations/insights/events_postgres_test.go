@@ -444,3 +444,69 @@ func TestDashboardsOverTheConsoleAPI(t *testing.T) {
 		t.Fatal("bad settings accepted")
 	}
 }
+
+func TestConnectorImportsThroughTheOutbox(t *testing.T) {
+	f := newFixture(t)
+	f.cleanupEvents()
+	var body bytes.Buffer
+	zw := gzipWriter(&body)
+	_, _ = zw.Write([]byte(`{"data":{"category":"design","event_id":"Vehicle:Distance","value":12,"user_id":"` + f.prefix + `","session_id":"s1","platform":"ios","build":"3.1","client_ts":1780300000}}` + "\n"))
+	_ = zw.Close()
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/bkt" {
+			_, _ = w.Write([]byte(`<ListBucketResult><Contents><Key>x/1.json.gz</Key></Contents><IsTruncated>false</IsTruncated></ListBucketResult>`))
+			return
+		}
+		_, _ = w.Write(body.Bytes())
+	}))
+	defer srv.Close()
+	f.s.httpClient = srv.Client()
+	in := map[string]any{"kind": "gameanalytics", "name": "GA raw", "enabled": true, "everyMinutes": 60, "config": map[string]any{"endpoint": srv.URL, "bucket": "bkt", "accessKey": "AK"}, "secret": "sk"}
+	if code, out := call(t, f.s.connectorSave, "POST", "/x", in, nil); code != 400 || out["error"] != "SECRET_KEY_MISSING" {
+		t.Fatalf("no key %d %v", code, out)
+	}
+	key, _ := connectorBox.DeriveKey([]byte(strings.Repeat("k", 40)), "insights-secrets")
+	f.s.secretKey = key
+	c := okc(t, f.s.connectorSave, "POST", "/x", in, nil)
+	id := c["id"].(string)
+	t.Cleanup(func() { _, _ = f.s.db.Exec(`DELETE FROM insights_connector WHERE id=$1`, id) })
+	if c["hasSecret"] != true {
+		t.Fatalf("connector %v", c)
+	}
+	if code, _ := call(t, f.s.connectorSave, "POST", "/x", map[string]any{"kind": "nope", "name": "x"}, nil); code != 400 {
+		t.Fatal("bad kind accepted")
+	}
+	if code, out := call(t, f.s.connectorSave, "POST", "/x", map[string]any{"kind": "gameanalytics", "name": "x", "config": map[string]any{"endpoint": "ftp://x"}}, nil); code != 400 || out["field"] != "endpoint" {
+		t.Fatalf("bad config %d %v", code, out)
+	}
+	okc(t, f.s.connectorRunNow, "POST", "/x", nil, map[string]string{"id": id})
+	ran, err := f.s.runDueConnector(context.Background(), "node-a")
+	if err != nil || !ran {
+		t.Fatalf("run %v %v", ran, err)
+	}
+	if ran, _ := f.s.runDueConnector(context.Background(), "node-b"); ran {
+		t.Fatal("ran again before it was due")
+	}
+	f.drain()
+	var name, source, user, platform string
+	var value float64
+	if err := f.s.db.QueryRow(`SELECT name, source, user_id, platform, value FROM insights_event WHERE user_id=$1`, "ga:"+f.prefix).Scan(&name, &source, &user, &platform, &value); err != nil {
+		t.Fatal(err)
+	}
+	if name != "Vehicle" || source != "import:gameanalytics" || platform != "ios" || value != 12 {
+		t.Fatalf("imported %s %s %s %v", name, source, platform, value)
+	}
+	runs := okc(t, f.s.connectorRuns, "GET", "/x", nil, map[string]string{"id": id})
+	r0 := runs["items"].([]any)[0].(map[string]any)
+	if r0["status"] != "ok" || r0["written"].(float64) != 1 {
+		t.Fatalf("runs %v", runs)
+	}
+	list := okc(t, f.s.connectorList, "GET", "/x", nil, nil)
+	if len(list["kinds"].([]any)) != 3 {
+		t.Fatalf("kinds %v", list["kinds"])
+	}
+	_, _ = f.s.db.Exec(`DELETE FROM insights_event WHERE user_id=$1`, "ga:"+f.prefix)
+	_, _ = f.s.db.Exec(`DELETE FROM insights_event_user WHERE user_id=$1`, "ga:"+f.prefix)
+	_, _ = f.s.db.Exec(`DELETE FROM insights_event_user_day WHERE user_id=$1`, "ga:"+f.prefix)
+	okc(t, f.s.connectorDelete, "DELETE", "/x", nil, map[string]string{"id": id})
+}
