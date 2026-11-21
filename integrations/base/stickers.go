@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -98,8 +99,10 @@ func (s *service) stickerRefusal(ctx context.Context, userID, code string, grpc 
 }
 
 type stickerRef struct {
-	Pack, Key, ImageURL, Access, ItemKey string
+	Pack, Key, ImageURL, Access, ItemKey, Kind, Text, AssetID string
 }
+
+var stickerKinds = []string{"sticker", "text", "gif", "emoji"}
 
 func splitStickerRef(v string) (string, string, bool) {
 	pack, key, ok := strings.Cut(strings.TrimSpace(v), "/")
@@ -149,8 +152,8 @@ func (s *service) stickerGate(ctx context.Context, userID, channelID, content st
 		return "", true, st, s.stickerRefusal(ctx, userID, CodeStickerNotFound, codes.NotFound, map[string]any{"sticker": ref})
 	}
 	var r stickerRef
-	err = s.db.QueryRowContext(ctx, `SELECT p.key, s.key, s.image_url, p.access, p.item_key FROM base_sticker s JOIN base_sticker_pack p ON p.id=s.pack_id
-		WHERE p.key=$1 AND s.key=$2 AND p.is_active AND s.is_active`, pack, key).Scan(&r.Pack, &r.Key, &r.ImageURL, &r.Access, &r.ItemKey)
+	err = s.db.QueryRowContext(ctx, `SELECT p.key, s.key, s.image_url, p.access, p.item_key, p.kind, s.text::text, s.asset_id FROM base_sticker s JOIN base_sticker_pack p ON p.id=s.pack_id
+		WHERE p.key=$1 AND s.key=$2 AND p.is_active AND p.in_chat AND s.is_active`, pack, key).Scan(&r.Pack, &r.Key, &r.ImageURL, &r.Access, &r.ItemKey, &r.Kind, &r.Text, &r.AssetID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", true, st, s.stickerRefusal(ctx, userID, CodeStickerNotFound, codes.NotFound, map[string]any{"sticker": ref})
 	}
@@ -169,6 +172,15 @@ func (s *service) stickerGate(ctx context.Context, userID, channelID, content st
 	doc["sticker"], _ = json.Marshal(r.Pack + "/" + r.Key)
 	doc["stickerPack"], _ = json.Marshal(r.Pack)
 	doc["stickerUrl"], _ = json.Marshal(r.ImageURL)
+	if r.Kind != "sticker" {
+		doc["stickerKind"], _ = json.Marshal(r.Kind)
+	}
+	if r.Text != "" && r.Text != "{}" {
+		doc["stickerText"] = json.RawMessage(r.Text)
+	}
+	if r.AssetID != "" {
+		doc["stickerAsset"], _ = json.Marshal(r.AssetID)
+	}
 	out, err := json.Marshal(doc)
 	if err != nil {
 		return "", true, st, s.hookFailure(err)
@@ -181,6 +193,8 @@ type clientSticker struct {
 	Ref      string `json:"ref"`
 	Name     string `json:"name"`
 	ImageURL string `json:"imageUrl"`
+	Text     string `json:"text,omitempty"`
+	AssetID  string `json:"assetId,omitempty"`
 }
 
 type clientStickerPack struct {
@@ -188,6 +202,7 @@ type clientStickerPack struct {
 	Name        string          `json:"name"`
 	Description string          `json:"description"`
 	IconURL     string          `json:"iconUrl"`
+	Kind        string          `json:"kind"`
 	Access      string          `json:"access"`
 	Owned       bool            `json:"owned"`
 	ItemKey     string          `json:"itemKey,omitempty"`
@@ -214,13 +229,13 @@ func (s *service) rpcStickers(ctx context.Context, userID, payload string) (any,
 	if !st.Enabled {
 		return out, nil
 	}
-	rows, err := s.db.QueryContext(ctx, `SELECT p.id::text, p.key, p.name::text, p.description::text, p.icon_url, p.access, p.item_key,
+	rows, err := s.db.QueryContext(ctx, `SELECT p.id::text, p.key, p.name::text, p.description::text, p.icon_url, p.kind, p.access, p.item_key,
 		COALESCE((SELECT jsonb_build_object('key',i.key,'name',i.name,'iconUrl',i.icon_url,'price',i.price,'typeId',i.type_id::text,
 			'productIds',(SELECT COALESCE(jsonb_agg(pr.id::text ORDER BY pr.sort, pr.created_at),'[]'::jsonb) FROM economy_product pr JOIN economy_prize z ON z.id=pr.prize_id
 				WHERE pr.is_active AND z.items @> jsonb_build_array(jsonb_build_object('type','item','key',i.key))))
 			FROM economy_item i WHERE i.key=p.item_key AND p.access='item'), 'null'::jsonb)::text,
 		p.access='free' OR EXISTS (SELECT 1 FROM economy_user_item ui JOIN economy_item i ON i.id=ui.item_id WHERE ui.user_id=$1::uuid AND i.key=p.item_key)
-		FROM base_sticker_pack p WHERE p.is_active ORDER BY p.sort, p.key`, userID)
+		FROM base_sticker_pack p WHERE p.is_active AND p.in_chat ORDER BY p.sort, p.key`, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -233,7 +248,7 @@ func (s *service) rpcStickers(ctx context.Context, userID, payload string) (any,
 	for rows.Next() {
 		var p clientStickerPack
 		var id, name, desc, item string
-		if err := rows.Scan(&id, &p.Key, &name, &desc, &p.IconURL, &p.Access, &p.ItemKey, &item, &p.Owned); err != nil {
+		if err := rows.Scan(&id, &p.Key, &name, &desc, &p.IconURL, &p.Kind, &p.Access, &p.ItemKey, &item, &p.Owned); err != nil {
 			rows.Close()
 			return nil, err
 		}
@@ -265,20 +280,21 @@ func (s *service) rpcStickers(ctx context.Context, userID, payload string) (any,
 		for i, id := range ids {
 			at[id] = i
 		}
-		srows, err := s.db.QueryContext(ctx, `SELECT pack_id::text, key, name::text, image_url FROM base_sticker WHERE pack_id::text = ANY($1::text[]) AND is_active ORDER BY sort, key`, ids)
+		srows, err := s.db.QueryContext(ctx, `SELECT pack_id::text, key, name::text, image_url, text::text, asset_id FROM base_sticker WHERE pack_id::text = ANY($1::text[]) AND is_active ORDER BY sort, key`, ids)
 		if err != nil {
 			return nil, err
 		}
 		for srows.Next() {
-			var pid, name string
+			var pid, name, text string
 			var c clientSticker
-			if err := srows.Scan(&pid, &c.Key, &name, &c.ImageURL); err != nil {
+			if err := srows.Scan(&pid, &c.Key, &name, &c.ImageURL, &text, &c.AssetID); err != nil {
 				srows.Close()
 				return nil, err
 			}
 			p := &packs[at[pid]]
 			c.Ref = p.Key + "/" + c.Key
 			c.Name = langs.Resolve(localized.Parse(name), lang)
+			c.Text = langs.Resolve(localized.Parse(text), lang)
 			p.Stickers = append(p.Stickers, c)
 		}
 		srows.Close()
@@ -315,11 +331,11 @@ func (s *service) stickerSettingsPut(w http.ResponseWriter, r *http.Request) {
 	s.stickerSettingsGet(w, r)
 }
 
-const stickerPackJSON = `jsonb_build_object('id',p.id,'key',p.key,'name',p.name,'description',p.description,'iconUrl',p.icon_url,'access',p.access,'itemKey',p.item_key,
+const stickerPackJSON = `jsonb_build_object('id',p.id,'key',p.key,'name',p.name,'description',p.description,'iconUrl',p.icon_url,'kind',p.kind,'inChat',p.in_chat,'inMatch',p.in_match,'access',p.access,'itemKey',p.item_key,
 	'item',(SELECT jsonb_build_object('key',i.key,'name',i.name,'iconUrl',i.icon_url) FROM economy_item i WHERE i.key=p.item_key AND p.access='item'),
 	'sort',p.sort,'isActive',p.is_active,'createdBy',p.created_by,'createdAt',p.created_at,'updatedAt',p.updated_at,
 	'count',(SELECT count(*) FROM base_sticker s WHERE s.pack_id=p.id),
-	'stickers',(SELECT COALESCE(jsonb_agg(jsonb_build_object('key',s.key,'name',s.name,'imageUrl',s.image_url,'isActive',s.is_active) ORDER BY s.sort, s.key),'[]'::jsonb) FROM base_sticker s WHERE s.pack_id=p.id))`
+	'stickers',(SELECT COALESCE(jsonb_agg(jsonb_build_object('key',s.key,'name',s.name,'imageUrl',s.image_url,'text',s.text,'assetId',s.asset_id,'isActive',s.is_active) ORDER BY s.sort, s.key),'[]'::jsonb) FROM base_sticker s WHERE s.pack_id=p.id))`
 
 func (s *service) stickerPackList(w http.ResponseWriter, r *http.Request) {
 	p := readPage(r)
@@ -332,6 +348,15 @@ func (s *service) stickerPackList(w http.ResponseWriter, r *http.Request) {
 	}
 	if v := r.URL.Query().Get("access"); v == "free" || v == "item" {
 		where.add("p.access = ?", v)
+	}
+	if v := r.URL.Query().Get("kind"); validKeyType(stickerKinds, v) {
+		where.add("p.kind = ?", v)
+	}
+	switch r.URL.Query().Get("place") {
+	case "chat":
+		where.add("p.in_chat = ?", true)
+	case "match":
+		where.add("p.in_match = ?", true)
 	}
 	out, err := s.listRaw(r, ` FROM base_sticker_pack p`, stickerPackJSON, "p.sort, p.key", where, p)
 	if err != nil {
@@ -369,8 +394,12 @@ type stickerIn struct {
 	Key      string         `json:"key"`
 	Name     localized.Text `json:"name"`
 	ImageURL string         `json:"imageUrl"`
+	Text     localized.Text `json:"text"`
+	AssetID  string         `json:"assetId"`
 	IsActive *bool          `json:"isActive"`
 }
+
+var assetIDPattern = regexp.MustCompile(`^[a-z0-9_.-]{1,64}$`)
 
 func (s *service) stickerPackWrite(create bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -379,6 +408,9 @@ func (s *service) stickerPackWrite(create bool) http.HandlerFunc {
 			Name        localized.Text `json:"name"`
 			Description localized.Text `json:"description"`
 			IconURL     string         `json:"iconUrl"`
+			Kind        string         `json:"kind"`
+			InChat      *bool          `json:"inChat"`
+			InMatch     *bool          `json:"inMatch"`
 			Access      string         `json:"access"`
 			ItemKey     string         `json:"itemKey"`
 			Sort        int            `json:"sort"`
@@ -416,6 +448,23 @@ func (s *service) stickerPackWrite(create bool) http.HandlerFunc {
 			err = badRequest("INVALID_SORT", "sort", "between -100000 and 100000")
 		}
 		in.ItemKey = strings.TrimSpace(in.ItemKey)
+		if in.Kind == "" {
+			in.Kind = "sticker"
+		}
+		inChat := in.InChat == nil || *in.InChat
+		inMatch := in.InMatch != nil && *in.InMatch
+		if err == nil && !validKeyType(stickerKinds, in.Kind) {
+			err = badRequest("INVALID_KIND", "kind", "sticker, text, gif or emoji")
+		}
+		if err == nil && !inChat && !inMatch {
+			err = badRequest("PLACE_REQUIRED", "inChat", "turn on chat, match or both")
+		}
+		if err == nil && !create {
+			var old string
+			if qerr := s.db.QueryRowContext(ctx, `SELECT kind FROM base_sticker_pack WHERE id=$1`, id).Scan(&old); qerr == nil && old != in.Kind {
+				err = badRequest("KIND_LOCKED", "kind", "the kind of a pack cannot change")
+			}
+		}
 		if err == nil {
 			switch in.Access {
 			case "", "free":
@@ -448,8 +497,24 @@ func (s *service) stickerPackWrite(create bool) http.HandlerFunc {
 			if st.Name, err = cleanText(langs, field+".name", st.Name, false, 100); err != nil {
 				break
 			}
-			if st.ImageURL, err = cleanURL(field+".imageUrl", st.ImageURL); err == nil && st.ImageURL == "" {
-				err = badRequest("IMAGE_REQUIRED", field+".imageUrl", "upload the sticker image")
+			st.AssetID = strings.TrimSpace(st.AssetID)
+			if st.AssetID != "" && !assetIDPattern.MatchString(st.AssetID) {
+				err = badRequest("INVALID_ASSET_ID", field+".assetId", "1 to 64 lower-case letters, digits, _ . -")
+				break
+			}
+			if st.ImageURL, err = cleanURL(field+".imageUrl", st.ImageURL); err != nil {
+				break
+			}
+			if in.Kind == "text" {
+				st.ImageURL, st.AssetID = "", ""
+				if st.Text, err = cleanText(langs, field+".text", st.Text, true, 120); err != nil {
+					break
+				}
+			} else {
+				st.Text = localized.Text{}
+				if st.ImageURL == "" && st.AssetID == "" {
+					err = badRequest("IMAGE_REQUIRED", field+".imageUrl", "upload the picture or give a client asset id")
+				}
 			}
 		}
 		if err != nil {
@@ -469,13 +534,13 @@ func (s *service) stickerPackWrite(create bool) http.HandlerFunc {
 				if taken {
 					return conflict("KEY_EXISTS", "another sticker pack has this key")
 				}
-				if _, err := tx.ExecContext(ctx, `INSERT INTO base_sticker_pack (id, key, name, description, icon_url, access, item_key, sort, is_active, created_by)
-					VALUES ($1,$2,$3::jsonb,$4::jsonb,$5,$6,$7,$8,$9,$10)`, id, key, string(name), string(desc), in.IconURL, in.Access, in.ItemKey, in.Sort, active, consoleUser(r)); err != nil {
+				if _, err := tx.ExecContext(ctx, `INSERT INTO base_sticker_pack (id, key, name, description, icon_url, access, item_key, sort, is_active, created_by, kind, in_chat, in_match)
+					VALUES ($1,$2,$3::jsonb,$4::jsonb,$5,$6,$7,$8,$9,$10,$11,$12,$13)`, id, key, string(name), string(desc), in.IconURL, in.Access, in.ItemKey, in.Sort, active, consoleUser(r), in.Kind, inChat, inMatch); err != nil {
 					return err
 				}
 			} else {
-				res, err := tx.ExecContext(ctx, `UPDATE base_sticker_pack SET name=$2::jsonb, description=$3::jsonb, icon_url=$4, access=$5, item_key=$6, sort=$7, is_active=$8, updated_at=now() WHERE id=$1`,
-					id, string(name), string(desc), in.IconURL, in.Access, in.ItemKey, in.Sort, active)
+				res, err := tx.ExecContext(ctx, `UPDATE base_sticker_pack SET name=$2::jsonb, description=$3::jsonb, icon_url=$4, access=$5, item_key=$6, sort=$7, is_active=$8, in_chat=$9, in_match=$10, updated_at=now() WHERE id=$1`,
+					id, string(name), string(desc), in.IconURL, in.Access, in.ItemKey, in.Sort, active, inChat, inMatch)
 				if err != nil {
 					return err
 				}
@@ -486,10 +551,11 @@ func (s *service) stickerPackWrite(create bool) http.HandlerFunc {
 			keys := make([]string, 0, len(in.Stickers))
 			for i, st := range in.Stickers {
 				sn, _ := json.Marshal(st.Name)
+				stx, _ := json.Marshal(st.Text)
 				on := st.IsActive == nil || *st.IsActive
-				if _, err := tx.ExecContext(ctx, `INSERT INTO base_sticker (id, pack_id, key, name, image_url, sort, is_active) VALUES ($1,$2,$3,$4::jsonb,$5,$6,$7)
-					ON CONFLICT (pack_id, key) DO UPDATE SET name=EXCLUDED.name, image_url=EXCLUDED.image_url, sort=EXCLUDED.sort, is_active=EXCLUDED.is_active`,
-					uuid.Must(uuid.NewV4()).String(), id, st.Key, string(sn), st.ImageURL, i, on); err != nil {
+				if _, err := tx.ExecContext(ctx, `INSERT INTO base_sticker (id, pack_id, key, name, image_url, sort, is_active, text, asset_id) VALUES ($1,$2,$3,$4::jsonb,$5,$6,$7,$8::jsonb,$9)
+					ON CONFLICT (pack_id, key) DO UPDATE SET name=EXCLUDED.name, image_url=EXCLUDED.image_url, sort=EXCLUDED.sort, is_active=EXCLUDED.is_active, text=EXCLUDED.text, asset_id=EXCLUDED.asset_id`,
+					uuid.Must(uuid.NewV4()).String(), id, st.Key, string(sn), st.ImageURL, i, on, string(stx), st.AssetID); err != nil {
 					return err
 				}
 				keys = append(keys, st.Key)

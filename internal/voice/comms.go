@@ -217,3 +217,36 @@ func (c *comms) Test(ctx context.Context) error {
 	}
 	return ExchangeUserToken(ctx, c.client, c.base, token)
 }
+
+func (c *comms) SetPublish(ctx context.Context, room, identity string, can bool) error {
+	err := c.call(ctx, http.MethodPost, roomPath(room)+"/players/"+url.PathEscape(identity)+"/mute", map[string]any{"muted": !can}, nil)
+	var ce *commsError
+	if errors.As(err, &ce) && (ce.status == http.StatusNotFound || ce.code == "not_listed" || ce.code == "room_closed") {
+		return ErrNotInRoom
+	}
+	return mapComms(err)
+}
+
+func (c *comms) Participants(ctx context.Context, room string) ([]Participant, error) {
+	var out struct {
+		Players []struct {
+			ID        string `json:"id"`
+			Name      string `json:"name"`
+			Muted     bool   `json:"muted"`
+			Connected bool   `json:"connected"`
+		} `json:"players"`
+	}
+	err := c.call(ctx, http.MethodGet, roomPath(room), nil, &out)
+	var ce *commsError
+	if errors.As(err, &ce) && ce.status == http.StatusNotFound {
+		return []Participant{}, nil
+	}
+	if err != nil {
+		return nil, mapComms(err)
+	}
+	list := []Participant{}
+	for _, x := range out.Players {
+		list = append(list, Participant{Identity: x.ID, Name: x.Name, CanPublish: !x.Muted, Connected: x.Connected})
+	}
+	return list, nil
+}

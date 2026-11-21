@@ -582,6 +582,13 @@ func (s *service) rpcVoiceToken(ctx context.Context, userID, payload string) (an
 			canPublish = false
 		}
 	}
+	staffMuted, err := s.voiceMuted(ctx, target.room, userID)
+	if err != nil {
+		return nil, err
+	}
+	if staffMuted {
+		canPublish = false
+	}
 	var name string
 	_ = s.db.QueryRowContext(ctx, `SELECT COALESCE(NULLIF(display_name,''), username) FROM users WHERE id=$1`, userID).Scan(&name)
 	p, err := s.voiceProvider(settings)
@@ -596,8 +603,9 @@ func (s *service) rpcVoiceToken(ctx context.Context, userID, payload string) (an
 		s.logger.Warn("Base voice token from %s failed (%s %d): %v", settings.Provider, code, status, err)
 		return nil, runtime.NewError(code, int(codes.Unavailable))
 	}
+	s.recordVoiceGrant(ctx, grant.Provider, target.room, target.gameKey, userID, clip(name, 100), canPublish, grant.ExpiresAt)
 	return map[string]any{"enabled": true, "provider": grant.Provider, "url": grant.URL, "token": grant.Token, "room": grant.Room, "identity": grant.Identity,
-		"expiresAt": grant.ExpiresAt.UTC().Format(time.RFC3339), "canPublish": canPublish, "gameKey": target.gameKey}, nil
+		"expiresAt": grant.ExpiresAt.UTC().Format(time.RFC3339), "canPublish": canPublish, "staffMuted": staffMuted, "gameKey": target.gameKey}, nil
 }
 
 func (s *service) rpcCommsUserToken(ctx context.Context, userID, payload string) (any, error) {
