@@ -114,6 +114,19 @@ type All struct {
 	Events   Events   `json:"events"`
 	Freeride Freeride `json:"freeride"`
 	Fields   Fields   `json:"fields"`
+	Items    Items    `json:"items"`
+}
+
+type Items struct {
+	Enforce      bool     `json:"enforce"`
+	Param        string   `json:"param"`
+	ItemType     string   `json:"itemType"`
+	RequireItem  bool     `json:"requireItem"`
+	RequireOwned bool     `json:"requireOwned"`
+	Allow        []string `json:"allow"`
+	Deny         []string `json:"deny"`
+	Classes      []string `json:"classes"`
+	ClassField   string   `json:"classField"`
 }
 
 const (
@@ -191,6 +204,12 @@ var (
 	Ops             = map[string]bool{">=": true, ">": true, "<=": true, "<": true, "==": true, "!=": true}
 )
 
+var (
+	ParamPattern    = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_]{0,31}$`)
+	ItemTypePattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_.-]{0,63}$`)
+	PathPattern     = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*){0,3}$`)
+)
+
 func Defaults() All {
 	return All{
 		Play:     Play{CostAmount: 1, RefundOnWin: true},
@@ -210,6 +229,7 @@ func Defaults() All {
 		Events:   Events{EconomyEvent: "stage_completed", AnalyticsEvent: "stage_completed", OnFailure: true},
 		Freeride: Freeride{RequireRequestID: true, RequestHours: 24},
 		Fields:   Fields{Stage: []FieldDef{}, Chapter: []FieldDef{}},
+		Items:    Items{Param: "itemKey", RequireOwned: true, Allow: []string{"allowedItems"}, Deny: []string{"deniedItems"}, Classes: []string{"allowedClasses"}, ClassField: "class"},
 	}
 }
 
@@ -304,6 +324,22 @@ func (a All) Validate() (string, string) {
 		return "events.analyticsEvent", "INVALID_KEY"
 	case a.Freeride.RequestHours < 1 || a.Freeride.RequestHours > 720:
 		return "freeride.requestHours", "VALUE_OUT_OF_RANGE"
+	case !ParamPattern.MatchString(a.Items.Param):
+		return "items.param", "INVALID_KEY"
+	case a.Items.ItemType != "" && !ItemTypePattern.MatchString(a.Items.ItemType):
+		return "items.itemType", "INVALID_KEY"
+	case a.Items.ClassField != "" && !ParamPattern.MatchString(a.Items.ClassField):
+		return "items.classField", "INVALID_KEY"
+	}
+	for name, list := range map[string][]string{"items.allow": a.Items.Allow, "items.deny": a.Items.Deny, "items.classes": a.Items.Classes} {
+		if len(list) > 10 {
+			return name, "TOO_MANY"
+		}
+		for _, p := range list {
+			if !PathPattern.MatchString(p) {
+				return name, "INVALID_PATH"
+			}
+		}
 	}
 	if _, err := time.LoadLocation(a.Rewards.DayZone); err != nil || a.Rewards.DayZone == "" {
 		return "rewards.dayZone", "INVALID_TIMEZONE"

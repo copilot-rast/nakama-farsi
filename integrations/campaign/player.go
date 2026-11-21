@@ -219,10 +219,14 @@ func (s *service) rpcStart(ctx context.Context, userID, payload string) (any, er
 	if err := apierr.Decode(payload, &in); err != nil {
 		return nil, err
 	}
-	return s.start(ctx, userID, in.StageKey, false)
+	return s.startWith(ctx, userID, in.StageKey, false, itemParam(payload, s.settings(ctx).Items))
 }
 
 func (s *service) start(ctx context.Context, userID, stageKey string, server bool) (any, error) {
+	return s.startWith(ctx, userID, stageKey, server, "")
+}
+
+func (s *service) startWith(ctx context.Context, userID, stageKey string, server bool, itemKey string) (any, error) {
 	stageKey = strings.TrimSpace(stageKey)
 	if stageKey == "" {
 		return nil, apierr.BadRequest("STAGE_KEY_REQUIRED").WithField("stageKey")
@@ -245,6 +249,10 @@ func (s *service) start(ctx context.Context, userID, stageKey string, server boo
 	}
 	if !replayable(st, p.row(st.ID)) {
 		return nil, apierr.Forbidden("STAGE_ALREADY_WON").WithField("stageKey")
+	}
+	item, err := s.checkStageItem(ctx, userID, st, cfg.Items, itemKey)
+	if err != nil {
+		return nil, err
 	}
 	now := s.now().UTC()
 	id := uuid.Must(uuid.NewV4()).String()
@@ -283,6 +291,9 @@ func (s *service) start(ctx context.Context, userID, stageKey string, server boo
 		}
 	}
 	out := map[string]any{"attemptId": id, "stageKey": st.Key, "startedAt": now.Format(time.RFC3339Nano), "expiresAt": expires.Format(time.RFC3339), "timeLimitSeconds": st.TimeLimit, "playCost": nil}
+	if item != nil {
+		out["item"] = item
+	}
 	if cost != nil {
 		out["playCost"] = cost
 		if regen != nil {
