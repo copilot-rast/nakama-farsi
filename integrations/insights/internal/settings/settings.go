@@ -40,11 +40,44 @@ type Heatmap struct {
 	ImportMaxFiles int     `json:"importMaxFiles"`
 }
 
+type Events struct {
+	Enabled          bool    `json:"enabled"`
+	MaxBatch         int     `json:"maxBatch"`
+	MaxTags          int     `json:"maxTags"`
+	MaxNameLength    int     `json:"maxNameLength"`
+	MaxFields        int     `json:"maxFields"`
+	MaxStringLength  int     `json:"maxStringLength"`
+	ValueMin         float64 `json:"valueMin"`
+	ValueMax         float64 `json:"valueMax"`
+	BatchesPerMinute int     `json:"batchesPerMinute"`
+	EventsPerMinute  int     `json:"eventsPerMinute"`
+	PastHours        int     `json:"pastHours"`
+	FutureMinutes    int     `json:"futureMinutes"`
+	ReceiptDays      int     `json:"receiptDays"`
+	UnknownEvents    string  `json:"unknownEvents"`
+	UnknownTagGroups string  `json:"unknownTagGroups"`
+	UnknownTagValues string  `json:"unknownTagValues"`
+	ValueOutOfRange  string  `json:"valueOutOfRange"`
+	GameEvents       bool    `json:"gameEvents"`
+	SessionEvents    bool    `json:"sessionEvents"`
+	FlushSeconds     int     `json:"flushSeconds"`
+	MaxQueue         int     `json:"maxQueue"`
+}
+
+type Storage struct {
+	KeepDays         int `json:"keepDays"`
+	BatchSize        int `json:"batchSize"`
+	MaxPendingEvents int `json:"maxPendingEvents"`
+	DeadAfter        int `json:"deadAfter"`
+}
+
 type All struct {
 	Timezone  string    `json:"timezone"`
 	Sessions  Sessions  `json:"sessions"`
 	Retention Retention `json:"retention"`
 	Heatmap   Heatmap   `json:"heatmap"`
+	Events    Events    `json:"events"`
+	Storage   Storage   `json:"storage"`
 }
 
 const (
@@ -56,7 +89,85 @@ const (
 
 	MapsAccept = "accept"
 	MapsReject = "reject"
+
+	PolicyAccept = "accept"
+	PolicyFlag   = "flag"
+	PolicyReject = "reject"
 )
+
+func DefaultEvents() Events {
+	return Events{Enabled: true, MaxBatch: 100, MaxTags: 8, MaxNameLength: 64, MaxFields: 16, MaxStringLength: 256, ValueMin: -1e12, ValueMax: 1e12,
+		BatchesPerMinute: 60, EventsPerMinute: 1200, PastHours: 72, FutureMinutes: 5, ReceiptDays: 7,
+		UnknownEvents: PolicyAccept, UnknownTagGroups: PolicyAccept, UnknownTagValues: PolicyFlag, ValueOutOfRange: PolicyReject,
+		GameEvents: true, SessionEvents: true, FlushSeconds: 30, MaxQueue: 1000}
+}
+
+func DefaultStorage() Storage {
+	return Storage{KeepDays: 400, BatchSize: 50, MaxPendingEvents: 2000000, DeadAfter: 50}
+}
+
+func policyIn(v string, allowed ...string) bool {
+	for _, a := range allowed {
+		if v == a {
+			return true
+		}
+	}
+	return false
+}
+
+func (e Events) Validate() (string, string) {
+	switch {
+	case !between(e.MaxBatch, 1, 500):
+		return "events.maxBatch", "VALUE_OUT_OF_RANGE"
+	case !between(e.MaxTags, 1, 16):
+		return "events.maxTags", "VALUE_OUT_OF_RANGE"
+	case !between(e.MaxNameLength, 8, 128):
+		return "events.maxNameLength", "VALUE_OUT_OF_RANGE"
+	case !between(e.MaxFields, 0, 64):
+		return "events.maxFields", "VALUE_OUT_OF_RANGE"
+	case !between(e.MaxStringLength, 16, 2048):
+		return "events.maxStringLength", "VALUE_OUT_OF_RANGE"
+	case e.ValueMin >= e.ValueMax || e.ValueMin < -1e15 || e.ValueMax > 1e15:
+		return "events.valueMax", "VALUE_OUT_OF_RANGE"
+	case !between(e.BatchesPerMinute, 1, 10000):
+		return "events.batchesPerMinute", "VALUE_OUT_OF_RANGE"
+	case !between(e.EventsPerMinute, 1, 100000):
+		return "events.eventsPerMinute", "VALUE_OUT_OF_RANGE"
+	case !between(e.PastHours, 1, 720):
+		return "events.pastHours", "VALUE_OUT_OF_RANGE"
+	case !between(e.FutureMinutes, 0, 1440):
+		return "events.futureMinutes", "VALUE_OUT_OF_RANGE"
+	case !between(e.ReceiptDays, 1, 90):
+		return "events.receiptDays", "VALUE_OUT_OF_RANGE"
+	case !policyIn(e.UnknownEvents, PolicyAccept, PolicyFlag, PolicyReject):
+		return "events.unknownEvents", "INVALID_POLICY"
+	case !policyIn(e.UnknownTagGroups, PolicyAccept, PolicyFlag, PolicyReject):
+		return "events.unknownTagGroups", "INVALID_POLICY"
+	case !policyIn(e.UnknownTagValues, PolicyFlag, PolicyReject):
+		return "events.unknownTagValues", "INVALID_POLICY"
+	case !policyIn(e.ValueOutOfRange, PolicyFlag, PolicyReject):
+		return "events.valueOutOfRange", "INVALID_POLICY"
+	case !between(e.FlushSeconds, 5, 3600):
+		return "events.flushSeconds", "VALUE_OUT_OF_RANGE"
+	case !between(e.MaxQueue, 10, 100000):
+		return "events.maxQueue", "VALUE_OUT_OF_RANGE"
+	}
+	return "", ""
+}
+
+func (s Storage) Validate() (string, string) {
+	switch {
+	case !between(s.KeepDays, 0, 3650):
+		return "storage.keepDays", "VALUE_OUT_OF_RANGE"
+	case !between(s.BatchSize, 1, 500):
+		return "storage.batchSize", "VALUE_OUT_OF_RANGE"
+	case !between(s.MaxPendingEvents, 1000, 100000000):
+		return "storage.maxPendingEvents", "VALUE_OUT_OF_RANGE"
+	case !between(s.DeadAfter, 1, 1000):
+		return "storage.deadAfter", "VALUE_OUT_OF_RANGE"
+	}
+	return "", ""
+}
 
 func Defaults() All {
 	return All{
@@ -64,6 +175,8 @@ func Defaults() All {
 		Sessions:  Sessions{Source: SourceClient, PingSeconds: 60, TimeoutSeconds: 300, MaxSeconds: 6 * 3600, StartsPerHour: 120, CloseOtherOpen: true, KeepDays: 400},
 		Retention: Retention{Days: []int{1, 7, 30}, Mode: ModeClassic, CohortRows: 30},
 		Heatmap:   Heatmap{Enabled: true, UnknownMaps: MapsAccept, CellSize: 5, MaxPoints: 20000, MaxBytes: 512 * 1024, UploadsPerHour: 120, MaxKmh: 600, KeepRawDays: 14, KeepCellsDays: 365, MaxTracePoints: 20000, ImportMaxMB: 64, ImportMaxRows: 2000000, ImportMaxFiles: 100},
+		Events:    DefaultEvents(),
+		Storage:   DefaultStorage(),
 	}
 }
 
@@ -124,6 +237,12 @@ func (a All) Validate() (string, string) {
 		return "heatmap.importMaxRows", "VALUE_OUT_OF_RANGE"
 	case !between(h.ImportMaxFiles, 1, 2000):
 		return "heatmap.importMaxFiles", "VALUE_OUT_OF_RANGE"
+	}
+	if f, c := a.Events.Validate(); c != "" {
+		return f, c
+	}
+	if f, c := a.Storage.Validate(); c != "" {
+		return f, c
 	}
 	seen := map[int]bool{}
 	for _, d := range r.Days {

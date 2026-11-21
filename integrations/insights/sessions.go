@@ -155,6 +155,13 @@ func (s *service) session(ctx context.Context, userID string, in sessionIn, sour
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
+	if created {
+		s.sessionEvent(ctx, userID, in.SessionID, "session_start", strings.ToLower(in.Platform), in.AppVersion, nil)
+	}
+	if in.Event == "end" {
+		n, _ := out["seconds"].(int64)
+		s.sessionEvent(ctx, userID, in.SessionID, "session_end", strings.ToLower(in.Platform), in.AppVersion, &n)
+	}
 	return out, nil
 }
 
@@ -257,7 +264,18 @@ func (s *service) closeIdle(ctx context.Context, cfg settings.All) (int, error) 
 		if err := tx.Commit(); err != nil {
 			return closed, err
 		}
+		s.idleEnded(ctx, o.id)
 		closed++
 	}
 	return closed, nil
+}
+
+func (s *service) idleEnded(ctx context.Context, id string) {
+	var uid, client, platform, version string
+	var secs sql.NullInt64
+	if err := s.db.QueryRowContext(ctx, `SELECT user_id::text, client_id, platform, app_version, seconds FROM insights_session WHERE id=$1`, id).Scan(&uid, &client, &platform, &version, &secs); err != nil {
+		return
+	}
+	n := secs.Int64
+	s.sessionEvent(ctx, uid, client, "session_end", strings.ToLower(platform), version, &n)
 }
