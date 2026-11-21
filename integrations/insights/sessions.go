@@ -88,10 +88,19 @@ func (s *service) session(ctx context.Context, userID string, in sessionIn, sour
 	if !events.GamePattern.MatchString(in.Game) {
 		in.Game = ""
 	}
-	var storedGame string
-	err = tx.QueryRowContext(ctx, `SELECT id::text, started_at, ended_at, seconds, game FROM insights_session WHERE user_id=$1 AND client_id=$2 FOR UPDATE`, userID, in.SessionID).Scan(&id, &started, &ended, &secs, &storedGame)
-	if err == nil && in.Game == "" {
-		in.Game = storedGame
+	var storedGame, storedPlatform, storedVersion string
+	err = tx.QueryRowContext(ctx, `SELECT id::text, started_at, ended_at, seconds, game, platform, app_version FROM insights_session WHERE user_id=$1 AND client_id=$2 FOR UPDATE`, userID, in.SessionID).Scan(&id, &started, &ended, &secs, &storedGame, &storedPlatform, &storedVersion)
+	evPlatform, evVersion := in.Platform, in.AppVersion
+	if err == nil {
+		if in.Game == "" {
+			in.Game = storedGame
+		}
+		if evPlatform == "" {
+			evPlatform = storedPlatform
+		}
+		if evVersion == "" {
+			evVersion = storedVersion
+		}
 	}
 	created := false
 	switch {
@@ -165,11 +174,11 @@ func (s *service) session(ctx context.Context, userID string, in sessionIn, sour
 		return nil, err
 	}
 	if created {
-		s.sessionEvent(ctx, userID, in.Game, in.SessionID, "session_start", strings.ToLower(in.Platform), in.AppVersion, nil)
+		s.sessionEvent(ctx, userID, in.Game, in.SessionID, "session_start", strings.ToLower(evPlatform), evVersion, nil)
 	}
 	if in.Event == "end" {
 		n, _ := out["seconds"].(int64)
-		s.sessionEvent(ctx, userID, in.Game, in.SessionID, "session_end", strings.ToLower(in.Platform), in.AppVersion, &n)
+		s.sessionEvent(ctx, userID, in.Game, in.SessionID, "session_end", strings.ToLower(evPlatform), evVersion, &n)
 	}
 	return out, nil
 }

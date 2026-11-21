@@ -1,0 +1,11 @@
+{
+  "name": "nakama-console-insights",
+  "private": true,
+  "description": "Game analytics pages (overview, active users, retention, funnels, event explorer, sessions, catalog, storage, imports, settings) injected into the prebuilt Nakama Console UI.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check"
+  }
+}
