@@ -118,7 +118,7 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 		var writes []*runtime.StorageWrite
 		var metas []prizeItem
 		var itemKeys, achKeys []string
-		var tags []prizeItem
+		var tags, boosters []prizeItem
 		for _, item := range prize.Items {
 			switch item.Type {
 			case "currency":
@@ -134,6 +134,8 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 				achKeys = append(achKeys, item.Key)
 			case "tag":
 				tags = append(tags, item)
+			case "booster":
+				boosters = append(boosters, item)
 			}
 		}
 		if len(itemKeys) > 0 {
@@ -194,6 +196,11 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 		}
 		for _, item := range tags {
 			if err := applyTag(ctx, tx, req.UserID, item, req.SourceType); err != nil {
+				return err
+			}
+		}
+		for _, item := range boosters {
+			if err := applyBooster(ctx, tx, req.UserID, item, req.SourceType); err != nil {
 				return err
 			}
 		}

@@ -22,13 +22,22 @@ type streakRule struct {
 	Grace      int
 	MissAction string
 	Milestones []int
+	WeekLength int
+	Infinity   bool
+	Track      int
 }
 
 type streakStep struct {
-	Advanced bool
-	Reset    bool
-	Floored  bool
-	Fell     bool
+	Advanced    bool
+	Reset       bool
+	Floored     bool
+	Fell        bool
+	Consecutive bool
+	Infinity    bool
+}
+
+func (r streakRule) inInfinity(st streakState) bool {
+	return r.Infinity && r.Track > 0 && st.Peak >= r.Track
 }
 
 func streakFloor(peak int, milestones []int) int {
@@ -62,6 +71,20 @@ func streakMissed(st streakState, idx int64, r streakRule) (int, int) {
 
 func streakFallCount(st streakState, excess int, r streakRule) (int, bool) {
 	floor := streakFloor(st.Peak, r.Milestones)
+	if r.MissAction == "week_start" {
+		wl := r.WeekLength
+		if wl < 1 {
+			wl = 7
+		}
+		c := 0
+		if st.Count > 0 {
+			c = ((st.Count - 1) / wl) * wl
+		}
+		if c < floor {
+			return floor, true
+		}
+		return c, false
+	}
 	if r.MissAction == "step_back" {
 		c := st.Count - excess
 		floored := false
@@ -90,14 +113,25 @@ func advanceStreak(st streakState, idx int64, r streakRule) (streakState, streak
 	}
 	if st.Last == nil || st.Count == 0 {
 		st.Count = 1
+	} else if r.inInfinity(st) {
+		st.Count++
+		step.Infinity = true
+		step.Consecutive = idx == *st.Last+1
 	} else {
 		missed, left := streakMissed(st, idx, r)
 		switch {
 		case missed == 0:
 			st.Count++
+			step.Consecutive = true
 		case missed <= left:
 			st.Count++
 			st.GraceUsed += missed
+		case r.MissAction == "week_start":
+			c, floored := streakFallCount(st, missed-left, r)
+			st.GraceUsed = 0
+			st.Count = c + 1
+			st.Falls++
+			step.Fell, step.Floored = true, floored
 		case r.MissAction == "step_back":
 			c, floored := streakFallCount(st, missed-left, r)
 			st.GraceUsed = r.Grace
@@ -165,7 +199,7 @@ func streakMilestoneScope(day int) string {
 }
 
 func streakBroken(st streakState, idx int64, r streakRule) bool {
-	if st.Last == nil || st.Count == 0 {
+	if st.Last == nil || st.Count == 0 || r.inInfinity(st) {
 		return false
 	}
 	missed, left := streakMissed(st, idx, r)
@@ -208,20 +242,22 @@ func milestoneDays(list []streakMilestone) []int {
 }
 
 func (s *service) applyStreaks(ctx context.Context, tx *sql.Tx, userID, typeID string, now time.Time, clk eventClock, out *eventOutcome) error {
-	rows, err := tx.QueryContext(ctx, `SELECT id::text, key, period_days, grace_periods, miss_action, COALESCE(cycle_length,0), repay_after_fall FROM economy_streak WHERE event_type_id=$1 AND is_active ORDER BY sort, created_at, id`, typeID)
+	rows, err := tx.QueryContext(ctx, `SELECT id::text, key, period_days, grace_periods, miss_action, COALESCE(cycle_length,0), repay_after_fall, week_length, infinity, infinity_currency, infinity_min, infinity_max FROM economy_streak WHERE event_type_id=$1 AND is_active ORDER BY sort, created_at, id`, typeID)
 	if err != nil {
 		return err
 	}
 	type streak struct {
-		id, key, miss      string
-		days, grace, cycle int
-		repay              bool
+		id, key, miss, infCur string
+		days, grace, cycle    int
+		repay, inf            bool
+		week                  int
+		infMin, infMax        int64
 	}
 	var list []streak
 	ids := []string{}
 	for rows.Next() {
 		var st streak
-		if err := rows.Scan(&st.id, &st.key, &st.days, &st.grace, &st.miss, &st.cycle, &st.repay); err != nil {
+		if err := rows.Scan(&st.id, &st.key, &st.days, &st.grace, &st.miss, &st.cycle, &st.repay, &st.week, &st.inf, &st.infCur, &st.infMin, &st.infMax); err != nil {
 			rows.Close()
 			return err
 		}
@@ -233,6 +269,10 @@ func (s *service) applyStreaks(ctx context.Context, tx *sql.Tx, userID, typeID s
 		return err
 	}
 	milestones, err := loadStreakMilestones(ctx, tx, ids)
+	if err != nil {
+		return err
+	}
+	extras, err := loadStreakExtras(ctx, tx, ids)
 	if err != nil {
 		return err
 	}
@@ -251,7 +291,7 @@ func (s *service) applyStreaks(ctx context.Context, tx *sql.Tx, userID, typeID s
 			st.Last = &v
 		}
 		ms := milestones[sk.id]
-		rule := streakRule{Grace: sk.grace, MissAction: sk.miss, Milestones: milestoneDays(ms)}
+		rule := streakRule{Grace: sk.grace, MissAction: sk.miss, Milestones: milestoneDays(ms), WeekLength: sk.week, Infinity: sk.inf && sk.infCur != "", Track: sk.cycle}
 		idx := clk.streakIndex(now, sk.days)
 		next, step := advanceStreak(st, idx, rule)
 		if !step.Advanced {
@@ -265,6 +305,35 @@ func (s *service) applyStreaks(ctx context.Context, tx *sql.Tx, userID, typeID s
 		floor := streakFloor(next.Peak, rule.Milestones)
 		out.Streaks = append(out.Streaks, streakChange{StreakID: sk.id, Key: sk.key, Count: next.Count, Best: next.Best, Advanced: true, Reset: step.Reset,
 			Floored: step.Floored, Floor: floor, NextMilestone: streakNextMilestone(next.Peak, rule.Milestones)})
+		if step.Infinity {
+			amount, err := secureRange(sk.infMin, sk.infMax)
+			if err != nil {
+				return err
+			}
+			if amount > 0 {
+				if err := s.walletChange(ctx, tx, userID, "streak:"+sk.id+":r"+strconv.Itoa(next.Run)+":"+strconv.Itoa(next.Count), map[string]int64{sk.infCur: amount}, map[string]any{
+					"reason": "streak_infinity", "sourceType": "streak", "sourceId": sk.id}); err != nil {
+					return err
+				}
+			}
+			ch := &out.Streaks[len(out.Streaks)-1]
+			ch.Phase, ch.InfinityCurrency, ch.InfinityAmount = "infinity", sk.infCur, amount
+			continue
+		}
+		if step.Consecutive {
+			for _, x := range extras[sk.id] {
+				if x.day != next.Count {
+					continue
+				}
+				ref, err := insertClaim(ctx, tx, userID, "streak", sk.id, x.id, "x"+streakDayScope(next.Run, next.Falls, next.Count, sk.repay), x.prize, x.mode, float64(next.Count))
+				if err != nil {
+					return err
+				}
+				if ref != nil {
+					out.Claims = append(out.Claims, *ref)
+				}
+			}
+		}
 		day := streakRewardDay(next.Count, sk.cycle)
 		var rewardID, prizeID, mode string
 		err := tx.QueryRowContext(ctx, `SELECT id::text, prize_id::text, grant_mode FROM economy_streak_reward WHERE streak_id=$1 AND day=$2`, sk.id, day).Scan(&rewardID, &prizeID, &mode)
@@ -294,4 +363,25 @@ func (s *service) applyStreaks(ctx context.Context, tx *sql.Tx, userID, typeID s
 		}
 	}
 	return nil
+}
+
+func loadStreakExtras(ctx context.Context, q dbRunner, streakIDs []string) (map[string][]streakMilestone, error) {
+	out := map[string][]streakMilestone{}
+	if len(streakIDs) == 0 {
+		return out, nil
+	}
+	rows, err := q.QueryContext(ctx, `SELECT streak_id::text, id::text, day, prize_id::text, grant_mode FROM economy_streak_extra WHERE streak_id::text = ANY($1) ORDER BY day`, streakIDs)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var sid string
+		var m streakMilestone
+		if err := rows.Scan(&sid, &m.id, &m.day, &m.prize, &m.mode); err != nil {
+			return nil, err
+		}
+		out[sid] = append(out[sid], m)
+	}
+	return out, rows.Err()
 }

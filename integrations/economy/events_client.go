@@ -18,6 +18,7 @@ func (s *service) eventRPCs() map[string]clientRPC {
 		"economy_streaks":         s.rpcStreaks,
 		"economy_reward_claim":    s.rpcRewardClaim,
 		"economy_rewards_mine":    s.rpcRewardsMine,
+		"economy_boosters":        s.rpcBoosters,
 	}
 }
 
@@ -438,7 +439,7 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 	}
 	clk := settings.clock()
 	now := s.now()
-	q := `SELECT st.id::text, st.key, st.name::text, st.description::text, st.period_days, st.grace_periods, st.miss_action, COALESCE(st.cycle_length,0), st.is_active, et.key, st.repay_after_fall,
+	q := `SELECT st.id::text, st.key, st.name::text, st.description::text, st.period_days, st.grace_periods, st.miss_action, COALESCE(st.cycle_length,0), st.is_active, et.key, st.repay_after_fall, st.week_length, st.infinity, st.infinity_currency, st.infinity_min, st.infinity_max,
 			COALESCE(u.count,0), COALESCE(u.best,0), COALESCE(u.run,1), COALESCE(u.grace_used,0), COALESCE(u.peak,0), COALESCE(u.falls,0), u.last_period, u.updated_at
 		FROM economy_streak st JOIN economy_event_type et ON et.id=st.event_type_id LEFT JOIN economy_user_streak u ON u.streak_id=st.id AND u.user_id=$1`
 	if activeOnly {
@@ -452,6 +453,10 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 		id, key, name, desc, miss, eventKey string
 		days, grace, cycle                  int
 		active, repay                       bool
+		week                                int
+		inf                                 bool
+		infCur                              string
+		infMin, infMax                      int64
 		st                                  streakState
 		updated                             sql.NullTime
 	}
@@ -459,7 +464,7 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 	for rows.Next() {
 		var sk streak
 		var last sql.NullInt64
-		if err := rows.Scan(&sk.id, &sk.key, &sk.name, &sk.desc, &sk.days, &sk.grace, &sk.miss, &sk.cycle, &sk.active, &sk.eventKey, &sk.repay,
+		if err := rows.Scan(&sk.id, &sk.key, &sk.name, &sk.desc, &sk.days, &sk.grace, &sk.miss, &sk.cycle, &sk.active, &sk.eventKey, &sk.repay, &sk.week, &sk.inf, &sk.infCur, &sk.infMin, &sk.infMax,
 			&sk.st.Count, &sk.st.Best, &sk.st.Run, &sk.st.GraceUsed, &sk.st.Peak, &sk.st.Falls, &last, &sk.updated); err != nil {
 			rows.Close()
 			return nil, err
@@ -483,6 +488,10 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 		return nil, err
 	}
 	milestones, err := loadStreakMilestones(ctx, s.db, ids)
+	if err != nil {
+		return nil, err
+	}
+	extras, err := loadStreakExtras(ctx, s.db, ids)
 	if err != nil {
 		return nil, err
 	}
@@ -514,12 +523,15 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 				prizeIDs = append(prizeIDs, m.prize)
 			}
 		}
+		for _, x := range extras[sk.id] {
+			prizeIDs = append(prizeIDs, x.prize)
+		}
 		names, err := s.prizeNames(ctx, langs, lang, prizeIDs)
 		if err != nil {
 			return nil, err
 		}
 		idx := clk.streakIndex(now, sk.days)
-		rule := streakRule{Grace: sk.grace, MissAction: sk.miss, Milestones: milestoneDays(ms)}
+		rule := streakRule{Grace: sk.grace, MissAction: sk.miss, Milestones: milestoneDays(ms), WeekLength: sk.week, Infinity: sk.inf && sk.infCur != "", Track: sk.cycle}
 		broken := streakBroken(sk.st, idx, rule)
 		count := sk.st.Count
 		run := sk.st.Run
@@ -530,7 +542,7 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 			missed, left := streakMissed(sk.st, idx, rule)
 			c, fl := streakFallCount(sk.st, missed-left, rule)
 			count, floored = c, fl
-			if sk.miss == "step_back" || fl {
+			if sk.miss == "step_back" || sk.miss == "week_start" || fl {
 				falls++
 			} else {
 				run++
@@ -636,10 +648,30 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 		if n := streakNextMilestone(peak, rule.Milestones); n > 0 {
 			nextMilestone = n
 		}
+		xlist := []map[string]any{}
+		for _, x := range extras[sk.id] {
+			row := map[string]any{"day": x.day, "prize": prizeJSON(names[x.prize], x.prize), "grantMode": x.mode, "status": "locked"}
+			for i := range claims {
+				c := &claims[i]
+				if c.RefID == x.id {
+					row["claimId"] = c.ID
+					row["status"] = claimStatusWord(c)
+				}
+			}
+			xlist = append(xlist, row)
+		}
+		phase := "track"
+		if rule.Infinity && sk.cycle > 0 && count > sk.cycle {
+			phase = "infinity"
+		}
+		var infinity any
+		if rule.Infinity {
+			infinity = map[string]any{"currencyKey": sk.infCur, "min": sk.infMin, "max": sk.infMax}
+		}
 		item := map[string]any{"key": sk.key, "milestones": mlist, "floor": floor, "nextMilestone": nextMilestone, "floored": floored, "peak": peak, "repayAfterFall": sk.repay, "name": langs.Resolve(localized.Parse(sk.name), lang), "description": langs.Resolve(localized.Parse(sk.desc), lang),
 			"eventKey": sk.eventKey, "periodDays": sk.days, "count": count, "best": sk.st.Best, "run": run, "countedThisPeriod": counted, "broken": broken,
 			"graceLeft": graceLeft, "gracePeriods": sk.grace, "missAction": sk.miss, "cycleLength": sk.cycle, "nextPeriodAt": nextAt, "breaksAt": breaksAt,
-			"days": days, "claimable": claimable, "isActive": sk.active}
+			"days": days, "claimable": claimable, "isActive": sk.active, "extras": xlist, "phase": phase, "infinity": infinity, "weekLength": sk.week}
 		if !activeOnly {
 			item["id"] = sk.id
 			if sk.updated.Valid {

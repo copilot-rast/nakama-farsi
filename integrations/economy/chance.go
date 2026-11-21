@@ -28,6 +28,11 @@ type chanceRow struct {
 	Chance       float64 `json:"chance"`
 	PrizeID      *string `json:"prizeId"`
 	PrizeGroupID *string `json:"prizeGroupId"`
+	Kind         string  `json:"kind,omitempty"`
+	CurrencyID   string  `json:"currencyId,omitempty"`
+	Min          int64   `json:"min,omitempty"`
+	Max          int64   `json:"max,omitempty"`
+	Jackpot      bool    `json:"jackpot,omitempty"`
 }
 
 type chancePrice struct {
@@ -51,6 +56,10 @@ type chanceGame struct {
 	DailyLimit  *int
 	TotalLimit  *int
 	ShowOdds    bool
+	Ladder      []int64
+	Pity        *int
+	RevealAck   bool
+	Reroll      bool
 }
 
 type chancePick struct {
@@ -60,7 +69,7 @@ type chancePick struct {
 	GroupID string
 }
 
-const chanceGameColumns = `id::text, key, name::text, description::text, metadata::text, prize_type, prize::text, interval_time, price::text, is_active, sort, kind, daily_limit, total_limit, show_odds`
+const chanceGameColumns = `id::text, key, name::text, description::text, metadata::text, prize_type, prize::text, interval_time, price::text, is_active, sort, kind, daily_limit, total_limit, show_odds, price_ladder::text, pity_threshold, reveal_ack, reroll_empty`
 
 type scanner interface {
 	Scan(dest ...any) error
@@ -70,9 +79,17 @@ func scanChanceGame(row scanner) (*chanceGame, error) {
 	var g chanceGame
 	var name, desc, meta, rows string
 	var price sql.NullString
-	var interval, daily, total sql.NullInt64
-	if err := row.Scan(&g.ID, &g.Key, &name, &desc, &meta, &g.PrizeType, &rows, &interval, &price, &g.Active, &g.Sort, &g.Kind, &daily, &total, &g.ShowOdds); err != nil {
+	var interval, daily, total, pity sql.NullInt64
+	var ladder sql.NullString
+	if err := row.Scan(&g.ID, &g.Key, &name, &desc, &meta, &g.PrizeType, &rows, &interval, &price, &g.Active, &g.Sort, &g.Kind, &daily, &total, &g.ShowOdds, &ladder, &pity, &g.RevealAck, &g.Reroll); err != nil {
 		return nil, err
+	}
+	if ladder.Valid && ladder.String != "" && ladder.String != "null" {
+		_ = json.Unmarshal([]byte(ladder.String), &g.Ladder)
+	}
+	if pity.Valid {
+		v := int(pity.Int64)
+		g.Pity = &v
 	}
 	if daily.Valid {
 		v := int(daily.Int64)
@@ -206,8 +223,8 @@ func (s *service) drawFromPrizeGroup(ctx context.Context, q rowsQueryer, groupID
 	return drawGroupMember(members)
 }
 
-func (s *service) pickChance(ctx context.Context, tx *sql.Tx, g *chanceGame, userID string) (chancePick, error) {
-	p, err := s.drawChance(ctx, tx, g)
+func (s *service) pickChance(ctx context.Context, tx *sql.Tx, g *chanceGame, userID string, force int) (chancePick, error) {
+	p, err := s.drawChance(ctx, tx, g, force)
 	if err != nil || p.PrizeID == "" {
 		return p, err
 	}
@@ -227,12 +244,15 @@ func (s *service) pickChance(ctx context.Context, tx *sql.Tx, g *chanceGame, use
 	return p, nil
 }
 
-func (s *service) drawChance(ctx context.Context, tx *sql.Tx, g *chanceGame) (chancePick, error) {
+func (s *service) drawChance(ctx context.Context, tx *sql.Tx, g *chanceGame, force int) (chancePick, error) {
 	roll, err := secureInt(chanceTotal)
 	if err != nil {
 		return chancePick{}, err
 	}
 	p := chancePick{Roll: roll, Slot: pickSlot(g.Rows, roll)}
+	if force >= 0 && force < len(g.Rows) {
+		p.Slot = force
+	}
 	if p.Slot < 0 {
 		return p, nil
 	}
@@ -326,15 +346,23 @@ type chancePlayRow struct {
 	PrizeID, GroupID, ClaimID        sql.NullString
 	Price                            *coinPrice
 	CreatedAt                        time.Time
+	Outcome                          []chanceOutcome
+	Forced                           bool
 }
 
-const chancePlayColumns = `id::text, game_id::text, user_id::text, mode, status, roll, slot, prize_id::text, prize_group_id::text, claim_id::text, price::text, created_at`
+const chancePlayColumns = `id::text, game_id::text, user_id::text, mode, status, roll, slot, prize_id::text, prize_group_id::text, claim_id::text, price::text, created_at, outcome::text, forced`
 
 func scanChancePlay(row scanner) (*chancePlayRow, error) {
 	var p chancePlayRow
-	var price sql.NullString
-	if err := row.Scan(&p.ID, &p.GameID, &p.UserID, &p.Mode, &p.Status, &p.Roll, &p.Slot, &p.PrizeID, &p.GroupID, &p.ClaimID, &price, &p.CreatedAt); err != nil {
+	var price, outcome sql.NullString
+	if err := row.Scan(&p.ID, &p.GameID, &p.UserID, &p.Mode, &p.Status, &p.Roll, &p.Slot, &p.PrizeID, &p.GroupID, &p.ClaimID, &price, &p.CreatedAt, &outcome, &p.Forced); err != nil {
 		return nil, err
+	}
+	if outcome.Valid && outcome.String != "" && outcome.String != "null" {
+		_ = json.Unmarshal([]byte(outcome.String), &p.Outcome)
+		if p.Outcome == nil {
+			p.Outcome = []chanceOutcome{}
+		}
 	}
 	if price.Valid && price.String != "" && price.String != "null" {
 		var cp coinPrice
@@ -367,7 +395,7 @@ func notEnough(key string, amount, balance int64) *appError {
 	return e
 }
 
-func (s *service) playChance(ctx context.Context, userID, gameID, mode string) (*chanceResult, error) {
+func (s *service) playChance(ctx context.Context, userID, gameID, mode string, expected *int64) (*chanceResult, error) {
 	g, err := loadChanceGame(ctx, s.db, gameID, "")
 	if err != nil {
 		return nil, err
@@ -389,7 +417,14 @@ func (s *service) playChance(ctx context.Context, userID, gameID, mode string) (
 		if err != nil {
 			return nil, err
 		}
-		price = &coinPrice{CurrencyKey: key, Amount: g.Price.Amount}
+		amount, err := s.chanceTicketAmount(ctx, s.db, g, userID, s.now().UTC())
+		if err != nil {
+			return nil, err
+		}
+		if expected != nil && *expected != amount {
+			return nil, priceChanged(amount, *expected)
+		}
+		price = &coinPrice{CurrencyKey: key, Amount: amount}
 		wallet, err := s.userWallet(ctx, userID)
 		if err != nil {
 			return nil, err
@@ -405,7 +440,8 @@ func (s *service) playChance(ctx context.Context, userID, gameID, mode string) (
 			return err
 		}
 		var plays int64
-		if err := tx.QueryRowContext(ctx, `SELECT plays FROM economy_chance_state WHERE game_id=$1 AND user_id=$2 FOR UPDATE`, g.ID, userID).Scan(&plays); err != nil {
+		var since int
+		if err := tx.QueryRowContext(ctx, `SELECT plays, since_jackpot FROM economy_chance_state WHERE game_id=$1 AND user_id=$2 FOR UPDATE`, g.ID, userID).Scan(&plays, &since); err != nil {
 			return err
 		}
 		cur, err := loadChanceGame(ctx, tx, g.ID, " FOR SHARE")
@@ -438,12 +474,42 @@ func (s *service) playChance(ctx context.Context, userID, gameID, mode string) (
 			if err != nil {
 				return err
 			}
-			price = &coinPrice{CurrencyKey: key, Amount: g.Price.Amount}
+			amount, err := s.chanceTicketAmount(ctx, tx, g, userID, now)
+			if err != nil {
+				return err
+			}
+			if expected != nil && *expected != amount {
+				return priceChanged(amount, *expected)
+			}
+			price = &coinPrice{CurrencyKey: key, Amount: amount}
 			play.Price = price
 		}
-		pick, err := s.pickChance(ctx, tx, g, userID)
+		if g.PrizeType == "slots" {
+			outcome, roll, err := s.rollSlots(ctx, tx, g, userID)
+			if err != nil {
+				return err
+			}
+			play.Roll = roll
+			play.Outcome = outcome
+			play.Status = "done"
+			if len(outcome) > 0 || price != nil {
+				play.Status = "pending"
+			}
+			return s.insertChancePlay(ctx, tx, play, g, userID, price, now, 0)
+		}
+		jp := jackpotRow(g.Rows)
+		force := -1
+		if jp >= 0 && g.Pity != nil && since+1 >= *g.Pity {
+			force = jp
+			play.Forced = true
+		}
+		pick, err := s.pickChance(ctx, tx, g, userID, force)
 		if err != nil {
 			return err
+		}
+		nextSince := since + 1
+		if jp >= 0 && pick.Slot == jp {
+			nextSince = 0
 		}
 		play.Roll = pick.Roll
 		if pick.Slot >= 0 {
@@ -470,22 +536,7 @@ func (s *service) playChance(ctx context.Context, userID, gameID, mode string) (
 		} else if mode == "ticket" {
 			play.Status = "pending"
 		}
-		var priceJSON any
-		if price != nil {
-			raw, _ := json.Marshal(price)
-			priceJSON = string(raw)
-		}
-		var finished any
-		if play.Status == "done" {
-			finished = now
-		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO economy_chance_play (id, game_id, user_id, mode, status, roll, slot, prize_id, prize_group_id, claim_id, price, created_at, finished_at)
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb,$12,$13)`,
-			play.ID, g.ID, userID, mode, play.Status, play.Roll, play.Slot, play.PrizeID, play.GroupID, play.ClaimID, priceJSON, now, finished); err != nil {
-			return err
-		}
-		_, err = tx.ExecContext(ctx, `UPDATE economy_chance_state SET plays=plays+1, last_play_at=$3 WHERE game_id=$1 AND user_id=$2`, g.ID, userID, now)
-		return err
+		return s.insertChancePlay(ctx, tx, play, g, userID, price, now, nextSince)
 	})
 	if err != nil {
 		return nil, err
@@ -527,6 +578,9 @@ func (s *service) recordChanceEvent(ctx context.Context, play *chancePlayRow) {
 }
 
 func (s *service) finishChancePlay(ctx context.Context, play *chancePlayRow) ([]prizeItem, error) {
+	if play.Outcome != nil {
+		return s.finishSlotsPlay(ctx, play)
+	}
 	if play.ClaimID.Valid {
 		if _, err := s.grantClaim(ctx, play.ClaimID.String, 1); err != nil {
 			return nil, err
