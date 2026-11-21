@@ -70,7 +70,7 @@ func eventResources() []resource {
 		{
 			name:    "streaks",
 			table:   "economy_streak",
-			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'eventTypeId',t.event_type_id,'periodDays',t.period_days,'gracePeriods',t.grace_periods,'missAction',t.miss_action,'cycleLength',t.cycle_length,'repayAfterFall',t.repay_after_fall,'isActive',t.is_active,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at,'rewards',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',r.id,'day',r.day,'prizeId',r.prize_id,'grantMode',r.grant_mode) ORDER BY r.day),'[]'::jsonb) FROM economy_streak_reward r WHERE r.streak_id=t.id),'milestones',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',m.id,'day',m.day,'prizeId',m.prize_id,'grantMode',m.grant_mode) ORDER BY m.day),'[]'::jsonb) FROM economy_streak_milestone m WHERE m.streak_id=t.id),'players',(SELECT count(*) FROM economy_user_streak u WHERE u.streak_id=t.id AND u.count > 0))`,
+			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'eventTypeId',t.event_type_id,'periodDays',t.period_days,'gracePeriods',t.grace_periods,'missAction',t.miss_action,'cycleLength',t.cycle_length,'repayAfterFall',t.repay_after_fall,'weekLength',t.week_length,'infinity',t.infinity,'infinityCurrency',t.infinity_currency,'infinityMin',t.infinity_min,'infinityMax',t.infinity_max,'extras',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',x.id,'day',x.day,'prizeId',x.prize_id,'grantMode',x.grant_mode) ORDER BY x.day),'[]'::jsonb) FROM economy_streak_extra x WHERE x.streak_id=t.id),'isActive',t.is_active,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at,'rewards',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',r.id,'day',r.day,'prizeId',r.prize_id,'grantMode',r.grant_mode) ORDER BY r.day),'[]'::jsonb) FROM economy_streak_reward r WHERE r.streak_id=t.id),'milestones',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',m.id,'day',m.day,'prizeId',m.prize_id,'grantMode',m.grant_mode) ORDER BY m.day),'[]'::jsonb) FROM economy_streak_milestone m WHERE m.streak_id=t.id),'players',(SELECT count(*) FROM economy_user_streak u WHERE u.streak_id=t.id AND u.count > 0))`,
 			search:  []string{"t.key", translatedSearch("t.name")},
 			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "eventTypeId": "t.event_type_id::text = ?"},
 			save:    saveStreak,
@@ -507,6 +507,16 @@ func saveStreak(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 			PrizeID   string `json:"prizeId"`
 			GrantMode string `json:"grantMode"`
 		} `json:"milestones"`
+		Extras []struct {
+			Day       int    `json:"day"`
+			PrizeID   string `json:"prizeId"`
+			GrantMode string `json:"grantMode"`
+		} `json:"extras"`
+		WeekLength       int    `json:"weekLength"`
+		Infinity         bool   `json:"infinity"`
+		InfinityCurrency string `json:"infinityCurrency"`
+		InfinityMin      int64  `json:"infinityMin"`
+		InfinityMax      int64  `json:"infinityMax"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -546,8 +556,32 @@ func saveStreak(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 	if in.MissAction == "" {
 		in.MissAction = "reset"
 	}
-	if err := oneOf("missAction", "INVALID_MISS_ACTION", in.MissAction, "reset", "step_back"); err != nil {
+	if err := oneOf("missAction", "INVALID_MISS_ACTION", in.MissAction, "reset", "step_back", "week_start"); err != nil {
 		return err
+	}
+	if in.WeekLength == 0 {
+		in.WeekLength = 7
+	}
+	if in.WeekLength < 1 || in.WeekLength > 365 {
+		return badRequest("INVALID_WEEK_LENGTH", "weekLength", "between 1 and 365 days")
+	}
+	in.InfinityCurrency = strings.TrimSpace(in.InfinityCurrency)
+	if in.Infinity {
+		if in.CycleLength == nil {
+			return badRequest("INFINITY_NEEDS_CYCLE", "infinity", "the infinity phase starts after the cycle; set the cycle length")
+		}
+		var ok bool
+		if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_currency WHERE key=$1)`, in.InfinityCurrency).Scan(&ok); err != nil {
+			return err
+		}
+		if !ok {
+			return badRequest("CURRENCY_NOT_FOUND", "infinityCurrency", "pick the currency of the infinity phase")
+		}
+		if in.InfinityMin < 1 || in.InfinityMax < in.InfinityMin || in.InfinityMax > 1e12 {
+			return badRequest("INVALID_INFINITY_RANGE", "infinityMin", "a whole range with 1 <= min <= max")
+		}
+	} else {
+		in.InfinityCurrency, in.InfinityMin, in.InfinityMax = "", 0, 0
 	}
 	if in.CycleLength != nil && (*in.CycleLength < 1 || *in.CycleLength > 365) {
 		return badRequest("INVALID_CYCLE", "cycleLength", "between 1 and 365 days, or empty")
@@ -618,8 +652,46 @@ func saveStreak(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 		mdays = append(mdays, m.Day)
 		milestones = append(milestones, reward{day: m.Day, prize: prize, mode: mode})
 	}
-	if err := execSave(ctx, tx, "economy_streak", id, create, []string{"key", "name", "description", "event_type_id", "period_days", "grace_periods", "miss_action", "cycle_length", "repay_after_fall", "is_active", "sort"},
-		[]any{key, i18nJSON(name), i18nJSON(desc), typeID, in.PeriodDays, in.GracePeriods, in.MissAction, in.CycleLength, in.RepayAfterFall, in.IsActive, in.Sort}); err != nil {
+	if len(in.Extras) > 100 {
+		return badRequest("TOO_MANY_EXTRAS", "extras", "at most 100 extra days")
+	}
+	seenX := map[int]bool{}
+	xdays := []int{}
+	var extras []reward
+	for i, x := range in.Extras {
+		field := "extras[" + strconv.Itoa(i) + "]"
+		if x.Day < 1 || x.Day > 3650 {
+			return badRequest("INVALID_DAY", field+".day", "between day 1 and 3650")
+		}
+		if seenX[x.Day] {
+			return badRequest("DUPLICATE_DAY", field+".day", "each day once")
+		}
+		seenX[x.Day] = true
+		prize, err := refExists(ctx, tx, "economy_prize", field+".prizeId", "PRIZE_NOT_FOUND", x.PrizeID, true)
+		if err != nil {
+			return err
+		}
+		mode := x.GrantMode
+		if mode == "" {
+			mode = "claim"
+		}
+		if err := oneOf(field+".grantMode", "INVALID_GRANT_MODE", mode, "auto", "claim"); err != nil {
+			return err
+		}
+		xdays = append(xdays, x.Day)
+		extras = append(extras, reward{day: x.Day, prize: prize, mode: mode})
+	}
+	if err := execSave(ctx, tx, "economy_streak", id, create, []string{"key", "name", "description", "event_type_id", "period_days", "grace_periods", "miss_action", "cycle_length", "repay_after_fall", "is_active", "sort", "week_length", "infinity", "infinity_currency", "infinity_min", "infinity_max"},
+		[]any{key, i18nJSON(name), i18nJSON(desc), typeID, in.PeriodDays, in.GracePeriods, in.MissAction, in.CycleLength, in.RepayAfterFall, in.IsActive, in.Sort, in.WeekLength, in.Infinity, in.InfinityCurrency, in.InfinityMin, in.InfinityMax}); err != nil {
+		return err
+	}
+	for _, x := range extras {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO economy_streak_extra (id, streak_id, day, prize_id, grant_mode) VALUES ($1,$2,$3,$4,$5)
+			ON CONFLICT (streak_id, day) DO UPDATE SET prize_id=EXCLUDED.prize_id, grant_mode=EXCLUDED.grant_mode`, uuid.Must(uuid.NewV4()).String(), id, x.day, x.prize, x.mode); err != nil {
+			return err
+		}
+	}
+	if _, err := tx.ExecContext(ctx, `DELETE FROM economy_streak_extra WHERE streak_id=$1 AND NOT (day = ANY($2))`, id, xdays); err != nil {
 		return err
 	}
 	for _, m := range milestones {

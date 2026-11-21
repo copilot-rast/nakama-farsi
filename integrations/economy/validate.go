@@ -259,8 +259,21 @@ func normalizePrizeItems(items []prizeItem) ([]prizeItem, error) {
 				return nil, badRequest("INVALID_VALUE", "items", "tag days must be from 0 (no end) to 36500")
 			}
 			item.Value = json.RawMessage(v)
+		case "booster":
+			if item.Action != "give" && item.Action != "set" {
+				return nil, badRequest("INVALID_ACTION", "items", "booster entries support give (adds time) or set (starts again now)")
+			}
+			if !keyPattern.MatchString(item.Key) {
+				return nil, badRequest("INVALID_KEY", "items", "invalid meta key")
+			}
+			b, ok := parseBooster(item.Value)
+			if !ok {
+				return nil, badRequest("INVALID_VALUE", "items", "a booster needs a multiplier from 1.01 to 100 and minutes from 1 to 525600")
+			}
+			raw, _ := json.Marshal(b)
+			item.Value = raw
 		default:
-			return nil, badRequest("INVALID_ITEM_TYPE", "items", "type must be currency, meta, storage, item, achievement or tag")
+			return nil, badRequest("INVALID_ITEM_TYPE", "items", "type must be currency, meta, storage, item, achievement, tag or booster")
 		}
 		out = append(out, item)
 	}

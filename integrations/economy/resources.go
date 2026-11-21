@@ -570,7 +570,7 @@ func checkPrizeItems(ctx context.Context, tx *sql.Tx, items []prizeItem) error {
 			if !exists {
 				return badRequest("CURRENCY_NOT_FOUND", "items", "currency "+item.Key+" does not exist")
 			}
-		case "meta":
+		case "meta", "booster":
 			if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_meta WHERE key=$1)`, item.Key).Scan(&exists); err != nil {
 				return err
 			}

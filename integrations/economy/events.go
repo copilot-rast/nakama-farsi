@@ -205,6 +205,9 @@ type streakChange struct {
 	Floored       bool   `json:"floored"`
 	Floor         int    `json:"floor"`
 	NextMilestone int    `json:"nextMilestone,omitempty"`
+	Phase            string `json:"phase,omitempty"`
+	InfinityCurrency string `json:"infinityCurrency,omitempty"`
+	InfinityAmount   int64  `json:"infinityAmount,omitempty"`
 }
 
 type levelChange struct {

@@ -206,3 +206,35 @@ func TestStreakRewardDayAndLevels(t *testing.T) {
 		t.Fatal("amounts keep four decimals")
 	}
 }
+
+func TestStreakWeekStartAndInfinityRules(t *testing.T) {
+	last := func(v int64) *int64 { return &v }
+	week := streakRule{MissAction: "week_start", WeekLength: 7}
+	for count, want := range map[int]int{12: 8, 7: 1, 8: 8, 15: 15, 21: 15, 1: 1} {
+		st, step := advanceStreak(streakState{Count: count, Run: 1, Peak: count, Last: last(10)}, 13, week)
+		if st.Count != want || !step.Fell || step.Consecutive || st.Run != 1 {
+			t.Fatalf("week_start from %d = %d %+v", count, st.Count, step)
+		}
+	}
+	st, step := advanceStreak(streakState{Count: 3, Run: 1, Peak: 3, Last: last(10)}, 11, week)
+	if st.Count != 4 || !step.Consecutive {
+		t.Fatalf("next day = %d %+v", st.Count, step)
+	}
+	inf := streakRule{MissAction: "reset", Infinity: true, Track: 28}
+	st, step = advanceStreak(streakState{Count: 28, Run: 1, Peak: 28, Last: last(10)}, 20, inf)
+	if st.Count != 29 || !step.Infinity || step.Fell || step.Reset {
+		t.Fatalf("infinity = %d %+v", st.Count, step)
+	}
+	if streakBroken(streakState{Count: 30, Peak: 30, Last: last(10)}, 40, inf) {
+		t.Fatal("infinity never breaks")
+	}
+	if ladderAmount([]int64{10, 15, 20}, 0) != 10 || ladderAmount([]int64{10, 15, 20}, 7) != 20 || ladderAmount(nil, 3) != 0 {
+		t.Fatal("ladder")
+	}
+	if v := boostedAmount(10, 2); v != 20 {
+		t.Fatalf("boost = %v", v)
+	}
+	if _, ok := parseBooster([]byte(`{"multiplier":2,"minutes":0}`)); ok {
+		t.Fatal("zero minutes")
+	}
+}
