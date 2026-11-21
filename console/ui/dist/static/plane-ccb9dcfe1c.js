@@ -508,6 +508,7 @@ function iconFor(href) {
   if (parts[0] === 'trophies') return TROPHY_ICON[parts[1] || 'leagues'] || 'trophy';
   if (parts[0] === 'clans') return CLAN_ICON[parts[1] || 'list'] || 'group';
   if (parts[0] === 'cups') return CUP_ICON[parts[1] || 'list'] || 'medal';
+  if (parts[0] === 'itemkinds') return IK_ICON[parts[1] || 'kind'] || 'package';
   var key = parts.length > 1 && /^(economy|publication|moderation|support|system|settings)$/.test(parts[0]) ? parts[1] : parts[0] || '';
   return HREF_ICON[key] || 'page';
 }
@@ -518,7 +519,8 @@ var QUIZ_ICON = { packs: 'package', questions: 'help', missions: 'checklist', du
 var TROPHY_ICON = { leagues: 'ladder', players: 'trophy', seasons: 'calendar', settings: 'sliders' };
 var CLAN_ICON = { list: 'group', levels: 'layers', wars: 'shield', rounds: 'repeat', gallery: 'image', uploads: 'inbox', settings: 'sliders' };
 var CUP_ICON = { list: 'medal', view: 'medal', templates: 'repeat', settings: 'sliders' };
-var GROUP_ICON = { quiz: 'help', cups: 'medal', trophies: 'trophy', clans: 'group', economy: 'coins', publication: 'megaphone', moderation: 'shield', support: 'buoy', system: 'cloudDown', developer: 'code', help: 'help', settings: 'settings' };
+var IK_ICON = { kind: 'package', routes: 'repeat', runs: 'list', settings: 'sliders' };
+var GROUP_ICON = { quiz: 'help', cups: 'medal', itemkinds: 'package', trophies: 'trophy', clans: 'group', economy: 'coins', publication: 'megaphone', moderation: 'shield', support: 'buoy', system: 'cloudDown', developer: 'code', help: 'help', settings: 'settings' };
 
 function linkInfo(a) {
   var badgeEl = a.querySelector('.eco-nav-badge, .eco-nav-dot');

@@ -1,0 +1,11 @@
+{
+  "name": "nakama-console-itemkinds",
+  "private": true,
+  "description": "Item kind pages (one section per registered kind, schema-built forms, Unity route table, run reports, settings) injected into the prebuilt Nakama Console UI.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check"
+  }
+}

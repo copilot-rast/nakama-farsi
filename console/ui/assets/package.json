@@ -1,0 +1,11 @@
+{
+  "name": "nakama-console-assets",
+  "private": true,
+  "description": "Game data entries (versioned JSON with history and rollback), content packs and their settings, injected into the prebuilt Nakama Console UI.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check"
+  }
+}

@@ -63,6 +63,10 @@ var CG_TEXT = {
     'se.costCurrency': 'ارز هزینه', 'se.cost.none': 'بدون هزینه', 'se.costAmount': 'مقدار هر شروع', 'se.refundOnWin': 'اگر برد، هزینه برگردد',
     'se.costMissing': 'ارز {k} در اقتصاد نیست؛ شروع مرحله رد می‌شود.', 'se.costNoRegen': 'ارز {k} پرشدن خودکار ندارد؛ هزینه مثل یک کسر ساده از کیف پول است.',
     'code.NOT_ENOUGH_PLAY_COST': 'ارز کافی برای شروع مرحله نیست.',
+    'se.items': 'آیتم مجاز در مرحله', 'se.itemsHint': 'هر مرحله می‌تواند بگوید با کدام آیتم (مثلاً ماشین) بازی می‌شود. کلاینت کلید آیتم را با campaign_attempt_start می‌فرستد و سرور مالکیت و مجاز بودن را بررسی می‌کند.',
+    'se.itemsEnforce': 'بررسی در شروع مرحله روشن باشد', 'se.itemsRequire': 'مرحله‌ای که قانون دارد، بدون آیتم شروع نشود', 'se.itemsOwned': 'بازیکن باید آیتم را داشته باشد',
+    'se.itemsParam': 'نام فیلد در درخواست', 'se.itemsType': 'نوع آیتم (خالی یعنی همه)', 'se.itemsAllow': 'مسیر فهرست مجازها', 'se.itemsDeny': 'مسیر فهرست ممنوع‌ها',
+    'se.itemsClasses': 'مسیر کلاس‌های مجاز', 'se.itemsClassField': 'فیلد کلاس در پروفایل آیتم', 'se.itemsPathHint': 'مسیر در تنظیمات مرحله، مثل missions.acceptedCars؛ چند مسیر را با ویرگول جدا کنید',
     'se.freeride': 'گشت آزاد', 'se.requireRequestId': 'requestId برای گرفتن جایزه لازم باشد', 'se.requestHours': 'نگه‌داری جواب هر requestId (ساعت)',
     'se.noEconomy': 'افزونهٔ اقتصاد بارگذاری نشده؛ سطح و جایزه‌های اقتصاد کار نمی‌کنند.',
     'pc.title': 'پیشرفت مرحله‌ها', 'pc.xp': 'XP مرحله‌ها: {xp} · سطح {level}', 'pc.reset': 'از نو', 'pc.reset.confirm': 'پیشرفت مرحلهٔ «{name}» پاک شود؟',
@@ -158,6 +162,10 @@ var CG_TEXT = {
     'se.costCurrency': 'Cost currency', 'se.cost.none': 'No cost', 'se.costAmount': 'Amount per start', 'se.refundOnWin': 'Give it back on a win',
     'se.costMissing': 'Currency {k} is not in economy; stage starts will be refused.', 'se.costNoRegen': 'Currency {k} does not refill over time; the cost is a plain wallet debit.',
     'code.NOT_ENOUGH_PLAY_COST': 'Not enough currency to start the stage.',
+    'se.items': 'Allowed item per stage', 'se.itemsHint': 'Each stage can say which item (for example a car) it is played with. The client sends the item key with campaign_attempt_start and the server checks ownership and the stage rules.',
+    'se.itemsEnforce': 'Check at stage start', 'se.itemsRequire': 'A stage with rules cannot start without an item', 'se.itemsOwned': 'The player must own the item',
+    'se.itemsParam': 'Request field name', 'se.itemsType': 'Item type (empty = any)', 'se.itemsAllow': 'Path of the allowed list', 'se.itemsDeny': 'Path of the excluded list',
+    'se.itemsClasses': 'Path of the allowed classes', 'se.itemsClassField': 'Class field in the item profile', 'se.itemsPathHint': 'A path in the stage settings, like missions.acceptedCars; separate several with commas',
     'se.freeride': 'Free ride', 'se.requireRequestId': 'A requestId is required to claim', 'se.requestHours': 'Keep the answer of each requestId (hours)',
     'se.noEconomy': 'The economy plugin is not loaded; levels and economy prizes do not work.',
     'pc.title': 'Stage progress', 'pc.xp': 'Stage XP: {xp} · level {level}', 'pc.reset': 'Reset', 'pc.reset.confirm': 'Clear the progress of “{name}”?',
@@ -1418,6 +1426,18 @@ function campaignSettingsPage(root) {
       (s.templates || []).forEach(addTpl);
       var fieldsRaw = input(JSON.stringify(cur.fields || { stage: [], chapter: [] }, null, 2), { name: 'fields', ltr: true, mono: true, multiline: true, rows: 10 });
       var reqHours = numInput(f.requestHours, 'freeride.requestHours');
+      var it = cur.items || {};
+      var csv = function (list) { return (list || []).join(', '); };
+      var splitCsv = function (el) { return el.value.split(/[,،]/).map(function (x) { return x.trim(); }).filter(Boolean); };
+      var itEnforce = check(it.enforce, t('se.itemsEnforce'), 'items.enforce');
+      var itRequire = check(it.requireItem, t('se.itemsRequire'), 'items.requireItem');
+      var itOwned = check(it.requireOwned, t('se.itemsOwned'), 'items.requireOwned');
+      var itParam = input(it.param || 'itemKey', { name: 'items.param', ltr: true });
+      var itType = input(it.itemType || '', { name: 'items.itemType', ltr: true });
+      var itClass = input(it.classField || '', { name: 'items.classField', ltr: true });
+      var itAllow = input(csv(it.allow), { name: 'items.allow', ltr: true });
+      var itDeny = input(csv(it.deny), { name: 'items.deny', ltr: true });
+      var itClasses = input(csv(it.classes), { name: 'items.classes', ltr: true });
       var grid = function () { return h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, Array.prototype.slice.call(arguments)); };
       return {
         el: [notes,
@@ -1435,6 +1455,9 @@ function campaignSettingsPage(root) {
           section(t('se.xp'), grid(field(t('se.metaKey'), metaKey), field(t('se.levelTable'), table_)), 'xp'),
           section(t('se.events'), h('div', {}, grid(field(t('se.economyEvent'), ecoEvent), field(t('se.analyticsEvent'), anEvent)), onFailure), 'events'),
           section(t('se.freeride'), h('div', {}, tableOn, h('p', { class: 'text-xs text-secondary-500 -mt-2 mb-3', text: t('se.tableEnabledHint') }), reqId, field(t('se.requestHours'), reqHours, null, 'cg-num')), 'freeride'),
+          section(t('se.items'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-3', text: t('se.itemsHint') }), itEnforce, itRequire, itOwned,
+            grid(field(t('se.itemsParam'), itParam), field(t('se.itemsType'), itType)), grid(field(t('se.itemsAllow'), itAllow, t('se.itemsPathHint')), field(t('se.itemsDeny'), itDeny, t('se.itemsPathHint'))),
+            grid(field(t('se.itemsClasses'), itClasses, t('se.itemsPathHint')), field(t('se.itemsClassField'), itClass))), 'items'),
           section(t('se.fields'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('se.fieldsHint') }), field(t('se.fieldsJson'), fieldsRaw)), 'fields')],
         read: function (c) {
           c.play = { costCurrency: costCur.value || '', costAmount: numberValue(costAmount), refundOnWin: refundOnWin.input.checked };
@@ -1448,6 +1471,8 @@ function campaignSettingsPage(root) {
           c.xp = { metaKey: metaKey.value, levelTableKey: table_.value };
           c.events = { economyEvent: ecoEvent.value.trim(), analyticsEvent: anEvent.value.trim(), onFailure: onFailure.input.checked };
           c.freeride = { tableEnabled: tableOn.input.checked, requireRequestId: reqId.input.checked, requestHours: numberValue(reqHours) };
+          c.items = { enforce: itEnforce.input.checked, requireItem: itRequire.input.checked, requireOwned: itOwned.input.checked, param: itParam.value.trim(), itemType: itType.value.trim(),
+            classField: itClass.value.trim(), allow: splitCsv(itAllow), deny: splitCsv(itDeny), classes: splitCsv(itClasses) };
           return null;
         },
         after: function () { cgSettingsCache = null; cgNavSettings = false; cgMounted = null; cgSchedule(); }

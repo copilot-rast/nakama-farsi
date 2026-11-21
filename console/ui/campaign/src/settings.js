@@ -50,6 +50,18 @@ function campaignSettingsPage(root) {
       (s.templates || []).forEach(addTpl);
       var fieldsRaw = input(JSON.stringify(cur.fields || { stage: [], chapter: [] }, null, 2), { name: 'fields', ltr: true, mono: true, multiline: true, rows: 10 });
       var reqHours = numInput(f.requestHours, 'freeride.requestHours');
+      var it = cur.items || {};
+      var csv = function (list) { return (list || []).join(', '); };
+      var splitCsv = function (el) { return el.value.split(/[,،]/).map(function (x) { return x.trim(); }).filter(Boolean); };
+      var itEnforce = check(it.enforce, t('se.itemsEnforce'), 'items.enforce');
+      var itRequire = check(it.requireItem, t('se.itemsRequire'), 'items.requireItem');
+      var itOwned = check(it.requireOwned, t('se.itemsOwned'), 'items.requireOwned');
+      var itParam = input(it.param || 'itemKey', { name: 'items.param', ltr: true });
+      var itType = input(it.itemType || '', { name: 'items.itemType', ltr: true });
+      var itClass = input(it.classField || '', { name: 'items.classField', ltr: true });
+      var itAllow = input(csv(it.allow), { name: 'items.allow', ltr: true });
+      var itDeny = input(csv(it.deny), { name: 'items.deny', ltr: true });
+      var itClasses = input(csv(it.classes), { name: 'items.classes', ltr: true });
       var grid = function () { return h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, Array.prototype.slice.call(arguments)); };
       return {
         el: [notes,
@@ -67,6 +79,9 @@ function campaignSettingsPage(root) {
           section(t('se.xp'), grid(field(t('se.metaKey'), metaKey), field(t('se.levelTable'), table_)), 'xp'),
           section(t('se.events'), h('div', {}, grid(field(t('se.economyEvent'), ecoEvent), field(t('se.analyticsEvent'), anEvent)), onFailure), 'events'),
           section(t('se.freeride'), h('div', {}, tableOn, h('p', { class: 'text-xs text-secondary-500 -mt-2 mb-3', text: t('se.tableEnabledHint') }), reqId, field(t('se.requestHours'), reqHours, null, 'cg-num')), 'freeride'),
+          section(t('se.items'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-3', text: t('se.itemsHint') }), itEnforce, itRequire, itOwned,
+            grid(field(t('se.itemsParam'), itParam), field(t('se.itemsType'), itType)), grid(field(t('se.itemsAllow'), itAllow, t('se.itemsPathHint')), field(t('se.itemsDeny'), itDeny, t('se.itemsPathHint'))),
+            grid(field(t('se.itemsClasses'), itClasses, t('se.itemsPathHint')), field(t('se.itemsClassField'), itClass))), 'items'),
           section(t('se.fields'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('se.fieldsHint') }), field(t('se.fieldsJson'), fieldsRaw)), 'fields')],
         read: function (c) {
           c.play = { costCurrency: costCur.value || '', costAmount: numberValue(costAmount), refundOnWin: refundOnWin.input.checked };
@@ -80,6 +95,8 @@ function campaignSettingsPage(root) {
           c.xp = { metaKey: metaKey.value, levelTableKey: table_.value };
           c.events = { economyEvent: ecoEvent.value.trim(), analyticsEvent: anEvent.value.trim(), onFailure: onFailure.input.checked };
           c.freeride = { tableEnabled: tableOn.input.checked, requireRequestId: reqId.input.checked, requestHours: numberValue(reqHours) };
+          c.items = { enforce: itEnforce.input.checked, requireItem: itRequire.input.checked, requireOwned: itOwned.input.checked, param: itParam.value.trim(), itemType: itType.value.trim(),
+            classField: itClass.value.trim(), allow: splitCsv(itAllow), deny: splitCsv(itDeny), classes: splitCsv(itClasses) };
           return null;
         },
         after: function () { cgSettingsCache = null; cgNavSettings = false; cgMounted = null; cgSchedule(); }
