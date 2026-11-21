@@ -219,6 +219,9 @@ func (s *service) claimFreeride(ctx context.Context, userID, key, requestID stri
 	if key == "" {
 		return nil, apierr.BadRequest("FREERIDE_KEY_REQUIRED").WithField("key")
 	}
+	if !cfg.Freeride.TableEnabled {
+		return nil, apierr.NotFound("FREERIDE_NOT_FOUND").WithField("key")
+	}
 	if requestID == "" {
 		if cfg.Freeride.RequireRequestID {
 			return nil, apierr.BadRequest("REQUEST_ID_REQUIRED").WithField("requestId")

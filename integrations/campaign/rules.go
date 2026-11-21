@@ -40,6 +40,12 @@ func resultValues(r runResult, timeLimit *float64) map[string]float64 {
 func condHolds(c settings.Cond, vals map[string]float64, missingPass bool) bool {
 	v, ok := vals[c.Field]
 	if !ok {
+		switch c.Missing {
+		case settings.MissingPass:
+			return true
+		case settings.MissingFail:
+			return false
+		}
 		return missingPass
 	}
 	switch c.Op {
@@ -175,4 +181,94 @@ func chapterPercent(stars, stages, maxStars int) float64 {
 		return 0
 	}
 	return math.Min(100, float64(stars)*100/float64(stages*maxStars))
+}
+
+type criterion struct {
+	Field string   `json:"field"`
+	Value *float64 `json:"value"`
+	Stars int      `json:"stars"`
+}
+
+func criteriaTiers(success bool, vals map[string]float64, rules []settings.StarRule, maxStars, minOnSuccess int, missingPass bool) []criterion {
+	sorted := append([]settings.StarRule(nil), rules...)
+	sort.SliceStable(sorted, func(i, j int) bool { return sorted[i].Stars > sorted[j].Stars })
+	var order []string
+	seen := map[string]bool{}
+	for _, r := range sorted {
+		for _, c := range r.Conditions {
+			if !seen[c.Field] {
+				seen[c.Field] = true
+				order = append(order, c.Field)
+			}
+		}
+	}
+	out := []criterion{}
+	for _, f := range order {
+		tier := 0
+		if success {
+			tier = clamp(minOnSuccess, 0, maxStars)
+			for _, r := range sorted {
+				ok, any := true, false
+				for _, c := range r.Conditions {
+					if c.Field != f {
+						continue
+					}
+					any = true
+					if !condHolds(c, vals, missingPass) {
+						ok = false
+						break
+					}
+				}
+				if any && ok {
+					if s := clamp(r.Stars, 1, maxStars); s > tier {
+						tier = s
+					}
+					break
+				}
+			}
+		}
+		c := criterion{Field: f, Stars: tier}
+		if v, ok := vals[f]; ok {
+			r := math.Round(v*100) / 100
+			c.Value = &r
+		}
+		out = append(out, c)
+	}
+	return out
+}
+
+const percentTolerance = 0.005
+
+func reachedPercent(have, need float64) bool {
+	return have+percentTolerance+1e-9 >= need
+}
+
+func milestoneID(m Milestone) string {
+	if m.ID != "" {
+		return m.ID
+	}
+	return ftoa(m.Percent)
+}
+
+func milestonePaid(paid []any, m Milestone) bool {
+	for _, v := range paid {
+		switch x := v.(type) {
+		case string:
+			if m.ID != "" && x == m.ID {
+				return true
+			}
+		case float64:
+			if math.Abs(x-m.Percent) < 1e-6 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func paidEntry(m Milestone) any {
+	if m.ID != "" {
+		return m.ID
+	}
+	return m.Percent
 }

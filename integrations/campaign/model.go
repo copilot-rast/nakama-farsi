@@ -34,6 +34,7 @@ func (r Reward) empty() bool {
 }
 
 type Milestone struct {
+	ID      string  `json:"id"`
 	Percent float64 `json:"percent"`
 	Reward
 }
@@ -56,6 +57,7 @@ type chapter struct {
 	Unlock      []Rule            `json:"unlock"`
 	Milestones  []Milestone       `json:"milestones"`
 	Metadata    map[string]any    `json:"metadata"`
+	Settings    map[string]any    `json:"settings"`
 	UpdatedBy   string            `json:"updatedBy"`
 	UpdatedAt   string            `json:"updatedAt"`
 	StageCount  int               `json:"stageCount"`
@@ -79,6 +81,8 @@ type stage struct {
 	MinSeconds    *float64            `json:"minSeconds"`
 	StarRules     []settings.StarRule `json:"starRules"`
 	OwnRules      bool                `json:"ownStarRules"`
+	StarTemplate  string              `json:"starTemplate"`
+	NoReplay      bool                `json:"noReplayAfterWin"`
 	Multipliers   []float64           `json:"starMultipliers"`
 	OwnMultiplier bool                `json:"ownMultipliers"`
 	Rewards       Reward              `json:"rewards"`
@@ -89,6 +93,7 @@ type stage struct {
 	DailyLimit    int                 `json:"dailyLimit"`
 	XPWhenLimited bool                `json:"xpWhenLimited"`
 	Metadata      map[string]any      `json:"metadata"`
+	Settings      map[string]any      `json:"settings"`
 	UpdatedBy     string              `json:"updatedBy"`
 	UpdatedAt     string              `json:"updatedAt"`
 }
@@ -154,17 +159,21 @@ func unmarshal(raw []byte, out any) {
 	}
 }
 
-const chapterCols = `c.id::text, c.key, c.name, c.description, c.icon_url, c.address, c.sort, c.is_active, c.unlock, c.milestones, c.metadata, c.updated_by, c.updated_at,
+const chapterCols = `c.id::text, c.key, c.name, c.description, c.icon_url, c.address, c.sort, c.is_active, c.unlock, c.milestones, c.metadata, c.settings, c.updated_by, c.updated_at,
 	(SELECT count(*) FROM campaign_stage s WHERE s.chapter_id=c.id)`
 
 func scanChapter(sc interface{ Scan(...any) error }) (*chapter, error) {
 	c := &chapter{}
-	var name, desc, unlock, ms, md []byte
+	var name, desc, unlock, ms, md, set []byte
 	var at sql.NullTime
-	if err := sc.Scan(&c.ID, &c.Key, &name, &desc, &c.IconURL, &c.Address, &c.Sort, &c.Active, &unlock, &ms, &md, &c.UpdatedBy, &at, &c.StageCount); err != nil {
+	if err := sc.Scan(&c.ID, &c.Key, &name, &desc, &c.IconURL, &c.Address, &c.Sort, &c.Active, &unlock, &ms, &md, &set, &c.UpdatedBy, &at, &c.StageCount); err != nil {
 		return nil, err
 	}
-	c.Name, c.Description, c.Unlock, c.Milestones, c.Metadata = map[string]string{}, map[string]string{}, []Rule{}, []Milestone{}, map[string]any{}
+	c.Name, c.Description, c.Unlock, c.Milestones, c.Metadata, c.Settings = map[string]string{}, map[string]string{}, []Rule{}, []Milestone{}, map[string]any{}, map[string]any{}
+	unmarshal(set, &c.Settings)
+	if c.Settings == nil {
+		c.Settings = map[string]any{}
+	}
 	unmarshal(name, &c.Name)
 	unmarshal(desc, &c.Description)
 	unmarshal(unlock, &c.Unlock)
@@ -183,18 +192,22 @@ func scanChapter(sc interface{ Scan(...any) error }) (*chapter, error) {
 }
 
 const stageCols = `s.id::text, s.key, s.chapter_id::text, c.key, s.name, s.description, s.icon_url, s.address, s.sort, s.is_active, s.mode, s.unlock, s.time_limit_seconds::float8, s.min_seconds::float8,
-	s.star_rules, s.star_multipliers, s.rewards, s.xp, s.tier_prizes, s.reward_group, s.cooldown_seconds, s.daily_limit, s.xp_when_limited, s.metadata, s.updated_by, s.updated_at`
+	s.star_rules, s.star_multipliers, s.rewards, s.xp, s.tier_prizes, s.reward_group, s.cooldown_seconds, s.daily_limit, s.xp_when_limited, s.metadata, s.settings, s.star_template, s.no_replay_after_win, s.updated_by, s.updated_at`
 
 func scanStage(sc interface{ Scan(...any) error }) (*stage, error) {
 	s := &stage{}
-	var name, desc, unlock, rules, mult, rewards, tiers, md []byte
+	var name, desc, unlock, rules, mult, rewards, tiers, md, set []byte
 	var limit, minSec sql.NullFloat64
 	var at sql.NullTime
 	if err := sc.Scan(&s.ID, &s.Key, &s.ChapterID, &s.ChapterKey, &name, &desc, &s.IconURL, &s.Address, &s.Sort, &s.Active, &s.Mode, &unlock, &limit, &minSec,
-		&rules, &mult, &rewards, &s.XP, &tiers, &s.RewardGroup, &s.Cooldown, &s.DailyLimit, &s.XPWhenLimited, &md, &s.UpdatedBy, &at); err != nil {
+		&rules, &mult, &rewards, &s.XP, &tiers, &s.RewardGroup, &s.Cooldown, &s.DailyLimit, &s.XPWhenLimited, &md, &set, &s.StarTemplate, &s.NoReplay, &s.UpdatedBy, &at); err != nil {
 		return nil, err
 	}
-	s.Name, s.Description, s.Metadata, s.TierPrizes = map[string]string{}, map[string]string{}, map[string]any{}, []TierPrize{}
+	s.Name, s.Description, s.Metadata, s.TierPrizes, s.Settings = map[string]string{}, map[string]string{}, map[string]any{}, []TierPrize{}, map[string]any{}
+	unmarshal(set, &s.Settings)
+	if s.Settings == nil {
+		s.Settings = map[string]any{}
+	}
 	unmarshal(name, &s.Name)
 	unmarshal(desc, &s.Description)
 	unmarshal(md, &s.Metadata)

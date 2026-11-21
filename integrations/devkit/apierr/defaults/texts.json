@@ -3199,6 +3199,10 @@
     "en": "A sponsor is required.",
     "fa": "حامی لازم است."
   },
+  "STAGE_ALREADY_WON": {
+    "en": "This stage is already won and cannot be played again.",
+    "fa": "این مرحله را برده‌اید و دوباره بازی نمی‌شود."
+  },
   "STAGE_BUSY": {
     "en": "The result could not be saved; send it again.",
     "fa": "نتیجه ذخیره نشد؛ یک بار دیگر بفرستید."

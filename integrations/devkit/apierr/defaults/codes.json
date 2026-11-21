@@ -4730,6 +4730,12 @@
       "publication"
     ]
   },
+  "STAGE_ALREADY_WON": {
+    "status": 403,
+    "modules": [
+      "campaign"
+    ]
+  },
   "STAGE_BUSY": {
     "status": 409,
     "modules": [

@@ -308,6 +308,10 @@ func (s *service) chapterSave(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, bad("TOO_MANY_MILESTONES", "milestones"))
 		return
 	}
+	if f, code := assignMilestoneIDs(in.Milestones); code != "" {
+		s.fail(w, bad(code, f))
+		return
+	}
 	seen := map[float64]bool{}
 	for i := range in.Milestones {
 		f := "milestones[" + strconv.Itoa(i) + "]"
@@ -333,16 +337,27 @@ func (s *service) chapterSave(w http.ResponseWriter, r *http.Request) {
 	if in.Metadata == nil {
 		in.Metadata = map[string]any{}
 	}
+	chKey := in.Key
+	if id != "" {
+		_ = s.db.QueryRowContext(ctx, `SELECT key FROM campaign_chapter WHERE id::text=$1`, id).Scan(&chKey)
+	}
+	cfg := s.settings(ctx)
+	clean, f, code := settings.CleanValues(cfg.Fields.Chapter, chKey, in.Settings)
+	if code != "" {
+		s.fail(w, bad(code, "settings."+f))
+		return
+	}
+	in.Settings = clean
 	by := pluginkit.ConsoleUser(r)
 	if id == "" {
 		id = uuid.Must(uuid.NewV4()).String()
-		_, err = s.db.ExecContext(ctx, `INSERT INTO campaign_chapter (id, key, name, description, icon_url, address, sort, is_active, unlock, milestones, metadata, updated_by)
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`, id, in.Key, jsonOf(in.Name), jsonOf(in.Description), in.IconURL, in.Address, in.Sort, in.Active,
-			jsonOf(in.Unlock), jsonOf(in.Milestones), jsonOf(in.Metadata), by)
+		_, err = s.db.ExecContext(ctx, `INSERT INTO campaign_chapter (id, key, name, description, icon_url, address, sort, is_active, unlock, milestones, metadata, settings, updated_by)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$13,$12)`, id, in.Key, jsonOf(in.Name), jsonOf(in.Description), in.IconURL, in.Address, in.Sort, in.Active,
+			jsonOf(in.Unlock), jsonOf(in.Milestones), jsonOf(in.Metadata), by, jsonOf(in.Settings))
 	} else {
 		var res sql.Result
-		res, err = s.db.ExecContext(ctx, `UPDATE campaign_chapter SET name=$2, description=$3, icon_url=$4, address=$5, sort=$6, is_active=$7, unlock=$8, milestones=$9, metadata=$10, updated_by=$11, updated_at=now()
-			WHERE id::text=$1`, id, jsonOf(in.Name), jsonOf(in.Description), in.IconURL, in.Address, in.Sort, in.Active, jsonOf(in.Unlock), jsonOf(in.Milestones), jsonOf(in.Metadata), by)
+		res, err = s.db.ExecContext(ctx, `UPDATE campaign_chapter SET name=$2, description=$3, icon_url=$4, address=$5, sort=$6, is_active=$7, unlock=$8, milestones=$9, metadata=$10, updated_by=$11, settings=$12, updated_at=now()
+			WHERE id::text=$1`, id, jsonOf(in.Name), jsonOf(in.Description), in.IconURL, in.Address, in.Sort, in.Active, jsonOf(in.Unlock), jsonOf(in.Milestones), jsonOf(in.Metadata), by, jsonOf(in.Settings))
 		if err == nil {
 			if n, _ := res.RowsAffected(); n == 0 {
 				s.fail(w, pluginkit.Missing("CHAPTER_NOT_FOUND"))
@@ -500,8 +515,9 @@ func (s *service) stageSave(w http.ResponseWriter, r *http.Request) {
 		_ = s.db.QueryRowContext(ctx, `SELECT id::text FROM campaign_chapter WHERE key=$1`, in.ChapterKey).Scan(&in.ChapterID)
 	}
 	var exists bool
+	var chKey string
 	if _, err := uuid.FromString(in.ChapterID); err == nil {
-		_ = s.db.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM campaign_chapter WHERE id=$1)`, in.ChapterID).Scan(&exists)
+		exists = s.db.QueryRowContext(ctx, `SELECT key FROM campaign_chapter WHERE id=$1`, in.ChapterID).Scan(&chKey) == nil
 	}
 	if !exists {
 		s.fail(w, bad("CHAPTER_NOT_FOUND", "chapterId"))
@@ -612,19 +628,31 @@ func (s *service) stageSave(w http.ResponseWriter, r *http.Request) {
 	if in.Metadata == nil {
 		in.Metadata = map[string]any{}
 	}
+	in.StarTemplate = strings.TrimSpace(in.StarTemplate)
+	if in.StarTemplate != "" && cfg.Stars.Template(in.StarTemplate) == nil {
+		s.fail(w, bad("INVALID_TEMPLATE", "starTemplate"))
+		return
+	}
+	clean, f, code := settings.CleanValues(cfg.Fields.Stage, chKey, in.Settings)
+	if code != "" {
+		s.fail(w, bad(code, "settings."+f))
+		return
+	}
+	in.Settings = clean
 	by := pluginkit.ConsoleUser(r)
 	args := []any{jsonOf(in.Name), jsonOf(in.Description), in.IconURL, in.Address, in.Sort, in.Active, in.Mode, unlock, in.TimeLimit, in.MinSeconds, rules, mult,
-		jsonOf(in.Rewards), in.XP, jsonOf(in.TierPrizes), in.RewardGroup, in.Cooldown, in.DailyLimit, in.XPWhenLimited, jsonOf(in.Metadata), by, in.ChapterID}
+		jsonOf(in.Rewards), in.XP, jsonOf(in.TierPrizes), in.RewardGroup, in.Cooldown, in.DailyLimit, in.XPWhenLimited, jsonOf(in.Metadata), by, in.ChapterID,
+		jsonOf(in.Settings), in.StarTemplate, in.NoReplay}
 	if id == "" {
 		id = uuid.Must(uuid.NewV4()).String()
 		_, err = s.db.ExecContext(ctx, `INSERT INTO campaign_stage (name, description, icon_url, address, sort, is_active, mode, unlock, time_limit_seconds, min_seconds, star_rules, star_multipliers,
-			rewards, xp, tier_prizes, reward_group, cooldown_seconds, daily_limit, xp_when_limited, metadata, updated_by, chapter_id, id, key)
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)`, append(args, id, in.Key)...)
+			rewards, xp, tier_prizes, reward_group, cooldown_seconds, daily_limit, xp_when_limited, metadata, updated_by, chapter_id, settings, star_template, no_replay_after_win, id, key)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27)`, append(args, id, in.Key)...)
 	} else {
 		var res sql.Result
 		res, err = s.db.ExecContext(ctx, `UPDATE campaign_stage SET name=$1, description=$2, icon_url=$3, address=$4, sort=$5, is_active=$6, mode=$7, unlock=$8, time_limit_seconds=$9,
 			min_seconds=$10, star_rules=$11, star_multipliers=$12, rewards=$13, xp=$14, tier_prizes=$15, reward_group=$16, cooldown_seconds=$17, daily_limit=$18, xp_when_limited=$19,
-			metadata=$20, updated_by=$21, chapter_id=$22, updated_at=now() WHERE id::text=$23`, append(args, id)...)
+			metadata=$20, updated_by=$21, chapter_id=$22, settings=$23, star_template=$24, no_replay_after_win=$25, updated_at=now() WHERE id::text=$26`, append(args, id)...)
 		if err == nil {
 			if n, _ := res.RowsAffected(); n == 0 {
 				s.fail(w, pluginkit.Missing("STAGE_NOT_FOUND"))
@@ -945,4 +973,38 @@ func (s *service) report(w http.ResponseWriter, r *http.Request) {
 			"avgStars": math.Round(avgStars*100) / 100, "dropOff": dropOff})
 	}
 	pluginkit.WriteJSON(w, http.StatusOK, map[string]any{"days": days, "items": items, "totals": totals})
+}
+
+func assignMilestoneIDs(list []Milestone) (string, string) {
+	used := map[string]bool{}
+	next := 1
+	for i := range list {
+		list[i].ID = strings.TrimSpace(list[i].ID)
+		id := list[i].ID
+		if id == "" {
+			continue
+		}
+		if !settings.KeyPattern.MatchString(id) {
+			return "milestones[" + strconv.Itoa(i) + "].id", "INVALID_KEY"
+		}
+		if used[id] {
+			return "milestones[" + strconv.Itoa(i) + "].id", "DUPLICATE_MILESTONE"
+		}
+		used[id] = true
+		if n, err := strconv.Atoi(id); err == nil && n >= next {
+			next = n + 1
+		}
+	}
+	for i := range list {
+		if list[i].ID != "" {
+			continue
+		}
+		for used[strconv.Itoa(next)] {
+			next++
+		}
+		list[i].ID = strconv.Itoa(next)
+		used[list[i].ID] = true
+		next++
+	}
+	return "", ""
 }

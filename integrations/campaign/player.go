@@ -85,7 +85,23 @@ func (s *service) starRules(cfg settings.All, st *stage) []settings.StarRule {
 	if st.OwnRules {
 		return st.StarRules
 	}
+	if st.StarTemplate != "" {
+		if t := cfg.Stars.Template(st.StarTemplate); t != nil {
+			return t.Rules
+		}
+	}
 	return cfg.Stars.Rules
+}
+
+func minSecondsOf(cfg settings.All, st *stage) float64 {
+	if st.MinSeconds != nil {
+		return *st.MinSeconds
+	}
+	return cfg.Attempts.DefaultMinSeconds
+}
+
+func replayable(st *stage, r *userStage) bool {
+	return !st.NoReplay || r.Wins == 0
 }
 
 func (s *service) nextLevelXP(ctx context.Context, p *player, level int) any {
@@ -137,21 +153,17 @@ func (s *service) rpcChapters(ctx context.Context, userID, payload string) (any,
 			continue
 		}
 		earned, max, pct := p.chapterStars(ch)
-		var paid []float64
+		var paid []any
 		var raw []byte
 		if err := s.db.QueryRowContext(ctx, `SELECT milestones FROM campaign_user_chapter WHERE user_id=$1 AND chapter_id=$2`, userID, ch.ID).Scan(&raw); err == nil {
 			unmarshal(raw, &paid)
 		}
 		milestones := []map[string]any{}
 		for _, m := range ch.Milestones {
-			claimed := false
-			for _, v := range paid {
-				if v == m.Percent {
-					claimed = true
-				}
-			}
-			milestones = append(milestones, map[string]any{"percent": m.Percent, "rewards": rewardList(m.Currencies), "prizeKey": m.PrizeKey, "prizeGroupKey": m.PrizeGroupKey, "claimed": claimed, "reached": pct >= m.Percent})
+			milestones = append(milestones, map[string]any{"id": milestoneID(m), "percent": m.Percent, "rewards": rewardList(m.Currencies), "prizeKey": m.PrizeKey, "prizeGroupKey": m.PrizeGroupKey,
+				"claimed": milestonePaid(paid, m), "reached": reachedPercent(pct, m.Percent)})
 		}
+		resolveText := func(m map[string]string) string { return text(langs, lang, m) }
 		stages := []map[string]any{}
 		for _, st := range cat.stagesOf(ch.ID) {
 			slocks := append(append([]Rule{}, locks...), p.unmet(ctx, p.stageRules(st))...)
@@ -167,14 +179,20 @@ func (s *service) rpcChapters(ctx context.Context, userID, payload string) (any,
 				"claimed": rewardList(r.Claimed), "claimedXp": r.ClaimedXP, "timeLimitSeconds": st.TimeLimit, "rewardGroup": st.RewardGroup,
 				"cooldownSeconds": st.Cooldown, "dailyRewardLimit": st.DailyLimit, "nextRewardAt": iso(nextRewardAt(g, st.Cooldown, now)),
 				"rewardsLeftToday": rewardsLeft(g, st.DailyLimit, now, loc), "metadata": st.Metadata, "completedBy": owned(ctx, st.Key),
+				"starRules": s.starRules(cfg, st), "starTemplate": st.StarTemplate, "minSeconds": minSecondsOf(cfg, st), "noReplayAfterWin": st.NoReplay, "replayable": replayable(st, r),
+				"settings": settings.Resolve(cfg.Fields.Stage, ch.Key, st.Settings, resolveText),
 			})
 		}
 		chapters = append(chapters, map[string]any{"key": ch.Key, "name": text(langs, lang, ch.Name), "description": text(langs, lang, ch.Description), "iconUrl": ch.IconURL,
 			"address": ch.Address, "sort": ch.Sort, "unlocked": len(locks) == 0, "locks": locks, "stars": earned, "maxStars": max, "starPercent": math.Round(pct*100) / 100,
-			"milestones": milestones, "stages": stages, "metadata": ch.Metadata})
+			"milestones": milestones, "stages": stages, "metadata": ch.Metadata, "settings": settings.Resolve(cfg.Fields.Chapter, ch.Key, ch.Settings, resolveText)})
 	}
 	rides := []map[string]any{}
-	rows, err := s.db.QueryContext(ctx, `SELECT `+freerideCols+` FROM campaign_freeride WHERE is_active ORDER BY sort, key`)
+	where := `is_active`
+	if !cfg.Freeride.TableEnabled {
+		where = `false`
+	}
+	rows, err := s.db.QueryContext(ctx, `SELECT `+freerideCols+` FROM campaign_freeride WHERE `+where+` ORDER BY sort, key`)
 	if err != nil {
 		return nil, err
 	}
@@ -224,6 +242,9 @@ func (s *service) start(ctx context.Context, userID, stageKey string, server boo
 	}
 	if locks := p.stageLocks(ctx, st); len(locks) > 0 {
 		return nil, apierr.Forbidden("STAGE_LOCKED").With("locks", locks)
+	}
+	if !replayable(st, p.row(st.ID)) {
+		return nil, apierr.Forbidden("STAGE_ALREADY_WON").WithField("stageKey")
 	}
 	now := s.now().UTC()
 	id := uuid.Must(uuid.NewV4()).String()
@@ -446,10 +467,7 @@ func (s *service) complete(ctx context.Context, userID string, in completeIn) (a
 		grace := float64(cfg.Attempts.GraceSeconds)
 		serverSeconds := now.Sub(started).Seconds()
 		elapsed := *in.ElapsedSecond
-		minSeconds := cfg.Attempts.DefaultMinSeconds
-		if st.MinSeconds != nil {
-			minSeconds = *st.MinSeconds
-		}
+		minSeconds := minSecondsOf(cfg, st)
 		switch {
 		case elapsed > serverSeconds+grace:
 			return apierr.BadRequest("INVALID_RESULT").WithField("elapsedSeconds").With("serverSeconds", math.Round(serverSeconds*100)/100)
@@ -470,6 +488,9 @@ func (s *service) complete(ctx context.Context, userID string, in completeIn) (a
 		}
 		if locks := p.stageLocks(ctx, st); len(locks) > 0 {
 			return apierr.Forbidden("STAGE_LOCKED").With("locks", locks)
+		}
+		if !replayable(st, p.row(st.ID)) {
+			return apierr.Forbidden("STAGE_ALREADY_WON").WithField("stageKey")
 		}
 		res, pl, err := s.score(ctx, tx, p, st, in, numbers, extra, now, serverSeconds)
 		if err != nil {
@@ -508,7 +529,9 @@ func (s *service) score(ctx context.Context, tx *sql.Tx, p *player, st *stage, i
 	cfg := p.cfg
 	run := runResult{Success: in.Success, Elapsed: *in.ElapsedSecond, Health: in.HealthPercent, Fields: numbers}
 	vals := resultValues(run, st.TimeLimit)
-	stars := computeStars(in.Success, vals, s.starRules(cfg, st), cfg.Stars.MaxStars, cfg.Stars.MinOnSuccess, cfg.Stars.MissingField == settings.MissingPass)
+	rules := s.starRules(cfg, st)
+	missingPass := cfg.Stars.MissingField == settings.MissingPass
+	stars := computeStars(in.Success, vals, rules, cfg.Stars.MaxStars, cfg.Stars.MinOnSuccess, missingPass)
 	row := p.row(st.ID)
 	prevBest, prevWins := row.BestStars, row.Wins
 	pay := map[string]int64{}
@@ -582,7 +605,8 @@ func (s *service) score(ctx context.Context, tx *sql.Tx, p *player, st *stage, i
 		return nil, plan{}, err
 	}
 	milestonePay := map[string]int64{}
-	var reached []float64
+	reached := []float64{}
+	reachedIDs := []string{}
 	ch := p.cat.chapter[st.ChapterID]
 	if ch != nil && len(ch.Milestones) > 0 && counted(st.Mode, cfg.Rewards.MilestoneModes) && row.BestStars > prevBest {
 		if _, err := tx.ExecContext(ctx, `INSERT INTO campaign_user_chapter (user_id, chapter_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`, p.userID, ch.ID); err != nil {
@@ -592,28 +616,23 @@ func (s *service) score(ctx context.Context, tx *sql.Tx, p *player, st *stage, i
 		if err := tx.QueryRowContext(ctx, `SELECT milestones FROM campaign_user_chapter WHERE user_id=$1 AND chapter_id=$2 FOR UPDATE`, p.userID, ch.ID).Scan(&raw); err != nil {
 			return nil, plan{}, err
 		}
-		var paid []float64
+		var paid []any
 		unmarshal(raw, &paid)
 		_, _, pct := p.chapterStars(ch)
 		for _, m := range ch.Milestones {
-			done := false
-			for _, v := range paid {
-				if v == m.Percent {
-					done = true
-				}
-			}
-			if done || m.Percent > pct+1e-9 {
+			if milestonePaid(paid, m) || !reachedPercent(pct, m.Percent) {
 				continue
 			}
-			paid = append(paid, m.Percent)
+			paid = append(paid, paidEntry(m))
 			reached = append(reached, m.Percent)
+			reachedIDs = append(reachedIDs, milestoneID(m))
 			for k, v := range m.Currencies {
 				if v > 0 {
 					milestonePay[k] += v
 				}
 			}
 			if m.PrizeKey != "" || m.PrizeGroupKey != "" {
-				prizes = append(prizes, prizeRef{PrizeKey: m.PrizeKey, PrizeGroupKey: m.PrizeGroupKey, SourceID: p.userID + ":" + ch.ID + ":m" + ftoa(m.Percent), For: "milestone"})
+				prizes = append(prizes, prizeRef{PrizeKey: m.PrizeKey, PrizeGroupKey: m.PrizeGroupKey, SourceID: p.userID + ":" + ch.ID + ":m" + milestoneID(m), For: "milestone"})
 			}
 		}
 		if len(reached) > 0 {
@@ -651,7 +670,9 @@ func (s *service) score(ctx context.Context, tx *sql.Tx, p *player, st *stage, i
 	g := p.group(st.group())
 	res := map[string]any{
 		"stageKey": st.Key, "chapterKey": st.ChapterKey, "mode": st.Mode, "success": in.Success, "stars": stars, "bestStars": row.BestStars, "previousBestStars": prevBest,
-		"rewards": rewardList(pay), "milestoneRewards": rewardList(milestonePay), "milestones": reached, "xpGained": xpGained, "xp": xpTotal,
+		"rewards": rewardList(pay), "milestoneRewards": rewardList(milestonePay), "milestones": reached, "milestoneIds": reachedIDs, "xpGained": xpGained, "xp": xpTotal,
+		"criteria": criteriaTiers(in.Success, vals, rules, cfg.Stars.MaxStars, cfg.Stars.MinOnSuccess, missingPass), "starRules": rules, "minSeconds": minSecondsOf(cfg, st),
+		"timeSavedPercent": math.Round(vals["timeSavedPercent"]*100) / 100, "replayable": replayable(st, row),
 		"rewardLimited": nil, "nextRewardAt": iso(nextRewardAt(g, st.Cooldown, now)), "rewardsLeftToday": rewardsLeft(g, st.DailyLimit, now, s.zone(cfg)),
 		"serverSeconds": math.Round(serverSeconds*100) / 100, "replayed": false,
 	}

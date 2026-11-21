@@ -338,7 +338,7 @@ func TestPostgresConcurrentCompletionsPayOnce(t *testing.T) {
 
 func TestPostgresRepeatableStageAndFreerideCaps(t *testing.T) {
 	f := newFixture(t)
-	f.settings(func(a *settings.All) { a.Rewards.DayZone = "UTC" })
+	f.settings(func(a *settings.All) { a.Rewards.DayZone = "UTC"; a.Freeride.TableEnabled = true })
 	ch := f.chapter(map[string]any{})
 	ride := f.stage(ch, map[string]any{"mode": "repeatable", "xp": 20, "cooldownSeconds": 600, "dailyLimit": 2, "rewardGroup": "pt_roam",
 		"rewards": map[string]any{"currencies": map[string]int64{f.coin: 100}}})

@@ -11,9 +11,10 @@ import (
 )
 
 type Cond struct {
-	Field string  `json:"field"`
-	Op    string  `json:"op"`
-	Value float64 `json:"value"`
+	Field   string  `json:"field"`
+	Op      string  `json:"op"`
+	Value   float64 `json:"value"`
+	Missing string  `json:"missing,omitempty"`
 }
 
 type StarRule struct {
@@ -30,8 +31,15 @@ type Attempts struct {
 	KeepDays           int     `json:"keepDays"`
 }
 
+type Template struct {
+	Key   string            `json:"key"`
+	Name  map[string]string `json:"name"`
+	Rules []StarRule        `json:"rules"`
+}
+
 type Stars struct {
 	Rules                 []StarRule `json:"rules"`
+	Templates             []Template `json:"templates"`
 	Multipliers           []float64  `json:"multipliers"`
 	RepeatableMultipliers []float64  `json:"repeatableMultipliers"`
 	MaxStars              int        `json:"maxStars"`
@@ -65,8 +73,28 @@ type Events struct {
 }
 
 type Freeride struct {
+	TableEnabled     bool `json:"tableEnabled"`
 	RequireRequestID bool `json:"requireRequestId"`
 	RequestHours     int  `json:"requestHours"`
+}
+
+type FieldDef struct {
+	Key      string            `json:"key"`
+	Label    map[string]string `json:"label"`
+	Hint     map[string]string `json:"hint,omitempty"`
+	Type     string            `json:"type"`
+	Default  any               `json:"default,omitempty"`
+	Min      *float64          `json:"min,omitempty"`
+	Max      *float64          `json:"max,omitempty"`
+	Options  []string          `json:"options,omitempty"`
+	Fields   []FieldDef        `json:"fields,omitempty"`
+	MaxItems int               `json:"maxItems,omitempty"`
+	Chapters []string          `json:"chapters,omitempty"`
+}
+
+type Fields struct {
+	Stage   []FieldDef `json:"stage"`
+	Chapter []FieldDef `json:"chapter"`
 }
 
 type Play struct {
@@ -84,6 +112,7 @@ type All struct {
 	XP       XP       `json:"xp"`
 	Events   Events   `json:"events"`
 	Freeride Freeride `json:"freeride"`
+	Fields   Fields   `json:"fields"`
 }
 
 const (
@@ -104,7 +133,54 @@ const (
 
 	GroupDraw = "draw"
 	GroupAll  = "all"
+
+	FieldNumber  = "number"
+	FieldInteger = "integer"
+	FieldBool    = "bool"
+	FieldText    = "text"
+	FieldI18n    = "i18n"
+	FieldSelect  = "select"
+	FieldTags    = "tags"
+	FieldList    = "list"
+
+	MaxFieldDepth = 3
 )
+
+var FieldTypes = map[string]bool{FieldNumber: true, FieldInteger: true, FieldBool: true, FieldText: true, FieldI18n: true, FieldSelect: true, FieldTags: true, FieldList: true}
+
+func baseRules(time, health bool) []StarRule {
+	three := []Cond{}
+	two := []Cond{}
+	if time {
+		three = append(three, Cond{Field: "timeSavedPercent", Op: ">=", Value: 30})
+		two = append(two, Cond{Field: "timeSavedPercent", Op: ">=", Value: 10})
+	}
+	if health {
+		three = append(three, Cond{Field: "healthPercent", Op: ">=", Value: 75})
+		two = append(two, Cond{Field: "healthPercent", Op: ">=", Value: 50})
+	}
+	three = append(three, Cond{Field: "timesSeen", Op: "<=", Value: 0, Missing: MissingPass})
+	two = append(two, Cond{Field: "timesSeen", Op: "<=", Value: 2, Missing: MissingPass})
+	return []StarRule{{Stars: 3, Conditions: three}, {Stars: 2, Conditions: two}}
+}
+
+func DefaultTemplates() []Template {
+	return []Template{
+		{Key: "base", Name: map[string]string{"fa": "پایه", "en": "Base"}, Rules: baseRules(true, true)},
+		{Key: "race", Name: map[string]string{"fa": "مسابقه", "en": "Race"}, Rules: baseRules(true, false)},
+		{Key: "stealth", Name: map[string]string{"fa": "مخفی", "en": "Stealth"}, Rules: baseRules(false, true)},
+		{Key: "quest", Name: map[string]string{"fa": "کوئست", "en": "Quest"}, Rules: baseRules(true, true)},
+	}
+}
+
+func (s Stars) Template(key string) *Template {
+	for i := range s.Templates {
+		if s.Templates[i].Key == key {
+			return &s.Templates[i]
+		}
+	}
+	return nil
+}
 
 var (
 	KeyPattern      = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$`)
@@ -119,10 +195,8 @@ func Defaults() All {
 		Play:     Play{CostAmount: 1, RefundOnWin: true},
 		Attempts: Attempts{Hours: 24, GraceSeconds: 3, DefaultMinSeconds: 5, CloseOthers: true, KeepDays: 90},
 		Stars: Stars{
-			Rules: []StarRule{
-				{Stars: 3, Conditions: []Cond{{Field: "timeSavedPercent", Op: ">=", Value: 30}, {Field: "healthPercent", Op: ">=", Value: 75}}},
-				{Stars: 2, Conditions: []Cond{{Field: "timeSavedPercent", Op: ">=", Value: 10}, {Field: "healthPercent", Op: ">=", Value: 50}}},
-			},
+			Rules:                 baseRules(true, true),
+			Templates:             DefaultTemplates(),
 			Multipliers:           []float64{0.2, 0.5, 1},
 			RepeatableMultipliers: []float64{1, 1, 1},
 			MaxStars:              3,
@@ -134,6 +208,7 @@ func Defaults() All {
 		XP:       XP{MetaKey: "xp"},
 		Events:   Events{EconomyEvent: "stage_completed", AnalyticsEvent: "stage_completed", OnFailure: true},
 		Freeride: Freeride{RequireRequestID: true, RequestHours: 24},
+		Fields:   Fields{Stage: []FieldDef{}, Chapter: []FieldDef{}},
 	}
 }
 
@@ -163,6 +238,9 @@ func ValidateRules(rules []StarRule, maxStars int) (string, string) {
 			}
 			if !Ops[c.Op] {
 				return "[" + strconv.Itoa(i) + "].conditions[" + strconv.Itoa(j) + "].op", "INVALID_OPERATOR"
+			}
+			if c.Missing != "" && !oneOf(c.Missing, MissingPass, MissingFail) {
+				return "[" + strconv.Itoa(i) + "].conditions[" + strconv.Itoa(j) + "].missing", "INVALID_POLICY"
 			}
 		}
 	}
@@ -236,6 +314,85 @@ func (a All) Validate() (string, string) {
 	}
 	if f, code := ValidateRules(a.Stars.Rules, a.Stars.MaxStars); code != "" {
 		return "stars.rules" + f, code
+	}
+	if len(a.Stars.Templates) > 20 {
+		return "stars.templates", "TOO_MANY_TEMPLATES"
+	}
+	seen := map[string]bool{}
+	for i, t := range a.Stars.Templates {
+		f := "stars.templates[" + strconv.Itoa(i) + "]"
+		if !KeyPattern.MatchString(t.Key) {
+			return f + ".key", "INVALID_KEY"
+		}
+		if seen[t.Key] {
+			return f + ".key", "DUPLICATE_KEY"
+		}
+		seen[t.Key] = true
+		if sub, code := ValidateRules(t.Rules, a.Stars.MaxStars); code != "" {
+			return f + ".rules" + sub, code
+		}
+	}
+	if f, code := ValidateFields(a.Fields.Stage, 1); code != "" {
+		return "fields.stage" + f, code
+	}
+	if f, code := ValidateFields(a.Fields.Chapter, 1); code != "" {
+		return "fields.chapter" + f, code
+	}
+	return "", ""
+}
+
+func ValidateFields(defs []FieldDef, depth int) (string, string) {
+	if depth > MaxFieldDepth {
+		return "", "FIELDS_TOO_DEEP"
+	}
+	if len(defs) > 60 {
+		return "", "TOO_MANY_FIELDS"
+	}
+	seen := map[string]bool{}
+	for i, d := range defs {
+		f := "[" + strconv.Itoa(i) + "]"
+		if !FieldPattern.MatchString(d.Key) {
+			return f + ".key", "INVALID_FIELD"
+		}
+		if seen[d.Key] {
+			return f + ".key", "DUPLICATE_KEY"
+		}
+		seen[d.Key] = true
+		if !FieldTypes[d.Type] {
+			return f + ".type", "INVALID_FIELD_TYPE"
+		}
+		if d.Type == FieldSelect && len(d.Options) == 0 {
+			return f + ".options", "OPTIONS_REQUIRED"
+		}
+		if len(d.Options) > 50 {
+			return f + ".options", "TOO_MANY_OPTIONS"
+		}
+		if d.Min != nil && d.Max != nil && *d.Min > *d.Max {
+			return f + ".min", "VALUE_OUT_OF_RANGE"
+		}
+		if d.MaxItems < 0 || d.MaxItems > 100 {
+			return f + ".maxItems", "VALUE_OUT_OF_RANGE"
+		}
+		for _, c := range d.Chapters {
+			if !KeyPattern.MatchString(c) {
+				return f + ".chapters", "INVALID_KEY"
+			}
+		}
+		if d.Type == FieldList {
+			if len(d.Fields) == 0 {
+				return f + ".fields", "FIELDS_REQUIRED"
+			}
+			if sub, code := ValidateFields(d.Fields, depth+1); code != "" {
+				return f + ".fields" + sub, code
+			}
+		} else if len(d.Fields) > 0 {
+			return f + ".fields", "INVALID_FIELD_TYPE"
+		}
+		if d.Default != nil {
+			if _, code := CleanValue(d, d.Default, depth); code != "" {
+				return f + ".default", code
+			}
+		}
 	}
 	return "", ""
 }
