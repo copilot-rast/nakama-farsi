@@ -11395,8 +11395,8 @@ function ApiError(status, code, message, field) {
 
 function token() {
   var stores = [];
-  try { stores.push(window.localStorage); } catch (e) { stores.push(null); }
   try { stores.push(window.sessionStorage); } catch (e) { stores.push(null); }
+  try { stores.push(window.localStorage); } catch (e) { stores.push(null); }
   for (var i = 0; i < stores.length; i++) {
     try {
       if (!stores[i]) continue;

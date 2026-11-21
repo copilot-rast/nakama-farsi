@@ -1,9 +1,9 @@
 {
   "note": "Files generated in console/ui/dist by scripts/build.mjs.",
   "files": [
+    "static/clan-57215f6955.js",
+    "static/clan-57215f6955.js.gz",
     "static/clan-7941e1c9fb.css",
-    "static/clan-7941e1c9fb.css.gz",
-    "static/clan-a2b8c68c0a.js",
-    "static/clan-a2b8c68c0a.js.gz"
+    "static/clan-7941e1c9fb.css.gz"
   ]
 }
