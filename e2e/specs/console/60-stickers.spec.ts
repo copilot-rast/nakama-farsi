@@ -43,7 +43,7 @@ test.describe('stickers: hub, packs and settings', () => {
     await open(page, '#/moderation/players');
     await expect(page.locator('.x-drawer a[data-economy-page="stickers"]').first()).toHaveText('استیکرها');
     await open(page, '#/moderation/stickers');
-    await expect(root(page).locator('[data-economy-tabs="stickers"] [data-economy-tab]')).toHaveText(['بسته‌ها', 'تنظیمات']);
+    await expect(root(page).locator('[data-economy-tabs="stickers"] [data-economy-tab]')).toHaveText(['بسته‌ها', 'تنظیمات', 'پیام سریع بازی', 'گفتگوی مسابقه‌ها']);
     await page.keyboard.press('Control+k');
     await page.locator('.pl-pal-input:visible').fill('استیکر');
     await expect(page.locator('.pl-pal-row').first()).toContainText('استیکرها');
@@ -117,7 +117,7 @@ test.describe('stickers: hub, packs and settings', () => {
     await open(page, '#/moderation/stickers');
     await page.locator('.pl-seg-lang [data-locale="en"]').click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
-    await expect(root(page).locator('[data-economy-tabs="stickers"] [data-economy-tab]')).toHaveText(['Packs', 'Settings']);
+    await expect(root(page).locator('[data-economy-tabs="stickers"] [data-economy-tab]')).toHaveText(['Packs', 'Settings', 'Match chat', 'Match chats']);
     await page.locator('.pl-seg-lang [data-locale="fa-IR"]').click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   });

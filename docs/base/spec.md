@@ -492,6 +492,15 @@ Client RPC `comms_user_token`, empty body: `{enabled: true, url, appId, token, e
 
 Project settings section «سرور ویس» (`#/project-settings/voice`, `SETTINGS`), before «ریپوی بالایی»: state line, «چت صوتی روشن باشد», provider select (fields of the chosen provider with a short note, secrets as password fields shown as `********` once saved), token lifetime, «بازیکن بتواند حرف بزند», «اتاق‌های باز هر بازی», «امتحان اتصال» (result with the time in ms or the translated error) and save. The section also has «توکن در دقیقه برای هر بازیکن», «بیشترین بازیکن در اتاق ویس», «فقط این برچسب‌ها ویس بگیرند» and «این برچسب‌ها فقط بشنوند». With comms chosen it also shows «توکن کاربر comms (چت، تماس و جلسه)»: «توکن کاربر comms روشن باشد», App ID, issuer, kid, token secret (password field, `********` once saved), «عمر توکن کاربر (ثانیه)» and «توکن کاربر در دقیقه برای هر بازیکن»; the state line adds whether user tokens are on and complete. Games editor: «چت صوتی» switch with «بیشترین بازیکن در ویس»; games list chip «بی‌ویس».
 
+### Staff mute and live rooms (2026-11-21)
+
+Migration `20270107000001-base-voice-moderation.sql`, code `integrations/base/voice_rooms.go`, provider side `internal/voice` (`Moderator`: `SetPublish`, `Participants`). Every `voice_token` records the room in `base_voice_room` (`room`, `provider`, `kind` match/party/room, `game_key`, `expires_at` = the latest token end) and the player in `base_voice_member` (`name`, `can_publish`, token times). A staff mute is a `base_voice_mute` row (`room`, `user_id`, `muted_by`); it lasts while the room record is live, so a muted player stays muted after a reconnect, and rows go one day after the room ends (swept every 10 minutes with the comm channels).
+
+- `voice_token` gives `canPublish: false` and `staffMuted: true` to a muted player.
+- Mute/unmute also act live: LiveKit `RoomService/UpdateParticipant` with a `roomAdmin` token (`canPublish` false, `canSubscribe` true, microphone as the only source when allowed); comms `POST /v1/server/game-rooms/{room}/players/{player}/mute {muted}`. A player who is not connected (`NOT_CONNECTED`) or a provider error still keeps the mute for the next token; the answer is `{room, userId, muted, applied, reason?}`. Unmute gives publish back only when the settings allow publishing.
+- Console API: `GET /voice/rooms?q=&live=true` (rooms with `expires_at` in the future, newest first, at most 200; members with `muted`, `mutedBy`, `mutedAt`; `live=true` asks the provider for connected players of the first 20 rooms), `POST /voice/rooms/{room}/mute` and `/unmute` `{userId}`. Errors `VOICE_ROOM_NOT_FOUND`, `VOICE_PARTICIPANT_NOT_FOUND`, `INVALID_USER_ID`.
+- Console page «اتاق‌های ویس» (`#/moderation/voice-rooms`, chat group, `CHANNEL_MESSAGE`): one row per player with room, kind, game, provider, connected state, microphone («بی‌صدا به‌دست پشتیبانی» / «می‌تواند صحبت کند» / «فقط شنیدن»), end time and Mute (with a confirm) or Unmute.
+
 ## Private chat quota (phase 23)
 
 A daily quota on private (direct) messages, with message packs sold in the shop and unlimited players. Off by default: until an admin turns it on nothing is counted or stored and direct messages behave as before. Migration `20261128000000-base-chat-quota.sql` (Up re-runnable, Down raises). Code: `integrations/base/chatquota.go` (engine, hook, RPC, sweep) and `chatquota_admin.go` (console).
@@ -600,6 +609,37 @@ A sticker is a chat message whose content has `sticker: "<pack>/<sticker>"`. The
 ### Console
 
 «استیکرها» hub in the moderation chat group (`#/moderation/stickers`): «بسته‌ها» (list with a preview of the first stickers, access and status; editor with key, name, description, icon, order, access and the item picker, and a sticker row list with an image upload or link, key and name) and «تنظیمات» (on/off, allowed chats, quota). The chat quota settings get «پیام خصوصی شمرده شود».
+
+## Communication packs (in-match quick messages, 2026-11-21)
+
+Ported from the Ludo backend (CommunicationPack*, CommsChannel*, `docs/comms-client.md`) on top of the sticker packs. Migration `20270107000000-base-comm-packs.sql`, code `integrations/base/comms.go`, helper for match handlers `internal/commpacks`.
+
+### Data
+
+- `base_sticker_pack` gets `kind` (`sticker` [default], `text`, `gif`, `emoji`; fixed after create, `KIND_LOCKED`), `in_chat` [true] and `in_match` [false]; at least one place (`PLACE_REQUIRED`). Free packs are the starter packs; item packs are sold and owned through the economy item (`access=item`, `item_key`) like sticker packs.
+- `base_sticker` gets translated `text` (required for `text` packs, up to 120) and `asset_id` (a client-bundled asset, `[a-z0-9_.-]{1,64}`); other kinds need an image or an asset id.
+- `base_comm_settings` (row 1, JSONB, defaults from the Ludo backend): `enabled` [true], `minIntervalSeconds` [4] (0–60, 0 = off), `maxCount` [6] (1–1000), `windowSeconds` [30] (1–600), `lockSeconds` [30] (1–3600), `channelHours` [2] (1–48), `maxFavorites` [0 = no limit]. `maxCount × minIntervalSeconds` must be below `windowSeconds` (`INVALID_SETTINGS`).
+- `base_comm_favorite` (`user_id`, `pack_id`, `sticker_key`).
+- `base_comm_channel` (one per match id: `status` open/closed, `close_reason` staff/ended/expired, `closed_by`, `messages`, `last_at`, `expires_at` = created + `channelHours`) and `base_comm_member` (`can_send` [true], `sent`, `changed_by`). Channels older than 7 days are deleted; expired open channels are closed every 10 minutes.
+
+### Match handler helper (`internal/commpacks`)
+
+`Open(ctx, db, matchID, userIDs)` at match start, `Send(ctx, db, matchID, userID, Input{Pack, Item, ClientMessageID})` for each pack message (returns `*Message` to broadcast or a `*Refusal{Code, RetryAfterMs}`), `Close(ctx, db, matchID, reason)` at the end. Checks in order: input, `COMMS_DISABLED`, channel open and not expired (`CHANNEL_CLOSED`), member `can_send` (`SEND_NOT_ALLOWED`), pack active and `in_match` (`PACK_NOT_AVAILABLE`), item active (`ITEM_NOT_AVAILABLE`), ownership for item packs (`PACK_NOT_OWNED`), then the cooldown: lock, gap, then the window (the send over `maxCount` locks for `lockSeconds`); only accepted sends count. Cooldown and the one-minute `clientMessageId` dedupe live in memory per match and player (a match runs on one node). Messages are not stored; the channel and member counters are. `samples/stargame` tic-tac-toe wires it: op 6 in, op 7 broadcast, op 5 refusal.
+
+### Client RPCs
+
+- `base_comm_packs {lang?, kind?, mine?}` → `{enabled, lang, cooldown, maxFavorites, packs: [{key, kind, name, description, iconUrl, access, starter, owned, itemKey?, item?, items: [{key, ref, name, text?, assetId?, imageUrl?, favorite}]}]}` (packs with `in_match`).
+- `base_comm_favorite {pack, item, favorite?}` (set needs a sendable item: `PACK_NOT_AVAILABLE`, `ITEM_NOT_AVAILABLE`, `PACK_NOT_OWNED` as 412/FailedPrecondition, `FAVORITES_FULL`; clear never fails).
+- `base_comm_favorites {lang?, kind?, pack?}` newest first, sendable items only.
+- `base_stickers` now lists only `in_chat` packs and adds `kind`, `text`, `assetId`; a chat sticker of another kind is stored with `stickerKind`, `stickerText`, `stickerAsset`.
+
+### Console API (`/v2/console/base/`, `CHANNEL_MESSAGE`, audit-logged)
+
+`GET/PUT /comms/settings`; `GET /comms/channels?status=open|closed|all&q=`; `GET /comms/channels/{matchId}`; `POST /comms/channels/{matchId}/close`, `/open`; `POST /comms/channels/{matchId}/can-send {userId, canSend}` (`NOT_A_MEMBER`, `CAN_SEND_REQUIRED`). `/stickers/packs` takes `kind`, `inChat`, `inMatch`, item `text`/`assetId`, and filters `kind` and `place=chat|match`.
+
+### Console
+
+The «استیکرها» hub gets «پیام سریع بازی» (settings) and «گفتگوی مسابقه‌ها» (channels with status, players and their sent count, «قطع ارسال»/«اجازهٔ ارسال», close with a confirm, open again). The pack editor gets «نوع بسته», «در گفتگوی چت», «در مسابقه» and per item «متن» and «شناسهٔ فایل کلاینت»; the list shows kind and places.
 
 ## Avatar builder
 

@@ -23,6 +23,7 @@ select 'H-rrules', md5(coalesce(string_agg(per_hour||'/'||duplicate_hours||'/'||
 select 'H-offset', md5(coalesce(string_agg(settings::text, '|'),'')) from economy_offer_settings;
 select 'H-fgset', md5(coalesce(string_agg(settings::text, '|'),'')) from economy_friend_gift_settings;
 select 'H-cqset', md5(coalesce(string_agg(settings::text, '|'),'')) from base_chat_quota_settings;
+select 'H-cmset', md5(coalesce(string_agg(settings::text, '|'),'')) from base_comm_settings;
 select 'H-ctset', md5(coalesce(string_agg(value::text, '|'),'')) from content_settings;
 select 'H-inset', md5(coalesce(string_agg(value::text, '|'),'')) from insights_settings;
 select 'H-newsset', md5(coalesce(string_agg(comments_per_minute||'/'||reactions_per_minute||unread_scope||show_expired::text||fill_default_lang::text||realtime_on_publish::text||notify_category_key||log_retention_days||'/'||log_payload_bytes||slug_style||public_enabled::text||public_base_url||public_path||rss_enabled::text||public_cache_seconds||site_title::text, '|'),'')) from publication_news_settings;

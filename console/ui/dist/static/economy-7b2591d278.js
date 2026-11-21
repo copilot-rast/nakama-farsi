@@ -22603,7 +22603,8 @@ function commChannelsPage(container, query) {
   var state = { status: query.status || 'open', q: query.q || '', page: 1, limit: LIMIT, total: 0 };
   var box = h('div', { class: 'flex flex-col gap-3' });
   var status = filterSelect(t('filter.status'), state.status, ['open', 'closed', 'all'].map(function (s) { return { value: s, label: t('cm.filter.' + s) }; }), function (v) { state.status = v || 'open'; state.page = 1; load(); });
-  var search = searchInput(state.q, t('search.comm-channels'), function (v) { state.q = v; state.page = 1; load(); });
+  var timer = null;
+  var search = searchInput(state.q, t('search.comm-channels'), function (e) { clearTimeout(timer); timer = setTimeout(function () { state.q = e.target.value.trim(); state.page = 1; load(); }, 250); });
   var pagerBox = h('div', {});
   frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center justify-between gap-2 pb-2' }, h('div', { class: 'flex flex-wrap items-center gap-2' }, search, status), pagerBox));
   frame.content.appendChild(box);
@@ -22654,7 +22655,8 @@ function voiceRoomsPage(container, query) {
   clear(container).appendChild(frame.el);
   var state = { q: query.q || '' };
   var box = h('div', { class: 'flex flex-col gap-3' });
-  var search = searchInput(state.q, t('search.voice-rooms'), function (v) { state.q = v; load(); });
+  var timer = null;
+  var search = searchInput(state.q, t('search.voice-rooms'), function (e) { clearTimeout(timer); timer = setTimeout(function () { state.q = e.target.value.trim(); load(); }, 250); });
   var refresh = button({ variant: 'secondary', size: 'sm', icon: 'refresh', label: t('refresh'), onclick: function () { load(); } });
   frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center justify-between gap-2 pb-2' }, search, refresh));
   frame.content.appendChild(box);
