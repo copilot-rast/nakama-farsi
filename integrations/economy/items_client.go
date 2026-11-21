@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/heroiclabs/nakama/v3/internal/economyhooks"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
@@ -23,8 +24,9 @@ func (s *service) itemRPCs() map[string]clientRPC {
 
 func (s *service) rpcInventory(ctx context.Context, userID, payload string) (any, error) {
 	var in struct {
-		Type string `json:"type"`
-		Lang string `json:"lang"`
+		Type        string `json:"type"`
+		Lang        string `json:"lang"`
+		WithProfile bool   `json:"withProfile"`
 	}
 	if err := decodeStrict(payload, &in); err != nil {
 		return nil, err
@@ -35,6 +37,9 @@ func (s *service) rpcInventory(ctx context.Context, userID, payload string) (any
 	}
 	if err := s.ensureDefaults(ctx, userID); err != nil {
 		return nil, err
+	}
+	if in.WithProfile {
+		ctx = economyhooks.WithOptions(ctx, "profile")
 	}
 	return s.inventoryView(ctx, userID, langs, lang, strings.TrimSpace(in.Type), true)
 }

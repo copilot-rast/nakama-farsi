@@ -13,6 +13,7 @@ import (
 
 	"github.com/gofrs/uuid/v5"
 	"github.com/heroiclabs/nakama/v3/internal/activity"
+	"github.com/heroiclabs/nakama/v3/internal/economyhooks"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
 	"github.com/heroiclabs/nakama/v3/internal/pluginkit"
 	"github.com/heroiclabs/nakama/v3/internal/tagdiscount"
@@ -696,6 +697,7 @@ func (s *service) inventoryView(ctx context.Context, userID string, langs *local
 			ownedKeys[d.Key] = true
 		}
 	}
+	states := economyhooks.Items(ctx, userID, lang, itemIDs(defs))
 	items := []itemView{}
 	equipped := map[string]string{}
 	counts := map[string]int{"owned": 0, "total": 0}
@@ -707,7 +709,7 @@ func (s *service) inventoryView(ctx context.Context, userID string, langs *local
 		if typeKey != "" && d.TypeKey != typeKey {
 			continue
 		}
-		v, err := s.itemState(ctx, d, o, has, lc, ownedKeys, langs, lang)
+		v, err := s.itemState(ctx, d, o, has, lc, ownedKeys, langs, lang, states[d.ID])
 		if err != nil {
 			return nil, err
 		}
@@ -721,7 +723,7 @@ func (s *service) inventoryView(ctx context.Context, userID string, langs *local
 	return map[string]any{"lang": lang, "level": mainLevel, "items": items, "equipped": equipped, "counts": counts}, nil
 }
 
-func (s *service) itemState(ctx context.Context, d itemDef, o ownedItem, has bool, lc *levelCache, ownedKeys map[string]bool, langs *localized.Set, lang string) (itemView, error) {
+func (s *service) itemState(ctx context.Context, d itemDef, o ownedItem, has bool, lc *levelCache, ownedKeys map[string]bool, langs *localized.Set, lang string, ext economyhooks.ItemState) (itemView, error) {
 	v := itemPublic(d, langs, lang)
 	level, err := lc.level(ctx, d.table())
 	if err != nil {
@@ -729,7 +731,7 @@ func (s *service) itemState(ctx context.Context, d itemDef, o ownedItem, has boo
 	}
 	need := d.needs()
 	needMet := need == "" || ownedKeys[need]
-	locked := !has && d.unlock() > 0 && level < d.unlock()
+	locked := !has && d.unlock() > 0 && level < d.unlock() && !ext.Unlocked
 	v["owned"] = has
 	v["equipped"] = has && o.Equipped
 	v["locked"] = locked
@@ -748,6 +750,7 @@ func (s *service) itemState(ctx context.Context, d itemDef, o ownedItem, has boo
 			v["nextUpgradePrice"] = d.Upgrades[o.UpgradeLevel]
 		}
 	}
+	economyhooks.Fill(v, ext.Fields)
 	return v, nil
 }
 
@@ -775,7 +778,7 @@ func (s *service) oneItemView(ctx context.Context, userID, key string, langs *lo
 		rows.Close()
 	}
 	o, has := owned[d.ID]
-	v, err := s.itemState(ctx, d, o, has, newLevelCache(s.db, userID), ownedKeys, langs, lang)
+	v, err := s.itemState(ctx, d, o, has, newLevelCache(s.db, userID), ownedKeys, langs, lang, economyhooks.Items(ctx, userID, lang, []string{d.ID})[d.ID])
 	if err != nil {
 		return nil, err
 	}
@@ -839,7 +842,13 @@ func (s *service) checkItemAccess(ctx context.Context, tx *sql.Tx, userID string
 			return err
 		}
 		if lv < d.unlock() {
-			return conflict("LEVEL_TOO_LOW", "the player's level is too low for this item")
+			st := economyhooks.Items(ctx, userID, "", []string{d.ID})[d.ID]
+			if !st.Unlocked {
+				e := conflict("LEVEL_TOO_LOW", "the player's level is too low for this item")
+				e.Meta = map[string]any{"level": lv, "unlockLevel": d.unlock()}
+				economyhooks.Fill(e.Meta, st.LockMeta)
+				return e
+			}
 		}
 	}
 	if need := d.needs(); need != "" {
@@ -884,6 +893,9 @@ func (s *service) buyItem(ctx context.Context, userID, key, rawRequest string) (
 		}
 		if err := s.checkItemAccess(ctx, tx, userID, d); err != nil {
 			return err
+		}
+		if err := economyhooks.CheckItemBuy(ctx, tx, economyhooks.ItemBuy{UserID: userID, ItemID: d.ID, ItemKey: d.Key, TypeKey: d.TypeKey, ParentKey: d.ParentKey}); err != nil {
+			return hookError(err)
 		}
 		res, err := tx.ExecContext(ctx, `INSERT INTO economy_user_item (user_id, item_id, source, source_ref) VALUES ($1,$2,'buy',$3) ON CONFLICT (user_id, item_id) DO NOTHING`, userID, d.ID, grantID)
 		if err != nil {
@@ -1027,8 +1039,12 @@ func (s *service) equipItem(ctx context.Context, userID, key string, on bool) (s
 			return notFound("ITEM_NOT_FOUND")
 		}
 		slot = d.TypeKey
+		typeID := d.TypeID
+		if custom := economyhooks.Slot(ctx, d.ID, d.TypeKey); custom != "" {
+			slot, typeID = custom, ""
+		}
 		rows, err := tx.QueryContext(ctx, `SELECT u.item_id::text, u.equipped, i.key FROM economy_user_item u JOIN economy_item i ON i.id=u.item_id
-			WHERE u.user_id=$1 AND (i.type_id=$2 OR u.slot=$3) ORDER BY u.item_id FOR UPDATE OF u`, userID, d.TypeID, slot)
+			WHERE u.user_id=$1 AND (i.type_id::text=$2 OR u.slot=$3 OR u.item_id::text=$4) ORDER BY u.item_id FOR UPDATE OF u`, userID, typeID, slot, d.ID)
 		if err != nil {
 			return err
 		}
