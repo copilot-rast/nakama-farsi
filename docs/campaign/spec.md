@@ -80,6 +80,18 @@ Chapters and stages take `[{type, key, value, table}]`, all must hold: `level` (
 | `events.onFailure` | true | lost runs send the events too |
 | `freeride.requireRequestId` | true | claims need a `requestId` |
 | `freeride.requestHours` | 24 | how long a claim answer is kept |
+| `freeride.tableEnabled` | false | the separate `campaign_freeride` table path; off = `freeride[]` is empty and `campaign_freeride_claim` answers `FREERIDE_NOT_FOUND` (free ride runs as repeatable stages) |
+| `stars.templates` | `base`, `race`, `stealth`, `quest` | named star rule sets a stage can pick (`starTemplate`); base = time + health + `timesSeen` (missing passes), race = no health, stealth = no time, quest = base |
+| `fields.stage` / `fields.chapter` | `[]` | field definitions for the stage / chapter `settings` form (types `number`, `integer`, `bool`, `text`, `i18n`, `select`, `tags`, `list` up to 3 levels; `default`, `min`, `max`, `options`, `maxItems`, `chapters`) |
+
+### Stage settings, templates and result details (2026-11-22)
+
+- `campaign_stage.settings` / `campaign_chapter.settings` (JSONB) hold values checked against `fields.*` (`UNKNOWN_FIELD`, `INVALID_FIELD_VALUE`, `INVALID_OPTION`, `VALUE_OUT_OF_RANGE`, `TOO_MANY_ITEMS`). `campaign_chapters` returns them resolved: defaults filled, `i18n` text in the player's language. Stages also return `starRules`, `starTemplate`, `minSeconds` (stage or default), `noReplayAfterWin`, `replayable`.
+- Star rule order: own `star_rules`, else the stage's `star_template`, else `stars.rules` (default = the base template). A condition may carry `missing: pass|fail` over `stars.missingField`.
+- `no_replay_after_win` (default off): a player with a win gets `STAGE_ALREADY_WON` on start and complete.
+- `campaign_attempt_complete` adds `criteria` (`[{field, value, stars}]`, the best tier each criterion reached), `starRules`, `minSeconds`, `timeSavedPercent`, `milestoneIds`, `replayable`.
+- Chapter milestones have a fixed `id` (the console gives new steps the next free number). Paid steps are stored by id in `campaign_user_chapter.milestones`, so changing a percent never pays twice; old numeric entries still count by percent. A step is reached when the star percent is within 0.005 of it, so 16.67 is paid at exactly 1/6.
+- Migration `20270126000000-campaign-stage-settings.sql`: the new columns, ids `1..n` (array order) for chapters without ids, paid percents turned into ids.
 
 ### Play cost
 
