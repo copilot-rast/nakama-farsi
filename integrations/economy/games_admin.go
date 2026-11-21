@@ -63,6 +63,7 @@ type gameRoomInput struct {
 	WinnerXP       json.RawMessage `json:"winnerXp"`
 	LoserXP        json.RawMessage `json:"loserXp"`
 	Overdraft      bool            `json:"overdraft"`
+	FeeAt          string          `json:"feeAt"`
 	NewPlayersOnly bool            `json:"newPlayersOnly"`
 	Replaces       string          `json:"replaces"`
 	Disabled       bool            `json:"disabled"`
@@ -221,6 +222,14 @@ func cleanRoomPlay(ctx context.Context, tx *sql.Tx, field string, r gameRoomInpu
 		return badRequest("INVALID_BOT_TEMPLATE", field, "at most 64 characters")
 	}
 	room.BotsPay, room.Overdraft, room.Disabled = r.BotsPay, r.Overdraft, r.Disabled
+	switch strings.TrimSpace(r.FeeAt) {
+	case "", gamecatalog.FeeAtSeat:
+		room.FeeAt = ""
+	case gamecatalog.FeeAtStart:
+		room.FeeAt = gamecatalog.FeeAtStart
+	default:
+		return badRequest("INVALID_FEE_AT", field, "the entry fee is taken at seat or at start")
+	}
 	switch strings.TrimSpace(r.Payout) {
 	case "", gamecatalog.PayoutPrize:
 		room.Payout = ""

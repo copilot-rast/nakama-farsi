@@ -44,6 +44,7 @@ type Room struct {
 	WinnerXP       int    `json:"winnerXp,omitempty"`
 	LoserXP        int    `json:"loserXp,omitempty"`
 	Overdraft      bool   `json:"overdraft,omitempty"`
+	FeeAt          string `json:"feeAt,omitempty"`
 	NewPlayersOnly bool   `json:"newPlayersOnly,omitempty"`
 	Replaces       string `json:"replaces,omitempty"`
 	Disabled       bool   `json:"disabled,omitempty"`
@@ -52,6 +53,8 @@ type Room struct {
 const (
 	PayoutPrize = "prize"
 	PayoutPot   = "pot"
+	FeeAtSeat   = "seat"
+	FeeAtStart  = "start"
 )
 
 func (r *Room) Seats(g *Game) int {
@@ -70,6 +73,10 @@ func (r *Room) Humans(g *Game) int {
 		return seats
 	}
 	return r.HumanSeats
+}
+
+func (r *Room) ChargesAtStart() bool {
+	return r != nil && r.FeeAt == FeeAtStart
 }
 
 func (r *Room) PotMode() bool {

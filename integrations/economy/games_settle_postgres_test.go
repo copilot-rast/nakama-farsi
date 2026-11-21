@@ -320,3 +320,96 @@ func TestBotConsoleBulkImportStatusTopup(t *testing.T) {
 		t.Fatalf("topup %v", tu)
 	}
 }
+
+func TestGameFeeAtStartOverdraftAndRefunds(t *testing.T) {
+	h := newSettleHarness(t)
+	code, out := h.api(http.MethodPost, "/games", map[string]any{"key": "tst_board", "name": map[string]string{"fa": "منچ"}, "minPlayers": 2, "maxPlayers": 4,
+		"rooms": []map[string]any{{"key": "bad", "entryFee": map[string]any{"currencyKey": "coin", "amount": 10}, "feeAt": "later"}}})
+	if code != 400 || out["error"] != "INVALID_FEE_AT" {
+		t.Fatalf("unknown fee timing: %d %v", code, out)
+	}
+	g := h.ludoGame([]map[string]any{{"key": "two", "players": 2, "humanSeats": 2, "botsPay": true, "entryFee": map[string]any{"currencyKey": "coin", "amount": 300},
+		"payout": "pot", "payoutPercent": 80, "overdraft": true, "feeAt": "start"}}, nil)
+	if rooms, _ := g["rooms"].([]any); len(rooms) != 1 || rooms[0].(map[string]any)["feeAt"] != "start" {
+		t.Fatalf("feeAt is stored: %v", g["rooms"])
+	}
+	p := gameProvider{s: h.s}
+	a, b, poor := h.user(), h.user(), h.user()
+	h.give(a, 500)
+	h.give(b, 500)
+	start := map[string]int64{}
+	for _, u := range []string{a, b, poor} {
+		if err := h.s.ensureDefaults(h.ctx, u); err != nil {
+			t.Fatal(err)
+		}
+		start[u] = h.wallet(u)["coin"]
+	}
+	h.s.db.ExecContext(h.ctx, `UPDATE users SET wallet=jsonb_set(wallet,'{coin}','100') WHERE id=$1`, poor)
+	match := "tst-feestart-" + randomSuffix()
+	if _, err := p.Enter(h.ctx, gamecatalog.Entry{MatchID: match, Game: "tst_board", Room: "two", UserID: poor}); gamecatalog.Code(err) != "INSUFFICIENT_BALANCE" {
+		t.Fatalf("the balance is checked at seat time: %v", err)
+	}
+	for _, u := range []string{a, b} {
+		r, err := p.Enter(h.ctx, gamecatalog.Entry{MatchID: match, Game: "tst_board", Room: "two", UserID: u})
+		if err != nil || r.Charged || r.Status != "free" {
+			t.Fatalf("nothing is taken at seat time: %v %v", r, err)
+		}
+		if h.wallet(u)["coin"] != start[u] {
+			t.Fatalf("wallet untouched before the start")
+		}
+	}
+	if _, err := p.Leave(h.ctx, match, b); err != nil || h.wallet(b)["coin"] != start[b] {
+		t.Fatalf("leaving the lobby moves no money: %v", err)
+	}
+	if _, err := p.Enter(h.ctx, gamecatalog.Entry{MatchID: match, Game: "tst_board", Room: "two", UserID: b}); err != nil {
+		t.Fatal(err)
+	}
+	h.s.db.ExecContext(h.ctx, `UPDATE users SET wallet=jsonb_set(wallet,'{coin}','100') WHERE id=$1`, b)
+	if err := p.Start(h.ctx, match); err != nil {
+		t.Fatal(err)
+	}
+	if err := p.Start(h.ctx, match); err != nil {
+		t.Fatal(err)
+	}
+	if h.wallet(a)["coin"] != start[a]-300 || h.wallet(b)["coin"] != -200 {
+		t.Fatalf("fees taken once at the start, overdraft allowed: %d %d", h.wallet(a)["coin"], h.wallet(b)["coin"])
+	}
+	if n, err := p.Cancel(h.ctx, match); gamecatalog.Code(err) != "MATCH_STARTED" || n != 0 {
+		t.Fatalf("a started match is not cancelled without force: %d %v", n, err)
+	}
+	if n, err := p.Void(h.ctx, match, "admin-cancel", "staff"); err != nil || n != 2 {
+		t.Fatalf("void refunds both fees: %d %v", n, err)
+	}
+	if h.wallet(a)["coin"] != start[a] || h.wallet(b)["coin"] != 100 {
+		t.Fatalf("refunds put the fee back: %d %d", h.wallet(a)["coin"], h.wallet(b)["coin"])
+	}
+
+	m2 := "tst-feestart2-" + randomSuffix()
+	h.give(b, 500)
+	for _, u := range []string{a, b} {
+		if _, err := p.Enter(h.ctx, gamecatalog.Entry{MatchID: m2, Game: "tst_board", Room: "two", UserID: u}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if n, err := p.Cancel(h.ctx, m2); err != nil || n != 0 {
+		t.Fatalf("a lobby cancel before the start refunds nothing because nothing was taken: %d %v", n, err)
+	}
+
+	m3 := "tst-feestart3-" + randomSuffix()
+	for _, u := range []string{a, b} {
+		if _, err := p.Enter(h.ctx, gamecatalog.Entry{MatchID: m3, Game: "tst_board", Room: "two", UserID: u}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	beforeA, beforeB := h.wallet(a)["coin"], h.wallet(b)["coin"]
+	if err := p.Start(h.ctx, m3); err != nil {
+		t.Fatal(err)
+	}
+	pay, err := p.Settle(h.ctx, gamecatalog.Settlement{MatchID: m3, Results: []gamecatalog.Result{{UserID: a, Rank: 1, Status: gamecatalog.ResultWon}, {UserID: b, Rank: 2, Status: gamecatalog.ResultRefunded}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h.wallet(b)["coin"] != beforeB || h.wallet(a)["coin"] != beforeA-300+240 {
+		t.Fatalf("refunded row gets its fee back and leaves the pot: a %d b %d %v", h.wallet(a)["coin"]-beforeA, h.wallet(b)["coin"]-beforeB, pay)
+	}
+}

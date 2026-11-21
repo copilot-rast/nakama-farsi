@@ -525,6 +525,10 @@ CRUD `tasks` (filters `isActive`, `groupId`, `eventTypeId`, `categoryId`, `prize
 
 Economy section after «روزهای پیاپی»: «تسک‌ها» (`#/economy/tasks`: search, filters for kind, group, event, category and status; a condition sentence such as «پایان یک دور» ۲ بار · هر روز; prize and mode; place: sub-task of, group, number of sub-tasks or dependencies; completions and players; cards at 390px) with the floating editor (condition type, event, count, target, value range, parent task, live sentence, repeat with wait and limit, group, dependencies, prize, mode, in-app note, player tags, level range, window), and «گروه‌های تسک» (`#/economy/task-groups`, a sentence such as هم‌زمان ۱ تسک · به ترتیب · تسک بعدی با درخواست بازیکن; editor with tasks picked in hand-out order). The native player page gets «تسک‌های بازیکن» after the activity card: every visible task with state and progress, sub-tasks indented, «از نو», «تمامش کن», «جایزه را بده», and each group with its round, progress, next time and «تسک بعدی را بده». Both pages are in Ctrl K. A field that a form hides now also drops its old error message.
 
+### Entry fee timing (2026-11-21)
+
+Room field `feeAt`: `seat` (default, stored as empty) or `start` (`INVALID_FEE_AT`). `seat` keeps today's behaviour: `Enter` takes the fee, `Leave` before the start and `Cancel` give it back. `start` (Mench, as the legacy MatchFunding): `Enter` and `economy_game_join` only check the balance (`INSUFFICIENT_BALANCE`, also with `overdraft` on), the entry stays `free`; `Start` takes the fee from every `free` entry (bots only with `botsPay`) in one transaction, with `overdraft` letting any wallet, bots included, go below zero, and marks them `paid`. A lobby leave or a cancel before the start moves no money; `Void` of a started match and `refunded` results in `Settle` give the fee back, once. Console: «زمان گرفتن ورودی» in the room play box.
+
 ### Entry requirements (phase 24)
 
 Owner's request (2026-11-14, Ludo-style games): a room, or a whole game, can ask for items, player tags, a level and meta values, optionally using up a ticket.

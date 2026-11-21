@@ -370,7 +370,7 @@ func (s *service) gameJoinCheck(ctx context.Context, userID, key, roomKey, platf
 	if len(rc.Missing) > 0 {
 		return nil, s.requirementsError(ctx, userID, lang, g, room, path, rc)
 	}
-	if room.EntryFee != nil && room.EntryFee.Amount > 0 && !room.Overdraft {
+	if room.EntryFee != nil && room.EntryFee.Amount > 0 && (!room.Overdraft || room.ChargesAtStart()) {
 		if err := s.ensureDefaults(ctx, userID); err != nil {
 			return nil, err
 		}
@@ -529,7 +529,17 @@ func (s *service) gameEnter(ctx context.Context, e gamecatalog.Entry) (gamecatal
 		}
 		next := "free"
 		var feeJSON any
-		if charge {
+		if charge && room.ChargesAtStart() {
+			if !bot {
+				var have int64
+				if err := tx.QueryRowContext(ctx, `SELECT COALESCE((wallet->>$2)::bigint, 0) FROM users WHERE id=$1`, e.UserID, room.EntryFee.CurrencyKey).Scan(&have); err != nil {
+					return err
+				}
+				if have < room.EntryFee.Amount {
+					return fail(http.StatusPaymentRequired, "INSUFFICIENT_BALANCE", "room", "not enough "+room.EntryFee.CurrencyKey+" for the entry fee")
+				}
+			}
+		} else if charge {
 			fee := gameFee{CurrencyKey: room.EntryFee.CurrencyKey, Amount: room.EntryFee.Amount}
 			change := s.walletChange
 			if room.Overdraft && !bot {
@@ -684,6 +694,21 @@ func (s *service) gameStart(ctx context.Context, matchID string) error {
 	if err != nil {
 		return err
 	}
+	var gameKey, roomKey, current string
+	err = s.db.QueryRowContext(ctx, `SELECT game_key, room_key, status FROM economy_game_match WHERE id=$1`, matchID).Scan(&gameKey, &roomKey, &current)
+	if errors.Is(err, sql.ErrNoRows) {
+		return notFound("MATCH_NOT_FOUND")
+	}
+	if err != nil {
+		return err
+	}
+	if current == "open" {
+		if g, gerr := s.gameByKey(ctx, gameKey); gerr == nil {
+			if room, rerr := g.room(roomKey); rerr == nil && room.ChargesAtStart() && room.EntryFee != nil && room.EntryFee.Amount > 0 {
+				return s.startCharging(ctx, matchID, g, room)
+			}
+		}
+	}
 	var status string
 	err = s.db.QueryRowContext(ctx, `UPDATE economy_game_match SET status=CASE WHEN status='open' THEN 'started' ELSE status END,
 		started_at=CASE WHEN status='open' THEN now() ELSE started_at END WHERE id=$1 RETURNING status`, matchID).Scan(&status)
@@ -695,6 +720,93 @@ func (s *service) gameStart(ctx context.Context, matchID string) error {
 	}
 	if status == "cancelled" {
 		return conflict("MATCH_CANCELLED", "this match was cancelled")
+	}
+	return nil
+}
+
+func (s *service) startCharging(ctx context.Context, matchID string, g *gameRecord, room *gamecatalog.Room) error {
+	type payer struct {
+		user    string
+		bot     bool
+		attempt int
+	}
+	var humans []string
+	rows, err := s.db.QueryContext(ctx, `SELECT user_id::text FROM economy_game_entry WHERE match_id=$1 AND status='free' AND NOT bot`, matchID)
+	if err != nil {
+		return err
+	}
+	for rows.Next() {
+		var u string
+		if err := rows.Scan(&u); err != nil {
+			rows.Close()
+			return err
+		}
+		humans = append(humans, u)
+	}
+	rows.Close()
+	for _, u := range humans {
+		if err := s.ensureDefaults(ctx, u); err != nil {
+			return err
+		}
+	}
+	fee := gameFee{CurrencyKey: room.EntryFee.CurrencyKey, Amount: room.EntryFee.Amount}
+	raw, _ := json.Marshal(fee)
+	var charged []string
+	err = s.inTx(ctx, func(tx *sql.Tx) error {
+		charged = nil
+		var status string
+		if err := tx.QueryRowContext(ctx, `SELECT status FROM economy_game_match WHERE id=$1 FOR UPDATE`, matchID).Scan(&status); err != nil {
+			return err
+		}
+		switch status {
+		case "cancelled":
+			return conflict("MATCH_CANCELLED", "this match was cancelled")
+		case "started", "finished":
+			return nil
+		}
+		rows, err := tx.QueryContext(ctx, `SELECT user_id::text, bot, attempt FROM economy_game_entry WHERE match_id=$1 AND status='free' ORDER BY user_id FOR UPDATE`, matchID)
+		if err != nil {
+			return err
+		}
+		var payers []payer
+		for rows.Next() {
+			var p payer
+			if err := rows.Scan(&p.user, &p.bot, &p.attempt); err != nil {
+				rows.Close()
+				return err
+			}
+			payers = append(payers, p)
+		}
+		rows.Close()
+		for _, p := range payers {
+			if p.bot && !room.BotsPay {
+				continue
+			}
+			change := s.walletChange
+			if room.Overdraft {
+				change = s.walletChangeOverdraft
+			}
+			if err := change(ctx, tx, p.user, gameGrantID(matchID, p.user, "fee", strconv.Itoa(p.attempt)), map[string]int64{fee.CurrencyKey: -fee.Amount}, map[string]any{
+				"reason": gameEntryReason, "sourceType": gameSourceType, "sourceId": matchID, "game": g.Key, "room": room.Key, "part": "debit", "bot": p.bot, "at": gamecatalog.FeeAtStart,
+			}); err != nil {
+				return err
+			}
+			if _, err := tx.ExecContext(ctx, `UPDATE economy_game_entry SET status='paid', fee=$3::jsonb, updated_at=now() WHERE match_id=$1 AND user_id=$2`, matchID, p.user, string(raw)); err != nil {
+				return err
+			}
+			if !p.bot {
+				charged = append(charged, p.user)
+			}
+		}
+		_, err = tx.ExecContext(ctx, `UPDATE economy_game_match SET status='started', started_at=now() WHERE id=$1`, matchID)
+		return err
+	})
+	if err != nil {
+		return err
+	}
+	for _, u := range charged {
+		activity.Safe(ctx, s.db, s.logger, activity.Entry{UserID: u, Kind: activity.KindPrize, Action: "game_entry", RefID: matchID, Actor: "system",
+			Data: map[string]any{"game": g.Key, "room": room.Key, "currency": fee.CurrencyKey, "amount": fee.Amount}})
 	}
 	return nil
 }

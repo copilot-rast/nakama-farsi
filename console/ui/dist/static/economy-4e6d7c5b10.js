@@ -6135,6 +6135,7 @@ var MESSAGES = {
     'gm.play.sum.pot': "{n}٪ ورودی‌ها به برنده",
     'gm.play.sum.botsPay': "ربات ورودی می‌دهد",
     'gm.play.sum.overdraft': "بدهی مجاز",
+    'gm.play.sum.feeStart': "ورودی هنگام شروع",
     'gm.play.sum.np': "تازه‌واردها به جای {room}",
     'gm.play.sum.off': "خاموش",
     'gm.play.sum.none': "پیش‌فرض بازی",
@@ -6159,6 +6160,10 @@ var MESSAGES = {
     'f.gm.play.loserXp': "تجربهٔ بازنده",
     'f.gm.play.overdraft': "ورودی حتی با موجودی کم",
     'f.gm.play.overdraft.hint': "اگر روشن باشد، کیف پول بازیکن می‌تواند منفی شود.",
+    'f.gm.play.feeAt': "زمان گرفتن ورودی",
+    'f.gm.play.feeAt.hint': "هنگام نشستن: ورودی با گرفتن صندلی کم می‌شود. هنگام شروع: موقع نشستن فقط موجودی بررسی می‌شود و ورودی وقتی بازی شروع شد کم می‌شود.",
+    'gm.play.feeAt.seat': "هنگام نشستن",
+    'gm.play.feeAt.start': "هنگام شروع بازی",
     'f.gm.play.np': "فقط تازه‌واردها",
     'f.gm.play.np.hint': "بازیکنی که هنوز برد و باخت ندارد این اتاق را به جای اتاق دیگری می‌بیند.",
     'f.gm.play.replaces': "به جای اتاق",
@@ -12238,6 +12243,7 @@ var MESSAGES = {
     'gm.play.sum.pot': "{n}% of fees to the winner",
     'gm.play.sum.botsPay': "Bots pay the fee",
     'gm.play.sum.overdraft': "Overdraft",
+    'gm.play.sum.feeStart': "Fee at start",
     'gm.play.sum.np': "New players instead of {room}",
     'gm.play.sum.off': "Off",
     'gm.play.sum.none': "Game defaults",
@@ -12262,6 +12268,10 @@ var MESSAGES = {
     'f.gm.play.loserXp': "Loser XP",
     'f.gm.play.overdraft': "Allow overdraft",
     'f.gm.play.overdraft.hint': "When on, the wallet may go below zero.",
+    'f.gm.play.feeAt': "When the entry fee is taken",
+    'f.gm.play.feeAt.hint': "At seat: the fee is taken when the seat is taken. At start: only the balance is checked at seat time and the fee is taken when the match starts.",
+    'gm.play.feeAt.seat': "At seat",
+    'gm.play.feeAt.start': "At match start",
     'f.gm.play.np': "New players only",
     'f.gm.play.np.hint': "Players with no wins or losses see this room instead of another one.",
     'f.gm.play.replaces': "Instead of room",
@@ -27079,7 +27089,7 @@ function timeline(id) {
 
 function roomPlayEditor(cur, change, row) {
   var vals = Object.assign({ players: null, humanSeats: null, botFillSeconds: null, botTemplate: '', botsPay: false, payout: 'prize', payoutPercent: null, loserPrizeId: null, winnerXp: null, loserXp: null,
-    overdraft: false, newPlayersOnly: false, replaces: '', disabled: false }, cur || {});
+    overdraft: false, feeAt: 'seat', newPlayersOnly: false, replaces: '', disabled: false }, cur || {});
   var summary = h('span', { class: 'text-sm text-secondary-700 dark:text-secondary-200 min-w-0', 'data-gm-play-summary': '' });
   var panel = h('div', { class: 'mt-3 pt-3 border-t border-secondary-200 dark:border-secondary-700', hidden: true, 'data-gm-play-panel': '' });
   var form = null;
@@ -27091,6 +27101,7 @@ function roomPlayEditor(cur, change, row) {
     if (vals.payout === 'pot') p.push(t('gm.play.sum.pot', { n: fmtNum(vals.payoutPercent || 0) }));
     if (vals.botsPay) p.push(t('gm.play.sum.botsPay'));
     if (vals.overdraft) p.push(t('gm.play.sum.overdraft'));
+    if (vals.feeAt === 'start') p.push(t('gm.play.sum.feeStart'));
     if (vals.newPlayersOnly) p.push(t('gm.play.sum.np', { room: vals.replaces || t('none') }));
     if (vals.disabled) p.push(t('gm.play.sum.off'));
     return p.length ? p.join(' · ') : t('gm.play.sum.none');
@@ -27123,6 +27134,7 @@ function roomPlayEditor(cur, change, row) {
             { name: 'loserXp', type: 'number', label: 'f.gm.play.loserXp', optional: true, min: 0, max: 1000000 }
           ] },
           { name: 'overdraft', type: 'bool', inline: true, label: 'f.gm.play.overdraft', hint: 'f.gm.play.overdraft.hint' },
+          { name: 'feeAt', type: 'select', noPlaceholder: true, label: 'f.gm.play.feeAt', hint: 'f.gm.play.feeAt.hint', options: function () { return [{ value: 'seat', label: t('gm.play.feeAt.seat') }, { value: 'start', label: t('gm.play.feeAt.start') }]; } },
           { name: 'newPlayersOnly', type: 'bool', inline: true, label: 'f.gm.play.np', hint: 'f.gm.play.np.hint' },
           { name: 'replaces', type: 'text', ltr: true, label: 'f.gm.play.replaces', hint: 'f.gm.play.replaces.hint', required: true, when: function (v) { return v.newPlayersOnly; } },
           { name: 'disabled', type: 'bool', inline: true, label: 'f.gm.play.disabled', hint: 'f.gm.play.disabled.hint' }
@@ -27149,7 +27161,7 @@ function roomPlayEditor(cur, change, row) {
 function roomPlayFrom(r) {
   return { players: r.players || null, humanSeats: r.humanSeats || null, botFillSeconds: r.botFillSeconds || null, botTemplate: r.botTemplate || '', botsPay: !!r.botsPay,
     payout: r.payout === 'pot' ? 'pot' : 'prize', payoutPercent: r.payoutPercent == null ? null : r.payoutPercent, loserPrizeId: r.loserPrizeId || null, winnerXp: r.winnerXp || null,
-    loserXp: r.loserXp || null, overdraft: !!r.overdraft, newPlayersOnly: !!r.newPlayersOnly, replaces: r.replaces || '', disabled: !!r.disabled };
+    loserXp: r.loserXp || null, overdraft: !!r.overdraft, feeAt: r.feeAt === 'start' ? 'start' : 'seat', newPlayersOnly: !!r.newPlayersOnly, replaces: r.replaces || '', disabled: !!r.disabled };
 }
 
 function roomPlayTo(p) {
@@ -27157,7 +27169,7 @@ function roomPlayTo(p) {
   var num = function (v) { return v == null || v === '' ? null : Number(v); };
   return { players: num(p.players), humanSeats: num(p.humanSeats), botFillSeconds: num(p.botFillSeconds), botTemplate: p.botTemplate || '', botsPay: !!p.botsPay,
     payout: p.payout === 'pot' ? 'pot' : 'prize', payoutPercent: p.payout === 'pot' ? num(p.payoutPercent) : null, loserPrizeId: p.loserPrizeId || '', winnerXp: num(p.winnerXp), loserXp: num(p.loserXp),
-    overdraft: !!p.overdraft, newPlayersOnly: !!p.newPlayersOnly, replaces: p.newPlayersOnly ? (p.replaces || '') : '', disabled: !!p.disabled };
+    overdraft: !!p.overdraft, feeAt: p.feeAt === 'start' ? 'start' : 'seat', newPlayersOnly: !!p.newPlayersOnly, replaces: p.newPlayersOnly ? (p.replaces || '') : '', disabled: !!p.disabled };
 }
 
 (function () {
