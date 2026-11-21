@@ -30,6 +30,7 @@ import (
 
 	"github.com/gofrs/uuid/v5"
 	"github.com/heroiclabs/nakama/v3/console"
+	"github.com/heroiclabs/nakama/v3/internal/matchmakerkit"
 	"github.com/heroiclabs/nakama/v3/migrate"
 	"github.com/heroiclabs/nakama/v3/se"
 	"github.com/heroiclabs/nakama/v3/server"
@@ -206,6 +207,7 @@ func main() {
 		startupLogger.Fatal("Failed initializing runtime modules", zap.Error(err))
 	}
 	matchmaker := server.NewClusterAwareMatchmaker(clusterNode, logger, startupLogger, config, router, metrics, runtime)
+	matchmakerkit.Set(matchmaker.RemoveSession)
 	partyRegistry.Init(matchmaker, tracker, streamManager, router)
 	tracker.SetPartyJoinListener(partyRegistry.Join)
 	tracker.SetPartyLeaveListener(partyRegistry.Leave)
