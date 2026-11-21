@@ -1,5 +1,8 @@
 import { expect, test } from '../../lib/fixtures';
+import type { Page } from '@playwright/test';
 import { noHorizontalScroll, open, root } from '../../lib/console';
+import { deleteUser, devicePlayer, uid } from '../../lib/api';
+import { API_URL } from '../../lib/env';
 
 test.use({ pageOpts: { signedIn: true, mobile: true } } as any);
 
@@ -163,17 +166,30 @@ test.describe('native console at 390px with the plane shell', () => {
   });
 
   test('a native editor opens as a bottom sheet and closes', async ({ page }) => {
-    await page.goto('/#/storage');
-    await page.locator('#main tbody tr').first().waitFor();
-    await page.locator('#main tbody tr').first().click();
-    const form = page.locator('div.fixed.inset-0.flex.justify-end > .x-form');
-    await expect(form).toBeVisible();
-    await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity));
-    const b = await form.boundingBox();
-    expect(b!.width).toBeGreaterThanOrEqual(388);
-    expect(Math.round(b!.y + b!.height)).toBeGreaterThanOrEqual(843);
-    await noHorizontalScroll(page);
-    await form.locator('button', { hasText: 'انصراف' }).click();
-    await expect(form).toHaveCount(0);
+    const who = await devicePlayer('e2e-' + uid('sheet'));
+    const put = await fetch(API_URL + '/v2/storage', { method: 'PUT', headers: { Authorization: 'Bearer ' + who.token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ objects: [{ collection: 'e2e_sheet', key: 'k', value: '{"a":1}', permission_read: 1, permission_write: 1 }] }) });
+    expect(put.status).toBe(200);
+    try {
+      await sheetCheck(page);
+    } finally {
+      await deleteUser(who.id);
+    }
   });
 });
+
+async function sheetCheck(page: Page) {
+  await page.goto('/#/storage');
+  const row = page.locator('#main tbody tr').filter({ hasText: 'e2e_sheet' }).first();
+  await row.waitFor();
+  await row.click();
+  const form = page.locator('div.fixed.inset-0.flex.justify-end > .x-form');
+  await expect(form).toBeVisible();
+  await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity));
+  const b = await form.boundingBox();
+  expect(b!.width).toBeGreaterThanOrEqual(388);
+  expect(Math.round(b!.y + b!.height)).toBeGreaterThanOrEqual(843);
+  await noHorizontalScroll(page);
+  await form.locator('button', { hasText: 'انصراف' }).click();
+  await expect(form).toHaveCount(0);
+}
