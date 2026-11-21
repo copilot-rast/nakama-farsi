@@ -32,7 +32,7 @@ test.beforeAll(async () => {
   F.cur = 'e2e' + k + 'c';
   await eco.post('/currencies', { key: F.cur, name: { fa: 'سکهٔ کنسول ' + k, en: 'Console coin ' + k }, type: 'soft', defaultValue: 0, iconUrl: '', tagIds: [], metadata: {}, sort: 99 });
   F.prize = await eco.post('/prizes', { key: 'e2e_' + k + '_medal', name: { fa: 'مدال ' + k }, message: {}, tagIds: [], isRepeatable: true, metadata: {}, items: [{ type: 'currency', key: F.cur, action: 'add', value: 1 }] });
-  await cg.setSettings((s) => { plainCampaign(s); s.attempts.defaultMinSeconds = 0; });
+  await cg.setSettings((s) => { plainCampaign(s); s.attempts.defaultMinSeconds = 0; s.freeride.tableEnabled = true; });
 });
 
 test.afterAll(async () => {
@@ -71,7 +71,7 @@ test.describe('campaign console', () => {
     await expect(row).toContainText('سطح ≥ ۲');
     const ch = (await cg.get('/chapters')).items.find((c: any) => c.key === CH);
     expect(ch.unlock).toEqual([{ type: 'level', value: 2 }]);
-    expect(ch.milestones).toEqual([{ percent: 50, currencies: { [F.cur]: 40 } }]);
+    expect(ch.milestones).toEqual([{ id: '1', percent: 50, currencies: { [F.cur]: 40 } }]);
     expect(ch.address).toBe('Chapters/Story');
     F.ch = ch;
     await cg.put('/chapters/' + ch.id, { ...ch, unlock: [] });
