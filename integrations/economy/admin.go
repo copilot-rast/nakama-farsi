@@ -42,6 +42,8 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 	routes = append(routes, s.achievementConsoleRoutes()...)
 	routes = append(routes, s.chanceConsoleRoutes()...)
 	routes = append(routes, s.gameConsoleRoutes()...)
+	routes = append(routes, s.gameLiveConsoleRoutes()...)
+	routes = append(routes, s.botConsoleRoutes()...)
 	routes = append(routes, s.metaRelationConsoleRoutes()...)
 	routes = append(routes, s.offerConsoleRoutes()...)
 	routes = append(routes, s.friendGiftConsoleRoutes()...)

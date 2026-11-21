@@ -179,6 +179,14 @@ type TxQueryer interface {
 }
 
 func WalletTx(ctx context.Context, tx TxQueryer, userID, grantID string, changes map[string]int64, meta map[string]any) error {
+	return walletTx(ctx, tx, userID, grantID, changes, meta, false)
+}
+
+func WalletTxOverdraft(ctx context.Context, tx TxQueryer, userID, grantID string, changes map[string]int64, meta map[string]any) error {
+	return walletTx(ctx, tx, userID, grantID, changes, meta, true)
+}
+
+func walletTx(ctx context.Context, tx TxQueryer, userID, grantID string, changes map[string]int64, meta map[string]any, overdraft bool) error {
 	clean := map[string]int64{}
 	for k, v := range changes {
 		if v != 0 {
@@ -203,7 +211,7 @@ func WalletTx(ctx context.Context, tx TxQueryer, userID, grantID string, changes
 		}
 	}
 	for k, v := range clean {
-		if wallet[k]+v < 0 {
+		if wallet[k]+v < 0 && !(overdraft && v < 0) {
 			return &ErrInsufficient{Path: k}
 		}
 		wallet[k] += v

@@ -23,8 +23,12 @@ const (
 	StatusPlaying  = "playing"
 	StatusFinished = "finished"
 
-	ActionCancel  = "cancel"
-	ActionDecline = "decline"
+	ActionCancel      = "cancel"
+	ActionDecline     = "decline"
+	ActionReserve     = "reserve"
+	ActionAdminEnd    = "admin_end"
+	ActionAdminCancel = "admin_cancel"
+	ActionAdminView   = "admin_view"
 
 	CodeAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 	CodeLength   = 6
@@ -127,6 +131,13 @@ func (p Params) MayJoin(userID string) bool {
 type Signal struct {
 	Action string `json:"action"`
 	UserID string `json:"userId"`
+	Winner string `json:"winner,omitempty"`
+	Reason string `json:"reason,omitempty"`
+}
+
+func (s Signal) Data() string {
+	raw, _ := json.Marshal(s)
+	return string(raw)
 }
 
 func ParseSignal(data string) (Signal, bool) {
