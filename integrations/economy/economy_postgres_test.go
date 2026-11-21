@@ -157,6 +157,9 @@ func newHarness(t *testing.T) *harness {
 	if _, err := db.ExecContext(ctx, `UPDATE economy_payment_method SET is_active=false, config=''`); err != nil {
 		t.Fatal(err)
 	}
+	if _, err := db.ExecContext(ctx, `DELETE FROM economy_payment_settings`); err != nil {
+		t.Fatal(err)
+	}
 	s := testService()
 	s.cfg.uploadDir = t.TempDir()
 	s.store, _ = objectstore.New(objectstore.Config{Driver: objectstore.DriverLocal, LocalDir: s.cfg.uploadDir}, nil)
