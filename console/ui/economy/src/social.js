@@ -233,7 +233,7 @@ function playerSocialCard() {
   if (SOCIAL_CARD.id !== id) { SOCIAL_CARD.id = id; SOCIAL_CARD.data = null; SOCIAL_CARD.err = null; SOCIAL_CARD.at = 0; }
   if (!SOCIAL_CARD.loading && Date.now() - SOCIAL_CARD.at > 20000) loadSocialCard(id);
   var d = SOCIAL_CARD.data;
-  var anchor = grid.querySelector('[data-player-mod]');
+  var anchor = grid.querySelector('[data-player-chat-quota]') || grid.querySelector('[data-player-friend-gifts]') || grid.querySelector('[data-player-offers]') || grid.querySelector('[data-player-chance]') || grid.querySelector('[data-player-achievements]') || grid.querySelector('[data-player-items]') || grid.querySelector('[data-player-tasks]') || grid.querySelector('[data-player-activity]') || grid.querySelector('[data-player-progress]') || grid.querySelector('[data-player-mod]');
   var key = lang() + '|' + id + '|' + (d ? JSON.stringify([d.names.code, d.names.username, (d.names.items || []).length, d.names.quote, d.sugg.generatedAt, (d.sugg.visible || []).length, (d.sugg.reserve || []).length, (d.sugg.coplay || []).length]) : SOCIAL_CARD.err ? 'err' : 'loading');
   var placed = existing && existing.parentNode === grid && (anchor ? existing.previousElementSibling === anchor : grid.firstChild === existing);
   if (existing && existing.getAttribute('data-key') === key && placed) return;

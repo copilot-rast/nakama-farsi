@@ -26,8 +26,8 @@ export class Chat {
     });
   }
 
-  static open(player: Player): Promise<Chat> {
-    const url = API_URL.replace(/^http/, 'ws') + '/ws?format=json&token=' + encodeURIComponent(player.token);
+  static open(player: Player, opts: { status?: boolean } = {}): Promise<Chat> {
+    const url = API_URL.replace(/^http/, 'ws') + '/ws?format=json&token=' + encodeURIComponent(player.token) + (opts.status ? '&status=true' : '');
     const ws = new WebSocket(url);
     return new Promise((resolve, reject) => {
       ws.addEventListener('open', () => resolve(new Chat(ws)), { once: true });
@@ -72,6 +72,12 @@ export class Chat {
     const r = await this.call({ rpc: { id, payload: JSON.stringify(payload) } });
     if (r.error) return { error: r.error };
     return { data: (r.rpc?.payload ? JSON.parse(r.rpc.payload) : {}) as T };
+  }
+
+  async follow(userIds: string[]): Promise<{ presences: any[]; error?: string }> {
+    const r = await this.call({ status_follow: { user_ids: userIds } });
+    if (r.error) return { presences: [], error: r.error.message };
+    return { presences: r.status?.presences || [] };
   }
 
   close() {
