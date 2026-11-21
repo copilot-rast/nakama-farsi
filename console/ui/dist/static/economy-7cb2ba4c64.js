@@ -2332,6 +2332,112 @@ var MESSAGES = {
     'act.chat': "گفتگوی پشتیبانی",
     'act.referral': "معرف",
     'act.config': "پیکربندی",
+    'act.account': "حساب",
+    'fr.privacy': "حریم خصوصی و اعلان‌ها",
+    'f.fr.notifyDeclined': "اعلان رد درخواست",
+    'f.fr.notifyDeclined.hint': "وقتی بازیکنی درخواست دوستی را رد کند، فرستنده یک اعلان در صندوق پیام می‌گیرد.",
+    'f.fr.notifyRemoved': "اعلان حذف از دوستان",
+    'f.fr.notifyRemoved.hint': "وقتی بازیکنی دوستش را حذف کند، طرف دیگر یک اعلان می‌گیرد.",
+    'f.fr.presenceFriends': "وضعیت آنلاین فقط برای دوستان",
+    'f.fr.presenceFriends.hint': "بازیکن فقط وضعیت آنلاین دوستانش را می‌بیند و دنبال‌کردن دیگران نادیده گرفته می‌شود.",
+    'f.fr.dmFriends': "پیام خصوصی فقط بین دوستان",
+    'f.fr.dmFriends.hint': "باز کردن گفتگوی خصوصی و فرستادن پیام خصوصی فقط بین دو دوست ممکن است.",
+    'un.title': "تغییر نام کاربری",
+    'un.desc': "بار اول رایگان، بعد با قیمت پله‌ای. کنسول هم می‌تواند نام را بدون هزینه عوض کند و همه در تاریخچه می‌مانند.",
+    'f.un.enabled': "قانون تغییر نام روشن باشد",
+    'f.un.enabled.hint': "خاموش یعنی تغییر نام مثل قبل آزاد و بی‌هزینه است و شمرده نمی‌شود.",
+    'f.un.firstFree': "اولین تغییر رایگان",
+    'f.un.firstFree.hint': "اولین تغییر نام بازیکن هزینه ندارد.",
+    'f.un.currency': "ارز هزینه",
+    'f.un.currency.hint': "قیمت‌ها با این ارز کم می‌شوند؛ مثلاً جم.",
+    'f.un.cooldown': "فاصله بین دو تغییر (ساعت)",
+    'f.un.cooldown.hint': "صفر یعنی بدون فاصله.",
+    'f.un.ladder': "پله‌های قیمت",
+    'f.un.ladder.hint': "قیمت تغییرهای پولی به ترتیب، با ویرگول. بعد از آخرین پله، همان قیمت آخر می‌ماند. پیش‌فرض: ۵۰، ۱۰۰، ۲۰۰، ۴۰۰، ۸۰۰.",
+    'un.err.ladder': "حداکثر بیست عدد صحیح بین یک تا یک میلیارد.",
+    'pcs.title': "کد بازیکن",
+    'pcs.desc': "هر حساب یک کد کوتاه عمومی دارد که با آن پیدا یا دوست می‌شود. تغییر این تنظیم فقط روی حساب‌های تازه اثر دارد.",
+    'f.pcs.length': "طول کد",
+    'f.pcs.length.hint': "بین چهار تا شانزده نویسه.",
+    'f.pcs.charset': "نویسه‌ها",
+    'f.pcs.charset.hint': "کدها بزرگ‌نویس هستند و جستجو به کوچک و بزرگ حساس نیست.",
+    'pcs.charset.alnum': "حرف لاتین بزرگ و رقم",
+    'pcs.charset.letters': "فقط حرف لاتین بزرگ",
+    'pcs.charset.digits': "فقط رقم",
+    'fs.title': "پیشنهاد دوستی",
+    'fs.desc': "هر روز برای هر بازیکن فهرستی از هم‌بازی‌ها، دوستانِ دوستان، بازیکنان هم‌سطح و فعال ساخته می‌شود.",
+    'f.fs.enabled': "پیشنهاد دوستی روشن باشد",
+    'f.fs.enabled.hint': "خاموش یعنی فهرست خالی برمی‌گردد.",
+    'f.fs.visible': "اندازهٔ فهرست",
+    'f.fs.visible.hint': "چند پیشنهاد به بازیکن نشان داده شود.",
+    'f.fs.reserve': "ذخیره",
+    'f.fs.reserve.hint': "وقتی یکی از فهرست بیرون برود، اولین ذخیره جایش می‌نشیند.",
+    'fs.quotas': "سهم هر منبع",
+    'fs.sources': "منبع‌ها",
+    'fs.rules': "قانون‌ها",
+    'f.fs.coplay': "هم‌بازی‌ها",
+    'f.fs.mutual': "دوستان مشترک",
+    'f.fs.activity': "فعالیت مشابه",
+    'f.fs.level': "سطح مشابه",
+    'f.fs.lookback': "هم‌بازی‌های چند روز اخیر",
+    'f.fs.lookback.hint': "هم‌بازی‌های قدیمی‌تر پیشنهاد نمی‌شوند.",
+    'f.fs.presenceDays': "پنجرهٔ فعالیت (روز)",
+    'f.fs.presenceDays.hint': "روزهای حضور بازیکن در این بازه شمرده می‌شود.",
+    'f.fs.levelTable': "جدول سطح",
+    'f.fs.levelTable.hint': "خالی یعنی منبع سطح خاموش است.",
+    'f.fs.levelDelta': "بیشترین اختلاف سطح",
+    'f.fs.levelDelta.hint': "بازیکنانی که اختلاف سطحشان بیشتر است پیشنهاد نمی‌شوند.",
+    'f.fs.decayAfter': "کم‌رنگ شدن بعد از چند روز",
+    'f.fs.decayAfter.hint': "بعد از این تعداد روز نمایش پشت سر هم، امتیاز پیشنهاد هر روز نصف می‌شود.",
+    'f.fs.maxFriends': "سقف دوستان پیشنهادشونده",
+    'f.fs.maxFriends.hint': "کسی که این تعداد دوست یا بیشتر دارد پیشنهاد نمی‌شود. صفر یعنی بدون سقف.",
+    'f.fs.scanMax': "بیشترین نامزد از هر منبع",
+    'f.fs.scanMax.hint': "برای سرعت ساخت فهرست.",
+    'f.fs.livePatch': "هم‌بازی تازه فوراً بالای فهرست",
+    'f.fs.livePatch.hint': "بعد از پایان هر مسابقه، هم‌بازی‌ها همان روز به بالای فهرست می‌آیند.",
+    'fs.src.coplay': "هم‌بازی",
+    'fs.src.mutual': "دوست مشترک",
+    'fs.src.activity': "فعالیت",
+    'fs.src.level': "سطح",
+    'ps.title': "حساب و دوستی",
+    'ps.code': "کد بازیکن",
+    'ps.next': "تغییر نام بعدی",
+    'ps.next.free': "رایگان",
+    'ps.next.cost': "{n} {cur}",
+    'ps.paidN': "{n} تغییر پولی",
+    'ps.cooldown': "تا {date} بسته است",
+    'ps.policyOff': "قانون تغییر نام خاموش است",
+    'ps.rename': "تغییر نام کاربری",
+    'ps.rename.title': "تغییر نام کاربری بازیکن",
+    'ps.rename.text': "از طرف کنسول، بدون هزینه و بدون فاصلهٔ زمانی. در تاریخچه ثبت می‌شود.",
+    'ps.rename.field': "نام کاربری تازه",
+    'ps.rename.hint': "باید با قوانین حساب جور باشد و تکراری نباشد.",
+    'ps.rename.done': "نام کاربری به {name} تغییر کرد.",
+    'ps.history': "تاریخچهٔ نام کاربری",
+    'ps.history.empty': "هنوز تغییری نیست.",
+    'ps.src.free': "رایگان",
+    'ps.src.paid': "پولی",
+    'ps.src.admin': "کنسول",
+    'ps.col.from': "نام قبلی",
+    'ps.col.to': "نام تازه",
+    'ps.col.source': "نوع",
+    'ps.col.cost': "هزینه",
+    'ps.col.when': "زمان",
+    'ps.col.player': "بازیکن",
+    'ps.col.score': "امتیاز",
+    'ps.col.shows': "نمایش",
+    'ps.col.played': "آخرین بازی",
+    'ps.col.game': "بازی",
+    'ps.col.matches': "مسابقه",
+    'ps.sugg': "پیشنهاد دوستی",
+    'ps.sugg.none': "هنوز ساخته نشده",
+    'ps.sugg.counts': "{v} پیشنهاد، {r} ذخیره",
+    'ps.sugg.meta': "روز {cycle}، ساخته در {when}",
+    'ps.regen': "ساخت دوبارهٔ پیشنهادها",
+    'ps.regen.done': "پیشنهادها دوباره ساخته شد.",
+    'ps.visible': "پیشنهادهای نمایش‌داده‌شده",
+    'ps.reserve': "ذخیره",
+    'ps.coplay': "هم‌بازی‌های اخیر",
     'act.method.device': "دستگاه",
     'act.method.custom': "شناسهٔ اختصاصی",
     'act.method.email': "ایمیل",
@@ -7884,6 +7990,112 @@ var MESSAGES = {
     'act.chat': "Support chat",
     'act.referral': "Referral",
     'act.config': "Config",
+    'act.account': "Account",
+    'fr.privacy': "Privacy and notices",
+    'f.fr.notifyDeclined': "Notice when a request is declined",
+    'f.fr.notifyDeclined.hint': "When a player declines a friend request, the sender gets an inbox notice.",
+    'f.fr.notifyRemoved': "Notice when removed as a friend",
+    'f.fr.notifyRemoved.hint': "When a player removes a friend, the other player gets an inbox notice.",
+    'f.fr.presenceFriends': "Online status for friends only",
+    'f.fr.presenceFriends.hint': "Players see only their friends online status; following anyone else is ignored.",
+    'f.fr.dmFriends': "Private chat only between friends",
+    'f.fr.dmFriends.hint': "Opening a private chat and sending private messages works only between two friends.",
+    'un.title': "Username change",
+    'un.desc': "The first change is free, then a price ladder. The console can rename for free; every change is kept in the history.",
+    'f.un.enabled': "Username change rules are on",
+    'f.un.enabled.hint': "Off means renames are free and unlimited, like before, and are not counted.",
+    'f.un.firstFree': "First change is free",
+    'f.un.firstFree.hint': "A player pays nothing for the first rename.",
+    'f.un.currency': "Currency",
+    'f.un.currency.hint': "Prices are taken in this currency, for example gems.",
+    'f.un.cooldown': "Hours between changes",
+    'f.un.cooldown.hint': "0 means no wait.",
+    'f.un.ladder': "Price ladder",
+    'f.un.ladder.hint': "Prices of the paid changes in order, comma separated. After the last one the last price repeats. Default: 50, 100, 200, 400, 800.",
+    'un.err.ladder': "At most 20 whole numbers from 1 to 1000000000.",
+    'pcs.title': "Player code",
+    'pcs.desc': "Every account has a short public code to find and add players. Changes here apply to new accounts only.",
+    'f.pcs.length': "Code length",
+    'f.pcs.length.hint': "4 to 16 characters.",
+    'f.pcs.charset': "Characters",
+    'f.pcs.charset.hint': "Codes are upper case; lookups ignore case.",
+    'pcs.charset.alnum': "Upper-case letters and digits",
+    'pcs.charset.letters': "Upper-case letters only",
+    'pcs.charset.digits': "Digits only",
+    'fs.title': "Friend suggestions",
+    'fs.desc': "Every day each player gets a list built from co-players, friends of friends, similar levels and similar activity.",
+    'f.fs.enabled': "Friend suggestions are on",
+    'f.fs.enabled.hint': "Off returns an empty list.",
+    'f.fs.visible': "List size",
+    'f.fs.visible.hint': "How many suggestions the player sees.",
+    'f.fs.reserve': "Reserve",
+    'f.fs.reserve.hint': "When one leaves the list, the first reserve takes its place.",
+    'fs.quotas': "Share of each source",
+    'fs.sources': "Sources",
+    'fs.rules': "Rules",
+    'f.fs.coplay': "Co-players",
+    'f.fs.mutual': "Mutual friends",
+    'f.fs.activity': "Similar activity",
+    'f.fs.level': "Similar level",
+    'f.fs.lookback': "Co-players of the last days",
+    'f.fs.lookback.hint': "Older co-players are not suggested.",
+    'f.fs.presenceDays': "Activity window (days)",
+    'f.fs.presenceDays.hint': "Days a player was online in this window are counted.",
+    'f.fs.levelTable': "Level table",
+    'f.fs.levelTable.hint': "Empty turns the level source off.",
+    'f.fs.levelDelta': "Largest level gap",
+    'f.fs.levelDelta.hint': "Players further apart are not suggested.",
+    'f.fs.decayAfter': "Fade after days",
+    'f.fs.decayAfter.hint': "After this many days in a row on the list, the score halves every day.",
+    'f.fs.maxFriends': "Friend cap of a suggestion",
+    'f.fs.maxFriends.hint': "Players with this many friends or more are not suggested. 0 means no cap.",
+    'f.fs.scanMax': "Most candidates per source",
+    'f.fs.scanMax.hint': "Keeps building the list fast.",
+    'f.fs.livePatch': "New co-players go to the top at once",
+    'f.fs.livePatch.hint': "After each match, co-players move to the top of the list the same day.",
+    'fs.src.coplay': "Co-player",
+    'fs.src.mutual': "Mutual friend",
+    'fs.src.activity': "Activity",
+    'fs.src.level': "Level",
+    'ps.title': "Account and friends",
+    'ps.code': "Player code",
+    'ps.next': "Next username change",
+    'ps.next.free': "Free",
+    'ps.next.cost': "{n} {cur}",
+    'ps.paidN': "{n} paid changes",
+    'ps.cooldown': "Locked until {date}",
+    'ps.policyOff': "Username change rules are off",
+    'ps.rename': "Change username",
+    'ps.rename.title': "Change the player username",
+    'ps.rename.text': "From the console: no price and no wait. It is kept in the history.",
+    'ps.rename.field': "New username",
+    'ps.rename.hint': "Must follow the account rules and be free.",
+    'ps.rename.done': "Username changed to {name}.",
+    'ps.history': "Username history",
+    'ps.history.empty': "No changes yet.",
+    'ps.src.free': "Free",
+    'ps.src.paid': "Paid",
+    'ps.src.admin': "Console",
+    'ps.col.from': "Old name",
+    'ps.col.to': "New name",
+    'ps.col.source': "Kind",
+    'ps.col.cost': "Price",
+    'ps.col.when': "When",
+    'ps.col.player': "Player",
+    'ps.col.score': "Score",
+    'ps.col.shows': "Shown",
+    'ps.col.played': "Last played",
+    'ps.col.game': "Game",
+    'ps.col.matches': "Matches",
+    'ps.sugg': "Friend suggestions",
+    'ps.sugg.none': "Not built yet",
+    'ps.sugg.counts': "{v} suggestions, {r} in reserve",
+    'ps.sugg.meta': "Day {cycle}, built {when}",
+    'ps.regen': "Rebuild suggestions",
+    'ps.regen.done': "Suggestions rebuilt.",
+    'ps.visible': "Shown suggestions",
+    'ps.reserve': "Reserve",
+    'ps.coplay': "Recent co-players",
     'act.method.device': "device",
     'act.method.custom': "custom id",
     'act.method.email': "email",
@@ -16215,7 +16427,7 @@ function friendRulesPage(container, query, ctx) {
   var page = apiPage(baseApi, '/friend-rules', null, FRIEND_FIELDS, {
     id: 'friends',
     onchange: function (v, extra) { clear(extra).appendChild(friendSummary(v)); },
-    fixPayload: function (p) { return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0, requestsBonusMeta: p.requestsBonusMeta || '', friendsBonusMeta: p.friendsBonusMeta || '', matchPolicy: p.matchPolicy || 'priority', overLimit: p.overLimit || 'refuse' }; }
+    fixPayload: friendRulesPayload
   });
   var heading = h('div', { class: 'mt-6 mb-2' }, h('h2', { class: 'text-lg font-medium', text: t('fr.tiers.title') }), h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('fr.tiers.desc') }));
   container.insertBefore(heading, container.firstChild);
@@ -27426,6 +27638,308 @@ function voicePage(container) {
   load();
 }
 
+if (ACTIVITY_KINDS.indexOf('account') === -1) ACTIVITY_KINDS.push('account');
+
+FRIEND_FIELDS.push(
+  { type: 'heading', label: 'fr.privacy' },
+  { type: 'row', fields: [
+    { name: 'notifyDeclined', type: 'bool', inline: true, label: 'f.fr.notifyDeclined', hint: 'f.fr.notifyDeclined.hint' },
+    { name: 'notifyRemoved', type: 'bool', inline: true, label: 'f.fr.notifyRemoved', hint: 'f.fr.notifyRemoved.hint' }
+  ] },
+  { type: 'row', fields: [
+    { name: 'presenceFriendsOnly', type: 'bool', inline: true, label: 'f.fr.presenceFriends', hint: 'f.fr.presenceFriends.hint' },
+    { name: 'dmFriendsOnly', type: 'bool', inline: true, label: 'f.fr.dmFriends', hint: 'f.fr.dmFriends.hint' }
+  ] }
+);
+
+function friendRulesPayload(p) {
+  return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0,
+    requestsBonusMeta: p.requestsBonusMeta || '', friendsBonusMeta: p.friendsBonusMeta || '', matchPolicy: p.matchPolicy || 'priority', overLimit: p.overLimit || 'refuse',
+    notifyDeclined: !!p.notifyDeclined, notifyRemoved: !!p.notifyRemoved, presenceFriendsOnly: !!p.presenceFriendsOnly, dmFriendsOnly: !!p.dmFriendsOnly };
+}
+
+function unLadder(text) {
+  var parts = toLatinDigits(String(text || '')).split(/[\s,،]+/).filter(function (x) { return x !== ''; });
+  return parts.map(function (x) { return Number(x); });
+}
+
+function usernameFields(values) {
+  if (values && values.ladder && values.ladderText == null) values.ladderText = values.ladder.join(', ');
+  return [
+    { name: 'enabled', type: 'bool', inline: true, label: 'f.un.enabled', hint: 'f.un.enabled.hint' },
+    { name: 'firstFree', type: 'bool', inline: true, label: 'f.un.firstFree', hint: 'f.un.firstFree.hint' },
+    { type: 'row', fields: [
+      { name: 'currency', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.un.currency', hint: 'f.un.currency.hint', optional: true },
+      { name: 'cooldownHours', type: 'number', label: 'f.un.cooldown', hint: 'f.un.cooldown.hint', required: true, min: 0, max: 8760 }
+    ] },
+    { name: 'ladderText', type: 'text', ltr: true, label: 'f.un.ladder', hint: 'f.un.ladder.hint', optional: true, check: function (v) {
+      var list = unLadder(v);
+      if (list.length > 20) return t('un.err.ladder');
+      for (var i = 0; i < list.length; i++) if (!(list[i] >= 1 && list[i] <= 1000000000 && Math.floor(list[i]) === list[i])) return t('un.err.ladder');
+      return null;
+    } }
+  ];
+}
+
+var PLAYER_CODE_FIELDS = [
+  { type: 'row', fields: [
+    { name: 'length', type: 'number', label: 'f.pcs.length', hint: 'f.pcs.length.hint', required: true, min: 4, max: 16 },
+    { name: 'charset', type: 'select', label: 'f.pcs.charset', hint: 'f.pcs.charset.hint', required: true, noPlaceholder: true, options: function () { return ['alnum', 'letters', 'digits'].map(function (v) { return { value: v, label: t('pcs.charset.' + v) }; }); } }
+  ] }
+];
+
+var SUGGEST_FIELDS = [
+  { name: 'enabled', type: 'bool', inline: true, label: 'f.fs.enabled', hint: 'f.fs.enabled.hint' },
+  { type: 'row', fields: [
+    { name: 'visible', type: 'number', label: 'f.fs.visible', hint: 'f.fs.visible.hint', required: true, min: 1, max: 100 },
+    { name: 'reserve', type: 'number', label: 'f.fs.reserve', hint: 'f.fs.reserve.hint', required: true, min: 0, max: 100 }
+  ] },
+  { type: 'heading', label: 'fs.quotas' },
+  { type: 'row', fields: [
+    { name: 'coplayQuota', type: 'number', label: 'f.fs.coplay', required: true, min: 0, max: 100 },
+    { name: 'mutualQuota', type: 'number', label: 'f.fs.mutual', required: true, min: 0, max: 100 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'activityQuota', type: 'number', label: 'f.fs.activity', required: true, min: 0, max: 100 },
+    { name: 'levelQuota', type: 'number', label: 'f.fs.level', required: true, min: 0, max: 100 }
+  ] },
+  { type: 'heading', label: 'fs.sources' },
+  { type: 'row', fields: [
+    { name: 'lookbackDays', type: 'number', label: 'f.fs.lookback', hint: 'f.fs.lookback.hint', required: true, min: 1, max: 365 },
+    { name: 'presenceDays', type: 'number', label: 'f.fs.presenceDays', hint: 'f.fs.presenceDays.hint', required: true, min: 1, max: 60 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'levelTable', type: 'ref', resource: 'level-tables', valueKey: 'key', label: 'f.fs.levelTable', hint: 'f.fs.levelTable.hint', optional: true },
+    { name: 'levelDelta', type: 'number', label: 'f.fs.levelDelta', hint: 'f.fs.levelDelta.hint', required: true, min: 0, max: 1000 }
+  ] },
+  { type: 'heading', label: 'fs.rules' },
+  { type: 'row', fields: [
+    { name: 'decayAfter', type: 'number', label: 'f.fs.decayAfter', hint: 'f.fs.decayAfter.hint', required: true, min: 0, max: 365 },
+    { name: 'candidateMaxFriends', type: 'number', label: 'f.fs.maxFriends', hint: 'f.fs.maxFriends.hint', required: true, min: 0, max: 10000 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'scanMax', type: 'number', label: 'f.fs.scanMax', hint: 'f.fs.scanMax.hint', required: true, min: 10, max: 2000 },
+    { name: 'livePatch', type: 'bool', inline: true, label: 'f.fs.livePatch', hint: 'f.fs.livePatch.hint' }
+  ] }
+];
+
+function socialSettingsPage(container, path, title, desc, fields, id, fix) {
+  var page = apiPage(baseApi, path, title, fields, { id: id, desc: desc, fixPayload: function (p) {
+    delete p.updatedBy;
+    delete p.updatedAt;
+    return fix ? fix(p) : p;
+  } });
+  var wrap = h('div', { class: 'mt-6' }, page.el);
+  container.appendChild(wrap);
+  page.load();
+  return page;
+}
+
+var accountRulesBase = accountRulesPage;
+accountRulesPage = function (container) {
+  accountRulesBase(container);
+  var content = container.querySelector('[data-settings-form="accounts"]');
+  var host = content ? content.parentNode : container;
+  socialSettingsPage(host, '/username-settings', 'un.title', 'un.desc', usernameFields, 'username-policy', function (p) {
+    p.ladder = unLadder(p.ladderText);
+    delete p.ladderText;
+    p.currency = p.currency || '';
+    p.cooldownHours = Number(p.cooldownHours) || 0;
+    p.enabled = !!p.enabled;
+    p.firstFree = !!p.firstFree;
+    return p;
+  });
+  socialSettingsPage(host, '/player-codes/settings', 'pcs.title', 'pcs.desc', PLAYER_CODE_FIELDS, 'player-codes', function (p) {
+    delete p.codes;
+    p.length = Number(p.length) || 6;
+    return p;
+  });
+};
+
+var friendRulesBase = friendRulesPage;
+friendRulesPage = function (container, query, ctx) {
+  var list = friendRulesBase(container, query, ctx);
+  var rules = container.querySelector('[data-settings-form="friends"]');
+  var holder = h('div', {});
+  if (rules && rules.nextSibling) rules.parentNode.insertBefore(holder, rules.nextSibling);
+  else container.appendChild(holder);
+  socialSettingsPage(holder, '/friend-suggestions/settings', 'fs.title', 'fs.desc', SUGGEST_FIELDS, 'friend-suggestions', function (p) {
+    Object.keys(p).forEach(function (k) { if (typeof p[k] === 'string' && k !== 'levelTable') p[k] = Number(p[k]) || 0; });
+    p.levelTable = p.levelTable || '';
+    p.enabled = !!p.enabled;
+    p.livePatch = !!p.livePatch;
+    return p;
+  });
+  return list;
+};
+
+var SOCIAL_CARD = { id: null, data: null, loading: false, at: 0, err: null };
+
+function loadSocialCard(id) {
+  SOCIAL_CARD.loading = true;
+  var enc = encodeURIComponent(id);
+  return Promise.all([baseApi('GET', '/players/' + enc + '/username-changes'), baseApi('GET', '/players/' + enc + '/friend-suggestions')]).then(function (all) {
+    SOCIAL_CARD.loading = false;
+    SOCIAL_CARD.at = Date.now();
+    SOCIAL_CARD.data = { names: all[0] || {}, sugg: all[1] || {} };
+    SOCIAL_CARD.err = null;
+    var old = document.querySelector('[data-player-social]');
+    if (old) old.removeAttribute('data-key');
+    schedule();
+  }, function (err) {
+    SOCIAL_CARD.loading = false;
+    SOCIAL_CARD.at = Date.now();
+    SOCIAL_CARD.err = err;
+    schedule();
+  });
+}
+
+function renameDialog(id, current) {
+  var v = { username: current || '' };
+  var input = textInput(v.username, { ltr: true, label: t('ps.rename.field'), oninput: function (x) { v.username = x; wrap.setError(''); } });
+  input.setAttribute('data-rename-input', '');
+  var wrap = field(t('ps.rename.field'), input, t('ps.rename.hint'));
+  return formDialog({
+    id: 'player-rename',
+    title: t('ps.rename.title'),
+    text: t('ps.rename.text'),
+    icon: 'users',
+    ok: t('ps.rename'),
+    body: wrap,
+    validate: function () {
+      var ok = v.username.trim() !== '';
+      wrap.setError(ok ? '' : t('err.required'));
+      return ok;
+    },
+    showError: function (err) {
+      if (err && err.field === 'username') { wrap.setError(errorText(err)); return true; }
+      return false;
+    },
+    submit: function () { return baseApi('POST', '/players/' + encodeURIComponent(id) + '/username', { username: v.username.trim() }); }
+  });
+}
+
+function socialSourceTag(src) {
+  var color = { coplay: 'primary', mutual: 'success', activity: 'warning', level: 'secondary' }[src] || 'secondary';
+  return tag(t('fs.src.' + src), color);
+}
+
+function socialQuote(q) {
+  if (!q || !q.enabled) return h('span', { class: 'text-sm text-secondary-500', 'data-un-quote': 'off', text: t('ps.policyOff') });
+  var box = h('div', { class: 'flex flex-col gap-0.5', 'data-un-quote': q.free ? 'free' : 'paid' },
+    h('span', { class: 'text-sm', text: q.free ? t('ps.next.free') : t('ps.next.cost', { n: fmtNum(q.cost), cur: q.currency }) }),
+    h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: t('ps.paidN', { n: fmtNum(q.paidChanges || 0) }) }));
+  if (q.cooldownEndsAt) box.appendChild(h('span', { class: 'text-xs eco-text-error', text: t('ps.cooldown', { date: fmtDate(q.cooldownEndsAt, true) }) }));
+  return box;
+}
+
+function socialHistoryTable(items) {
+  if (!items.length) return h('p', { class: 'text-sm text-secondary-500', 'data-un-history': 'empty', text: t('ps.history.empty') });
+  var cols = [{ label: t('ps.col.from') }, { label: t('ps.col.to') }, { label: t('ps.col.source'), width: 110 }, { label: t('ps.col.cost'), width: 110 }, { label: t('ps.col.when'), width: 160 }];
+  var rows = items.slice(0, 10).map(function (it) {
+    return { item: it, cells: [h('span', { dir: 'ltr', text: it.oldUsername }), h('span', { dir: 'ltr', class: 'font-medium', text: it.newUsername }),
+      tag(t('ps.src.' + it.source) + (it.admin ? ' · ' + it.admin : ''), it.source === 'admin' ? 'warning' : it.source === 'paid' ? 'primary' : 'success'),
+      h('span', { class: 'tabular-nums', text: it.cost ? fmtNum(it.cost) + ' ' + it.currency : '-' }), h('span', { class: 'text-xs', text: fmtDate(it.createdAt, true) })] };
+  });
+  var tb = table(cols, rows);
+  tb.setAttribute('data-un-history', String(items.length));
+  return tb;
+}
+
+function socialSuggestTable(list, attr) {
+  var cols = [{ label: t('ps.col.player') }, { label: t('ps.col.source'), width: 120 }, { label: t('ps.col.score'), width: 100 }, { label: t('ps.col.shows'), width: 80 }, { label: t('ps.col.played'), width: 150 }];
+  var rows = list.slice(0, 20).map(function (it) {
+    return { item: it, cells: [
+      h('a', { href: '#/players/' + it.userId, class: 'eco-link', dir: 'ltr', text: it.username + (it.code ? ' · ' + it.code : '') }),
+      socialSourceTag(it.source),
+      h('span', { class: 'tabular-nums', text: it.source === 'coplay' ? '-' : fmtNum(Math.round((it.score || 0) * 100) / 100) }),
+      h('span', { class: 'tabular-nums', text: fmtNum(it.shows || 0) }),
+      h('span', { class: 'text-xs', text: it.lastPlayedAt ? fmtDate(it.lastPlayedAt, true) : '-' })] };
+  });
+  var tb = table(cols, rows);
+  tb.setAttribute(attr, String(list.length));
+  return tb;
+}
+
+function playerSocialCard() {
+  var id = playerCardRoute();
+  var existing = document.querySelector('[data-player-social]');
+  if (!id || !token() || !aclCan('ACCOUNT', 0)) { if (existing) existing.remove(); return; }
+  var main = null;
+  var mains = document.querySelectorAll('#main > main');
+  for (var i = 0; i < mains.length; i++) if (mains[i].style.display !== 'none') main = mains[i];
+  var grid = main && main.querySelector('div.flex.flex-col.flex-1.min-w-0 > div.grid.grid-cols-1.gap-4');
+  if (!grid) return;
+  if (SOCIAL_CARD.id !== id) { SOCIAL_CARD.id = id; SOCIAL_CARD.data = null; SOCIAL_CARD.err = null; SOCIAL_CARD.at = 0; }
+  if (!SOCIAL_CARD.loading && Date.now() - SOCIAL_CARD.at > 20000) loadSocialCard(id);
+  var d = SOCIAL_CARD.data;
+  var anchor = grid.querySelector('[data-player-mod]');
+  var key = lang() + '|' + id + '|' + (d ? JSON.stringify([d.names.code, d.names.username, (d.names.items || []).length, d.names.quote, d.sugg.generatedAt, (d.sugg.visible || []).length, (d.sugg.reserve || []).length, (d.sugg.coplay || []).length]) : SOCIAL_CARD.err ? 'err' : 'loading');
+  var placed = existing && existing.parentNode === grid && (anchor ? existing.previousElementSibling === anchor : grid.firstChild === existing);
+  if (existing && existing.getAttribute('data-key') === key && placed) return;
+  if (existing) existing.remove();
+  var body = h('div', { class: 'px-4 py-3' });
+  var cardEl = h('section', { class: 'flex flex-col dark:bg-secondary-800 rounded-md shadow bg-white', 'data-player-social': '', 'data-key': key, 'data-economy': 'player-social', 'data-l10n-skip': '', 'aria-labelledby': 'player-social-title', dir: document.documentElement.getAttribute('dir') || 'ltr' }, body);
+  var title = h('h2', { id: 'player-social-title', class: 'font-medium flex items-center gap-2' }, icon('users', 'h-4 w-4'), h('span', { text: t('ps.title') }));
+  var place = function () { if (anchor) anchor.after(cardEl); else grid.insertBefore(cardEl, grid.firstChild); };
+  if (!d) {
+    body.appendChild(h('div', { class: 'flex items-center justify-between gap-2 mb-3' }, title));
+    body.appendChild(SOCIAL_CARD.err ? notice('error', errorText(SOCIAL_CARD.err), button({ variant: 'link', size: 'sm', label: t('try.again'), onclick: function () { SOCIAL_CARD.at = 0; loadSocialCard(id); } })) : h('div', { class: 'flex flex-col gap-2' }, bar('40%'), bar('60%')));
+    place();
+    return;
+  }
+  var write = aclCan('ACCOUNT', 1);
+  var reload = function () { SOCIAL_CARD.at = 0; loadSocialCard(id); if (typeof PLAYER_CARD !== 'undefined') PLAYER_CARD.at = 0; };
+  var actions = h('div', { class: 'flex flex-wrap items-center gap-1' });
+  if (write) {
+    var rename = button({ variant: 'ghost', size: 'sm', icon: 'players', label: t('ps.rename'), onclick: function () {
+      renameDialog(id, d.names.username).then(function (res) { if (res) { toast('success', t('ps.rename.done', { name: res.username })); reload(); } });
+    } });
+    rename.setAttribute('data-ps-action', 'rename');
+    var regen = button({ variant: 'ghost', size: 'sm', icon: 'refresh', label: t('ps.regen'), onclick: function () {
+      setBusy(regen, true, t('saving'));
+      baseApi('POST', '/players/' + encodeURIComponent(id) + '/friend-suggestions/regenerate', {}).then(function () { toast('success', t('ps.regen.done')); reload(); }, function (err) { setBusy(regen, false); toast('error', errorText(err)); });
+    } });
+    regen.setAttribute('data-ps-action', 'regenerate');
+    actions.appendChild(rename);
+    actions.appendChild(regen);
+  }
+  body.appendChild(h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-3' }, title, actions));
+  var s = d.sugg || {};
+  body.appendChild(h('div', { class: 'eco-pc-grid mb-3' },
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('ps.code') }),
+      h('div', { class: 'text-lg font-semibold', dir: 'ltr', 'data-ps-code': '', text: d.names.code || '-' })),
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('ps.next') }),
+      socialQuote(d.names.quote)),
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('ps.sugg') }),
+      h('div', { class: 'text-sm tabular-nums', 'data-ps-sugg': '' }, s.generatedAt ? t('ps.sugg.counts', { v: fmtNum((s.visible || []).length), r: fmtNum((s.reserve || []).length) }) : t('ps.sugg.none')),
+      s.generatedAt ? h('div', { class: 'text-xs text-secondary-500', text: t('ps.sugg.meta', { cycle: s.cycle, when: fmtDate(s.generatedAt, true) }) + (s.generatedBy ? ' · ' + s.generatedBy : '') }) : null)));
+  body.appendChild(h('h3', { class: 'text-sm font-medium mt-2 mb-2', text: t('ps.history') }));
+  body.appendChild(socialHistoryTable(d.names.items || []));
+  if ((s.visible || []).length) {
+    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('ps.visible') }));
+    body.appendChild(socialSuggestTable(s.visible, 'data-ps-visible'));
+  }
+  if ((s.reserve || []).length) {
+    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('ps.reserve') }));
+    body.appendChild(socialSuggestTable(s.reserve, 'data-ps-reserve'));
+  }
+  if ((s.coplay || []).length) {
+    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('ps.coplay') }));
+    var cols = [{ label: t('ps.col.player') }, { label: t('ps.col.game'), width: 120 }, { label: t('ps.col.matches'), width: 90 }, { label: t('ps.col.played'), width: 150 }];
+    var tb = table(cols, s.coplay.map(function (c) {
+      return { item: c, cells: [h('a', { href: '#/players/' + c.userId, class: 'eco-link', dir: 'ltr', text: c.username || c.userId }), h('span', { dir: 'ltr', text: c.gameKey || '-' }),
+        h('span', { class: 'tabular-nums', text: fmtNum(c.matches || 0) }), h('span', { class: 'text-xs', text: fmtDate(c.lastAt, true) })] };
+    }));
+    tb.setAttribute('data-ps-coplay', String(s.coplay.length));
+    body.appendChild(tb);
+  }
+  place();
+}
+
 var BRAND_KEY = 'nakama-brand';
 var BRAND_SHADES = { 50: 0.9, 100: 0.8, 200: 0.6, 300: 0.4, 400: 0.1, 500: 0, 600: -0.1, 700: -0.25, 800: -0.58, 900: -0.7, 950: -0.8 };
 var BRAND_DEFAULT_SHADES = { '244,244,253': 50, '233,232,252': 100, '209,205,248': 200, '181,175,245': 300, '130,117,240': 400, '107,89,238': 500, '102,84,226': 600, '93,77,206': 700, '69,58,154': 800, '59,49,130': 900, '48,40,106': 950 };
@@ -29697,6 +30211,7 @@ function nativeTweaks() {
   auditLogSources();
   satoriRoutes();
   playerModCard();
+  playerSocialCard();
   playerProgressCard();
   playerActivityCard();
   playerTasksCard();

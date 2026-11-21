@@ -398,7 +398,14 @@ func (s *service) playerUsernameChanges(w http.ResponseWriter, r *http.Request) 
 		s.writeError(w, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"items": items, "quote": quote})
+	code, err := s.playerCode(r.Context(), id)
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	var username string
+	_ = s.db.QueryRowContext(r.Context(), `SELECT username FROM users WHERE id=$1`, id).Scan(&username)
+	writeJSON(w, http.StatusOK, map[string]any{"items": items, "quote": quote, "code": code, "username": username})
 }
 
 func (s *service) playerUsernameRename(w http.ResponseWriter, r *http.Request) {

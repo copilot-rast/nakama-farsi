@@ -450,7 +450,7 @@ function friendRulesPage(container, query, ctx) {
   var page = apiPage(baseApi, '/friend-rules', null, FRIEND_FIELDS, {
     id: 'friends',
     onchange: function (v, extra) { clear(extra).appendChild(friendSummary(v)); },
-    fixPayload: function (p) { return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0, requestsBonusMeta: p.requestsBonusMeta || '', friendsBonusMeta: p.friendsBonusMeta || '', matchPolicy: p.matchPolicy || 'priority', overLimit: p.overLimit || 'refuse' }; }
+    fixPayload: friendRulesPayload
   });
   var heading = h('div', { class: 'mt-6 mb-2' }, h('h2', { class: 'text-lg font-medium', text: t('fr.tiers.title') }), h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('fr.tiers.desc') }));
   container.insertBefore(heading, container.firstChild);
