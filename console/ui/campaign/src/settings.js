@@ -32,7 +32,23 @@ function campaignSettingsPage(root) {
       var ecoEvent = input(e.economyEvent, { name: 'events.economyEvent', ltr: true, mono: true });
       var anEvent = input(e.analyticsEvent, { name: 'events.analyticsEvent', ltr: true, mono: true });
       var onFailure = check(e.onFailure, t('se.onFailure'), 'events.onFailure');
+      var tableOn = check(f.tableEnabled, t('se.tableEnabled'), 'freeride.tableEnabled');
       var reqId = check(f.requireRequestId, t('se.requireRequestId'), 'freeride.requireRequestId');
+      var tplBox = h('div', { class: 'flex flex-col gap-3', 'data-campaign-templates': '' });
+      var tplItems = [];
+      var addTpl = function (tp) {
+        tp = tp || { key: '', name: {}, rules: [] };
+        var k = input(tp.key, { name: 'template-key', ltr: true, mono: true, label: t('f.key') });
+        var nm = translated(t('f.name'), 'template-name', tp.name);
+        var ed = starEditor(tp.rules, s.maxStars);
+        var el = h('div', { class: 'cg-track', 'data-campaign-template': tp.key || '' },
+          h('div', { class: 'flex items-end gap-3' }, field(t('f.key'), k, null, 'flex-1'),
+            button({ label: t('remove'), variant: 'danger', onclick: function () { el.remove(); tplItems = tplItems.filter(function (x) { return x.el !== el; }); } })), nm, ed);
+        tplItems.push({ el: el, read: function () { return { key: k.value.trim(), name: nm.read(), rules: ed.read() }; } });
+        tplBox.appendChild(el);
+      };
+      (s.templates || []).forEach(addTpl);
+      var fieldsRaw = input(JSON.stringify(cur.fields || { stage: [], chapter: [] }, null, 2), { name: 'fields', ltr: true, mono: true, multiline: true, rows: 10 });
       var reqHours = numInput(f.requestHours, 'freeride.requestHours');
       var grid = function () { return h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, Array.prototype.slice.call(arguments)); };
       return {
@@ -42,26 +58,31 @@ function campaignSettingsPage(root) {
           section(t('se.attempts'), h('div', {}, grid(field(t('se.hours'), hours), field(t('se.grace'), grace)), grid(field(t('se.keepDays'), keep), field(t('se.minSeconds'), minSec)), closeOthers, serverCloses), 'attempts'),
           section(t('se.stars'), h('div', {}, grid(field(t('se.maxStars'), maxStars), field(t('se.minOnSuccess'), minOn)), field(t('se.missing'), missing),
             h('div', { class: 'text-sm font-medium mb-1', text: t('se.multipliers') }), mult, h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('se.repeatMultipliers') }), rmult,
-            h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('se.rules') }), rules), 'stars'),
+            h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('se.rules') }), rules,
+            h('div', { class: 'text-sm font-medium mt-4 mb-1', text: t('se.templates') }), h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('se.templatesHint') }), tplBox,
+            button({ label: '+ ' + t('se.addTemplate'), data: { 'campaign-action': 'add-template' }, onclick: function () { addTpl(); } })), 'stars'),
           section(t('se.unlock'), h('div', {}, grid(field(t('se.stageDefault'), stageDefault), field(t('se.chapterDefault'), chapterDefault)), field(t('se.minStars'), minStars, null, 'cg-num'), showLocked), 'unlock'),
           section(t('se.rewards'), h('div', {}, grid(field(t('se.replay'), replay), field(t('se.groupMode'), groupMode)), field(t('se.zone'), zone),
             h('div', { class: 'text-sm font-medium mb-1', text: t('se.milestoneModes') }), h('div', { class: 'flex flex-wrap gap-4' }, modes)), 'rewards'),
           section(t('se.xp'), grid(field(t('se.metaKey'), metaKey), field(t('se.levelTable'), table_)), 'xp'),
           section(t('se.events'), h('div', {}, grid(field(t('se.economyEvent'), ecoEvent), field(t('se.analyticsEvent'), anEvent)), onFailure), 'events'),
-          section(t('se.freeride'), h('div', {}, reqId, field(t('se.requestHours'), reqHours, null, 'cg-num')), 'freeride')],
+          section(t('se.freeride'), h('div', {}, tableOn, h('p', { class: 'text-xs text-secondary-500 -mt-2 mb-3', text: t('se.tableEnabledHint') }), reqId, field(t('se.requestHours'), reqHours, null, 'cg-num')), 'freeride'),
+          section(t('se.fields'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('se.fieldsHint') }), field(t('se.fieldsJson'), fieldsRaw)), 'fields')],
         read: function (c) {
           c.play = { costCurrency: costCur.value || '', costAmount: numberValue(costAmount), refundOnWin: refundOnWin.input.checked };
           c.attempts = { hours: numberValue(hours), graceSeconds: numberValue(grace), keepDays: numberValue(keep), defaultMinSeconds: numberValue(minSec), closeOthers: closeOthers.input.checked, serverClosesOthers: serverCloses.input.checked };
-          c.stars = { maxStars: numberValue(maxStars), minOnSuccess: numberValue(minOn), missingField: missing.value, multipliers: mult.read(), repeatableMultipliers: rmult.read(), rules: rules.read() };
+          c.stars = { maxStars: numberValue(maxStars), minOnSuccess: numberValue(minOn), missingField: missing.value, multipliers: mult.read(), repeatableMultipliers: rmult.read(), rules: rules.read(),
+            templates: tplItems.map(function (x) { return x.read(); }) };
+          try { c.fields = JSON.parse(fieldsRaw.value || '{}'); } catch (err) { return t('code.INVALID_JSON') + ' · fields'; }
           c.unlock = { stageDefault: stageDefault.value, chapterDefault: chapterDefault.value, minStars: numberValue(minStars), showLocked: showLocked.input.checked };
           c.rewards = { replayMode: replay.value, dayZone: zone.value.trim(), prizeGroupMode: groupMode.value,
             milestoneModes: ['ordered', 'repeatable', 'once'].filter(function (m, i) { return modes[i].input.checked; }) };
           c.xp = { metaKey: metaKey.value, levelTableKey: table_.value };
           c.events = { economyEvent: ecoEvent.value.trim(), analyticsEvent: anEvent.value.trim(), onFailure: onFailure.input.checked };
-          c.freeride = { requireRequestId: reqId.input.checked, requestHours: numberValue(reqHours) };
+          c.freeride = { tableEnabled: tableOn.input.checked, requireRequestId: reqId.input.checked, requestHours: numberValue(reqHours) };
           return null;
         },
-        after: function () { cgSettingsCache = null; }
+        after: function () { cgSettingsCache = null; cgNavSettings = false; cgMounted = null; cgSchedule(); }
       };
     });
   });

@@ -50,17 +50,27 @@ function cgNavLink(page, active) {
     h('div', { class: 'font-medium relative truncate flex-1' }, h('span', { text: t('nav.' + page) }))));
 }
 
+var cgNavSettings = false;
+function cgVisiblePages(active) {
+  if (!cgNavSettings && token()) {
+    cgNavSettings = true;
+    loadCgSettings().then(cgSchedule, function () { cgNavSettings = false; });
+  }
+  var off = cgSettingsCache && cgSettingsCache.settings && cgSettingsCache.settings.freeride && !cgSettingsCache.settings.freeride.tableEnabled;
+  return CG_PAGES.filter(function (p) { return p !== 'freeride' || !off || active === 'freeride'; });
+}
+
 function cgSyncNav(active) {
   var dev = document.querySelector('.x-drawer a[href="#/api-explorer"], .x-drawer a[href="#/runtime"]');
   var group = dev && dev.closest('.x-drawer .grid > div');
   var existing = document.querySelector('[data-campaign-group]');
   if (!group || !cgAllowed()) { if (existing) existing.remove(); return; }
   var target = document.querySelector('.x-drawer [data-shopx-group]') || document.querySelector('.x-drawer [data-account-group]') || document.querySelector('.x-drawer [data-analytics-group]') || group;
-  var key = cgLang() + '|' + active;
+  var key = cgLang() + '|' + active + '|' + cgVisiblePages(active).length;
   if (existing && existing.getAttribute('data-key') === key && existing.nextElementSibling === target) return;
   var built = h('div', { 'data-campaign-group': '', 'data-l10n-skip': '', 'data-key': key, class: 'eco-nav-next' },
     h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 px-3 text-[10px]', text: t('group') }),
-    h('nav', { 'aria-label': t('group') }, h('ul', { class: 'space-y-0.5' }, CG_PAGES.map(function (p) { return cgNavLink(p, active); }))));
+    h('nav', { 'aria-label': t('group') }, h('ul', { class: 'space-y-0.5' }, cgVisiblePages(active).map(function (p) { return cgNavLink(p, active); }))));
   if (existing) existing.remove();
   target.before(built);
 }
@@ -123,7 +133,7 @@ function cgBoot() {
   cgSync();
 }
 
-window.NakamaCampaign = { version: 1, pages: function () { return CG_PAGES.map(function (p) { return { id: p, href: '#/campaign/' + p, label: t('nav.' + p) }; }); } };
+window.NakamaCampaign = { version: 1, pages: function () { return cgVisiblePages('').map(function (p) { return { id: p, href: '#/campaign/' + p, label: t('nav.' + p) }; }); } };
 
 if (CG_HASH.test(location.hash)) {
   cgPending = location.hash;

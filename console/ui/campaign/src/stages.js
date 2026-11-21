@@ -106,6 +106,21 @@ function stageEditor(s, chapters, done, chapterId) {
     var rules = ruleEditor(s.ownUnlock ? s.unlock : [], 'stage');
     var unlockBox = h('div', {}, ownUnlock, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('st.unlockDefault') }), rules);
     var ownStars = check(!s.ownStarRules, t('star.useDefault'), 'useDefaultStars');
+    var templates = cfg.stars.templates || [];
+    var template = select(s.starTemplate || '', [{ value: '', label: t('tpl.none') }].concat(templates.map(function (x) { return { value: x.key, label: textOf(x.name, x.key) + ' · ' + x.key }; })), { name: 'starTemplate', label: t('tpl.label') });
+    var templateBox = h('div', {}, field(t('tpl.label'), template, t('tpl.hint')), h('ul', { class: 'text-sm flex flex-col gap-1 mb-3', 'data-campaign-template-rules': '' }));
+    var noReplay = check(s.noReplayAfterWin, t('st.noReplay'), 'noReplayAfterWin');
+    var chapterKeyOf = function (id) { var c = chapters.filter(function (x) { return x.id === id; })[0]; return c ? c.key : ''; };
+    var settingsHolder = h('div', { 'data-campaign-stage-settings': '' });
+    var settingsForm = null;
+    var stageDefs = (cfg.fields && cfg.fields.stage) || [];
+    function paintSettings() {
+      var keep = settingsForm ? settingsForm.read() : (s.settings || {});
+      settingsForm = fieldsForm(stageDefs, keep, chapterKeyOf(chapter.value));
+      clear(settingsHolder).appendChild(settingsForm.empty ? h('p', { class: 'text-sm text-secondary-500', text: t('fd.none') }) : settingsForm);
+    }
+    chapter.addEventListener('change', paintSettings);
+    paintSettings();
     var starRules = starEditor(s.ownStarRules ? s.starRules : cfg.stars.rules, max);
     var ownMult = check(!s.ownMultipliers, t('star.useDefault'), 'useDefaultMultipliers');
     var mult = multiplierInputs(s.ownMultipliers ? s.starMultipliers : (s.mode === 'repeatable' ? cfg.stars.repeatableMultipliers : cfg.stars.multipliers), max, 'mult');
@@ -127,12 +142,17 @@ function stageEditor(s, chapters, done, chapterId) {
     var cooldown = numInput(s.cooldownSeconds || '', 'cooldownSeconds', t('f.cooldown'));
     var daily = numInput(s.dailyLimit || '', 'dailyLimit', t('f.daily'));
     var xpLimited = check(s.xpWhenLimited, t('f.xpWhenLimited'), 'xpWhenLimited');
-    var meta = input(JSON.stringify(s.metadata || {}), { name: 'metadata', ltr: true, mono: true, multiline: true, rows: 2 });
+    var meta = input(JSON.stringify(s.metadata || {}, null, 2), { name: 'metadata', ltr: true, mono: true, multiline: true, rows: 4 });
     var preview = h('ul', { class: 'text-sm flex flex-col gap-1', 'data-campaign-preview': '' });
     function paint() {
       modeHint.textContent = t('mode.hint.' + mode.value);
       rules.hidden = !ownUnlock.input.checked;
       starRules.hidden = ownStars.input.checked;
+      templateBox.hidden = !ownStars.input.checked;
+      var tplRules = template.value ? ((templates.filter(function (x) { return x.key === template.value; })[0] || {}).rules || []) : cfg.stars.rules;
+      var tplList = templateBox.querySelector('[data-campaign-template-rules]');
+      clear(tplList);
+      tplRules.forEach(function (rr) { tplList.appendChild(h('li', { class: 'text-secondary-600 dark:text-secondary-300', text: starSentence(rr) })); });
       mult.hidden = false;
       mult.inputs.forEach(function (el) { el.disabled = ownMult.input.checked; });
       if (ownMult.input.checked) {
@@ -148,16 +168,18 @@ function stageEditor(s, chapters, done, chapterId) {
       h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.key'), key, t('hint.key')), field(t('f.chapter'), chapter)),
       field(t('f.mode'), mode), modeHint, name, desc,
       h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.icon'), icon), field(t('f.address'), address)), active,
-      section(t('st.timing'), h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.timeLimit'), limit), field(t('f.minSeconds'), minSec, t('hint.minSeconds'))), 'timing'),
+      section(t('st.timing'), h('div', {}, h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.timeLimit'), limit), field(t('f.minSeconds'), minSec, t('hint.minSeconds'))), noReplay,
+        h('p', { class: 'text-xs text-secondary-500 -mt-2', text: t('st.noReplayHint') })), 'timing'),
+      h('div', { class: 'h-3' }), section(t('st.settings'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-3', text: t('st.settingsHint') }), settingsHolder), 'settings'),
       h('div', { class: 'h-3' }), section(t('st.unlock'), unlockBox, 'unlock'),
-      h('div', { class: 'h-3' }), section(t('st.stars'), h('div', {}, ownStars, starRules), 'stars'),
+      h('div', { class: 'h-3' }), section(t('st.stars'), h('div', {}, ownStars, templateBox, starRules), 'stars'),
       h('div', { class: 'h-3' }), section(t('st.rewards'), h('div', {}, cur, h('div', { class: 'mt-3' }, field(t('f.xp'), xp, null, 'cg-num')),
         h('div', { class: 'text-sm font-medium mt-2 mb-1', text: t('st.multipliers') }), ownMult, mult,
         h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('st.preview') }), preview), 'rewards'),
       h('div', { class: 'h-3' }), section(t('st.tierPrizes'), h('div', {}, tiers, button({ label: '+ ' + t('st.addTier'), data: { 'campaign-action': 'add-tier' }, onclick: function () { addTier(); } })), 'tiers'),
       h('div', { class: 'h-3' }), section(t('st.limits'), h('div', {}, field(t('f.rewardGroup'), group, t('hint.rewardGroup')),
         h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.cooldown'), cooldown), field(t('f.daily'), daily)), xpLimited), 'limits'),
-      h('div', { class: 'h-3' }), field(t('f.metadata'), meta), msg);
+      h('div', { class: 'h-3' }), section(t('st.advanced'), field(t('f.metadata'), meta, t('hint.metadata')), 'advanced'), msg);
     body.addEventListener('input', paint);
     body.addEventListener('change', paint);
     body.addEventListener('click', function (e) { if (e.target.closest('button')) setTimeout(paint, 0); });
@@ -167,11 +189,14 @@ function stageEditor(s, chapters, done, chapterId) {
       var md;
       try { md = JSON.parse(meta.value || '{}'); } catch (e) { busy(save, false); msg.appendChild(notice('error', t('code.INVALID_JSON') + ' · metadata')); return; }
       var lim = floatValue(limit), mn = floatValue(minSec);
+      var badField = settingsForm.invalid();
+      if (badField) { busy(save, false); msg.appendChild(notice('error', t('code.INVALID_FIELD_VALUE') + ' · ' + badField)); return; }
       var out = { key: key.value.trim(), chapterId: chapter.value, mode: mode.value, name: name.read(), description: desc.read(), iconUrl: icon.value.trim(), address: address.value.trim(),
         sort: creating ? 1000 : s.sort, isActive: active.input.checked, timeLimitSeconds: lim == null ? null : lim, minSeconds: mn == null ? null : mn,
         unlock: ownUnlock.input.checked ? rules.read() : null, starRules: ownStars.input.checked ? null : starRules.read(), starMultipliers: ownMult.input.checked ? null : mult.read(),
         rewards: { currencies: cur.read() }, xp: numberValue(xp) || 0, tierPrizes: tierRows.map(function (r) { return r.read(); }),
-        rewardGroup: group.value.trim(), cooldownSeconds: numberValue(cooldown) || 0, dailyLimit: numberValue(daily) || 0, xpWhenLimited: xpLimited.input.checked, metadata: md };
+        rewardGroup: group.value.trim(), cooldownSeconds: numberValue(cooldown) || 0, dailyLimit: numberValue(daily) || 0, xpWhenLimited: xpLimited.input.checked, metadata: md,
+        settings: settingsForm.read(), starTemplate: ownStars.input.checked ? template.value : '', noReplayAfterWin: noReplay.input.checked };
       api(creating ? 'POST' : 'PUT', '/campaign/stages' + (creating ? '' : '/' + s.id), out).then(function () {
         closePanel(); toast('success', t('saved')); done();
       }, function (err) { busy(save, false); msg.appendChild(notice('error', cgErrText(err))); });

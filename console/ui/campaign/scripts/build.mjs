@@ -10,7 +10,7 @@ const INDEX = path.join(DIST, 'index.html');
 const MANIFEST = path.join(ROOT, 'dist-manifest.json');
 export const START = '<!-- nakama-campaign:start -->';
 export const END = '<!-- nakama-campaign:end -->';
-export const SOURCES = ['i18n.js', 'core.js', 'rules.js', 'chapters.js', 'stages.js', 'freeride.js', 'report.js', 'settings.js', 'player.js', 'shell.js'];
+export const SOURCES = ['i18n.js', 'core.js', 'rules.js', 'fields.js', 'chapters.js', 'stages.js', 'freeride.js', 'report.js', 'settings.js', 'player.js', 'shell.js'];
 
 function hash(content) {
   return crypto.createHash('sha256').update(content).digest('hex').slice(0, 10);

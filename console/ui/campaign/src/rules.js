@@ -106,13 +106,13 @@ function ruleEditor(rules, name) {
   return wrap;
 }
 
-var CG_FIELDS = ['timeSavedPercent', 'healthPercent', 'elapsedSeconds'];
+var CG_FIELDS = ['timeSavedPercent', 'healthPercent', 'timesSeen', 'elapsedSeconds'];
 var CG_OPS = ['>=', '>', '<=', '<', '==', '!='];
 
 function starSentence(r) {
   var conds = (r.conditions || []).map(function (c) {
     var label = has('star.f.' + c.field) ? t('star.f.' + c.field) : c.field;
-    return label + ' ' + c.op + ' ' + fmtNum(c.value);
+    return label + ' ' + c.op + ' ' + fmtNum(c.value) + (c.missing === 'pass' ? t('star.ifMissing') : '');
   });
   return tr('star.sentence', { stars: r.stars }, { conds: conds.length ? conds.join(t('star.and')) : t('star.always') });
 }
@@ -135,11 +135,12 @@ function starEditor(rules, maxStars) {
       customIn.hidden = !custom;
       var op = select(c.op, CG_OPS.map(function (o) { return { value: o, label: o }; }), { name: 'cond-op', label: t('star.op') });
       var val = numInput(c.value, 'cond-value', t('star.value'));
-      var row = h('div', { class: 'cg-row' }, field(t('star.field'), h('div', { class: 'flex flex-col gap-1' }, fieldSel, customIn)), field(t('star.op'), op), field(t('star.value'), val),
+      var miss = select(c.missing || '', [{ value: '', label: t('star.missing.default') }, { value: 'pass', label: t('star.missing.pass') }, { value: 'fail', label: t('star.missing.fail') }], { name: 'cond-missing', label: t('star.missing') });
+      var row = h('div', { class: 'cg-row' }, field(t('star.field'), h('div', { class: 'flex flex-col gap-1' }, fieldSel, customIn)), field(t('star.op'), op), field(t('star.value'), val), field(t('star.missing'), miss),
         h('div', {}, button({ label: t('remove'), variant: 'danger', onclick: function () { row.remove(); conds = conds.filter(function (x) { return x.row !== row; }); paint(); } })));
       fieldSel.addEventListener('change', function () { customIn.hidden = fieldSel.value !== '__custom'; paint(); });
-      [customIn, op, val].forEach(function (el) { el.addEventListener('input', paint); el.addEventListener('change', paint); });
-      conds.push({ row: row, read: function () { return { field: fieldSel.value === '__custom' ? customIn.value.trim() : fieldSel.value, op: op.value, value: floatValue(val) || 0 }; } });
+      [customIn, op, val, miss].forEach(function (el) { el.addEventListener('input', paint); el.addEventListener('change', paint); });
+      conds.push({ row: row, read: function () { var o = { field: fieldSel.value === '__custom' ? customIn.value.trim() : fieldSel.value, op: op.value, value: floatValue(val) || 0 }; if (miss.value) o.missing = miss.value; return o; } });
       condBox.appendChild(row);
     }
     function read() { return { stars: numberValue(stars) || 0, conditions: conds.map(function (c) { return c.read(); }) }; }

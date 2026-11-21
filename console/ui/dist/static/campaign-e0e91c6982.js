@@ -75,7 +75,26 @@ var CG_TEXT = {
     'code.INVALID_OPERATOR': 'عمل شرط درست نیست.', 'code.INVALID_FIELD': 'نام فیلد درست نیست (حرف انگلیسی، عدد و _).', 'code.REWARD_REQUIRED': 'یک جایزه انتخاب کنید.',
     'code.DUPLICATE_MILESTONE': 'هر درصد یک بار.', 'code.INVALID_TIMEZONE': 'منطقهٔ زمانی شناخته نشد.', 'code.INVALID_POLICY': 'یکی از گزینه‌ها درست نیست.',
     'code.DEFAULT_LANGUAGE_REQUIRED': 'نام به زبان پیش‌فرض لازم است.', 'code.INVALID_MODE': 'نوع مرحله درست نیست.', 'code.INVALID_JSON': 'JSON درست نیست.',
-    'code.INVALID_PRIZE_KEY': 'کلید جایزه درست نیست.'
+    'code.INVALID_PRIZE_KEY': 'کلید جایزه درست نیست.',
+    'fd.default': 'پیش‌فرض: {v}', 'fd.defaultOpt': 'پیش‌فرض ({v})', 'fd.tagsHint': 'چند مقدار را با ویرگول جدا کنید.', 'fd.item': '{label} {n}', 'fd.add': '{label}',
+    'fd.none': 'برای این فصل فیلدی تعریف نشده است. فیلدها را در «تنظیمات مرحله‌ها ← فیلدهای مرحله و فصل» تعریف کنید.',
+    'tpl.none': 'قانون پیش‌فرض تنظیمات', 'tpl.label': 'قالب قانون ستاره', 'tpl.hint': 'قالب‌ها در تنظیمات مرحله‌ها تعریف می‌شوند. قانون پایین همان چیزی است که سرور حساب می‌کند.',
+    'st.noReplay': 'بعد از برد دوباره بازی نشود', 'st.noReplayHint': 'بازیکنی که یک بار برده باشد این مرحله را دوباره شروع نمی‌کند (STAGE_ALREADY_WON).',
+    'st.settings': 'تنظیمات مأموریت', 'st.settingsHint': 'بازی این مقدارها را در campaign_chapters و در فیلد settings هر مرحله می‌خواند. خالی یعنی پیش‌فرض فیلد.',
+    'st.advanced': 'پیشرفته', 'hint.metadata': 'دادهٔ آزاد برای بازی. فیلدهایی که فرم دارند را این‌جا ننویسید.',
+    'ch.stepId': 'شناسهٔ پله: {id}', 'ch.milestoneHint': 'هر پله شناسهٔ ثابت دارد. اگر درصد را عوض کنید، بازیکنی که این پله را گرفته دوباره جایزه نمی‌گیرد.',
+    'ch.settings': 'تنظیمات فصل', 'fr.off': 'این مسیر خاموش است و بازی آن را نمی‌بیند. گشت آزاد را با مرحله‌های تکرارشونده بسازید یا در تنظیمات روشنش کنید.',
+    'se.tableEnabled': 'جدول جدای جایزهٔ گشت آزاد روشن باشد', 'se.tableEnabledHint': 'خاموش یعنی گشت آزاد فقط از مسیر مرحله‌های تکرارشونده می‌گذرد و campaign_freeride_claim پاسخ FREERIDE_NOT_FOUND می‌دهد.',
+    'se.templates': 'قالب‌های قانون ستاره', 'se.templatesHint': 'هر مرحله می‌تواند یکی از این قالب‌ها را بگیرد. پایه: زمان و سلامت و دفعهٔ دیده شدن. مسابقه: بدون سلامت. مخفی: بدون زمان. کوئست: مثل پایه.',
+    'se.addTemplate': 'قالب تازه', 'se.fields': 'فیلدهای مرحله و فصل', 'se.fieldsJson': 'تعریف فیلدها (JSON)',
+    'se.fieldsHint': 'از روی این تعریف، فرم «تنظیمات مأموریت» در هر مرحله و «تنظیمات فصل» ساخته می‌شود. نوع‌ها: number، integer، bool، text، i18n، select، tags، list. با chapters فیلد فقط در همان فصل‌ها دیده می‌شود.',
+    'star.missing': 'اگر بازی نفرستاد', 'star.missing.default': 'طبق تنظیمات', 'star.missing.pass': 'قبول', 'star.missing.fail': 'رد',
+    'star.f.timesSeen': 'دفعهٔ دیده شدن', 'star.ifMissing': ' (اگر نیامد: قبول)',
+    'code.INVALID_FIELD_VALUE': 'مقدار این فیلد درست نیست.', 'code.UNKNOWN_FIELD': 'این فیلد تعریف نشده است.', 'code.INVALID_TEMPLATE': 'این قالب ستاره پیدا نشد.',
+    'code.TOO_MANY_ITEMS': 'تعداد ردیف‌ها از سقف بیشتر است.', 'code.INVALID_OPTION': 'این گزینه در فهرست نیست.', 'code.FIELDS_TOO_DEEP': 'فهرست تودرتو حداکثر سه سطح دارد.',
+    'code.INVALID_FIELD_TYPE': 'نوع فیلد درست نیست.', 'code.OPTIONS_REQUIRED': 'فیلد انتخابی گزینه لازم دارد.', 'code.DUPLICATE_KEY': 'این کلید تکراری است.',
+    'code.TOO_MANY_TEMPLATES': 'تعداد قالب‌ها زیاد است.', 'code.TEXT_TOO_LONG': 'متن خیلی بلند است.', 'code.FIELDS_REQUIRED': 'فهرست باید فیلد داشته باشد.',
+    'code.STAGE_ALREADY_WON': 'این مرحله برده شده و دوباره بازی نمی‌شود.'
   },
   en: {
     'group': 'Stages',
@@ -151,7 +170,26 @@ var CG_TEXT = {
     'code.INVALID_OPERATOR': 'Invalid operator.', 'code.INVALID_FIELD': 'Invalid field name (English letters, digits and _).', 'code.REWARD_REQUIRED': 'Pick a reward.',
     'code.DUPLICATE_MILESTONE': 'Each percent once.', 'code.INVALID_TIMEZONE': 'Unknown time zone.', 'code.INVALID_POLICY': 'One of the choices is not valid.',
     'code.DEFAULT_LANGUAGE_REQUIRED': 'A name in the default language is required.', 'code.INVALID_MODE': 'Invalid stage kind.', 'code.INVALID_JSON': 'Invalid JSON.',
-    'code.INVALID_PRIZE_KEY': 'Invalid prize key.'
+    'code.INVALID_PRIZE_KEY': 'Invalid prize key.',
+    'fd.default': 'Default: {v}', 'fd.defaultOpt': 'Default ({v})', 'fd.tagsHint': 'Separate values with commas.', 'fd.item': '{label} {n}', 'fd.add': '{label}',
+    'fd.none': 'No fields are defined for this chapter. Define them in Stage settings > Stage and chapter fields.',
+    'tpl.none': 'Default rules of the settings', 'tpl.label': 'Star rule template', 'tpl.hint': 'Templates are defined in the stage settings. The rules below are what the server scores.',
+    'st.noReplay': 'No replay after a win', 'st.noReplayHint': 'A player who has won once cannot start this stage again (STAGE_ALREADY_WON).',
+    'st.settings': 'Mission settings', 'st.settingsHint': 'The game reads these values from campaign_chapters, in each stage\'s settings field. Empty means the field default.',
+    'st.advanced': 'Advanced', 'hint.metadata': 'Free data for the game. Do not put fields that have a form here.',
+    'ch.stepId': 'Step id: {id}', 'ch.milestoneHint': 'Each step has a fixed id. Changing its percent never pays a player who already got it.',
+    'ch.settings': 'Chapter settings', 'fr.off': 'This path is off and the game does not see it. Build free ride with repeatable stages, or turn it on in the settings.',
+    'se.tableEnabled': 'Separate free ride reward table on', 'se.tableEnabledHint': 'Off means free ride only goes through repeatable stages and campaign_freeride_claim answers FREERIDE_NOT_FOUND.',
+    'se.templates': 'Star rule templates', 'se.templatesHint': 'Each stage can pick one template. Base: time, health and times seen. Race: no health. Stealth: no time. Quest: like Base.',
+    'se.addTemplate': 'New template', 'se.fields': 'Stage and chapter fields', 'se.fieldsJson': 'Field definitions (JSON)',
+    'se.fieldsHint': 'The Mission settings form of each stage and the Chapter settings form are built from this. Types: number, integer, bool, text, i18n, select, tags, list. With chapters a field shows only in those chapters.',
+    'star.missing': 'If the game does not send it', 'star.missing.default': 'As in the settings', 'star.missing.pass': 'Pass', 'star.missing.fail': 'Fail',
+    'star.f.timesSeen': 'Times seen', 'star.ifMissing': ' (missing: pass)',
+    'code.INVALID_FIELD_VALUE': 'This field value is not valid.', 'code.UNKNOWN_FIELD': 'This field is not defined.', 'code.INVALID_TEMPLATE': 'This star template was not found.',
+    'code.TOO_MANY_ITEMS': 'Too many rows.', 'code.INVALID_OPTION': 'This option is not in the list.', 'code.FIELDS_TOO_DEEP': 'Nested lists go three levels deep at most.',
+    'code.INVALID_FIELD_TYPE': 'Invalid field type.', 'code.OPTIONS_REQUIRED': 'A select field needs options.', 'code.DUPLICATE_KEY': 'This key is used twice.',
+    'code.TOO_MANY_TEMPLATES': 'Too many templates.', 'code.TEXT_TOO_LONG': 'The text is too long.', 'code.FIELDS_REQUIRED': 'A list needs fields.',
+    'code.STAGE_ALREADY_WON': 'This stage is won and cannot be played again.'
   }
 };
 
@@ -698,13 +736,13 @@ function ruleEditor(rules, name) {
   return wrap;
 }
 
-var CG_FIELDS = ['timeSavedPercent', 'healthPercent', 'elapsedSeconds'];
+var CG_FIELDS = ['timeSavedPercent', 'healthPercent', 'timesSeen', 'elapsedSeconds'];
 var CG_OPS = ['>=', '>', '<=', '<', '==', '!='];
 
 function starSentence(r) {
   var conds = (r.conditions || []).map(function (c) {
     var label = has('star.f.' + c.field) ? t('star.f.' + c.field) : c.field;
-    return label + ' ' + c.op + ' ' + fmtNum(c.value);
+    return label + ' ' + c.op + ' ' + fmtNum(c.value) + (c.missing === 'pass' ? t('star.ifMissing') : '');
   });
   return tr('star.sentence', { stars: r.stars }, { conds: conds.length ? conds.join(t('star.and')) : t('star.always') });
 }
@@ -727,11 +765,12 @@ function starEditor(rules, maxStars) {
       customIn.hidden = !custom;
       var op = select(c.op, CG_OPS.map(function (o) { return { value: o, label: o }; }), { name: 'cond-op', label: t('star.op') });
       var val = numInput(c.value, 'cond-value', t('star.value'));
-      var row = h('div', { class: 'cg-row' }, field(t('star.field'), h('div', { class: 'flex flex-col gap-1' }, fieldSel, customIn)), field(t('star.op'), op), field(t('star.value'), val),
+      var miss = select(c.missing || '', [{ value: '', label: t('star.missing.default') }, { value: 'pass', label: t('star.missing.pass') }, { value: 'fail', label: t('star.missing.fail') }], { name: 'cond-missing', label: t('star.missing') });
+      var row = h('div', { class: 'cg-row' }, field(t('star.field'), h('div', { class: 'flex flex-col gap-1' }, fieldSel, customIn)), field(t('star.op'), op), field(t('star.value'), val), field(t('star.missing'), miss),
         h('div', {}, button({ label: t('remove'), variant: 'danger', onclick: function () { row.remove(); conds = conds.filter(function (x) { return x.row !== row; }); paint(); } })));
       fieldSel.addEventListener('change', function () { customIn.hidden = fieldSel.value !== '__custom'; paint(); });
-      [customIn, op, val].forEach(function (el) { el.addEventListener('input', paint); el.addEventListener('change', paint); });
-      conds.push({ row: row, read: function () { return { field: fieldSel.value === '__custom' ? customIn.value.trim() : fieldSel.value, op: op.value, value: floatValue(val) || 0 }; } });
+      [customIn, op, val, miss].forEach(function (el) { el.addEventListener('input', paint); el.addEventListener('change', paint); });
+      conds.push({ row: row, read: function () { var o = { field: fieldSel.value === '__custom' ? customIn.value.trim() : fieldSel.value, op: op.value, value: floatValue(val) || 0 }; if (miss.value) o.missing = miss.value; return o; } });
       condBox.appendChild(row);
     }
     function read() { return { stars: numberValue(stars) || 0, conditions: conds.map(function (c) { return c.read(); }) }; }
@@ -789,6 +828,112 @@ function stars(n, max) {
   return h('span', { class: 'cg-stars', 'data-campaign-stars': String(n), 'aria-label': String(n), text: s });
 }
 
+function cgAppliesTo(d, chapterKey) {
+  return !d.chapters || !d.chapters.length || d.chapters.indexOf(chapterKey) !== -1;
+}
+
+function cgDefaultText(d) {
+  if (d.default == null) return '';
+  if (d.type === 'bool') return d.default ? t('yes') : t('no');
+  if (d.type === 'tags') return (d.default || []).join(', ');
+  if (typeof d.default === 'number') return fmtNum(d.default);
+  return String(d.default);
+}
+
+function fieldsForm(defs, values, chapterKey, prefix) {
+  values = values || {};
+  prefix = prefix || 'settings';
+  var box = h('div', { class: 'cg-fields', 'data-campaign-fields': prefix });
+  var readers = [];
+  (defs || []).forEach(function (d) {
+    if (chapterKey !== null && !cgAppliesTo(d, chapterKey)) return;
+    var label = textOf(d.label, d.key);
+    var hint = textOf(d.hint, '');
+    var name = prefix + '.' + d.key;
+    var has_ = Object.prototype.hasOwnProperty.call(values, d.key) && values[d.key] != null;
+    var v = values[d.key];
+    var def = cgDefaultText(d);
+    var withDef = def ? (hint ? hint + ' · ' : '') + t('fd.default', { v: def }) : hint;
+    var el, read;
+    switch (d.type) {
+      case 'number':
+      case 'integer':
+        el = input(has_ ? digits(String(v)) : '', { ltr: true, name: name, label: label, placeholder: def });
+        el.setAttribute('inputmode', d.type === 'integer' ? 'numeric' : 'decimal');
+        el.classList.add('cg-num');
+        read = function () { var n = d.type === 'integer' ? numberValue(el) : floatValue(el); return n == null ? undefined : n; };
+        box.appendChild(field(label, el, withDef, 'cg-num-field'));
+        break;
+      case 'bool':
+        var start = has_ ? !!v : !!d.default;
+        el = check(start, label, name);
+        read = function () { var c = el.input.checked; return has_ || c !== !!d.default ? c : undefined; };
+        box.appendChild(h('div', {}, el, hint ? h('p', { class: 'text-xs text-secondary-500 -mt-2 mb-3', text: hint }) : null));
+        break;
+      case 'select':
+        el = select(has_ ? v : '', [{ value: '', label: def ? t('fd.defaultOpt', { v: def }) : t('none') }].concat((d.options || []).map(function (o) { return { value: o, label: has('opt.' + o) ? t('opt.' + o) + ' · ' + o : o }; })), { name: name, label: label });
+        read = function () { return el.value || undefined; };
+        box.appendChild(field(label, el, hint));
+        break;
+      case 'tags':
+        el = input(has_ ? (v || []).join(', ') : '', { ltr: true, mono: true, name: name, label: label, placeholder: def });
+        read = function () {
+          var raw = el.value.trim();
+          if (!raw) return has_ ? [] : undefined;
+          return raw.split(/[,،]/).map(function (x) { return x.trim(); }).filter(Boolean);
+        };
+        box.appendChild(field(label, el, withDef ? withDef + ' · ' + t('fd.tagsHint') : t('fd.tagsHint')));
+        break;
+      case 'i18n':
+        el = translated(label, name, has_ ? v : {}, { multiline: true });
+        read = function () { var o = el.read(); return Object.keys(o).length ? o : undefined; };
+        box.appendChild(h('div', {}, el, hint ? h('p', { class: 'text-xs text-secondary-500 -mt-3 mb-3', text: hint }) : null));
+        break;
+      case 'list':
+        var items = [];
+        var list = h('div', { class: 'cg-rows', 'data-campaign-list-field': d.key });
+        var addItem = function (item) {
+          var sub = fieldsForm(d.fields, item || {}, null, d.key);
+          var row = h('div', { class: 'cg-track', 'data-campaign-list-item': d.key });
+          var entry = { row: row, sub: sub };
+          row.appendChild(h('div', { class: 'flex items-center justify-between gap-2 mb-2' },
+            h('span', { class: 'text-sm font-medium', 'data-campaign-list-title': '' }),
+            button({ label: t('remove'), variant: 'danger', onclick: function () { row.remove(); items = items.filter(function (x) { return x !== entry; }); renumber(); } })));
+          row.appendChild(sub);
+          items.push(entry);
+          list.appendChild(row);
+          renumber();
+        };
+        var renumber = function () { items.forEach(function (x, i) { x.row.querySelector('[data-campaign-list-title]').textContent = t('fd.item', { label: label, n: i + 1 }); }); };
+        (has_ ? v : []).forEach(addItem);
+        var max = d.maxItems || 20;
+        read = function () { var out = items.map(function (x) { return x.sub.read(); }); return has_ || out.length ? out : undefined; };
+        box.appendChild(h('div', { class: 'mb-4', 'data-campaign-list': d.key },
+          h('div', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 mb-1', text: label }),
+          hint ? h('p', { class: 'text-xs text-secondary-500 mb-2', text: hint }) : null, list,
+          button({ label: '+ ' + t('fd.add', { label: label }), data: { 'campaign-action': 'add-' + d.key }, onclick: function () { if (items.length < max) addItem({}); else toast('error', t('code.TOO_MANY_ITEMS')); } })));
+        break;
+      default:
+        el = input(has_ ? v : '', { name: name, label: label, placeholder: def, ltr: /^[A-Za-z0-9_.:\-\s]*$/.test(String(has_ ? v : def)) });
+        read = function () { var s = el.value.trim(); return s ? s : (has_ ? '' : undefined); };
+        box.appendChild(field(label, el, withDef));
+    }
+    readers.push({ key: d.key, read: read });
+  });
+  box.read = function () {
+    var out = {};
+    readers.forEach(function (r) { var v = r.read(); if (v !== undefined && !(typeof v === 'number' && isNaN(v))) out[r.key] = v; });
+    return out;
+  };
+  box.invalid = function () {
+    var bad = null;
+    readers.forEach(function (r) { var v = r.read(); if (typeof v === 'number' && isNaN(v)) bad = bad || r.key; });
+    return bad;
+  };
+  box.empty = !readers.length;
+  return box;
+}
+
 function chaptersPage(root) {
   var frame = pageFrame('chapters', t('desc.chapters'), [button({ label: t('ch.new'), variant: 'primary', data: { 'campaign-action': 'new-chapter' }, onclick: function () { chapterEditor(null, reload); } })]);
   clear(root).appendChild(frame.el);
@@ -839,7 +984,8 @@ function milestoneRows(list) {
     var prizes = prizePickers(m);
     var el = h('div', { class: 'cg-track', 'data-campaign-milestone': '' }, h('div', { class: 'flex items-end gap-3' }, field(t('ch.percent'), pct, null, 'cg-num'), h('div', { class: 'flex-1' }),
       button({ label: t('remove'), variant: 'danger', onclick: function () { el.remove(); rows = rows.filter(function (r) { return r.el !== el; }); } })), cur, prizes);
-    rows.push({ el: el, read: function () { var o = prizes.read(); o.percent = floatValue(pct) || 0; o.currencies = cur.read(); return o; } });
+    if (m.id) el.querySelector('.flex').insertBefore(h('span', { class: 'text-xs text-secondary-500 self-center', 'data-campaign-milestone-id': m.id, text: t('ch.stepId', { id: m.id }) }), el.querySelector('.flex').children[1]);
+    rows.push({ el: el, read: function () { var o = prizes.read(); if (m.id) o.id = m.id; o.percent = floatValue(pct) || 0; o.currencies = cur.read(); return o; } });
     box.appendChild(el);
   }
   (list || []).forEach(addRow);
@@ -849,6 +995,10 @@ function milestoneRows(list) {
 }
 
 function chapterEditor(c, done) {
+  loadCgSettings().then(function (cfgRes) { chapterForm(c, done, cfgRes); }, function () { chapterForm(c, done, null); });
+}
+
+function chapterForm(c, done, cfgRes) {
   var creating = !c;
   c = c || { name: {}, description: {}, unlock: [], milestones: [], isActive: true, metadata: {} };
   var key = input(c.key || '', { name: 'key', ltr: true, mono: true });
@@ -860,14 +1010,23 @@ function chapterEditor(c, done) {
   var active = check(c.isActive, t('f.active'), 'isActive');
   var rules = ruleEditor(c.unlock, 'chapter');
   var milestones = milestoneRows(c.milestones);
+  var defs = (cfgRes && cfgRes.settings.fields && cfgRes.settings.fields.chapter) || [];
+  var setForm = fieldsForm(defs, c.settings || {}, c.key || '');
+  var meta = input(JSON.stringify(c.metadata || {}, null, 2), { name: 'metadata', ltr: true, mono: true, multiline: true, rows: 4 });
   var msg = h('div', {});
   var body = h('div', { 'data-campaign-form': 'chapter' }, field(t('f.key'), key), name, desc, h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.icon'), icon), field(t('f.address'), address)), active,
-    section(t('ch.unlock'), rules, 'unlock'), h('div', { class: 'h-3' }), section(t('ch.milestones'), milestones, 'milestones'), msg);
+    section(t('ch.unlock'), rules, 'unlock'), h('div', { class: 'h-3' }), section(t('ch.milestones'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-3', text: t('ch.milestoneHint') }), milestones), 'milestones'),
+    setForm.empty ? null : h('div', { class: 'h-3' }), setForm.empty ? null : section(t('ch.settings'), setForm, 'settings'),
+    h('div', { class: 'h-3' }), section(t('st.advanced'), field(t('f.metadata'), meta, t('hint.metadata')), 'advanced'), msg);
   var save = button({ label: t('save'), variant: 'primary', data: { 'campaign-action': 'save-chapter' }, onclick: function () {
     busy(save, true);
     clear(msg);
+    var md;
+    try { md = JSON.parse(meta.value || '{}'); } catch (e) { busy(save, false); msg.appendChild(notice('error', t('code.INVALID_JSON') + ' · metadata')); return; }
+    var badField = setForm.invalid();
+    if (badField) { busy(save, false); msg.appendChild(notice('error', t('code.INVALID_FIELD_VALUE') + ' · ' + badField)); return; }
     var out = { key: key.value.trim(), name: name.read(), description: desc.read(), iconUrl: icon.value.trim(), address: address.value.trim(), sort: c.sort || 0,
-      isActive: active.input.checked, unlock: rules.read(), milestones: milestones.read(), metadata: c.metadata || {} };
+      isActive: active.input.checked, unlock: rules.read(), milestones: milestones.read(), metadata: md, settings: setForm.read() };
     if (creating) out.sort = 1000;
     api(creating ? 'POST' : 'PUT', '/campaign/chapters' + (creating ? '' : '/' + c.id), out).then(function () {
       closePanel(); toast('success', t('saved')); done();
@@ -984,6 +1143,21 @@ function stageEditor(s, chapters, done, chapterId) {
     var rules = ruleEditor(s.ownUnlock ? s.unlock : [], 'stage');
     var unlockBox = h('div', {}, ownUnlock, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('st.unlockDefault') }), rules);
     var ownStars = check(!s.ownStarRules, t('star.useDefault'), 'useDefaultStars');
+    var templates = cfg.stars.templates || [];
+    var template = select(s.starTemplate || '', [{ value: '', label: t('tpl.none') }].concat(templates.map(function (x) { return { value: x.key, label: textOf(x.name, x.key) + ' · ' + x.key }; })), { name: 'starTemplate', label: t('tpl.label') });
+    var templateBox = h('div', {}, field(t('tpl.label'), template, t('tpl.hint')), h('ul', { class: 'text-sm flex flex-col gap-1 mb-3', 'data-campaign-template-rules': '' }));
+    var noReplay = check(s.noReplayAfterWin, t('st.noReplay'), 'noReplayAfterWin');
+    var chapterKeyOf = function (id) { var c = chapters.filter(function (x) { return x.id === id; })[0]; return c ? c.key : ''; };
+    var settingsHolder = h('div', { 'data-campaign-stage-settings': '' });
+    var settingsForm = null;
+    var stageDefs = (cfg.fields && cfg.fields.stage) || [];
+    function paintSettings() {
+      var keep = settingsForm ? settingsForm.read() : (s.settings || {});
+      settingsForm = fieldsForm(stageDefs, keep, chapterKeyOf(chapter.value));
+      clear(settingsHolder).appendChild(settingsForm.empty ? h('p', { class: 'text-sm text-secondary-500', text: t('fd.none') }) : settingsForm);
+    }
+    chapter.addEventListener('change', paintSettings);
+    paintSettings();
     var starRules = starEditor(s.ownStarRules ? s.starRules : cfg.stars.rules, max);
     var ownMult = check(!s.ownMultipliers, t('star.useDefault'), 'useDefaultMultipliers');
     var mult = multiplierInputs(s.ownMultipliers ? s.starMultipliers : (s.mode === 'repeatable' ? cfg.stars.repeatableMultipliers : cfg.stars.multipliers), max, 'mult');
@@ -1005,12 +1179,17 @@ function stageEditor(s, chapters, done, chapterId) {
     var cooldown = numInput(s.cooldownSeconds || '', 'cooldownSeconds', t('f.cooldown'));
     var daily = numInput(s.dailyLimit || '', 'dailyLimit', t('f.daily'));
     var xpLimited = check(s.xpWhenLimited, t('f.xpWhenLimited'), 'xpWhenLimited');
-    var meta = input(JSON.stringify(s.metadata || {}), { name: 'metadata', ltr: true, mono: true, multiline: true, rows: 2 });
+    var meta = input(JSON.stringify(s.metadata || {}, null, 2), { name: 'metadata', ltr: true, mono: true, multiline: true, rows: 4 });
     var preview = h('ul', { class: 'text-sm flex flex-col gap-1', 'data-campaign-preview': '' });
     function paint() {
       modeHint.textContent = t('mode.hint.' + mode.value);
       rules.hidden = !ownUnlock.input.checked;
       starRules.hidden = ownStars.input.checked;
+      templateBox.hidden = !ownStars.input.checked;
+      var tplRules = template.value ? ((templates.filter(function (x) { return x.key === template.value; })[0] || {}).rules || []) : cfg.stars.rules;
+      var tplList = templateBox.querySelector('[data-campaign-template-rules]');
+      clear(tplList);
+      tplRules.forEach(function (rr) { tplList.appendChild(h('li', { class: 'text-secondary-600 dark:text-secondary-300', text: starSentence(rr) })); });
       mult.hidden = false;
       mult.inputs.forEach(function (el) { el.disabled = ownMult.input.checked; });
       if (ownMult.input.checked) {
@@ -1026,16 +1205,18 @@ function stageEditor(s, chapters, done, chapterId) {
       h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.key'), key, t('hint.key')), field(t('f.chapter'), chapter)),
       field(t('f.mode'), mode), modeHint, name, desc,
       h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.icon'), icon), field(t('f.address'), address)), active,
-      section(t('st.timing'), h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.timeLimit'), limit), field(t('f.minSeconds'), minSec, t('hint.minSeconds'))), 'timing'),
+      section(t('st.timing'), h('div', {}, h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.timeLimit'), limit), field(t('f.minSeconds'), minSec, t('hint.minSeconds'))), noReplay,
+        h('p', { class: 'text-xs text-secondary-500 -mt-2', text: t('st.noReplayHint') })), 'timing'),
+      h('div', { class: 'h-3' }), section(t('st.settings'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-3', text: t('st.settingsHint') }), settingsHolder), 'settings'),
       h('div', { class: 'h-3' }), section(t('st.unlock'), unlockBox, 'unlock'),
-      h('div', { class: 'h-3' }), section(t('st.stars'), h('div', {}, ownStars, starRules), 'stars'),
+      h('div', { class: 'h-3' }), section(t('st.stars'), h('div', {}, ownStars, templateBox, starRules), 'stars'),
       h('div', { class: 'h-3' }), section(t('st.rewards'), h('div', {}, cur, h('div', { class: 'mt-3' }, field(t('f.xp'), xp, null, 'cg-num')),
         h('div', { class: 'text-sm font-medium mt-2 mb-1', text: t('st.multipliers') }), ownMult, mult,
         h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('st.preview') }), preview), 'rewards'),
       h('div', { class: 'h-3' }), section(t('st.tierPrizes'), h('div', {}, tiers, button({ label: '+ ' + t('st.addTier'), data: { 'campaign-action': 'add-tier' }, onclick: function () { addTier(); } })), 'tiers'),
       h('div', { class: 'h-3' }), section(t('st.limits'), h('div', {}, field(t('f.rewardGroup'), group, t('hint.rewardGroup')),
         h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.cooldown'), cooldown), field(t('f.daily'), daily)), xpLimited), 'limits'),
-      h('div', { class: 'h-3' }), field(t('f.metadata'), meta), msg);
+      h('div', { class: 'h-3' }), section(t('st.advanced'), field(t('f.metadata'), meta, t('hint.metadata')), 'advanced'), msg);
     body.addEventListener('input', paint);
     body.addEventListener('change', paint);
     body.addEventListener('click', function (e) { if (e.target.closest('button')) setTimeout(paint, 0); });
@@ -1045,11 +1226,14 @@ function stageEditor(s, chapters, done, chapterId) {
       var md;
       try { md = JSON.parse(meta.value || '{}'); } catch (e) { busy(save, false); msg.appendChild(notice('error', t('code.INVALID_JSON') + ' · metadata')); return; }
       var lim = floatValue(limit), mn = floatValue(minSec);
+      var badField = settingsForm.invalid();
+      if (badField) { busy(save, false); msg.appendChild(notice('error', t('code.INVALID_FIELD_VALUE') + ' · ' + badField)); return; }
       var out = { key: key.value.trim(), chapterId: chapter.value, mode: mode.value, name: name.read(), description: desc.read(), iconUrl: icon.value.trim(), address: address.value.trim(),
         sort: creating ? 1000 : s.sort, isActive: active.input.checked, timeLimitSeconds: lim == null ? null : lim, minSeconds: mn == null ? null : mn,
         unlock: ownUnlock.input.checked ? rules.read() : null, starRules: ownStars.input.checked ? null : starRules.read(), starMultipliers: ownMult.input.checked ? null : mult.read(),
         rewards: { currencies: cur.read() }, xp: numberValue(xp) || 0, tierPrizes: tierRows.map(function (r) { return r.read(); }),
-        rewardGroup: group.value.trim(), cooldownSeconds: numberValue(cooldown) || 0, dailyLimit: numberValue(daily) || 0, xpWhenLimited: xpLimited.input.checked, metadata: md };
+        rewardGroup: group.value.trim(), cooldownSeconds: numberValue(cooldown) || 0, dailyLimit: numberValue(daily) || 0, xpWhenLimited: xpLimited.input.checked, metadata: md,
+        settings: settingsForm.read(), starTemplate: ownStars.input.checked ? template.value : '', noReplayAfterWin: noReplay.input.checked };
       api(creating ? 'POST' : 'PUT', '/campaign/stages' + (creating ? '' : '/' + s.id), out).then(function () {
         closePanel(); toast('success', t('saved')); done();
       }, function (err) { busy(save, false); msg.appendChild(notice('error', cgErrText(err))); });
@@ -1064,9 +1248,10 @@ function freeridePage(root) {
   clear(root).appendChild(frame.el);
   function reload() {
     clear(frame.content).appendChild(h('p', { class: 'text-sm text-secondary-500', text: t('loading') }));
-    Promise.all([api('GET', '/campaign/freeride'), loadLanguages(), loadRefs(true)]).then(function (res) {
+    Promise.all([api('GET', '/campaign/freeride'), loadLanguages(), loadRefs(true), loadCgSettings()]).then(function (res) {
       var list = res[0].items || [];
       clear(frame.content);
+      if (!res[3].settings.freeride.tableEnabled) frame.content.appendChild(notice('warning', t('fr.off')));
       if (!list.length) { frame.content.appendChild(card(h('p', { class: 'p-4 text-sm text-secondary-500', text: t('empty') }))); return; }
       frame.content.appendChild(h('div', { 'data-campaign-list': 'freeride' }, table([
         { label: t('f.name') }, { label: t('f.key') }, { label: t('st.rewards') }, { label: t('st.limits') }, { label: t('f.rewardGroup') }, { label: '' }
@@ -1209,7 +1394,23 @@ function campaignSettingsPage(root) {
       var ecoEvent = input(e.economyEvent, { name: 'events.economyEvent', ltr: true, mono: true });
       var anEvent = input(e.analyticsEvent, { name: 'events.analyticsEvent', ltr: true, mono: true });
       var onFailure = check(e.onFailure, t('se.onFailure'), 'events.onFailure');
+      var tableOn = check(f.tableEnabled, t('se.tableEnabled'), 'freeride.tableEnabled');
       var reqId = check(f.requireRequestId, t('se.requireRequestId'), 'freeride.requireRequestId');
+      var tplBox = h('div', { class: 'flex flex-col gap-3', 'data-campaign-templates': '' });
+      var tplItems = [];
+      var addTpl = function (tp) {
+        tp = tp || { key: '', name: {}, rules: [] };
+        var k = input(tp.key, { name: 'template-key', ltr: true, mono: true, label: t('f.key') });
+        var nm = translated(t('f.name'), 'template-name', tp.name);
+        var ed = starEditor(tp.rules, s.maxStars);
+        var el = h('div', { class: 'cg-track', 'data-campaign-template': tp.key || '' },
+          h('div', { class: 'flex items-end gap-3' }, field(t('f.key'), k, null, 'flex-1'),
+            button({ label: t('remove'), variant: 'danger', onclick: function () { el.remove(); tplItems = tplItems.filter(function (x) { return x.el !== el; }); } })), nm, ed);
+        tplItems.push({ el: el, read: function () { return { key: k.value.trim(), name: nm.read(), rules: ed.read() }; } });
+        tplBox.appendChild(el);
+      };
+      (s.templates || []).forEach(addTpl);
+      var fieldsRaw = input(JSON.stringify(cur.fields || { stage: [], chapter: [] }, null, 2), { name: 'fields', ltr: true, mono: true, multiline: true, rows: 10 });
       var reqHours = numInput(f.requestHours, 'freeride.requestHours');
       var grid = function () { return h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, Array.prototype.slice.call(arguments)); };
       return {
@@ -1219,26 +1420,31 @@ function campaignSettingsPage(root) {
           section(t('se.attempts'), h('div', {}, grid(field(t('se.hours'), hours), field(t('se.grace'), grace)), grid(field(t('se.keepDays'), keep), field(t('se.minSeconds'), minSec)), closeOthers, serverCloses), 'attempts'),
           section(t('se.stars'), h('div', {}, grid(field(t('se.maxStars'), maxStars), field(t('se.minOnSuccess'), minOn)), field(t('se.missing'), missing),
             h('div', { class: 'text-sm font-medium mb-1', text: t('se.multipliers') }), mult, h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('se.repeatMultipliers') }), rmult,
-            h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('se.rules') }), rules), 'stars'),
+            h('div', { class: 'text-sm font-medium mt-3 mb-1', text: t('se.rules') }), rules,
+            h('div', { class: 'text-sm font-medium mt-4 mb-1', text: t('se.templates') }), h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('se.templatesHint') }), tplBox,
+            button({ label: '+ ' + t('se.addTemplate'), data: { 'campaign-action': 'add-template' }, onclick: function () { addTpl(); } })), 'stars'),
           section(t('se.unlock'), h('div', {}, grid(field(t('se.stageDefault'), stageDefault), field(t('se.chapterDefault'), chapterDefault)), field(t('se.minStars'), minStars, null, 'cg-num'), showLocked), 'unlock'),
           section(t('se.rewards'), h('div', {}, grid(field(t('se.replay'), replay), field(t('se.groupMode'), groupMode)), field(t('se.zone'), zone),
             h('div', { class: 'text-sm font-medium mb-1', text: t('se.milestoneModes') }), h('div', { class: 'flex flex-wrap gap-4' }, modes)), 'rewards'),
           section(t('se.xp'), grid(field(t('se.metaKey'), metaKey), field(t('se.levelTable'), table_)), 'xp'),
           section(t('se.events'), h('div', {}, grid(field(t('se.economyEvent'), ecoEvent), field(t('se.analyticsEvent'), anEvent)), onFailure), 'events'),
-          section(t('se.freeride'), h('div', {}, reqId, field(t('se.requestHours'), reqHours, null, 'cg-num')), 'freeride')],
+          section(t('se.freeride'), h('div', {}, tableOn, h('p', { class: 'text-xs text-secondary-500 -mt-2 mb-3', text: t('se.tableEnabledHint') }), reqId, field(t('se.requestHours'), reqHours, null, 'cg-num')), 'freeride'),
+          section(t('se.fields'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-2', text: t('se.fieldsHint') }), field(t('se.fieldsJson'), fieldsRaw)), 'fields')],
         read: function (c) {
           c.play = { costCurrency: costCur.value || '', costAmount: numberValue(costAmount), refundOnWin: refundOnWin.input.checked };
           c.attempts = { hours: numberValue(hours), graceSeconds: numberValue(grace), keepDays: numberValue(keep), defaultMinSeconds: numberValue(minSec), closeOthers: closeOthers.input.checked, serverClosesOthers: serverCloses.input.checked };
-          c.stars = { maxStars: numberValue(maxStars), minOnSuccess: numberValue(minOn), missingField: missing.value, multipliers: mult.read(), repeatableMultipliers: rmult.read(), rules: rules.read() };
+          c.stars = { maxStars: numberValue(maxStars), minOnSuccess: numberValue(minOn), missingField: missing.value, multipliers: mult.read(), repeatableMultipliers: rmult.read(), rules: rules.read(),
+            templates: tplItems.map(function (x) { return x.read(); }) };
+          try { c.fields = JSON.parse(fieldsRaw.value || '{}'); } catch (err) { return t('code.INVALID_JSON') + ' · fields'; }
           c.unlock = { stageDefault: stageDefault.value, chapterDefault: chapterDefault.value, minStars: numberValue(minStars), showLocked: showLocked.input.checked };
           c.rewards = { replayMode: replay.value, dayZone: zone.value.trim(), prizeGroupMode: groupMode.value,
             milestoneModes: ['ordered', 'repeatable', 'once'].filter(function (m, i) { return modes[i].input.checked; }) };
           c.xp = { metaKey: metaKey.value, levelTableKey: table_.value };
           c.events = { economyEvent: ecoEvent.value.trim(), analyticsEvent: anEvent.value.trim(), onFailure: onFailure.input.checked };
-          c.freeride = { requireRequestId: reqId.input.checked, requestHours: numberValue(reqHours) };
+          c.freeride = { tableEnabled: tableOn.input.checked, requireRequestId: reqId.input.checked, requestHours: numberValue(reqHours) };
           return null;
         },
-        after: function () { cgSettingsCache = null; }
+        after: function () { cgSettingsCache = null; cgNavSettings = false; cgMounted = null; cgSchedule(); }
       };
     });
   });
@@ -1381,17 +1587,27 @@ function cgNavLink(page, active) {
     h('div', { class: 'font-medium relative truncate flex-1' }, h('span', { text: t('nav.' + page) }))));
 }
 
+var cgNavSettings = false;
+function cgVisiblePages(active) {
+  if (!cgNavSettings && token()) {
+    cgNavSettings = true;
+    loadCgSettings().then(cgSchedule, function () { cgNavSettings = false; });
+  }
+  var off = cgSettingsCache && cgSettingsCache.settings && cgSettingsCache.settings.freeride && !cgSettingsCache.settings.freeride.tableEnabled;
+  return CG_PAGES.filter(function (p) { return p !== 'freeride' || !off || active === 'freeride'; });
+}
+
 function cgSyncNav(active) {
   var dev = document.querySelector('.x-drawer a[href="#/api-explorer"], .x-drawer a[href="#/runtime"]');
   var group = dev && dev.closest('.x-drawer .grid > div');
   var existing = document.querySelector('[data-campaign-group]');
   if (!group || !cgAllowed()) { if (existing) existing.remove(); return; }
   var target = document.querySelector('.x-drawer [data-shopx-group]') || document.querySelector('.x-drawer [data-account-group]') || document.querySelector('.x-drawer [data-analytics-group]') || group;
-  var key = cgLang() + '|' + active;
+  var key = cgLang() + '|' + active + '|' + cgVisiblePages(active).length;
   if (existing && existing.getAttribute('data-key') === key && existing.nextElementSibling === target) return;
   var built = h('div', { 'data-campaign-group': '', 'data-l10n-skip': '', 'data-key': key, class: 'eco-nav-next' },
     h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 px-3 text-[10px]', text: t('group') }),
-    h('nav', { 'aria-label': t('group') }, h('ul', { class: 'space-y-0.5' }, CG_PAGES.map(function (p) { return cgNavLink(p, active); }))));
+    h('nav', { 'aria-label': t('group') }, h('ul', { class: 'space-y-0.5' }, cgVisiblePages(active).map(function (p) { return cgNavLink(p, active); }))));
   if (existing) existing.remove();
   target.before(built);
 }
@@ -1454,7 +1670,7 @@ function cgBoot() {
   cgSync();
 }
 
-window.NakamaCampaign = { version: 1, pages: function () { return CG_PAGES.map(function (p) { return { id: p, href: '#/campaign/' + p, label: t('nav.' + p) }; }); } };
+window.NakamaCampaign = { version: 1, pages: function () { return cgVisiblePages('').map(function (p) { return { id: p, href: '#/campaign/' + p, label: t('nav.' + p) }; }); } };
 
 if (CG_HASH.test(location.hash)) {
   cgPending = location.hash;

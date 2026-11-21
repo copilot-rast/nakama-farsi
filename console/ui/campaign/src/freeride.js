@@ -3,9 +3,10 @@ function freeridePage(root) {
   clear(root).appendChild(frame.el);
   function reload() {
     clear(frame.content).appendChild(h('p', { class: 'text-sm text-secondary-500', text: t('loading') }));
-    Promise.all([api('GET', '/campaign/freeride'), loadLanguages(), loadRefs(true)]).then(function (res) {
+    Promise.all([api('GET', '/campaign/freeride'), loadLanguages(), loadRefs(true), loadCgSettings()]).then(function (res) {
       var list = res[0].items || [];
       clear(frame.content);
+      if (!res[3].settings.freeride.tableEnabled) frame.content.appendChild(notice('warning', t('fr.off')));
       if (!list.length) { frame.content.appendChild(card(h('p', { class: 'p-4 text-sm text-secondary-500', text: t('empty') }))); return; }
       frame.content.appendChild(h('div', { 'data-campaign-list': 'freeride' }, table([
         { label: t('f.name') }, { label: t('f.key') }, { label: t('st.rewards') }, { label: t('st.limits') }, { label: t('f.rewardGroup') }, { label: '' }

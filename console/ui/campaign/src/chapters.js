@@ -48,7 +48,8 @@ function milestoneRows(list) {
     var prizes = prizePickers(m);
     var el = h('div', { class: 'cg-track', 'data-campaign-milestone': '' }, h('div', { class: 'flex items-end gap-3' }, field(t('ch.percent'), pct, null, 'cg-num'), h('div', { class: 'flex-1' }),
       button({ label: t('remove'), variant: 'danger', onclick: function () { el.remove(); rows = rows.filter(function (r) { return r.el !== el; }); } })), cur, prizes);
-    rows.push({ el: el, read: function () { var o = prizes.read(); o.percent = floatValue(pct) || 0; o.currencies = cur.read(); return o; } });
+    if (m.id) el.querySelector('.flex').insertBefore(h('span', { class: 'text-xs text-secondary-500 self-center', 'data-campaign-milestone-id': m.id, text: t('ch.stepId', { id: m.id }) }), el.querySelector('.flex').children[1]);
+    rows.push({ el: el, read: function () { var o = prizes.read(); if (m.id) o.id = m.id; o.percent = floatValue(pct) || 0; o.currencies = cur.read(); return o; } });
     box.appendChild(el);
   }
   (list || []).forEach(addRow);
@@ -58,6 +59,10 @@ function milestoneRows(list) {
 }
 
 function chapterEditor(c, done) {
+  loadCgSettings().then(function (cfgRes) { chapterForm(c, done, cfgRes); }, function () { chapterForm(c, done, null); });
+}
+
+function chapterForm(c, done, cfgRes) {
   var creating = !c;
   c = c || { name: {}, description: {}, unlock: [], milestones: [], isActive: true, metadata: {} };
   var key = input(c.key || '', { name: 'key', ltr: true, mono: true });
@@ -69,14 +74,23 @@ function chapterEditor(c, done) {
   var active = check(c.isActive, t('f.active'), 'isActive');
   var rules = ruleEditor(c.unlock, 'chapter');
   var milestones = milestoneRows(c.milestones);
+  var defs = (cfgRes && cfgRes.settings.fields && cfgRes.settings.fields.chapter) || [];
+  var setForm = fieldsForm(defs, c.settings || {}, c.key || '');
+  var meta = input(JSON.stringify(c.metadata || {}, null, 2), { name: 'metadata', ltr: true, mono: true, multiline: true, rows: 4 });
   var msg = h('div', {});
   var body = h('div', { 'data-campaign-form': 'chapter' }, field(t('f.key'), key), name, desc, h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('f.icon'), icon), field(t('f.address'), address)), active,
-    section(t('ch.unlock'), rules, 'unlock'), h('div', { class: 'h-3' }), section(t('ch.milestones'), milestones, 'milestones'), msg);
+    section(t('ch.unlock'), rules, 'unlock'), h('div', { class: 'h-3' }), section(t('ch.milestones'), h('div', {}, h('p', { class: 'text-xs text-secondary-500 mb-3', text: t('ch.milestoneHint') }), milestones), 'milestones'),
+    setForm.empty ? null : h('div', { class: 'h-3' }), setForm.empty ? null : section(t('ch.settings'), setForm, 'settings'),
+    h('div', { class: 'h-3' }), section(t('st.advanced'), field(t('f.metadata'), meta, t('hint.metadata')), 'advanced'), msg);
   var save = button({ label: t('save'), variant: 'primary', data: { 'campaign-action': 'save-chapter' }, onclick: function () {
     busy(save, true);
     clear(msg);
+    var md;
+    try { md = JSON.parse(meta.value || '{}'); } catch (e) { busy(save, false); msg.appendChild(notice('error', t('code.INVALID_JSON') + ' · metadata')); return; }
+    var badField = setForm.invalid();
+    if (badField) { busy(save, false); msg.appendChild(notice('error', t('code.INVALID_FIELD_VALUE') + ' · ' + badField)); return; }
     var out = { key: key.value.trim(), name: name.read(), description: desc.read(), iconUrl: icon.value.trim(), address: address.value.trim(), sort: c.sort || 0,
-      isActive: active.input.checked, unlock: rules.read(), milestones: milestones.read(), metadata: c.metadata || {} };
+      isActive: active.input.checked, unlock: rules.read(), milestones: milestones.read(), metadata: md, settings: setForm.read() };
     if (creating) out.sort = 1000;
     api(creating ? 'POST' : 'PUT', '/campaign/chapters' + (creating ? '' : '/' + c.id), out).then(function () {
       closePanel(); toast('success', t('saved')); done();
