@@ -143,7 +143,7 @@ func Run(ctx context.Context, tx *sql.Tx, s Settings, in RunInput) (RunOut, erro
 		}
 		return true
 	}
-	parentsOf := func(id string) []string {
+	walk := func(id string, want func(*Entry) bool) []string {
 		seen := map[string]bool{id: true}
 		found := []string{}
 		frontier := []string{id}
@@ -159,7 +159,7 @@ func Run(ctx context.Context, tx *sql.Tx, s Settings, in RunInput) (RunOut, erro
 					if p == nil {
 						continue
 					}
-					if addTarget(p) {
+					if want(p) && addTarget(p) {
 						found = append(found, pid)
 					}
 					next = append(next, pid)
@@ -170,6 +170,7 @@ func Run(ctx context.Context, tx *sql.Tx, s Settings, in RunInput) (RunOut, erro
 		sort.Strings(found)
 		return found
 	}
+	parentsOf := func(id string) []string { return walk(id, func(*Entry) bool { return true }) }
 	info := []Row{}
 	if in.All {
 		ids := make([]string, 0, len(m.entries))
@@ -195,6 +196,17 @@ func Run(ctx context.Context, tx *sql.Tx, s Settings, in RunInput) (RunOut, erro
 			continue
 		}
 		info = append(info, Row{AssetID: id, Type: e.SourceType, Action: ActStored})
+	}
+	if len(in.Changed) > 0 {
+		pending, err := pendingSources(ctx, tx)
+		if err != nil {
+			return out, err
+		}
+		if len(pending) > 0 {
+			for _, id := range in.Changed {
+				walk(id, func(p *Entry) bool { return pending[p.AssetID] })
+			}
+		}
 	}
 	deletedRows := []Row{}
 	for _, id := range in.Deleted {
@@ -258,6 +270,23 @@ func Run(ctx context.Context, tx *sql.Tx, s Settings, in RunInput) (RunOut, erro
 		}
 	}
 	return out, nil
+}
+
+func pendingSources(ctx context.Context, q Querier) (map[string]bool, error) {
+	rows, err := q.QueryContext(ctx, `SELECT source_asset_id FROM itemkind_profile WHERE status='pending' AND source_asset_id <> ''`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[string]bool{}
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		out[id] = true
+	}
+	return out, rows.Err()
 }
 
 func SaveRun(ctx context.Context, db Querier, s Settings, source, actor string, out *RunOut) {

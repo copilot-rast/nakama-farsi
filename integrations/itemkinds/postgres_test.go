@@ -300,3 +300,23 @@ func TestRouterPendingAndLinkingSeededItems(t *testing.T) {
 		t.Fatalf("forced re-route row = %+v", rr)
 	}
 }
+
+func TestPendingItemRetriedWhenTheItemItWaitsForArrives(t *testing.T) {
+	f := newFixture(t)
+	p := plugintest.Key("w")
+	waiting, later, cfg := p+"-a", p+"-b", p+"-cfg"
+	f.put(cfg, "Test.GadgetConfig", map[string]any{"power": 1})
+	f.put(waiting, "Test.GadgetCard", map[string]any{"Id": p + "a", "name": "الف", "coin": 5, "config": map[string]any{"$asset": later}})
+	out := f.run(itemkinds.RunInput{Changed: []string{waiting}, Actor: "test"})
+	if r := rowFor(out, waiting); r.Action != itemkinds.ActPending {
+		t.Fatalf("first push = %+v", r)
+	}
+	f.put(later, "Test.GadgetCard", map[string]any{"Id": p + "b", "name": "ب", "coin": 6, "power": 4, "config": map[string]any{"$asset": cfg}})
+	out = f.run(itemkinds.RunInput{Changed: []string{later}, Actor: "test"})
+	if r := rowFor(out, waiting); r.Action != itemkinds.ActLinked && r.Action != itemkinds.ActUpdated {
+		t.Fatalf("the pending card must be retried when its reference arrives: %+v", out.Rows)
+	}
+	if _, _, active, _ := f.item("gadget-" + p + "a"); !active {
+		t.Fatal("the retried item must be switched on")
+	}
+}
