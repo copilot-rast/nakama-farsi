@@ -49,7 +49,15 @@ func (s *service) applyMetaRules(ctx context.Context, tx *sql.Tx, userID, typeID
 		if !ok {
 			continue
 		}
-		amount := formatAmount(metaRuleAmount(r.source, r.amount, value))
+		raw := metaRuleAmount(r.source, r.amount, value)
+		if r.action != "set" && r.action != "max" && raw > 0 {
+			m, err := activeBooster(ctx, tx, userID, r.metaID, now)
+			if err != nil {
+				return err
+			}
+			raw = boostedAmount(raw, m)
+		}
+		amount := formatAmount(raw)
 		var q string
 		switch r.action {
 		case "set":

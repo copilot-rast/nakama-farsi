@@ -28,6 +28,9 @@ func (s *service) clientRPCs() map[string]clientRPC {
 		"base_friend_rules":          s.rpcFriendRules,
 		"base_chat_quota":            s.rpcChatQuota,
 		"base_stickers":              s.rpcStickers,
+		"base_comm_packs":            s.rpcCommPacks,
+		"base_comm_favorites":        s.rpcCommFavorites,
+		"base_comm_favorite":         s.rpcCommFavorite,
 		"base_report_player":         s.rpcReportPlayer,
 		"base_my_reports":            s.rpcMyReports,
 		"voice_token":                s.rpcVoiceToken,
@@ -51,6 +54,12 @@ func (s *service) clientRPCs() map[string]clientRPC {
 		"base_support_chat_rate":      s.rpcChatRate,
 		"base_remote_config":          s.rpcRemoteConfig,
 		"base_my_activity":            s.rpcMyActivity,
+		"base_username_quote":         s.rpcUsernameQuote,
+		"base_username_change":        s.rpcUsernameChange,
+		"base_my_code":                s.rpcMyCode,
+		"base_player_codes":           s.rpcPlayerCodes,
+		"base_user_by_code":           s.rpcUserByCode,
+		"base_friend_suggestions":     s.rpcFriendSuggestions,
 	}
 	for name, fn := range s.socialRPCs() {
 		rpcs[name] = fn

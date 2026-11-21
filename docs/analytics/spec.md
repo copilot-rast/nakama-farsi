@@ -252,7 +252,7 @@ The old «Insights» pages in the economy bundle (overview, sessions, heatmaps, 
 
 ## Client handoff
 
-`docs/handoff/general/07-analytics-events.md`: the standard, `insights_send` over the socket with the batch format, queueing and retry rules, `insights_config` hints, examples (nakama-js), error codes. Unity: list of what `nakama-unity` needs (not changed in this work).
+`docs/handoff/general/14-analytics-events.md`: the standard, `insights_send` over the socket with the batch format, queueing and retry rules, `insights_config` hints, examples (nakama-js), error codes. Unity: list of what `nakama-unity` needs (not changed in this work).
 
 ## Progress (2026-11-21, branch `analytics`)
 
@@ -266,12 +266,12 @@ Built:
 - Queries: explorer (metric × up to 4 group-bys × bucket × tag filters), activity (DAU/WAU/MAU/new/returning), retention summary + cohorts (classic/rolling), funnels, event log with cursor, values, session timelines.
 - Importers: `ga4_bigquery`, `ga4_data`, `gameanalytics` (S3 raw export), connector table with leases and runs.
 - Console bundle `console/ui/insights` (section «آنالیتیکس بازی»), every page listed above, CSV export, fa/en with Persian digits.
-- Client handoff `docs/handoff/general/07-analytics-events.md`.
+- Client handoff `docs/handoff/general/14-analytics-events.md`.
 
 Tested:
 
 - Go: events, store (Postgres contract on a disposable DB for both Postgres drivers; the same contract against an in-memory MongoDB wire server; ClickHouse against a fake HTTP server checking SQL and bound parameters), mongowire (BSON, RFC 7677 SCRAM vector, auth/insert/aggregate against a fake server), importers (fake Google token + BigQuery + Data API, fake S3), plugin (ingest, duplicates, rate limit, backlog, catalog policies, server helper, game events, outbox while the store is down then switch to an external Postgres schema, dashboards API, connector run).
-- e2e `88-game-analytics` (catalog from the console, 4 device players over HTTP RPC, overview, active users, CSV, retention, explorer, funnel editor and result, session timeline, storage test, settings validation, imports form, mobile width, English).
+- e2e `96-game-analytics` (catalog from the console, 4 device players over HTTP RPC, overview, active users, CSV, retention, explorer, funnel editor and result, session timeline, storage test, settings validation, imports form, mobile width, English).
 - Real run: nakama-js client over the socket (`insights_session`, `insights_send` incl. duplicate batches, `insights_config`), then console API checks (explorer by tag combinations and by user, activity, retention, funnel, session timeline, empty outbox).
 
 Not tested live: ClickHouse, MongoDB, GA4 (BigQuery and Data API), GameAnalytics S3 export: no servers or credentials on this Mac.

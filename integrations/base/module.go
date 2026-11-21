@@ -72,12 +72,20 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := svc.registerFriendHooks(initializer); err != nil {
 		return err
 	}
+	if err := svc.registerFriendExtraHooks(initializer); err != nil {
+		return err
+	}
+	if err := svc.registerSuggestionHooks(initializer); err != nil {
+		return err
+	}
 	go svc.restrictionLoop(ctx)
 	go svc.supportLoop(ctx)
 	go svc.updatesLoop(ctx)
 	go svc.friendsLoop(ctx)
+	go svc.coplayLoop(ctx)
 	go svc.chatQuotaLoop(ctx)
 	go svc.accountDeleteLoop(ctx)
+	go svc.commLoop(ctx)
 	logger.Info("Base module registered")
 	return nil
 }

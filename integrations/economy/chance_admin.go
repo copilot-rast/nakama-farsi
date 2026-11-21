@@ -13,7 +13,7 @@ import (
 )
 
 const chanceGameJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'metadata',t.metadata,'prizeType',t.prize_type,'prize',t.prize,
-	'intervalTime',t.interval_time,'price',t.price,'isActive',t.is_active,'sort',t.sort,'kind',t.kind,'dailyLimit',t.daily_limit,'totalLimit',t.total_limit,'showOdds',t.show_odds,'createdAt',t.created_at,'updatedAt',t.updated_at,
+	'intervalTime',t.interval_time,'price',t.price,'isActive',t.is_active,'sort',t.sort,'kind',t.kind,'dailyLimit',t.daily_limit,'totalLimit',t.total_limit,'showOdds',t.show_odds,'priceLadder',t.price_ladder,'pityThreshold',t.pity_threshold,'revealAck',t.reveal_ack,'rerollEmpty',t.reroll_empty,'createdAt',t.created_at,'updatedAt',t.updated_at,
 	'plays',(SELECT count(*) FROM economy_chance_play p WHERE p.game_id=t.id),
 	'players',(SELECT count(*) FROM economy_chance_state c WHERE c.game_id=t.id),
 	'wins',(SELECT count(*) FROM economy_chance_play p WHERE p.game_id=t.id AND p.prize_id IS NOT NULL),
@@ -71,6 +71,11 @@ func saveChanceGame(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 			Chance       json.RawMessage `json:"chance"`
 			PrizeID      string          `json:"prizeId"`
 			PrizeGroupID string          `json:"prizeGroupId"`
+			Kind         string          `json:"kind"`
+			CurrencyID   string          `json:"currencyId"`
+			Min          *int64          `json:"min"`
+			Max          *int64          `json:"max"`
+			Jackpot      bool            `json:"jackpot"`
 		} `json:"prize"`
 		IntervalTime json.RawMessage `json:"intervalTime"`
 		Price        *struct {
@@ -83,6 +88,10 @@ func saveChanceGame(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 		DailyLimit *int   `json:"dailyLimit"`
 		TotalLimit *int   `json:"totalLimit"`
 		ShowOdds   *bool  `json:"showOdds"`
+		Ladder     []int64 `json:"priceLadder"`
+		Pity       *int    `json:"pityThreshold"`
+		RevealAck  bool    `json:"revealAck"`
+		Reroll     *bool   `json:"rerollEmpty"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -126,7 +135,7 @@ func saveChanceGame(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 	if in.PrizeType == "" {
 		in.PrizeType = "prize"
 	}
-	if err := oneOf("prizeType", "INVALID_PRIZE_TYPE", in.PrizeType, "prize", "prizeGroup"); err != nil {
+	if err := oneOf("prizeType", "INVALID_PRIZE_TYPE", in.PrizeType, "prize", "prizeGroup", "slots"); err != nil {
 		return err
 	}
 	if len(in.Prize) == 0 {
@@ -143,8 +152,16 @@ func saveChanceGame(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 			return badRequest("INVALID_PRIZE_CHANCE", field, "chance must be a number from 0 to 100")
 		}
 		chance = math.Round(chance*chanceScale) / chanceScale
-		row := chanceRow{Chance: chance}
+		row := chanceRow{Chance: chance, Jackpot: r.Jackpot}
 		prizeID, groupID := strings.TrimSpace(r.PrizeID), strings.TrimSpace(r.PrizeGroupID)
+		if in.PrizeType == "slots" {
+			slot, err := cleanSlotRow(ctx, tx, field, row, r.Kind, r.CurrencyID, prizeID, groupID, r.Min, r.Max)
+			if err != nil {
+				return err
+			}
+			rows = append(rows, slot)
+			continue
+		}
 		if in.PrizeType == "prize" && groupID != "" || in.PrizeType == "prizeGroup" && prizeID != "" {
 			return badRequest("PRIZE_TYPE_MISMATCH", field, "use prizeId rows for prizeType prize and prizeGroupId rows for prizeType prizeGroup")
 		}
@@ -164,7 +181,11 @@ func saveChanceGame(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 		}
 		rows = append(rows, row)
 	}
-	if total := chanceTotalOf(rows); scaledChance(total) != chanceTotal {
+	if err := checkChanceExtras(in.PrizeType, rows, in.Pity, in.Ladder); err != nil {
+		return err
+	}
+	if in.PrizeType != "slots" && scaledChance(chanceTotalOf(rows)) != chanceTotal {
+		total := chanceTotalOf(rows)
 		e := badRequest("TOTAL_CHANCE_MUST_BE_100", "prize", "the chances must add up to exactly 100")
 		e.Meta = map[string]any{"totalChance": total}
 		return e
@@ -197,10 +218,19 @@ func saveChanceGame(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 	if interval == nil && price == nil {
 		return badRequest("INTERVAL_OR_PRICE_REQUIRED", "intervalTime", "set a free turn interval, a ticket price, or both")
 	}
+	var ladder any
+	if len(in.Ladder) > 0 {
+		if price == nil {
+			return badRequest("LADDER_NEEDS_PRICE", "priceLadder", "a price ladder needs the ticket currency")
+		}
+		raw, _ := json.Marshal(in.Ladder)
+		ladder = string(raw)
+	}
+	reroll := in.Reroll == nil || *in.Reroll
 	rowsJSON, _ := json.Marshal(rows)
 	return execSave(ctx, tx, "economy_chance_game", id, create,
-		[]string{"key", "name", "description", "metadata", "prize_type", "prize", "interval_time", "price", "is_active", "sort", "kind", "daily_limit", "total_limit", "show_odds"},
-		[]any{key, i18nJSON(name), i18nJSON(desc), meta, in.PrizeType, string(rowsJSON), interval, price, in.IsActive, in.Sort, in.Kind, in.DailyLimit, in.TotalLimit, showOdds})
+		[]string{"key", "name", "description", "metadata", "prize_type", "prize", "interval_time", "price", "is_active", "sort", "kind", "daily_limit", "total_limit", "show_odds", "price_ladder", "pity_threshold", "reveal_ack", "reroll_empty"},
+		[]any{key, i18nJSON(name), i18nJSON(desc), meta, in.PrizeType, string(rowsJSON), interval, price, in.IsActive, in.Sort, in.Kind, in.DailyLimit, in.TotalLimit, showOdds, ladder, in.Pity, in.RevealAck, reroll})
 }
 
 func savePrizeGroup(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {
@@ -289,7 +319,7 @@ func (s *service) chanceConsoleRoutes() []consoleRoute {
 
 const chancePlayAdminJSON = `jsonb_build_object('id',p.id,'gameId',p.game_id,'gameKey',g.key,'gameName',g.name,'userId',p.user_id,'username',u.username,'mode',p.mode,'status',p.status,
 	'roll',p.roll::numeric/10000,'slot',p.slot,'prizeId',p.prize_id,'prizeKey',z.key,'prizeName',z.name,'prizeGroupId',p.prize_group_id,'groupKey',pg.key,'groupName',pg.name,
-	'claimId',p.claim_id,'price',p.price,'error',p.error,'createdAt',p.created_at,'finishedAt',p.finished_at)::text`
+	'claimId',p.claim_id,'price',p.price,'outcome',p.outcome,'forced',p.forced,'ackedAt',p.acked_at,'error',p.error,'createdAt',p.created_at,'finishedAt',p.finished_at)::text`
 
 const chancePlayAdminFrom = ` FROM economy_chance_play p JOIN economy_chance_game g ON g.id=p.game_id LEFT JOIN users u ON u.id=p.user_id
 	LEFT JOIN economy_prize z ON z.id=p.prize_id LEFT JOIN economy_prize_group pg ON pg.id=p.prize_group_id`
@@ -357,4 +387,90 @@ func (s *service) consoleUserChancePlays(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	s.listRaw(w, r, `SELECT count(*)`+chancePlayAdminFrom, `SELECT `+chancePlayAdminJSON+chancePlayAdminFrom, where, ` ORDER BY p.created_at DESC, p.id DESC`, readPage(r))
+}
+
+func cleanSlotRow(ctx context.Context, tx *sql.Tx, field string, row chanceRow, kind, currencyID, prizeID, groupID string, min, max *int64) (chanceRow, error) {
+	if row.Jackpot {
+		return row, badRequest("JACKPOT_NOT_FOR_SLOTS", field, "a chest with slots has no jackpot")
+	}
+	if kind == "" {
+		switch {
+		case strings.TrimSpace(currencyID) != "":
+			kind = "currency"
+		case groupID != "":
+			kind = "prizeGroup"
+		default:
+			kind = "prize"
+		}
+	}
+	row.Kind = kind
+	switch kind {
+	case "currency":
+		cur, err := refExists(ctx, tx, "economy_currency", field+".currencyId", "CURRENCY_NOT_FOUND", currencyID, true)
+		if err != nil {
+			return row, err
+		}
+		row.CurrencyID = *cur
+		if min == nil || max == nil || *min < 1 || *max < *min || *max > 1e12 {
+			return row, badRequest("INVALID_SLOT_RANGE", field+".min", "a whole range with 1 <= min <= max")
+		}
+		row.Min, row.Max = *min, *max
+	case "prize":
+		ref, err := refExists(ctx, tx, "economy_prize", field+".prizeId", "PRIZE_NOT_FOUND", prizeID, true)
+		if err != nil {
+			return row, err
+		}
+		row.PrizeID = ref
+	case "prizeGroup":
+		ref, err := refExists(ctx, tx, "economy_prize_group", field+".prizeGroupId", "PRIZE_GROUP_NOT_FOUND", groupID, true)
+		if err != nil {
+			return row, err
+		}
+		row.PrizeGroupID = ref
+	default:
+		return row, badRequest("INVALID_SLOT_KIND", field+".kind", "currency, prize or prizeGroup")
+	}
+	return row, nil
+}
+
+func checkChanceExtras(prizeType string, rows []chanceRow, pity *int, ladder []int64) error {
+	if len(ladder) > 10 {
+		return badRequest("INVALID_PRICE_LADDER", "priceLadder", "at most 10 steps")
+	}
+	for _, v := range ladder {
+		if v < 1 || v > 1e12 {
+			return badRequest("INVALID_PRICE_LADDER", "priceLadder", "every step is a whole amount of 1 or more")
+		}
+	}
+	if prizeType == "slots" {
+		if pity != nil {
+			return badRequest("PITY_NOT_FOR_SLOTS", "pityThreshold", "a chest with slots has no jackpot")
+		}
+		some := false
+		for _, r := range rows {
+			some = some || scaledChance(r.Chance) > 0
+		}
+		if !some {
+			return badRequest("SLOTS_ALL_ZERO", "prize", "at least one slot needs a chance above 0")
+		}
+		return nil
+	}
+	jackpots := 0
+	for _, r := range rows {
+		if r.Jackpot {
+			jackpots++
+		}
+	}
+	if jackpots > 1 {
+		return badRequest("ONE_JACKPOT", "prize", "mark at most one row as the jackpot")
+	}
+	if pity != nil {
+		if *pity < 1 || *pity > 100000 {
+			return badRequest("INVALID_PITY", "pityThreshold", "from 1 to 100000, or empty")
+		}
+		if jackpots == 0 {
+			return badRequest("PITY_NEEDS_JACKPOT", "pityThreshold", "mark the jackpot row first")
+		}
+	}
+	return nil
 }

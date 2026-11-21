@@ -4,7 +4,15 @@ PH_ICONS['prize-groups'] = '<path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-1
 PH_ICONS.packageDuo = '<path d="M128,129.09V232a8,8,0,0,1-3.84-1l-88-48.18a8,8,0,0,1-4.16-7V80.18a8,8,0,0,1,.7-3.25Z" opacity="0.2"/>' + PH_ICONS['prize-groups'];
 PH_ICONS.timerDuo = '<path d="M216,136a88,88,0,1,1-88-88A88,88,0,0,1,216,136Z" opacity="0.2"/><path d="M128,40a96,96,0,1,0,96,96A96.11,96.11,0,0,0,128,40Zm0,176a80,80,0,1,1,80-80A80.09,80.09,0,0,1,128,216ZM173.66,90.34a8,8,0,0,1,0,11.32l-40,40a8,8,0,0,1-11.32-11.32l40-40A8,8,0,0,1,173.66,90.34ZM96,16a8,8,0,0,1,8-8h48a8,8,0,0,1,0,16H104A8,8,0,0,1,96,16Z"/>';
 
-var CHANCE_PRIZE_TYPES = ['prize', 'prizeGroup'];
+var CHANCE_PRIZE_TYPES = ['prize', 'prizeGroup', 'slots'];
+var CH_SLOT_KINDS = ['currency', 'prize', 'prizeGroup'];
+
+function chNotSlots(v) { return v.prizeType !== 'slots'; }
+function chSlots(v) { return v.prizeType === 'slots'; }
+
+function chLadder(text) {
+  return String(text || '').split(/[\s,،]+/).filter(function (x) { return x !== ''; }).map(function (x) { return parseNumber(x, true); });
+}
 var CH_SLICE_COLORS = 8;
 
 function chanceSum(rows) {
@@ -22,7 +30,7 @@ function chanceBar(rows, prizeType) {
   (rows || []).forEach(function (r, i) {
     var v = Number(r.chance) || 0;
     if (v <= 0) return;
-    var empty = prizeType === 'prizeGroup' ? !r.prizeGroupId : !r.prizeId;
+    var empty = prizeType === 'slots' ? false : prizeType === 'prizeGroup' ? !r.prizeGroupId : !r.prizeId;
     barEl.appendChild(h('span', { 'data-slice': String(i % CH_SLICE_COLORS), 'data-empty': empty ? '' : null, style: 'flex:' + v + ' 1 0' }));
   });
   return barEl;
@@ -35,6 +43,8 @@ function chanceModes(it) {
     out.push(h('span', { class: 'eco-tag eco-tag--primary inline-flex items-center gap-1 leading-tight max-w-full px-2 py-0.5 text-xs rounded-md whitespace-nowrap', 'data-ch-price': '' },
       h('span', { class: 'tabular-nums', text: t('ch.mode.ticket', { n: fmtNum(it.price.amount) }) }), refNameCell('currencies', it.price.currencyId)));
   }
+  if (it.priceLadder && it.priceLadder.length) out.push(h('span', { 'data-ch-ladder': '' }, tag(t('ch.ladder.tag', { list: it.priceLadder.map(function (n) { return fmtNum(n); }).join(' › ') }), 'primary')));
+  if (it.pityThreshold) out.push(h('span', { 'data-ch-pity': '' }, tag(t('ch.pity.tag', { n: fmtNum(it.pityThreshold) }), 'success')));
   if (it.dailyLimit) out.push(h('span', { 'data-ch-daily': '' }, tag(t('ch.limit.daily', { n: fmtNum(it.dailyLimit) }), 'warning')));
   if (it.totalLimit) out.push(h('span', { 'data-ch-total': '' }, tag(t('ch.limit.total', { n: fmtNum(it.totalLimit) }), 'warning')));
   return out;
@@ -49,6 +59,7 @@ function chanceMinutes(n) {
 
 function chanceRowsSummary(it) {
   var rows = it.prize || [];
+  if (it.prizeType === 'slots') return t('ch.slotsN', { n: fmtNum(rows.length) });
   var won = rows.filter(function (r) { return it.prizeType === 'prizeGroup' ? r.prizeGroupId : r.prizeId; }).length;
   return t('ch.rowsN', { n: fmtNum(rows.length), w: fmtNum(won) });
 }
@@ -113,8 +124,8 @@ RESOURCES['chance-games'] = {
     { name: 'kind', type: 'select', label: 'f.ch.kind', hint: 'f.ch.kind.hint', required: true, noPlaceholder: true, options: opts('ch.kind.', ['wheel', 'chest']) },
     { name: 'stats', type: 'static', readonly: true, render: chanceStats },
     { type: 'heading', label: 'ch.h.table' },
-    { name: 'prizeType', type: 'select', label: 'f.ch.prizeType', hint: 'f.ch.prizeType.hint', required: true, noPlaceholder: true, options: opts('ch.type.', CHANCE_PRIZE_TYPES) },
-    { name: 'prize', type: 'rows', addLabel: 'ch.row.add', emptyText: 'ch.row.empty', min: 1, max: 50, empty: [], refresh: true,
+    { name: 'prizeType', type: 'select', label: 'f.ch.prizeType', hint: 'f.ch.prizeType.hint', required: true, noPlaceholder: true, refresh: true, options: opts('ch.type.', CHANCE_PRIZE_TYPES) },
+    { name: 'prize', type: 'rows', when: chNotSlots, addLabel: 'ch.row.add', emptyText: 'ch.row.empty', min: 1, max: 50, empty: [], refresh: true,
       newRow: function (rows) {
         var left = Math.round((100 - chanceSum(rows)) * 10000) / 10000;
         return { chance: left > 0 ? left : 0, prizeId: null, prizeGroupId: null };
@@ -129,8 +140,36 @@ RESOURCES['chance-games'] = {
         { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.ch.prize', optional: true },
         { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.ch.group', optional: true }
       ] },
-    { name: 'sum', type: 'static', readonly: true, live: true, render: chanceSumBlock },
-    { name: 'rowsHint', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('ch.rows.hint') }); } },
+    { name: 'sum', type: 'static', readonly: true, live: true, when: chNotSlots, render: chanceSumBlock },
+    { type: 'row', when: chNotSlots, fields: [
+      { name: 'jackpotRow', type: 'number', label: 'f.ch.jackpot', hint: 'f.ch.jackpot.hint', optional: true, min: 1, max: 50, when: chNotSlots },
+      { name: 'pityThreshold', type: 'number', label: 'f.ch.pity', hint: 'f.ch.pity.hint', optional: true, min: 1, max: 100000, when: chNotSlots }
+    ] },
+    { name: 'rowsHint', type: 'static', readonly: true, when: chNotSlots, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('ch.rows.hint') }); } },
+    { name: 'slots', type: 'rows', addLabel: 'ch.slot.add', emptyText: 'ch.row.empty', min: 1, max: 50, empty: [], when: chSlots,
+      newRow: function () { return { chance: 50, kind: 'currency', currencyId: null, min: 1, max: 1, prizeId: null, prizeGroupId: null }; },
+      check: function (rows) {
+        var any = false;
+        for (var i = 0; i < rows.length; i++) {
+          var r = rows[i];
+          if (Number(r.chance) > 0) any = true;
+          if (r.kind === 'currency' && (!r.currencyId || !(Number(r.min) >= 1) || Number(r.max) < Number(r.min))) return { index: i, message: t('code.INVALID_SLOT_RANGE') };
+          if (r.kind === 'prize' && !r.prizeId) return { index: i, message: t('f.ch.prize') + ': ' + t('err.required') };
+          if (r.kind === 'prizeGroup' && !r.prizeGroupId) return { index: i, message: t('f.ch.group') + ': ' + t('err.required') };
+        }
+        return any ? null : { index: 0, message: t('code.SLOTS_ALL_ZERO') };
+      },
+      columns: [
+        { name: 'chance', type: 'number', int: false, label: 'f.ch.chance', required: true, min: 0, max: 100 },
+        { name: 'kind', type: 'select', label: 'f.ch.slotKind', options: function () { return opts('ch.slotKind.', CH_SLOT_KINDS)(); } },
+        { name: 'currencyId', type: 'ref', resource: 'currencies', label: 'f.ch.currency', optional: true },
+        { name: 'min', type: 'number', label: 'f.ch.min', optional: true, min: 1 },
+        { name: 'max', type: 'number', label: 'f.ch.max', optional: true, min: 1 },
+        { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.ch.prize', optional: true },
+        { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.ch.group', optional: true }
+      ] },
+    { name: 'slotsHint', type: 'static', readonly: true, when: chSlots, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-ch-slots-hint': '', text: t('ch.slots.hint') }); } },
+    { name: 'rerollEmpty', type: 'bool', inline: true, label: 'f.ch.reroll', hint: 'f.ch.reroll.hint', when: chSlots },
     { type: 'heading', label: 'ch.h.play' },
     { name: 'intervalTime', type: 'number', label: 'f.ch.interval', hint: 'f.ch.interval.hint', optional: true, min: 1, max: 525600 },
     { type: 'row', fields: [
@@ -138,6 +177,8 @@ RESOURCES['chance-games'] = {
         check: function (v, vals) { var a = vals.price && vals.price.amount; return (v && (a == null || a === '')) || (!v && a != null && a !== '') ? t('code.INVALID_PRICE_PAYLOAD') : null; } },
       { name: 'price.amount', type: 'number', label: 'f.ch.amount', hint: 'f.ch.amount.hint', optional: true, min: 1 }
     ] },
+    { name: 'ladderText', type: 'text', ltr: true, label: 'f.ch.ladder', hint: 'f.ch.ladder.hint', optional: true },
+    { name: 'revealAck', type: 'bool', inline: true, label: 'f.ch.revealAck', hint: 'f.ch.revealAck.hint' },
     { name: 'playHint', type: 'static', readonly: true, live: true, render: function (v) {
       var none = !v.intervalTime && !(v.price && v.price.currencyId);
       return h('p', { class: 'text-xs ' + (none ? 'text-error-600 dark:text-error-400' : 'text-secondary-500 dark:text-secondary-400'), 'data-ch-play-hint': none ? 'none' : '', text: none ? t('code.INTERVAL_OR_PRICE_REQUIRED') : t('ch.play.hint') });
@@ -153,17 +194,47 @@ RESOURCES['chance-games'] = {
     { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
   ],
   defaults: function () {
-    return { key: '', isActive: true, name: {}, description: {}, kind: 'wheel', prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null }, dailyLimit: null, totalLimit: null, showOdds: true,
+    return { key: '', isActive: true, name: {}, description: {}, kind: 'wheel', prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null }, dailyLimit: null, totalLimit: null, showOdds: true, ladderText: '', revealAck: false, rerollEmpty: true, jackpotRow: null, pityThreshold: null,
+      slots: [{ chance: 70, kind: 'currency', currencyId: null, min: 120, max: 180, prizeId: null, prizeGroupId: null }],
       prize: [{ chance: 30, prizeId: null, prizeGroupId: null }, { chance: 40, prizeId: null, prizeGroupId: null }, { chance: 30, prizeId: null, prizeGroupId: null }] };
   },
   toForm: function (v) {
     if (!v.price) v.price = { currencyId: null, amount: null };
-    v.prize = (v.prize || []).map(function (r) { return { chance: r.chance, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
+    var rows = v.prize || [];
+    v.ladderText = (v.priceLadder || []).join(', ');
+    v.jackpotRow = null;
+    rows.forEach(function (r, i) { if (r.jackpot) v.jackpotRow = i + 1; });
+    if (v.prizeType === 'slots') {
+      v.slots = rows.map(function (r) { return { chance: r.chance, kind: r.kind || 'prize', currencyId: r.currencyId || null, min: r.min || null, max: r.max || null, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
+      v.prize = [{ chance: 100, prizeId: null, prizeGroupId: null }];
+    } else {
+      if (!v.slots || !v.slots.length) v.slots = [{ chance: 70, kind: 'currency', currencyId: null, min: 120, max: 180, prizeId: null, prizeGroupId: null }];
+      v.prize = rows.map(function (r) { return { chance: r.chance, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
+    }
+    if (v.rerollEmpty == null) v.rerollEmpty = true;
     return v;
   },
   fixPayload: function (p) {
     var group = p.prizeType === 'prizeGroup';
-    p.prize = (p.prize || []).map(function (r) { return { chance: r.chance, prizeId: group ? '' : (r.prizeId || ''), prizeGroupId: group ? (r.prizeGroupId || '') : '' }; });
+    if (p.prizeType === 'slots') {
+      p.prize = (p.slots || []).map(function (r) {
+        var k = r.kind || 'prize';
+        var o = { chance: r.chance, kind: k };
+        if (k === 'currency') { o.currencyId = r.currencyId || ''; o.min = r.min; o.max = r.max; }
+        if (k === 'prize') o.prizeId = r.prizeId || '';
+        if (k === 'prizeGroup') o.prizeGroupId = r.prizeGroupId || '';
+        return o;
+      });
+      p.pityThreshold = null;
+    } else {
+      var jr = Number(p.jackpotRow) || 0;
+      p.prize = (p.prize || []).map(function (r, i) { var o = { chance: r.chance, prizeId: group ? '' : (r.prizeId || ''), prizeGroupId: group ? (r.prizeGroupId || '') : '' }; if (i + 1 === jr) o.jackpot = true; return o; });
+      if (p.pityThreshold === '' || p.pityThreshold === undefined) p.pityThreshold = null;
+    }
+    p.priceLadder = chLadder(p.ladderText);
+    p.revealAck = !!p.revealAck;
+    p.rerollEmpty = p.rerollEmpty !== false;
+    delete p.slots; delete p.ladderText; delete p.jackpotRow; delete p.slotsHint;
     if (!p.price || !p.price.currencyId) p.price = null;
     if (p.intervalTime === '' || p.intervalTime === undefined) p.intervalTime = null;
     if (p.sort == null) p.sort = 0;

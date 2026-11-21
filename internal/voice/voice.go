@@ -168,3 +168,17 @@ func (e *ProviderError) Error() string {
 }
 
 var ErrUnavailable = errors.New("VOICE_PROVIDER_UNAVAILABLE")
+
+type Participant struct {
+	Identity   string `json:"identity"`
+	Name       string `json:"name"`
+	CanPublish bool   `json:"canPublish"`
+	Connected  bool   `json:"connected"`
+}
+
+type Moderator interface {
+	SetPublish(ctx context.Context, room, identity string, can bool) error
+	Participants(ctx context.Context, room string) ([]Participant, error)
+}
+
+var ErrNotInRoom = errors.New("voice participant is not in the room")

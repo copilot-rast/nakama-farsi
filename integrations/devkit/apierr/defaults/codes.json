@@ -509,6 +509,18 @@
       "base"
     ]
   },
+  "CANNOT_TARGET_SELF": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "CAN_SEND_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
   "CATEGORY_ALWAYS_ON": {
     "status": 400,
     "modules": [
@@ -554,10 +566,28 @@
       "publication"
     ]
   },
+  "CHANCE_PRICE_CHANGED": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
   "CHANCE_TOTAL_LIMIT": {
     "status": 409,
     "modules": [
       "economy"
+    ]
+  },
+  "CHANNEL_CLOSED": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "CHANNEL_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
     ]
   },
   "CHAT_CLOSED": {
@@ -994,6 +1024,12 @@
       "base"
     ]
   },
+  "COMMS_DISABLED": {
+    "status": 403,
+    "modules": [
+      "base"
+    ]
+  },
   "COMMS_ISSUER_INVALID": {
     "status": 400,
     "modules": [
@@ -1035,6 +1071,12 @@
     "modules": [
       "assets",
       "content"
+    ]
+  },
+  "COOLDOWN_ACTIVE": {
+    "status": 429,
+    "modules": [
+      "base"
     ]
   },
   "COUNTRY_NOT_AVAILABLE": {
@@ -1334,6 +1376,7 @@
   "CURRENCY_IS_NOT_ENOUGH": {
     "status": 409,
     "modules": [
+      "base",
       "economy"
     ]
   },
@@ -1346,12 +1389,14 @@
   "CURRENCY_NOT_FOUND": {
     "status": 400,
     "modules": [
+      "base",
       "economy"
     ]
   },
   "CURRENCY_REQUIRED": {
     "status": 400,
     "modules": [
+      "base",
       "inventoryx"
     ]
   },
@@ -1543,6 +1588,12 @@
       "pp"
     ]
   },
+  "FAVORITES_FULL": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
   "FILE_REQUIRED": {
     "status": 400,
     "modules": [
@@ -1566,6 +1617,12 @@
     "status": 404,
     "modules": [
       "campaign"
+    ]
+  },
+  "FRIENDSHIP_REQUIRED": {
+    "status": 403,
+    "modules": [
+      "base"
     ]
   },
   "FRIEND_ROOMS_DISABLED": {
@@ -1726,6 +1783,12 @@
       "publication"
     ]
   },
+  "IMAGE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
   "IMPORT_DUPLICATE_KEY": {
     "status": 400,
     "modules": [
@@ -1742,6 +1805,12 @@
     "status": 400,
     "modules": [
       "inventoryx"
+    ]
+  },
+  "INFINITY_NEEDS_CYCLE": {
+    "status": 400,
+    "modules": [
+      "economy"
     ]
   },
   "INSUFFICIENT_BALANCE": {
@@ -1792,6 +1861,12 @@
       "base"
     ]
   },
+  "INVALID_ASSET_ID": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
   "INVALID_BRANCH": {
     "status": 400,
     "modules": [
@@ -1821,6 +1896,12 @@
     "modules": [
       "base",
       "publication"
+    ]
+  },
+  "INVALID_COMM_MESSAGE": {
+    "status": 400,
+    "modules": [
+      "base"
     ]
   },
   "INVALID_CONTEXT": {
@@ -1984,6 +2065,12 @@
       "publication"
     ]
   },
+  "INVALID_INFINITY_RANGE": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "INVALID_INTERVAL": {
     "status": 400,
     "modules": [
@@ -2032,7 +2119,8 @@
     "status": 400,
     "modules": [
       "base",
-      "ledger"
+      "ledger",
+      "publication"
     ]
   },
   "INVALID_LANGUAGE_CODE": {
@@ -2212,6 +2300,12 @@
       "publication"
     ]
   },
+  "INVALID_PITY": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "INVALID_PLACEMENT": {
     "status": 400,
     "modules": [
@@ -2244,6 +2338,12 @@
     ]
   },
   "INVALID_PRICE_AMOUNT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_PRICE_LADDER": {
     "status": 400,
     "modules": [
       "economy"
@@ -2402,7 +2502,25 @@
       "publication"
     ]
   },
+  "INVALID_SETTINGS": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
   "INVALID_SKU": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_SLOT_KIND": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "INVALID_SLOT_RANGE": {
     "status": 400,
     "modules": [
       "economy"
@@ -2417,7 +2535,9 @@
   "INVALID_STATUS": {
     "status": 400,
     "modules": [
-      "base"
+      "base",
+      "economy",
+      "publication"
     ]
   },
   "INVALID_STEP": {
@@ -2583,6 +2703,12 @@
       "publication"
     ]
   },
+  "INVALID_WEEK_LENGTH": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "INVALID_WEEK_START": {
     "status": 400,
     "modules": [
@@ -2622,6 +2748,12 @@
       "economy"
     ]
   },
+  "ITEM_NOT_AVAILABLE": {
+    "status": 412,
+    "modules": [
+      "base"
+    ]
+  },
   "ITEM_NOT_FOUND": {
     "status": 404,
     "modules": [
@@ -2629,7 +2761,20 @@
       "inventoryx"
     ]
   },
+  "ITEM_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base",
+      "economy"
+    ]
+  },
   "ITEM_TYPE_NOT_FOUND": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "JACKPOT_NOT_FOR_SLOTS": {
     "status": 400,
     "modules": [
       "economy"
@@ -2651,6 +2796,18 @@
     "status": 400,
     "modules": [
       "publication"
+    ]
+  },
+  "KIND_LOCKED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "LADDER_NEEDS_PRICE": {
+    "status": 400,
+    "modules": [
+      "economy"
     ]
   },
   "LANGUAGE_ACTIVE": {
@@ -2759,6 +2916,7 @@
   "LEVEL_TABLE_NOT_FOUND": {
     "status": 400,
     "modules": [
+      "base",
       "economy",
       "publication"
     ]
@@ -2901,6 +3059,12 @@
       "base"
     ]
   },
+  "NOT_A_MEMBER": {
+    "status": 404,
+    "modules": [
+      "base"
+    ]
+  },
   "NOT_CANCELLABLE": {
     "status": 409,
     "modules": [
@@ -3001,6 +3165,12 @@
       "base",
       "economy",
       "publication"
+    ]
+  },
+  "ONE_JACKPOT": {
+    "status": 400,
+    "modules": [
+      "economy"
     ]
   },
   "ONE_ROOM_PRIZE": {
@@ -3140,11 +3310,23 @@
       "content"
     ]
   },
+  "PACK_NOT_AVAILABLE": {
+    "status": 412,
+    "modules": [
+      "base"
+    ]
+  },
   "PACK_NOT_FOUND": {
     "status": 404,
     "modules": [
       "assets",
       "content"
+    ]
+  },
+  "PACK_NOT_OWNED": {
+    "status": 412,
+    "modules": [
+      "base"
     ]
   },
   "PACK_NOT_READY": {
@@ -3370,6 +3552,24 @@
       "account"
     ]
   },
+  "PITY_NEEDS_JACKPOT": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PITY_NOT_FOR_SLOTS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "PLACE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
   "PLATFORM_REQUIRED": {
     "status": 400,
     "modules": [
@@ -3381,6 +3581,12 @@
     "status": 400,
     "modules": [
       "economy"
+    ]
+  },
+  "PLAYER_CODE_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
     ]
   },
   "PLAY_CONFLICT": {
@@ -4086,6 +4292,12 @@
       "economy"
     ]
   },
+  "SEND_NOT_ALLOWED": {
+    "status": 403,
+    "modules": [
+      "base"
+    ]
+  },
   "SERVICE_NOT_FOUND": {
     "status": 404,
     "modules": [
@@ -4123,6 +4335,12 @@
     ]
   },
   "SKU_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
+  "SLOTS_ALL_ZERO": {
     "status": 400,
     "modules": [
       "economy"
@@ -4414,6 +4632,12 @@
     "status": 409,
     "modules": [
       "economy"
+    ]
+  },
+  "SPAM_LOCKED": {
+    "status": 429,
+    "modules": [
+      "base"
     ]
   },
   "SPONSOR_LINK_NOT_FOUND": {
@@ -4816,6 +5040,12 @@
       "economy"
     ]
   },
+  "TOO_MANY_EXTRAS": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "TOO_MANY_FIELDS": {
     "status": 400,
     "modules": [
@@ -5140,16 +5370,36 @@
       "publication"
     ]
   },
+  "USERNAME_CHANGE_COOLDOWN": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "USERNAME_PRICE_CHANGED": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
   "USERNAME_REQUIRED": {
     "status": 400,
     "modules": [
-      "account"
+      "account",
+      "base"
     ]
   },
   "USERNAME_TAKEN": {
     "status": 409,
     "modules": [
-      "account"
+      "account",
+      "base"
+    ]
+  },
+  "USERNAME_UNCHANGED": {
+    "status": 400,
+    "modules": [
+      "base"
     ]
   },
   "USERS_NOT_FOUND": {
@@ -5209,6 +5459,12 @@
       "base"
     ]
   },
+  "VOICE_PARTICIPANT_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "base"
+    ]
+  },
   "VOICE_PROVIDER_REQUIRED": {
     "status": 400,
     "modules": [
@@ -5223,6 +5479,12 @@
   },
   "VOICE_ROOM_FULL": {
     "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "VOICE_ROOM_NOT_FOUND": {
+    "status": 404,
     "modules": [
       "base"
     ]

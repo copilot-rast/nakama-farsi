@@ -26,8 +26,8 @@ export class Chat {
     });
   }
 
-  static open(player: Player): Promise<Chat> {
-    const url = API_URL.replace(/^http/, 'ws') + '/ws?format=json&token=' + encodeURIComponent(player.token);
+  static open(player: Player, opts: { status?: boolean } = {}): Promise<Chat> {
+    const url = API_URL.replace(/^http/, 'ws') + '/ws?format=json&token=' + encodeURIComponent(player.token) + (opts.status ? '&status=true' : '');
     const ws = new WebSocket(url);
     return new Promise((resolve, reject) => {
       ws.addEventListener('open', () => resolve(new Chat(ws)), { once: true });
@@ -72,6 +72,36 @@ export class Chat {
     const r = await this.call({ rpc: { id, payload: JSON.stringify(payload) } });
     if (r.error) return { error: r.error };
     return { data: (r.rpc?.payload ? JSON.parse(r.rpc.payload) : {}) as T };
+  }
+
+  async follow(userIds: string[]): Promise<{ presences: any[]; error?: string }> {
+    const r = await this.call({ status_follow: { user_ids: userIds } });
+    if (r.error) return { presences: [], error: r.error.message };
+    return { presences: r.status?.presences || [] };
+  }
+
+  async joinMatch(matchId: string): Promise<any> {
+    const r = await this.call({ match_join: { match_id: matchId } });
+    if (r.error) throw new Error('match join failed: ' + r.error.message);
+    return r.match;
+  }
+
+  sendMatch(matchId: string, opCode: number, body: unknown) {
+    this.ws.send(JSON.stringify({ match_data_send: { match_id: matchId, op_code: String(opCode), data: Buffer.from(JSON.stringify(body)).toString('base64') } }));
+  }
+
+  matchData(opCode: number): any[] {
+    return this.events.filter((e) => e.match_data && Number(e.match_data.op_code) === opCode).map((e) => JSON.parse(Buffer.from(e.match_data.data || '', 'base64').toString('utf8') || '{}'));
+  }
+
+  async waitMatch(opCode: number, pred: (d: any) => boolean = () => true, timeout = 10_000): Promise<any> {
+    const end = Date.now() + timeout;
+    while (Date.now() < end) {
+      const hit = this.matchData(opCode).find(pred);
+      if (hit) return hit;
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    throw new Error('no match data with op ' + opCode);
   }
 
   close() {

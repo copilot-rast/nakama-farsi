@@ -1784,6 +1784,62 @@ var MESSAGES = {
     'f.sk.msPrize': 'جایزهٔ رسیدن (یک بار)',
     'f.sk.repay': 'جایزهٔ روزها دوباره داده شود',
     'f.sk.repay.hint': 'خاموش (پیشنهادی): اگر بازیکن به نقطهٔ امن برگردد و دوباره به همان روزها برسد، جایزهٔ آن روزها را دوباره نمی‌گیرد. این جلوی غیبتِ عمدی برای جمع‌کردن دوبارهٔ جایزه را می‌گیرد.',
+    'ch.type.slots': "صندوق خانه‌دار",
+    'ch.slotsN': "{n} خانهٔ مستقل",
+    'ch.slot.add': "خانهٔ تازه",
+    'ch.slots.hint': "هر خانه جدا قرعه می‌خورد: شانس، درصدِ آمدن همان خانه است و جمع‌شان لازم نیست ۱۰۰ شود. برای ارز، مقدار بین کمینه و بیشینه تصادفی است.",
+    'ch.slotKind.currency': "ارز (بازه)",
+    'ch.slotKind.prize': "جایزه",
+    'ch.slotKind.prizeGroup': "گروه جایزه",
+    'f.ch.slotKind': "نوع",
+    'f.ch.min': "کمینه",
+    'f.ch.max': "بیشینه",
+    'f.ch.reroll': "اگر هیچ خانه‌ای نیامد دوباره قرعه بکش",
+    'f.ch.reroll.hint': "روشن (پیشنهادی): صندوق هیچ‌وقت خالی باز نمی‌شود.",
+    'f.ch.jackpot': "ردیف جایزهٔ بزرگ",
+    'f.ch.jackpot.hint': "شمارهٔ ردیفی که جایزهٔ بزرگ است (از ۱). خالی یعنی جایزهٔ بزرگ ندارد.",
+    'f.ch.pity': "تضمین جایزهٔ بزرگ بعد از",
+    'f.ch.pity.hint': "اگر بازیکن این‌قدر بازی کند و جایزهٔ بزرگ نیاید، همین بازی جایزهٔ بزرگ می‌دهد. با هر جایزهٔ بزرگ از صفر شروع می‌شود. پیشنهاد: ۴۰.",
+    'f.ch.ladder': "پلکان قیمت بلیت در روز",
+    'f.ch.ladder.hint': "قیمت بلیت اول، دوم و … در هر روز، با ویرگول. بعد از آخرین پله همان قیمت آخر می‌ماند. مثال: 10, 15, 20, 25, 30. خالی یعنی همیشه همان قیمت بالا.",
+    'f.ch.revealAck': "نمایش نتیجه تا تأیید بازیکن",
+    'f.ch.revealAck.hint': "جایزه همان لحظه داده می‌شود؛ ولی تا بازیکن دیدن نتیجه را تأیید نکند، نتیجهٔ آخر در pendingReveal می‌ماند.",
+    'ch.ladder.tag': "پلکان {list}",
+    'ch.pity.tag': "تضمین بعد از {n}",
+    'item.booster': "افزایش‌دهندهٔ زمان‌دار",
+    'item.booster.multiplier': "ضریب",
+    'item.booster.minutes': "مدت (دقیقه)",
+    'item.booster.hint': "رویدادهایی که این متا را زیاد می‌کنند در این مدت ضرب می‌شوند. چند افزایش‌دهنده روی هم ضرب نمی‌شوند؛ تازه‌ترین ضریب می‌ماند.",
+    'item.booster.range': "ضریب از ۱٫۰۱ تا ۱۰۰ و مدت از ۱ تا ۵۲۵۶۰۰ دقیقه",
+    'sk.miss.week_start': "برگشت به اول همان هفته",
+    'f.sk.weekLength': "طول هفته (روز)",
+    'f.sk.weekLength.hint': "با غیبت، بازیکن به روز اولِ همین هفته برمی‌گردد؛ مثلاً با طول ۷، غیبت در روز ۱۲ یعنی روز ۸.",
+    'sk.h.extras': "روزهای ویژه",
+    'sk.extras.note': "جایزهٔ اضافه در این روزها، فقط اگر بازیکن بدون غیبت به آن روز رسیده باشد.",
+    'sk.x.add': "روز ویژهٔ تازه",
+    'sk.x.empty': "روز ویژه‌ای نیست.",
+    'f.sk.xDay': "روز",
+    'sk.h.infinity': "مرحلهٔ بی‌پایان",
+    'f.sk.infinity': "بعد از پایان چرخه، مرحلهٔ بی‌پایان",
+    'f.sk.infinity.hint': "بعد از رسیدن به آخرین روز چرخه، هر روز مقداری تصادفی از ارز می‌گیرد و با غیبت به عقب برنمی‌گردد. نیاز به طول چرخه دارد.",
+    'f.sk.infCurrency': "ارز",
+    'f.sk.infMin': "کمینه",
+    'f.sk.infMax': "بیشینه",
+    'code.CHANCE_PRICE_CHANGED': "قیمت این بازی عوض شده است. قیمت تازه را ببینید و دوباره امتحان کنید.",
+    'code.SLOTS_ALL_ZERO': "دست‌کم یک خانهٔ صندوق باید شانسی بیشتر از صفر داشته باشد.",
+    'code.INVALID_SLOT_RANGE': "بازهٔ خانهٔ صندوق باید عدد صحیح باشد و کمینه دست‌کم ۱ و نه بیشتر از بیشینه.",
+    'code.INVALID_SLOT_KIND': "نوع خانهٔ صندوق باید ارز، جایزه یا گروه جایزه باشد.",
+    'code.JACKPOT_NOT_FOR_SLOTS': "صندوقِ خانه‌دار جایزهٔ بزرگ ندارد.",
+    'code.PITY_NOT_FOR_SLOTS': "صندوقِ خانه‌دار شمارندهٔ تضمین ندارد.",
+    'code.ONE_JACKPOT': "فقط یک ردیف را جایزهٔ بزرگ کنید.",
+    'code.INVALID_PITY': "آستانهٔ تضمین باید بین ۱ تا ۱۰۰۰۰۰ بازی باشد.",
+    'code.PITY_NEEDS_JACKPOT': "اول ردیف جایزهٔ بزرگ را مشخص کنید، بعد آستانهٔ تضمین را.",
+    'code.INVALID_PRICE_LADDER': "پلکان قیمت حداکثر ۱۰ پله دارد و هر پله عددی صحیح از ۱ به بالاست.",
+    'code.LADDER_NEEDS_PRICE': "پلکان قیمت به ارز بلیت نیاز دارد.",
+    'code.INVALID_WEEK_LENGTH': "طول هفته باید بین ۱ تا ۳۶۵ روز باشد.",
+    'code.INFINITY_NEEDS_CYCLE': "مرحلهٔ بی‌پایان بعد از چرخه شروع می‌شود. اول طول چرخه را تعیین کنید.",
+    'code.INVALID_INFINITY_RANGE': "مقدار مرحلهٔ بی‌پایان باید بازه‌ای صحیح باشد؛ کمینه دست‌کم ۱ و نه بیشتر از بیشینه.",
+    'code.TOO_MANY_EXTRAS': "هر زنجیره حداکثر ۱۰۰ روز ویژه دارد.",
     'sk.hiro.notice': 'این بخش مال خود این سرور است و به Hiro نیازی ندارد. صفحهٔ «زنجیره‌ها»ی Hiro جدا و دست‌نخورده می‌ماند.',
     'f.sk.event': 'رویداد شمارنده',
     'f.sk.event.hint': 'مثلاً «ورود به بازی». هر بازه فقط یک بار شمرده می‌شود.',
@@ -2332,6 +2388,112 @@ var MESSAGES = {
     'act.chat': "گفتگوی پشتیبانی",
     'act.referral': "معرف",
     'act.config': "پیکربندی",
+    'act.account': "حساب",
+    'fr.privacy': "حریم خصوصی و اعلان‌ها",
+    'f.fr.notifyDeclined': "اعلان رد درخواست",
+    'f.fr.notifyDeclined.hint': "وقتی بازیکنی درخواست دوستی را رد کند، فرستنده یک اعلان در صندوق پیام می‌گیرد.",
+    'f.fr.notifyRemoved': "اعلان حذف از دوستان",
+    'f.fr.notifyRemoved.hint': "وقتی بازیکنی دوستش را حذف کند، طرف دیگر یک اعلان می‌گیرد.",
+    'f.fr.presenceFriends': "وضعیت آنلاین فقط برای دوستان",
+    'f.fr.presenceFriends.hint': "بازیکن فقط وضعیت آنلاین دوستانش را می‌بیند و دنبال‌کردن دیگران نادیده گرفته می‌شود.",
+    'f.fr.dmFriends': "پیام خصوصی فقط بین دوستان",
+    'f.fr.dmFriends.hint': "باز کردن گفتگوی خصوصی و فرستادن پیام خصوصی فقط بین دو دوست ممکن است.",
+    'un.title': "تغییر نام کاربری",
+    'un.desc': "بار اول رایگان، بعد با قیمت پله‌ای. کنسول هم می‌تواند نام را بدون هزینه عوض کند و همه در تاریخچه می‌مانند.",
+    'f.un.enabled': "قانون تغییر نام روشن باشد",
+    'f.un.enabled.hint': "خاموش یعنی تغییر نام مثل قبل آزاد و بی‌هزینه است و شمرده نمی‌شود.",
+    'f.un.firstFree': "اولین تغییر رایگان",
+    'f.un.firstFree.hint': "اولین تغییر نام بازیکن هزینه ندارد.",
+    'f.un.currency': "ارز هزینه",
+    'f.un.currency.hint': "قیمت‌ها با این ارز کم می‌شوند؛ مثلاً جم.",
+    'f.un.cooldown': "فاصله بین دو تغییر (ساعت)",
+    'f.un.cooldown.hint': "صفر یعنی بدون فاصله.",
+    'f.un.ladder': "پله‌های قیمت",
+    'f.un.ladder.hint': "قیمت تغییرهای پولی به ترتیب، با ویرگول. بعد از آخرین پله، همان قیمت آخر می‌ماند. پیش‌فرض: ۵۰، ۱۰۰، ۲۰۰، ۴۰۰، ۸۰۰.",
+    'un.err.ladder': "حداکثر بیست عدد صحیح بین یک تا یک میلیارد.",
+    'pcs.title': "کد بازیکن",
+    'pcs.desc': "هر حساب یک کد کوتاه عمومی دارد که با آن پیدا یا دوست می‌شود. تغییر این تنظیم فقط روی حساب‌های تازه اثر دارد.",
+    'f.pcs.length': "طول کد",
+    'f.pcs.length.hint': "بین چهار تا شانزده نویسه.",
+    'f.pcs.charset': "نویسه‌ها",
+    'f.pcs.charset.hint': "کدها بزرگ‌نویس هستند و جستجو به کوچک و بزرگ حساس نیست.",
+    'pcs.charset.alnum': "حرف لاتین بزرگ و رقم",
+    'pcs.charset.letters': "فقط حرف لاتین بزرگ",
+    'pcs.charset.digits': "فقط رقم",
+    'fs.title': "پیشنهاد دوستی",
+    'fs.desc': "هر روز برای هر بازیکن فهرستی از هم‌بازی‌ها، دوستانِ دوستان، بازیکنان هم‌سطح و فعال ساخته می‌شود.",
+    'f.fs.enabled': "پیشنهاد دوستی روشن باشد",
+    'f.fs.enabled.hint': "خاموش یعنی فهرست خالی برمی‌گردد.",
+    'f.fs.visible': "اندازهٔ فهرست",
+    'f.fs.visible.hint': "چند پیشنهاد به بازیکن نشان داده شود.",
+    'f.fs.reserve': "ذخیره",
+    'f.fs.reserve.hint': "وقتی یکی از فهرست بیرون برود، اولین ذخیره جایش می‌نشیند.",
+    'fs.quotas': "سهم هر منبع",
+    'fs.sources': "منبع‌ها",
+    'fs.rules': "قانون‌ها",
+    'f.fs.coplay': "هم‌بازی‌ها",
+    'f.fs.mutual': "دوستان مشترک",
+    'f.fs.activity': "فعالیت مشابه",
+    'f.fs.level': "سطح مشابه",
+    'f.fs.lookback': "هم‌بازی‌های چند روز اخیر",
+    'f.fs.lookback.hint': "هم‌بازی‌های قدیمی‌تر پیشنهاد نمی‌شوند.",
+    'f.fs.presenceDays': "پنجرهٔ فعالیت (روز)",
+    'f.fs.presenceDays.hint': "روزهای حضور بازیکن در این بازه شمرده می‌شود.",
+    'f.fs.levelTable': "جدول سطح",
+    'f.fs.levelTable.hint': "خالی یعنی منبع سطح خاموش است.",
+    'f.fs.levelDelta': "بیشترین اختلاف سطح",
+    'f.fs.levelDelta.hint': "بازیکنانی که اختلاف سطحشان بیشتر است پیشنهاد نمی‌شوند.",
+    'f.fs.decayAfter': "کم‌رنگ شدن بعد از چند روز",
+    'f.fs.decayAfter.hint': "بعد از این تعداد روز نمایش پشت سر هم، امتیاز پیشنهاد هر روز نصف می‌شود.",
+    'f.fs.maxFriends': "سقف دوستان پیشنهادشونده",
+    'f.fs.maxFriends.hint': "کسی که این تعداد دوست یا بیشتر دارد پیشنهاد نمی‌شود. صفر یعنی بدون سقف.",
+    'f.fs.scanMax': "بیشترین نامزد از هر منبع",
+    'f.fs.scanMax.hint': "برای سرعت ساخت فهرست.",
+    'f.fs.livePatch': "هم‌بازی تازه فوراً بالای فهرست",
+    'f.fs.livePatch.hint': "بعد از پایان هر مسابقه، هم‌بازی‌ها همان روز به بالای فهرست می‌آیند.",
+    'fs.src.coplay': "هم‌بازی",
+    'fs.src.mutual': "دوست مشترک",
+    'fs.src.activity': "فعالیت",
+    'fs.src.level': "سطح",
+    'psoc.title': "حساب و دوستی",
+    'psoc.code': "کد بازیکن",
+    'psoc.next': "تغییر نام بعدی",
+    'psoc.next.free': "رایگان",
+    'psoc.next.cost': "{n} {cur}",
+    'psoc.paidN': "{n} تغییر پولی",
+    'psoc.cooldown': "تا {date} بسته است",
+    'psoc.policyOff': "قانون تغییر نام خاموش است",
+    'psoc.rename': "تغییر نام کاربری",
+    'psoc.rename.title': "تغییر نام کاربری بازیکن",
+    'psoc.rename.text': "از طرف کنسول، بدون هزینه و بدون فاصلهٔ زمانی. در تاریخچه ثبت می‌شود.",
+    'psoc.rename.field': "نام کاربری تازه",
+    'psoc.rename.hint': "باید با قوانین حساب جور باشد و تکراری نباشد.",
+    'psoc.rename.done': "نام کاربری به {name} تغییر کرد.",
+    'psoc.history': "تاریخچهٔ نام کاربری",
+    'psoc.history.empty': "هنوز تغییری نیست.",
+    'psoc.src.free': "رایگان",
+    'psoc.src.paid': "پولی",
+    'psoc.src.admin': "کنسول",
+    'psoc.col.from': "نام قبلی",
+    'psoc.col.to': "نام تازه",
+    'psoc.col.source': "نوع",
+    'psoc.col.cost': "هزینه",
+    'psoc.col.when': "زمان",
+    'psoc.col.player': "بازیکن",
+    'psoc.col.score': "امتیاز",
+    'psoc.col.shows': "نمایش",
+    'psoc.col.played': "آخرین بازی",
+    'psoc.col.game': "بازی",
+    'psoc.col.matches': "مسابقه",
+    'psoc.sugg': "پیشنهاد دوستی",
+    'psoc.sugg.none': "هنوز ساخته نشده",
+    'psoc.sugg.counts': "{v} پیشنهاد، {r} ذخیره",
+    'psoc.sugg.meta': "روز {cycle}، ساخته در {when}",
+    'psoc.regen': "ساخت دوبارهٔ پیشنهادها",
+    'psoc.regen.done': "پیشنهادها دوباره ساخته شد.",
+    'psoc.visible': "پیشنهادهای نمایش‌داده‌شده",
+    'psoc.reserve': "ذخیره",
+    'psoc.coplay': "هم‌بازی‌های اخیر",
     'act.method.device': "دستگاه",
     'act.method.custom': "شناسهٔ اختصاصی",
     'act.method.email': "ایمیل",
@@ -5501,6 +5663,105 @@ var MESSAGES = {
     'search.sticker-packs': "جست‌وجوی کلید یا نام بسته",
     'nav.sticker-settings': "تنظیمات",
     'desc.sticker-settings': "استیکر در کدام گفتگوها مجاز باشد و آیا از سهمیهٔ پیام کم کند.",
+    'nav.comm-settings': "پیام سریع بازی",
+    'tab.comm-settings': "پیام سریع بازی",
+    'desc.comm-settings': "بسته‌های «در مسابقه» با چه فاصله‌ای فرستاده شوند و کِی گفتگو قفل شود.",
+    'nav.comm-channels': "گفتگوی مسابقه‌ها",
+    'tab.comm-channels': "گفتگوی مسابقه‌ها",
+    'desc.comm-channels': "گفتگوی پیام سریع هر مسابقه. اینجا می‌توانید گفتگو را ببندید یا ارسال یک بازیکن را قطع کنید.",
+    'search.comm-channels': "جست‌وجوی شناسهٔ مسابقه یا نام کاربری",
+    'empty.comm-channels': "گفتگویی پیدا نشد",
+    'empty.hint.comm-channels': "گفتگوی هر مسابقه با اولین پیام سریع یا شروع مسابقه ساخته می‌شود.",
+    'nav.voice-rooms': "اتاق‌های ویس",
+    'desc.voice-rooms': "اتاق‌های ویسِ فعال و بازیکنانشان. با «بی‌صدا کردن» میکروفون بازیکن تا پایان اتاق بسته می‌شود.",
+    'search.voice-rooms': "جست‌وجوی اتاق، بازی یا نام کاربری",
+    'empty.voice-rooms': "اتاق ویس فعالی نیست",
+    'empty.hint.voice-rooms': "اتاق وقتی اینجا می‌آید که بازیکنی توکن ویس بگیرد.",
+    'filter.cm.kind': "نوع",
+    'filter.cm.place': "جای استفاده",
+    'cm.kind.sticker': "استیکر",
+    'cm.kind.text': "متن",
+    'cm.kind.gif': "گیف",
+    'cm.kind.emoji': "ایموجی",
+    'cm.place.chat': "گفتگو",
+    'cm.place.match': "مسابقه",
+    'col.cm.kind': "نوع و جا",
+    'cm.h.kind': "نوع و جای استفاده",
+    'f.cm.kind': "نوع بسته",
+    'f.cm.kind.hint': "بعد از ساختن عوض نمی‌شود. بستهٔ متنی برای هر مورد متن می‌خواهد؛ بقیه تصویر یا شناسهٔ فایل کلاینت.",
+    'f.cm.inChat': "در گفتگوی چت",
+    'f.cm.inChat.hint': "در پیام خصوصی، گروه و اتاق‌ها به‌صورت استیکر.",
+    'f.cm.inMatch': "در مسابقه",
+    'f.cm.inMatch.hint': "پیام سریع داخل بازی با فاصله و قفل ضد اسپم.",
+    'f.cm.text': "متن",
+    'f.cm.assetId': "شناسهٔ فایل کلاینت",
+    'cm.items.about': "بستهٔ متنی: متن هر مورد لازم است. استیکر، گیف و ایموجی: تصویر یا شناسهٔ فایلی که داخل برنامه است.",
+    'f.cm.enabled': "پیام سریع بازی روشن باشد",
+    'f.cm.enabled.hint': "خاموش: هیچ پیام سریعی در مسابقه فرستاده نمی‌شود و فهرست بسته‌ها خالی است.",
+    'cm.h.cooldown': "فاصله و قفل ضد اسپم",
+    'cm.cooldown.about': "برای هر بازیکن در هر مسابقه حساب می‌شود و همهٔ نوع‌ها یک قانون دارند. فقط پیام‌های پذیرفته شمرده می‌شوند.",
+    'f.cm.minInterval': "فاصلهٔ دو پیام (ثانیه)",
+    'f.cm.minInterval.hint': "صفر یعنی بدون فاصله.",
+    'f.cm.lock': "مدت قفل (ثانیه)",
+    'f.cm.lock.hint': "بعد از پیام زیاد، بازیکن این مدت نمی‌تواند پیام بفرستد.",
+    'f.cm.maxCount': "بیشترین پیام در پنجره",
+    'f.cm.maxCount.hint': "پیام بعدی بازیکن را قفل می‌کند.",
+    'f.cm.window': "پنجرهٔ شمارش (ثانیه)",
+    'f.cm.window.hint': "باید بیشتر از «بیشترین پیام × فاصله» باشد.",
+    'cm.err.window': "پنجره باید بیشتر از «بیشترین پیام × فاصله» باشد.",
+    'cm.h.more': "گفتگو و علاقه‌مندی",
+    'f.cm.channelHours': "عمر گفتگوی مسابقه (ساعت)",
+    'f.cm.channelHours.hint': "بعد از این مدت گفتگو خودش بسته می‌شود.",
+    'f.cm.maxFavorites': "بیشترین علاقه‌مندی",
+    'f.cm.maxFavorites.hint': "صفر یعنی بدون سقف.",
+    'cm.status.open': "باز",
+    'cm.status.closed': "بسته",
+    'cm.status.expired': "تمام‌شده",
+    'cm.sentN': "{n} پیام",
+    'cm.listenOnly': "فقط خواندن",
+    'cm.blockSend': "قطع ارسال",
+    'cm.allowSend': "اجازهٔ ارسال",
+    'cm.filter.open': "باز",
+    'cm.filter.closed': "بسته",
+    'cm.filter.all': "همه",
+    'cm.col.match': "مسابقه",
+    'cm.col.members': "بازیکنان",
+    'cm.col.messages': "پیام",
+    'cm.col.expires': "پایان",
+    'cm.close': "بستن گفتگو",
+    'cm.close.title': "گفتگوی این مسابقه بسته شود؟",
+    'cm.close.text': "هیچ بازیکنی دیگر در این مسابقه پیام سریع نمی‌فرستد. بعداً می‌توانید دوباره بازش کنید.",
+    'cm.closed': "گفتگو بسته شد.",
+    'cm.open': "باز کردن",
+    'cm.opened': "گفتگو باز شد.",
+    'cm.reason.staff': "بسته به‌دست پشتیبانی",
+    'cm.reason.ended': "پایان مسابقه",
+    'cm.reason.expired': "پایان زمان",
+    'vr.col.room': "اتاق",
+    'vr.col.player': "بازیکن",
+    'vr.col.mic': "میکروفون",
+    'vr.col.expires': "پایان",
+    'vr.staffMuted': "بی‌صدا به‌دست پشتیبانی",
+    'vr.canPublish': "می‌تواند صحبت کند",
+    'vr.listenOnly': "فقط شنیدن",
+    'vr.mute': "بی‌صدا کردن",
+    'vr.unmute': "برداشتن بی‌صدا",
+    'vr.muted': "بازیکن بی‌صدا شد.",
+    'vr.unmuted': "بی‌صدا برداشته شد.",
+    'vr.savedNotLive': "ذخیره شد؛ بازیکن الان در اتاق نیست و با ورود بعدی اعمال می‌شود.",
+    'vr.mute.title': "«{name}» بی‌صدا شود؟",
+    'vr.mute.text': "میکروفون این بازیکن تا پایان این اتاق بسته می‌ماند، حتی اگر دوباره وصل شود. شنیدن آزاد است.",
+    'vr.kind.match': "مسابقه",
+    'vr.kind.party': "پارتی",
+    'vr.kind.room': "اتاق باز",
+    'vr.online': "وصل",
+    'vr.offline': "وصل نیست",
+    'code.KIND_LOCKED': "نوع بسته بعد از ساخت عوض نمی‌شود.",
+    'code.PLACE_REQUIRED': "گفتگو، مسابقه یا هر دو را روشن کنید.",
+    'code.INVALID_ASSET_ID': "شناسهٔ فایل ۱ تا ۶۴ حرف کوچک لاتین، رقم یا _ . - است.",
+    'code.INVALID_SETTINGS': "این تنظیمات درست نیست.",
+    'code.VOICE_ROOM_NOT_FOUND': "این اتاق ویس دیگر فعال نیست.",
+    'code.VOICE_PARTICIPANT_NOT_FOUND': "این بازیکن در اتاق ویس نیست.",
     'filter.sp.access': "دسترسی",
     'sp.access.free': "رایگان برای همه",
     'sp.access.item': "با آیتم فروشگاه",
@@ -7336,6 +7597,62 @@ var MESSAGES = {
     'f.sk.msPrize': 'Prize for reaching it (once)',
     'f.sk.repay': 'Pay day rewards again',
     'f.sk.repay.hint': 'Off (recommended): a player who falls back to a milestone and reaches the same days again does not get those day rewards twice. This stops players missing days on purpose to collect them again.',
+    'ch.type.slots': "Chest with slots",
+    'ch.slotsN': "{n} independent slots",
+    'ch.slot.add': "New slot",
+    'ch.slots.hint': "Each slot rolls on its own: the chance is how often that slot comes up, and the chances do not need to add up to 100. A currency slot pays a random amount from min to max.",
+    'ch.slotKind.currency': "Currency (range)",
+    'ch.slotKind.prize': "Prize",
+    'ch.slotKind.prizeGroup': "Prize group",
+    'f.ch.slotKind': "Kind",
+    'f.ch.min': "Min",
+    'f.ch.max': "Max",
+    'f.ch.reroll': "Roll again when no slot comes up",
+    'f.ch.reroll.hint': "On (recommended): a chest never opens empty.",
+    'f.ch.jackpot': "Jackpot row",
+    'f.ch.jackpot.hint': "The number of the jackpot row (from 1). Empty means no jackpot.",
+    'f.ch.pity': "Force the jackpot after",
+    'f.ch.pity.hint': "When a player plays this many times without the jackpot, this play gives it. It starts again from zero after any jackpot. Suggested: 40.",
+    'f.ch.ladder': "Ticket price ladder per day",
+    'f.ch.ladder.hint': "The price of the first, second, … ticket each day, separated by commas. After the last step the last price stays. Example: 10, 15, 20, 25, 30. Empty means the price above every time.",
+    'f.ch.revealAck': "Keep the result until the player confirms it",
+    'f.ch.revealAck.hint': "The reward is given at once; the last result stays in pendingReveal until the player confirms they saw it.",
+    'ch.ladder.tag': "Ladder {list}",
+    'ch.pity.tag': "Jackpot after {n}",
+    'item.booster': "Timed booster",
+    'item.booster.multiplier': "Multiplier",
+    'item.booster.minutes': "Length (minutes)",
+    'item.booster.hint': "Events that add to this meta are multiplied for this long. Boosters do not stack; the newest multiplier wins.",
+    'item.booster.range': "multiplier from 1.01 to 100 and length from 1 to 525600 minutes",
+    'sk.miss.week_start': "Back to the start of the week",
+    'f.sk.weekLength': "Week length (days)",
+    'f.sk.weekLength.hint': "A missed day sends the player back to the first day of the current week; with 7, missing on day 12 means day 8.",
+    'sk.h.extras': "Special days",
+    'sk.extras.note': "An extra prize on these days, only when the player reached the day without missing one.",
+    'sk.x.add': "New special day",
+    'sk.x.empty': "No special days.",
+    'f.sk.xDay': "Day",
+    'sk.h.infinity': "Infinity phase",
+    'f.sk.infinity': "Infinity phase after the cycle",
+    'f.sk.infinity.hint': "After the last day of the cycle, each day pays a random amount of a currency and a missed day no longer sends the player back. Needs the cycle length.",
+    'f.sk.infCurrency': "Currency",
+    'f.sk.infMin': "Min",
+    'f.sk.infMax': "Max",
+    'code.CHANCE_PRICE_CHANGED': "The price of this play has changed. Check the new price and try again.",
+    'code.SLOTS_ALL_ZERO': "At least one chest slot needs a chance above 0.",
+    'code.INVALID_SLOT_RANGE': "A chest slot needs a whole range where min is at least 1 and not above max.",
+    'code.INVALID_SLOT_KIND': "A chest slot is currency, prize or prize group.",
+    'code.JACKPOT_NOT_FOR_SLOTS': "A chest with slots has no jackpot row.",
+    'code.PITY_NOT_FOR_SLOTS': "A chest with slots has no pity counter.",
+    'code.ONE_JACKPOT': "Mark at most one row as the jackpot.",
+    'code.INVALID_PITY': "The pity threshold is from 1 to 100000 plays.",
+    'code.PITY_NEEDS_JACKPOT': "Mark the jackpot row before setting the pity threshold.",
+    'code.INVALID_PRICE_LADDER': "The price ladder has up to 10 whole amounts of 1 or more.",
+    'code.LADDER_NEEDS_PRICE': "A price ladder needs the ticket currency.",
+    'code.INVALID_WEEK_LENGTH': "The week length is from 1 to 365 days.",
+    'code.INFINITY_NEEDS_CYCLE': "The infinity phase starts after the cycle. Set the cycle length first.",
+    'code.INVALID_INFINITY_RANGE': "The infinity amount is a whole range where min is at least 1 and not above max.",
+    'code.TOO_MANY_EXTRAS': "A streak has at most 100 extra days.",
     'sk.hiro.notice': 'This is built into this server and does not need Hiro. The Hiro Streaks page stays separate and untouched.',
     'f.sk.event': 'Counting event',
     'f.sk.event.hint': 'For example "Sign-in". Counted at most once per period.',
@@ -7884,6 +8201,112 @@ var MESSAGES = {
     'act.chat': "Support chat",
     'act.referral': "Referral",
     'act.config': "Config",
+    'act.account': "Account",
+    'fr.privacy': "Privacy and notices",
+    'f.fr.notifyDeclined': "Notice when a request is declined",
+    'f.fr.notifyDeclined.hint': "When a player declines a friend request, the sender gets an inbox notice.",
+    'f.fr.notifyRemoved': "Notice when removed as a friend",
+    'f.fr.notifyRemoved.hint': "When a player removes a friend, the other player gets an inbox notice.",
+    'f.fr.presenceFriends': "Online status for friends only",
+    'f.fr.presenceFriends.hint': "Players see only their friends online status; following anyone else is ignored.",
+    'f.fr.dmFriends': "Private chat only between friends",
+    'f.fr.dmFriends.hint': "Opening a private chat and sending private messages works only between two friends.",
+    'un.title': "Username change",
+    'un.desc': "The first change is free, then a price ladder. The console can rename for free; every change is kept in the history.",
+    'f.un.enabled': "Username change rules are on",
+    'f.un.enabled.hint': "Off means renames are free and unlimited, like before, and are not counted.",
+    'f.un.firstFree': "First change is free",
+    'f.un.firstFree.hint': "A player pays nothing for the first rename.",
+    'f.un.currency': "Currency",
+    'f.un.currency.hint': "Prices are taken in this currency, for example gems.",
+    'f.un.cooldown': "Hours between changes",
+    'f.un.cooldown.hint': "0 means no wait.",
+    'f.un.ladder': "Price ladder",
+    'f.un.ladder.hint': "Prices of the paid changes in order, comma separated. After the last one the last price repeats. Default: 50, 100, 200, 400, 800.",
+    'un.err.ladder': "At most 20 whole numbers from 1 to 1000000000.",
+    'pcs.title': "Player code",
+    'pcs.desc': "Every account has a short public code to find and add players. Changes here apply to new accounts only.",
+    'f.pcs.length': "Code length",
+    'f.pcs.length.hint': "4 to 16 characters.",
+    'f.pcs.charset': "Characters",
+    'f.pcs.charset.hint': "Codes are upper case; lookups ignore case.",
+    'pcs.charset.alnum': "Upper-case letters and digits",
+    'pcs.charset.letters': "Upper-case letters only",
+    'pcs.charset.digits': "Digits only",
+    'fs.title': "Friend suggestions",
+    'fs.desc': "Every day each player gets a list built from co-players, friends of friends, similar levels and similar activity.",
+    'f.fs.enabled': "Friend suggestions are on",
+    'f.fs.enabled.hint': "Off returns an empty list.",
+    'f.fs.visible': "List size",
+    'f.fs.visible.hint': "How many suggestions the player sees.",
+    'f.fs.reserve': "Reserve",
+    'f.fs.reserve.hint': "When one leaves the list, the first reserve takes its place.",
+    'fs.quotas': "Share of each source",
+    'fs.sources': "Sources",
+    'fs.rules': "Rules",
+    'f.fs.coplay': "Co-players",
+    'f.fs.mutual': "Mutual friends",
+    'f.fs.activity': "Similar activity",
+    'f.fs.level': "Similar level",
+    'f.fs.lookback': "Co-players of the last days",
+    'f.fs.lookback.hint': "Older co-players are not suggested.",
+    'f.fs.presenceDays': "Activity window (days)",
+    'f.fs.presenceDays.hint': "Days a player was online in this window are counted.",
+    'f.fs.levelTable': "Level table",
+    'f.fs.levelTable.hint': "Empty turns the level source off.",
+    'f.fs.levelDelta': "Largest level gap",
+    'f.fs.levelDelta.hint': "Players further apart are not suggested.",
+    'f.fs.decayAfter': "Fade after days",
+    'f.fs.decayAfter.hint': "After this many days in a row on the list, the score halves every day.",
+    'f.fs.maxFriends': "Friend cap of a suggestion",
+    'f.fs.maxFriends.hint': "Players with this many friends or more are not suggested. 0 means no cap.",
+    'f.fs.scanMax': "Most candidates per source",
+    'f.fs.scanMax.hint': "Keeps building the list fast.",
+    'f.fs.livePatch': "New co-players go to the top at once",
+    'f.fs.livePatch.hint': "After each match, co-players move to the top of the list the same day.",
+    'fs.src.coplay': "Co-player",
+    'fs.src.mutual': "Mutual friend",
+    'fs.src.activity': "Activity",
+    'fs.src.level': "Level",
+    'psoc.title': "Account and friends",
+    'psoc.code': "Player code",
+    'psoc.next': "Next username change",
+    'psoc.next.free': "Free",
+    'psoc.next.cost': "{n} {cur}",
+    'psoc.paidN': "{n} paid changes",
+    'psoc.cooldown': "Locked until {date}",
+    'psoc.policyOff': "Username change rules are off",
+    'psoc.rename': "Change username",
+    'psoc.rename.title': "Change the player username",
+    'psoc.rename.text': "From the console: no price and no wait. It is kept in the history.",
+    'psoc.rename.field': "New username",
+    'psoc.rename.hint': "Must follow the account rules and be free.",
+    'psoc.rename.done': "Username changed to {name}.",
+    'psoc.history': "Username history",
+    'psoc.history.empty': "No changes yet.",
+    'psoc.src.free': "Free",
+    'psoc.src.paid': "Paid",
+    'psoc.src.admin': "Console",
+    'psoc.col.from': "Old name",
+    'psoc.col.to': "New name",
+    'psoc.col.source': "Kind",
+    'psoc.col.cost': "Price",
+    'psoc.col.when': "When",
+    'psoc.col.player': "Player",
+    'psoc.col.score': "Score",
+    'psoc.col.shows': "Shown",
+    'psoc.col.played': "Last played",
+    'psoc.col.game': "Game",
+    'psoc.col.matches': "Matches",
+    'psoc.sugg': "Friend suggestions",
+    'psoc.sugg.none': "Not built yet",
+    'psoc.sugg.counts': "{v} suggestions, {r} in reserve",
+    'psoc.sugg.meta': "Day {cycle}, built {when}",
+    'psoc.regen': "Rebuild suggestions",
+    'psoc.regen.done': "Suggestions rebuilt.",
+    'psoc.visible': "Shown suggestions",
+    'psoc.reserve': "Reserve",
+    'psoc.coplay': "Recent co-players",
     'act.method.device': "device",
     'act.method.custom': "custom id",
     'act.method.email': "email",
@@ -11053,6 +11476,105 @@ var MESSAGES = {
     'search.sticker-packs': "Search pack key or name",
     'nav.sticker-settings': "Settings",
     'desc.sticker-settings': "Which chats allow stickers and whether a sticker costs a chat quota message.",
+    'nav.comm-settings': "Match chat",
+    'tab.comm-settings': "Match chat",
+    'desc.comm-settings': "How often in-match pack messages may be sent and when chat locks.",
+    'nav.comm-channels': "Match chats",
+    'tab.comm-channels': "Match chats",
+    'desc.comm-channels': "The quick chat of each match. Close a chat or stop one player from sending.",
+    'search.comm-channels': "Search match ID or username",
+    'empty.comm-channels': "No match chats",
+    'empty.hint.comm-channels': "A match chat starts with the match or with its first pack message.",
+    'nav.voice-rooms': "Voice rooms",
+    'desc.voice-rooms': "Live voice rooms and their players. Mute closes a player's microphone until the room ends.",
+    'search.voice-rooms': "Search room, game or username",
+    'empty.voice-rooms': "No live voice rooms",
+    'empty.hint.voice-rooms': "A room shows here once a player gets a voice token.",
+    'filter.cm.kind': "Kind",
+    'filter.cm.place': "Used in",
+    'cm.kind.sticker': "Sticker",
+    'cm.kind.text': "Text",
+    'cm.kind.gif': "GIF",
+    'cm.kind.emoji': "Emoji",
+    'cm.place.chat': "Chat",
+    'cm.place.match': "Match",
+    'col.cm.kind': "Kind & place",
+    'cm.h.kind': "Kind and place",
+    'f.cm.kind': "Pack kind",
+    'f.cm.kind.hint': "Cannot change later. Text packs need a text per item; the others need a picture or a client asset ID.",
+    'f.cm.inChat': "In chat",
+    'f.cm.inChat.hint': "As stickers in direct messages, groups and rooms.",
+    'f.cm.inMatch': "In matches",
+    'f.cm.inMatch.hint': "Quick messages inside a match, with cooldown and spam lock.",
+    'f.cm.text': "Text",
+    'f.cm.assetId': "Client asset ID",
+    'cm.items.about': "Text packs: each item needs a text. Sticker, GIF and emoji: a picture or the ID of an asset bundled in the app.",
+    'f.cm.enabled': "Match chat is on",
+    'f.cm.enabled.hint': "Off: no pack messages in matches and the pack list is empty.",
+    'cm.h.cooldown': "Cooldown and spam lock",
+    'cm.cooldown.about': "Counted per player in each match, one rule for every kind. Only accepted messages count.",
+    'f.cm.minInterval': "Gap between messages (seconds)",
+    'f.cm.minInterval.hint': "0 means no gap.",
+    'f.cm.lock': "Lock time (seconds)",
+    'f.cm.lock.hint': "After too many messages the player cannot send for this long.",
+    'f.cm.maxCount': "Most messages in the window",
+    'f.cm.maxCount.hint': "The next one locks the player.",
+    'f.cm.window': "Counting window (seconds)",
+    'f.cm.window.hint': "Must be longer than most messages × gap.",
+    'cm.err.window': "The window must be longer than most messages × gap.",
+    'cm.h.more': "Chat and favorites",
+    'f.cm.channelHours': "Match chat lifetime (hours)",
+    'f.cm.channelHours.hint': "After this the chat closes by itself.",
+    'f.cm.maxFavorites': "Most favorites",
+    'f.cm.maxFavorites.hint': "0 means no limit.",
+    'cm.status.open': "Open",
+    'cm.status.closed': "Closed",
+    'cm.status.expired': "Expired",
+    'cm.sentN': "{n} sent",
+    'cm.listenOnly': "Read only",
+    'cm.blockSend': "Stop sending",
+    'cm.allowSend': "Allow sending",
+    'cm.filter.open': "Open",
+    'cm.filter.closed': "Closed",
+    'cm.filter.all': "All",
+    'cm.col.match': "Match",
+    'cm.col.members': "Players",
+    'cm.col.messages': "Messages",
+    'cm.col.expires': "Ends",
+    'cm.close': "Close chat",
+    'cm.close.title': "Close this match chat?",
+    'cm.close.text': "No player can send pack messages in this match. You can open it again later.",
+    'cm.closed': "Chat closed.",
+    'cm.open': "Open",
+    'cm.opened': "Chat opened.",
+    'cm.reason.staff': "Closed by staff",
+    'cm.reason.ended': "Match ended",
+    'cm.reason.expired': "Time ran out",
+    'vr.col.room': "Room",
+    'vr.col.player': "Player",
+    'vr.col.mic': "Microphone",
+    'vr.col.expires': "Ends",
+    'vr.staffMuted': "Staff muted",
+    'vr.canPublish': "Can speak",
+    'vr.listenOnly': "Listen only",
+    'vr.mute': "Mute",
+    'vr.unmute': "Unmute",
+    'vr.muted': "Player muted.",
+    'vr.unmuted': "Mute removed.",
+    'vr.savedNotLive': "Saved; the player is not in the room now, it applies when they join.",
+    'vr.mute.title': "Mute «{name}»?",
+    'vr.mute.text': "Their microphone stays closed until this room ends, also after a reconnect. They can still listen.",
+    'vr.kind.match': "Match",
+    'vr.kind.party': "Party",
+    'vr.kind.room': "Open room",
+    'vr.online': "Connected",
+    'vr.offline': "Not connected",
+    'code.KIND_LOCKED': "The kind of a pack cannot change.",
+    'code.PLACE_REQUIRED': "Turn on chat, match or both.",
+    'code.INVALID_ASSET_ID': "The asset ID has 1 to 64 lower-case letters, digits, _ . -.",
+    'code.INVALID_SETTINGS': "These settings are not valid.",
+    'code.VOICE_ROOM_NOT_FOUND': "This voice room is not live any more.",
+    'code.VOICE_PARTICIPANT_NOT_FOUND': "This player is not in the voice room.",
     'filter.sp.access': "Access",
     'sp.access.free': "Free for everyone",
     'sp.access.item': "With a shop item",
@@ -12857,7 +13379,7 @@ function actionsEditor(value, onchange) {
   return el;
 }
 
-var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'], item: ['give'], achievement: ['give'], tag: ['give', 'set'] };
+var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'], item: ['give'], achievement: ['give'], tag: ['give', 'set'], booster: ['give', 'set'] };
 
 function itemsEditor(value, onchange) {
   var rows = (value || []).map(function (r) { return Object.assign({}, r); });
@@ -12869,11 +13391,11 @@ function itemsEditor(value, onchange) {
     errors = [];
     if (!rows.length) listEl.appendChild(h('div', { class: 'text-sm text-secondary-500 dark:text-secondary-400 border border-dashed border-secondary-300 dark:border-secondary-700 rounded-md px-3 py-4 text-center', text: t('f.items.empty') }));
     rows.forEach(function (row, idx) {
-      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'achievement', 'tag', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
+      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'achievement', 'tag', 'booster', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
         row.type = v;
         row.key = '';
         row.action = (ITEM_ACTIONS[v] || ['add'])[0];
-        row.value = v === 'storage' ? {} : v === 'item' || v === 'achievement' ? 1 : v === 'tag' ? 30 : 0;
+        row.value = v === 'storage' ? {} : v === 'booster' ? { multiplier: 2, minutes: 60 } : v === 'item' || v === 'achievement' ? 1 : v === 'tag' ? 30 : 0;
         render();
         emit();
       }, { placeholder: false, label: t('f.item.type') });
@@ -12890,9 +13412,9 @@ function itemsEditor(value, onchange) {
         keyCtl = refPicker({ resource: 'tags', api: baseApi, filter: { keyType: 'user' }, valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
         keyCtl.setAttribute('data-tag-picker', '');
       } else {
-        keyCtl = refPicker({ resource: row.type === 'meta' ? 'metas' : 'currencies', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
+        keyCtl = refPicker({ resource: row.type === 'meta' || row.type === 'booster' ? 'metas' : 'currencies', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
       }
-      var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t((row.type === 'tag' ? 'action.tag.' : 'action.') + k) }; }), function (v) { row.action = v; emit(); }, { placeholder: false, label: t('f.item.action') });
+      var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t((row.type === 'tag' || row.type === 'booster' ? 'action.tag.' : 'action.') + k) }; }), function (v) { row.action = v; emit(); }, { placeholder: false, label: t('f.item.action') });
       var valCtl;
       if (row.type === 'item' || row.type === 'achievement') {
         valCtl = h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300 py-2', text: t('item.' + row.type + '.once') });
@@ -12901,6 +13423,13 @@ function itemsEditor(value, onchange) {
           try { row.value = JSON.parse(v); row._bad = false; } catch (e) { row._bad = true; }
           emit();
         } });
+      } else if (row.type === 'booster') {
+        var bv = row.value && typeof row.value === 'object' ? row.value : { multiplier: 2, minutes: 60 };
+        row.value = bv;
+        valCtl = h('div', { class: 'flex flex-col gap-1', 'data-booster-value': '' },
+          numberInput(bv.multiplier, { int: false, label: t('item.booster.multiplier'), oninput: function (v) { bv.multiplier = parseNumber(v, false); emit(); } }),
+          numberInput(bv.minutes, { int: true, label: t('item.booster.minutes'), oninput: function (v) { bv.minutes = parseNumber(v, true); emit(); } }),
+          h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('item.booster.hint') }));
       } else if (row.type === 'tag') {
         valCtl = h('div', { class: 'flex flex-col gap-1' }, numberInput(row.value, { int: false, label: t('item.tag.days'), oninput: function (v) { row._raw = v; row.value = parseNumber(v, false); emit(); } }),
           h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-tag-days-hint': '', text: t('item.tag.days.hint') }));
@@ -12936,7 +13465,8 @@ function itemsEditor(value, onchange) {
       var msg = '';
       if (!r.key) msg = t('f.item.key') + ': ' + t('err.required');
       else if (r.type === 'storage' && (r._bad || r.value === null || typeof r.value !== 'object')) msg = t('err.json');
-      else if (r.type !== 'storage' && r.type !== 'item' && r.type !== 'achievement' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
+      else if (r.type === 'booster' && (!r.value || !(Number(r.value.multiplier) >= 1.01 && Number(r.value.multiplier) <= 100) || !(Number(r.value.minutes) >= 1 && Number(r.value.minutes) <= 525600))) msg = t('item.booster.range');
+      else if (r.type !== 'storage' && r.type !== 'item' && r.type !== 'achievement' && r.type !== 'booster' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
       else if (r.type === 'tag' && (Number(r.value) < 0 || Number(r.value) > 36500)) msg = t('item.tag.days') + ': ' + t('item.tag.days.range');
       e.el.textContent = msg;
       e.el.hidden = !msg;
@@ -13000,6 +13530,7 @@ function buildForm(fields, values, ctx) {
       control = toggle(cur, f.inline ? label : null, function (v) { change(v); });
     } else if (t2 === 'select') {
       control = selectInput(cur, f.options(), function (v) { change(f.noPlaceholder ? v : v || null); }, { label: label, placeholder: f.required || f.noPlaceholder ? false : t('none') });
+      if (f.lockOnEdit && values.id) { var sel = control.matches && control.matches('select') ? control : control.querySelector && control.querySelector('select'); if (sel) sel.disabled = true; }
       if (f.required && (cur == null || cur === '')) { setPath(values, f.name, f.options()[0].value); }
     } else if (t2 === 'multi') {
       var set = (cur || []).slice();
@@ -13701,13 +14232,13 @@ var RESOURCES = {
 var SECTIONS = {
   economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'offers', 'entry-offers', 'offer-preview', 'offer-report', 'offer-settings', 'tag-discounts', 'tag-discount-preview', 'tag-discount-settings', 'friend-gifts', 'friend-gift-rules', 'friend-gift-settings', 'friend-gift-report', 'items', 'avatar-categories', 'avatar-items', 'avatar-types', 'avatar-settings', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments', 'payment-settings'],
   publication: ['faqs', 'news', 'news-review', 'news-sources', 'news-ingest', 'news-reactions', 'news-settings', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
-  moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'activity'],
+  moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'comm-settings', 'comm-channels', 'voice-rooms', 'activity'],
   support: ['tickets', 'live-chat'],
   system: ['updates', 'server-rules', 'content-packs', 'content-settings', 'insights-overview', 'insights-sessions', 'heatmaps', 'insights-settings', 'sdk']
 };
 var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'];
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
-var PAGE_ACL = { 'server-rules': 'SETTINGS', players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
+var PAGE_ACL = { 'server-rules': 'SETTINGS', players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', 'comm-settings': 'CHANNEL_MESSAGE', 'comm-channels': 'CHANNEL_MESSAGE', 'voice-rooms': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
 var HUBS = {
   metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['meta-relations', 'relations'], ['level-tables', 'levels']] },
@@ -13719,7 +14250,7 @@ var HUBS = {
   payments: { section: 'economy', tabs: [['payments', ''], ['payment-settings', 'settings']] },
   'chat-quota': { section: 'moderation', tabs: [['chat-quota', ''], ['chat-quota-settings', 'settings'], ['chat-quota-report', 'report']] },
   avatar: { section: 'economy', tabs: [['avatar-categories', ''], ['avatar-items', 'items'], ['avatar-types', 'types'], ['avatar-settings', 'settings']] },
-  stickers: { section: 'moderation', tabs: [['sticker-packs', ''], ['sticker-settings', 'settings']] },
+  stickers: { section: 'moderation', tabs: [['sticker-packs', ''], ['sticker-settings', 'settings'], ['comm-settings', 'match-chat'], ['comm-channels', 'channels']] },
   events: { section: 'economy', tabs: [['event-types', ''], ['event-rules', 'prizes'], ['event-log', 'report']] },
   news: { section: 'publication', tabs: [['news', ''], ['news-review', 'review'], ['news-sources', 'sources'], ['news-ingest', 'log'], ['news-reactions', 'reactions'], ['news-settings', 'settings']] },
   banners: { section: 'publication', tabs: [['banners', ''], ['banner-lists', 'placements']] },
@@ -13730,7 +14261,7 @@ var HUBS = {
 var NAV = {
   economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'offers', 'tag-discounts', 'items', 'avatar', 'gifts', 'friend-gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
-  moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers'] }],
+  moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers', 'voice-rooms'] }],
   support: ['tickets', 'live-chat'],
   system: ['updates', 'server-rules', 'content', 'insights', 'sdk']
 };
@@ -16215,7 +16746,7 @@ function friendRulesPage(container, query, ctx) {
   var page = apiPage(baseApi, '/friend-rules', null, FRIEND_FIELDS, {
     id: 'friends',
     onchange: function (v, extra) { clear(extra).appendChild(friendSummary(v)); },
-    fixPayload: function (p) { return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0, requestsBonusMeta: p.requestsBonusMeta || '', friendsBonusMeta: p.friendsBonusMeta || '', matchPolicy: p.matchPolicy || 'priority', overLimit: p.overLimit || 'refuse' }; }
+    fixPayload: friendRulesPayload
   });
   var heading = h('div', { class: 'mt-6 mb-2' }, h('h2', { class: 'text-lg font-medium', text: t('fr.tiers.title') }), h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: t('fr.tiers.desc') }));
   container.insertBefore(heading, container.firstChild);
@@ -17772,8 +18303,9 @@ RESOURCES.streaks = {
     ] },
     { type: 'row', fields: [
       { name: 'gracePeriods', type: 'number', label: 'f.sk.grace', hint: 'f.sk.grace.hint', required: true, min: 0, max: 30 },
-      { name: 'missAction', type: 'select', label: 'f.sk.miss', required: true, options: opts('sk.miss.', ['reset', 'step_back']) }
+      { name: 'missAction', type: 'select', label: 'f.sk.miss', required: true, refresh: true, options: opts('sk.miss.', ['reset', 'step_back', 'week_start']) }
     ] },
+    { name: 'weekLength', type: 'number', label: 'f.sk.weekLength', hint: 'f.sk.weekLength.hint', required: true, min: 1, max: 365, when: function (v) { return v.missAction === 'week_start'; } },
     { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' },
     { type: 'heading', label: 'sk.h.rewards' },
     { name: 'rewards', type: 'rows', addLabel: 'sk.add', emptyText: 'sk.empty', max: 365,
@@ -17805,11 +18337,37 @@ RESOURCES.streaks = {
         { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.sk.msPrize', optional: true },
         { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', options: grantOptions }
       ] },
-    { name: 'repayAfterFall', type: 'bool', inline: true, label: 'f.sk.repay', hint: 'f.sk.repay.hint' }
+    { name: 'repayAfterFall', type: 'bool', inline: true, label: 'f.sk.repay', hint: 'f.sk.repay.hint' },
+    { type: 'heading', label: 'sk.h.extras' },
+    { name: 'extrasNote', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', 'data-extras-note': '', text: t('sk.extras.note') }); } },
+    { name: 'extras', type: 'rows', addLabel: 'sk.x.add', emptyText: 'sk.x.empty', max: 100,
+      newRow: function (rows) {
+        var last = rows[rows.length - 1];
+        return { day: last ? Number(last.day || 0) + 7 : 8, prizeId: null, grantMode: 'claim' };
+      },
+      check: function (rows) { return duplicateCheck('day', 'DUPLICATE_DAY')(rows); },
+      columns: [
+        { name: 'day', type: 'number', label: 'f.sk.xDay', required: true, min: 1 },
+        { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', required: true },
+        { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', options: grantOptions }
+      ] },
+    { type: 'heading', label: 'sk.h.infinity' },
+    { name: 'infinity', type: 'bool', inline: true, label: 'f.sk.infinity', hint: 'f.sk.infinity.hint', refresh: true },
+    { type: 'row', when: function (v) { return !!v.infinity; }, fields: [
+      { name: 'infinityCurrency', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.sk.infCurrency', required: true, when: function (v) { return !!v.infinity; } },
+      { name: 'infinityMin', type: 'number', label: 'f.sk.infMin', required: true, min: 1, when: function (v) { return !!v.infinity; } },
+      { name: 'infinityMax', type: 'number', label: 'f.sk.infMax', required: true, min: 1, when: function (v) { return !!v.infinity; } }
+    ] }
   ],
-  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', isActive: true, sort: 0, rewards: [], milestones: [], repayAfterFall: false }; },
+  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', weekLength: 7, isActive: true, sort: 0, rewards: [], milestones: [], extras: [], repayAfterFall: false, infinity: false, infinityCurrency: null, infinityMin: 150, infinityMax: 180 }; },
   fixPayload: function (p) {
     if (p.sort == null) p.sort = 0;
+    if (!p.weekLength) p.weekLength = 7;
+    p.infinity = !!p.infinity;
+    if (!p.infinity) { p.infinityCurrency = ''; p.infinityMin = 0; p.infinityMax = 0; }
+    p.infinityCurrency = p.infinityCurrency || '';
+    p.extras = p.extras || [];
+    delete p.extrasNote;
     return p;
   }
 };
@@ -22206,6 +22764,7 @@ function playerChatQuotaCard() {
   place();
 }
 
+var CM_KINDS = ['sticker', 'text', 'gif', 'emoji'];
 ICONS['stickers'] = '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1 2.2 1.5 3.5 1.5s2.5-.5 3.5-1.5M9 9.5h.01M15 9.5h.01"/>';
 PH_ICONS['stickers'] = '<path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216ZM80,108a12,12,0,1,1,12,12A12,12,0,0,1,80,108Zm96,0a12,12,0,1,1-12-12A12,12,0,0,1,176,108Zm-1.07,48c-10.29,17.79-27.4,28-46.93,28s-36.63-10.2-46.92-28a8,8,0,1,1,13.84-8c7.47,12.91,19.21,20,33.08,20s25.61-7.1,33.07-20a8,8,0,0,1,13.86,8Z"/>';
 ICONS['sticker-packs'] = ICONS['stickers'];
@@ -22226,10 +22785,18 @@ function spPreview(it) {
 RESOURCES['sticker-packs'] = {
   api: 'base',
   path: 'stickers/packs',
-  filters: [activeFilter(), { name: 'access', label: 'filter.sp.access', options: function () { return [{ value: 'free', label: t('sp.access.free') }, { value: 'item', label: t('sp.access.item') }]; } }],
+  filters: [activeFilter(), { name: 'access', label: 'filter.sp.access', options: function () { return [{ value: 'free', label: t('sp.access.free') }, { value: 'item', label: t('sp.access.item') }]; } },
+    { name: 'kind', label: 'filter.cm.kind', options: function () { return CM_KINDS.map(function (k) { return { value: k, label: t('cm.kind.' + k) }; }); } },
+    { name: 'place', label: 'filter.cm.place', options: function () { return [{ value: 'chat', label: t('cm.place.chat') }, { value: 'match', label: t('cm.place.match') }]; } }],
   columns: [
     { label: 'col.name', render: function (it) { return nameCell(it, true); } },
     { label: 'col.sp.stickers', render: function (it) { return h('div', { class: 'flex flex-col gap-1' }, spPreview(it), h('span', { class: 'text-xs text-secondary-500', text: t('sp.countN', { n: fmtNum(it.count || 0) }) })); }, skeleton: '30%' },
+    { label: 'col.cm.kind', render: function (it) {
+      var box = h('div', { class: 'flex flex-wrap gap-1', 'data-cm-kind': it.kind || 'sticker' }, tag(t('cm.kind.' + (it.kind || 'sticker')), 'primary'));
+      if (it.inChat !== false) box.appendChild(tag(t('cm.place.chat'), 'secondary'));
+      if (it.inMatch) box.appendChild(tag(t('cm.place.match'), 'success'));
+      return box;
+    }, width: 170 },
     { label: 'col.sp.access', render: function (it) {
       if (it.access !== 'item') return h('span', { 'data-sp-access': 'free' }, tag(t('sp.access.free'), 'success'));
       var name = it.item ? (i18nText(it.item.name) || it.item.key) : it.itemKey;
@@ -22244,6 +22811,12 @@ RESOURCES['sticker-packs'] = {
     ] },
     tr('name', { label: 'f.name', required: true, max: 100 }),
     tr('description', { multiline: true, max: 500, optional: true }),
+    { type: 'heading', label: 'cm.h.kind' },
+    { name: 'kind', type: 'select', label: 'f.cm.kind', hint: 'f.cm.kind.hint', required: true, noPlaceholder: true, lockOnEdit: true, refresh: true, options: function () { return CM_KINDS.map(function (k) { return { value: k, label: t('cm.kind.' + k) }; }); } },
+    { type: 'row', fields: [
+      { name: 'inChat', type: 'bool', inline: true, label: 'f.cm.inChat', hint: 'f.cm.inChat.hint' },
+      { name: 'inMatch', type: 'bool', inline: true, label: 'f.cm.inMatch', hint: 'f.cm.inMatch.hint' }
+    ] },
     { type: 'row', fields: [
       { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
       { name: 'sort', type: 'number', label: 'f.sort', min: -100000, max: 100000, empty: 0 }
@@ -22257,7 +22830,6 @@ RESOURCES['sticker-packs'] = {
       check: function (rows) {
         var seen = {};
         for (var i = 0; i < rows.length; i++) {
-          if (!rows[i].imageUrl) return { index: i, message: t('sp.err.image') };
           if (seen[rows[i].key]) return { index: i, message: t('code.DUPLICATE_KEY') };
           seen[rows[i].key] = true;
         }
@@ -22266,16 +22838,22 @@ RESOURCES['sticker-packs'] = {
       columns: [
         { name: 'imageUrl', type: 'custom', label: 'f.sp.image', build: function (cur, change) { return imageInput(cur || '', function (v) { change(v || ''); }); } },
         { name: 'key', type: 'text', ltr: true, mono: true, label: 'f.key', required: true },
-        { name: 'name', type: 'i18n', label: 'f.name', max: 100 }
-      ] }
+        { name: 'name', type: 'i18n', label: 'f.name', max: 100 },
+        { name: 'text', type: 'i18n', label: 'f.cm.text', max: 120, optional: true },
+        { name: 'assetId', type: 'text', ltr: true, mono: true, label: 'f.cm.assetId', optional: true }
+      ] },
+    { name: 'about.items', type: 'static', readonly: true, render: function () { return notice('info', t('cm.items.about')); } }
   ],
-  defaults: function () { return { key: '', name: {}, description: {}, iconUrl: '', sort: 0, access: 'free', itemKey: null, isActive: true, stickers: [] }; },
+  defaults: function () { return { key: '', name: {}, description: {}, iconUrl: '', sort: 0, kind: 'sticker', inChat: true, inMatch: false, access: 'free', itemKey: null, isActive: true, stickers: [] }; },
   fixPayload: function (p) {
     if (p.access !== 'item') p.itemKey = '';
     p.itemKey = p.itemKey || '';
     p.sort = p.sort || 0;
-    p.stickers = (p.stickers || []).map(function (s) { return { key: s.key, name: s.name || {}, imageUrl: s.imageUrl || '', isActive: s.isActive !== false }; });
-    ['id', 'count', 'item', 'createdAt', 'createdBy', 'updatedAt'].forEach(function (k) { delete p[k]; });
+    p.kind = p.kind || 'sticker';
+    p.inChat = p.inChat !== false;
+    p.inMatch = !!p.inMatch;
+    p.stickers = (p.stickers || []).map(function (s) { return { key: s.key, name: s.name || {}, imageUrl: s.imageUrl || '', text: s.text || {}, assetId: s.assetId || '', isActive: s.isActive !== false }; });
+    ['id', 'count', 'item', 'createdAt', 'createdBy', 'updatedAt', 'about'].forEach(function (k) { delete p[k]; });
     return p;
   }
 };
@@ -22308,6 +22886,186 @@ function stickerSettingsPage(container) {
 }
 
 CUSTOM_PAGES['sticker-settings'] = function (root) { stickerSettingsPage(root); };
+
+ICONS['comm-settings'] = ICONS['sticker-settings'];
+ICONS['comm-channels'] = '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>';
+ICONS['voice-rooms'] = '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/>';
+PH_ICONS['voice-rooms'] = PH_ICONS['stickers'];
+PH_ICONS['comm-channels'] = PH_ICONS['stickers'];
+PH_ICONS['comm-settings'] = PH_ICONS['stickers'];
+
+var CM_SETTINGS_FIELDS = [
+  { name: 'enabled', type: 'bool', inline: true, label: 'f.cm.enabled', hint: 'f.cm.enabled.hint' },
+  { type: 'heading', label: 'cm.h.cooldown' },
+  { name: 'about.cooldown', type: 'static', readonly: true, render: function () { return notice('info', t('cm.cooldown.about')); } },
+  { type: 'row', fields: [
+    { name: 'minIntervalSeconds', type: 'number', label: 'f.cm.minInterval', hint: 'f.cm.minInterval.hint', required: true, min: 0, max: 60 },
+    { name: 'lockSeconds', type: 'number', label: 'f.cm.lock', hint: 'f.cm.lock.hint', required: true, min: 1, max: 3600 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'maxCount', type: 'number', label: 'f.cm.maxCount', hint: 'f.cm.maxCount.hint', required: true, min: 1, max: 1000 },
+    { name: 'windowSeconds', type: 'number', label: 'f.cm.window', hint: 'f.cm.window.hint', required: true, min: 1, max: 600, check: function (v, vals) { return v != null && vals.maxCount != null && vals.minIntervalSeconds != null && Number(vals.maxCount) * Number(vals.minIntervalSeconds) >= Number(v) ? t('cm.err.window') : null; } }
+  ] },
+  { type: 'heading', label: 'cm.h.more' },
+  { type: 'row', fields: [
+    { name: 'channelHours', type: 'number', label: 'f.cm.channelHours', hint: 'f.cm.channelHours.hint', required: true, min: 1, max: 48 },
+    { name: 'maxFavorites', type: 'number', label: 'f.cm.maxFavorites', hint: 'f.cm.maxFavorites.hint', required: true, min: 0, max: 1000 }
+  ] }
+];
+
+function commSettingsPage(container) {
+  var frame = pageFrame(t('nav.comm-settings'), t('desc.comm-settings'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(baseApi, '/comms/settings', null, CM_SETTINGS_FIELDS, {
+    id: 'comms',
+    fixPayload: function (p) {
+      ['updatedAt', 'updatedBy', 'about'].forEach(function (k) { delete p[k]; });
+      return p;
+    }
+  });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
+function cmStatusTag(status) {
+  var color = status === 'open' ? 'success' : status === 'expired' ? 'warning' : 'secondary';
+  return h('span', { 'data-cm-status': status }, tag(t('cm.status.' + status), color));
+}
+
+function cmMembers(ch, reload) {
+  var box = h('div', { class: 'flex flex-col gap-1' });
+  (ch.members || []).forEach(function (m) {
+    var row = h('div', { class: 'flex items-center gap-2 flex-wrap', 'data-cm-member': m.userId },
+      playerLink(m.userId, m.displayName || m.username),
+      h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: t('cm.sentN', { n: fmtNum(m.sent || 0) }) }),
+      m.canSend ? null : tag(t('cm.listenOnly'), 'warning'));
+    if (ch.status === 'open') {
+      var btn = button({ variant: 'link', size: 'sm', label: t(m.canSend ? 'cm.blockSend' : 'cm.allowSend'), onclick: function () {
+        setBusy(btn, true);
+        baseApi('POST', '/comms/channels/' + encodeURIComponent(ch.matchId) + '/can-send', { userId: m.userId, canSend: !m.canSend }).then(function () {
+          toast('success', t('saved'));
+          reload();
+        }, function (err) { setBusy(btn, false); toast('error', errorText(err)); });
+      } });
+      btn.setAttribute('data-cm-can-send', m.userId);
+      row.appendChild(btn);
+    }
+    box.appendChild(row);
+  });
+  if (!(ch.members || []).length) box.appendChild(h('span', { class: 'text-xs text-secondary-500', text: t('none') }));
+  return box;
+}
+
+function commChannelsPage(container, query) {
+  var frame = pageFrame(t('nav.comm-channels'), t('desc.comm-channels'));
+  clear(container).appendChild(frame.el);
+  var state = { status: query.status || 'open', q: query.q || '', page: 1, limit: LIMIT, total: 0 };
+  var box = h('div', { class: 'flex flex-col gap-3' });
+  var status = filterSelect(t('filter.status'), state.status, ['open', 'closed', 'all'].map(function (s) { return { value: s, label: t('cm.filter.' + s) }; }), function (v) { state.status = v || 'open'; state.page = 1; load(); });
+  var timer = null;
+  var search = searchInput(state.q, t('search.comm-channels'), function (e) { clearTimeout(timer); timer = setTimeout(function () { state.q = e.target.value.trim(); state.page = 1; load(); }, 250); });
+  var pagerBox = h('div', {});
+  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center justify-between gap-2 pb-2' }, h('div', { class: 'flex flex-wrap items-center gap-2' }, search, status), pagerBox));
+  frame.content.appendChild(box);
+  var cols = [{ label: t('cm.col.match'), skeleton: '60%' }, { label: t('col.status'), width: 110 }, { label: t('cm.col.members'), skeleton: '50%' }, { label: t('cm.col.messages'), width: 90 }, { label: t('cm.col.expires'), width: 150 }, { label: '', width: 120 }];
+  function load() {
+    clear(box).appendChild(table(cols, skeletonRows(cols, 3)));
+    baseApi('GET', '/comms/channels' + qs({ status: state.status, q: state.q, page: state.page, limit: state.limit })).then(function (res) {
+      state.total = res.total || 0;
+      clear(pagerBox).appendChild(pager(state, function (p) { state.page = p; load(); }, load));
+      var list = res.items || [];
+      clear(box);
+      if (!list.length) {
+        box.appendChild(card(emptyBlock(t('empty.comm-channels'), t('empty.hint.comm-channels'))));
+        return;
+      }
+      box.appendChild(table(cols, list.map(function (ch) {
+        var action = null;
+        if (ch.status === 'open') {
+          action = button({ variant: 'danger', size: 'sm', label: t('cm.close'), onclick: function () {
+            confirmModal({ title: t('cm.close.title'), text: t('cm.close.text'), ok: t('cm.close'), danger: true }).then(function (ok) {
+              if (!ok) return;
+              baseApi('POST', '/comms/channels/' + encodeURIComponent(ch.matchId) + '/close', {}).then(function () { toast('success', t('cm.closed')); load(); }, function (err) { toast('error', errorText(err)); });
+            });
+          } });
+          action.setAttribute('data-cm-close', ch.matchId);
+        } else {
+          action = button({ variant: 'secondary', size: 'sm', label: t('cm.open'), onclick: function () {
+            baseApi('POST', '/comms/channels/' + encodeURIComponent(ch.matchId) + '/open', {}).then(function () { toast('success', t('cm.opened')); load(); }, function (err) { toast('error', errorText(err)); });
+          } });
+          action.setAttribute('data-cm-open', ch.matchId);
+        }
+        return { item: ch, cells: [
+          h('div', { class: 'flex flex-col min-w-0', 'data-cm-channel': ch.matchId }, mono(ch.matchId), ch.gameKey ? h('span', { class: 'text-xs text-secondary-500', text: ch.gameKey }) : null),
+          h('div', { class: 'flex flex-col gap-1' }, cmStatusTag(ch.status), ch.closeReason ? h('span', { class: 'text-xs text-secondary-500', text: t('cm.reason.' + ch.closeReason) }) : null),
+          cmMembers(ch, load),
+          h('span', { class: 'tabular-nums', text: fmtNum(ch.messages || 0) }),
+          h('span', { class: 'text-xs', text: fmtDate(ch.expiresAt, true) }),
+          action
+        ] };
+      })));
+    }, function (err) { clear(box).appendChild(errorBlock(err, load)); });
+  }
+  load();
+}
+
+function voiceRoomsPage(container, query) {
+  var frame = pageFrame(t('nav.voice-rooms'), t('desc.voice-rooms'));
+  clear(container).appendChild(frame.el);
+  var state = { q: query.q || '' };
+  var box = h('div', { class: 'flex flex-col gap-3' });
+  var timer = null;
+  var search = searchInput(state.q, t('search.voice-rooms'), function (e) { clearTimeout(timer); timer = setTimeout(function () { state.q = e.target.value.trim(); load(); }, 250); });
+  var refresh = button({ variant: 'secondary', size: 'sm', icon: 'refresh', label: t('refresh'), onclick: function () { load(); } });
+  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center justify-between gap-2 pb-2' }, search, refresh));
+  frame.content.appendChild(box);
+  var cols = [{ label: t('vr.col.room'), skeleton: '50%' }, { label: t('vr.col.player'), skeleton: '40%' }, { label: t('vr.col.mic'), width: 150 }, { label: t('vr.col.expires'), width: 150 }, { label: '', width: 120 }];
+  function load() {
+    clear(box).appendChild(table(cols, skeletonRows(cols, 3)));
+    baseApi('GET', '/voice/rooms' + qs({ q: state.q, live: 'true' })).then(function (res) {
+      var rows = [];
+      (res.items || []).forEach(function (room) {
+        (room.members || []).forEach(function (m) {
+          rows.push({ room: room, m: m });
+        });
+      });
+      clear(box);
+      if (!rows.length) {
+        box.appendChild(card(emptyBlock(t('empty.voice-rooms'), t('empty.hint.voice-rooms'))));
+        return;
+      }
+      box.appendChild(table(cols, rows.map(function (r) {
+        var m = r.m;
+        var name = m.displayName || m.username || m.name;
+        var mic = m.muted ? tag(t('vr.staffMuted'), 'error') : m.canPublish ? tag(t('vr.canPublish'), 'success') : tag(t('vr.listenOnly'), 'warning');
+        var btn = button({ variant: m.muted ? 'secondary' : 'danger', size: 'sm', label: t(m.muted ? 'vr.unmute' : 'vr.mute'), onclick: function () {
+          var go = function () {
+            setBusy(btn, true);
+            baseApi('POST', '/voice/rooms/' + encodeURIComponent(r.room.room) + '/' + (m.muted ? 'unmute' : 'mute'), { userId: m.userId }).then(function (out) {
+              toast(out.applied ? 'success' : 'warning', t(out.applied ? (m.muted ? 'vr.unmuted' : 'vr.muted') : 'vr.savedNotLive'));
+              load();
+            }, function (err) { setBusy(btn, false); toast('error', errorText(err)); });
+          };
+          if (m.muted) return go();
+          confirmModal({ title: t('vr.mute.title', { name: name }), text: t('vr.mute.text'), ok: t('vr.mute'), danger: true }).then(function (ok) { if (ok) go(); });
+        } });
+        btn.setAttribute('data-vr-action', m.userId);
+        return { item: r, cells: [
+          h('div', { class: 'flex flex-col min-w-0', 'data-vr-room': r.room.room }, mono(r.room.room), h('span', { class: 'text-xs text-secondary-500', text: [t('vr.kind.' + r.room.kind), r.room.gameKey, r.room.provider].filter(Boolean).join(' · ') })),
+          h('div', { class: 'flex items-center gap-2' }, playerLink(m.userId, name), m.connected === true ? tag(t('vr.online'), 'success') : m.connected === false ? tag(t('vr.offline'), 'secondary') : null),
+          h('span', { 'data-vr-mic': m.muted ? 'muted' : 'open' }, mic),
+          h('span', { class: 'text-xs', text: fmtDate(r.room.expiresAt, true) }),
+          btn
+        ] };
+      })));
+    }, function (err) { clear(box).appendChild(errorBlock(err, load)); });
+  }
+  load();
+}
+
+CUSTOM_PAGES['comm-settings'] = function (root) { commSettingsPage(root); };
+CUSTOM_PAGES['comm-channels'] = function (root, route) { commChannelsPage(root, route.query || {}); };
+CUSTOM_PAGES['voice-rooms'] = function (root, route) { voiceRoomsPage(root, route.query || {}); };
 
 PH_ICONS.achievements = '<path d="M216,96A88,88,0,1,0,72,163.83V240a8,8,0,0,0,11.58,7.16L128,225l44.43,22.21A8.07,8.07,0,0,0,176,248a8,8,0,0,0,8-8V163.83A87.85,87.85,0,0,0,216,96ZM56,96a72,72,0,1,1,72,72A72.08,72.08,0,0,1,56,96ZM168,227.06l-36.43-18.21a8,8,0,0,0-7.16,0L88,227.06V174.37a87.89,87.89,0,0,0,80,0ZM128,152A56,56,0,1,0,72,96,56.06,56.06,0,0,0,128,152Zm0-96A40,40,0,1,1,88,96,40,40,0,0,1,128,56Z"/>';
 PH_ICONS.medalDuo = '<path d="M176,96a48,48,0,1,1-48-48A48,48,0,0,1,176,96Z" opacity="0.2"/>' + PH_ICONS.achievements;
@@ -24263,7 +25021,15 @@ PH_ICONS['prize-groups'] = '<path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-1
 PH_ICONS.packageDuo = '<path d="M128,129.09V232a8,8,0,0,1-3.84-1l-88-48.18a8,8,0,0,1-4.16-7V80.18a8,8,0,0,1,.7-3.25Z" opacity="0.2"/>' + PH_ICONS['prize-groups'];
 PH_ICONS.timerDuo = '<path d="M216,136a88,88,0,1,1-88-88A88,88,0,0,1,216,136Z" opacity="0.2"/><path d="M128,40a96,96,0,1,0,96,96A96.11,96.11,0,0,0,128,40Zm0,176a80,80,0,1,1,80-80A80.09,80.09,0,0,1,128,216ZM173.66,90.34a8,8,0,0,1,0,11.32l-40,40a8,8,0,0,1-11.32-11.32l40-40A8,8,0,0,1,173.66,90.34ZM96,16a8,8,0,0,1,8-8h48a8,8,0,0,1,0,16H104A8,8,0,0,1,96,16Z"/>';
 
-var CHANCE_PRIZE_TYPES = ['prize', 'prizeGroup'];
+var CHANCE_PRIZE_TYPES = ['prize', 'prizeGroup', 'slots'];
+var CH_SLOT_KINDS = ['currency', 'prize', 'prizeGroup'];
+
+function chNotSlots(v) { return v.prizeType !== 'slots'; }
+function chSlots(v) { return v.prizeType === 'slots'; }
+
+function chLadder(text) {
+  return String(text || '').split(/[\s,،]+/).filter(function (x) { return x !== ''; }).map(function (x) { return parseNumber(x, true); });
+}
 var CH_SLICE_COLORS = 8;
 
 function chanceSum(rows) {
@@ -24281,7 +25047,7 @@ function chanceBar(rows, prizeType) {
   (rows || []).forEach(function (r, i) {
     var v = Number(r.chance) || 0;
     if (v <= 0) return;
-    var empty = prizeType === 'prizeGroup' ? !r.prizeGroupId : !r.prizeId;
+    var empty = prizeType === 'slots' ? false : prizeType === 'prizeGroup' ? !r.prizeGroupId : !r.prizeId;
     barEl.appendChild(h('span', { 'data-slice': String(i % CH_SLICE_COLORS), 'data-empty': empty ? '' : null, style: 'flex:' + v + ' 1 0' }));
   });
   return barEl;
@@ -24294,6 +25060,8 @@ function chanceModes(it) {
     out.push(h('span', { class: 'eco-tag eco-tag--primary inline-flex items-center gap-1 leading-tight max-w-full px-2 py-0.5 text-xs rounded-md whitespace-nowrap', 'data-ch-price': '' },
       h('span', { class: 'tabular-nums', text: t('ch.mode.ticket', { n: fmtNum(it.price.amount) }) }), refNameCell('currencies', it.price.currencyId)));
   }
+  if (it.priceLadder && it.priceLadder.length) out.push(h('span', { 'data-ch-ladder': '' }, tag(t('ch.ladder.tag', { list: it.priceLadder.map(function (n) { return fmtNum(n); }).join(' › ') }), 'primary')));
+  if (it.pityThreshold) out.push(h('span', { 'data-ch-pity': '' }, tag(t('ch.pity.tag', { n: fmtNum(it.pityThreshold) }), 'success')));
   if (it.dailyLimit) out.push(h('span', { 'data-ch-daily': '' }, tag(t('ch.limit.daily', { n: fmtNum(it.dailyLimit) }), 'warning')));
   if (it.totalLimit) out.push(h('span', { 'data-ch-total': '' }, tag(t('ch.limit.total', { n: fmtNum(it.totalLimit) }), 'warning')));
   return out;
@@ -24308,6 +25076,7 @@ function chanceMinutes(n) {
 
 function chanceRowsSummary(it) {
   var rows = it.prize || [];
+  if (it.prizeType === 'slots') return t('ch.slotsN', { n: fmtNum(rows.length) });
   var won = rows.filter(function (r) { return it.prizeType === 'prizeGroup' ? r.prizeGroupId : r.prizeId; }).length;
   return t('ch.rowsN', { n: fmtNum(rows.length), w: fmtNum(won) });
 }
@@ -24372,8 +25141,8 @@ RESOURCES['chance-games'] = {
     { name: 'kind', type: 'select', label: 'f.ch.kind', hint: 'f.ch.kind.hint', required: true, noPlaceholder: true, options: opts('ch.kind.', ['wheel', 'chest']) },
     { name: 'stats', type: 'static', readonly: true, render: chanceStats },
     { type: 'heading', label: 'ch.h.table' },
-    { name: 'prizeType', type: 'select', label: 'f.ch.prizeType', hint: 'f.ch.prizeType.hint', required: true, noPlaceholder: true, options: opts('ch.type.', CHANCE_PRIZE_TYPES) },
-    { name: 'prize', type: 'rows', addLabel: 'ch.row.add', emptyText: 'ch.row.empty', min: 1, max: 50, empty: [], refresh: true,
+    { name: 'prizeType', type: 'select', label: 'f.ch.prizeType', hint: 'f.ch.prizeType.hint', required: true, noPlaceholder: true, refresh: true, options: opts('ch.type.', CHANCE_PRIZE_TYPES) },
+    { name: 'prize', type: 'rows', when: chNotSlots, addLabel: 'ch.row.add', emptyText: 'ch.row.empty', min: 1, max: 50, empty: [], refresh: true,
       newRow: function (rows) {
         var left = Math.round((100 - chanceSum(rows)) * 10000) / 10000;
         return { chance: left > 0 ? left : 0, prizeId: null, prizeGroupId: null };
@@ -24388,8 +25157,36 @@ RESOURCES['chance-games'] = {
         { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.ch.prize', optional: true },
         { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.ch.group', optional: true }
       ] },
-    { name: 'sum', type: 'static', readonly: true, live: true, render: chanceSumBlock },
-    { name: 'rowsHint', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('ch.rows.hint') }); } },
+    { name: 'sum', type: 'static', readonly: true, live: true, when: chNotSlots, render: chanceSumBlock },
+    { type: 'row', when: chNotSlots, fields: [
+      { name: 'jackpotRow', type: 'number', label: 'f.ch.jackpot', hint: 'f.ch.jackpot.hint', optional: true, min: 1, max: 50, when: chNotSlots },
+      { name: 'pityThreshold', type: 'number', label: 'f.ch.pity', hint: 'f.ch.pity.hint', optional: true, min: 1, max: 100000, when: chNotSlots }
+    ] },
+    { name: 'rowsHint', type: 'static', readonly: true, when: chNotSlots, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('ch.rows.hint') }); } },
+    { name: 'slots', type: 'rows', addLabel: 'ch.slot.add', emptyText: 'ch.row.empty', min: 1, max: 50, empty: [], when: chSlots,
+      newRow: function () { return { chance: 50, kind: 'currency', currencyId: null, min: 1, max: 1, prizeId: null, prizeGroupId: null }; },
+      check: function (rows) {
+        var any = false;
+        for (var i = 0; i < rows.length; i++) {
+          var r = rows[i];
+          if (Number(r.chance) > 0) any = true;
+          if (r.kind === 'currency' && (!r.currencyId || !(Number(r.min) >= 1) || Number(r.max) < Number(r.min))) return { index: i, message: t('code.INVALID_SLOT_RANGE') };
+          if (r.kind === 'prize' && !r.prizeId) return { index: i, message: t('f.ch.prize') + ': ' + t('err.required') };
+          if (r.kind === 'prizeGroup' && !r.prizeGroupId) return { index: i, message: t('f.ch.group') + ': ' + t('err.required') };
+        }
+        return any ? null : { index: 0, message: t('code.SLOTS_ALL_ZERO') };
+      },
+      columns: [
+        { name: 'chance', type: 'number', int: false, label: 'f.ch.chance', required: true, min: 0, max: 100 },
+        { name: 'kind', type: 'select', label: 'f.ch.slotKind', options: function () { return opts('ch.slotKind.', CH_SLOT_KINDS)(); } },
+        { name: 'currencyId', type: 'ref', resource: 'currencies', label: 'f.ch.currency', optional: true },
+        { name: 'min', type: 'number', label: 'f.ch.min', optional: true, min: 1 },
+        { name: 'max', type: 'number', label: 'f.ch.max', optional: true, min: 1 },
+        { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.ch.prize', optional: true },
+        { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.ch.group', optional: true }
+      ] },
+    { name: 'slotsHint', type: 'static', readonly: true, when: chSlots, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-ch-slots-hint': '', text: t('ch.slots.hint') }); } },
+    { name: 'rerollEmpty', type: 'bool', inline: true, label: 'f.ch.reroll', hint: 'f.ch.reroll.hint', when: chSlots },
     { type: 'heading', label: 'ch.h.play' },
     { name: 'intervalTime', type: 'number', label: 'f.ch.interval', hint: 'f.ch.interval.hint', optional: true, min: 1, max: 525600 },
     { type: 'row', fields: [
@@ -24397,6 +25194,8 @@ RESOURCES['chance-games'] = {
         check: function (v, vals) { var a = vals.price && vals.price.amount; return (v && (a == null || a === '')) || (!v && a != null && a !== '') ? t('code.INVALID_PRICE_PAYLOAD') : null; } },
       { name: 'price.amount', type: 'number', label: 'f.ch.amount', hint: 'f.ch.amount.hint', optional: true, min: 1 }
     ] },
+    { name: 'ladderText', type: 'text', ltr: true, label: 'f.ch.ladder', hint: 'f.ch.ladder.hint', optional: true },
+    { name: 'revealAck', type: 'bool', inline: true, label: 'f.ch.revealAck', hint: 'f.ch.revealAck.hint' },
     { name: 'playHint', type: 'static', readonly: true, live: true, render: function (v) {
       var none = !v.intervalTime && !(v.price && v.price.currencyId);
       return h('p', { class: 'text-xs ' + (none ? 'text-error-600 dark:text-error-400' : 'text-secondary-500 dark:text-secondary-400'), 'data-ch-play-hint': none ? 'none' : '', text: none ? t('code.INTERVAL_OR_PRICE_REQUIRED') : t('ch.play.hint') });
@@ -24412,17 +25211,47 @@ RESOURCES['chance-games'] = {
     { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
   ],
   defaults: function () {
-    return { key: '', isActive: true, name: {}, description: {}, kind: 'wheel', prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null }, dailyLimit: null, totalLimit: null, showOdds: true,
+    return { key: '', isActive: true, name: {}, description: {}, kind: 'wheel', prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null }, dailyLimit: null, totalLimit: null, showOdds: true, ladderText: '', revealAck: false, rerollEmpty: true, jackpotRow: null, pityThreshold: null,
+      slots: [{ chance: 70, kind: 'currency', currencyId: null, min: 120, max: 180, prizeId: null, prizeGroupId: null }],
       prize: [{ chance: 30, prizeId: null, prizeGroupId: null }, { chance: 40, prizeId: null, prizeGroupId: null }, { chance: 30, prizeId: null, prizeGroupId: null }] };
   },
   toForm: function (v) {
     if (!v.price) v.price = { currencyId: null, amount: null };
-    v.prize = (v.prize || []).map(function (r) { return { chance: r.chance, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
+    var rows = v.prize || [];
+    v.ladderText = (v.priceLadder || []).join(', ');
+    v.jackpotRow = null;
+    rows.forEach(function (r, i) { if (r.jackpot) v.jackpotRow = i + 1; });
+    if (v.prizeType === 'slots') {
+      v.slots = rows.map(function (r) { return { chance: r.chance, kind: r.kind || 'prize', currencyId: r.currencyId || null, min: r.min || null, max: r.max || null, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
+      v.prize = [{ chance: 100, prizeId: null, prizeGroupId: null }];
+    } else {
+      if (!v.slots || !v.slots.length) v.slots = [{ chance: 70, kind: 'currency', currencyId: null, min: 120, max: 180, prizeId: null, prizeGroupId: null }];
+      v.prize = rows.map(function (r) { return { chance: r.chance, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
+    }
+    if (v.rerollEmpty == null) v.rerollEmpty = true;
     return v;
   },
   fixPayload: function (p) {
     var group = p.prizeType === 'prizeGroup';
-    p.prize = (p.prize || []).map(function (r) { return { chance: r.chance, prizeId: group ? '' : (r.prizeId || ''), prizeGroupId: group ? (r.prizeGroupId || '') : '' }; });
+    if (p.prizeType === 'slots') {
+      p.prize = (p.slots || []).map(function (r) {
+        var k = r.kind || 'prize';
+        var o = { chance: r.chance, kind: k };
+        if (k === 'currency') { o.currencyId = r.currencyId || ''; o.min = r.min; o.max = r.max; }
+        if (k === 'prize') o.prizeId = r.prizeId || '';
+        if (k === 'prizeGroup') o.prizeGroupId = r.prizeGroupId || '';
+        return o;
+      });
+      p.pityThreshold = null;
+    } else {
+      var jr = Number(p.jackpotRow) || 0;
+      p.prize = (p.prize || []).map(function (r, i) { var o = { chance: r.chance, prizeId: group ? '' : (r.prizeId || ''), prizeGroupId: group ? (r.prizeGroupId || '') : '' }; if (i + 1 === jr) o.jackpot = true; return o; });
+      if (p.pityThreshold === '' || p.pityThreshold === undefined) p.pityThreshold = null;
+    }
+    p.priceLadder = chLadder(p.ladderText);
+    p.revealAck = !!p.revealAck;
+    p.rerollEmpty = p.rerollEmpty !== false;
+    delete p.slots; delete p.ladderText; delete p.jackpotRow; delete p.slotsHint;
     if (!p.price || !p.price.currencyId) p.price = null;
     if (p.intervalTime === '' || p.intervalTime === undefined) p.intervalTime = null;
     if (p.sort == null) p.sort = 0;
@@ -27426,6 +28255,308 @@ function voicePage(container) {
   load();
 }
 
+if (ACTIVITY_KINDS.indexOf('account') === -1) ACTIVITY_KINDS.push('account');
+
+FRIEND_FIELDS.push(
+  { type: 'heading', label: 'fr.privacy' },
+  { type: 'row', fields: [
+    { name: 'notifyDeclined', type: 'bool', inline: true, label: 'f.fr.notifyDeclined', hint: 'f.fr.notifyDeclined.hint' },
+    { name: 'notifyRemoved', type: 'bool', inline: true, label: 'f.fr.notifyRemoved', hint: 'f.fr.notifyRemoved.hint' }
+  ] },
+  { type: 'row', fields: [
+    { name: 'presenceFriendsOnly', type: 'bool', inline: true, label: 'f.fr.presenceFriends', hint: 'f.fr.presenceFriends.hint' },
+    { name: 'dmFriendsOnly', type: 'bool', inline: true, label: 'f.fr.dmFriends', hint: 'f.fr.dmFriends.hint' }
+  ] }
+);
+
+function friendRulesPayload(p) {
+  return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0,
+    requestsBonusMeta: p.requestsBonusMeta || '', friendsBonusMeta: p.friendsBonusMeta || '', matchPolicy: p.matchPolicy || 'priority', overLimit: p.overLimit || 'refuse',
+    notifyDeclined: !!p.notifyDeclined, notifyRemoved: !!p.notifyRemoved, presenceFriendsOnly: !!p.presenceFriendsOnly, dmFriendsOnly: !!p.dmFriendsOnly };
+}
+
+function unLadder(text) {
+  var parts = toLatinDigits(String(text || '')).split(/[\s,،]+/).filter(function (x) { return x !== ''; });
+  return parts.map(function (x) { return Number(x); });
+}
+
+function usernameFields(values) {
+  if (values && values.ladder && values.ladderText == null) values.ladderText = values.ladder.join(', ');
+  return [
+    { name: 'enabled', type: 'bool', inline: true, label: 'f.un.enabled', hint: 'f.un.enabled.hint' },
+    { name: 'firstFree', type: 'bool', inline: true, label: 'f.un.firstFree', hint: 'f.un.firstFree.hint' },
+    { type: 'row', fields: [
+      { name: 'currency', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.un.currency', hint: 'f.un.currency.hint', optional: true },
+      { name: 'cooldownHours', type: 'number', label: 'f.un.cooldown', hint: 'f.un.cooldown.hint', required: true, min: 0, max: 8760 }
+    ] },
+    { name: 'ladderText', type: 'text', ltr: true, label: 'f.un.ladder', hint: 'f.un.ladder.hint', optional: true, check: function (v) {
+      var list = unLadder(v);
+      if (list.length > 20) return t('un.err.ladder');
+      for (var i = 0; i < list.length; i++) if (!(list[i] >= 1 && list[i] <= 1000000000 && Math.floor(list[i]) === list[i])) return t('un.err.ladder');
+      return null;
+    } }
+  ];
+}
+
+var PLAYER_CODE_FIELDS = [
+  { type: 'row', fields: [
+    { name: 'length', type: 'number', label: 'f.pcs.length', hint: 'f.pcs.length.hint', required: true, min: 4, max: 16 },
+    { name: 'charset', type: 'select', label: 'f.pcs.charset', hint: 'f.pcs.charset.hint', required: true, noPlaceholder: true, options: function () { return ['alnum', 'letters', 'digits'].map(function (v) { return { value: v, label: t('pcs.charset.' + v) }; }); } }
+  ] }
+];
+
+var SUGGEST_FIELDS = [
+  { name: 'enabled', type: 'bool', inline: true, label: 'f.fs.enabled', hint: 'f.fs.enabled.hint' },
+  { type: 'row', fields: [
+    { name: 'visible', type: 'number', label: 'f.fs.visible', hint: 'f.fs.visible.hint', required: true, min: 1, max: 100 },
+    { name: 'reserve', type: 'number', label: 'f.fs.reserve', hint: 'f.fs.reserve.hint', required: true, min: 0, max: 100 }
+  ] },
+  { type: 'heading', label: 'fs.quotas' },
+  { type: 'row', fields: [
+    { name: 'coplayQuota', type: 'number', label: 'f.fs.coplay', required: true, min: 0, max: 100 },
+    { name: 'mutualQuota', type: 'number', label: 'f.fs.mutual', required: true, min: 0, max: 100 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'activityQuota', type: 'number', label: 'f.fs.activity', required: true, min: 0, max: 100 },
+    { name: 'levelQuota', type: 'number', label: 'f.fs.level', required: true, min: 0, max: 100 }
+  ] },
+  { type: 'heading', label: 'fs.sources' },
+  { type: 'row', fields: [
+    { name: 'lookbackDays', type: 'number', label: 'f.fs.lookback', hint: 'f.fs.lookback.hint', required: true, min: 1, max: 365 },
+    { name: 'presenceDays', type: 'number', label: 'f.fs.presenceDays', hint: 'f.fs.presenceDays.hint', required: true, min: 1, max: 60 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'levelTable', type: 'ref', resource: 'level-tables', valueKey: 'key', label: 'f.fs.levelTable', hint: 'f.fs.levelTable.hint', optional: true },
+    { name: 'levelDelta', type: 'number', label: 'f.fs.levelDelta', hint: 'f.fs.levelDelta.hint', required: true, min: 0, max: 1000 }
+  ] },
+  { type: 'heading', label: 'fs.rules' },
+  { type: 'row', fields: [
+    { name: 'decayAfter', type: 'number', label: 'f.fs.decayAfter', hint: 'f.fs.decayAfter.hint', required: true, min: 0, max: 365 },
+    { name: 'candidateMaxFriends', type: 'number', label: 'f.fs.maxFriends', hint: 'f.fs.maxFriends.hint', required: true, min: 0, max: 10000 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'scanMax', type: 'number', label: 'f.fs.scanMax', hint: 'f.fs.scanMax.hint', required: true, min: 10, max: 2000 },
+    { name: 'livePatch', type: 'bool', inline: true, label: 'f.fs.livePatch', hint: 'f.fs.livePatch.hint' }
+  ] }
+];
+
+function socialSettingsPage(container, path, title, desc, fields, id, fix) {
+  var page = apiPage(baseApi, path, title, fields, { id: id, desc: desc, fixPayload: function (p) {
+    delete p.updatedBy;
+    delete p.updatedAt;
+    return fix ? fix(p) : p;
+  } });
+  var wrap = h('div', { class: 'mt-6' }, page.el);
+  container.appendChild(wrap);
+  page.load();
+  return page;
+}
+
+var accountRulesBase = accountRulesPage;
+accountRulesPage = function (container) {
+  accountRulesBase(container);
+  var content = container.querySelector('[data-settings-form="accounts"]');
+  var host = content ? content.parentNode : container;
+  socialSettingsPage(host, '/username-settings', 'un.title', 'un.desc', usernameFields, 'username-policy', function (p) {
+    p.ladder = unLadder(p.ladderText);
+    delete p.ladderText;
+    p.currency = p.currency || '';
+    p.cooldownHours = Number(p.cooldownHours) || 0;
+    p.enabled = !!p.enabled;
+    p.firstFree = !!p.firstFree;
+    return p;
+  });
+  socialSettingsPage(host, '/player-codes/settings', 'pcs.title', 'pcs.desc', PLAYER_CODE_FIELDS, 'player-codes', function (p) {
+    delete p.codes;
+    p.length = Number(p.length) || 6;
+    return p;
+  });
+};
+
+var friendRulesBase = friendRulesPage;
+friendRulesPage = function (container, query, ctx) {
+  var list = friendRulesBase(container, query, ctx);
+  var rules = container.querySelector('[data-settings-form="friends"]');
+  var holder = h('div', {});
+  if (rules && rules.nextSibling) rules.parentNode.insertBefore(holder, rules.nextSibling);
+  else container.appendChild(holder);
+  socialSettingsPage(holder, '/friend-suggestions/settings', 'fs.title', 'fs.desc', SUGGEST_FIELDS, 'friend-suggestions', function (p) {
+    Object.keys(p).forEach(function (k) { if (typeof p[k] === 'string' && k !== 'levelTable') p[k] = Number(p[k]) || 0; });
+    p.levelTable = p.levelTable || '';
+    p.enabled = !!p.enabled;
+    p.livePatch = !!p.livePatch;
+    return p;
+  });
+  return list;
+};
+
+var SOCIAL_CARD = { id: null, data: null, loading: false, at: 0, err: null };
+
+function loadSocialCard(id) {
+  SOCIAL_CARD.loading = true;
+  var enc = encodeURIComponent(id);
+  return Promise.all([baseApi('GET', '/players/' + enc + '/username-changes'), baseApi('GET', '/players/' + enc + '/friend-suggestions')]).then(function (all) {
+    SOCIAL_CARD.loading = false;
+    SOCIAL_CARD.at = Date.now();
+    SOCIAL_CARD.data = { names: all[0] || {}, sugg: all[1] || {} };
+    SOCIAL_CARD.err = null;
+    var old = document.querySelector('[data-player-social]');
+    if (old) old.removeAttribute('data-key');
+    schedule();
+  }, function (err) {
+    SOCIAL_CARD.loading = false;
+    SOCIAL_CARD.at = Date.now();
+    SOCIAL_CARD.err = err;
+    schedule();
+  });
+}
+
+function renameDialog(id, current) {
+  var v = { username: current || '' };
+  var input = textInput(v.username, { ltr: true, label: t('psoc.rename.field'), oninput: function (x) { v.username = x; wrap.setError(''); } });
+  input.setAttribute('data-rename-input', '');
+  var wrap = field(t('psoc.rename.field'), input, t('psoc.rename.hint'));
+  return formDialog({
+    id: 'player-rename',
+    title: t('psoc.rename.title'),
+    text: t('psoc.rename.text'),
+    icon: 'users',
+    ok: t('psoc.rename'),
+    body: wrap,
+    validate: function () {
+      var ok = v.username.trim() !== '';
+      wrap.setError(ok ? '' : t('err.required'));
+      return ok;
+    },
+    showError: function (err) {
+      if (err && err.field === 'username') { wrap.setError(errorText(err)); return true; }
+      return false;
+    },
+    submit: function () { return baseApi('POST', '/players/' + encodeURIComponent(id) + '/username', { username: v.username.trim() }); }
+  });
+}
+
+function socialSourceTag(src) {
+  var color = { coplay: 'primary', mutual: 'success', activity: 'warning', level: 'secondary' }[src] || 'secondary';
+  return tag(t('fs.src.' + src), color);
+}
+
+function socialQuote(q) {
+  if (!q || !q.enabled) return h('span', { class: 'text-sm text-secondary-500', 'data-un-quote': 'off', text: t('psoc.policyOff') });
+  var box = h('div', { class: 'flex flex-col gap-0.5', 'data-un-quote': q.free ? 'free' : 'paid' },
+    h('span', { class: 'text-sm', text: q.free ? t('psoc.next.free') : t('psoc.next.cost', { n: fmtNum(q.cost), cur: q.currency }) }),
+    h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: t('psoc.paidN', { n: fmtNum(q.paidChanges || 0) }) }));
+  if (q.cooldownEndsAt) box.appendChild(h('span', { class: 'text-xs eco-text-error', text: t('psoc.cooldown', { date: fmtDate(q.cooldownEndsAt, true) }) }));
+  return box;
+}
+
+function socialHistoryTable(items) {
+  if (!items.length) return h('p', { class: 'text-sm text-secondary-500', 'data-un-history': 'empty', text: t('psoc.history.empty') });
+  var cols = [{ label: t('psoc.col.from') }, { label: t('psoc.col.to') }, { label: t('psoc.col.source'), width: 110 }, { label: t('psoc.col.cost'), width: 110 }, { label: t('psoc.col.when'), width: 160 }];
+  var rows = items.slice(0, 10).map(function (it) {
+    return { item: it, cells: [h('span', { dir: 'ltr', text: it.oldUsername }), h('span', { dir: 'ltr', class: 'font-medium', text: it.newUsername }),
+      tag(t('psoc.src.' + it.source) + (it.admin ? ' · ' + it.admin : ''), it.source === 'admin' ? 'warning' : it.source === 'paid' ? 'primary' : 'success'),
+      h('span', { class: 'tabular-nums', text: it.cost ? fmtNum(it.cost) + ' ' + it.currency : '-' }), h('span', { class: 'text-xs', text: fmtDate(it.createdAt, true) })] };
+  });
+  var tb = table(cols, rows);
+  tb.setAttribute('data-un-history', String(items.length));
+  return tb;
+}
+
+function socialSuggestTable(list, attr) {
+  var cols = [{ label: t('psoc.col.player') }, { label: t('psoc.col.source'), width: 120 }, { label: t('psoc.col.score'), width: 100 }, { label: t('psoc.col.shows'), width: 80 }, { label: t('psoc.col.played'), width: 150 }];
+  var rows = list.slice(0, 20).map(function (it) {
+    return { item: it, cells: [
+      h('a', { href: '#/players/' + it.userId, class: 'eco-link', dir: 'ltr', text: it.username + (it.code ? ' · ' + it.code : '') }),
+      socialSourceTag(it.source),
+      h('span', { class: 'tabular-nums', text: it.source === 'coplay' ? '-' : fmtNum(Math.round((it.score || 0) * 100) / 100) }),
+      h('span', { class: 'tabular-nums', text: fmtNum(it.shows || 0) }),
+      h('span', { class: 'text-xs', text: it.lastPlayedAt ? fmtDate(it.lastPlayedAt, true) : '-' })] };
+  });
+  var tb = table(cols, rows);
+  tb.setAttribute(attr, String(list.length));
+  return tb;
+}
+
+function playerSocialCard() {
+  var id = playerCardRoute();
+  var existing = document.querySelector('[data-player-social]');
+  if (!id || !token() || !aclCan('ACCOUNT', 0)) { if (existing) existing.remove(); return; }
+  var main = null;
+  var mains = document.querySelectorAll('#main > main');
+  for (var i = 0; i < mains.length; i++) if (mains[i].style.display !== 'none') main = mains[i];
+  var grid = main && main.querySelector('div.flex.flex-col.flex-1.min-w-0 > div.grid.grid-cols-1.gap-4');
+  if (!grid) return;
+  if (SOCIAL_CARD.id !== id) { SOCIAL_CARD.id = id; SOCIAL_CARD.data = null; SOCIAL_CARD.err = null; SOCIAL_CARD.at = 0; }
+  if (!SOCIAL_CARD.loading && Date.now() - SOCIAL_CARD.at > 20000) loadSocialCard(id);
+  var d = SOCIAL_CARD.data;
+  var anchor = grid.querySelector('[data-player-chat-quota]') || grid.querySelector('[data-player-friend-gifts]') || grid.querySelector('[data-player-offers]') || grid.querySelector('[data-player-chance]') || grid.querySelector('[data-player-achievements]') || grid.querySelector('[data-player-items]') || grid.querySelector('[data-player-tasks]') || grid.querySelector('[data-player-activity]') || grid.querySelector('[data-player-progress]') || grid.querySelector('[data-player-mod]');
+  var key = lang() + '|' + id + '|' + (d ? JSON.stringify([d.names.code, d.names.username, (d.names.items || []).length, d.names.quote, d.sugg.generatedAt, (d.sugg.visible || []).length, (d.sugg.reserve || []).length, (d.sugg.coplay || []).length]) : SOCIAL_CARD.err ? 'err' : 'loading');
+  var placed = existing && existing.parentNode === grid && (anchor ? existing.previousElementSibling === anchor : grid.firstChild === existing);
+  if (existing && existing.getAttribute('data-key') === key && placed) return;
+  if (existing) existing.remove();
+  var body = h('div', { class: 'px-4 py-3' });
+  var cardEl = h('section', { class: 'flex flex-col dark:bg-secondary-800 rounded-md shadow bg-white', 'data-player-social': '', 'data-key': key, 'data-economy': 'player-social', 'data-l10n-skip': '', 'aria-labelledby': 'player-social-title', dir: document.documentElement.getAttribute('dir') || 'ltr' }, body);
+  var title = h('h2', { id: 'player-social-title', class: 'font-medium flex items-center gap-2' }, icon('users', 'h-4 w-4'), h('span', { text: t('psoc.title') }));
+  var place = function () { if (anchor) anchor.after(cardEl); else grid.insertBefore(cardEl, grid.firstChild); };
+  if (!d) {
+    body.appendChild(h('div', { class: 'flex items-center justify-between gap-2 mb-3' }, title));
+    body.appendChild(SOCIAL_CARD.err ? notice('error', errorText(SOCIAL_CARD.err), button({ variant: 'link', size: 'sm', label: t('try.again'), onclick: function () { SOCIAL_CARD.at = 0; loadSocialCard(id); } })) : h('div', { class: 'flex flex-col gap-2' }, bar('40%'), bar('60%')));
+    place();
+    return;
+  }
+  var write = aclCan('ACCOUNT', 1);
+  var reload = function () { SOCIAL_CARD.at = 0; loadSocialCard(id); if (typeof PLAYER_CARD !== 'undefined') PLAYER_CARD.at = 0; };
+  var actions = h('div', { class: 'flex flex-wrap items-center gap-1' });
+  if (write) {
+    var rename = button({ variant: 'ghost', size: 'sm', icon: 'players', label: t('psoc.rename'), onclick: function () {
+      renameDialog(id, d.names.username).then(function (res) { if (res) { toast('success', t('psoc.rename.done', { name: res.username })); reload(); } });
+    } });
+    rename.setAttribute('data-ps-action', 'rename');
+    var regen = button({ variant: 'ghost', size: 'sm', icon: 'refresh', label: t('psoc.regen'), onclick: function () {
+      setBusy(regen, true, t('saving'));
+      baseApi('POST', '/players/' + encodeURIComponent(id) + '/friend-suggestions/regenerate', {}).then(function () { toast('success', t('psoc.regen.done')); reload(); }, function (err) { setBusy(regen, false); toast('error', errorText(err)); });
+    } });
+    regen.setAttribute('data-ps-action', 'regenerate');
+    actions.appendChild(rename);
+    actions.appendChild(regen);
+  }
+  body.appendChild(h('div', { class: 'flex flex-wrap items-center justify-between gap-2 mb-3' }, title, actions));
+  var s = d.sugg || {};
+  body.appendChild(h('div', { class: 'eco-pc-grid mb-3' },
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('psoc.code') }),
+      h('div', { class: 'text-lg font-semibold', dir: 'ltr', 'data-ps-code': '', text: d.names.code || '-' })),
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('psoc.next') }),
+      socialQuote(d.names.quote)),
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('psoc.sugg') }),
+      h('div', { class: 'text-sm tabular-nums', 'data-ps-sugg': '' }, s.generatedAt ? t('psoc.sugg.counts', { v: fmtNum((s.visible || []).length), r: fmtNum((s.reserve || []).length) }) : t('psoc.sugg.none')),
+      s.generatedAt ? h('div', { class: 'text-xs text-secondary-500', text: t('psoc.sugg.meta', { cycle: s.cycle, when: fmtDate(s.generatedAt, true) }) + (s.generatedBy ? ' · ' + s.generatedBy : '') }) : null)));
+  body.appendChild(h('h3', { class: 'text-sm font-medium mt-2 mb-2', text: t('psoc.history') }));
+  body.appendChild(socialHistoryTable(d.names.items || []));
+  if ((s.visible || []).length) {
+    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('psoc.visible') }));
+    body.appendChild(socialSuggestTable(s.visible, 'data-ps-visible'));
+  }
+  if ((s.reserve || []).length) {
+    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('psoc.reserve') }));
+    body.appendChild(socialSuggestTable(s.reserve, 'data-ps-reserve'));
+  }
+  if ((s.coplay || []).length) {
+    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('psoc.coplay') }));
+    var cols = [{ label: t('psoc.col.player') }, { label: t('psoc.col.game'), width: 120 }, { label: t('psoc.col.matches'), width: 90 }, { label: t('psoc.col.played'), width: 150 }];
+    var tb = table(cols, s.coplay.map(function (c) {
+      return { item: c, cells: [h('a', { href: '#/players/' + c.userId, class: 'eco-link', dir: 'ltr', text: c.username || c.userId }), h('span', { dir: 'ltr', text: c.gameKey || '-' }),
+        h('span', { class: 'tabular-nums', text: fmtNum(c.matches || 0) }), h('span', { class: 'text-xs', text: fmtDate(c.lastAt, true) })] };
+    }));
+    tb.setAttribute('data-ps-coplay', String(s.coplay.length));
+    body.appendChild(tb);
+  }
+  place();
+}
+
 var BRAND_KEY = 'nakama-brand';
 var BRAND_SHADES = { 50: 0.9, 100: 0.8, 200: 0.6, 300: 0.4, 400: 0.1, 500: 0, 600: -0.1, 700: -0.25, 800: -0.58, 900: -0.7, 950: -0.8 };
 var BRAND_DEFAULT_SHADES = { '244,244,253': 50, '233,232,252': 100, '209,205,248': 200, '181,175,245': 300, '130,117,240': 400, '107,89,238': 500, '102,84,226': 600, '93,77,206': 700, '69,58,154': 800, '59,49,130': 900, '48,40,106': 950 };
@@ -29706,6 +30837,7 @@ function nativeTweaks() {
   playerOffersCard();
   playerFriendGiftsCard();
   playerChatQuotaCard();
+  playerSocialCard();
 }
 
 var ROOT_ID = 'economy-root';

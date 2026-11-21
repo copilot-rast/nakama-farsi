@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/heroiclabs/nakama-common/runtime"
+	"github.com/heroiclabs/nakama/v3/internal/commpacks"
 	"github.com/heroiclabs/nakama/v3/internal/gamecatalog"
 )
 
@@ -19,6 +20,8 @@ const (
 	opUpdate     = 3
 	opResult     = 4
 	opError      = 5
+	opComm       = 6
+	opCommMsg    = 7
 	tttEndTicks  = 10 * tttTickRate
 	defaultTurn  = 15
 	defaultWait  = 60
@@ -50,6 +53,7 @@ type tttState struct {
 	winner     string
 	reason     string
 	payouts    []gamecatalog.Payout
+	db         *sql.DB
 }
 
 type tttMatch struct{}
@@ -57,6 +61,7 @@ type tttMatch struct{}
 func (m *tttMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, params map[string]interface{}) (interface{}, int, string) {
 	s := &tttState{allowed: map[string]bool{}, presences: map[string]runtime.Presence{}, marks: map[string]string{}, firstMove: "random", forfeit: true}
 	s.matchID, _ = ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
+	s.db = db
 	s.game, _ = params["game"].(string)
 	if s.game == "" {
 		s.game = tttGameKey
@@ -132,6 +137,9 @@ func (m *tttMatch) MatchJoin(ctx context.Context, logger runtime.Logger, db *sql
 		s.marks[s.order[first]], s.marks[s.order[1-first]] = "X", "O"
 		s.turn = s.order[first]
 		s.started, s.startTick, s.turnEnd = true, tick, tick+s.turnTicks
+		if err := commpacks.Open(ctx, db, s.matchID, s.order); err != nil {
+			logger.Warn("Tic-tac-toe comm channel not opened: %v", err)
+		}
 		label, _ := json.Marshal(map[string]any{"game": s.game, "room": s.room, "open": false})
 		_ = dispatcher.MatchLabelUpdate(string(label))
 		m.broadcast(dispatcher, opStart, s, tick)
@@ -187,6 +195,10 @@ func (m *tttMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sql
 		return s
 	}
 	for _, msg := range messages {
+		if msg.GetOpCode() == opComm {
+			m.comm(ctx, logger, db, dispatcher, s, msg)
+			continue
+		}
 		if msg.GetOpCode() != opMove {
 			continue
 		}
@@ -260,12 +272,39 @@ func (m *tttMatch) finish(ctx context.Context, logger runtime.Logger, dispatcher
 	if winner != "" {
 		winners = []string{winner}
 	}
+	if err := commpacks.Close(ctx, s.db, s.matchID, "ended"); err != nil {
+		logger.Warn("Tic-tac-toe comm channel not closed: %v", err)
+	}
 	payouts, err := gamecatalog.Finish(ctx, s.matchID, winners)
 	if err != nil {
 		logger.Warn("Tic-tac-toe finish failed: %v", err)
 	}
 	s.payouts = payouts
 	m.broadcast(dispatcher, opResult, s, tick)
+}
+
+func (m *tttMatch) comm(ctx context.Context, logger runtime.Logger, db *sql.DB, dispatcher runtime.MatchDispatcher, s *tttState, msg runtime.MatchData) {
+	me := []runtime.Presence{msg}
+	if _, ok := s.marks[msg.GetUserId()]; !ok {
+		m.send(dispatcher, opError, map[string]any{"code": "NOT_A_MEMBER"}, me)
+		return
+	}
+	var in commpacks.Input
+	if err := json.Unmarshal(msg.GetData(), &in); err != nil {
+		m.send(dispatcher, opError, map[string]any{"code": commpacks.CodeInvalid}, me)
+		return
+	}
+	out, err := commpacks.Send(ctx, db, s.matchID, msg.GetUserId(), in)
+	if r, ok := commpacks.AsRefusal(err); ok {
+		m.send(dispatcher, opError, r, me)
+		return
+	}
+	if err != nil {
+		logger.Warn("Tic-tac-toe comm message failed: %v", err)
+		m.send(dispatcher, opError, map[string]any{"code": "SEND_FAILED"}, me)
+		return
+	}
+	m.send(dispatcher, opCommMsg, out, nil)
 }
 
 func (m *tttMatch) view(s *tttState, tick int64) map[string]any {

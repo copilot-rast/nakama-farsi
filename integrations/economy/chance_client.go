@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"strconv"
 	"strings"
 	"time"
@@ -23,6 +24,7 @@ func (s *service) chanceRPCs() map[string]clientRPC {
 		"economy_chance_play":             s.rpcChancePlay,
 		"economy_chance_play_with_ticket": s.rpcChancePlayWithTicket,
 		"economy_chance_history":          s.rpcChanceHistory,
+		"economy_chance_ack":              s.rpcChanceAck,
 	}
 }
 
@@ -60,9 +62,10 @@ func (s *service) chanceRPC(fn clientRPC) func(context.Context, runtime.Logger, 
 }
 
 type chanceTarget struct {
-	ID   string `json:"id"`
-	Key  string `json:"key"`
-	Lang string `json:"lang"`
+	ID           string `json:"id"`
+	Key          string `json:"key"`
+	Lang         string `json:"lang"`
+	ExpectedCost *int64 `json:"expectedCost"`
 }
 
 func (s *service) chanceTargetGame(ctx context.Context, payload string) (*chanceGame, chanceTarget, error) {
@@ -123,6 +126,11 @@ func (s *service) chanceLookupsFor(ctx context.Context, langs *localized.Set, la
 		}
 		if g.Price != nil {
 			currencyIDs = append(currencyIDs, g.Price.CurrencyID)
+		}
+		for _, r := range g.Rows {
+			if r.CurrencyID != "" {
+				currencyIDs = append(currencyIDs, r.CurrencyID)
+			}
 		}
 	}
 	members := map[string][]groupMember{}
@@ -204,7 +212,7 @@ func hideGroupOdds(grp chanceGroupView) chanceGroupView {
 	return grp
 }
 
-func (s *service) chanceGameView(g *chanceGame, lk *chanceLookups, langs *localized.Set, lang string, last sql.NullTime, plays int64, today int, now time.Time) map[string]any {
+func (s *service) chanceGameView(g *chanceGame, lk *chanceLookups, langs *localized.Set, lang string, last sql.NullTime, plays int64, today, tickets int, now time.Time) map[string]any {
 	rows := []map[string]any{}
 	for _, r := range g.Rows {
 		var chance any = r.Chance
@@ -222,6 +230,15 @@ func (s *service) chanceGameView(g *chanceGame, lk *chanceLookups, langs *locali
 				}
 				row["group"] = grp
 			}
+		}
+		if g.PrizeType == "slots" {
+			row["kind"] = slotKind(r)
+			if r.CurrencyID != "" {
+				cur := lk.currencies[r.CurrencyID]
+				row["currency"] = map[string]any{"currencyId": r.CurrencyID, "currencyKey": cur[0], "currencyName": cur[1], "min": r.Min, "max": r.Max}
+			}
+		} else if r.Jackpot {
+			row["jackpot"] = true
 		}
 		rows = append(rows, row)
 	}
@@ -250,9 +267,16 @@ func (s *service) chanceGameView(g *chanceGame, lk *chanceLookups, langs *locali
 			out["limitReached"] = true
 		}
 	}
+	out["revealAck"] = g.RevealAck
 	if g.Price != nil {
 		cur := lk.currencies[g.Price.CurrencyID]
-		out["price"] = map[string]any{"currencyId": g.Price.CurrencyID, "currencyKey": cur[0], "currencyName": cur[1], "amount": g.Price.Amount}
+		amount := g.Price.Amount
+		if len(g.Ladder) > 0 {
+			amount = ladderAmount(g.Ladder, tickets)
+			out["priceLadder"] = g.Ladder
+			out["ticketsToday"] = tickets
+		}
+		out["price"] = map[string]any{"currencyId": g.Price.CurrencyID, "currencyKey": cur[0], "currencyName": cur[1], "amount": amount}
 	}
 	if g.Interval != nil {
 		left := chanceWait(g, last, now)
@@ -268,31 +292,46 @@ func (s *service) chanceGameView(g *chanceGame, lk *chanceLookups, langs *locali
 	return out
 }
 
+type chancePlayer struct {
+	last    map[string]sql.NullTime
+	plays   map[string]int64
+	today   map[string]int
+	tickets map[string]int
+}
+
 func (s *service) chancePlayerState(ctx context.Context, userID string) (map[string]sql.NullTime, map[string]int64, map[string]int, error) {
-	last := map[string]sql.NullTime{}
-	plays := map[string]int64{}
-	today := map[string]int{}
-	start := s.chanceDayStart(ctx, s.db, s.now().UTC())
-	rows, err := s.db.QueryContext(ctx, `SELECT c.game_id::text, c.plays, (SELECT max(p.created_at) FROM economy_chance_play p WHERE p.game_id=c.game_id AND p.user_id=c.user_id AND p.mode='free'),
-		(SELECT count(*) FROM economy_chance_play p WHERE p.game_id=c.game_id AND p.user_id=c.user_id AND p.created_at >= $2)
-		FROM economy_chance_state c WHERE c.user_id=$1`, userID, start)
+	st, err := s.chancePlayerFull(ctx, userID)
 	if err != nil {
 		return nil, nil, nil, err
+	}
+	return st.last, st.plays, st.today, nil
+}
+
+func (s *service) chancePlayerFull(ctx context.Context, userID string) (*chancePlayer, error) {
+	st := &chancePlayer{last: map[string]sql.NullTime{}, plays: map[string]int64{}, today: map[string]int{}, tickets: map[string]int{}}
+	start := s.chanceDayStart(ctx, s.db, s.now().UTC())
+	rows, err := s.db.QueryContext(ctx, `SELECT c.game_id::text, c.plays, (SELECT max(p.created_at) FROM economy_chance_play p WHERE p.game_id=c.game_id AND p.user_id=c.user_id AND p.mode='free'),
+		(SELECT count(*) FROM economy_chance_play p WHERE p.game_id=c.game_id AND p.user_id=c.user_id AND p.created_at >= $2),
+		(SELECT count(*) FROM economy_chance_play p WHERE p.game_id=c.game_id AND p.user_id=c.user_id AND p.created_at >= $2 AND p.mode='ticket')
+		FROM economy_chance_state c WHERE c.user_id=$1`, userID, start)
+	if err != nil {
+		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var id string
 		var n int64
 		var t sql.NullTime
-		var d int
-		if err := rows.Scan(&id, &n, &t, &d); err != nil {
-			return nil, nil, nil, err
+		var d, k int
+		if err := rows.Scan(&id, &n, &t, &d, &k); err != nil {
+			return nil, err
 		}
-		last[id] = t
-		plays[id] = n
-		today[id] = d
+		st.last[id] = t
+		st.plays[id] = n
+		st.today[id] = d
+		st.tickets[id] = k
 	}
-	return last, plays, today, rows.Err()
+	return st, rows.Err()
 }
 
 func (s *service) rpcChanceGames(ctx context.Context, userID, payload string) (any, error) {
@@ -314,14 +353,18 @@ func (s *service) rpcChanceGames(ctx context.Context, userID, payload string) (a
 	if err != nil {
 		return nil, err
 	}
-	last, plays, today, err := s.chancePlayerState(ctx, userID)
+	st, err := s.chancePlayerFull(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 	now := s.now().UTC()
 	items := []map[string]any{}
 	for _, g := range games {
-		items = append(items, s.chanceGameView(g, lk, langs, lang, last[g.ID], plays[g.ID], today[g.ID], now))
+		view := s.chanceGameView(g, lk, langs, lang, st.last[g.ID], st.plays[g.ID], st.today[g.ID], st.tickets[g.ID], now)
+		if err := s.addPendingReveal(ctx, view, g, userID, langs, lang); err != nil {
+			return nil, err
+		}
+		items = append(items, view)
 	}
 	return map[string]any{"code": "SUCCESS", "lang": lang, "items": items}, nil
 }
@@ -339,11 +382,15 @@ func (s *service) rpcChanceGame(ctx context.Context, userID, payload string) (an
 	if err != nil {
 		return nil, err
 	}
-	last, plays, today, err := s.chancePlayerState(ctx, userID)
+	st, err := s.chancePlayerFull(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"code": "SUCCESS", "lang": lang, "game": s.chanceGameView(g, lk, langs, lang, last[g.ID], plays[g.ID], today[g.ID], s.now().UTC())}, nil
+	view := s.chanceGameView(g, lk, langs, lang, st.last[g.ID], st.plays[g.ID], st.today[g.ID], st.tickets[g.ID], s.now().UTC())
+	if err := s.addPendingReveal(ctx, view, g, userID, langs, lang); err != nil {
+		return nil, err
+	}
+	return map[string]any{"code": "SUCCESS", "lang": lang, "game": view}, nil
 }
 
 func (s *service) chanceTurn(ctx context.Context, userID, payload string) (time.Duration, error) {
@@ -397,7 +444,7 @@ func (s *service) chancePlayRPC(ctx context.Context, userID, payload, mode strin
 	if err := s.ensureDefaults(ctx, userID); err != nil {
 		return nil, err
 	}
-	res, err := s.playChance(ctx, userID, g.ID, mode)
+	res, err := s.playChance(ctx, userID, g.ID, mode, in.ExpectedCost)
 	if err != nil {
 		return nil, err
 	}
@@ -427,6 +474,17 @@ func (s *service) chancePlayRPC(ctx context.Context, userID, payload, mode strin
 	}
 	if res.Play.Price != nil {
 		out["spent"] = map[string]any{"currencyKey": res.Play.Price.CurrencyKey, "amount": res.Play.Price.Amount}
+	}
+	if res.Play.Outcome != nil {
+		out["outcome"] = s.outcomeView(ctx, res.Play.Outcome, langs, lang)
+	}
+	if res.Game.RevealAck {
+		out["needsAck"] = res.Play.Status == "done"
+	}
+	if len(res.Game.Ladder) > 0 && res.Game.Price != nil {
+		if n, err := s.chanceTicketsToday(ctx, s.db, res.Game.ID, userID, s.now().UTC()); err == nil {
+			out["nextTicketCost"] = ladderAmount(res.Game.Ladder, n)
+		}
 	}
 	if res.Game.Interval != nil {
 		out["nextPlayTime"] = waitSeconds(res.Wait)
@@ -483,7 +541,7 @@ func (s *service) rpcChanceHistory(ctx context.Context, userID, payload string) 
 	}
 	n := len(where.args)
 	rows, err := s.db.QueryContext(ctx, `SELECT p.id::text, p.game_id::text, g.key, g.name::text, p.mode, p.status, p.roll, p.slot, p.prize_id::text, p.prize_group_id::text, p.price::text, p.created_at,
-			COALESCE((SELECT up.rewards::text FROM economy_user_prize up WHERE up.source_type='chance' AND up.source_id=p.claim_id::text AND up.claimed), '[]')
+			COALESCE((SELECT up.rewards::text FROM economy_user_prize up WHERE up.source_type='chance' AND up.source_id=p.claim_id::text AND up.claimed), '[]'), p.outcome::text
 		FROM economy_chance_play p JOIN economy_chance_game g ON g.id=p.game_id`+where.sql()+` ORDER BY p.created_at DESC, p.id DESC LIMIT $`+itoa(n+1)+` OFFSET $`+itoa(n+2),
 		append(where.args, in.Limit+1, offset)...)
 	if err != nil {
@@ -493,14 +551,14 @@ func (s *service) rpcChanceHistory(ctx context.Context, userID, payload string) 
 		id, gameID, gameKey, gameName, mode, status, rewards string
 		roll                                                 int
 		slot                                                 sql.NullInt64
-		prize, group, price                                  sql.NullString
+		prize, group, price, outcome                         sql.NullString
 		created                                              time.Time
 	}
 	var list []histRow
 	prizeIDs := []string{}
 	for rows.Next() {
 		var r histRow
-		if err := rows.Scan(&r.id, &r.gameID, &r.gameKey, &r.gameName, &r.mode, &r.status, &r.roll, &r.slot, &r.prize, &r.group, &r.price, &r.created, &r.rewards); err != nil {
+		if err := rows.Scan(&r.id, &r.gameID, &r.gameKey, &r.gameName, &r.mode, &r.status, &r.roll, &r.slot, &r.prize, &r.group, &r.price, &r.created, &r.rewards, &r.outcome); err != nil {
 			rows.Close()
 			return nil, err
 		}
@@ -544,6 +602,13 @@ func (s *service) rpcChanceHistory(ctx context.Context, userID, payload string) 
 		}
 		var rewards []prizeItem
 		_ = json.Unmarshal([]byte(r.rewards), &rewards)
+		if r.outcome.Valid && r.outcome.String != "" && r.outcome.String != "null" {
+			var oc []chanceOutcome
+			if json.Unmarshal([]byte(r.outcome.String), &oc) == nil {
+				rewards = slotRewards(oc)
+				item["outcome"] = s.outcomeView(ctx, oc, langs, lang)
+			}
+		}
 		if rewards == nil {
 			rewards = []prizeItem{}
 		}
@@ -551,4 +616,103 @@ func (s *service) rpcChanceHistory(ctx context.Context, userID, payload string) 
 		items = append(items, item)
 	}
 	return map[string]any{"code": "SUCCESS", "lang": lang, "items": items, "cursor": cursor}, nil
+}
+
+func (s *service) outcomeView(ctx context.Context, outcome []chanceOutcome, langs *localized.Set, lang string) []map[string]any {
+	ids := []string{}
+	for _, o := range outcome {
+		if o.PrizeID != "" {
+			ids = append(ids, o.PrizeID)
+		}
+	}
+	names, _ := s.prizeNames(ctx, langs, lang, ids)
+	out := []map[string]any{}
+	for _, o := range outcome {
+		if o.Skipped {
+			continue
+		}
+		row := map[string]any{"slot": o.Slot, "kind": o.Kind}
+		if o.Kind == "currency" {
+			row["currencyKey"], row["amount"] = o.CurrencyKey, o.Amount
+		} else {
+			row["prizeId"] = o.PrizeID
+			row["prize"] = prizeJSON(names[o.PrizeID], o.PrizeID)
+			if o.PrizeGroupID != "" {
+				row["prizeGroupId"] = o.PrizeGroupID
+			}
+			rewards := o.Rewards
+			if rewards == nil {
+				rewards = []prizeItem{}
+			}
+			row["rewards"] = rewards
+		}
+		out = append(out, row)
+	}
+	return out
+}
+
+func (s *service) addPendingReveal(ctx context.Context, view map[string]any, g *chanceGame, userID string, langs *localized.Set, lang string) error {
+	if !g.RevealAck {
+		return nil
+	}
+	view["pendingReveal"] = nil
+	var id, mode string
+	var slot sql.NullInt64
+	var prize, outcome, claim sql.NullString
+	var at time.Time
+	err := s.db.QueryRowContext(ctx, `SELECT id::text, mode, slot, prize_id::text, outcome::text, claim_id::text, created_at FROM economy_chance_play
+		WHERE game_id=$1 AND user_id=$2 AND status='done' AND acked_at IS NULL ORDER BY created_at DESC, id DESC LIMIT 1`, g.ID, userID).Scan(&id, &mode, &slot, &prize, &outcome, &claim, &at)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	rev := map[string]any{"playId": id, "mode": mode, "slot": nil, "prizeId": nil, "prize": nil, "rewards": []prizeItem{}, "createdAt": at.UTC().Format(time.RFC3339)}
+	if slot.Valid {
+		rev["slot"] = slot.Int64
+	}
+	if prize.Valid {
+		names, err := s.prizeNames(ctx, langs, lang, []string{prize.String})
+		if err != nil {
+			return err
+		}
+		rev["prizeId"] = prize.String
+		rev["prize"] = prizeJSON(names[prize.String], prize.String)
+	}
+	if claim.Valid {
+		if rewards, err := s.claimRewards(ctx, claim.String); err == nil {
+			rev["rewards"] = rewards
+		}
+	}
+	if outcome.Valid && outcome.String != "" && outcome.String != "null" {
+		var oc []chanceOutcome
+		if json.Unmarshal([]byte(outcome.String), &oc) == nil {
+			rev["outcome"] = s.outcomeView(ctx, oc, langs, lang)
+			rev["rewards"] = slotRewards(oc)
+		}
+	}
+	view["pendingReveal"] = rev
+	return nil
+}
+
+func (s *service) rpcChanceAck(ctx context.Context, userID, payload string) (any, error) {
+	var in struct {
+		PlayID string `json:"playId"`
+	}
+	if err := decodeStrict(payload, &in); err != nil {
+		return nil, err
+	}
+	if _, err := uuid.FromString(strings.TrimSpace(in.PlayID)); err != nil {
+		return nil, notFound("PLAY_NOT_FOUND")
+	}
+	var acked time.Time
+	err := s.db.QueryRowContext(ctx, `UPDATE economy_chance_play SET acked_at=COALESCE(acked_at, now()) WHERE id=$1 AND user_id=$2 RETURNING acked_at`, strings.TrimSpace(in.PlayID), userID).Scan(&acked)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, notFound("PLAY_NOT_FOUND")
+	}
+	if err != nil {
+		return nil, err
+	}
+	return map[string]any{"code": "SUCCESS", "acknowledged": true, "playId": strings.TrimSpace(in.PlayID), "ackedAt": acked.UTC().Format(time.RFC3339)}, nil
 }

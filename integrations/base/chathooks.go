@@ -129,6 +129,9 @@ func (s *service) beforeChannelMessageSend(ctx context.Context, _ runtime.Logger
 	if msg == nil {
 		return in, nil
 	}
+	if err := s.dmMessageGate(ctx, ctxUser(ctx), msg.ChannelId); err != nil {
+		return nil, err
+	}
 	content, err := s.moderateContent(ctx, ctxUser(ctx), msg.Content)
 	if err != nil {
 		return nil, err

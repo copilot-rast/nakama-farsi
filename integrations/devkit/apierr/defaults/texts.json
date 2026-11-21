@@ -431,6 +431,14 @@
     "en": "You cannot report yourself.",
     "fa": "نمی‌توانید خودتان را گزارش کنید."
   },
+  "CANNOT_TARGET_SELF": {
+    "en": "This is your own account.",
+    "fa": "این حساب خودت است."
+  },
+  "CAN_SEND_REQUIRED": {
+    "en": "Choose whether the player can send.",
+    "fa": "مشخص کن بازیکن بتواند پیام بفرستد یا نه."
+  },
   "CATEGORY_ALWAYS_ON": {
     "en": "This category cannot be turned off.",
     "fa": "این دسته را نمی‌شود خاموش کرد."
@@ -459,9 +467,21 @@
     "en": "Game not found.",
     "fa": "بازی شانس پیدا نشد."
   },
+  "CHANCE_PRICE_CHANGED": {
+    "en": "The price of this play has changed. Check the new price and try again.",
+    "fa": "قیمت این بازی عوض شده است. قیمت تازه را ببینید و دوباره امتحان کنید."
+  },
   "CHANCE_TOTAL_LIMIT": {
     "en": "Every play of this game has been used.",
     "fa": "همهٔ دفعه‌های این بازی استفاده شده."
+  },
+  "CHANNEL_CLOSED": {
+    "en": "Chat in this match is closed.",
+    "fa": "گفتگوی این مسابقه بسته است."
+  },
+  "CHANNEL_NOT_FOUND": {
+    "en": "This match chat was not found.",
+    "fa": "گفتگوی این مسابقه پیدا نشد."
   },
   "CHAT_CLOSED": {
     "en": "This chat has been closed.",
@@ -751,6 +771,10 @@
     "en": "The comms app ID must be a UUID.",
     "fa": "شناسهٔ برنامهٔ comms باید یک UUID باشد."
   },
+  "COMMS_DISABLED": {
+    "en": "Match chat packs are turned off.",
+    "fa": "پیام‌های سریع بازی فعلاً خاموش است."
+  },
   "COMMS_ISSUER_INVALID": {
     "en": "The token issuer must be 1 to 255 characters.",
     "fa": "صادرکنندهٔ توکن باید ۱ تا ۲۵۵ نویسه باشد."
@@ -778,6 +802,10 @@
   "CONTENT_INDEX_PRIVATE": {
     "en": "The content index needs a player session.",
     "fa": "فهرست محتوا بدون ورود بازیکن بسته است."
+  },
+  "COOLDOWN_ACTIVE": {
+    "en": "Wait a moment before the next message.",
+    "fa": "کمی صبر کن، بعد پیام بعدی را بفرست."
   },
   "COUNTRY_NOT_AVAILABLE": {
     "en": "This country is not available.",
@@ -1123,6 +1151,10 @@
     "en": "Send at most {maxBalances} balances and {maxKeys} item keys.",
     "fa": "حداکثر {maxBalances} موجودی و {maxKeys} کلید آیتم بفرستید."
   },
+  "FAVORITES_FULL": {
+    "en": "Your favorites list is full.",
+    "fa": "فهرست علاقه‌مندی‌هایت پر است."
+  },
   "FILE_REQUIRED": {
     "en": "Please choose a file.",
     "fa": "لطفاً یک فایل انتخاب کنید."
@@ -1138,6 +1170,10 @@
   "FREERIDE_NOT_FOUND": {
     "en": "This free ride reward was not found.",
     "fa": "این جایزهٔ گشت آزاد پیدا نشد."
+  },
+  "FRIENDSHIP_REQUIRED": {
+    "en": "Private chat is only between friends.",
+    "fa": "پیام خصوصی فقط بین دوستان است."
   },
   "FRIEND_ROOMS_DISABLED": {
     "en": "Private matches are off for this game.",
@@ -1255,6 +1291,10 @@
     "en": "At most {max} items can be imported at once.",
     "fa": "در هر بار حداکثر {max} آیتم را می‌توان وارد کرد."
   },
+  "INFINITY_NEEDS_CYCLE": {
+    "en": "The infinity phase starts after the cycle. Set the cycle length first.",
+    "fa": "مرحلهٔ بی‌پایان بعد از چرخه شروع می‌شود. اول طول چرخه را تعیین کنید."
+  },
   "INSUFFICIENT_BALANCE": {
     "en": "Your balance is not enough.",
     "fa": "موجودی شما کافی نیست."
@@ -1283,6 +1323,10 @@
     "en": "The agent is not valid.",
     "fa": "پشتیبان معتبر نیست."
   },
+  "INVALID_ASSET_ID": {
+    "en": "The client asset ID may have 1 to 64 lower-case letters, digits, _ . -.",
+    "fa": "شناسهٔ فایل کلاینت ۱ تا ۶۴ حرف کوچک لاتین، رقم یا _ . - است."
+  },
   "INVALID_BRANCH": {
     "en": "The branch is not valid.",
     "fa": "شاخه معتبر نیست."
@@ -1302,6 +1346,10 @@
   "INVALID_COLOR": {
     "en": "The color is not valid.",
     "fa": "رنگ معتبر نیست."
+  },
+  "INVALID_COMM_MESSAGE": {
+    "en": "The pack message is not valid.",
+    "fa": "پیام بسته درست نیست."
   },
   "INVALID_CONTEXT": {
     "en": "The request context is not valid.",
@@ -1402,6 +1450,10 @@
   "INVALID_ID": {
     "en": "The ID is not valid.",
     "fa": "شناسه معتبر نیست."
+  },
+  "INVALID_INFINITY_RANGE": {
+    "en": "The infinity amount is a whole range where min is at least 1 and not above max.",
+    "fa": "مقدار مرحلهٔ بی‌پایان باید بازه‌ای صحیح باشد؛ کمینه دست‌کم ۱ و نه بیشتر از بیشینه."
   },
   "INVALID_INTERVAL": {
     "en": "The interval is not valid.",
@@ -1547,6 +1599,10 @@
     "en": "The phone number is not valid.",
     "fa": "شماره موبایل معتبر نیست."
   },
+  "INVALID_PITY": {
+    "en": "The pity threshold is from 1 to 100000 plays.",
+    "fa": "آستانهٔ تضمین باید بین ۱ تا ۱۰۰۰۰۰ بازی باشد."
+  },
   "INVALID_PLACEMENT": {
     "en": "The placement is not valid.",
     "fa": "جایگاه معتبر نیست."
@@ -1570,6 +1626,10 @@
   "INVALID_PRICE_AMOUNT": {
     "en": "The price amount is not valid.",
     "fa": "مبلغ قیمت معتبر نیست."
+  },
+  "INVALID_PRICE_LADDER": {
+    "en": "The price ladder has up to 10 whole amounts of 1 or more.",
+    "fa": "پلکان قیمت حداکثر ۱۰ پله دارد و هر پله عددی صحیح از ۱ به بالاست."
   },
   "INVALID_PRICE_PAYLOAD": {
     "en": "The price data is not valid.",
@@ -1671,9 +1731,21 @@
     "en": "The service account is not valid.",
     "fa": "حساب سرویس معتبر نیست."
   },
+  "INVALID_SETTINGS": {
+    "en": "These settings are not valid.",
+    "fa": "این تنظیمات درست نیست."
+  },
   "INVALID_SKU": {
     "en": "The product code is not valid.",
     "fa": "کد محصول معتبر نیست."
+  },
+  "INVALID_SLOT_KIND": {
+    "en": "A chest slot is currency, prize or prize group.",
+    "fa": "نوع خانهٔ صندوق باید ارز، جایزه یا گروه جایزه باشد."
+  },
+  "INVALID_SLOT_RANGE": {
+    "en": "A chest slot needs a whole range where min is at least 1 and not above max.",
+    "fa": "بازهٔ خانهٔ صندوق باید عدد صحیح باشد و کمینه دست‌کم ۱ و نه بیشتر از بیشینه."
   },
   "INVALID_SOURCE": {
     "en": "The source id is not valid.",
@@ -1783,6 +1855,10 @@
     "en": "The weekday is not valid.",
     "fa": "روز هفته معتبر نیست."
   },
+  "INVALID_WEEK_LENGTH": {
+    "en": "The week length is from 1 to 365 days.",
+    "fa": "طول هفته باید بین ۱ تا ۳۶۵ روز باشد."
+  },
   "INVALID_WEEK_START": {
     "en": "The start of the week is not valid.",
     "fa": "شروع هفته معتبر نیست."
@@ -1807,6 +1883,10 @@
     "en": "Please add at least one item.",
     "fa": "لطفاً دست‌کم یک آیتم اضافه کنید."
   },
+  "ITEM_NOT_AVAILABLE": {
+    "en": "This item is not available.",
+    "fa": "این مورد در دسترس نیست."
+  },
   "ITEM_NOT_FOUND": {
     "en": "Item not found.",
     "fa": "آیتم پیدا نشد."
@@ -1814,6 +1894,10 @@
   "ITEM_TYPE_NOT_FOUND": {
     "en": "Item type not found.",
     "fa": "نوع آیتم پیدا نشد."
+  },
+  "JACKPOT_NOT_FOR_SLOTS": {
+    "en": "A chest with slots has no jackpot row.",
+    "fa": "صندوقِ خانه‌دار جایزهٔ بزرگ ندارد."
   },
   "KEY_EXISTS": {
     "en": "This key is already used.",
@@ -1826,6 +1910,14 @@
   "KEY_LOCKED": {
     "en": "This key is locked.",
     "fa": "این کلید قفل است."
+  },
+  "KIND_LOCKED": {
+    "en": "The kind of a pack cannot change.",
+    "fa": "نوع بسته بعد از ساخت عوض نمی‌شود."
+  },
+  "LADDER_NEEDS_PRICE": {
+    "en": "A price ladder needs the ticket currency.",
+    "fa": "پلکان قیمت به ارز بلیت نیاز دارد."
   },
   "LANGUAGE_ACTIVE": {
     "en": "This language is active.",
@@ -1991,6 +2083,10 @@
     "en": "This is not active.",
     "fa": "این مورد فعال نیست."
   },
+  "NOT_A_MEMBER": {
+    "en": "This player is not in the chat.",
+    "fa": "این بازیکن عضو این گفتگو نیست."
+  },
   "NOT_CANCELLABLE": {
     "en": "This cannot be cancelled.",
     "fa": "این مورد قابل لغو نیست."
@@ -2054,6 +2150,10 @@
   "OBJECT_TOO_LARGE": {
     "en": "The data is too large.",
     "fa": "حجم داده زیاد است."
+  },
+  "ONE_JACKPOT": {
+    "en": "Mark at most one row as the jackpot.",
+    "fa": "فقط یک ردیف را جایزهٔ بزرگ کنید."
   },
   "ONE_ROOM_PRIZE": {
     "en": "Only one prize per room is allowed.",
@@ -2147,9 +2247,17 @@
     "en": "The pack is not valid.",
     "fa": "اطلاعات بسته درست نیست."
   },
+  "PACK_NOT_AVAILABLE": {
+    "en": "This pack is not available.",
+    "fa": "این بسته در دسترس نیست."
+  },
   "PACK_NOT_FOUND": {
     "en": "Pack not found.",
     "fa": "بسته پیدا نشد."
+  },
+  "PACK_NOT_OWNED": {
+    "en": "You do not own this pack yet.",
+    "fa": "این بسته را هنوز نداری."
   },
   "PACK_NOT_READY": {
     "en": "This pack has not finished uploading.",
@@ -2315,6 +2423,18 @@
     "en": "Phone verification is not available right now.",
     "fa": "تأیید شماره الان در دسترس نیست."
   },
+  "PITY_NEEDS_JACKPOT": {
+    "en": "Mark the jackpot row before setting the pity threshold.",
+    "fa": "اول ردیف جایزهٔ بزرگ را مشخص کنید، بعد آستانهٔ تضمین را."
+  },
+  "PITY_NOT_FOR_SLOTS": {
+    "en": "A chest with slots has no pity counter.",
+    "fa": "صندوقِ خانه‌دار شمارندهٔ تضمین ندارد."
+  },
+  "PLACE_REQUIRED": {
+    "en": "Turn on chat, match or both.",
+    "fa": "گفتگو، مسابقه یا هر دو را روشن کن."
+  },
   "PLATFORM_REQUIRED": {
     "en": "The platform is required.",
     "fa": "پلتفرم را مشخص کنید."
@@ -2322,6 +2442,10 @@
   "PLAYERS_MAX_BELOW_MIN": {
     "en": "The maximum players is below the minimum.",
     "fa": "بیشینه بازیکن از کمینه کمتر است."
+  },
+  "PLAYER_CODE_NOT_FOUND": {
+    "en": "No player has this code.",
+    "fa": "بازیکنی با این کد پیدا نشد."
   },
   "PLAY_CONFLICT": {
     "en": "Another play is in progress.",
@@ -2783,6 +2907,10 @@
     "en": "You cannot use your own referral code.",
     "fa": "نمی‌توانید کد معرف خودتان را وارد کنید."
   },
+  "SEND_NOT_ALLOWED": {
+    "en": "You cannot send messages in this match.",
+    "fa": "در این مسابقه نمی‌توانی پیام بفرستی."
+  },
   "SERVICE_NOT_FOUND": {
     "en": "Service not found.",
     "fa": "سرویس پیدا نشد."
@@ -2810,6 +2938,10 @@
   "SKU_REQUIRED": {
     "en": "A product code is required.",
     "fa": "کد محصول لازم است."
+  },
+  "SLOTS_ALL_ZERO": {
+    "en": "At least one chest slot needs a chance above 0.",
+    "fa": "دست‌کم یک خانهٔ صندوق باید شانسی بیشتر از صفر داشته باشد."
   },
   "SOCIAL_ACCEPT_REQUIRED": {
     "en": "Say whether you accept the request.",
@@ -3002,6 +3134,10 @@
   "SOURCE_REUSED": {
     "en": "This request was already used for another currency.",
     "fa": "این درخواست قبلاً برای ارز دیگری به کار رفته است."
+  },
+  "SPAM_LOCKED": {
+    "en": "Too many messages. Chat is locked for a while.",
+    "fa": "پیام‌ها زیاد شد. گفتگو مدتی قفل است."
   },
   "SPONSOR_LINK_NOT_FOUND": {
     "en": "Sponsor link not found.",
@@ -3263,6 +3399,10 @@
     "en": "Too many events. Please slow down.",
     "fa": "رویدادها زیاد شد. کمی آهسته‌تر."
   },
+  "TOO_MANY_EXTRAS": {
+    "en": "A streak has at most 100 extra days.",
+    "fa": "هر زنجیره حداکثر ۱۰۰ روز ویژه دارد."
+  },
   "TOO_MANY_FIELDS": {
     "en": "The result has too many fields.",
     "fa": "تعداد فیلدهای نتیجه بیش از حد است."
@@ -3471,6 +3611,10 @@
     "en": "The link is too long.",
     "fa": "پیوند خیلی طولانی است."
   },
+  "USERNAME_CHANGE_COOLDOWN": {
+    "en": "You can change your username again after {cooldownEndsAt}.",
+    "fa": "نام کاربری را تا {cooldownEndsAt} نمی‌توانی دوباره عوض کنی."
+  },
   "USERNAME_DOUBLE_SEPARATOR": {
     "en": "Two dots or underscores cannot come together.",
     "fa": "دو نقطه یا زیرخط نباید پشت هم بیاید."
@@ -3482,6 +3626,10 @@
   "USERNAME_MUST_START_WITH_LETTER": {
     "en": "The username must start with a letter.",
     "fa": "نام کاربری باید با حرف شروع شود."
+  },
+  "USERNAME_PRICE_CHANGED": {
+    "en": "The price of a username change is now {cost}.",
+    "fa": "هزینهٔ تغییر نام کاربری عوض شده است: {cost}."
   },
   "USERNAME_REQUIRED": {
     "en": "Enter a username.",
@@ -3506,6 +3654,10 @@
   "USERNAME_TOO_SHORT": {
     "en": "The username is too short.",
     "fa": "نام کاربری خیلی کوتاه است."
+  },
+  "USERNAME_UNCHANGED": {
+    "en": "Choose a different username.",
+    "fa": "نام کاربری تازه با نام فعلی یکی است."
   },
   "USERS_NOT_FOUND": {
     "en": "Some players were not found.",
@@ -3543,6 +3695,10 @@
     "en": "A version is required.",
     "fa": "نسخه لازم است."
   },
+  "VOICE_PARTICIPANT_NOT_FOUND": {
+    "en": "This player is not in the voice room.",
+    "fa": "این بازیکن در اتاق ویس نیست."
+  },
   "VOICE_PROVIDER_REQUIRED": {
     "en": "A voice provider is required.",
     "fa": "سرویس صدا لازم است."
@@ -3554,6 +3710,10 @@
   "VOICE_ROOM_FULL": {
     "en": "The voice room is full.",
     "fa": "اتاق صوتی پر است."
+  },
+  "VOICE_ROOM_NOT_FOUND": {
+    "en": "This voice room is not live.",
+    "fa": "این اتاق ویس فعال نیست."
   },
   "VOICE_ROOM_REQUIRED": {
     "en": "A voice room is required.",

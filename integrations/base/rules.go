@@ -234,6 +234,13 @@ func (s *service) beforeUpdateAccount(ctx context.Context, _ runtime.Logger, _ *
 			if err := s.checkNewUsername(ctx, name); err != nil {
 				return nil, err
 			}
+			done, err := s.usernameThroughPolicy(ctx, userID, name)
+			if err != nil {
+				return nil, err
+			}
+			if done {
+				in.Username.Value = name
+			}
 		}
 	}
 	if in.DisplayName != nil {

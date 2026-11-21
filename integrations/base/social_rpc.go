@@ -125,6 +125,7 @@ func (s *service) rpcFriendsList(ctx context.Context, userID, payload string) (a
 type friendTargetsIn struct {
 	IDs       []string `json:"ids"`
 	Usernames []string `json:"usernames"`
+	Codes     []string `json:"codes"`
 }
 
 // targets checks ids and usernames the way the HTTP call does and resolves the
@@ -134,10 +135,10 @@ func (s *service) socialTargets(ctx context.Context, userID, payload string) (fr
 	if err := decodeStrict(payload, &in); err != nil {
 		return in, err
 	}
-	if len(in.IDs)+len(in.Usernames) == 0 {
-		return in, badRequest("NO_USERS", "ids", "give ids or usernames")
+	if len(in.IDs)+len(in.Usernames)+len(in.Codes) == 0 {
+		return in, badRequest("NO_USERS", "ids", "give ids, usernames or codes")
 	}
-	if len(in.IDs)+len(in.Usernames) > friendLookupMax {
+	if len(in.IDs)+len(in.Usernames)+len(in.Codes) > friendLookupMax {
 		return in, badRequest(CodeFriendTooManyNames, "ids", "at most 100 users")
 	}
 	for _, id := range in.IDs {
@@ -153,6 +154,14 @@ func (s *service) socialTargets(ctx context.Context, userID, payload string) (fr
 		if name == "" {
 			return in, badRequest("INVALID_USERNAME", "usernames", "empty username")
 		}
+	}
+	if len(in.Codes) > 0 {
+		ids, err := s.idsForCodes(ctx, userID, in.Codes)
+		if err != nil {
+			return in, err
+		}
+		in.IDs = append(in.IDs, ids...)
+		in.Codes = nil
 	}
 	return in, nil
 }
