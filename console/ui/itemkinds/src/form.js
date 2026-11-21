@@ -72,7 +72,7 @@ function schemaField(f, value, opts, path) {
     }
     case 'group': {
       var inner = schemaForm(f.fields, value || {}, { name: path, lockReadOnly: opts.lockReadOnly || f.readOnly });
-      var fs = h('fieldset', { class: 'ik-group mb-4', 'data-ik-group': path }, h('legend', { class: 'font-medium text-sm px-1', text: label }), hint ? h('p', { class: 'text-xs text-secondary-500 mb-2', text: hint }) : null, inner.el);
+      var fs = h('fieldset', { class: 'ik-group mb-4', 'data-ik-fieldset': path }, h('legend', { class: 'font-medium text-sm px-1', text: label }), hint ? h('p', { class: 'text-xs text-secondary-500 mb-2', text: hint }) : null, inner.el);
       return { el: fs, read: function (errors) { return inner.read(JSON.parse(JSON.stringify(value || {})), errors); } };
     }
     case 'list': {
@@ -89,7 +89,7 @@ function schemaField(f, value, opts, path) {
       };
       (Array.isArray(value) ? value : []).forEach(addRow);
       var addBtn = ro || f.readOnly ? null : button({ label: t('fm.addRow'), data: { 'ik-add-row': path }, onclick: function () { addRow({}); } });
-      var wrap = h('fieldset', { class: 'ik-group mb-4', 'data-ik-group': path }, h('legend', { class: 'font-medium text-sm px-1', text: label }), hint ? h('p', { class: 'text-xs text-secondary-500 mb-2', text: hint }) : null, holder, addBtn);
+      var wrap = h('fieldset', { class: 'ik-group mb-4', 'data-ik-fieldset': path }, h('legend', { class: 'font-medium text-sm px-1', text: label }), hint ? h('p', { class: 'text-xs text-secondary-500 mb-2', text: hint }) : null, holder, addBtn);
       return { el: wrap, read: function (errors) { return rows.map(function (r) { return r.form.read(JSON.parse(JSON.stringify(r.value)), errors); }); } };
     }
     case 'json': {
