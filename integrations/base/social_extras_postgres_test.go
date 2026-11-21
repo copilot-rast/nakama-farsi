@@ -336,7 +336,7 @@ func TestFriendSuggestionsFromCoplayMutualAndPresence(t *testing.T) {
 	h.finishedMatch("ludo", now.Add(-20*time.Second), viewer, friend)
 	h.befriend(viewer, friend)
 	h.befriend(friend, mutual)
-	day, _ := dayBounds(now, projectZone(h.ctx, h.s.db))
+	day, _ := dayBounds(now, h.s.socialClock(h.ctx))
 	for _, u := range []string{viewer, active} {
 		if _, err := h.s.db.Exec(`INSERT INTO base_presence_day (user_id, day) VALUES ($1,$2::date) ON CONFLICT DO NOTHING`, u, day); err != nil {
 			t.Fatal(err)

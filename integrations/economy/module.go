@@ -40,6 +40,7 @@ type service struct {
 	store  objectstore.Store
 	now    func() time.Time
 	games  gameCache
+	online *onlineTracker
 }
 
 const defaultDeepLink = "nakama://payment?success={success}&paymentId={paymentId}"
@@ -145,6 +146,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	economyhooks.SetPrizeGranter(svc.grantPrizeHook)
 	go svc.reconcileLoop(ctx)
 	go svc.eventLoop(ctx)
+	go svc.onlineLoop(ctx)
 	logger.Info("Economy module registered (uploads: %s storage)", cfg.storage.Driver)
 	return nil
 }
@@ -154,7 +156,7 @@ func newService(db *sql.DB, nk runtime.NakamaModule, logger runtime.Logger, cfg 
 	if err != nil {
 		return nil, err
 	}
-	return &service{db: db, nk: nk, logger: logger, cfg: cfg, client: &http.Client{Timeout: 20 * time.Second}, store: store, now: time.Now}, nil
+	return &service{db: db, nk: nk, logger: logger, cfg: cfg, client: &http.Client{Timeout: 20 * time.Second}, store: store, now: time.Now, online: newOnlineTracker()}, nil
 }
 
 func loadSettings(env map[string]string, args []string) (settings, error) {

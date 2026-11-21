@@ -23,12 +23,28 @@ func (s *service) offerRPCs() map[string]clientRPC {
 	}
 }
 
-// noteOfferLogin keeps the two latest login times for the lapsed-return
-// trigger of entry offers.
 func (s *service) noteOfferLogin(ctx context.Context, userID string) {
 	if _, err := s.db.ExecContext(ctx, `INSERT INTO economy_user_offer_state AS o (user_id, last_login_at, logins) VALUES ($1, $2, 1)
 		ON CONFLICT (user_id) DO UPDATE SET prev_login_at=o.last_login_at, last_login_at=EXCLUDED.last_login_at, logins=o.logins+1, updated_at=now()`, userID, s.now()); err != nil {
 		s.logger.Warn("Economy offer login note for %s failed: %v", userID, err)
+	}
+}
+
+func (s *service) offerGameFinished(ctx context.Context, userID string) {
+	var n int
+	if err := s.db.QueryRowContext(ctx, `SELECT count(*) FROM economy_offer WHERE kind='entry' AND trigger_type='game' AND is_active`).Scan(&n); err != nil || n == 0 {
+		return
+	}
+	st, err := loadOfferSettings(ctx, s.db)
+	if err != nil || !st.EntryEnabled {
+		return
+	}
+	oc, err := s.newOfferCtx(ctx, userID, st)
+	if err == nil {
+		_, err = oc.entryStates(true)
+	}
+	if err != nil {
+		s.logger.Warn("Economy entry offers after a finished match for %s failed: %v", userID, err)
 	}
 }
 
@@ -39,8 +55,6 @@ func offerPercent(p productView) int {
 	return p.DiscountPercent
 }
 
-// reserveOffer counts a coin purchase against the offer limit before the
-// coins move, so two parallel buys cannot pass a limit of one.
 func (s *service) reserveOffer(ctx context.Context, id string) error {
 	res, err := s.db.ExecContext(ctx, `UPDATE economy_user_offer SET bought=bought+1, last_bought_at=now(), updated_at=now() WHERE id=$1 AND bought < purchase_limit`, id)
 	if err != nil {
@@ -70,8 +84,6 @@ func (s *service) offerBoughtEvent(ctx context.Context, paymentID string) {
 	s.recordServerEvent(ctx, userID, offerBoughtEvent, float64(toman), map[string]any{"key": key, "kind": kind, "offerId": offerID, "paymentId": paymentID})
 }
 
-// paymentProduct returns the product of a payment as its offer sold it, so a
-// store check uses the offer SKU.
 func (s *service) paymentProduct(ctx context.Context, paymentID string, p productView) (productView, error) {
 	var offerID sql.NullString
 	if err := s.db.QueryRowContext(ctx, `SELECT user_offer_id::text FROM economy_payment WHERE id=$1`, paymentID).Scan(&offerID); err != nil || !offerID.Valid {
@@ -84,8 +96,6 @@ func (s *service) paymentProduct(ctx context.Context, paymentID string, p produc
 	return p.withOffer(list[0]), nil
 }
 
-// offerForPurchase checks that an offer belongs to the player and can still
-// be bought; a not yet started entry timer starts now.
 func (s *service) offerForPurchase(ctx context.Context, userID, id string) (userOffer, offerSettings, error) {
 	st, err := loadOfferSettings(ctx, s.db)
 	if err != nil {
@@ -172,9 +182,6 @@ func (s *service) offerItem(o *offerListOut, u userOffer) (map[string]any, error
 	return item, nil
 }
 
-// offerList builds the player's offers: today's daily set (made once per
-// period) and the entry offers whose trigger fired; entry timers start here
-// in timer mode "list".
 func (s *service) offerList(ctx context.Context, userID, want string, oc *offerCtx) (map[string]any, error) {
 	langs, lang, err := localized.ForUser(ctx, s.db, userID, want)
 	if err != nil {
@@ -286,8 +293,6 @@ func (s *service) rpcOfferBuy(ctx context.Context, userID, payload string) (any,
 	return s.purchaseStart(ctx, userID, in)
 }
 
-// rpcOfferSeen starts the personal timer of entry offers in timer mode
-// "seen"; in other modes it is harmless.
 func (s *service) rpcOfferSeen(ctx context.Context, userID, payload string) (any, error) {
 	var in struct {
 		OfferID string `json:"offerId"`
@@ -321,9 +326,6 @@ func (s *service) rpcOfferSeen(ctx context.Context, userID, payload string) (any
 	return map[string]any{"offerId": u.ID, "expiresAt": list[0].ExpiresAt, "secondsLeft": secondsLeft(oc.now, list[0].ExpiresAt)}, nil
 }
 
-// rpcOffersReroll replaces the player's unbought daily offers with a new draw
-// for the same period. Bought offers stay; the cost (if any) is taken first
-// and refunded when the draw fails.
 func (s *service) rpcOffersReroll(ctx context.Context, userID, payload string) (any, error) {
 	var in struct {
 		Lang string `json:"lang"`
@@ -349,8 +351,6 @@ func (s *service) rpcOffersReroll(ctx context.Context, userID, payload string) (
 	if err != nil {
 		return nil, err
 	}
-	// The wallet is charged before the database step: inserting offers
-	// key-locks the users row that a wallet update locks for update.
 	var done int
 	if err := s.db.QueryRowContext(ctx, `SELECT rerolls FROM economy_user_offer_period WHERE user_id=$1 AND period_start=$2`, userID, start).Scan(&done); err != nil {
 		return nil, err

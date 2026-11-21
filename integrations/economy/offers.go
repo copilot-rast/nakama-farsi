@@ -13,11 +13,6 @@ import (
 	"time"
 )
 
-// Personal offers: an admin pool of offer templates over shop products. Daily
-// templates are drawn per player per period; entry templates fire once per
-// player when a trigger holds and run on a personal timer. Pure rules live in
-// this file; offers_engine.go holds the database side.
-
 const offerBoughtEvent = "Offer:Bought"
 
 type offerTagCount struct {
@@ -50,6 +45,8 @@ type offerSettings struct {
 	EntryEnabled        bool            `json:"entryEnabled"`
 	EntryMaxActive      int             `json:"entryMaxActive"`
 	EntryTimerStart     string          `json:"entryTimerStart"`
+	Score               offerScore      `json:"score"`
+	CoinPriceFloor      int64           `json:"coinPriceFloor"`
 	UpdatedAt           string          `json:"updatedAt,omitempty"`
 	loc                 *time.Location
 }
@@ -59,7 +56,7 @@ func defaultOfferSettings() offerSettings {
 		DailyEnabled: true, Timezone: defaultTimezone, PeriodDays: 1, Count: 3, CountByTag: []offerTagCount{}, Weighting: "weighted",
 		NoRepeatDays: 1, FillWithRepeats: true, BoughtCooldownDays: 7, ExcludeOwned: true, RespectProductRules: true, InactiveProducts: "allow",
 		ShowSoldOut: true, RerollEnabled: true, RerollLimit: 1, RerollAvoidCurrent: true,
-		EntryEnabled: true, EntryMaxActive: 1, EntryTimerStart: "list",
+		EntryEnabled: true, EntryMaxActive: 1, EntryTimerStart: "list", Score: defaultOfferScore(),
 	}
 }
 
@@ -82,6 +79,13 @@ func loadOfferSettings(ctx context.Context, q queryer) (offerSettings, error) {
 	return st, nil
 }
 
+func (st offerSettings) zone() *time.Location {
+	if st.loc != nil {
+		return st.loc
+	}
+	return loadZone(st.Timezone)
+}
+
 func loadZone(name string) *time.Location {
 	if loc, err := time.LoadLocation(name); err == nil && name != "" {
 		return loc
@@ -93,9 +97,6 @@ func loadZone(name string) *time.Location {
 	return loc
 }
 
-// offerPeriod returns the daily-offer period that contains now: periods last
-// PeriodDays days, start at the reset time in the admin time zone and are
-// aligned on 1970-01-01 so every server agrees.
 func (st offerSettings) offerPeriod(now time.Time) (time.Time, time.Time) {
 	loc := st.loc
 	if loc == nil {
@@ -119,8 +120,6 @@ func (st offerSettings) offerPeriod(now time.Time) (time.Time, time.Time) {
 	return start, end
 }
 
-// dailyCount is the number of daily offers a player gets: the base count, or
-// the largest count of a player tag the admin listed.
 func (st offerSettings) dailyCount(tags map[string]bool) int {
 	n := st.Count
 	for _, tc := range st.CountByTag {
@@ -131,7 +130,6 @@ func (st offerSettings) dailyCount(tags map[string]bool) int {
 	return n
 }
 
-// rerollPrice is the cost of the next reroll after `done` rerolls this period.
 func (st offerSettings) rerollPrice(done int) *coinPrice {
 	if st.RerollCost == nil || st.RerollCost.CurrencyKey == "" {
 		return nil
@@ -183,6 +181,8 @@ type offerTemplate struct {
 	EndsAt          *time.Time        `json:"endsAt"`
 	IsActive        bool              `json:"isActive"`
 	Sort            int               `json:"sort"`
+	Metadata        json.RawMessage   `json:"metadata"`
+	CreatedAt       time.Time         `json:"createdAt"`
 }
 
 func (o offerTemplate) live(now time.Time) bool {
@@ -196,20 +196,17 @@ func (o offerTemplate) levelTable() string {
 	return ""
 }
 
-// offerFacts is what the rules know about one player. Level and Meta are
-// lazy so a pool without level or meta rules costs no queries.
 type offerFacts struct {
 	Tags       map[string]bool
 	Level      func(table string) int
 	Meta       func(metaID string) float64
+	Games      func(gameKey string) int
 	AccountAge time.Duration
 	LastLogin  *time.Time
 	PrevLogin  *time.Time
 	Now        time.Time
 }
 
-// offerBlock explains why a template is not offered to a player; "" means it
-// passes the template's own audience, level, meta and account-age rules.
 func offerBlock(o offerTemplate, f offerFacts) string {
 	if !o.live(f.Now) {
 		return "inactive"
@@ -255,9 +252,6 @@ func offerBlock(o offerTemplate, f offerFacts) string {
 	return ""
 }
 
-// entryTriggerHolds checks the entry template's own trigger. A lapsed return
-// holds when the player's previous login is at least TriggerValue days older
-// than the current one.
 func entryTriggerHolds(o offerTemplate, f offerFacts) bool {
 	v := 0.0
 	if o.TriggerValue != nil {
@@ -279,11 +273,15 @@ func entryTriggerHolds(o offerTemplate, f offerFacts) bool {
 			return false
 		}
 		return f.LastLogin.Sub(*f.PrevLogin).Hours()/24 >= v
+	case "game":
+		if f.Games == nil {
+			return false
+		}
+		return float64(f.Games(o.TriggerRef)) >= v
 	}
 	return false
 }
 
-// entryHistory is a player's past with one entry template.
 type entryHistory struct {
 	Count         int
 	Open          bool
@@ -291,10 +289,6 @@ type entryHistory struct {
 	LastTriggered *time.Time
 }
 
-// entryDue decides whether an entry template fires now for a player: never
-// while a copy is open, at most MaxTriggers times, once unless the repeat is
-// a cooldown, and for a lapsed return only on a return newer than the last
-// time it fired.
 func entryDue(o offerTemplate, h entryHistory, holds bool, f offerFacts) bool {
 	if !holds || h.Open {
 		return false
@@ -340,11 +334,6 @@ func offerSeed(parts ...string) int64 {
 	return int64(h.Sum64() & math.MaxInt64)
 }
 
-// pickOffers draws up to Count templates: first among the ones not seen in
-// the no-repeat window, then (when FillAgain) among the recent ones. Weight 0
-// never draws. Weighted draws without replacement by weight, uniform ignores
-// weight, priority takes the heaviest first and breaks ties at random. The
-// seed makes the draw repeatable, so a preview matches what the player gets.
 func pickOffers(cands []offerCandidate, in offerPick) []string {
 	rng := rand.New(rand.NewSource(in.Seed))
 	sorted := append([]offerCandidate(nil), cands...)
@@ -429,7 +418,6 @@ func drawOffers(pool []offerCandidate, n int, mode string, rng *rand.Rand) []str
 	return out
 }
 
-// offerPrice is the frozen price of one personal offer.
 type offerPrice struct {
 	OriginalToman   *int64            `json:"originalToman"`
 	FinalToman      *int64            `json:"finalToman"`
@@ -442,12 +430,6 @@ type offerPrice struct {
 
 func i64(v int64) *int64 { return &v }
 
-// priceOffer applies a template to its product. In discount mode the offer
-// percent replaces the product's own discount (0 keeps the product price);
-// in price mode the special Toman and coin prices replace the product's, and
-// an empty one keeps the product's. Stores sell an offer only with an offer
-// SKU or when the Toman price did not change, since the store charges the
-// SKU's own price.
 func priceOffer(o offerTemplate, p productView) offerPrice {
 	out := offerPrice{SKU: map[string]string{}}
 	var productFinal *int64
@@ -506,8 +488,6 @@ func priceOffer(o offerTemplate, p productView) offerPrice {
 	return out
 }
 
-// offerMethods lists the product's methods an offer can use with its frozen
-// price; active filters to the methods switched on.
 func offerMethods(p productView, price offerPrice, active map[string]paymentMethod) []string {
 	out := []string{}
 	for _, m := range p.PaymentMethods {

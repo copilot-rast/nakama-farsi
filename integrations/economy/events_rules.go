@@ -192,7 +192,7 @@ func (s *service) grantClaim(ctx context.Context, claimID string, depth int) (*e
 		s.afterTaskGranted(ctx, claimID)
 	}
 	var metaKeys []string
-	for _, item := range rewards {
+	for _, item := range flattenPrizeItems(rewards) {
 		if item.Type == "meta" {
 			metaKeys = append(metaKeys, item.Key)
 		}

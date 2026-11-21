@@ -236,6 +236,7 @@ func (s *service) gameSettle(ctx context.Context, st gamecatalog.Settlement) ([]
 	winners := []string{}
 	type prizeDue struct{ user, prize, part string }
 	dues := []prizeDue{}
+	finished := []string{}
 	refundedTickets := map[string]*gameTickets{}
 	err = s.inTx(ctx, func(tx *sql.Tx) error {
 		var status string
@@ -368,6 +369,9 @@ func (s *service) gameSettle(ctx context.Context, st gamecatalog.Settlement) ([]
 				if err := s.addGameStats(ctx, tx, e.user, gameKey, r.Status, played, potCur, won); err != nil {
 					return err
 				}
+				if r.Status == gamecatalog.ResultWon || r.Status == gamecatalog.ResultLost || r.Status == gamecatalog.ResultTimeout {
+					finished = append(finished, e.user)
+				}
 			}
 		}
 		list := make([]gamecatalog.Result, 0, len(results))
@@ -415,6 +419,9 @@ func (s *service) gameSettle(ctx context.Context, st gamecatalog.Settlement) ([]
 		}
 	}
 	if first {
+		for _, u := range finished {
+			s.offerGameFinished(ctx, u)
+		}
 		humans := []string{}
 		for _, w := range winners {
 			if !s.isBot(ctx, w) {

@@ -10,7 +10,10 @@ import (
 	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
-var keyPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_.-]{0,63}$`)
+var (
+	keyPattern         = regexp.MustCompile(`^[a-z0-9][a-z0-9_.-]{0,63}$`)
+	taxonomyKeyPattern = regexp.MustCompile(`^[a-z0-9][A-Za-z0-9_.-]{0,63}$`)
+)
 
 type keyType struct {
 	Key  string            `json:"key"`
@@ -75,6 +78,14 @@ func cleanKey(field, key string) (string, error) {
 	key = strings.TrimSpace(key)
 	if !keyPattern.MatchString(key) {
 		return "", badRequest("INVALID_KEY", field, "use lower-case letters, digits, _ . - (max 64)")
+	}
+	return key, nil
+}
+
+func cleanTaxonomyKey(field, key string) (string, error) {
+	key = strings.TrimSpace(key)
+	if !taxonomyKeyPattern.MatchString(key) {
+		return "", badRequest("INVALID_KEY", field, "start with a lower-case letter or digit, then letters, digits, _ . - (max 64)")
 	}
 	return key, nil
 }

@@ -550,7 +550,7 @@ func (s *service) reconcileClaimed(ctx context.Context, id string) (string, erro
 }
 
 func (s *service) expireIfOld(ctx context.Context, p payment) (string, error) {
-	if p.CreatedAt.After(s.now().Add(-s.cfg.pendingTTL)) {
+	if p.CreatedAt.After(s.now().Add(-s.pendingTTL(ctx))) {
 		return "pending", nil
 	}
 	if _, err := s.closePayment(ctx, p.ID, "expired", "TIMED_OUT"); err != nil {

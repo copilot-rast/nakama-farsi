@@ -404,3 +404,28 @@ func TestOTPPatternSendAndProviderTestPostgres(t *testing.T) {
 		t.Fatalf("login code = %s %v", path, form)
 	}
 }
+
+func TestOTPUserHourlyLimitPostgres(t *testing.T) {
+	h, _ := otpHarness(t)
+	guest := h.user(nil, "", "fa")
+	if _, err := h.s.db.ExecContext(h.ctx, `UPDATE publication_otp_settings SET resend_seconds=10, phone_hourly=10, phone_daily=50, ip_hourly=100, user_hourly=2`); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { h.s.db.ExecContext(h.ctx, `UPDATE publication_otp_settings SET user_hourly=0`) })
+	st, err := loadOTPSettings(h.ctx, h.s.db)
+	if err != nil || st.UserHourly != 2 || st.userLimit() != 2 {
+		t.Fatalf("settings %+v %v", st, err)
+	}
+	ctx := callerCtx(guest, "10.0.0.9")
+	for i, phone := range []string{"09191110010", "09191110011"} {
+		if _, err := h.s.rpcOTPRequest(ctx, guest, `{"phone":"`+phone+`"}`); err != nil {
+			t.Fatalf("request %d: %v", i+1, err)
+		}
+	}
+	if _, err := h.s.rpcOTPRequest(ctx, guest, `{"phone":"09191110012"}`); appCode(err) != "OTP_RATE_LIMITED" {
+		t.Fatalf("third code for one account in an hour = %v", err)
+	}
+	if (otpSettings{IPHourly: 30}).userLimit() != 30 {
+		t.Fatal("0 keeps the IP limit")
+	}
+}

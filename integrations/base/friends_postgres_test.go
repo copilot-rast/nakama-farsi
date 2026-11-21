@@ -192,7 +192,7 @@ func TestFriendDailyLimitAcrossParallelCalls(t *testing.T) {
 }
 
 func mustDay(h *harness) string {
-	day, _ := dayBounds(h.s.now(), projectZone(context.Background(), h.s.db))
+	day, _ := dayBounds(h.s.now(), h.s.socialClock(context.Background()))
 	return day
 }
 

@@ -156,7 +156,7 @@ func (s *service) saveTaxonomy(ctx context.Context, tx *sql.Tx, res resource, id
 	if !validKeyType(res.keyTypes, in.KeyType) {
 		return badRequest("INVALID_KEY_TYPE", "keyType", "key type must be one of "+strings.Join(res.keyTypes, ", "))
 	}
-	key, err := cleanKey("key", in.Key)
+	key, err := cleanTaxonomyKey("key", in.Key)
 	if err != nil {
 		return err
 	}

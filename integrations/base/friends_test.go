@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 	"time"
+
+	"github.com/heroiclabs/nakama/v3/internal/dayclock"
 )
 
 func TestFriendRulesClean(t *testing.T) {
@@ -37,11 +39,19 @@ func TestDayBoundsUseTheProjectZone(t *testing.T) {
 		t.Skip("no tzdata")
 	}
 	now := time.Date(2026, 11, 14, 21, 0, 0, 0, time.UTC)
-	day, reset := dayBounds(now, tehran)
+	day, reset := dayBounds(now, dayclock.New("", 0, tehran))
 	if day != "2026-11-15" || !reset.Equal(time.Date(2026, 11, 16, 0, 0, 0, 0, tehran)) {
 		t.Fatalf("tehran %s %s", day, reset)
 	}
-	day, reset = dayBounds(now, time.UTC)
+	day, reset = dayBounds(now, dayclock.New("", 0, time.UTC))
+	if day != "2026-11-14" || !reset.Equal(time.Date(2026, 11, 15, 0, 0, 0, 0, time.UTC)) {
+		t.Fatalf("utc %s %s", day, reset)
+	}
+	day, reset = dayBounds(time.Date(2026, 11, 15, 1, 0, 0, 0, time.UTC), dayclock.New("UTC", 90, tehran))
+	if day != "2026-11-14" || !reset.Equal(time.Date(2026, 11, 15, 1, 30, 0, 0, time.UTC)) {
+		t.Fatalf("legacy reset %s %s", day, reset)
+	}
+	day, reset = dayBounds(now, dayclock.New("", 0, time.UTC))
 	if day != "2026-11-14" || !reset.Equal(time.Date(2026, 11, 15, 0, 0, 0, 0, time.UTC)) {
 		t.Fatalf("utc %s %s", day, reset)
 	}

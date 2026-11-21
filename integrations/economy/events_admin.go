@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/dayclock"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
 )
 
@@ -70,7 +71,7 @@ func eventResources() []resource {
 		{
 			name:    "streaks",
 			table:   "economy_streak",
-			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'eventTypeId',t.event_type_id,'periodDays',t.period_days,'gracePeriods',t.grace_periods,'missAction',t.miss_action,'cycleLength',t.cycle_length,'repayAfterFall',t.repay_after_fall,'weekLength',t.week_length,'infinity',t.infinity,'infinityCurrency',t.infinity_currency,'infinityMin',t.infinity_min,'infinityMax',t.infinity_max,'extras',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',x.id,'day',x.day,'prizeId',x.prize_id,'grantMode',x.grant_mode) ORDER BY x.day),'[]'::jsonb) FROM economy_streak_extra x WHERE x.streak_id=t.id),'isActive',t.is_active,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at,'rewards',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',r.id,'day',r.day,'prizeId',r.prize_id,'grantMode',r.grant_mode) ORDER BY r.day),'[]'::jsonb) FROM economy_streak_reward r WHERE r.streak_id=t.id),'milestones',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',m.id,'day',m.day,'prizeId',m.prize_id,'grantMode',m.grant_mode) ORDER BY m.day),'[]'::jsonb) FROM economy_streak_milestone m WHERE m.streak_id=t.id),'players',(SELECT count(*) FROM economy_user_streak u WHERE u.streak_id=t.id AND u.count > 0))`,
+			json:    `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'eventTypeId',t.event_type_id,'periodDays',t.period_days,'gracePeriods',t.grace_periods,'missAction',t.miss_action,'cycleLength',t.cycle_length,'repayAfterFall',t.repay_after_fall,'weekLength',t.week_length,'infinity',t.infinity,'infinityCurrency',t.infinity_currency,'infinityMin',t.infinity_min,'infinityMax',t.infinity_max,'infinityMode',t.infinity_mode,'infinityPrizeId',t.infinity_prize_id,'dayZone',t.day_zone,'dayStartMinute',t.day_start_minute,'signupDelayDays',t.signup_delay_days,'claimWindow',t.claim_window,'extras',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',x.id,'day',x.day,'prizeId',x.prize_id,'grantMode',x.grant_mode) ORDER BY x.day),'[]'::jsonb) FROM economy_streak_extra x WHERE x.streak_id=t.id),'isActive',t.is_active,'sort',t.sort,'createdAt',t.created_at,'updatedAt',t.updated_at,'rewards',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',r.id,'day',r.day,'prizeId',r.prize_id,'grantMode',r.grant_mode) ORDER BY r.day),'[]'::jsonb) FROM economy_streak_reward r WHERE r.streak_id=t.id),'milestones',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',m.id,'day',m.day,'prizeId',m.prize_id,'grantMode',m.grant_mode) ORDER BY m.day),'[]'::jsonb) FROM economy_streak_milestone m WHERE m.streak_id=t.id),'players',(SELECT count(*) FROM economy_user_streak u WHERE u.streak_id=t.id AND u.count > 0))`,
 			search:  []string{"t.key", translatedSearch("t.name")},
 			filters: map[string]string{"isActive": "t.is_active = ?::boolean", "eventTypeId": "t.event_type_id::text = ?"},
 			save:    saveStreak,
@@ -517,6 +518,12 @@ func saveStreak(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 		InfinityCurrency string `json:"infinityCurrency"`
 		InfinityMin      int64  `json:"infinityMin"`
 		InfinityMax      int64  `json:"infinityMax"`
+		InfinityMode     string `json:"infinityMode"`
+		InfinityPrizeID  string `json:"infinityPrizeId"`
+		DayZone          string `json:"dayZone"`
+		DayStartMinute   int    `json:"dayStartMinute"`
+		SignupDelayDays  int    `json:"signupDelayDays"`
+		ClaimWindow      string `json:"claimWindow"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -566,7 +573,40 @@ func saveStreak(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 		return badRequest("INVALID_WEEK_LENGTH", "weekLength", "between 1 and 365 days")
 	}
 	in.InfinityCurrency = strings.TrimSpace(in.InfinityCurrency)
-	if in.Infinity {
+	in.DayZone = strings.TrimSpace(in.DayZone)
+	if !dayclock.ValidZone(in.DayZone) {
+		return badRequest("INVALID_TIMEZONE", "dayZone", "an IANA time zone such as UTC or Asia/Tehran, or empty for the project zone")
+	}
+	if in.DayStartMinute < 0 || in.DayStartMinute > dayclock.MaxStartMinute {
+		return badRequest("INVALID_DAY_START", "dayStartMinute", "minutes after midnight, from 0 to 1439")
+	}
+	if in.SignupDelayDays < 0 || in.SignupDelayDays > 365 {
+		return badRequest("INVALID_SIGNUP_DELAY", "signupDelayDays", "between 0 and 365 days")
+	}
+	if in.ClaimWindow == "" {
+		in.ClaimWindow = "open"
+	}
+	if err := oneOf("claimWindow", "INVALID_CLAIM_WINDOW", in.ClaimWindow, "open", "period"); err != nil {
+		return err
+	}
+	if in.InfinityMode == "" {
+		in.InfinityMode = "pay"
+	}
+	if err := oneOf("infinityMode", "INVALID_INFINITY_MODE", in.InfinityMode, "pay", "claim"); err != nil {
+		return err
+	}
+	var infPrize any
+	if in.Infinity && in.InfinityMode == "claim" {
+		if in.CycleLength == nil {
+			return badRequest("INFINITY_NEEDS_CYCLE", "infinity", "the infinity phase starts after the cycle; set the cycle length")
+		}
+		ref, err := refExists(ctx, tx, "economy_prize", "infinityPrizeId", "PRIZE_NOT_FOUND", in.InfinityPrizeID, true)
+		if err != nil {
+			return err
+		}
+		infPrize = *ref
+		in.InfinityCurrency, in.InfinityMin, in.InfinityMax = "", 0, 0
+	} else if in.Infinity {
 		if in.CycleLength == nil {
 			return badRequest("INFINITY_NEEDS_CYCLE", "infinity", "the infinity phase starts after the cycle; set the cycle length")
 		}
@@ -681,8 +721,10 @@ func saveStreak(s *service, ctx context.Context, tx *sql.Tx, id string, create b
 		xdays = append(xdays, x.Day)
 		extras = append(extras, reward{day: x.Day, prize: prize, mode: mode})
 	}
-	if err := execSave(ctx, tx, "economy_streak", id, create, []string{"key", "name", "description", "event_type_id", "period_days", "grace_periods", "miss_action", "cycle_length", "repay_after_fall", "is_active", "sort", "week_length", "infinity", "infinity_currency", "infinity_min", "infinity_max"},
-		[]any{key, i18nJSON(name), i18nJSON(desc), typeID, in.PeriodDays, in.GracePeriods, in.MissAction, in.CycleLength, in.RepayAfterFall, in.IsActive, in.Sort, in.WeekLength, in.Infinity, in.InfinityCurrency, in.InfinityMin, in.InfinityMax}); err != nil {
+	if err := execSave(ctx, tx, "economy_streak", id, create, []string{"key", "name", "description", "event_type_id", "period_days", "grace_periods", "miss_action", "cycle_length", "repay_after_fall", "is_active", "sort", "week_length", "infinity", "infinity_currency", "infinity_min", "infinity_max",
+		"infinity_mode", "infinity_prize_id", "day_zone", "day_start_minute", "signup_delay_days", "claim_window"},
+		[]any{key, i18nJSON(name), i18nJSON(desc), typeID, in.PeriodDays, in.GracePeriods, in.MissAction, in.CycleLength, in.RepayAfterFall, in.IsActive, in.Sort, in.WeekLength, in.Infinity, in.InfinityCurrency, in.InfinityMin, in.InfinityMax,
+			in.InfinityMode, infPrize, in.DayZone, in.DayStartMinute, in.SignupDelayDays, in.ClaimWindow}); err != nil {
 		return err
 	}
 	for _, x := range extras {
@@ -883,7 +925,7 @@ func (s *service) consoleEventClaims(w http.ResponseWriter, r *http.Request) {
 		LEFT JOIN economy_chance_game cg ON c.kind='chance' AND cg.id=c.owner_id`
 	s.listRaw(w, r, `SELECT count(*)`+from, `SELECT jsonb_build_object('id',c.id,'userId',c.user_id,'username',u.username,'kind',c.kind,'ownerId',c.owner_id,'sourceKey',COALESCE(er.key,lt.key,st.key,tk.key,ac.key,cg.key),
 		'sourceName',COALESCE(er.name,lt.name,st.name,tk.name,ac.name,cg.name),'level',COALESCE(ls.level,at.tier),'scope',c.scope,'prizeId',c.prize_id,'prizeKey',z.key,'prizeName',z.name,'grantMode',c.grant_mode,'status',c.status,'value',c.value,
-		'error',c.error,'attempts',c.attempts,'createdAt',c.created_at,'grantedAt',c.granted_at)::text`+from, where, ` ORDER BY c.created_at DESC, c.id DESC`, p)
+		'error',c.error,'attempts',c.attempts,'createdAt',c.created_at,'grantedAt',c.granted_at,'expiresAt',c.expires_at)::text`+from, where, ` ORDER BY c.created_at DESC, c.id DESC`, p)
 }
 
 func (s *service) consoleEventClaimRetry(w http.ResponseWriter, r *http.Request) {

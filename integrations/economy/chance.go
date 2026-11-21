@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/dayclock"
 )
 
 const (
@@ -60,6 +61,13 @@ type chanceGame struct {
 	Pity        *int
 	RevealAck   bool
 	Reroll      bool
+	RerollCap   *int
+	FreeReset   string
+	FreeFirst   bool
+	DayZone     string
+	DayStart    int
+	MinLevel    int
+	LevelTable  string
 }
 
 type chancePick struct {
@@ -69,7 +77,7 @@ type chancePick struct {
 	GroupID string
 }
 
-const chanceGameColumns = `id::text, key, name::text, description::text, metadata::text, prize_type, prize::text, interval_time, price::text, is_active, sort, kind, daily_limit, total_limit, show_odds, price_ladder::text, pity_threshold, reveal_ack, reroll_empty`
+const chanceGameColumns = `id::text, key, name::text, description::text, metadata::text, prize_type, prize::text, interval_time, price::text, is_active, sort, kind, daily_limit, total_limit, show_odds, price_ladder::text, pity_threshold, reveal_ack, reroll_empty, reroll_cap, free_reset, free_first, day_zone, day_start_minute, min_level, COALESCE(level_table_id::text,'')`
 
 type scanner interface {
 	Scan(dest ...any) error
@@ -79,10 +87,15 @@ func scanChanceGame(row scanner) (*chanceGame, error) {
 	var g chanceGame
 	var name, desc, meta, rows string
 	var price sql.NullString
-	var interval, daily, total, pity sql.NullInt64
+	var interval, daily, total, pity, rerollCap sql.NullInt64
 	var ladder sql.NullString
-	if err := row.Scan(&g.ID, &g.Key, &name, &desc, &meta, &g.PrizeType, &rows, &interval, &price, &g.Active, &g.Sort, &g.Kind, &daily, &total, &g.ShowOdds, &ladder, &pity, &g.RevealAck, &g.Reroll); err != nil {
+	if err := row.Scan(&g.ID, &g.Key, &name, &desc, &meta, &g.PrizeType, &rows, &interval, &price, &g.Active, &g.Sort, &g.Kind, &daily, &total, &g.ShowOdds, &ladder, &pity, &g.RevealAck, &g.Reroll,
+		&rerollCap, &g.FreeReset, &g.FreeFirst, &g.DayZone, &g.DayStart, &g.MinLevel, &g.LevelTable); err != nil {
 		return nil, err
+	}
+	if rerollCap.Valid {
+		v := int(rerollCap.Int64)
+		g.RerollCap = &v
 	}
 	if ladder.Valid && ladder.String != "" && ladder.String != "null" {
 		_ = json.Unmarshal([]byte(ladder.String), &g.Ladder)
@@ -283,13 +296,75 @@ func chanceWait(g *chanceGame, last sql.NullTime, now time.Time) time.Duration {
 }
 
 func (s *service) chanceDayStart(ctx context.Context, q queryer, now time.Time) time.Time {
+	start, _ := s.chanceDay(ctx, q, nil, now)
+	return start
+}
+
+func (s *service) chanceDay(ctx context.Context, q queryer, g *chanceGame, now time.Time) (time.Time, time.Time) {
 	st, err := loadEventSettings(ctx, q)
 	loc := st.loc
 	if err != nil || loc == nil {
 		loc = loadZone(defaultTimezone)
 	}
-	y, m, d := now.In(loc).Date()
-	return time.Date(y, m, d, 0, 0, 0, 0, loc)
+	zone, minute := "", 0
+	if g != nil {
+		zone, minute = g.DayZone, g.DayStart
+	}
+	_, start, end := dayclock.New(zone, minute, loc).Bounds(now)
+	return start, end
+}
+
+func (g *chanceGame) hasFreeTurn() bool {
+	return g.FreeReset == "daily" || g.Interval != nil
+}
+
+func freeTurnLeft(g *chanceGame, last sql.NullTime, dayStart, dayEnd, now time.Time) time.Duration {
+	if g.FreeReset == "daily" {
+		if last.Valid && !last.Time.Before(dayStart) {
+			return dayEnd.Sub(now)
+		}
+		return 0
+	}
+	return chanceWait(g, last, now)
+}
+
+func (s *service) chanceFreeLeft(ctx context.Context, q queryer, g *chanceGame, userID string, now time.Time) (time.Duration, error) {
+	last, err := lastFreePlay(ctx, q, g.ID, userID)
+	if err != nil {
+		return 0, err
+	}
+	start, end := s.chanceDay(ctx, q, g, now)
+	return freeTurnLeft(g, last, start, end, now), nil
+}
+
+func (s *service) chanceLevel(ctx context.Context, q queryer, g *chanceGame, userID string) (int, error) {
+	if g.MinLevel <= 0 {
+		return 0, nil
+	}
+	return newLevelCache(q, userID).level(ctx, g.LevelTable)
+}
+
+func (s *service) freeFirstBlock(ctx context.Context, q queryer, g *chanceGame, userID string, now time.Time, amount int64, expected *int64) error {
+	if !g.FreeFirst || !g.hasFreeTurn() {
+		return nil
+	}
+	left, err := s.chanceFreeLeft(ctx, q, g, userID, now)
+	if err != nil || left > 0 {
+		return err
+	}
+	want := amount
+	if expected != nil {
+		want = *expected
+	}
+	e := priceChanged(0, want)
+	e.Meta["freeFirst"] = true
+	return e
+}
+
+func chanceLocked(minLevel, level int) *appError {
+	e := fail(http.StatusForbidden, "CHANCE_LOCKED", "", "reach a higher level to play this game")
+	e.Meta = map[string]any{"minLevel": minLevel, "level": level}
+	return e
 }
 
 func (s *service) chancePlaysSince(ctx context.Context, q queryer, gameID, userID string, since time.Time) (int, error) {
@@ -307,14 +382,14 @@ func (s *service) checkChanceLimits(ctx context.Context, q queryer, g *chanceGam
 	if g.DailyLimit == nil {
 		return nil
 	}
-	start := s.chanceDayStart(ctx, q, now)
+	start, end := s.chanceDay(ctx, q, g, now)
 	n, err := s.chancePlaysSince(ctx, q, g.ID, userID, start)
 	if err != nil {
 		return err
 	}
 	if n >= *g.DailyLimit {
 		e := fail(http.StatusTooManyRequests, "CHANCE_DAILY_LIMIT", "", "no plays left today")
-		e.Meta = map[string]any{"limit": *g.DailyLimit, "resetsAt": start.AddDate(0, 0, 1).UTC().Format(time.RFC3339)}
+		e.Meta = map[string]any{"limit": *g.DailyLimit, "resetsAt": end.UTC().Format(time.RFC3339)}
 		return e
 	}
 	return nil
@@ -403,10 +478,15 @@ func (s *service) playChance(ctx context.Context, userID, gameID, mode string, e
 	if !g.Active {
 		return nil, notFound("CHANCE_GAME_NOT_FOUND")
 	}
+	if lv, err := s.chanceLevel(ctx, s.db, g, userID); err != nil {
+		return nil, err
+	} else if g.MinLevel > 0 && lv < g.MinLevel {
+		return nil, chanceLocked(g.MinLevel, lv)
+	}
 	var price *coinPrice
 	switch mode {
 	case "free":
-		if g.Interval == nil {
+		if !g.hasFreeTurn() {
 			return nil, badRequest("INTERVAL_TIME_IS_NULL", "", "this game has no free turn")
 		}
 	case "ticket":
@@ -419,6 +499,9 @@ func (s *service) playChance(ctx context.Context, userID, gameID, mode string, e
 		}
 		amount, err := s.chanceTicketAmount(ctx, s.db, g, userID, s.now().UTC())
 		if err != nil {
+			return nil, err
+		}
+		if err := s.freeFirstBlock(ctx, s.db, g, userID, s.now().UTC(), amount, expected); err != nil {
 			return nil, err
 		}
 		if expected != nil && *expected != amount {
@@ -456,14 +539,14 @@ func (s *service) playChance(ctx context.Context, userID, gameID, mode string, e
 			return err
 		}
 		if mode == "free" {
-			if g.Interval == nil {
+			if !g.hasFreeTurn() {
 				return badRequest("INTERVAL_TIME_IS_NULL", "", "this game has no free turn")
 			}
-			last, err := lastFreePlay(ctx, tx, g.ID, userID)
+			left, err := s.chanceFreeLeft(ctx, tx, g, userID, now)
 			if err != nil {
 				return err
 			}
-			if left := chanceWait(g, last, now); left > 0 {
+			if left > 0 {
 				return waitingForTurn(left)
 			}
 		} else {
@@ -476,6 +559,9 @@ func (s *service) playChance(ctx context.Context, userID, gameID, mode string, e
 			}
 			amount, err := s.chanceTicketAmount(ctx, tx, g, userID, now)
 			if err != nil {
+				return err
+			}
+			if err := s.freeFirstBlock(ctx, tx, g, userID, now, amount, expected); err != nil {
 				return err
 			}
 			if expected != nil && *expected != amount {
@@ -556,10 +642,9 @@ func (s *service) playChance(ctx context.Context, userID, gameID, mode string, e
 		res.Rewards = rewards
 	}
 	s.recordChanceEvent(ctx, play)
-	if g.Interval != nil {
-		last, err := lastFreePlay(ctx, s.db, g.ID, userID)
-		if err == nil {
-			res.Wait = chanceWait(g, last, s.now().UTC())
+	if g.hasFreeTurn() {
+		if left, err := s.chanceFreeLeft(ctx, s.db, g, userID, s.now().UTC()); err == nil {
+			res.Wait = left
 		}
 	}
 	return res, nil

@@ -174,10 +174,11 @@ func cleanTime(field, value string) (*time.Time, error) {
 }
 
 type prizeItem struct {
-	Type   string          `json:"type"`
-	Key    string          `json:"key"`
-	Action string          `json:"action"`
-	Value  json.RawMessage `json:"value"`
+	Type    string          `json:"type"`
+	Key     string          `json:"key"`
+	Action  string          `json:"action"`
+	Value   json.RawMessage `json:"value"`
+	Rewards []prizeItem     `json:"rewards,omitempty"`
 }
 
 func normalizePrizeItems(items []prizeItem) ([]prizeItem, error) {
@@ -192,11 +193,22 @@ func normalizePrizeItems(items []prizeItem) ([]prizeItem, error) {
 		item.Key = strings.TrimSpace(item.Key)
 		switch item.Type {
 		case "currency":
-			if item.Action != "add" {
-				return nil, badRequest("INVALID_ACTION", "items", "currency items only support add")
+			if item.Action != "add" && item.Action != "random" {
+				return nil, badRequest("INVALID_ACTION", "items", "currency items support add or random")
 			}
 			if !currencyPattern.MatchString(item.Key) {
 				return nil, badRequest("INVALID_KEY", "items", "invalid currency key")
+			}
+			if item.Action == "random" {
+				r, ok := parseRandomAmount(item.Value)
+				if !ok {
+					return nil, badRequest("INVALID_VALUE", "items", "a random amount needs whole numbers min and max with 0 <= min <= max <= 1000000000000 and max > 0")
+				}
+				raw, _ := json.Marshal(r)
+				item.Value = raw
+				item.Rewards = nil
+				out = append(out, item)
+				continue
 			}
 			v, ok := int64FromJSON(item.Value)
 			if !ok || v == 0 || v > 1_000_000_000_000 || v < -1_000_000_000_000 {
@@ -272,9 +284,22 @@ func normalizePrizeItems(items []prizeItem) ([]prizeItem, error) {
 			}
 			raw, _ := json.Marshal(b)
 			item.Value = raw
+		case "chest":
+			if item.Action != "open" {
+				return nil, badRequest("INVALID_ACTION", "items", "chest entries only support open")
+			}
+			if !keyPattern.MatchString(item.Key) {
+				return nil, badRequest("INVALID_KEY", "items", "invalid chest key")
+			}
+			n, ok := int64FromJSON(item.Value)
+			if !ok || n < 1 || n > maxChestOpens {
+				return nil, badRequest("INVALID_VALUE", "items", "a chest opens 1 to 20 times")
+			}
+			item.Value = json.RawMessage(jsonInt(n))
 		default:
-			return nil, badRequest("INVALID_ITEM_TYPE", "items", "type must be currency, meta, storage, item, achievement, tag or booster")
+			return nil, badRequest("INVALID_ITEM_TYPE", "items", "type must be currency, meta, storage, item, achievement, tag, booster or chest")
 		}
+		item.Rewards = nil
 		out = append(out, item)
 	}
 	return out, nil

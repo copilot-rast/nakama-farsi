@@ -467,6 +467,10 @@
     "en": "Game not found.",
     "fa": "بازی شانس پیدا نشد."
   },
+  "CHANCE_LOCKED": {
+    "en": "Reach a higher level to play this game.",
+    "fa": "برای این بازی باید به سطح بالاتری برسید."
+  },
   "CHANCE_PRICE_CHANGED": {
     "en": "The price of this play has changed. Check the new price and try again.",
     "fa": "قیمت این بازی عوض شده است. قیمت تازه را ببینید و دوباره امتحان کنید."
@@ -498,6 +502,18 @@
   "CHAT_NOT_FOUND": {
     "en": "Chat not found.",
     "fa": "گفتگو پیدا نشد."
+  },
+  "CHEST_NOT_FOUND": {
+    "en": "Chest not found.",
+    "fa": "صندوق پیدا نشد."
+  },
+  "CHEST_TOO_DEEP": {
+    "en": "A chest cannot hold chests more than three levels deep.",
+    "fa": "صندوق نمی‌تواند بیشتر از سه لایه صندوق تو در تو داشته باشد."
+  },
+  "CLAIM_EXPIRED": {
+    "en": "This reward could only be received until the day ended.",
+    "fa": "مهلت گرفتن این جایزه با تمام شدن همان روز گذشت."
   },
   "CLAIM_NOT_FOUND": {
     "en": "Nothing to claim was found.",
@@ -1339,6 +1355,10 @@
     "en": "The upload part is not valid.",
     "fa": "بخش ارسال‌شده فایل معتبر نیست."
   },
+  "INVALID_CLAIM_WINDOW": {
+    "en": "The claim window is open or period.",
+    "fa": "مهلت گرفتن جایزه «همیشه باز» یا «تا آخر همان روز» است."
+  },
   "INVALID_CODE": {
     "en": "The code is not valid.",
     "fa": "کد معتبر نیست."
@@ -1387,6 +1407,10 @@
     "en": "The number of days is not valid.",
     "fa": "تعداد روزها معتبر نیست."
   },
+  "INVALID_DAY_START": {
+    "en": "The day start is minutes after midnight, from 0 to 1439.",
+    "fa": "شروع روز دقیقهٔ بعد از نیمه‌شب است، از ۰ تا ۱۴۳۹."
+  },
   "INVALID_DEVICE": {
     "en": "The device is not valid.",
     "fa": "دستگاه معتبر نیست."
@@ -1423,6 +1447,10 @@
     "en": "The filter is not valid.",
     "fa": "فیلتر معتبر نیست."
   },
+  "INVALID_FREE_RESET": {
+    "en": "The free turn is interval or daily.",
+    "fa": "نوبت رایگان «بعد از فاصله» یا «روزانه» است."
+  },
   "INVALID_GAME_KEY": {
     "en": "The game key is not valid.",
     "fa": "کلید بازی معتبر نیست."
@@ -1450,6 +1478,10 @@
   "INVALID_ID": {
     "en": "The ID is not valid.",
     "fa": "شناسه معتبر نیست."
+  },
+  "INVALID_INFINITY_MODE": {
+    "en": "The infinity reward is pay or claim.",
+    "fa": "جایزهٔ مرحلهٔ بی‌پایان «پرداخت مستقیم» یا «جایزهٔ گرفتنی» است."
   },
   "INVALID_INFINITY_RANGE": {
     "en": "The infinity amount is a whole range where min is at least 1 and not above max.",
@@ -1695,6 +1727,10 @@
     "en": "The request id is not valid.",
     "fa": "شناسهٔ درخواست درست نیست."
   },
+  "INVALID_REROLL_CAP": {
+    "en": "The re-roll cap is from 1 to 100000.",
+    "fa": "سقف تلاش دوباره از ۱ تا ۱۰۰۰۰۰ است."
+  },
   "INVALID_RESTRICTION_KIND": {
     "en": "The restriction type is not valid.",
     "fa": "نوع محدودیت معتبر نیست."
@@ -1734,6 +1770,10 @@
   "INVALID_SETTINGS": {
     "en": "These settings are not valid.",
     "fa": "این تنظیمات درست نیست."
+  },
+  "INVALID_SIGNUP_DELAY": {
+    "en": "The delay after sign-up is from 0 to 365 days.",
+    "fa": "تأخیر بعد از ثبت‌نام از ۰ تا ۳۶۵ روز است."
   },
   "INVALID_SKU": {
     "en": "The product code is not valid.",

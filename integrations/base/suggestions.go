@@ -84,8 +84,7 @@ type suggestRow struct {
 }
 
 func (s *service) suggestCycle(ctx context.Context) (string, time.Time) {
-	zone := projectZone(ctx, s.db)
-	cycle, next := dayBounds(s.now(), zone)
+	cycle, next := dayBounds(s.now(), s.socialClock(ctx))
 	return cycle, next.AddDate(0, 0, -1)
 }
 
@@ -172,9 +171,8 @@ func (s *service) suggestPools(ctx context.Context, v suggestSettings, userID st
 	}); err != nil {
 		return nil, err
 	}
-	zone := projectZone(ctx, s.db)
-	today, _ := dayBounds(now, zone)
-	start, _ := time.ParseInLocation("2006-01-02", today, zone)
+	today, _ := dayBounds(now, s.socialClock(ctx))
+	start, _ := time.Parse("2006-01-02", today)
 	since := start.AddDate(0, 0, -(v.PresenceDays - 1)).Format("2006-01-02")
 	var mine int
 	if err := s.db.QueryRowContext(ctx, `SELECT count(*) FROM base_presence_day WHERE user_id=$1 AND day >= $2::date`, userID, since).Scan(&mine); err != nil {
@@ -547,7 +545,7 @@ func (s *service) rpcFriendSuggestions(ctx context.Context, userID, payload stri
 	if err != nil {
 		return nil, err
 	}
-	_, next := dayBounds(s.now(), projectZone(ctx, s.db))
+	_, next := dayBounds(s.now(), s.socialClock(ctx))
 	return map[string]any{"enabled": true, "cycle": cycle, "refreshesAt": next.UTC().Format(time.RFC3339), "suggestions": users}, nil
 }
 
@@ -721,7 +719,7 @@ func (s *service) onSessionStart(ctx context.Context, _ runtime.Logger, _ *api.E
 	if userID == "" {
 		return
 	}
-	day, _ := dayBounds(s.now(), projectZone(ctx, s.db))
+	day, _ := dayBounds(s.now(), s.socialClock(ctx))
 	if _, err := s.db.ExecContext(ctx, `INSERT INTO base_presence_day (user_id, day) VALUES ($1, $2::date) ON CONFLICT DO NOTHING`, userID, day); err != nil {
 		s.logger.Warn("Base presence day not saved: %v", err)
 	}

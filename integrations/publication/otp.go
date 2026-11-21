@@ -43,6 +43,7 @@ type otpSettings struct {
 	PhoneHourly   int       `json:"phoneHourly"`
 	PhoneDaily    int       `json:"phoneDaily"`
 	IPHourly      int       `json:"ipHourly"`
+	UserHourly    int       `json:"userHourly"`
 	Message       i18n      `json:"message"`
 	UpdatedBy     string    `json:"updatedBy,omitempty"`
 	UpdatedAt     time.Time `json:"updatedAt"`
@@ -57,9 +58,9 @@ func loadOTPSettings(ctx context.Context, q queryer) (otpSettings, error) {
 	st := defaultOTPSettings()
 	var provider sql.NullString
 	var msg string
-	err := q.QueryRowContext(ctx, `SELECT is_enabled, sandbox, provider_id::text, code_length, ttl_seconds, max_attempts, resend_seconds, phone_hourly, phone_daily, ip_hourly, message::text, updated_by, updated_at
+	err := q.QueryRowContext(ctx, `SELECT is_enabled, sandbox, provider_id::text, code_length, ttl_seconds, max_attempts, resend_seconds, phone_hourly, phone_daily, ip_hourly, user_hourly, message::text, updated_by, updated_at
 		FROM publication_otp_settings WHERE id=1`).Scan(&st.IsEnabled, &st.Sandbox, &provider, &st.CodeLength, &st.TTLSeconds, &st.MaxAttempts, &st.ResendSeconds,
-		&st.PhoneHourly, &st.PhoneDaily, &st.IPHourly, &msg, &st.UpdatedBy, &st.UpdatedAt)
+		&st.PhoneHourly, &st.PhoneDaily, &st.IPHourly, &st.UserHourly, &msg, &st.UpdatedBy, &st.UpdatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
 		return defaultOTPSettings(), nil
 	}
@@ -69,6 +70,13 @@ func loadOTPSettings(ctx context.Context, q queryer) (otpSettings, error) {
 	st.ProviderID = provider.String
 	st.Message = parseI18n(msg)
 	return st, nil
+}
+
+func (st otpSettings) userLimit() int {
+	if st.UserHourly > 0 {
+		return st.UserHourly
+	}
+	return st.IPHourly
 }
 
 func between(field string, v, lo, hi int) error {
@@ -87,6 +95,7 @@ func (s *service) cleanOTPSettings(ctx context.Context, in otpSettings) (otpSett
 		between("phoneHourly", in.PhoneHourly, 1, 100),
 		between("phoneDaily", in.PhoneDaily, 1, 500),
 		between("ipHourly", in.IPHourly, 1, 10000),
+		between("userHourly", in.UserHourly, 0, 10000),
 	}
 	for _, err := range checks {
 		if err != nil {
@@ -180,12 +189,12 @@ func (s *service) consoleOTPSettingsPut(w http.ResponseWriter, r *http.Request) 
 	if st.ProviderID != "" {
 		provider = st.ProviderID
 	}
-	_, err = s.db.ExecContext(r.Context(), `INSERT INTO publication_otp_settings (id, is_enabled, sandbox, provider_id, code_length, ttl_seconds, max_attempts, resend_seconds, phone_hourly, phone_daily, ip_hourly, message, updated_by, updated_at)
-		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,now())
+	_, err = s.db.ExecContext(r.Context(), `INSERT INTO publication_otp_settings (id, is_enabled, sandbox, provider_id, code_length, ttl_seconds, max_attempts, resend_seconds, phone_hourly, phone_daily, ip_hourly, user_hourly, message, updated_by, updated_at)
+		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$13,$11,$12,now())
 		ON CONFLICT (id) DO UPDATE SET is_enabled=EXCLUDED.is_enabled, sandbox=EXCLUDED.sandbox, provider_id=EXCLUDED.provider_id, code_length=EXCLUDED.code_length,
 		ttl_seconds=EXCLUDED.ttl_seconds, max_attempts=EXCLUDED.max_attempts, resend_seconds=EXCLUDED.resend_seconds, phone_hourly=EXCLUDED.phone_hourly,
-		phone_daily=EXCLUDED.phone_daily, ip_hourly=EXCLUDED.ip_hourly, message=EXCLUDED.message, updated_by=EXCLUDED.updated_by, updated_at=now()`,
-		st.IsEnabled, st.Sandbox, provider, st.CodeLength, st.TTLSeconds, st.MaxAttempts, st.ResendSeconds, st.PhoneHourly, st.PhoneDaily, st.IPHourly, st.Message.JSON(), consoleUser(r))
+		phone_daily=EXCLUDED.phone_daily, ip_hourly=EXCLUDED.ip_hourly, user_hourly=EXCLUDED.user_hourly, message=EXCLUDED.message, updated_by=EXCLUDED.updated_by, updated_at=now()`,
+		st.IsEnabled, st.Sandbox, provider, st.CodeLength, st.TTLSeconds, st.MaxAttempts, st.ResendSeconds, st.PhoneHourly, st.PhoneDaily, st.IPHourly, st.Message.JSON(), consoleUser(r), st.UserHourly)
 	if err != nil {
 		s.writeError(w, err)
 		return
@@ -373,7 +382,7 @@ func (s *service) rpcOTPRequest(ctx context.Context, userID, payload string) (an
 			return nil, err
 		}
 	}
-	if err := s.otpLimit(ctx, "otp:user:h:"+userID, st.IPHourly, time.Hour, "OTP_RATE_LIMITED"); err != nil {
+	if err := s.otpLimit(ctx, "otp:user:h:"+userID, st.userLimit(), time.Hour, "OTP_RATE_LIMITED"); err != nil {
 		return nil, err
 	}
 	var p provider

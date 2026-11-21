@@ -14,9 +14,6 @@ func (s *service) metaRelationRPCs() map[string]clientRPC {
 	}
 }
 
-// rpcMetaRelations lists the relations a player can see: the ones they
-// completed (with their prize claims) and, unless completedOnly is set, the
-// active ones still waiting. Conditions on server-only metas stay hidden.
 func (s *service) rpcMetaRelations(ctx context.Context, userID, payload string) (any, error) {
 	var in struct {
 		CompletedOnly bool   `json:"completedOnly"`
@@ -103,7 +100,7 @@ func (s *service) rpcMetaRelations(ctx context.Context, userID, payload string) 
 			if c.OwnerID != r.id {
 				continue
 			}
-			row := map[string]any{"claimId": c.ID, "status": claimStatusWord(c), "grantMode": c.Mode, "prize": prizeJSON(names[c.PrizeID], c.PrizeID), "createdAt": c.CreatedAt}
+			row := map[string]any{"claimId": c.ID, "status": claimStatusWord(c, s.now()), "grantMode": c.Mode, "prize": prizeJSON(names[c.PrizeID], c.PrizeID), "createdAt": c.CreatedAt}
 			mine = append(mine, row)
 			if c.Status != "granted" && c.Mode == "claim" {
 				ready = append(ready, map[string]any{"claimId": c.ID, "kind": "relation", "source": r.key, "sourceName": name, "prize": prizeJSON(names[c.PrizeID], c.PrizeID), "createdAt": c.CreatedAt})

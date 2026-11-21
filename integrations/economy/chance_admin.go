@@ -10,10 +10,11 @@ import (
 	"strings"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/dayclock"
 )
 
 const chanceGameJSON = `jsonb_build_object('id',t.id,'key',t.key,'name',t.name,'description',t.description,'metadata',t.metadata,'prizeType',t.prize_type,'prize',t.prize,
-	'intervalTime',t.interval_time,'price',t.price,'isActive',t.is_active,'sort',t.sort,'kind',t.kind,'dailyLimit',t.daily_limit,'totalLimit',t.total_limit,'showOdds',t.show_odds,'priceLadder',t.price_ladder,'pityThreshold',t.pity_threshold,'revealAck',t.reveal_ack,'rerollEmpty',t.reroll_empty,'createdAt',t.created_at,'updatedAt',t.updated_at,
+	'intervalTime',t.interval_time,'price',t.price,'isActive',t.is_active,'sort',t.sort,'kind',t.kind,'dailyLimit',t.daily_limit,'totalLimit',t.total_limit,'showOdds',t.show_odds,'priceLadder',t.price_ladder,'pityThreshold',t.pity_threshold,'revealAck',t.reveal_ack,'rerollEmpty',t.reroll_empty,'rerollCap',t.reroll_cap,'freeReset',t.free_reset,'freeFirst',t.free_first,'dayZone',t.day_zone,'dayStartMinute',t.day_start_minute,'minLevel',t.min_level,'levelTableId',t.level_table_id,'createdAt',t.created_at,'updatedAt',t.updated_at,
 	'plays',(SELECT count(*) FROM economy_chance_play p WHERE p.game_id=t.id),
 	'players',(SELECT count(*) FROM economy_chance_state c WHERE c.game_id=t.id),
 	'wins',(SELECT count(*) FROM economy_chance_play p WHERE p.game_id=t.id AND p.prize_id IS NOT NULL),
@@ -82,16 +83,23 @@ func saveChanceGame(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 			CurrencyID string          `json:"currencyId"`
 			Amount     json.RawMessage `json:"amount"`
 		} `json:"price"`
-		IsActive   bool   `json:"isActive"`
-		Sort       int    `json:"sort"`
-		Kind       string `json:"kind"`
-		DailyLimit *int   `json:"dailyLimit"`
-		TotalLimit *int   `json:"totalLimit"`
-		ShowOdds   *bool  `json:"showOdds"`
+		IsActive   bool    `json:"isActive"`
+		Sort       int     `json:"sort"`
+		Kind       string  `json:"kind"`
+		DailyLimit *int    `json:"dailyLimit"`
+		TotalLimit *int    `json:"totalLimit"`
+		ShowOdds   *bool   `json:"showOdds"`
 		Ladder     []int64 `json:"priceLadder"`
 		Pity       *int    `json:"pityThreshold"`
 		RevealAck  bool    `json:"revealAck"`
 		Reroll     *bool   `json:"rerollEmpty"`
+		RerollCap  *int    `json:"rerollCap"`
+		FreeReset  string  `json:"freeReset"`
+		FreeFirst  bool    `json:"freeFirst"`
+		DayZone    string  `json:"dayZone"`
+		DayStart   int     `json:"dayStartMinute"`
+		MinLevel   int     `json:"minLevel"`
+		LevelTable *string `json:"levelTableId"`
 	}
 	if err := decodeInto(raw, &in); err != nil {
 		return err
@@ -109,6 +117,33 @@ func saveChanceGame(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 		return badRequest("INVALID_LIMIT", "totalLimit", "from 1 to 10000000, or empty for no limit")
 	}
 	showOdds := in.ShowOdds == nil || *in.ShowOdds
+	if in.FreeReset == "" {
+		in.FreeReset = "interval"
+	}
+	if err := oneOf("freeReset", "INVALID_FREE_RESET", in.FreeReset, "interval", "daily"); err != nil {
+		return err
+	}
+	in.DayZone = strings.TrimSpace(in.DayZone)
+	if !dayclock.ValidZone(in.DayZone) {
+		return badRequest("INVALID_TIMEZONE", "dayZone", "an IANA time zone such as UTC or Asia/Tehran, or empty for the project zone")
+	}
+	if in.DayStart < 0 || in.DayStart > dayclock.MaxStartMinute {
+		return badRequest("INVALID_DAY_START", "dayStartMinute", "minutes after midnight, from 0 to 1439")
+	}
+	if in.RerollCap != nil && (*in.RerollCap < 1 || *in.RerollCap > 100000) {
+		return badRequest("INVALID_REROLL_CAP", "rerollCap", "from 1 to 100000, or empty for 1000")
+	}
+	if in.MinLevel < 0 || in.MinLevel > 100000 {
+		return badRequest("INVALID_MIN_LEVEL", "minLevel", "from 0 (no gate) to 100000")
+	}
+	var levelTable any
+	if in.LevelTable != nil && strings.TrimSpace(*in.LevelTable) != "" {
+		ref, err := refExists(ctx, tx, "economy_level_table", "levelTableId", "LEVEL_TABLE_NOT_FOUND", *in.LevelTable, false)
+		if err != nil {
+			return err
+		}
+		levelTable = *ref
+	}
 	langs, err := loadLangs(ctx, tx)
 	if err != nil {
 		return err
@@ -215,7 +250,7 @@ func saveChanceGame(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 		raw, _ := json.Marshal(chancePrice{CurrencyID: *cur, Amount: int64(amount)})
 		price = string(raw)
 	}
-	if interval == nil && price == nil {
+	if interval == nil && price == nil && in.FreeReset != "daily" {
 		return badRequest("INTERVAL_OR_PRICE_REQUIRED", "intervalTime", "set a free turn interval, a ticket price, or both")
 	}
 	var ladder any
@@ -229,8 +264,10 @@ func saveChanceGame(s *service, ctx context.Context, tx *sql.Tx, id string, crea
 	reroll := in.Reroll == nil || *in.Reroll
 	rowsJSON, _ := json.Marshal(rows)
 	return execSave(ctx, tx, "economy_chance_game", id, create,
-		[]string{"key", "name", "description", "metadata", "prize_type", "prize", "interval_time", "price", "is_active", "sort", "kind", "daily_limit", "total_limit", "show_odds", "price_ladder", "pity_threshold", "reveal_ack", "reroll_empty"},
-		[]any{key, i18nJSON(name), i18nJSON(desc), meta, in.PrizeType, string(rowsJSON), interval, price, in.IsActive, in.Sort, in.Kind, in.DailyLimit, in.TotalLimit, showOdds, ladder, in.Pity, in.RevealAck, reroll})
+		[]string{"key", "name", "description", "metadata", "prize_type", "prize", "interval_time", "price", "is_active", "sort", "kind", "daily_limit", "total_limit", "show_odds", "price_ladder", "pity_threshold", "reveal_ack", "reroll_empty",
+			"reroll_cap", "free_reset", "free_first", "day_zone", "day_start_minute", "min_level", "level_table_id"},
+		[]any{key, i18nJSON(name), i18nJSON(desc), meta, in.PrizeType, string(rowsJSON), interval, price, in.IsActive, in.Sort, in.Kind, in.DailyLimit, in.TotalLimit, showOdds, ladder, in.Pity, in.RevealAck, reroll,
+			in.RerollCap, in.FreeReset, in.FreeFirst, in.DayZone, in.DayStart, in.MinLevel, levelTable})
 }
 
 func savePrizeGroup(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error {

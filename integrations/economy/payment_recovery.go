@@ -27,6 +27,7 @@ type paymentSettings struct {
 	StoreConsumed            string `json:"storeConsumed"`
 	GoogleAcknowledge        bool   `json:"googleAcknowledge"`
 	StripeToleranceSeconds   int    `json:"stripeToleranceSeconds"`
+	PendingMinutes           int    `json:"pendingMinutes"`
 	UpdatedAt                string `json:"updatedAt,omitempty"`
 }
 
@@ -56,6 +57,14 @@ func loadPaymentSettings(ctx context.Context, q queryer) (paymentSettings, error
 	return st, nil
 }
 
+func (s *service) pendingTTL(ctx context.Context) time.Duration {
+	st, err := loadPaymentSettings(ctx, s.db)
+	if err == nil && st.PendingMinutes > 0 {
+		return time.Duration(st.PendingMinutes) * time.Minute
+	}
+	return s.cfg.pendingTTL
+}
+
 func validatePaymentSettings(st paymentSettings) error {
 	switch {
 	case st.RetryMinutes < 1 || st.RetryMinutes > 1440:
@@ -76,6 +85,8 @@ func validatePaymentSettings(st paymentSettings) error {
 		return badRequest("INVALID_SETTING", "storeConsumed", "must be accept or refuse")
 	case st.StripeToleranceSeconds < 30 || st.StripeToleranceSeconds > 3600:
 		return badRequest("INVALID_SETTING", "stripeToleranceSeconds", "must be 30 to 3600")
+	case st.PendingMinutes < 0 || st.PendingMinutes > 10080:
+		return badRequest("INVALID_SETTING", "pendingMinutes", "must be 0 to 10080")
 	}
 	return nil
 }

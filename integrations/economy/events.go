@@ -15,6 +15,7 @@ import (
 
 	"github.com/gofrs/uuid/v5"
 	"github.com/heroiclabs/nakama/v3/internal/clusterkit"
+	"github.com/heroiclabs/nakama/v3/internal/dayclock"
 	"github.com/heroiclabs/nakama/v3/internal/playerevents"
 )
 
@@ -74,13 +75,25 @@ func (st eventSettings) clock() eventClock {
 }
 
 type eventClock struct {
-	loc       *time.Location
-	weekStart time.Weekday
+	loc         *time.Location
+	weekStart   time.Weekday
+	startMinute int
+}
+
+func (c eventClock) withDay(zone string, minute int) eventClock {
+	if zone == "" && minute == 0 {
+		return c
+	}
+	d := dayclock.New(zone, minute, c.loc)
+	return eventClock{loc: d.Loc, weekStart: c.weekStart, startMinute: d.StartMinute}
 }
 
 var epochDate = time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)
 
 func (c eventClock) civil(t time.Time) time.Time {
+	if c.startMinute != 0 {
+		return dayclock.Clock{Loc: c.loc, StartMinute: c.startMinute}.Civil(t)
+	}
 	y, m, d := t.In(c.loc).Date()
 	return time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
 }
@@ -98,7 +111,7 @@ func (c eventClock) periodStart(period string, t time.Time) time.Time {
 }
 
 func (c eventClock) instant(civil time.Time) time.Time {
-	return time.Date(civil.Year(), civil.Month(), civil.Day(), 0, 0, 0, 0, c.loc)
+	return time.Date(civil.Year(), civil.Month(), civil.Day(), 0, c.startMinute, 0, 0, c.loc)
 }
 
 func (c eventClock) periodEnd(period string, t time.Time) *time.Time {
@@ -196,15 +209,15 @@ type ruleProgress struct {
 }
 
 type streakChange struct {
-	StreakID      string `json:"streakId"`
-	Key           string `json:"key"`
-	Count         int    `json:"count"`
-	Best          int    `json:"best"`
-	Advanced      bool   `json:"advanced"`
-	Reset         bool   `json:"reset"`
-	Floored       bool   `json:"floored"`
-	Floor         int    `json:"floor"`
-	NextMilestone int    `json:"nextMilestone,omitempty"`
+	StreakID         string `json:"streakId"`
+	Key              string `json:"key"`
+	Count            int    `json:"count"`
+	Best             int    `json:"best"`
+	Advanced         bool   `json:"advanced"`
+	Reset            bool   `json:"reset"`
+	Floored          bool   `json:"floored"`
+	Floor            int    `json:"floor"`
+	NextMilestone    int    `json:"nextMilestone,omitempty"`
 	Phase            string `json:"phase,omitempty"`
 	InfinityCurrency string `json:"infinityCurrency,omitempty"`
 	InfinityAmount   int64  `json:"infinityAmount,omitempty"`
@@ -218,12 +231,13 @@ type levelChange struct {
 }
 
 type claimRef struct {
-	ClaimID  string `json:"claimId"`
-	Kind     string `json:"kind"`
-	PrizeID  string `json:"prizeId"`
-	Mode     string `json:"grantMode"`
-	Status   string `json:"status"`
-	PrizeKey string `json:"prizeKey,omitempty"`
+	ClaimID   string     `json:"claimId"`
+	Kind      string     `json:"kind"`
+	PrizeID   string     `json:"prizeId"`
+	Mode      string     `json:"grantMode"`
+	Status    string     `json:"status"`
+	PrizeKey  string     `json:"prizeKey,omitempty"`
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
 }
 
 type eventOutcome struct {

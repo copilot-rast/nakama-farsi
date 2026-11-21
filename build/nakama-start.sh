@@ -52,6 +52,14 @@ args=(
     --console.signing_key "${NAKAMA_CONSOLE_SIGNING_KEY:?NAKAMA_CONSOLE_SIGNING_KEY is required}"
 )
 
+if [ -n "${NAKAMA_SESSION_REFRESH_TOKEN_EXPIRY_SEC:-}" ]; then
+    args+=(--session.refresh_token_expiry_sec "$NAKAMA_SESSION_REFRESH_TOKEN_EXPIRY_SEC")
+fi
+
+if [ -n "${NAKAMA_CONSOLE_TOKEN_EXPIRY_SEC:-}" ]; then
+    args+=(--console.token_expiry_sec "$NAKAMA_CONSOLE_TOKEN_EXPIRY_SEC")
+fi
+
 if [ -n "${NAKAMA_REFRESH_ENCRYPTION_KEY:-}" ]; then
     args+=(--session.refresh_encryption_key "$NAKAMA_REFRESH_ENCRYPTION_KEY")
 fi

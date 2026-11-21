@@ -89,8 +89,8 @@ func checkStripeConfig(cfg methodConfig) error {
 	return nil
 }
 
-func (s *service) stripeSessionLifetime() time.Duration {
-	d := s.cfg.pendingTTL
+func (s *service) stripeSessionLifetime(ctx context.Context) time.Duration {
+	d := s.pendingTTL(ctx)
 	if d < 31*time.Minute {
 		d = 31 * time.Minute
 	}
@@ -145,7 +145,7 @@ func (s *service) startStripe(ctx context.Context, userID string, product produc
 	form.Set("metadata[paymentId]", id)
 	form.Set("metadata[productKey]", product.Key)
 	form.Set("payment_intent_data[metadata][paymentId]", id)
-	form.Set("expires_at", strconv.FormatInt(s.now().Add(s.stripeSessionLifetime()).Unix(), 10))
+	form.Set("expires_at", strconv.FormatInt(s.now().Add(s.stripeSessionLifetime(ctx)).Unix(), 10))
 	logged := map[string]any{}
 	for k, v := range form {
 		logged[k] = v[0]

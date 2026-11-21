@@ -83,15 +83,15 @@ func (s *service) chanceTicketAmount(ctx context.Context, q queryer, g *chanceGa
 	if len(g.Ladder) == 0 {
 		return g.Price.Amount, nil
 	}
-	n, err := s.chanceTicketsToday(ctx, q, g.ID, userID, now)
+	start, _ := s.chanceDay(ctx, q, g, now)
+	n, err := s.chanceTicketsSince(ctx, q, g.ID, userID, start)
 	if err != nil {
 		return 0, err
 	}
 	return ladderAmount(g.Ladder, n), nil
 }
 
-func (s *service) chanceTicketsToday(ctx context.Context, q queryer, gameID, userID string, now time.Time) (int, error) {
-	start := s.chanceDayStart(ctx, q, now)
+func (s *service) chanceTicketsSince(ctx context.Context, q queryer, gameID, userID string, start time.Time) (int, error) {
 	var n int
 	err := q.QueryRowContext(ctx, `SELECT count(*) FROM economy_chance_play WHERE game_id=$1 AND user_id=$2 AND mode='ticket' AND created_at >= $3`, gameID, userID, start).Scan(&n)
 	return n, err
@@ -127,6 +127,9 @@ func (s *service) rollSlots(ctx context.Context, tx *sql.Tx, g *chanceGame, user
 	tries := 1
 	if g.Reroll {
 		tries = chanceRerollCap
+		if g.RerollCap != nil && *g.RerollCap > 0 {
+			tries = *g.RerollCap
+		}
 	}
 	for attempt := 0; attempt < tries; attempt++ {
 		out := []chanceOutcome{}

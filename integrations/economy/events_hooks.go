@@ -27,6 +27,8 @@ func (s *service) loginEvent(ctx context.Context, session *api.Session, method s
 
 func (s *service) registerEventHooks(initializer runtime.Initializer) error {
 	steps := []func() error{
+		func() error { return initializer.RegisterEventSessionStart(s.onSessionStart) },
+		func() error { return initializer.RegisterEventSessionEnd(s.onSessionEnd) },
 		func() error {
 			return initializer.RegisterAfterAuthenticateDevice(hookchain.After("AuthenticateDevice", func(ctx context.Context, _ runtime.Logger, _ *sql.DB, _ runtime.NakamaModule, out *api.Session, _ *api.AuthenticateDeviceRequest) error {
 				s.loginEvent(ctx, out, "device")

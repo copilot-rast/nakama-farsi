@@ -248,14 +248,14 @@ func saveOffer(ctx context.Context, tx *sql.Tx, id string, create bool, kind str
 		if in.TriggerType != "" {
 			trigger = in.TriggerType
 		}
-		if err := oneOf("triggerType", "INVALID_TRIGGER", trigger, "first_entry", "level", "meta", "tag", "account_days", "lapsed"); err != nil {
+		if err := oneOf("triggerType", "INVALID_TRIGGER", trigger, "first_entry", "level", "meta", "tag", "account_days", "lapsed", "game"); err != nil {
 			return err
 		}
 		if triggerValue, err = optionalNumeric("triggerValue", in.TriggerValue); err != nil {
 			return err
 		}
 		switch trigger {
-		case "level", "meta", "account_days", "lapsed":
+		case "level", "meta", "account_days", "lapsed", "game":
 			if triggerValue == nil {
 				return badRequest("INVALID_VALUE", "triggerValue", "a value is required")
 			}
@@ -280,6 +280,20 @@ func saveOffer(ctx context.Context, tx *sql.Tx, id string, create bool, kind str
 				return err
 			}
 			triggerRef = *ref
+		case "game":
+			triggerRef = strings.TrimSpace(in.TriggerRef)
+			if triggerRef != "" {
+				var ok bool
+				if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_game WHERE key=$1)`, triggerRef).Scan(&ok); err != nil {
+					return err
+				}
+				if !ok {
+					return badRequest("GAME_NOT_FOUND", "triggerRef", "pick a game, or leave it empty for any game")
+				}
+			}
+			if numericFloat(*triggerValue) < 1 {
+				return badRequest("INVALID_VALUE", "triggerValue", "the number of finished matches, 1 or more")
+			}
 		case "tag":
 			tags, err := checkUserTags(ctx, tx, []string{in.TriggerRef})
 			if err != nil || len(tags) == 0 || strings.TrimSpace(in.TriggerRef) == "" {
@@ -376,8 +390,17 @@ func validateOfferSettings(ctx context.Context, q queryer, st *offerSettings) er
 			return badRequest("INVALID_SETTING", c.field, "between "+strconv.Itoa(c.lo)+" and "+strconv.Itoa(c.h))
 		}
 	}
-	if err := oneOf("weighting", "INVALID_POLICY", st.Weighting, "weighted", "uniform", "priority"); err != nil {
+	if err := oneOf("weighting", "INVALID_POLICY", st.Weighting, "weighted", "uniform", "priority", "scored"); err != nil {
 		return err
+	}
+	if st.Score.Rarity == nil {
+		st.Score.Rarity = map[string]float64{}
+	}
+	if field, ok := st.Score.valid(); !ok {
+		return badRequest("INVALID_SETTING", field, "out of range")
+	}
+	if st.CoinPriceFloor < 0 || st.CoinPriceFloor > 1000000 {
+		return badRequest("INVALID_SETTING", "coinPriceFloor", "between 0 and 1000000")
 	}
 	if err := oneOf("inactiveProducts", "INVALID_POLICY", st.InactiveProducts, "allow", "skip"); err != nil {
 		return err
@@ -455,9 +478,6 @@ func (s *service) consoleOfferSettingsPut(w http.ResponseWriter, r *http.Request
 
 var offerReasonOrder = map[string]int{"picked": 0, "recent": 1, "": 2}
 
-// consoleOfferPreview shows what a player would get now: the current daily
-// set, a fresh draw for this period with the reason each template was left
-// out, and the state of every entry offer.
 func (s *service) consoleOfferPreview(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, err := uuidParam(r, "userId")
@@ -577,9 +597,6 @@ func adminOfferRows(list []userOffer, now time.Time) []map[string]any {
 	return out
 }
 
-// consoleOfferReport counts per offer template, for offers made in the last
-// `days` days: made, shown, players who bought, purchases, conversion and
-// what the purchases brought in.
 func (s *service) consoleOfferReport(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	days := 30
@@ -680,8 +697,6 @@ func (s *service) consoleUserOffers(w http.ResponseWriter, r *http.Request) {
 		"daily": adminOfferRows(daily, now), "entry": adminOfferRows(entry, now), "shown": shown, "bought": bought})
 }
 
-// consoleUserOffersReset closes the player's daily offers of this period so
-// the next list draws again (with the pool and settings as they are now).
 func (s *service) consoleUserOffersReset(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, err := s.consoleUser(r)
@@ -740,8 +755,6 @@ func (s *service) consoleUserOfferExpire(w http.ResponseWriter, r *http.Request)
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 }
 
-// consoleUserEntryReset forgets the player's history with an entry offer so
-// its trigger can fire again; open copies close. Purchases stay in reports.
 func (s *service) consoleUserEntryReset(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, err := s.consoleUser(r)

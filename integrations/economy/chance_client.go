@@ -212,7 +212,37 @@ func hideGroupOdds(grp chanceGroupView) chanceGroupView {
 	return grp
 }
 
-func (s *service) chanceGameView(g *chanceGame, lk *chanceLookups, langs *localized.Set, lang string, last sql.NullTime, plays int64, today, tickets int, now time.Time) map[string]any {
+func (s *service) chanceViewFor(ctx context.Context, g *chanceGame, lk *chanceLookups, langs *localized.Set, lang string, st *chancePlayer, userID string, now time.Time) (map[string]any, error) {
+	today, tickets := st.today[g.ID], st.tickets[g.ID]
+	start, end := s.chanceDay(ctx, s.db, g, now)
+	if g.DayZone != "" || g.DayStart != 0 {
+		if err := s.db.QueryRowContext(ctx, `SELECT count(*), count(*) FILTER (WHERE mode='ticket') FROM economy_chance_play WHERE game_id=$1 AND user_id=$2 AND created_at >= $3`, g.ID, userID, start).Scan(&today, &tickets); err != nil {
+			return nil, err
+		}
+	}
+	left := freeTurnLeft(g, st.last[g.ID], start, end, now)
+	view := s.chanceGameView(g, lk, langs, lang, st.last[g.ID], st.plays[g.ID], today, tickets, now, left)
+	view["freeReset"], view["freeFirst"] = g.FreeReset, g.FreeFirst
+	if g.FreeReset == "daily" || g.DailyLimit != nil {
+		view["dayEndsAt"] = end.UTC().Format(time.RFC3339)
+	}
+	if g.MinLevel > 0 {
+		level, err := s.chanceLevel(ctx, s.db, g, userID)
+		if err != nil {
+			return nil, err
+		}
+		locked := level < g.MinLevel
+		view["minLevel"], view["level"], view["locked"] = g.MinLevel, level, locked
+		if locked {
+			if _, ok := view["canPlay"]; ok {
+				view["canPlay"] = false
+			}
+		}
+	}
+	return view, nil
+}
+
+func (s *service) chanceGameView(g *chanceGame, lk *chanceLookups, langs *localized.Set, lang string, last sql.NullTime, plays int64, today, tickets int, now time.Time, left time.Duration) map[string]any {
 	rows := []map[string]any{}
 	for _, r := range g.Rows {
 		var chance any = r.Chance
@@ -278,8 +308,7 @@ func (s *service) chanceGameView(g *chanceGame, lk *chanceLookups, langs *locali
 		}
 		out["price"] = map[string]any{"currencyId": g.Price.CurrencyID, "currencyKey": cur[0], "currencyName": cur[1], "amount": amount}
 	}
-	if g.Interval != nil {
-		left := chanceWait(g, last, now)
+	if g.hasFreeTurn() {
 		out["canPlay"] = left <= 0 && !limitReached(out)
 		out["nextPlayTime"] = waitSeconds(left)
 		if left > 0 {
@@ -360,7 +389,10 @@ func (s *service) rpcChanceGames(ctx context.Context, userID, payload string) (a
 	now := s.now().UTC()
 	items := []map[string]any{}
 	for _, g := range games {
-		view := s.chanceGameView(g, lk, langs, lang, st.last[g.ID], st.plays[g.ID], st.today[g.ID], st.tickets[g.ID], now)
+		view, err := s.chanceViewFor(ctx, g, lk, langs, lang, st, userID, now)
+		if err != nil {
+			return nil, err
+		}
 		if err := s.addPendingReveal(ctx, view, g, userID, langs, lang); err != nil {
 			return nil, err
 		}
@@ -386,7 +418,10 @@ func (s *service) rpcChanceGame(ctx context.Context, userID, payload string) (an
 	if err != nil {
 		return nil, err
 	}
-	view := s.chanceGameView(g, lk, langs, lang, st.last[g.ID], st.plays[g.ID], st.today[g.ID], st.tickets[g.ID], s.now().UTC())
+	view, err := s.chanceViewFor(ctx, g, lk, langs, lang, st, userID, s.now().UTC())
+	if err != nil {
+		return nil, err
+	}
 	if err := s.addPendingReveal(ctx, view, g, userID, langs, lang); err != nil {
 		return nil, err
 	}
@@ -398,14 +433,10 @@ func (s *service) chanceTurn(ctx context.Context, userID, payload string) (time.
 	if err != nil {
 		return 0, err
 	}
-	if g.Interval == nil {
+	if !g.hasFreeTurn() {
 		return 0, badRequest("INTERVAL_TIME_IS_NULL", "", "this game has no free turn")
 	}
-	last, err := lastFreePlay(ctx, s.db, g.ID, userID)
-	if err != nil {
-		return 0, err
-	}
-	return chanceWait(g, last, s.now().UTC()), nil
+	return s.chanceFreeLeft(ctx, s.db, g, userID, s.now().UTC())
 }
 
 func (s *service) rpcChanceCanPlay(ctx context.Context, userID, payload string) (any, error) {
@@ -482,11 +513,12 @@ func (s *service) chancePlayRPC(ctx context.Context, userID, payload, mode strin
 		out["needsAck"] = res.Play.Status == "done"
 	}
 	if len(res.Game.Ladder) > 0 && res.Game.Price != nil {
-		if n, err := s.chanceTicketsToday(ctx, s.db, res.Game.ID, userID, s.now().UTC()); err == nil {
+		start, _ := s.chanceDay(ctx, s.db, res.Game, s.now().UTC())
+		if n, err := s.chanceTicketsSince(ctx, s.db, res.Game.ID, userID, start); err == nil {
 			out["nextTicketCost"] = ladderAmount(res.Game.Ladder, n)
 		}
 	}
-	if res.Game.Interval != nil {
+	if res.Game.hasFreeTurn() {
 		out["nextPlayTime"] = waitSeconds(res.Wait)
 		if res.Wait > 0 {
 			out["nextPlayAt"] = s.now().UTC().Add(res.Wait).Format(time.RFC3339)
@@ -497,7 +529,14 @@ func (s *service) chancePlayRPC(ctx context.Context, userID, payload, mode strin
 		_, plays, today, err := s.chancePlayerState(ctx, userID)
 		if err == nil {
 			if res.Game.DailyLimit != nil {
-				out["playsLeftToday"] = max(*res.Game.DailyLimit-today[res.Game.ID], 0)
+				n := today[res.Game.ID]
+				if res.Game.DayZone != "" || res.Game.DayStart != 0 {
+					start, _ := s.chanceDay(ctx, s.db, res.Game, s.now().UTC())
+					if c, err := s.chancePlaysSince(ctx, s.db, res.Game.ID, userID, start); err == nil {
+						n = c
+					}
+				}
+				out["playsLeftToday"] = max(*res.Game.DailyLimit-n, 0)
 			}
 			if res.Game.TotalLimit != nil {
 				out["playsLeft"] = max(int64(*res.Game.TotalLimit)-plays[res.Game.ID], 0)

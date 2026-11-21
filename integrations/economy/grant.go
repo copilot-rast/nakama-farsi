@@ -119,7 +119,11 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 		var metas []prizeItem
 		var itemKeys, achKeys []string
 		var tags, boosters []prizeItem
-		for _, item := range prize.Items {
+		resolved, err := s.resolvePrizeItems(ctx, tx, req.UserID, prize.Items, 0)
+		if err != nil {
+			return err
+		}
+		for _, item := range flattenPrizeItems(resolved) {
 			switch item.Type {
 			case "currency":
 				v, _ := int64FromJSON(item.Value)
@@ -211,7 +215,7 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 			}
 			unlocked = got
 		}
-		raw, _ := json.Marshal(prize.Items)
+		raw, _ := json.Marshal(resolved)
 		if _, err := tx.ExecContext(ctx, `UPDATE economy_user_prize SET claimed=true, error=NULL, rewards=$2, updated_at=now() WHERE id=$1 AND claimed=false`, rowID, string(raw)); err != nil {
 			return err
 		}
@@ -220,7 +224,7 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 				return err
 			}
 		}
-		rewards = prize.Items
+		rewards = resolved
 		granted = true
 		return nil
 	})
@@ -240,7 +244,7 @@ func (s *service) grant(ctx context.Context, req grantRequest) ([]prizeItem, err
 	}
 	if granted && !grantEvaluatesMetas[req.SourceType] {
 		var keys []string
-		for _, item := range rewards {
+		for _, item := range flattenPrizeItems(rewards) {
 			if item.Type == "meta" {
 				keys = append(keys, item.Key)
 			}

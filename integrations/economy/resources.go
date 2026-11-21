@@ -18,11 +18,9 @@ type resource struct {
 	json    string
 	search  []string
 	filters map[string]string
-	// scope, when set, is a fixed condition on t that limits the resource to
-	// part of its table (offers keep daily and entry templates in one table).
-	scope  string
-	save   func(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error
-	remove func(s *service, ctx context.Context, tx *sql.Tx, id string) error
+	scope   string
+	save    func(s *service, ctx context.Context, tx *sql.Tx, id string, create bool, raw []byte) error
+	remove  func(s *service, ctx context.Context, tx *sql.Tx, id string) error
 }
 
 func resources() []resource {
@@ -569,6 +567,13 @@ func checkPrizeItems(ctx context.Context, tx *sql.Tx, items []prizeItem) error {
 			}
 			if !exists {
 				return badRequest("CURRENCY_NOT_FOUND", "items", "currency "+item.Key+" does not exist")
+			}
+		case "chest":
+			if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_chance_game WHERE key=$1 AND prize_type='slots')`, item.Key).Scan(&exists); err != nil {
+				return err
+			}
+			if !exists {
+				return badRequest("CHEST_NOT_FOUND", "items", "no chest (chance game with slots) has the key "+item.Key)
 			}
 		case "meta", "booster":
 			if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM economy_meta WHERE key=$1)`, item.Key).Scan(&exists); err != nil {

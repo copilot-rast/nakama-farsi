@@ -15,6 +15,7 @@ import (
 	"github.com/heroiclabs/nakama-common/api"
 	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/internal/clusterkit"
+	"github.com/heroiclabs/nakama/v3/internal/dayclock"
 	"github.com/heroiclabs/nakama/v3/internal/hookchain"
 	"github.com/heroiclabs/nakama/v3/internal/localized"
 	"google.golang.org/grpc/codes"
@@ -52,6 +53,9 @@ type friendRules struct {
 	NotifyRemoved       bool      `json:"notifyRemoved"`
 	PresenceFriendsOnly bool      `json:"presenceFriendsOnly"`
 	DMFriendsOnly       bool      `json:"dmFriendsOnly"`
+	DayZone             string    `json:"dayZone"`
+	DayStartMinute      int       `json:"dayStartMinute"`
+	BotDeclineHours     int       `json:"botDeclineHours"`
 	UpdatedBy           string    `json:"updatedBy,omitempty"`
 	UpdatedAt           time.Time `json:"updatedAt"`
 }
@@ -67,9 +71,9 @@ func defaultFriendRules() friendRules {
 
 func loadFriendRules(ctx context.Context, q queryer) (friendRules, error) {
 	r := defaultFriendRules()
-	err := q.QueryRowContext(ctx, `SELECT daily_requests, max_friends, expiry_days, reject_cooldown_hours, requests_bonus_meta, friends_bonus_meta, match_policy, over_limit, notify_declined, notify_removed, presence_friends_only, dm_friends_only, updated_by, updated_at FROM base_friend_rules WHERE id=1`).
+	err := q.QueryRowContext(ctx, `SELECT daily_requests, max_friends, expiry_days, reject_cooldown_hours, requests_bonus_meta, friends_bonus_meta, match_policy, over_limit, notify_declined, notify_removed, presence_friends_only, dm_friends_only, day_zone, day_start_minute, bot_decline_hours, updated_by, updated_at FROM base_friend_rules WHERE id=1`).
 		Scan(&r.DailyRequests, &r.MaxFriends, &r.ExpiryDays, &r.RejectCooldownHours, &r.RequestsBonusMeta, &r.FriendsBonusMeta, &r.MatchPolicy, &r.OverLimit,
-			&r.NotifyDeclined, &r.NotifyRemoved, &r.PresenceFriendsOnly, &r.DMFriendsOnly, &r.UpdatedBy, &r.UpdatedAt)
+			&r.NotifyDeclined, &r.NotifyRemoved, &r.PresenceFriendsOnly, &r.DMFriendsOnly, &r.DayZone, &r.DayStartMinute, &r.BotDeclineHours, &r.UpdatedBy, &r.UpdatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
 		return defaultFriendRules(), nil
 	}
@@ -79,6 +83,7 @@ func loadFriendRules(ctx context.Context, q queryer) (friendRules, error) {
 func (r friendRules) clean() (friendRules, error) {
 	r.RequestsBonusMeta = strings.TrimSpace(r.RequestsBonusMeta)
 	r.FriendsBonusMeta = strings.TrimSpace(r.FriendsBonusMeta)
+	r.DayZone = strings.TrimSpace(r.DayZone)
 	if r.MatchPolicy == "" {
 		r.MatchPolicy = "priority"
 	}
@@ -98,6 +103,12 @@ func (r friendRules) clean() (friendRules, error) {
 		return r, badRequest("INVALID_RULE", "matchPolicy", "priority or generous")
 	case !validKeyType(friendOverLimits, r.OverLimit):
 		return r, badRequest("INVALID_RULE", "overLimit", "refuse or trim")
+	case !dayclock.ValidZone(r.DayZone):
+		return r, badRequest("INVALID_RULE", "dayZone", "an IANA time zone such as UTC or Asia/Tehran, or empty for the project zone")
+	case r.DayStartMinute < 0 || r.DayStartMinute > dayclock.MaxStartMinute:
+		return r, badRequest("INVALID_RULE", "dayStartMinute", "between 0 and 1439")
+	case r.BotDeclineHours < 0 || r.BotDeclineHours > 8760:
+		return r, badRequest("INVALID_RULE", "botDeclineHours", "between 0 and 8760")
 	}
 	return r, nil
 }
@@ -142,14 +153,15 @@ func (s *service) friendRulesPut(w http.ResponseWriter, r *http.Request) {
 		s.writeError(w, err)
 		return
 	}
-	_, err = s.db.ExecContext(r.Context(), `INSERT INTO base_friend_rules (id, daily_requests, max_friends, expiry_days, reject_cooldown_hours, requests_bonus_meta, friends_bonus_meta, match_policy, over_limit, notify_declined, notify_removed, presence_friends_only, dm_friends_only, updated_by, updated_at)
-		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$10,$11,$12,$13,$9,now())
+	_, err = s.db.ExecContext(r.Context(), `INSERT INTO base_friend_rules (id, daily_requests, max_friends, expiry_days, reject_cooldown_hours, requests_bonus_meta, friends_bonus_meta, match_policy, over_limit, notify_declined, notify_removed, presence_friends_only, dm_friends_only, day_zone, day_start_minute, bot_decline_hours, updated_by, updated_at)
+		VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$10,$11,$12,$13,$14,$15,$16,$9,now())
 		ON CONFLICT (id) DO UPDATE SET daily_requests=EXCLUDED.daily_requests, max_friends=EXCLUDED.max_friends, expiry_days=EXCLUDED.expiry_days,
 		reject_cooldown_hours=EXCLUDED.reject_cooldown_hours, requests_bonus_meta=EXCLUDED.requests_bonus_meta, friends_bonus_meta=EXCLUDED.friends_bonus_meta,
 		match_policy=EXCLUDED.match_policy, over_limit=EXCLUDED.over_limit, notify_declined=EXCLUDED.notify_declined, notify_removed=EXCLUDED.notify_removed,
-		presence_friends_only=EXCLUDED.presence_friends_only, dm_friends_only=EXCLUDED.dm_friends_only, updated_by=EXCLUDED.updated_by, updated_at=now()`,
+		presence_friends_only=EXCLUDED.presence_friends_only, dm_friends_only=EXCLUDED.dm_friends_only,
+		day_zone=EXCLUDED.day_zone, day_start_minute=EXCLUDED.day_start_minute, bot_decline_hours=EXCLUDED.bot_decline_hours, updated_by=EXCLUDED.updated_by, updated_at=now()`,
 		rules.DailyRequests, rules.MaxFriends, rules.ExpiryDays, rules.RejectCooldownHours, rules.RequestsBonusMeta, rules.FriendsBonusMeta, rules.MatchPolicy, rules.OverLimit, consoleUser(r),
-		rules.NotifyDeclined, rules.NotifyRemoved, rules.PresenceFriendsOnly, rules.DMFriendsOnly)
+		rules.NotifyDeclined, rules.NotifyRemoved, rules.PresenceFriendsOnly, rules.DMFriendsOnly, rules.DayZone, rules.DayStartMinute, rules.BotDeclineHours)
 	if err != nil {
 		s.writeError(w, err)
 		return
@@ -169,10 +181,18 @@ func projectZone(ctx context.Context, q queryer) *time.Location {
 	return loc
 }
 
-func dayBounds(now time.Time, zone *time.Location) (string, time.Time) {
-	local := now.In(zone)
-	start := time.Date(local.Year(), local.Month(), local.Day(), 0, 0, 0, 0, zone)
-	return start.Format("2006-01-02"), start.AddDate(0, 0, 1)
+func dayBounds(now time.Time, clock dayclock.Clock) (string, time.Time) {
+	key, _, end := clock.Bounds(now)
+	return key, end
+}
+
+func (s *service) socialClock(ctx context.Context) dayclock.Clock {
+	var zone string
+	var minute int
+	if err := s.db.QueryRowContext(ctx, `SELECT day_zone, day_start_minute FROM base_friend_rules WHERE id=1`).Scan(&zone, &minute); err != nil {
+		zone, minute = "", 0
+	}
+	return dayclock.New(zone, minute, projectZone(ctx, s.db))
 }
 
 var friendMessages = map[string]localized.Text{
@@ -437,8 +457,8 @@ func (s *service) checkFriendAdd(ctx context.Context, userID string, in *api.Add
 			return nil, err
 		}
 	}
-	zone := projectZone(ctx, s.db)
-	day, reset := dayBounds(s.now(), zone)
+	clock := s.socialClock(ctx)
+	day, reset := dayBounds(s.now(), clock)
 	took, err := s.reserveRequests(ctx, userID, day, len(invites), eff.DailyRequests, rules.OverLimit == "trim")
 	if err != nil {
 		return nil, err
@@ -467,7 +487,7 @@ func (s *service) beforeAddFriends(ctx context.Context, _ runtime.Logger, _ *sql
 	if err != nil {
 		var fe *friendError
 		if errors.As(err, &fe) {
-			return nil, s.friendFailure(ctx, userID, fe, projectZone(ctx, s.db))
+			return nil, s.friendFailure(ctx, userID, fe, s.socialClock(ctx).Loc)
 		}
 		return nil, s.hookFailure(err)
 	}
@@ -579,6 +599,44 @@ func (s *service) expireInvites(ctx context.Context, userID string, days, limit 
 	return n, nil
 }
 
+func (s *service) declineBotInvites(ctx context.Context, hours, limit int) (int, error) {
+	if hours <= 0 {
+		return 0, nil
+	}
+	var ok bool
+	if err := s.db.QueryRowContext(ctx, `SELECT to_regclass('economy_bot') IS NOT NULL`).Scan(&ok); err != nil || !ok {
+		return 0, err
+	}
+	rows, err := s.db.QueryContext(ctx, `SELECT e.source_id::text, e.destination_id::text FROM user_edge e JOIN economy_bot b ON b.user_id=e.destination_id
+		WHERE e.state=1 AND e.update_time <= now() - $1::INT * INTERVAL '1 hour' ORDER BY e.update_time LIMIT $2`, hours, limit)
+	if err != nil {
+		return 0, err
+	}
+	type pair struct{ player, bot string }
+	pairs := []pair{}
+	for rows.Next() {
+		var p pair
+		if err := rows.Scan(&p.player, &p.bot); err != nil {
+			rows.Close()
+			return 0, err
+		}
+		pairs = append(pairs, p)
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return 0, err
+	}
+	n := 0
+	for _, p := range pairs {
+		if err := s.nk.FriendsDelete(ctx, p.bot, "", []string{p.player}, nil); err != nil {
+			s.logger.Warn("Base friend request %s -> bot %s not declined: %v", p.player, p.bot, err)
+			continue
+		}
+		n++
+	}
+	return n, nil
+}
+
 func (s *service) friendsLoop(ctx context.Context) {
 	ticker := time.NewTicker(friendsTick)
 	defer ticker.Stop()
@@ -609,6 +667,11 @@ func (s *service) friendsSweep(ctx context.Context, holder string) (int, error) 
 	if err != nil {
 		return n, err
 	}
+	declined, err := s.declineBotInvites(ctx, rules.BotDeclineHours, friendsSweepBatch)
+	n += declined
+	if err != nil {
+		return n, err
+	}
 	if _, err := s.db.ExecContext(ctx, `DELETE FROM base_friend_request_day WHERE day < (now() - INTERVAL '3 days')::date`); err != nil {
 		return n, err
 	}
@@ -632,8 +695,8 @@ func (s *service) rpcFriendRules(ctx context.Context, userID, payload string) (a
 	if err != nil {
 		return nil, err
 	}
-	zone := projectZone(ctx, s.db)
-	day, reset := dayBounds(s.now(), zone)
+	clock := s.socialClock(ctx)
+	day, reset := dayBounds(s.now(), clock)
 	sent, err := s.sentToday(ctx, userID, day)
 	if err != nil {
 		return nil, err
@@ -667,7 +730,8 @@ func (s *service) rpcFriendRules(ctx context.Context, userID, payload string) (a
 		"bonus":               map[string]any{"dailyRequests": eff.BonusDaily, "maxFriends": eff.BonusMax},
 		"tier":                tier,
 		"overLimit":           rules.OverLimit,
-		"timeZone":            zone.String(),
+		"timeZone":            clock.Loc.String(),
+		"dayStartMinute":      clock.StartMinute,
 		"presenceFriendsOnly": rules.PresenceFriendsOnly,
 		"dmFriendsOnly":       rules.DMFriendsOnly,
 	}, nil

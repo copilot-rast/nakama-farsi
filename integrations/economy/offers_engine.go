@@ -40,7 +40,6 @@ func loadOfferTemplates(ctx context.Context, q rowsQueryer, where string, args .
 	return out, rows.Err()
 }
 
-// offerCtx caches what one request needs to judge offers for one player.
 type offerCtx struct {
 	s        *service
 	ctx      context.Context
@@ -96,6 +95,13 @@ func (s *service) newOfferCtx(ctx context.Context, userID string, st offerSettin
 		}
 		return lv
 	}
+	oc.facts.Games = func(gameKey string) int {
+		var n int
+		if err := s.db.QueryRowContext(ctx, `SELECT COALESCE(sum(games),0) FROM economy_game_stats WHERE user_id=$1 AND ($2='' OR game_key=$2)`, userID, gameKey).Scan(&n); err != nil && oc.err == nil {
+			oc.err = err
+		}
+		return n
+	}
 	oc.facts.Meta = func(metaID string) float64 {
 		if oc.metas == nil {
 			oc.metas = map[string]float64{}
@@ -138,9 +144,6 @@ func (oc *offerCtx) product(id string) (productView, prizeRow, error) {
 	return p, prize, nil
 }
 
-// block explains why a template cannot go to this player now ("" = it can):
-// the template rules first, then the product (shop visibility, product rules,
-// owned contents) and finally whether any active payment method can sell it.
 func (oc *offerCtx) block(o offerTemplate) (string, error) {
 	if r := offerBlock(o, oc.facts); r != "" || oc.err != nil {
 		return r, oc.err
@@ -205,9 +208,6 @@ type offerDraw struct {
 	Count   int
 }
 
-// drawDaily runs the daily selection for one period: eligible templates, the
-// no-repeat window, the bought cooldown, kept and avoided templates, then the
-// seeded weighted draw.
 func (oc *offerCtx) drawDaily(start time.Time, reroll int, keep []string, avoid map[string]bool) (offerDraw, error) {
 	d := offerDraw{Reasons: map[string]string{}, Pool: map[string]offerTemplate{}}
 	tpls, err := loadOfferTemplates(oc.ctx, oc.s.db, `WHERE t.kind='daily'`)
@@ -266,7 +266,7 @@ func (oc *offerCtx) drawDaily(start time.Time, reroll int, keep []string, avoid 
 			reason = "replaced"
 		case exclude[o.ID]:
 			reason = "bought_recently"
-		case o.Weight <= 0:
+		case o.Weight <= 0 && oc.st.Weighting != "scored":
 			reason = "weight_zero"
 		}
 		if reason != "" {
@@ -280,11 +280,69 @@ func (oc *offerCtx) drawDaily(start time.Time, reroll int, keep []string, avoid 
 	}
 	d.Count = oc.st.dailyCount(oc.facts.Tags)
 	need := d.Count - len(keep)
+	if oc.st.Weighting == "scored" {
+		picks, err := oc.drawScored(start, reroll, cands, d.Pool, need)
+		if err != nil {
+			return d, err
+		}
+		d.Picks = picks
+		for _, id := range d.Picks {
+			d.Reasons[id] = "picked"
+		}
+		return d, nil
+	}
 	d.Picks = pickOffers(cands, offerPick{Count: need, Mode: oc.st.Weighting, Recent: recent, FillAgain: oc.st.FillWithRepeats, Seed: offerSeed(oc.userID, periodKey(start), strconv.Itoa(reroll))})
 	for _, id := range d.Picks {
 		d.Reasons[id] = "picked"
 	}
 	return d, nil
+}
+
+func (oc *offerCtx) drawScored(start time.Time, reroll int, cands []offerCandidate, pool map[string]offerTemplate, need int) ([]string, error) {
+	if need <= 0 || len(cands) == 0 {
+		return []string{}, nil
+	}
+	sc := oc.st.Score
+	wallet, err := oc.s.userWallet(oc.ctx, oc.userID)
+	if err != nil {
+		return nil, err
+	}
+	last := map[string]time.Time{}
+	rows, err := oc.s.db.QueryContext(oc.ctx, `SELECT offer_id::text, max(period_start) FROM economy_user_offer WHERE user_id=$1 AND kind='daily' AND period_start < $2 AND period_start >= $2 - $3::int * INTERVAL '1 day' GROUP BY offer_id`,
+		oc.userID, start, sc.RecencyDays)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var id string
+		var at time.Time
+		if err := rows.Scan(&id, &at); err == nil {
+			last[id] = at
+		}
+	}
+	rows.Close()
+	list := make([]scoredCandidate, 0, len(cands))
+	for _, c := range cands {
+		o := pool[c.ID]
+		p, _, err := oc.product(o.ProductID)
+		if err != nil {
+			return nil, err
+		}
+		sc := scoredCandidate{ID: o.ID, Key: o.Key, Rarity: offerRarity(o.Metadata), CreatedAt: offerCreatedAt(o.Metadata, o.CreatedAt)}
+		if p.CoinPrice != nil && p.CoinPrice.CurrencyKey != "" {
+			sc.Currency, sc.Price, sc.HasPrice = p.CoinPrice.CurrencyKey, p.CoinPrice.Amount, true
+		}
+		if at, ok := last[o.ID]; ok {
+			t := at
+			sc.LastOffered = &t
+		}
+		list = append(list, sc)
+	}
+	seed := oc.userID + ":" + start.In(oc.st.zone()).Format("2006-01-02")
+	if reroll > 0 {
+		seed += ":" + strconv.Itoa(reroll)
+	}
+	return pickScored(list, need, seed, wallet, start, oc.now, sc), nil
 }
 
 func (oc *offerCtx) insertOffer(tx *sql.Tx, o offerTemplate, periodStart *time.Time, slot, reroll int, expires *time.Time, shown bool) (string, error) {
@@ -293,6 +351,9 @@ func (oc *offerCtx) insertOffer(tx *sql.Tx, o offerTemplate, periodStart *time.T
 		return "", err
 	}
 	price := priceOffer(o, p)
+	if f := oc.st.CoinPriceFloor; f > 0 && price.CoinAmount != nil && *price.CoinAmount < f && (price.CoinOriginal == nil || *price.CoinOriginal >= f) {
+		price.CoinAmount = i64(f)
+	}
 	sku, _ := json.Marshal(price.SKU)
 	id := uuid.Must(uuid.NewV4()).String()
 	var coin any
@@ -309,8 +370,6 @@ func (oc *offerCtx) insertOffer(tx *sql.Tx, o offerTemplate, periodStart *time.T
 	return id, err
 }
 
-// ensureDaily makes the player's daily offers for the current period once;
-// the period row lock keeps two parallel calls from drawing twice.
 func (oc *offerCtx) ensureDaily() (time.Time, time.Time, int, error) {
 	start, end := oc.st.offerPeriod(oc.now)
 	rerolls := 0
@@ -352,8 +411,6 @@ type entryState struct {
 	created bool
 }
 
-// entryStates judges every entry template for the player; with create it
-// also opens the due ones (highest priority first, up to the active cap).
 func (oc *offerCtx) entryStates(create bool) ([]entryState, error) {
 	tpls, err := loadOfferTemplates(oc.ctx, oc.s.db, `WHERE t.kind='entry'`)
 	if err != nil {
@@ -443,8 +500,6 @@ func (oc *offerCtx) entryStates(create bool) ([]entryState, error) {
 	return out, err
 }
 
-// startEntryTimers starts the personal countdown of entry offers the player
-// sees for the first time (timer mode "list").
 func (oc *offerCtx) startEntryTimers(ids []string) error {
 	q := `UPDATE economy_user_offer u SET shown_at=COALESCE(u.shown_at, $2), expires_at=COALESCE(u.expires_at, $2::timestamptz + o.duration_minutes * INTERVAL '1 minute'), updated_at=now()
 		FROM economy_offer o WHERE o.id=u.offer_id AND u.user_id=$1 AND u.kind='entry' AND u.status='active' AND (u.shown_at IS NULL OR u.expires_at IS NULL)`
@@ -457,7 +512,6 @@ func (oc *offerCtx) startEntryTimers(ids []string) error {
 	return err
 }
 
-// userOffer is one personal offer row.
 type userOffer struct {
 	ID              string            `json:"id"`
 	UserID          string            `json:"userId"`
@@ -527,7 +581,6 @@ func (u userOffer) soldOut() bool { return u.Bought >= u.PurchaseLimit }
 
 func (u userOffer) expired(now time.Time) bool { return u.ExpiresAt != nil && !u.ExpiresAt.After(now) }
 
-// withOffer returns the product as this personal offer sells it.
 func (p productView) withOffer(u userOffer) productView {
 	price := u.price()
 	p.PriceToman = price.OriginalToman
@@ -563,7 +616,6 @@ func sortOffersBySlot(list []userOffer) {
 	})
 }
 
-// displayName is the offer name, or the product name when the offer has none.
 func (u userOffer) displayName() i18n {
 	if len(u.Tpl.Name) > 0 {
 		return u.Tpl.Name

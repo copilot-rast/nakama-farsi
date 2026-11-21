@@ -566,6 +566,12 @@
       "publication"
     ]
   },
+  "CHANCE_LOCKED": {
+    "status": 403,
+    "modules": [
+      "economy"
+    ]
+  },
   "CHANCE_PRICE_CHANGED": {
     "status": 409,
     "modules": [
@@ -612,6 +618,24 @@
     "status": 404,
     "modules": [
       "base"
+    ]
+  },
+  "CHEST_NOT_FOUND": {
+    "status": 404,
+    "modules": [
+      "economy"
+    ]
+  },
+  "CHEST_TOO_DEEP": {
+    "status": 409,
+    "modules": [
+      "economy"
+    ]
+  },
+  "CLAIM_EXPIRED": {
+    "status": 410,
+    "modules": [
+      "economy"
     ]
   },
   "CLAIM_NOT_FOUND": {
@@ -1885,6 +1909,12 @@
       "base"
     ]
   },
+  "INVALID_CLAIM_WINDOW": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "INVALID_CODE": {
     "status": 400,
     "modules": [
@@ -1963,6 +1993,12 @@
       "publication"
     ]
   },
+  "INVALID_DAY_START": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "INVALID_DEVICE": {
     "status": 400,
     "modules": [
@@ -2020,6 +2056,12 @@
       "publication"
     ]
   },
+  "INVALID_FREE_RESET": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "INVALID_GAME_KEY": {
     "status": 400,
     "modules": [
@@ -2063,6 +2105,12 @@
       "base",
       "economy",
       "publication"
+    ]
+  },
+  "INVALID_INFINITY_MODE": {
+    "status": 400,
+    "modules": [
+      "economy"
     ]
   },
   "INVALID_INFINITY_RANGE": {
@@ -2448,6 +2496,12 @@
       "leaderboardx"
     ]
   },
+  "INVALID_REROLL_CAP": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "INVALID_RESTRICTION_KIND": {
     "status": 400,
     "modules": [
@@ -2506,6 +2560,12 @@
     "status": 400,
     "modules": [
       "base"
+    ]
+  },
+  "INVALID_SIGNUP_DELAY": {
+    "status": 400,
+    "modules": [
+      "economy"
     ]
   },
   "INVALID_SKU": {

@@ -34,8 +34,7 @@ func (s *service) friendEdgeNotices(ctx context.Context, userID string, rejected
 		return
 	}
 	if len(rejected) > 0 {
-		zone := projectZone(ctx, s.db)
-		cycle, _ := dayBounds(s.now(), zone)
+		cycle, _ := dayBounds(s.now(), s.socialClock(ctx))
 		for _, id := range rejected {
 			if _, err := s.db.ExecContext(ctx, `INSERT INTO base_friend_suggest_skip (user_id, candidate_id, until_cycle) VALUES ($1,$2,$3)
 				ON CONFLICT (user_id, candidate_id) DO UPDATE SET until_cycle=EXCLUDED.until_cycle`, id, userID, cycle); err != nil {

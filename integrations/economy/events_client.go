@@ -4,6 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofrs/uuid/v5"
@@ -120,10 +123,15 @@ type claimRow struct {
 	Error                                                  sql.NullString
 	CreatedAt                                              time.Time
 	GrantedAt                                              sql.NullTime
+	ExpiresAt                                              sql.NullTime
+}
+
+func (c *claimRow) expired(now time.Time) bool {
+	return c.Status != "granted" && c.ExpiresAt.Valid && !c.ExpiresAt.Time.After(now)
 }
 
 func (s *service) userClaims(ctx context.Context, userID, kind string, owners []string) ([]claimRow, error) {
-	rows, err := s.db.QueryContext(ctx, `SELECT id::text, kind, owner_id::text, ref_id::text, scope, prize_id::text, grant_mode, status, COALESCE(value,0)::float8, error, created_at, granted_at
+	rows, err := s.db.QueryContext(ctx, `SELECT id::text, kind, owner_id::text, ref_id::text, scope, prize_id::text, grant_mode, status, COALESCE(value,0)::float8, error, created_at, granted_at, expires_at
 		FROM economy_reward_claim WHERE user_id=$1 AND kind=$2 AND owner_id::text = ANY($3) ORDER BY created_at`, userID, kind, owners)
 	if err != nil {
 		return nil, err
@@ -132,7 +140,7 @@ func (s *service) userClaims(ctx context.Context, userID, kind string, owners []
 	var out []claimRow
 	for rows.Next() {
 		var c claimRow
-		if err := rows.Scan(&c.ID, &c.Kind, &c.OwnerID, &c.RefID, &c.Scope, &c.PrizeID, &c.Mode, &c.Status, &c.Value, &c.Error, &c.CreatedAt, &c.GrantedAt); err != nil {
+		if err := rows.Scan(&c.ID, &c.Kind, &c.OwnerID, &c.RefID, &c.Scope, &c.PrizeID, &c.Mode, &c.Status, &c.Value, &c.Error, &c.CreatedAt, &c.GrantedAt, &c.ExpiresAt); err != nil {
 			return nil, err
 		}
 		out = append(out, c)
@@ -440,6 +448,7 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 	clk := settings.clock()
 	now := s.now()
 	q := `SELECT st.id::text, st.key, st.name::text, st.description::text, st.period_days, st.grace_periods, st.miss_action, COALESCE(st.cycle_length,0), st.is_active, et.key, st.repay_after_fall, st.week_length, st.infinity, st.infinity_currency, st.infinity_min, st.infinity_max,
+			st.day_zone, st.day_start_minute, st.signup_delay_days, st.claim_window, st.infinity_mode, COALESCE(st.infinity_prize_id::text,''),
 			COALESCE(u.count,0), COALESCE(u.best,0), COALESCE(u.run,1), COALESCE(u.grace_used,0), COALESCE(u.peak,0), COALESCE(u.falls,0), u.last_period, u.updated_at
 		FROM economy_streak st JOIN economy_event_type et ON et.id=st.event_type_id LEFT JOIN economy_user_streak u ON u.streak_id=st.id AND u.user_id=$1`
 	if activeOnly {
@@ -457,6 +466,8 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 		inf                                 bool
 		infCur                              string
 		infMin, infMax                      int64
+		zone, window, infMode, infPrize     string
+		dayStart, delay                     int
 		st                                  streakState
 		updated                             sql.NullTime
 	}
@@ -465,6 +476,7 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 		var sk streak
 		var last sql.NullInt64
 		if err := rows.Scan(&sk.id, &sk.key, &sk.name, &sk.desc, &sk.days, &sk.grace, &sk.miss, &sk.cycle, &sk.active, &sk.eventKey, &sk.repay, &sk.week, &sk.inf, &sk.infCur, &sk.infMin, &sk.infMax,
+			&sk.zone, &sk.dayStart, &sk.delay, &sk.window, &sk.infMode, &sk.infPrize,
 			&sk.st.Count, &sk.st.Best, &sk.st.Run, &sk.st.GraceUsed, &sk.st.Peak, &sk.st.Falls, &last, &sk.updated); err != nil {
 			rows.Close()
 			return nil, err
@@ -530,8 +542,9 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 		if err != nil {
 			return nil, err
 		}
-		idx := clk.streakIndex(now, sk.days)
-		rule := streakRule{Grace: sk.grace, MissAction: sk.miss, Milestones: milestoneDays(ms), WeekLength: sk.week, Infinity: sk.inf && sk.infCur != "", Track: sk.cycle}
+		sclk := clk.withDay(sk.zone, sk.dayStart)
+		idx := sclk.streakIndex(now, sk.days)
+		rule := streakRule{Grace: sk.grace, MissAction: sk.miss, Milestones: milestoneDays(ms), WeekLength: sk.week, Infinity: streakInfinityOn(sk.inf, sk.infMode, sk.infCur, sk.infPrize), Track: sk.cycle}
 		broken := streakBroken(sk.st, idx, rule)
 		count := sk.st.Count
 		run := sk.st.Run
@@ -561,10 +574,10 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 		}
 		var breaksAt *time.Time
 		if count > 0 && sk.st.Last != nil && !broken {
-			b := clk.streakPeriodStart(*sk.st.Last+int64(2+graceLeft), sk.days)
+			b := sclk.streakPeriodStart(*sk.st.Last+int64(2+graceLeft), sk.days)
 			breaksAt = &b
 		}
-		nextAt := clk.streakPeriodStart(idx+1, sk.days)
+		nextAt := sclk.streakPeriodStart(idx+1, sk.days)
 		length := sk.cycle
 		if length == 0 {
 			for _, r := range rewards {
@@ -613,13 +626,14 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 				}
 				if c := found; c != nil {
 					row["claimId"] = c.ID
-					row["status"] = claimStatusWord(c)
+					row["status"] = claimStatusWord(c, s.now())
 				}
 			}
 			days = append(days, row)
 		}
-		for _, c := range claims {
-			if c.OwnerID == sk.id && c.Status != "granted" && c.Mode == "claim" {
+		for i := range claims {
+			c := &claims[i]
+			if c.OwnerID == sk.id && c.Status != "granted" && c.Mode == "claim" && !c.expired(now) {
 				claimable = append(claimable, c.ID)
 			}
 		}
@@ -637,7 +651,7 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 					c := &claims[i]
 					if c.RefID == sk.id && c.Scope == streakMilestoneScope(m.day) {
 						row["claimId"] = c.ID
-						status = claimStatusWord(c)
+						status = claimStatusWord(c, s.now())
 					}
 				}
 			}
@@ -655,7 +669,7 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 				c := &claims[i]
 				if c.RefID == x.id {
 					row["claimId"] = c.ID
-					row["status"] = claimStatusWord(c)
+					row["status"] = claimStatusWord(c, s.now())
 				}
 			}
 			xlist = append(xlist, row)
@@ -666,12 +680,22 @@ func (s *service) streakViews(ctx context.Context, userID string, langs *localiz
 		}
 		var infinity any
 		if rule.Infinity {
-			infinity = map[string]any{"currencyKey": sk.infCur, "min": sk.infMin, "max": sk.infMax}
+			inf := map[string]any{"currencyKey": sk.infCur, "min": sk.infMin, "max": sk.infMax, "mode": sk.infMode}
+			if sk.infMode == "claim" {
+				inf["prizeId"] = sk.infPrize
+				for i := range claims {
+					c := &claims[i]
+					if c.RefID == sk.id && strings.HasPrefix(c.Scope, "inf:") && sk.st.Last != nil && *sk.st.Last == idx && c.Scope == "inf:r"+strconv.Itoa(sk.st.Run)+":"+strconv.Itoa(sk.st.Count) {
+						inf["claimId"], inf["status"] = c.ID, claimStatusWord(c, now)
+					}
+				}
+			}
+			infinity = inf
 		}
 		item := map[string]any{"key": sk.key, "milestones": mlist, "floor": floor, "nextMilestone": nextMilestone, "floored": floored, "peak": peak, "repayAfterFall": sk.repay, "name": langs.Resolve(localized.Parse(sk.name), lang), "description": langs.Resolve(localized.Parse(sk.desc), lang),
 			"eventKey": sk.eventKey, "periodDays": sk.days, "count": count, "best": sk.st.Best, "run": run, "countedThisPeriod": counted, "broken": broken,
 			"graceLeft": graceLeft, "gracePeriods": sk.grace, "missAction": sk.miss, "cycleLength": sk.cycle, "nextPeriodAt": nextAt, "breaksAt": breaksAt,
-			"days": days, "claimable": claimable, "isActive": sk.active, "extras": xlist, "phase": phase, "infinity": infinity, "weekLength": sk.week}
+			"days": days, "claimable": claimable, "isActive": sk.active, "claimWindow": sk.window, "signupDelayDays": sk.delay, "dayZone": sk.zone, "dayStartMinute": sk.dayStart, "extras": xlist, "phase": phase, "infinity": infinity, "weekLength": sk.week}
 		if !activeOnly {
 			item["id"] = sk.id
 			if sk.updated.Valid {
@@ -707,7 +731,8 @@ func (s *service) rpcRewardClaim(ctx context.Context, userID, payload string) (a
 		return s.taskClaimResponse(ctx, userID, in.Lang, res)
 	}
 	var owner, status, prizeID, kind string
-	err := s.db.QueryRowContext(ctx, `SELECT user_id::text, status, prize_id::text, kind FROM economy_reward_claim WHERE id=$1`, in.ClaimID).Scan(&owner, &status, &prizeID, &kind)
+	var expires sql.NullTime
+	err := s.db.QueryRowContext(ctx, `SELECT user_id::text, status, prize_id::text, kind, expires_at FROM economy_reward_claim WHERE id=$1`, in.ClaimID).Scan(&owner, &status, &prizeID, &kind, &expires)
 	if errors.Is(err, sql.ErrNoRows) || (err == nil && owner != userID) {
 		return nil, notFound("CLAIM_NOT_FOUND")
 	}
@@ -716,6 +741,11 @@ func (s *service) rpcRewardClaim(ctx context.Context, userID, payload string) (a
 	}
 	if status == "granted" {
 		return nil, conflict("ALREADY_CLAIMED", "this reward was already received")
+	}
+	if expires.Valid && !expires.Time.After(s.now()) {
+		e := fail(http.StatusGone, "CLAIM_EXPIRED", "", "this reward could only be received until the day ended")
+		e.Meta = map[string]any{"expiredAt": expires.Time.UTC().Format(time.RFC3339)}
+		return nil, e
 	}
 	extra, err := s.grantClaim(ctx, in.ClaimID, 1)
 	if err != nil {
@@ -768,11 +798,12 @@ func (s *service) claimViews(ctx context.Context, userID, status string, limit i
 	where.add("c.user_id = ?::uuid", userID)
 	if status == "ready" {
 		where.add("c.status <> 'granted'")
+		where.add("(c.expires_at IS NULL OR c.expires_at > now())")
 	} else if status != "" {
 		where.add("c.status = ?", status)
 	}
 	n := len(where.args)
-	rows, err := s.db.QueryContext(ctx, `SELECT c.id::text, c.kind, c.scope, c.grant_mode, c.status, COALESCE(c.value,0)::float8, COALESCE(c.error,''), c.created_at, c.granted_at, c.prize_id::text,
+	rows, err := s.db.QueryContext(ctx, `SELECT c.id::text, c.kind, c.scope, c.grant_mode, c.status, COALESCE(c.value,0)::float8, COALESCE(c.error,''), c.created_at, c.granted_at, c.prize_id::text, c.expires_at,
 			COALESCE(r.key, lt.key, st.key, tk.key, ac.key, cg.key, mr.key, ''), COALESCE(r.name, lt.name, st.name, tk.name, ac.name, cg.name, mr.name, '{}'::jsonb)::text, COALESCE(ls.level, at.tier, 0)
 		FROM economy_reward_claim c
 		LEFT JOIN economy_event_rule r ON c.kind='event' AND r.id=c.owner_id
@@ -791,14 +822,14 @@ func (s *service) claimViews(ctx context.Context, userID, status string, limit i
 		id, kind, scope, mode, status, errText, prize, srcKey, srcName string
 		value                                                          float64
 		created                                                        time.Time
-		granted                                                        sql.NullTime
+		granted, expires                                               sql.NullTime
 		level                                                          int
 	}
 	var list []row
 	prizeIDs := []string{}
 	for rows.Next() {
 		var r row
-		if err := rows.Scan(&r.id, &r.kind, &r.scope, &r.mode, &r.status, &r.value, &r.errText, &r.created, &r.granted, &r.prize, &r.srcKey, &r.srcName, &r.level); err != nil {
+		if err := rows.Scan(&r.id, &r.kind, &r.scope, &r.mode, &r.status, &r.value, &r.errText, &r.created, &r.granted, &r.prize, &r.expires, &r.srcKey, &r.srcName, &r.level); err != nil {
 			rows.Close()
 			return nil, err
 		}
@@ -820,6 +851,12 @@ func (s *service) claimViews(ctx context.Context, userID, status string, limit i
 		if r.granted.Valid {
 			item["grantedAt"] = r.granted.Time
 		}
+		if r.expires.Valid {
+			item["expiresAt"] = r.expires.Time
+			if r.status != "granted" && !r.expires.Time.After(s.now()) {
+				item["status"] = "expired"
+			}
+		}
 		if r.errText != "" {
 			item["error"] = r.errText
 		}
@@ -831,9 +868,12 @@ func (s *service) claimViews(ctx context.Context, userID, status string, limit i
 	return out, nil
 }
 
-func claimStatusWord(c *claimRow) string {
+func claimStatusWord(c *claimRow, now time.Time) string {
 	if c.Status == "granted" {
 		return "claimed"
+	}
+	if c.expired(now) {
+		return "expired"
 	}
 	if c.Mode == "claim" {
 		return "claimable"
