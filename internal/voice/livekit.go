@@ -48,6 +48,7 @@ type liveKit struct {
 type liveKitVideo struct {
 	RoomJoin       bool   `json:"roomJoin,omitempty"`
 	RoomList       bool   `json:"roomList,omitempty"`
+	RoomAdmin      bool   `json:"roomAdmin,omitempty"`
 	Room           string `json:"room,omitempty"`
 	CanPublish     *bool  `json:"canPublish,omitempty"`
 	CanSubscribe   *bool  `json:"canSubscribe,omitempty"`
@@ -178,4 +179,73 @@ func (p *liveKit) Test(ctx context.Context) error {
 	default:
 		return &ProviderError{Code: "VOICE_PROVIDER_ERROR", Status: res.StatusCode}
 	}
+}
+
+func (p *liveKit) admin(ctx context.Context, room, method string, body any, out any) error {
+	now := p.now()
+	token, err := signHS256(liveKitClaims{Issuer: p.key, NotBefore: now.Add(-10 * time.Second).Unix(), IssuedAt: now.Unix(), Expires: now.Add(time.Minute).Unix(), ID: randomID(), Video: liveKitVideo{RoomAdmin: true, Room: room}}, p.secret)
+	if err != nil {
+		return err
+	}
+	raw, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, p.apiURL()+"/twirp/livekit.RoomService/"+method, bytes.NewReader(raw))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+	res, err := p.client.Do(req)
+	if err != nil {
+		return errors.Join(ErrUnavailable, err)
+	}
+	defer res.Body.Close()
+	data, _ := io.ReadAll(io.LimitReader(res.Body, 1<<20))
+	switch {
+	case res.StatusCode == http.StatusOK:
+		if out != nil && len(data) > 0 {
+			return json.Unmarshal(data, out)
+		}
+		return nil
+	case res.StatusCode == http.StatusNotFound:
+		return ErrNotInRoom
+	case res.StatusCode == http.StatusUnauthorized || res.StatusCode == http.StatusForbidden:
+		return &ProviderError{Code: "VOICE_BAD_CREDENTIALS", Status: res.StatusCode}
+	default:
+		return &ProviderError{Code: "VOICE_PROVIDER_ERROR", Status: res.StatusCode}
+	}
+}
+
+func (p *liveKit) SetPublish(ctx context.Context, room, identity string, can bool) error {
+	sources := []string{}
+	if can {
+		sources = []string{"MICROPHONE"}
+	}
+	return p.admin(ctx, room, "UpdateParticipant", map[string]any{"room": room, "identity": identity,
+		"permission": map[string]any{"canPublish": can, "canSubscribe": true, "canPublishData": false, "canPublishSources": sources}}, nil)
+}
+
+func (p *liveKit) Participants(ctx context.Context, room string) ([]Participant, error) {
+	var out struct {
+		Participants []struct {
+			Identity   string `json:"identity"`
+			Name       string `json:"name"`
+			Permission *struct {
+				CanPublish bool `json:"canPublish"`
+			} `json:"permission"`
+		} `json:"participants"`
+	}
+	if err := p.admin(ctx, room, "ListParticipants", map[string]any{"room": room}, &out); err != nil {
+		if errors.Is(err, ErrNotInRoom) {
+			return []Participant{}, nil
+		}
+		return nil, err
+	}
+	list := []Participant{}
+	for _, x := range out.Participants {
+		list = append(list, Participant{Identity: x.Identity, Name: x.Name, CanPublish: x.Permission != nil && x.Permission.CanPublish, Connected: true})
+	}
+	return list, nil
 }

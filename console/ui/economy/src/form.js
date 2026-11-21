@@ -969,6 +969,7 @@ function buildForm(fields, values, ctx) {
       control = toggle(cur, f.inline ? label : null, function (v) { change(v); });
     } else if (t2 === 'select') {
       control = selectInput(cur, f.options(), function (v) { change(f.noPlaceholder ? v : v || null); }, { label: label, placeholder: f.required || f.noPlaceholder ? false : t('none') });
+      if (f.lockOnEdit && values.id) { var sel = control.matches && control.matches('select') ? control : control.querySelector && control.querySelector('select'); if (sel) sel.disabled = true; }
       if (f.required && (cur == null || cur === '')) { setPath(values, f.name, f.options()[0].value); }
     } else if (t2 === 'multi') {
       var set = (cur || []).slice();

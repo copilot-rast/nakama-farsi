@@ -2399,45 +2399,45 @@ var MESSAGES = {
     'fs.src.mutual': "دوست مشترک",
     'fs.src.activity': "فعالیت",
     'fs.src.level': "سطح",
-    'ps.title': "حساب و دوستی",
-    'ps.code': "کد بازیکن",
-    'ps.next': "تغییر نام بعدی",
-    'ps.next.free': "رایگان",
-    'ps.next.cost': "{n} {cur}",
-    'ps.paidN': "{n} تغییر پولی",
-    'ps.cooldown': "تا {date} بسته است",
-    'ps.policyOff': "قانون تغییر نام خاموش است",
-    'ps.rename': "تغییر نام کاربری",
-    'ps.rename.title': "تغییر نام کاربری بازیکن",
-    'ps.rename.text': "از طرف کنسول، بدون هزینه و بدون فاصلهٔ زمانی. در تاریخچه ثبت می‌شود.",
-    'ps.rename.field': "نام کاربری تازه",
-    'ps.rename.hint': "باید با قوانین حساب جور باشد و تکراری نباشد.",
-    'ps.rename.done': "نام کاربری به {name} تغییر کرد.",
-    'ps.history': "تاریخچهٔ نام کاربری",
-    'ps.history.empty': "هنوز تغییری نیست.",
-    'ps.src.free': "رایگان",
-    'ps.src.paid': "پولی",
-    'ps.src.admin': "کنسول",
-    'ps.col.from': "نام قبلی",
-    'ps.col.to': "نام تازه",
-    'ps.col.source': "نوع",
-    'ps.col.cost': "هزینه",
-    'ps.col.when': "زمان",
-    'ps.col.player': "بازیکن",
-    'ps.col.score': "امتیاز",
-    'ps.col.shows': "نمایش",
-    'ps.col.played': "آخرین بازی",
-    'ps.col.game': "بازی",
-    'ps.col.matches': "مسابقه",
-    'ps.sugg': "پیشنهاد دوستی",
-    'ps.sugg.none': "هنوز ساخته نشده",
-    'ps.sugg.counts': "{v} پیشنهاد، {r} ذخیره",
-    'ps.sugg.meta': "روز {cycle}، ساخته در {when}",
-    'ps.regen': "ساخت دوبارهٔ پیشنهادها",
-    'ps.regen.done': "پیشنهادها دوباره ساخته شد.",
-    'ps.visible': "پیشنهادهای نمایش‌داده‌شده",
-    'ps.reserve': "ذخیره",
-    'ps.coplay': "هم‌بازی‌های اخیر",
+    'psoc.title': "حساب و دوستی",
+    'psoc.code': "کد بازیکن",
+    'psoc.next': "تغییر نام بعدی",
+    'psoc.next.free': "رایگان",
+    'psoc.next.cost': "{n} {cur}",
+    'psoc.paidN': "{n} تغییر پولی",
+    'psoc.cooldown': "تا {date} بسته است",
+    'psoc.policyOff': "قانون تغییر نام خاموش است",
+    'psoc.rename': "تغییر نام کاربری",
+    'psoc.rename.title': "تغییر نام کاربری بازیکن",
+    'psoc.rename.text': "از طرف کنسول، بدون هزینه و بدون فاصلهٔ زمانی. در تاریخچه ثبت می‌شود.",
+    'psoc.rename.field': "نام کاربری تازه",
+    'psoc.rename.hint': "باید با قوانین حساب جور باشد و تکراری نباشد.",
+    'psoc.rename.done': "نام کاربری به {name} تغییر کرد.",
+    'psoc.history': "تاریخچهٔ نام کاربری",
+    'psoc.history.empty': "هنوز تغییری نیست.",
+    'psoc.src.free': "رایگان",
+    'psoc.src.paid': "پولی",
+    'psoc.src.admin': "کنسول",
+    'psoc.col.from': "نام قبلی",
+    'psoc.col.to': "نام تازه",
+    'psoc.col.source': "نوع",
+    'psoc.col.cost': "هزینه",
+    'psoc.col.when': "زمان",
+    'psoc.col.player': "بازیکن",
+    'psoc.col.score': "امتیاز",
+    'psoc.col.shows': "نمایش",
+    'psoc.col.played': "آخرین بازی",
+    'psoc.col.game': "بازی",
+    'psoc.col.matches': "مسابقه",
+    'psoc.sugg': "پیشنهاد دوستی",
+    'psoc.sugg.none': "هنوز ساخته نشده",
+    'psoc.sugg.counts': "{v} پیشنهاد، {r} ذخیره",
+    'psoc.sugg.meta': "روز {cycle}، ساخته در {when}",
+    'psoc.regen': "ساخت دوبارهٔ پیشنهادها",
+    'psoc.regen.done': "پیشنهادها دوباره ساخته شد.",
+    'psoc.visible': "پیشنهادهای نمایش‌داده‌شده",
+    'psoc.reserve': "ذخیره",
+    'psoc.coplay': "هم‌بازی‌های اخیر",
     'act.method.device': "دستگاه",
     'act.method.custom': "شناسهٔ اختصاصی",
     'act.method.email': "ایمیل",
@@ -5607,6 +5607,105 @@ var MESSAGES = {
     'search.sticker-packs': "جست‌وجوی کلید یا نام بسته",
     'nav.sticker-settings': "تنظیمات",
     'desc.sticker-settings': "استیکر در کدام گفتگوها مجاز باشد و آیا از سهمیهٔ پیام کم کند.",
+    'nav.comm-settings': "پیام سریع بازی",
+    'tab.comm-settings': "پیام سریع بازی",
+    'desc.comm-settings': "بسته‌های «در مسابقه» با چه فاصله‌ای فرستاده شوند و کِی گفتگو قفل شود.",
+    'nav.comm-channels': "گفتگوی مسابقه‌ها",
+    'tab.comm-channels': "گفتگوی مسابقه‌ها",
+    'desc.comm-channels': "گفتگوی پیام سریع هر مسابقه. اینجا می‌توانید گفتگو را ببندید یا ارسال یک بازیکن را قطع کنید.",
+    'search.comm-channels': "جست‌وجوی شناسهٔ مسابقه یا نام کاربری",
+    'empty.comm-channels': "گفتگویی پیدا نشد",
+    'empty.hint.comm-channels': "گفتگوی هر مسابقه با اولین پیام سریع یا شروع مسابقه ساخته می‌شود.",
+    'nav.voice-rooms': "اتاق‌های ویس",
+    'desc.voice-rooms': "اتاق‌های ویسِ فعال و بازیکنانشان. با «بی‌صدا کردن» میکروفون بازیکن تا پایان اتاق بسته می‌شود.",
+    'search.voice-rooms': "جست‌وجوی اتاق، بازی یا نام کاربری",
+    'empty.voice-rooms': "اتاق ویس فعالی نیست",
+    'empty.hint.voice-rooms': "اتاق وقتی اینجا می‌آید که بازیکنی توکن ویس بگیرد.",
+    'filter.cm.kind': "نوع",
+    'filter.cm.place': "جای استفاده",
+    'cm.kind.sticker': "استیکر",
+    'cm.kind.text': "متن",
+    'cm.kind.gif': "گیف",
+    'cm.kind.emoji': "ایموجی",
+    'cm.place.chat': "گفتگو",
+    'cm.place.match': "مسابقه",
+    'col.cm.kind': "نوع و جا",
+    'cm.h.kind': "نوع و جای استفاده",
+    'f.cm.kind': "نوع بسته",
+    'f.cm.kind.hint': "بعد از ساختن عوض نمی‌شود. بستهٔ متنی برای هر مورد متن می‌خواهد؛ بقیه تصویر یا شناسهٔ فایل کلاینت.",
+    'f.cm.inChat': "در گفتگوی چت",
+    'f.cm.inChat.hint': "در پیام خصوصی، گروه و اتاق‌ها به‌صورت استیکر.",
+    'f.cm.inMatch': "در مسابقه",
+    'f.cm.inMatch.hint': "پیام سریع داخل بازی با فاصله و قفل ضد اسپم.",
+    'f.cm.text': "متن",
+    'f.cm.assetId': "شناسهٔ فایل کلاینت",
+    'cm.items.about': "بستهٔ متنی: متن هر مورد لازم است. استیکر، گیف و ایموجی: تصویر یا شناسهٔ فایلی که داخل برنامه است.",
+    'f.cm.enabled': "پیام سریع بازی روشن باشد",
+    'f.cm.enabled.hint': "خاموش: هیچ پیام سریعی در مسابقه فرستاده نمی‌شود و فهرست بسته‌ها خالی است.",
+    'cm.h.cooldown': "فاصله و قفل ضد اسپم",
+    'cm.cooldown.about': "برای هر بازیکن در هر مسابقه حساب می‌شود و همهٔ نوع‌ها یک قانون دارند. فقط پیام‌های پذیرفته شمرده می‌شوند.",
+    'f.cm.minInterval': "فاصلهٔ دو پیام (ثانیه)",
+    'f.cm.minInterval.hint': "صفر یعنی بدون فاصله.",
+    'f.cm.lock': "مدت قفل (ثانیه)",
+    'f.cm.lock.hint': "بعد از پیام زیاد، بازیکن این مدت نمی‌تواند پیام بفرستد.",
+    'f.cm.maxCount': "بیشترین پیام در پنجره",
+    'f.cm.maxCount.hint': "پیام بعدی بازیکن را قفل می‌کند.",
+    'f.cm.window': "پنجرهٔ شمارش (ثانیه)",
+    'f.cm.window.hint': "باید بیشتر از «بیشترین پیام × فاصله» باشد.",
+    'cm.err.window': "پنجره باید بیشتر از «بیشترین پیام × فاصله» باشد.",
+    'cm.h.more': "گفتگو و علاقه‌مندی",
+    'f.cm.channelHours': "عمر گفتگوی مسابقه (ساعت)",
+    'f.cm.channelHours.hint': "بعد از این مدت گفتگو خودش بسته می‌شود.",
+    'f.cm.maxFavorites': "بیشترین علاقه‌مندی",
+    'f.cm.maxFavorites.hint': "صفر یعنی بدون سقف.",
+    'cm.status.open': "باز",
+    'cm.status.closed': "بسته",
+    'cm.status.expired': "تمام‌شده",
+    'cm.sentN': "{n} پیام",
+    'cm.listenOnly': "فقط خواندن",
+    'cm.blockSend': "قطع ارسال",
+    'cm.allowSend': "اجازهٔ ارسال",
+    'cm.filter.open': "باز",
+    'cm.filter.closed': "بسته",
+    'cm.filter.all': "همه",
+    'cm.col.match': "مسابقه",
+    'cm.col.members': "بازیکنان",
+    'cm.col.messages': "پیام",
+    'cm.col.expires': "پایان",
+    'cm.close': "بستن گفتگو",
+    'cm.close.title': "گفتگوی این مسابقه بسته شود؟",
+    'cm.close.text': "هیچ بازیکنی دیگر در این مسابقه پیام سریع نمی‌فرستد. بعداً می‌توانید دوباره بازش کنید.",
+    'cm.closed': "گفتگو بسته شد.",
+    'cm.open': "باز کردن",
+    'cm.opened': "گفتگو باز شد.",
+    'cm.reason.staff': "بسته به‌دست پشتیبانی",
+    'cm.reason.ended': "پایان مسابقه",
+    'cm.reason.expired': "پایان زمان",
+    'vr.col.room': "اتاق",
+    'vr.col.player': "بازیکن",
+    'vr.col.mic': "میکروفون",
+    'vr.col.expires': "پایان",
+    'vr.staffMuted': "بی‌صدا به‌دست پشتیبانی",
+    'vr.canPublish': "می‌تواند صحبت کند",
+    'vr.listenOnly': "فقط شنیدن",
+    'vr.mute': "بی‌صدا کردن",
+    'vr.unmute': "برداشتن بی‌صدا",
+    'vr.muted': "بازیکن بی‌صدا شد.",
+    'vr.unmuted': "بی‌صدا برداشته شد.",
+    'vr.savedNotLive': "ذخیره شد؛ بازیکن الان در اتاق نیست و با ورود بعدی اعمال می‌شود.",
+    'vr.mute.title': "«{name}» بی‌صدا شود؟",
+    'vr.mute.text': "میکروفون این بازیکن تا پایان این اتاق بسته می‌ماند، حتی اگر دوباره وصل شود. شنیدن آزاد است.",
+    'vr.kind.match': "مسابقه",
+    'vr.kind.party': "پارتی",
+    'vr.kind.room': "اتاق باز",
+    'vr.online': "وصل",
+    'vr.offline': "وصل نیست",
+    'code.KIND_LOCKED': "نوع بسته بعد از ساخت عوض نمی‌شود.",
+    'code.PLACE_REQUIRED': "گفتگو، مسابقه یا هر دو را روشن کنید.",
+    'code.INVALID_ASSET_ID': "شناسهٔ فایل ۱ تا ۶۴ حرف کوچک لاتین، رقم یا _ . - است.",
+    'code.INVALID_SETTINGS': "این تنظیمات درست نیست.",
+    'code.VOICE_ROOM_NOT_FOUND': "این اتاق ویس دیگر فعال نیست.",
+    'code.VOICE_PARTICIPANT_NOT_FOUND': "این بازیکن در اتاق ویس نیست.",
     'filter.sp.access': "دسترسی",
     'sp.access.free': "رایگان برای همه",
     'sp.access.item': "با آیتم فروشگاه",
@@ -8057,45 +8156,45 @@ var MESSAGES = {
     'fs.src.mutual': "Mutual friend",
     'fs.src.activity': "Activity",
     'fs.src.level': "Level",
-    'ps.title': "Account and friends",
-    'ps.code': "Player code",
-    'ps.next': "Next username change",
-    'ps.next.free': "Free",
-    'ps.next.cost': "{n} {cur}",
-    'ps.paidN': "{n} paid changes",
-    'ps.cooldown': "Locked until {date}",
-    'ps.policyOff': "Username change rules are off",
-    'ps.rename': "Change username",
-    'ps.rename.title': "Change the player username",
-    'ps.rename.text': "From the console: no price and no wait. It is kept in the history.",
-    'ps.rename.field': "New username",
-    'ps.rename.hint': "Must follow the account rules and be free.",
-    'ps.rename.done': "Username changed to {name}.",
-    'ps.history': "Username history",
-    'ps.history.empty': "No changes yet.",
-    'ps.src.free': "Free",
-    'ps.src.paid': "Paid",
-    'ps.src.admin': "Console",
-    'ps.col.from': "Old name",
-    'ps.col.to': "New name",
-    'ps.col.source': "Kind",
-    'ps.col.cost': "Price",
-    'ps.col.when': "When",
-    'ps.col.player': "Player",
-    'ps.col.score': "Score",
-    'ps.col.shows': "Shown",
-    'ps.col.played': "Last played",
-    'ps.col.game': "Game",
-    'ps.col.matches': "Matches",
-    'ps.sugg': "Friend suggestions",
-    'ps.sugg.none': "Not built yet",
-    'ps.sugg.counts': "{v} suggestions, {r} in reserve",
-    'ps.sugg.meta': "Day {cycle}, built {when}",
-    'ps.regen': "Rebuild suggestions",
-    'ps.regen.done': "Suggestions rebuilt.",
-    'ps.visible': "Shown suggestions",
-    'ps.reserve': "Reserve",
-    'ps.coplay': "Recent co-players",
+    'psoc.title': "Account and friends",
+    'psoc.code': "Player code",
+    'psoc.next': "Next username change",
+    'psoc.next.free': "Free",
+    'psoc.next.cost': "{n} {cur}",
+    'psoc.paidN': "{n} paid changes",
+    'psoc.cooldown': "Locked until {date}",
+    'psoc.policyOff': "Username change rules are off",
+    'psoc.rename': "Change username",
+    'psoc.rename.title': "Change the player username",
+    'psoc.rename.text': "From the console: no price and no wait. It is kept in the history.",
+    'psoc.rename.field': "New username",
+    'psoc.rename.hint': "Must follow the account rules and be free.",
+    'psoc.rename.done': "Username changed to {name}.",
+    'psoc.history': "Username history",
+    'psoc.history.empty': "No changes yet.",
+    'psoc.src.free': "Free",
+    'psoc.src.paid': "Paid",
+    'psoc.src.admin': "Console",
+    'psoc.col.from': "Old name",
+    'psoc.col.to': "New name",
+    'psoc.col.source': "Kind",
+    'psoc.col.cost': "Price",
+    'psoc.col.when': "When",
+    'psoc.col.player': "Player",
+    'psoc.col.score': "Score",
+    'psoc.col.shows': "Shown",
+    'psoc.col.played': "Last played",
+    'psoc.col.game': "Game",
+    'psoc.col.matches': "Matches",
+    'psoc.sugg': "Friend suggestions",
+    'psoc.sugg.none': "Not built yet",
+    'psoc.sugg.counts': "{v} suggestions, {r} in reserve",
+    'psoc.sugg.meta': "Day {cycle}, built {when}",
+    'psoc.regen': "Rebuild suggestions",
+    'psoc.regen.done': "Suggestions rebuilt.",
+    'psoc.visible': "Shown suggestions",
+    'psoc.reserve': "Reserve",
+    'psoc.coplay': "Recent co-players",
     'act.method.device': "device",
     'act.method.custom': "custom id",
     'act.method.email': "email",
@@ -11265,6 +11364,105 @@ var MESSAGES = {
     'search.sticker-packs': "Search pack key or name",
     'nav.sticker-settings': "Settings",
     'desc.sticker-settings': "Which chats allow stickers and whether a sticker costs a chat quota message.",
+    'nav.comm-settings': "Match chat",
+    'tab.comm-settings': "Match chat",
+    'desc.comm-settings': "How often in-match pack messages may be sent and when chat locks.",
+    'nav.comm-channels': "Match chats",
+    'tab.comm-channels': "Match chats",
+    'desc.comm-channels': "The quick chat of each match. Close a chat or stop one player from sending.",
+    'search.comm-channels': "Search match ID or username",
+    'empty.comm-channels': "No match chats",
+    'empty.hint.comm-channels': "A match chat starts with the match or with its first pack message.",
+    'nav.voice-rooms': "Voice rooms",
+    'desc.voice-rooms': "Live voice rooms and their players. Mute closes a player's microphone until the room ends.",
+    'search.voice-rooms': "Search room, game or username",
+    'empty.voice-rooms': "No live voice rooms",
+    'empty.hint.voice-rooms': "A room shows here once a player gets a voice token.",
+    'filter.cm.kind': "Kind",
+    'filter.cm.place': "Used in",
+    'cm.kind.sticker': "Sticker",
+    'cm.kind.text': "Text",
+    'cm.kind.gif': "GIF",
+    'cm.kind.emoji': "Emoji",
+    'cm.place.chat': "Chat",
+    'cm.place.match': "Match",
+    'col.cm.kind': "Kind & place",
+    'cm.h.kind': "Kind and place",
+    'f.cm.kind': "Pack kind",
+    'f.cm.kind.hint': "Cannot change later. Text packs need a text per item; the others need a picture or a client asset ID.",
+    'f.cm.inChat': "In chat",
+    'f.cm.inChat.hint': "As stickers in direct messages, groups and rooms.",
+    'f.cm.inMatch': "In matches",
+    'f.cm.inMatch.hint': "Quick messages inside a match, with cooldown and spam lock.",
+    'f.cm.text': "Text",
+    'f.cm.assetId': "Client asset ID",
+    'cm.items.about': "Text packs: each item needs a text. Sticker, GIF and emoji: a picture or the ID of an asset bundled in the app.",
+    'f.cm.enabled': "Match chat is on",
+    'f.cm.enabled.hint': "Off: no pack messages in matches and the pack list is empty.",
+    'cm.h.cooldown': "Cooldown and spam lock",
+    'cm.cooldown.about': "Counted per player in each match, one rule for every kind. Only accepted messages count.",
+    'f.cm.minInterval': "Gap between messages (seconds)",
+    'f.cm.minInterval.hint': "0 means no gap.",
+    'f.cm.lock': "Lock time (seconds)",
+    'f.cm.lock.hint': "After too many messages the player cannot send for this long.",
+    'f.cm.maxCount': "Most messages in the window",
+    'f.cm.maxCount.hint': "The next one locks the player.",
+    'f.cm.window': "Counting window (seconds)",
+    'f.cm.window.hint': "Must be longer than most messages × gap.",
+    'cm.err.window': "The window must be longer than most messages × gap.",
+    'cm.h.more': "Chat and favorites",
+    'f.cm.channelHours': "Match chat lifetime (hours)",
+    'f.cm.channelHours.hint': "After this the chat closes by itself.",
+    'f.cm.maxFavorites': "Most favorites",
+    'f.cm.maxFavorites.hint': "0 means no limit.",
+    'cm.status.open': "Open",
+    'cm.status.closed': "Closed",
+    'cm.status.expired': "Expired",
+    'cm.sentN': "{n} sent",
+    'cm.listenOnly': "Read only",
+    'cm.blockSend': "Stop sending",
+    'cm.allowSend': "Allow sending",
+    'cm.filter.open': "Open",
+    'cm.filter.closed': "Closed",
+    'cm.filter.all': "All",
+    'cm.col.match': "Match",
+    'cm.col.members': "Players",
+    'cm.col.messages': "Messages",
+    'cm.col.expires': "Ends",
+    'cm.close': "Close chat",
+    'cm.close.title': "Close this match chat?",
+    'cm.close.text': "No player can send pack messages in this match. You can open it again later.",
+    'cm.closed': "Chat closed.",
+    'cm.open': "Open",
+    'cm.opened': "Chat opened.",
+    'cm.reason.staff': "Closed by staff",
+    'cm.reason.ended': "Match ended",
+    'cm.reason.expired': "Time ran out",
+    'vr.col.room': "Room",
+    'vr.col.player': "Player",
+    'vr.col.mic': "Microphone",
+    'vr.col.expires': "Ends",
+    'vr.staffMuted': "Staff muted",
+    'vr.canPublish': "Can speak",
+    'vr.listenOnly': "Listen only",
+    'vr.mute': "Mute",
+    'vr.unmute': "Unmute",
+    'vr.muted': "Player muted.",
+    'vr.unmuted': "Mute removed.",
+    'vr.savedNotLive': "Saved; the player is not in the room now, it applies when they join.",
+    'vr.mute.title': "Mute «{name}»?",
+    'vr.mute.text': "Their microphone stays closed until this room ends, also after a reconnect. They can still listen.",
+    'vr.kind.match': "Match",
+    'vr.kind.party': "Party",
+    'vr.kind.room': "Open room",
+    'vr.online': "Connected",
+    'vr.offline': "Not connected",
+    'code.KIND_LOCKED': "The kind of a pack cannot change.",
+    'code.PLACE_REQUIRED': "Turn on chat, match or both.",
+    'code.INVALID_ASSET_ID': "The asset ID has 1 to 64 lower-case letters, digits, _ . -.",
+    'code.INVALID_SETTINGS': "These settings are not valid.",
+    'code.VOICE_ROOM_NOT_FOUND': "This voice room is not live any more.",
+    'code.VOICE_PARTICIPANT_NOT_FOUND': "This player is not in the voice room.",
     'filter.sp.access': "Access",
     'sp.access.free': "Free for everyone",
     'sp.access.item': "With a shop item",
@@ -13212,6 +13410,7 @@ function buildForm(fields, values, ctx) {
       control = toggle(cur, f.inline ? label : null, function (v) { change(v); });
     } else if (t2 === 'select') {
       control = selectInput(cur, f.options(), function (v) { change(f.noPlaceholder ? v : v || null); }, { label: label, placeholder: f.required || f.noPlaceholder ? false : t('none') });
+      if (f.lockOnEdit && values.id) { var sel = control.matches && control.matches('select') ? control : control.querySelector && control.querySelector('select'); if (sel) sel.disabled = true; }
       if (f.required && (cur == null || cur === '')) { setPath(values, f.name, f.options()[0].value); }
     } else if (t2 === 'multi') {
       var set = (cur || []).slice();
@@ -13913,13 +14112,13 @@ var RESOURCES = {
 var SECTIONS = {
   economy: ['overview', 'currencies', 'metas', 'meta-relations', 'prizes', 'products', 'offers', 'entry-offers', 'offer-preview', 'offer-report', 'offer-settings', 'tag-discounts', 'tag-discount-preview', 'tag-discount-settings', 'friend-gifts', 'friend-gift-rules', 'friend-gift-settings', 'friend-gift-report', 'items', 'avatar-categories', 'avatar-items', 'avatar-types', 'avatar-settings', 'achievements', 'chance-games', 'prize-groups', 'games', 'gifts', 'event-types', 'event-rules', 'meta-rules', 'level-tables', 'streaks', 'tasks', 'task-groups', 'event-log', 'referrals', 'payments', 'payment-settings'],
   publication: ['faqs', 'news', 'news-review', 'news-sources', 'news-ingest', 'news-reactions', 'news-settings', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
-  moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'activity'],
+  moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'comm-settings', 'comm-channels', 'voice-rooms', 'activity'],
   support: ['tickets', 'live-chat'],
   system: ['updates', 'server-rules', 'content-packs', 'content-settings', 'insights-overview', 'insights-sessions', 'heatmaps', 'insights-settings', 'sdk']
 };
 var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'];
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
-var PAGE_ACL = { 'server-rules': 'SETTINGS', players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
+var PAGE_ACL = { 'server-rules': 'SETTINGS', players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', 'comm-settings': 'CHANNEL_MESSAGE', 'comm-channels': 'CHANNEL_MESSAGE', 'voice-rooms': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
 var HUBS = {
   metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['meta-relations', 'relations'], ['level-tables', 'levels']] },
@@ -13931,7 +14130,7 @@ var HUBS = {
   payments: { section: 'economy', tabs: [['payments', ''], ['payment-settings', 'settings']] },
   'chat-quota': { section: 'moderation', tabs: [['chat-quota', ''], ['chat-quota-settings', 'settings'], ['chat-quota-report', 'report']] },
   avatar: { section: 'economy', tabs: [['avatar-categories', ''], ['avatar-items', 'items'], ['avatar-types', 'types'], ['avatar-settings', 'settings']] },
-  stickers: { section: 'moderation', tabs: [['sticker-packs', ''], ['sticker-settings', 'settings']] },
+  stickers: { section: 'moderation', tabs: [['sticker-packs', ''], ['sticker-settings', 'settings'], ['comm-settings', 'match-chat'], ['comm-channels', 'channels']] },
   events: { section: 'economy', tabs: [['event-types', ''], ['event-rules', 'prizes'], ['event-log', 'report']] },
   news: { section: 'publication', tabs: [['news', ''], ['news-review', 'review'], ['news-sources', 'sources'], ['news-ingest', 'log'], ['news-reactions', 'reactions'], ['news-settings', 'settings']] },
   banners: { section: 'publication', tabs: [['banners', ''], ['banner-lists', 'placements']] },
@@ -13942,7 +14141,7 @@ var HUBS = {
 var NAV = {
   economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'offers', 'tag-discounts', 'items', 'avatar', 'gifts', 'friend-gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
-  moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers'] }],
+  moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers', 'voice-rooms'] }],
   support: ['tickets', 'live-chat'],
   system: ['updates', 'server-rules', 'content', 'insights', 'sdk']
 };
@@ -22418,6 +22617,7 @@ function playerChatQuotaCard() {
   place();
 }
 
+var CM_KINDS = ['sticker', 'text', 'gif', 'emoji'];
 ICONS['stickers'] = '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1 2.2 1.5 3.5 1.5s2.5-.5 3.5-1.5M9 9.5h.01M15 9.5h.01"/>';
 PH_ICONS['stickers'] = '<path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216ZM80,108a12,12,0,1,1,12,12A12,12,0,0,1,80,108Zm96,0a12,12,0,1,1-12-12A12,12,0,0,1,176,108Zm-1.07,48c-10.29,17.79-27.4,28-46.93,28s-36.63-10.2-46.92-28a8,8,0,1,1,13.84-8c7.47,12.91,19.21,20,33.08,20s25.61-7.1,33.07-20a8,8,0,0,1,13.86,8Z"/>';
 ICONS['sticker-packs'] = ICONS['stickers'];
@@ -22438,10 +22638,18 @@ function spPreview(it) {
 RESOURCES['sticker-packs'] = {
   api: 'base',
   path: 'stickers/packs',
-  filters: [activeFilter(), { name: 'access', label: 'filter.sp.access', options: function () { return [{ value: 'free', label: t('sp.access.free') }, { value: 'item', label: t('sp.access.item') }]; } }],
+  filters: [activeFilter(), { name: 'access', label: 'filter.sp.access', options: function () { return [{ value: 'free', label: t('sp.access.free') }, { value: 'item', label: t('sp.access.item') }]; } },
+    { name: 'kind', label: 'filter.cm.kind', options: function () { return CM_KINDS.map(function (k) { return { value: k, label: t('cm.kind.' + k) }; }); } },
+    { name: 'place', label: 'filter.cm.place', options: function () { return [{ value: 'chat', label: t('cm.place.chat') }, { value: 'match', label: t('cm.place.match') }]; } }],
   columns: [
     { label: 'col.name', render: function (it) { return nameCell(it, true); } },
     { label: 'col.sp.stickers', render: function (it) { return h('div', { class: 'flex flex-col gap-1' }, spPreview(it), h('span', { class: 'text-xs text-secondary-500', text: t('sp.countN', { n: fmtNum(it.count || 0) }) })); }, skeleton: '30%' },
+    { label: 'col.cm.kind', render: function (it) {
+      var box = h('div', { class: 'flex flex-wrap gap-1', 'data-cm-kind': it.kind || 'sticker' }, tag(t('cm.kind.' + (it.kind || 'sticker')), 'primary'));
+      if (it.inChat !== false) box.appendChild(tag(t('cm.place.chat'), 'secondary'));
+      if (it.inMatch) box.appendChild(tag(t('cm.place.match'), 'success'));
+      return box;
+    }, width: 170 },
     { label: 'col.sp.access', render: function (it) {
       if (it.access !== 'item') return h('span', { 'data-sp-access': 'free' }, tag(t('sp.access.free'), 'success'));
       var name = it.item ? (i18nText(it.item.name) || it.item.key) : it.itemKey;
@@ -22456,6 +22664,12 @@ RESOURCES['sticker-packs'] = {
     ] },
     tr('name', { label: 'f.name', required: true, max: 100 }),
     tr('description', { multiline: true, max: 500, optional: true }),
+    { type: 'heading', label: 'cm.h.kind' },
+    { name: 'kind', type: 'select', label: 'f.cm.kind', hint: 'f.cm.kind.hint', required: true, noPlaceholder: true, lockOnEdit: true, refresh: true, options: function () { return CM_KINDS.map(function (k) { return { value: k, label: t('cm.kind.' + k) }; }); } },
+    { type: 'row', fields: [
+      { name: 'inChat', type: 'bool', inline: true, label: 'f.cm.inChat', hint: 'f.cm.inChat.hint' },
+      { name: 'inMatch', type: 'bool', inline: true, label: 'f.cm.inMatch', hint: 'f.cm.inMatch.hint' }
+    ] },
     { type: 'row', fields: [
       { name: 'iconUrl', type: 'image', label: 'f.icon', optional: true },
       { name: 'sort', type: 'number', label: 'f.sort', min: -100000, max: 100000, empty: 0 }
@@ -22469,7 +22683,6 @@ RESOURCES['sticker-packs'] = {
       check: function (rows) {
         var seen = {};
         for (var i = 0; i < rows.length; i++) {
-          if (!rows[i].imageUrl) return { index: i, message: t('sp.err.image') };
           if (seen[rows[i].key]) return { index: i, message: t('code.DUPLICATE_KEY') };
           seen[rows[i].key] = true;
         }
@@ -22478,16 +22691,22 @@ RESOURCES['sticker-packs'] = {
       columns: [
         { name: 'imageUrl', type: 'custom', label: 'f.sp.image', build: function (cur, change) { return imageInput(cur || '', function (v) { change(v || ''); }); } },
         { name: 'key', type: 'text', ltr: true, mono: true, label: 'f.key', required: true },
-        { name: 'name', type: 'i18n', label: 'f.name', max: 100 }
-      ] }
+        { name: 'name', type: 'i18n', label: 'f.name', max: 100 },
+        { name: 'text', type: 'i18n', label: 'f.cm.text', max: 120, optional: true },
+        { name: 'assetId', type: 'text', ltr: true, mono: true, label: 'f.cm.assetId', optional: true }
+      ] },
+    { name: 'about.items', type: 'static', readonly: true, render: function () { return notice('info', t('cm.items.about')); } }
   ],
-  defaults: function () { return { key: '', name: {}, description: {}, iconUrl: '', sort: 0, access: 'free', itemKey: null, isActive: true, stickers: [] }; },
+  defaults: function () { return { key: '', name: {}, description: {}, iconUrl: '', sort: 0, kind: 'sticker', inChat: true, inMatch: false, access: 'free', itemKey: null, isActive: true, stickers: [] }; },
   fixPayload: function (p) {
     if (p.access !== 'item') p.itemKey = '';
     p.itemKey = p.itemKey || '';
     p.sort = p.sort || 0;
-    p.stickers = (p.stickers || []).map(function (s) { return { key: s.key, name: s.name || {}, imageUrl: s.imageUrl || '', isActive: s.isActive !== false }; });
-    ['id', 'count', 'item', 'createdAt', 'createdBy', 'updatedAt'].forEach(function (k) { delete p[k]; });
+    p.kind = p.kind || 'sticker';
+    p.inChat = p.inChat !== false;
+    p.inMatch = !!p.inMatch;
+    p.stickers = (p.stickers || []).map(function (s) { return { key: s.key, name: s.name || {}, imageUrl: s.imageUrl || '', text: s.text || {}, assetId: s.assetId || '', isActive: s.isActive !== false }; });
+    ['id', 'count', 'item', 'createdAt', 'createdBy', 'updatedAt', 'about'].forEach(function (k) { delete p[k]; });
     return p;
   }
 };
@@ -22520,6 +22739,186 @@ function stickerSettingsPage(container) {
 }
 
 CUSTOM_PAGES['sticker-settings'] = function (root) { stickerSettingsPage(root); };
+
+ICONS['comm-settings'] = ICONS['sticker-settings'];
+ICONS['comm-channels'] = '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>';
+ICONS['voice-rooms'] = '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/>';
+PH_ICONS['voice-rooms'] = PH_ICONS['stickers'];
+PH_ICONS['comm-channels'] = PH_ICONS['stickers'];
+PH_ICONS['comm-settings'] = PH_ICONS['stickers'];
+
+var CM_SETTINGS_FIELDS = [
+  { name: 'enabled', type: 'bool', inline: true, label: 'f.cm.enabled', hint: 'f.cm.enabled.hint' },
+  { type: 'heading', label: 'cm.h.cooldown' },
+  { name: 'about.cooldown', type: 'static', readonly: true, render: function () { return notice('info', t('cm.cooldown.about')); } },
+  { type: 'row', fields: [
+    { name: 'minIntervalSeconds', type: 'number', label: 'f.cm.minInterval', hint: 'f.cm.minInterval.hint', required: true, min: 0, max: 60 },
+    { name: 'lockSeconds', type: 'number', label: 'f.cm.lock', hint: 'f.cm.lock.hint', required: true, min: 1, max: 3600 }
+  ] },
+  { type: 'row', fields: [
+    { name: 'maxCount', type: 'number', label: 'f.cm.maxCount', hint: 'f.cm.maxCount.hint', required: true, min: 1, max: 1000 },
+    { name: 'windowSeconds', type: 'number', label: 'f.cm.window', hint: 'f.cm.window.hint', required: true, min: 1, max: 600, check: function (v, vals) { return v != null && vals.maxCount != null && vals.minIntervalSeconds != null && Number(vals.maxCount) * Number(vals.minIntervalSeconds) >= Number(v) ? t('cm.err.window') : null; } }
+  ] },
+  { type: 'heading', label: 'cm.h.more' },
+  { type: 'row', fields: [
+    { name: 'channelHours', type: 'number', label: 'f.cm.channelHours', hint: 'f.cm.channelHours.hint', required: true, min: 1, max: 48 },
+    { name: 'maxFavorites', type: 'number', label: 'f.cm.maxFavorites', hint: 'f.cm.maxFavorites.hint', required: true, min: 0, max: 1000 }
+  ] }
+];
+
+function commSettingsPage(container) {
+  var frame = pageFrame(t('nav.comm-settings'), t('desc.comm-settings'));
+  clear(container).appendChild(frame.el);
+  var page = apiPage(baseApi, '/comms/settings', null, CM_SETTINGS_FIELDS, {
+    id: 'comms',
+    fixPayload: function (p) {
+      ['updatedAt', 'updatedBy', 'about'].forEach(function (k) { delete p[k]; });
+      return p;
+    }
+  });
+  frame.content.appendChild(page.el);
+  page.load();
+}
+
+function cmStatusTag(status) {
+  var color = status === 'open' ? 'success' : status === 'expired' ? 'warning' : 'secondary';
+  return h('span', { 'data-cm-status': status }, tag(t('cm.status.' + status), color));
+}
+
+function cmMembers(ch, reload) {
+  var box = h('div', { class: 'flex flex-col gap-1' });
+  (ch.members || []).forEach(function (m) {
+    var row = h('div', { class: 'flex items-center gap-2 flex-wrap', 'data-cm-member': m.userId },
+      playerLink(m.userId, m.displayName || m.username),
+      h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: t('cm.sentN', { n: fmtNum(m.sent || 0) }) }),
+      m.canSend ? null : tag(t('cm.listenOnly'), 'warning'));
+    if (ch.status === 'open') {
+      var btn = button({ variant: 'link', size: 'sm', label: t(m.canSend ? 'cm.blockSend' : 'cm.allowSend'), onclick: function () {
+        setBusy(btn, true);
+        baseApi('POST', '/comms/channels/' + encodeURIComponent(ch.matchId) + '/can-send', { userId: m.userId, canSend: !m.canSend }).then(function () {
+          toast('success', t('saved'));
+          reload();
+        }, function (err) { setBusy(btn, false); toast('error', errorText(err)); });
+      } });
+      btn.setAttribute('data-cm-can-send', m.userId);
+      row.appendChild(btn);
+    }
+    box.appendChild(row);
+  });
+  if (!(ch.members || []).length) box.appendChild(h('span', { class: 'text-xs text-secondary-500', text: t('none') }));
+  return box;
+}
+
+function commChannelsPage(container, query) {
+  var frame = pageFrame(t('nav.comm-channels'), t('desc.comm-channels'));
+  clear(container).appendChild(frame.el);
+  var state = { status: query.status || 'open', q: query.q || '', page: 1, limit: LIMIT, total: 0 };
+  var box = h('div', { class: 'flex flex-col gap-3' });
+  var status = filterSelect(t('filter.status'), state.status, ['open', 'closed', 'all'].map(function (s) { return { value: s, label: t('cm.filter.' + s) }; }), function (v) { state.status = v || 'open'; state.page = 1; load(); });
+  var timer = null;
+  var search = searchInput(state.q, t('search.comm-channels'), function (e) { clearTimeout(timer); timer = setTimeout(function () { state.q = e.target.value.trim(); state.page = 1; load(); }, 250); });
+  var pagerBox = h('div', {});
+  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center justify-between gap-2 pb-2' }, h('div', { class: 'flex flex-wrap items-center gap-2' }, search, status), pagerBox));
+  frame.content.appendChild(box);
+  var cols = [{ label: t('cm.col.match'), skeleton: '60%' }, { label: t('col.status'), width: 110 }, { label: t('cm.col.members'), skeleton: '50%' }, { label: t('cm.col.messages'), width: 90 }, { label: t('cm.col.expires'), width: 150 }, { label: '', width: 120 }];
+  function load() {
+    clear(box).appendChild(table(cols, skeletonRows(cols, 3)));
+    baseApi('GET', '/comms/channels' + qs({ status: state.status, q: state.q, page: state.page, limit: state.limit })).then(function (res) {
+      state.total = res.total || 0;
+      clear(pagerBox).appendChild(pager(state, function (p) { state.page = p; load(); }, load));
+      var list = res.items || [];
+      clear(box);
+      if (!list.length) {
+        box.appendChild(card(emptyBlock(t('empty.comm-channels'), t('empty.hint.comm-channels'))));
+        return;
+      }
+      box.appendChild(table(cols, list.map(function (ch) {
+        var action = null;
+        if (ch.status === 'open') {
+          action = button({ variant: 'danger', size: 'sm', label: t('cm.close'), onclick: function () {
+            confirmModal({ title: t('cm.close.title'), text: t('cm.close.text'), ok: t('cm.close'), danger: true }).then(function (ok) {
+              if (!ok) return;
+              baseApi('POST', '/comms/channels/' + encodeURIComponent(ch.matchId) + '/close', {}).then(function () { toast('success', t('cm.closed')); load(); }, function (err) { toast('error', errorText(err)); });
+            });
+          } });
+          action.setAttribute('data-cm-close', ch.matchId);
+        } else {
+          action = button({ variant: 'secondary', size: 'sm', label: t('cm.open'), onclick: function () {
+            baseApi('POST', '/comms/channels/' + encodeURIComponent(ch.matchId) + '/open', {}).then(function () { toast('success', t('cm.opened')); load(); }, function (err) { toast('error', errorText(err)); });
+          } });
+          action.setAttribute('data-cm-open', ch.matchId);
+        }
+        return { item: ch, cells: [
+          h('div', { class: 'flex flex-col min-w-0', 'data-cm-channel': ch.matchId }, mono(ch.matchId), ch.gameKey ? h('span', { class: 'text-xs text-secondary-500', text: ch.gameKey }) : null),
+          h('div', { class: 'flex flex-col gap-1' }, cmStatusTag(ch.status), ch.closeReason ? h('span', { class: 'text-xs text-secondary-500', text: t('cm.reason.' + ch.closeReason) }) : null),
+          cmMembers(ch, load),
+          h('span', { class: 'tabular-nums', text: fmtNum(ch.messages || 0) }),
+          h('span', { class: 'text-xs', text: fmtDate(ch.expiresAt, true) }),
+          action
+        ] };
+      })));
+    }, function (err) { clear(box).appendChild(errorBlock(err, load)); });
+  }
+  load();
+}
+
+function voiceRoomsPage(container, query) {
+  var frame = pageFrame(t('nav.voice-rooms'), t('desc.voice-rooms'));
+  clear(container).appendChild(frame.el);
+  var state = { q: query.q || '' };
+  var box = h('div', { class: 'flex flex-col gap-3' });
+  var timer = null;
+  var search = searchInput(state.q, t('search.voice-rooms'), function (e) { clearTimeout(timer); timer = setTimeout(function () { state.q = e.target.value.trim(); load(); }, 250); });
+  var refresh = button({ variant: 'secondary', size: 'sm', icon: 'refresh', label: t('refresh'), onclick: function () { load(); } });
+  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center justify-between gap-2 pb-2' }, search, refresh));
+  frame.content.appendChild(box);
+  var cols = [{ label: t('vr.col.room'), skeleton: '50%' }, { label: t('vr.col.player'), skeleton: '40%' }, { label: t('vr.col.mic'), width: 150 }, { label: t('vr.col.expires'), width: 150 }, { label: '', width: 120 }];
+  function load() {
+    clear(box).appendChild(table(cols, skeletonRows(cols, 3)));
+    baseApi('GET', '/voice/rooms' + qs({ q: state.q, live: 'true' })).then(function (res) {
+      var rows = [];
+      (res.items || []).forEach(function (room) {
+        (room.members || []).forEach(function (m) {
+          rows.push({ room: room, m: m });
+        });
+      });
+      clear(box);
+      if (!rows.length) {
+        box.appendChild(card(emptyBlock(t('empty.voice-rooms'), t('empty.hint.voice-rooms'))));
+        return;
+      }
+      box.appendChild(table(cols, rows.map(function (r) {
+        var m = r.m;
+        var name = m.displayName || m.username || m.name;
+        var mic = m.muted ? tag(t('vr.staffMuted'), 'error') : m.canPublish ? tag(t('vr.canPublish'), 'success') : tag(t('vr.listenOnly'), 'warning');
+        var btn = button({ variant: m.muted ? 'secondary' : 'danger', size: 'sm', label: t(m.muted ? 'vr.unmute' : 'vr.mute'), onclick: function () {
+          var go = function () {
+            setBusy(btn, true);
+            baseApi('POST', '/voice/rooms/' + encodeURIComponent(r.room.room) + '/' + (m.muted ? 'unmute' : 'mute'), { userId: m.userId }).then(function (out) {
+              toast(out.applied ? 'success' : 'warning', t(out.applied ? (m.muted ? 'vr.unmuted' : 'vr.muted') : 'vr.savedNotLive'));
+              load();
+            }, function (err) { setBusy(btn, false); toast('error', errorText(err)); });
+          };
+          if (m.muted) return go();
+          confirmModal({ title: t('vr.mute.title', { name: name }), text: t('vr.mute.text'), ok: t('vr.mute'), danger: true }).then(function (ok) { if (ok) go(); });
+        } });
+        btn.setAttribute('data-vr-action', m.userId);
+        return { item: r, cells: [
+          h('div', { class: 'flex flex-col min-w-0', 'data-vr-room': r.room.room }, mono(r.room.room), h('span', { class: 'text-xs text-secondary-500', text: [t('vr.kind.' + r.room.kind), r.room.gameKey, r.room.provider].filter(Boolean).join(' · ') })),
+          h('div', { class: 'flex items-center gap-2' }, playerLink(m.userId, name), m.connected === true ? tag(t('vr.online'), 'success') : m.connected === false ? tag(t('vr.offline'), 'secondary') : null),
+          h('span', { 'data-vr-mic': m.muted ? 'muted' : 'open' }, mic),
+          h('span', { class: 'text-xs', text: fmtDate(r.room.expiresAt, true) }),
+          btn
+        ] };
+      })));
+    }, function (err) { clear(box).appendChild(errorBlock(err, load)); });
+  }
+  load();
+}
+
+CUSTOM_PAGES['comm-settings'] = function (root) { commSettingsPage(root); };
+CUSTOM_PAGES['comm-channels'] = function (root, route) { commChannelsPage(root, route.query || {}); };
+CUSTOM_PAGES['voice-rooms'] = function (root, route) { voiceRoomsPage(root, route.query || {}); };
 
 PH_ICONS.achievements = '<path d="M216,96A88,88,0,1,0,72,163.83V240a8,8,0,0,0,11.58,7.16L128,225l44.43,22.21A8.07,8.07,0,0,0,176,248a8,8,0,0,0,8-8V163.83A87.85,87.85,0,0,0,216,96ZM56,96a72,72,0,1,1,72,72A72.08,72.08,0,0,1,56,96ZM168,227.06l-36.43-18.21a8,8,0,0,0-7.16,0L88,227.06V174.37a87.89,87.89,0,0,0,80,0ZM128,152A56,56,0,1,0,72,96,56.06,56.06,0,0,0,128,152Zm0-96A40,40,0,1,1,88,96,40,40,0,0,1,128,56Z"/>';
 PH_ICONS.medalDuo = '<path d="M176,96a48,48,0,1,1-48-48A48,48,0,0,1,176,96Z" opacity="0.2"/>' + PH_ICONS.achievements;
@@ -27796,15 +28195,15 @@ function loadSocialCard(id) {
 
 function renameDialog(id, current) {
   var v = { username: current || '' };
-  var input = textInput(v.username, { ltr: true, label: t('ps.rename.field'), oninput: function (x) { v.username = x; wrap.setError(''); } });
+  var input = textInput(v.username, { ltr: true, label: t('psoc.rename.field'), oninput: function (x) { v.username = x; wrap.setError(''); } });
   input.setAttribute('data-rename-input', '');
-  var wrap = field(t('ps.rename.field'), input, t('ps.rename.hint'));
+  var wrap = field(t('psoc.rename.field'), input, t('psoc.rename.hint'));
   return formDialog({
     id: 'player-rename',
-    title: t('ps.rename.title'),
-    text: t('ps.rename.text'),
+    title: t('psoc.rename.title'),
+    text: t('psoc.rename.text'),
     icon: 'users',
-    ok: t('ps.rename'),
+    ok: t('psoc.rename'),
     body: wrap,
     validate: function () {
       var ok = v.username.trim() !== '';
@@ -27825,20 +28224,20 @@ function socialSourceTag(src) {
 }
 
 function socialQuote(q) {
-  if (!q || !q.enabled) return h('span', { class: 'text-sm text-secondary-500', 'data-un-quote': 'off', text: t('ps.policyOff') });
+  if (!q || !q.enabled) return h('span', { class: 'text-sm text-secondary-500', 'data-un-quote': 'off', text: t('psoc.policyOff') });
   var box = h('div', { class: 'flex flex-col gap-0.5', 'data-un-quote': q.free ? 'free' : 'paid' },
-    h('span', { class: 'text-sm', text: q.free ? t('ps.next.free') : t('ps.next.cost', { n: fmtNum(q.cost), cur: q.currency }) }),
-    h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: t('ps.paidN', { n: fmtNum(q.paidChanges || 0) }) }));
-  if (q.cooldownEndsAt) box.appendChild(h('span', { class: 'text-xs eco-text-error', text: t('ps.cooldown', { date: fmtDate(q.cooldownEndsAt, true) }) }));
+    h('span', { class: 'text-sm', text: q.free ? t('psoc.next.free') : t('psoc.next.cost', { n: fmtNum(q.cost), cur: q.currency }) }),
+    h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: t('psoc.paidN', { n: fmtNum(q.paidChanges || 0) }) }));
+  if (q.cooldownEndsAt) box.appendChild(h('span', { class: 'text-xs eco-text-error', text: t('psoc.cooldown', { date: fmtDate(q.cooldownEndsAt, true) }) }));
   return box;
 }
 
 function socialHistoryTable(items) {
-  if (!items.length) return h('p', { class: 'text-sm text-secondary-500', 'data-un-history': 'empty', text: t('ps.history.empty') });
-  var cols = [{ label: t('ps.col.from') }, { label: t('ps.col.to') }, { label: t('ps.col.source'), width: 110 }, { label: t('ps.col.cost'), width: 110 }, { label: t('ps.col.when'), width: 160 }];
+  if (!items.length) return h('p', { class: 'text-sm text-secondary-500', 'data-un-history': 'empty', text: t('psoc.history.empty') });
+  var cols = [{ label: t('psoc.col.from') }, { label: t('psoc.col.to') }, { label: t('psoc.col.source'), width: 110 }, { label: t('psoc.col.cost'), width: 110 }, { label: t('psoc.col.when'), width: 160 }];
   var rows = items.slice(0, 10).map(function (it) {
     return { item: it, cells: [h('span', { dir: 'ltr', text: it.oldUsername }), h('span', { dir: 'ltr', class: 'font-medium', text: it.newUsername }),
-      tag(t('ps.src.' + it.source) + (it.admin ? ' · ' + it.admin : ''), it.source === 'admin' ? 'warning' : it.source === 'paid' ? 'primary' : 'success'),
+      tag(t('psoc.src.' + it.source) + (it.admin ? ' · ' + it.admin : ''), it.source === 'admin' ? 'warning' : it.source === 'paid' ? 'primary' : 'success'),
       h('span', { class: 'tabular-nums', text: it.cost ? fmtNum(it.cost) + ' ' + it.currency : '-' }), h('span', { class: 'text-xs', text: fmtDate(it.createdAt, true) })] };
   });
   var tb = table(cols, rows);
@@ -27847,7 +28246,7 @@ function socialHistoryTable(items) {
 }
 
 function socialSuggestTable(list, attr) {
-  var cols = [{ label: t('ps.col.player') }, { label: t('ps.col.source'), width: 120 }, { label: t('ps.col.score'), width: 100 }, { label: t('ps.col.shows'), width: 80 }, { label: t('ps.col.played'), width: 150 }];
+  var cols = [{ label: t('psoc.col.player') }, { label: t('psoc.col.source'), width: 120 }, { label: t('psoc.col.score'), width: 100 }, { label: t('psoc.col.shows'), width: 80 }, { label: t('psoc.col.played'), width: 150 }];
   var rows = list.slice(0, 20).map(function (it) {
     return { item: it, cells: [
       h('a', { href: '#/players/' + it.userId, class: 'eco-link', dir: 'ltr', text: it.username + (it.code ? ' · ' + it.code : '') }),
@@ -27880,7 +28279,7 @@ function playerSocialCard() {
   if (existing) existing.remove();
   var body = h('div', { class: 'px-4 py-3' });
   var cardEl = h('section', { class: 'flex flex-col dark:bg-secondary-800 rounded-md shadow bg-white', 'data-player-social': '', 'data-key': key, 'data-economy': 'player-social', 'data-l10n-skip': '', 'aria-labelledby': 'player-social-title', dir: document.documentElement.getAttribute('dir') || 'ltr' }, body);
-  var title = h('h2', { id: 'player-social-title', class: 'font-medium flex items-center gap-2' }, icon('users', 'h-4 w-4'), h('span', { text: t('ps.title') }));
+  var title = h('h2', { id: 'player-social-title', class: 'font-medium flex items-center gap-2' }, icon('users', 'h-4 w-4'), h('span', { text: t('psoc.title') }));
   var place = function () { if (anchor) anchor.after(cardEl); else grid.insertBefore(cardEl, grid.firstChild); };
   if (!d) {
     body.appendChild(h('div', { class: 'flex items-center justify-between gap-2 mb-3' }, title));
@@ -27892,13 +28291,13 @@ function playerSocialCard() {
   var reload = function () { SOCIAL_CARD.at = 0; loadSocialCard(id); if (typeof PLAYER_CARD !== 'undefined') PLAYER_CARD.at = 0; };
   var actions = h('div', { class: 'flex flex-wrap items-center gap-1' });
   if (write) {
-    var rename = button({ variant: 'ghost', size: 'sm', icon: 'players', label: t('ps.rename'), onclick: function () {
-      renameDialog(id, d.names.username).then(function (res) { if (res) { toast('success', t('ps.rename.done', { name: res.username })); reload(); } });
+    var rename = button({ variant: 'ghost', size: 'sm', icon: 'players', label: t('psoc.rename'), onclick: function () {
+      renameDialog(id, d.names.username).then(function (res) { if (res) { toast('success', t('psoc.rename.done', { name: res.username })); reload(); } });
     } });
     rename.setAttribute('data-ps-action', 'rename');
-    var regen = button({ variant: 'ghost', size: 'sm', icon: 'refresh', label: t('ps.regen'), onclick: function () {
+    var regen = button({ variant: 'ghost', size: 'sm', icon: 'refresh', label: t('psoc.regen'), onclick: function () {
       setBusy(regen, true, t('saving'));
-      baseApi('POST', '/players/' + encodeURIComponent(id) + '/friend-suggestions/regenerate', {}).then(function () { toast('success', t('ps.regen.done')); reload(); }, function (err) { setBusy(regen, false); toast('error', errorText(err)); });
+      baseApi('POST', '/players/' + encodeURIComponent(id) + '/friend-suggestions/regenerate', {}).then(function () { toast('success', t('psoc.regen.done')); reload(); }, function (err) { setBusy(regen, false); toast('error', errorText(err)); });
     } });
     regen.setAttribute('data-ps-action', 'regenerate');
     actions.appendChild(rename);
@@ -27908,28 +28307,28 @@ function playerSocialCard() {
   var s = d.sugg || {};
   body.appendChild(h('div', { class: 'eco-pc-grid mb-3' },
     h('div', { class: 'min-w-0' },
-      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('ps.code') }),
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('psoc.code') }),
       h('div', { class: 'text-lg font-semibold', dir: 'ltr', 'data-ps-code': '', text: d.names.code || '-' })),
     h('div', { class: 'min-w-0' },
-      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('ps.next') }),
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('psoc.next') }),
       socialQuote(d.names.quote)),
     h('div', { class: 'min-w-0' },
-      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('ps.sugg') }),
-      h('div', { class: 'text-sm tabular-nums', 'data-ps-sugg': '' }, s.generatedAt ? t('ps.sugg.counts', { v: fmtNum((s.visible || []).length), r: fmtNum((s.reserve || []).length) }) : t('ps.sugg.none')),
-      s.generatedAt ? h('div', { class: 'text-xs text-secondary-500', text: t('ps.sugg.meta', { cycle: s.cycle, when: fmtDate(s.generatedAt, true) }) + (s.generatedBy ? ' · ' + s.generatedBy : '') }) : null)));
-  body.appendChild(h('h3', { class: 'text-sm font-medium mt-2 mb-2', text: t('ps.history') }));
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('psoc.sugg') }),
+      h('div', { class: 'text-sm tabular-nums', 'data-ps-sugg': '' }, s.generatedAt ? t('psoc.sugg.counts', { v: fmtNum((s.visible || []).length), r: fmtNum((s.reserve || []).length) }) : t('psoc.sugg.none')),
+      s.generatedAt ? h('div', { class: 'text-xs text-secondary-500', text: t('psoc.sugg.meta', { cycle: s.cycle, when: fmtDate(s.generatedAt, true) }) + (s.generatedBy ? ' · ' + s.generatedBy : '') }) : null)));
+  body.appendChild(h('h3', { class: 'text-sm font-medium mt-2 mb-2', text: t('psoc.history') }));
   body.appendChild(socialHistoryTable(d.names.items || []));
   if ((s.visible || []).length) {
-    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('ps.visible') }));
+    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('psoc.visible') }));
     body.appendChild(socialSuggestTable(s.visible, 'data-ps-visible'));
   }
   if ((s.reserve || []).length) {
-    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('ps.reserve') }));
+    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('psoc.reserve') }));
     body.appendChild(socialSuggestTable(s.reserve, 'data-ps-reserve'));
   }
   if ((s.coplay || []).length) {
-    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('ps.coplay') }));
-    var cols = [{ label: t('ps.col.player') }, { label: t('ps.col.game'), width: 120 }, { label: t('ps.col.matches'), width: 90 }, { label: t('ps.col.played'), width: 150 }];
+    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('psoc.coplay') }));
+    var cols = [{ label: t('psoc.col.player') }, { label: t('psoc.col.game'), width: 120 }, { label: t('psoc.col.matches'), width: 90 }, { label: t('psoc.col.played'), width: 150 }];
     var tb = table(cols, s.coplay.map(function (c) {
       return { item: c, cells: [h('a', { href: '#/players/' + c.userId, class: 'eco-link', dir: 'ltr', text: c.username || c.userId }), h('span', { dir: 'ltr', text: c.gameKey || '-' }),
         h('span', { class: 'tabular-nums', text: fmtNum(c.matches || 0) }), h('span', { class: 'text-xs', text: fmtDate(c.lastAt, true) })] };

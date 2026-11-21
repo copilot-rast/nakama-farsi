@@ -156,15 +156,15 @@ function loadSocialCard(id) {
 
 function renameDialog(id, current) {
   var v = { username: current || '' };
-  var input = textInput(v.username, { ltr: true, label: t('ps.rename.field'), oninput: function (x) { v.username = x; wrap.setError(''); } });
+  var input = textInput(v.username, { ltr: true, label: t('psoc.rename.field'), oninput: function (x) { v.username = x; wrap.setError(''); } });
   input.setAttribute('data-rename-input', '');
-  var wrap = field(t('ps.rename.field'), input, t('ps.rename.hint'));
+  var wrap = field(t('psoc.rename.field'), input, t('psoc.rename.hint'));
   return formDialog({
     id: 'player-rename',
-    title: t('ps.rename.title'),
-    text: t('ps.rename.text'),
+    title: t('psoc.rename.title'),
+    text: t('psoc.rename.text'),
     icon: 'users',
-    ok: t('ps.rename'),
+    ok: t('psoc.rename'),
     body: wrap,
     validate: function () {
       var ok = v.username.trim() !== '';
@@ -185,20 +185,20 @@ function socialSourceTag(src) {
 }
 
 function socialQuote(q) {
-  if (!q || !q.enabled) return h('span', { class: 'text-sm text-secondary-500', 'data-un-quote': 'off', text: t('ps.policyOff') });
+  if (!q || !q.enabled) return h('span', { class: 'text-sm text-secondary-500', 'data-un-quote': 'off', text: t('psoc.policyOff') });
   var box = h('div', { class: 'flex flex-col gap-0.5', 'data-un-quote': q.free ? 'free' : 'paid' },
-    h('span', { class: 'text-sm', text: q.free ? t('ps.next.free') : t('ps.next.cost', { n: fmtNum(q.cost), cur: q.currency }) }),
-    h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: t('ps.paidN', { n: fmtNum(q.paidChanges || 0) }) }));
-  if (q.cooldownEndsAt) box.appendChild(h('span', { class: 'text-xs eco-text-error', text: t('ps.cooldown', { date: fmtDate(q.cooldownEndsAt, true) }) }));
+    h('span', { class: 'text-sm', text: q.free ? t('psoc.next.free') : t('psoc.next.cost', { n: fmtNum(q.cost), cur: q.currency }) }),
+    h('span', { class: 'text-xs text-secondary-500 tabular-nums', text: t('psoc.paidN', { n: fmtNum(q.paidChanges || 0) }) }));
+  if (q.cooldownEndsAt) box.appendChild(h('span', { class: 'text-xs eco-text-error', text: t('psoc.cooldown', { date: fmtDate(q.cooldownEndsAt, true) }) }));
   return box;
 }
 
 function socialHistoryTable(items) {
-  if (!items.length) return h('p', { class: 'text-sm text-secondary-500', 'data-un-history': 'empty', text: t('ps.history.empty') });
-  var cols = [{ label: t('ps.col.from') }, { label: t('ps.col.to') }, { label: t('ps.col.source'), width: 110 }, { label: t('ps.col.cost'), width: 110 }, { label: t('ps.col.when'), width: 160 }];
+  if (!items.length) return h('p', { class: 'text-sm text-secondary-500', 'data-un-history': 'empty', text: t('psoc.history.empty') });
+  var cols = [{ label: t('psoc.col.from') }, { label: t('psoc.col.to') }, { label: t('psoc.col.source'), width: 110 }, { label: t('psoc.col.cost'), width: 110 }, { label: t('psoc.col.when'), width: 160 }];
   var rows = items.slice(0, 10).map(function (it) {
     return { item: it, cells: [h('span', { dir: 'ltr', text: it.oldUsername }), h('span', { dir: 'ltr', class: 'font-medium', text: it.newUsername }),
-      tag(t('ps.src.' + it.source) + (it.admin ? ' · ' + it.admin : ''), it.source === 'admin' ? 'warning' : it.source === 'paid' ? 'primary' : 'success'),
+      tag(t('psoc.src.' + it.source) + (it.admin ? ' · ' + it.admin : ''), it.source === 'admin' ? 'warning' : it.source === 'paid' ? 'primary' : 'success'),
       h('span', { class: 'tabular-nums', text: it.cost ? fmtNum(it.cost) + ' ' + it.currency : '-' }), h('span', { class: 'text-xs', text: fmtDate(it.createdAt, true) })] };
   });
   var tb = table(cols, rows);
@@ -207,7 +207,7 @@ function socialHistoryTable(items) {
 }
 
 function socialSuggestTable(list, attr) {
-  var cols = [{ label: t('ps.col.player') }, { label: t('ps.col.source'), width: 120 }, { label: t('ps.col.score'), width: 100 }, { label: t('ps.col.shows'), width: 80 }, { label: t('ps.col.played'), width: 150 }];
+  var cols = [{ label: t('psoc.col.player') }, { label: t('psoc.col.source'), width: 120 }, { label: t('psoc.col.score'), width: 100 }, { label: t('psoc.col.shows'), width: 80 }, { label: t('psoc.col.played'), width: 150 }];
   var rows = list.slice(0, 20).map(function (it) {
     return { item: it, cells: [
       h('a', { href: '#/players/' + it.userId, class: 'eco-link', dir: 'ltr', text: it.username + (it.code ? ' · ' + it.code : '') }),
@@ -240,7 +240,7 @@ function playerSocialCard() {
   if (existing) existing.remove();
   var body = h('div', { class: 'px-4 py-3' });
   var cardEl = h('section', { class: 'flex flex-col dark:bg-secondary-800 rounded-md shadow bg-white', 'data-player-social': '', 'data-key': key, 'data-economy': 'player-social', 'data-l10n-skip': '', 'aria-labelledby': 'player-social-title', dir: document.documentElement.getAttribute('dir') || 'ltr' }, body);
-  var title = h('h2', { id: 'player-social-title', class: 'font-medium flex items-center gap-2' }, icon('users', 'h-4 w-4'), h('span', { text: t('ps.title') }));
+  var title = h('h2', { id: 'player-social-title', class: 'font-medium flex items-center gap-2' }, icon('users', 'h-4 w-4'), h('span', { text: t('psoc.title') }));
   var place = function () { if (anchor) anchor.after(cardEl); else grid.insertBefore(cardEl, grid.firstChild); };
   if (!d) {
     body.appendChild(h('div', { class: 'flex items-center justify-between gap-2 mb-3' }, title));
@@ -252,13 +252,13 @@ function playerSocialCard() {
   var reload = function () { SOCIAL_CARD.at = 0; loadSocialCard(id); if (typeof PLAYER_CARD !== 'undefined') PLAYER_CARD.at = 0; };
   var actions = h('div', { class: 'flex flex-wrap items-center gap-1' });
   if (write) {
-    var rename = button({ variant: 'ghost', size: 'sm', icon: 'players', label: t('ps.rename'), onclick: function () {
-      renameDialog(id, d.names.username).then(function (res) { if (res) { toast('success', t('ps.rename.done', { name: res.username })); reload(); } });
+    var rename = button({ variant: 'ghost', size: 'sm', icon: 'players', label: t('psoc.rename'), onclick: function () {
+      renameDialog(id, d.names.username).then(function (res) { if (res) { toast('success', t('psoc.rename.done', { name: res.username })); reload(); } });
     } });
     rename.setAttribute('data-ps-action', 'rename');
-    var regen = button({ variant: 'ghost', size: 'sm', icon: 'refresh', label: t('ps.regen'), onclick: function () {
+    var regen = button({ variant: 'ghost', size: 'sm', icon: 'refresh', label: t('psoc.regen'), onclick: function () {
       setBusy(regen, true, t('saving'));
-      baseApi('POST', '/players/' + encodeURIComponent(id) + '/friend-suggestions/regenerate', {}).then(function () { toast('success', t('ps.regen.done')); reload(); }, function (err) { setBusy(regen, false); toast('error', errorText(err)); });
+      baseApi('POST', '/players/' + encodeURIComponent(id) + '/friend-suggestions/regenerate', {}).then(function () { toast('success', t('psoc.regen.done')); reload(); }, function (err) { setBusy(regen, false); toast('error', errorText(err)); });
     } });
     regen.setAttribute('data-ps-action', 'regenerate');
     actions.appendChild(rename);
@@ -268,28 +268,28 @@ function playerSocialCard() {
   var s = d.sugg || {};
   body.appendChild(h('div', { class: 'eco-pc-grid mb-3' },
     h('div', { class: 'min-w-0' },
-      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('ps.code') }),
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('psoc.code') }),
       h('div', { class: 'text-lg font-semibold', dir: 'ltr', 'data-ps-code': '', text: d.names.code || '-' })),
     h('div', { class: 'min-w-0' },
-      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('ps.next') }),
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('psoc.next') }),
       socialQuote(d.names.quote)),
     h('div', { class: 'min-w-0' },
-      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('ps.sugg') }),
-      h('div', { class: 'text-sm tabular-nums', 'data-ps-sugg': '' }, s.generatedAt ? t('ps.sugg.counts', { v: fmtNum((s.visible || []).length), r: fmtNum((s.reserve || []).length) }) : t('ps.sugg.none')),
-      s.generatedAt ? h('div', { class: 'text-xs text-secondary-500', text: t('ps.sugg.meta', { cycle: s.cycle, when: fmtDate(s.generatedAt, true) }) + (s.generatedBy ? ' · ' + s.generatedBy : '') }) : null)));
-  body.appendChild(h('h3', { class: 'text-sm font-medium mt-2 mb-2', text: t('ps.history') }));
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('psoc.sugg') }),
+      h('div', { class: 'text-sm tabular-nums', 'data-ps-sugg': '' }, s.generatedAt ? t('psoc.sugg.counts', { v: fmtNum((s.visible || []).length), r: fmtNum((s.reserve || []).length) }) : t('psoc.sugg.none')),
+      s.generatedAt ? h('div', { class: 'text-xs text-secondary-500', text: t('psoc.sugg.meta', { cycle: s.cycle, when: fmtDate(s.generatedAt, true) }) + (s.generatedBy ? ' · ' + s.generatedBy : '') }) : null)));
+  body.appendChild(h('h3', { class: 'text-sm font-medium mt-2 mb-2', text: t('psoc.history') }));
   body.appendChild(socialHistoryTable(d.names.items || []));
   if ((s.visible || []).length) {
-    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('ps.visible') }));
+    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('psoc.visible') }));
     body.appendChild(socialSuggestTable(s.visible, 'data-ps-visible'));
   }
   if ((s.reserve || []).length) {
-    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('ps.reserve') }));
+    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('psoc.reserve') }));
     body.appendChild(socialSuggestTable(s.reserve, 'data-ps-reserve'));
   }
   if ((s.coplay || []).length) {
-    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('ps.coplay') }));
-    var cols = [{ label: t('ps.col.player') }, { label: t('ps.col.game'), width: 120 }, { label: t('ps.col.matches'), width: 90 }, { label: t('ps.col.played'), width: 150 }];
+    body.appendChild(h('h3', { class: 'text-sm font-medium mt-4 mb-2', text: t('psoc.coplay') }));
+    var cols = [{ label: t('psoc.col.player') }, { label: t('psoc.col.game'), width: 120 }, { label: t('psoc.col.matches'), width: 90 }, { label: t('psoc.col.played'), width: 150 }];
     var tb = table(cols, s.coplay.map(function (c) {
       return { item: c, cells: [h('a', { href: '#/players/' + c.userId, class: 'eco-link', dir: 'ltr', text: c.username || c.userId }), h('span', { dir: 'ltr', text: c.gameKey || '-' }),
         h('span', { class: 'tabular-nums', text: fmtNum(c.matches || 0) }), h('span', { class: 'text-xs', text: fmtDate(c.lastAt, true) })] };

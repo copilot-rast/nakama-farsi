@@ -80,6 +80,30 @@ export class Chat {
     return { presences: r.status?.presences || [] };
   }
 
+  async joinMatch(matchId: string): Promise<any> {
+    const r = await this.call({ match_join: { match_id: matchId } });
+    if (r.error) throw new Error('match join failed: ' + r.error.message);
+    return r.match;
+  }
+
+  sendMatch(matchId: string, opCode: number, body: unknown) {
+    this.ws.send(JSON.stringify({ match_data_send: { match_id: matchId, op_code: String(opCode), data: Buffer.from(JSON.stringify(body)).toString('base64') } }));
+  }
+
+  matchData(opCode: number): any[] {
+    return this.events.filter((e) => e.match_data && Number(e.match_data.op_code) === opCode).map((e) => JSON.parse(Buffer.from(e.match_data.data || '', 'base64').toString('utf8') || '{}'));
+  }
+
+  async waitMatch(opCode: number, pred: (d: any) => boolean = () => true, timeout = 10_000): Promise<any> {
+    const end = Date.now() + timeout;
+    while (Date.now() < end) {
+      const hit = this.matchData(opCode).find(pred);
+      if (hit) return hit;
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    throw new Error('no match data with op ' + opCode);
+  }
+
   close() {
     try { this.ws.close(); } catch { return; }
   }
