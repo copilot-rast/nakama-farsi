@@ -442,8 +442,9 @@ RESOURCES.streaks = {
     ] },
     { type: 'row', fields: [
       { name: 'gracePeriods', type: 'number', label: 'f.sk.grace', hint: 'f.sk.grace.hint', required: true, min: 0, max: 30 },
-      { name: 'missAction', type: 'select', label: 'f.sk.miss', required: true, options: opts('sk.miss.', ['reset', 'step_back']) }
+      { name: 'missAction', type: 'select', label: 'f.sk.miss', required: true, refresh: true, options: opts('sk.miss.', ['reset', 'step_back', 'week_start']) }
     ] },
+    { name: 'weekLength', type: 'number', label: 'f.sk.weekLength', hint: 'f.sk.weekLength.hint', required: true, min: 1, max: 365, when: function (v) { return v.missAction === 'week_start'; } },
     { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' },
     { type: 'heading', label: 'sk.h.rewards' },
     { name: 'rewards', type: 'rows', addLabel: 'sk.add', emptyText: 'sk.empty', max: 365,
@@ -475,11 +476,37 @@ RESOURCES.streaks = {
         { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.sk.msPrize', optional: true },
         { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', options: grantOptions }
       ] },
-    { name: 'repayAfterFall', type: 'bool', inline: true, label: 'f.sk.repay', hint: 'f.sk.repay.hint' }
+    { name: 'repayAfterFall', type: 'bool', inline: true, label: 'f.sk.repay', hint: 'f.sk.repay.hint' },
+    { type: 'heading', label: 'sk.h.extras' },
+    { name: 'extrasNote', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', 'data-extras-note': '', text: t('sk.extras.note') }); } },
+    { name: 'extras', type: 'rows', addLabel: 'sk.x.add', emptyText: 'sk.x.empty', max: 100,
+      newRow: function (rows) {
+        var last = rows[rows.length - 1];
+        return { day: last ? Number(last.day || 0) + 7 : 8, prizeId: null, grantMode: 'claim' };
+      },
+      check: function (rows) { return duplicateCheck('day', 'DUPLICATE_DAY')(rows); },
+      columns: [
+        { name: 'day', type: 'number', label: 'f.sk.xDay', required: true, min: 1 },
+        { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', required: true },
+        { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', options: grantOptions }
+      ] },
+    { type: 'heading', label: 'sk.h.infinity' },
+    { name: 'infinity', type: 'bool', inline: true, label: 'f.sk.infinity', hint: 'f.sk.infinity.hint', refresh: true },
+    { type: 'row', when: function (v) { return !!v.infinity; }, fields: [
+      { name: 'infinityCurrency', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.sk.infCurrency', required: true, when: function (v) { return !!v.infinity; } },
+      { name: 'infinityMin', type: 'number', label: 'f.sk.infMin', required: true, min: 1, when: function (v) { return !!v.infinity; } },
+      { name: 'infinityMax', type: 'number', label: 'f.sk.infMax', required: true, min: 1, when: function (v) { return !!v.infinity; } }
+    ] }
   ],
-  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', isActive: true, sort: 0, rewards: [], milestones: [], repayAfterFall: false }; },
+  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', weekLength: 7, isActive: true, sort: 0, rewards: [], milestones: [], extras: [], repayAfterFall: false, infinity: false, infinityCurrency: null, infinityMin: 150, infinityMax: 180 }; },
   fixPayload: function (p) {
     if (p.sort == null) p.sort = 0;
+    if (!p.weekLength) p.weekLength = 7;
+    p.infinity = !!p.infinity;
+    if (!p.infinity) { p.infinityCurrency = ''; p.infinityMin = 0; p.infinityMax = 0; }
+    p.infinityCurrency = p.infinityCurrency || '';
+    p.extras = p.extras || [];
+    delete p.extrasNote;
     return p;
   }
 };

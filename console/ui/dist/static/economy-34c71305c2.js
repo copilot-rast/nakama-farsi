@@ -1784,6 +1784,62 @@ var MESSAGES = {
     'f.sk.msPrize': 'جایزهٔ رسیدن (یک بار)',
     'f.sk.repay': 'جایزهٔ روزها دوباره داده شود',
     'f.sk.repay.hint': 'خاموش (پیشنهادی): اگر بازیکن به نقطهٔ امن برگردد و دوباره به همان روزها برسد، جایزهٔ آن روزها را دوباره نمی‌گیرد. این جلوی غیبتِ عمدی برای جمع‌کردن دوبارهٔ جایزه را می‌گیرد.',
+    'ch.type.slots': "صندوق خانه‌دار",
+    'ch.slotsN': "{n} خانهٔ مستقل",
+    'ch.slot.add': "خانهٔ تازه",
+    'ch.slots.hint': "هر خانه جدا قرعه می‌خورد: شانس، درصدِ آمدن همان خانه است و جمع‌شان لازم نیست ۱۰۰ شود. برای ارز، مقدار بین کمینه و بیشینه تصادفی است.",
+    'ch.slotKind.currency': "ارز (بازه)",
+    'ch.slotKind.prize': "جایزه",
+    'ch.slotKind.prizeGroup': "گروه جایزه",
+    'f.ch.slotKind': "نوع",
+    'f.ch.min': "کمینه",
+    'f.ch.max': "بیشینه",
+    'f.ch.reroll': "اگر هیچ خانه‌ای نیامد دوباره قرعه بکش",
+    'f.ch.reroll.hint': "روشن (پیشنهادی): صندوق هیچ‌وقت خالی باز نمی‌شود.",
+    'f.ch.jackpot': "ردیف جایزهٔ بزرگ",
+    'f.ch.jackpot.hint': "شمارهٔ ردیفی که جایزهٔ بزرگ است (از ۱). خالی یعنی جایزهٔ بزرگ ندارد.",
+    'f.ch.pity': "تضمین جایزهٔ بزرگ بعد از",
+    'f.ch.pity.hint': "اگر بازیکن این‌قدر بازی کند و جایزهٔ بزرگ نیاید، همین بازی جایزهٔ بزرگ می‌دهد. با هر جایزهٔ بزرگ از صفر شروع می‌شود. پیشنهاد: ۴۰.",
+    'f.ch.ladder': "پلکان قیمت بلیت در روز",
+    'f.ch.ladder.hint': "قیمت بلیت اول، دوم و … در هر روز، با ویرگول. بعد از آخرین پله همان قیمت آخر می‌ماند. مثال: 10, 15, 20, 25, 30. خالی یعنی همیشه همان قیمت بالا.",
+    'f.ch.revealAck': "نمایش نتیجه تا تأیید بازیکن",
+    'f.ch.revealAck.hint': "جایزه همان لحظه داده می‌شود؛ ولی تا بازیکن دیدن نتیجه را تأیید نکند، نتیجهٔ آخر در pendingReveal می‌ماند.",
+    'ch.ladder.tag': "پلکان {list}",
+    'ch.pity.tag': "تضمین بعد از {n}",
+    'item.booster': "افزایش‌دهندهٔ زمان‌دار",
+    'item.booster.multiplier': "ضریب",
+    'item.booster.minutes': "مدت (دقیقه)",
+    'item.booster.hint': "رویدادهایی که این متا را زیاد می‌کنند در این مدت ضرب می‌شوند. چند افزایش‌دهنده روی هم ضرب نمی‌شوند؛ تازه‌ترین ضریب می‌ماند.",
+    'item.booster.range': "ضریب از ۱٫۰۱ تا ۱۰۰ و مدت از ۱ تا ۵۲۵۶۰۰ دقیقه",
+    'sk.miss.week_start': "برگشت به اول همان هفته",
+    'f.sk.weekLength': "طول هفته (روز)",
+    'f.sk.weekLength.hint': "با غیبت، بازیکن به روز اولِ همین هفته برمی‌گردد؛ مثلاً با طول ۷، غیبت در روز ۱۲ یعنی روز ۸.",
+    'sk.h.extras': "روزهای ویژه",
+    'sk.extras.note': "جایزهٔ اضافه در این روزها، فقط اگر بازیکن بدون غیبت به آن روز رسیده باشد.",
+    'sk.x.add': "روز ویژهٔ تازه",
+    'sk.x.empty': "روز ویژه‌ای نیست.",
+    'f.sk.xDay': "روز",
+    'sk.h.infinity': "مرحلهٔ بی‌پایان",
+    'f.sk.infinity': "بعد از پایان چرخه، مرحلهٔ بی‌پایان",
+    'f.sk.infinity.hint': "بعد از رسیدن به آخرین روز چرخه، هر روز مقداری تصادفی از ارز می‌گیرد و با غیبت به عقب برنمی‌گردد. نیاز به طول چرخه دارد.",
+    'f.sk.infCurrency': "ارز",
+    'f.sk.infMin': "کمینه",
+    'f.sk.infMax': "بیشینه",
+    'code.CHANCE_PRICE_CHANGED': "قیمت این بازی عوض شده است. قیمت تازه را ببینید و دوباره امتحان کنید.",
+    'code.SLOTS_ALL_ZERO': "دست‌کم یک خانهٔ صندوق باید شانسی بیشتر از صفر داشته باشد.",
+    'code.INVALID_SLOT_RANGE': "بازهٔ خانهٔ صندوق باید عدد صحیح باشد و کمینه دست‌کم ۱ و نه بیشتر از بیشینه.",
+    'code.INVALID_SLOT_KIND': "نوع خانهٔ صندوق باید ارز، جایزه یا گروه جایزه باشد.",
+    'code.JACKPOT_NOT_FOR_SLOTS': "صندوقِ خانه‌دار جایزهٔ بزرگ ندارد.",
+    'code.PITY_NOT_FOR_SLOTS': "صندوقِ خانه‌دار شمارندهٔ تضمین ندارد.",
+    'code.ONE_JACKPOT': "فقط یک ردیف را جایزهٔ بزرگ کنید.",
+    'code.INVALID_PITY': "آستانهٔ تضمین باید بین ۱ تا ۱۰۰۰۰۰ بازی باشد.",
+    'code.PITY_NEEDS_JACKPOT': "اول ردیف جایزهٔ بزرگ را مشخص کنید، بعد آستانهٔ تضمین را.",
+    'code.INVALID_PRICE_LADDER': "پلکان قیمت حداکثر ۱۰ پله دارد و هر پله عددی صحیح از ۱ به بالاست.",
+    'code.LADDER_NEEDS_PRICE': "پلکان قیمت به ارز بلیت نیاز دارد.",
+    'code.INVALID_WEEK_LENGTH': "طول هفته باید بین ۱ تا ۳۶۵ روز باشد.",
+    'code.INFINITY_NEEDS_CYCLE': "مرحلهٔ بی‌پایان بعد از چرخه شروع می‌شود. اول طول چرخه را تعیین کنید.",
+    'code.INVALID_INFINITY_RANGE': "مقدار مرحلهٔ بی‌پایان باید بازه‌ای صحیح باشد؛ کمینه دست‌کم ۱ و نه بیشتر از بیشینه.",
+    'code.TOO_MANY_EXTRAS': "هر زنجیره حداکثر ۱۰۰ روز ویژه دارد.",
     'sk.hiro.notice': 'این بخش مال خود این سرور است و به Hiro نیازی ندارد. صفحهٔ «زنجیره‌ها»ی Hiro جدا و دست‌نخورده می‌ماند.',
     'f.sk.event': 'رویداد شمارنده',
     'f.sk.event.hint': 'مثلاً «ورود به بازی». هر بازه فقط یک بار شمرده می‌شود.',
@@ -7336,6 +7392,62 @@ var MESSAGES = {
     'f.sk.msPrize': 'Prize for reaching it (once)',
     'f.sk.repay': 'Pay day rewards again',
     'f.sk.repay.hint': 'Off (recommended): a player who falls back to a milestone and reaches the same days again does not get those day rewards twice. This stops players missing days on purpose to collect them again.',
+    'ch.type.slots': "Chest with slots",
+    'ch.slotsN': "{n} independent slots",
+    'ch.slot.add': "New slot",
+    'ch.slots.hint': "Each slot rolls on its own: the chance is how often that slot comes up, and the chances do not need to add up to 100. A currency slot pays a random amount from min to max.",
+    'ch.slotKind.currency': "Currency (range)",
+    'ch.slotKind.prize': "Prize",
+    'ch.slotKind.prizeGroup': "Prize group",
+    'f.ch.slotKind': "Kind",
+    'f.ch.min': "Min",
+    'f.ch.max': "Max",
+    'f.ch.reroll': "Roll again when no slot comes up",
+    'f.ch.reroll.hint': "On (recommended): a chest never opens empty.",
+    'f.ch.jackpot': "Jackpot row",
+    'f.ch.jackpot.hint': "The number of the jackpot row (from 1). Empty means no jackpot.",
+    'f.ch.pity': "Force the jackpot after",
+    'f.ch.pity.hint': "When a player plays this many times without the jackpot, this play gives it. It starts again from zero after any jackpot. Suggested: 40.",
+    'f.ch.ladder': "Ticket price ladder per day",
+    'f.ch.ladder.hint': "The price of the first, second, … ticket each day, separated by commas. After the last step the last price stays. Example: 10, 15, 20, 25, 30. Empty means the price above every time.",
+    'f.ch.revealAck': "Keep the result until the player confirms it",
+    'f.ch.revealAck.hint': "The reward is given at once; the last result stays in pendingReveal until the player confirms they saw it.",
+    'ch.ladder.tag': "Ladder {list}",
+    'ch.pity.tag': "Jackpot after {n}",
+    'item.booster': "Timed booster",
+    'item.booster.multiplier': "Multiplier",
+    'item.booster.minutes': "Length (minutes)",
+    'item.booster.hint': "Events that add to this meta are multiplied for this long. Boosters do not stack; the newest multiplier wins.",
+    'item.booster.range': "multiplier from 1.01 to 100 and length from 1 to 525600 minutes",
+    'sk.miss.week_start': "Back to the start of the week",
+    'f.sk.weekLength': "Week length (days)",
+    'f.sk.weekLength.hint': "A missed day sends the player back to the first day of the current week; with 7, missing on day 12 means day 8.",
+    'sk.h.extras': "Special days",
+    'sk.extras.note': "An extra prize on these days, only when the player reached the day without missing one.",
+    'sk.x.add': "New special day",
+    'sk.x.empty': "No special days.",
+    'f.sk.xDay': "Day",
+    'sk.h.infinity': "Infinity phase",
+    'f.sk.infinity': "Infinity phase after the cycle",
+    'f.sk.infinity.hint': "After the last day of the cycle, each day pays a random amount of a currency and a missed day no longer sends the player back. Needs the cycle length.",
+    'f.sk.infCurrency': "Currency",
+    'f.sk.infMin': "Min",
+    'f.sk.infMax': "Max",
+    'code.CHANCE_PRICE_CHANGED': "The price of this play has changed. Check the new price and try again.",
+    'code.SLOTS_ALL_ZERO': "At least one chest slot needs a chance above 0.",
+    'code.INVALID_SLOT_RANGE': "A chest slot needs a whole range where min is at least 1 and not above max.",
+    'code.INVALID_SLOT_KIND': "A chest slot is currency, prize or prize group.",
+    'code.JACKPOT_NOT_FOR_SLOTS': "A chest with slots has no jackpot row.",
+    'code.PITY_NOT_FOR_SLOTS': "A chest with slots has no pity counter.",
+    'code.ONE_JACKPOT': "Mark at most one row as the jackpot.",
+    'code.INVALID_PITY': "The pity threshold is from 1 to 100000 plays.",
+    'code.PITY_NEEDS_JACKPOT': "Mark the jackpot row before setting the pity threshold.",
+    'code.INVALID_PRICE_LADDER': "The price ladder has up to 10 whole amounts of 1 or more.",
+    'code.LADDER_NEEDS_PRICE': "A price ladder needs the ticket currency.",
+    'code.INVALID_WEEK_LENGTH': "The week length is from 1 to 365 days.",
+    'code.INFINITY_NEEDS_CYCLE': "The infinity phase starts after the cycle. Set the cycle length first.",
+    'code.INVALID_INFINITY_RANGE': "The infinity amount is a whole range where min is at least 1 and not above max.",
+    'code.TOO_MANY_EXTRAS': "A streak has at most 100 extra days.",
     'sk.hiro.notice': 'This is built into this server and does not need Hiro. The Hiro Streaks page stays separate and untouched.',
     'f.sk.event': 'Counting event',
     'f.sk.event.hint': 'For example "Sign-in". Counted at most once per period.',
@@ -12857,7 +12969,7 @@ function actionsEditor(value, onchange) {
   return el;
 }
 
-var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'], item: ['give'], achievement: ['give'], tag: ['give', 'set'] };
+var ITEM_ACTIONS = { currency: ['add'], meta: ['add', 'set'], storage: ['give'], item: ['give'], achievement: ['give'], tag: ['give', 'set'], booster: ['give', 'set'] };
 
 function itemsEditor(value, onchange) {
   var rows = (value || []).map(function (r) { return Object.assign({}, r); });
@@ -12869,11 +12981,11 @@ function itemsEditor(value, onchange) {
     errors = [];
     if (!rows.length) listEl.appendChild(h('div', { class: 'text-sm text-secondary-500 dark:text-secondary-400 border border-dashed border-secondary-300 dark:border-secondary-700 rounded-md px-3 py-4 text-center', text: t('f.items.empty') }));
     rows.forEach(function (row, idx) {
-      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'achievement', 'tag', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
+      var typeSel = selectInput(row.type, ['currency', 'meta', 'item', 'achievement', 'tag', 'booster', 'storage'].map(function (k) { return { value: k, label: t('item.' + k) }; }), function (v) {
         row.type = v;
         row.key = '';
         row.action = (ITEM_ACTIONS[v] || ['add'])[0];
-        row.value = v === 'storage' ? {} : v === 'item' || v === 'achievement' ? 1 : v === 'tag' ? 30 : 0;
+        row.value = v === 'storage' ? {} : v === 'booster' ? { multiplier: 2, minutes: 60 } : v === 'item' || v === 'achievement' ? 1 : v === 'tag' ? 30 : 0;
         render();
         emit();
       }, { placeholder: false, label: t('f.item.type') });
@@ -12890,9 +13002,9 @@ function itemsEditor(value, onchange) {
         keyCtl = refPicker({ resource: 'tags', api: baseApi, filter: { keyType: 'user' }, valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
         keyCtl.setAttribute('data-tag-picker', '');
       } else {
-        keyCtl = refPicker({ resource: row.type === 'meta' ? 'metas' : 'currencies', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
+        keyCtl = refPicker({ resource: row.type === 'meta' || row.type === 'booster' ? 'metas' : 'currencies', valueKey: 'key', value: row.key, required: true, label: t('f.item.key'), onchange: function (v) { row.key = v || ''; emit(); } });
       }
-      var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t((row.type === 'tag' ? 'action.tag.' : 'action.') + k) }; }), function (v) { row.action = v; emit(); }, { placeholder: false, label: t('f.item.action') });
+      var actSel = selectInput(row.action, (ITEM_ACTIONS[row.type] || ['add']).map(function (k) { return { value: k, label: t((row.type === 'tag' || row.type === 'booster' ? 'action.tag.' : 'action.') + k) }; }), function (v) { row.action = v; emit(); }, { placeholder: false, label: t('f.item.action') });
       var valCtl;
       if (row.type === 'item' || row.type === 'achievement') {
         valCtl = h('div', { class: 'text-sm text-secondary-600 dark:text-secondary-300 py-2', text: t('item.' + row.type + '.once') });
@@ -12901,6 +13013,13 @@ function itemsEditor(value, onchange) {
           try { row.value = JSON.parse(v); row._bad = false; } catch (e) { row._bad = true; }
           emit();
         } });
+      } else if (row.type === 'booster') {
+        var bv = row.value && typeof row.value === 'object' ? row.value : { multiplier: 2, minutes: 60 };
+        row.value = bv;
+        valCtl = h('div', { class: 'flex flex-col gap-1', 'data-booster-value': '' },
+          numberInput(bv.multiplier, { int: false, label: t('item.booster.multiplier'), oninput: function (v) { bv.multiplier = parseNumber(v, false); emit(); } }),
+          numberInput(bv.minutes, { int: true, label: t('item.booster.minutes'), oninput: function (v) { bv.minutes = parseNumber(v, true); emit(); } }),
+          h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('item.booster.hint') }));
       } else if (row.type === 'tag') {
         valCtl = h('div', { class: 'flex flex-col gap-1' }, numberInput(row.value, { int: false, label: t('item.tag.days'), oninput: function (v) { row._raw = v; row.value = parseNumber(v, false); emit(); } }),
           h('span', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-tag-days-hint': '', text: t('item.tag.days.hint') }));
@@ -12936,7 +13055,8 @@ function itemsEditor(value, onchange) {
       var msg = '';
       if (!r.key) msg = t('f.item.key') + ': ' + t('err.required');
       else if (r.type === 'storage' && (r._bad || r.value === null || typeof r.value !== 'object')) msg = t('err.json');
-      else if (r.type !== 'storage' && r.type !== 'item' && r.type !== 'achievement' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
+      else if (r.type === 'booster' && (!r.value || !(Number(r.value.multiplier) >= 1.01 && Number(r.value.multiplier) <= 100) || !(Number(r.value.minutes) >= 1 && Number(r.value.minutes) <= 525600))) msg = t('item.booster.range');
+      else if (r.type !== 'storage' && r.type !== 'item' && r.type !== 'achievement' && r.type !== 'booster' && (r.value === null || r.value === undefined || isNaN(r.value))) msg = t('f.item.value') + ': ' + t('err.number');
       else if (r.type === 'tag' && (Number(r.value) < 0 || Number(r.value) > 36500)) msg = t('item.tag.days') + ': ' + t('item.tag.days.range');
       e.el.textContent = msg;
       e.el.hidden = !msg;
@@ -17772,8 +17892,9 @@ RESOURCES.streaks = {
     ] },
     { type: 'row', fields: [
       { name: 'gracePeriods', type: 'number', label: 'f.sk.grace', hint: 'f.sk.grace.hint', required: true, min: 0, max: 30 },
-      { name: 'missAction', type: 'select', label: 'f.sk.miss', required: true, options: opts('sk.miss.', ['reset', 'step_back']) }
+      { name: 'missAction', type: 'select', label: 'f.sk.miss', required: true, refresh: true, options: opts('sk.miss.', ['reset', 'step_back', 'week_start']) }
     ] },
+    { name: 'weekLength', type: 'number', label: 'f.sk.weekLength', hint: 'f.sk.weekLength.hint', required: true, min: 1, max: 365, when: function (v) { return v.missAction === 'week_start'; } },
     { name: 'isActive', type: 'bool', inline: true, label: 'f.isActive' },
     { type: 'heading', label: 'sk.h.rewards' },
     { name: 'rewards', type: 'rows', addLabel: 'sk.add', emptyText: 'sk.empty', max: 365,
@@ -17805,11 +17926,37 @@ RESOURCES.streaks = {
         { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.sk.msPrize', optional: true },
         { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', options: grantOptions }
       ] },
-    { name: 'repayAfterFall', type: 'bool', inline: true, label: 'f.sk.repay', hint: 'f.sk.repay.hint' }
+    { name: 'repayAfterFall', type: 'bool', inline: true, label: 'f.sk.repay', hint: 'f.sk.repay.hint' },
+    { type: 'heading', label: 'sk.h.extras' },
+    { name: 'extrasNote', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', 'data-extras-note': '', text: t('sk.extras.note') }); } },
+    { name: 'extras', type: 'rows', addLabel: 'sk.x.add', emptyText: 'sk.x.empty', max: 100,
+      newRow: function (rows) {
+        var last = rows[rows.length - 1];
+        return { day: last ? Number(last.day || 0) + 7 : 8, prizeId: null, grantMode: 'claim' };
+      },
+      check: function (rows) { return duplicateCheck('day', 'DUPLICATE_DAY')(rows); },
+      columns: [
+        { name: 'day', type: 'number', label: 'f.sk.xDay', required: true, min: 1 },
+        { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.prize', required: true },
+        { name: 'grantMode', type: 'select', label: 'f.ev.grantMode', options: grantOptions }
+      ] },
+    { type: 'heading', label: 'sk.h.infinity' },
+    { name: 'infinity', type: 'bool', inline: true, label: 'f.sk.infinity', hint: 'f.sk.infinity.hint', refresh: true },
+    { type: 'row', when: function (v) { return !!v.infinity; }, fields: [
+      { name: 'infinityCurrency', type: 'ref', resource: 'currencies', valueKey: 'key', label: 'f.sk.infCurrency', required: true, when: function (v) { return !!v.infinity; } },
+      { name: 'infinityMin', type: 'number', label: 'f.sk.infMin', required: true, min: 1, when: function (v) { return !!v.infinity; } },
+      { name: 'infinityMax', type: 'number', label: 'f.sk.infMax', required: true, min: 1, when: function (v) { return !!v.infinity; } }
+    ] }
   ],
-  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', isActive: true, sort: 0, rewards: [], milestones: [], repayAfterFall: false }; },
+  defaults: function () { return { key: '', name: {}, description: {}, eventTypeId: null, periodDays: 1, cycleLength: 7, gracePeriods: 0, missAction: 'reset', weekLength: 7, isActive: true, sort: 0, rewards: [], milestones: [], extras: [], repayAfterFall: false, infinity: false, infinityCurrency: null, infinityMin: 150, infinityMax: 180 }; },
   fixPayload: function (p) {
     if (p.sort == null) p.sort = 0;
+    if (!p.weekLength) p.weekLength = 7;
+    p.infinity = !!p.infinity;
+    if (!p.infinity) { p.infinityCurrency = ''; p.infinityMin = 0; p.infinityMax = 0; }
+    p.infinityCurrency = p.infinityCurrency || '';
+    p.extras = p.extras || [];
+    delete p.extrasNote;
     return p;
   }
 };
@@ -24263,7 +24410,15 @@ PH_ICONS['prize-groups'] = '<path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-1
 PH_ICONS.packageDuo = '<path d="M128,129.09V232a8,8,0,0,1-3.84-1l-88-48.18a8,8,0,0,1-4.16-7V80.18a8,8,0,0,1,.7-3.25Z" opacity="0.2"/>' + PH_ICONS['prize-groups'];
 PH_ICONS.timerDuo = '<path d="M216,136a88,88,0,1,1-88-88A88,88,0,0,1,216,136Z" opacity="0.2"/><path d="M128,40a96,96,0,1,0,96,96A96.11,96.11,0,0,0,128,40Zm0,176a80,80,0,1,1,80-80A80.09,80.09,0,0,1,128,216ZM173.66,90.34a8,8,0,0,1,0,11.32l-40,40a8,8,0,0,1-11.32-11.32l40-40A8,8,0,0,1,173.66,90.34ZM96,16a8,8,0,0,1,8-8h48a8,8,0,0,1,0,16H104A8,8,0,0,1,96,16Z"/>';
 
-var CHANCE_PRIZE_TYPES = ['prize', 'prizeGroup'];
+var CHANCE_PRIZE_TYPES = ['prize', 'prizeGroup', 'slots'];
+var CH_SLOT_KINDS = ['currency', 'prize', 'prizeGroup'];
+
+function chNotSlots(v) { return v.prizeType !== 'slots'; }
+function chSlots(v) { return v.prizeType === 'slots'; }
+
+function chLadder(text) {
+  return String(text || '').split(/[\s,،]+/).filter(function (x) { return x !== ''; }).map(function (x) { return parseNumber(x, true); });
+}
 var CH_SLICE_COLORS = 8;
 
 function chanceSum(rows) {
@@ -24281,7 +24436,7 @@ function chanceBar(rows, prizeType) {
   (rows || []).forEach(function (r, i) {
     var v = Number(r.chance) || 0;
     if (v <= 0) return;
-    var empty = prizeType === 'prizeGroup' ? !r.prizeGroupId : !r.prizeId;
+    var empty = prizeType === 'slots' ? false : prizeType === 'prizeGroup' ? !r.prizeGroupId : !r.prizeId;
     barEl.appendChild(h('span', { 'data-slice': String(i % CH_SLICE_COLORS), 'data-empty': empty ? '' : null, style: 'flex:' + v + ' 1 0' }));
   });
   return barEl;
@@ -24294,6 +24449,8 @@ function chanceModes(it) {
     out.push(h('span', { class: 'eco-tag eco-tag--primary inline-flex items-center gap-1 leading-tight max-w-full px-2 py-0.5 text-xs rounded-md whitespace-nowrap', 'data-ch-price': '' },
       h('span', { class: 'tabular-nums', text: t('ch.mode.ticket', { n: fmtNum(it.price.amount) }) }), refNameCell('currencies', it.price.currencyId)));
   }
+  if (it.priceLadder && it.priceLadder.length) out.push(h('span', { 'data-ch-ladder': '' }, tag(t('ch.ladder.tag', { list: it.priceLadder.map(function (n) { return fmtNum(n); }).join(' › ') }), 'primary')));
+  if (it.pityThreshold) out.push(h('span', { 'data-ch-pity': '' }, tag(t('ch.pity.tag', { n: fmtNum(it.pityThreshold) }), 'success')));
   if (it.dailyLimit) out.push(h('span', { 'data-ch-daily': '' }, tag(t('ch.limit.daily', { n: fmtNum(it.dailyLimit) }), 'warning')));
   if (it.totalLimit) out.push(h('span', { 'data-ch-total': '' }, tag(t('ch.limit.total', { n: fmtNum(it.totalLimit) }), 'warning')));
   return out;
@@ -24308,6 +24465,7 @@ function chanceMinutes(n) {
 
 function chanceRowsSummary(it) {
   var rows = it.prize || [];
+  if (it.prizeType === 'slots') return t('ch.slotsN', { n: fmtNum(rows.length) });
   var won = rows.filter(function (r) { return it.prizeType === 'prizeGroup' ? r.prizeGroupId : r.prizeId; }).length;
   return t('ch.rowsN', { n: fmtNum(rows.length), w: fmtNum(won) });
 }
@@ -24372,8 +24530,32 @@ RESOURCES['chance-games'] = {
     { name: 'kind', type: 'select', label: 'f.ch.kind', hint: 'f.ch.kind.hint', required: true, noPlaceholder: true, options: opts('ch.kind.', ['wheel', 'chest']) },
     { name: 'stats', type: 'static', readonly: true, render: chanceStats },
     { type: 'heading', label: 'ch.h.table' },
-    { name: 'prizeType', type: 'select', label: 'f.ch.prizeType', hint: 'f.ch.prizeType.hint', required: true, noPlaceholder: true, options: opts('ch.type.', CHANCE_PRIZE_TYPES) },
-    { name: 'prize', type: 'rows', addLabel: 'ch.row.add', emptyText: 'ch.row.empty', min: 1, max: 50, empty: [], refresh: true,
+    { name: 'prizeType', type: 'select', label: 'f.ch.prizeType', hint: 'f.ch.prizeType.hint', required: true, noPlaceholder: true, refresh: true, options: opts('ch.type.', CHANCE_PRIZE_TYPES) },
+    { name: 'slots', type: 'rows', addLabel: 'ch.slot.add', emptyText: 'ch.row.empty', min: 1, max: 50, empty: [], when: chSlots,
+      newRow: function () { return { chance: 50, kind: 'currency', currencyId: null, min: 1, max: 1, prizeId: null, prizeGroupId: null }; },
+      check: function (rows) {
+        var any = false;
+        for (var i = 0; i < rows.length; i++) {
+          var r = rows[i];
+          if (Number(r.chance) > 0) any = true;
+          if (r.kind === 'currency' && (!r.currencyId || !(Number(r.min) >= 1) || Number(r.max) < Number(r.min))) return { index: i, message: t('code.INVALID_SLOT_RANGE') };
+          if (r.kind === 'prize' && !r.prizeId) return { index: i, message: t('f.ch.prize') + ': ' + t('err.required') };
+          if (r.kind === 'prizeGroup' && !r.prizeGroupId) return { index: i, message: t('f.ch.group') + ': ' + t('err.required') };
+        }
+        return any ? null : { index: 0, message: t('code.SLOTS_ALL_ZERO') };
+      },
+      columns: [
+        { name: 'chance', type: 'number', int: false, label: 'f.ch.chance', required: true, min: 0, max: 100 },
+        { name: 'kind', type: 'select', label: 'f.ch.slotKind', options: function () { return opts('ch.slotKind.', CH_SLOT_KINDS)(); } },
+        { name: 'currencyId', type: 'ref', resource: 'currencies', label: 'f.ch.currency', optional: true },
+        { name: 'min', type: 'number', label: 'f.ch.min', optional: true, min: 1 },
+        { name: 'max', type: 'number', label: 'f.ch.max', optional: true, min: 1 },
+        { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.ch.prize', optional: true },
+        { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.ch.group', optional: true }
+      ] },
+    { name: 'slotsHint', type: 'static', readonly: true, when: chSlots, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-ch-slots-hint': '', text: t('ch.slots.hint') }); } },
+    { name: 'rerollEmpty', type: 'bool', inline: true, label: 'f.ch.reroll', hint: 'f.ch.reroll.hint', when: chSlots },
+    { name: 'prize', type: 'rows', when: chNotSlots, addLabel: 'ch.row.add', emptyText: 'ch.row.empty', min: 1, max: 50, empty: [], refresh: true,
       newRow: function (rows) {
         var left = Math.round((100 - chanceSum(rows)) * 10000) / 10000;
         return { chance: left > 0 ? left : 0, prizeId: null, prizeGroupId: null };
@@ -24388,8 +24570,12 @@ RESOURCES['chance-games'] = {
         { name: 'prizeId', type: 'ref', resource: 'prizes', label: 'f.ch.prize', optional: true },
         { name: 'prizeGroupId', type: 'ref', resource: 'prize-groups', label: 'f.ch.group', optional: true }
       ] },
-    { name: 'sum', type: 'static', readonly: true, live: true, render: chanceSumBlock },
-    { name: 'rowsHint', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('ch.rows.hint') }); } },
+    { name: 'sum', type: 'static', readonly: true, live: true, when: chNotSlots, render: chanceSumBlock },
+    { type: 'row', when: chNotSlots, fields: [
+      { name: 'jackpotRow', type: 'number', label: 'f.ch.jackpot', hint: 'f.ch.jackpot.hint', optional: true, min: 1, max: 50, when: chNotSlots },
+      { name: 'pityThreshold', type: 'number', label: 'f.ch.pity', hint: 'f.ch.pity.hint', optional: true, min: 1, max: 100000, when: chNotSlots }
+    ] },
+    { name: 'rowsHint', type: 'static', readonly: true, when: chNotSlots, render: function () { return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('ch.rows.hint') }); } },
     { type: 'heading', label: 'ch.h.play' },
     { name: 'intervalTime', type: 'number', label: 'f.ch.interval', hint: 'f.ch.interval.hint', optional: true, min: 1, max: 525600 },
     { type: 'row', fields: [
@@ -24397,6 +24583,8 @@ RESOURCES['chance-games'] = {
         check: function (v, vals) { var a = vals.price && vals.price.amount; return (v && (a == null || a === '')) || (!v && a != null && a !== '') ? t('code.INVALID_PRICE_PAYLOAD') : null; } },
       { name: 'price.amount', type: 'number', label: 'f.ch.amount', hint: 'f.ch.amount.hint', optional: true, min: 1 }
     ] },
+    { name: 'ladderText', type: 'text', ltr: true, label: 'f.ch.ladder', hint: 'f.ch.ladder.hint', optional: true },
+    { name: 'revealAck', type: 'bool', inline: true, label: 'f.ch.revealAck', hint: 'f.ch.revealAck.hint' },
     { name: 'playHint', type: 'static', readonly: true, live: true, render: function (v) {
       var none = !v.intervalTime && !(v.price && v.price.currencyId);
       return h('p', { class: 'text-xs ' + (none ? 'text-error-600 dark:text-error-400' : 'text-secondary-500 dark:text-secondary-400'), 'data-ch-play-hint': none ? 'none' : '', text: none ? t('code.INTERVAL_OR_PRICE_REQUIRED') : t('ch.play.hint') });
@@ -24412,17 +24600,47 @@ RESOURCES['chance-games'] = {
     { name: 'sort', type: 'number', label: 'f.sort', hint: 'f.sort.hint' }
   ],
   defaults: function () {
-    return { key: '', isActive: true, name: {}, description: {}, kind: 'wheel', prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null }, dailyLimit: null, totalLimit: null, showOdds: true,
+    return { key: '', isActive: true, name: {}, description: {}, kind: 'wheel', prizeType: 'prize', metadata: {}, sort: 0, intervalTime: 1440, price: { currencyId: null, amount: null }, dailyLimit: null, totalLimit: null, showOdds: true, ladderText: '', revealAck: false, rerollEmpty: true, jackpotRow: null, pityThreshold: null,
+      slots: [{ chance: 70, kind: 'currency', currencyId: null, min: 120, max: 180, prizeId: null, prizeGroupId: null }],
       prize: [{ chance: 30, prizeId: null, prizeGroupId: null }, { chance: 40, prizeId: null, prizeGroupId: null }, { chance: 30, prizeId: null, prizeGroupId: null }] };
   },
   toForm: function (v) {
     if (!v.price) v.price = { currencyId: null, amount: null };
-    v.prize = (v.prize || []).map(function (r) { return { chance: r.chance, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
+    var rows = v.prize || [];
+    v.ladderText = (v.priceLadder || []).join(', ');
+    v.jackpotRow = null;
+    rows.forEach(function (r, i) { if (r.jackpot) v.jackpotRow = i + 1; });
+    if (v.prizeType === 'slots') {
+      v.slots = rows.map(function (r) { return { chance: r.chance, kind: r.kind || 'prize', currencyId: r.currencyId || null, min: r.min || null, max: r.max || null, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
+      v.prize = [{ chance: 100, prizeId: null, prizeGroupId: null }];
+    } else {
+      v.slots = [];
+      v.prize = rows.map(function (r) { return { chance: r.chance, prizeId: r.prizeId || null, prizeGroupId: r.prizeGroupId || null }; });
+    }
+    if (v.rerollEmpty == null) v.rerollEmpty = true;
     return v;
   },
   fixPayload: function (p) {
     var group = p.prizeType === 'prizeGroup';
-    p.prize = (p.prize || []).map(function (r) { return { chance: r.chance, prizeId: group ? '' : (r.prizeId || ''), prizeGroupId: group ? (r.prizeGroupId || '') : '' }; });
+    if (p.prizeType === 'slots') {
+      p.prize = (p.slots || []).map(function (r) {
+        var k = r.kind || 'prize';
+        var o = { chance: r.chance, kind: k };
+        if (k === 'currency') { o.currencyId = r.currencyId || ''; o.min = r.min; o.max = r.max; }
+        if (k === 'prize') o.prizeId = r.prizeId || '';
+        if (k === 'prizeGroup') o.prizeGroupId = r.prizeGroupId || '';
+        return o;
+      });
+      p.pityThreshold = null;
+    } else {
+      var jr = Number(p.jackpotRow) || 0;
+      p.prize = (p.prize || []).map(function (r, i) { var o = { chance: r.chance, prizeId: group ? '' : (r.prizeId || ''), prizeGroupId: group ? (r.prizeGroupId || '') : '' }; if (i + 1 === jr) o.jackpot = true; return o; });
+      if (p.pityThreshold === '' || p.pityThreshold === undefined) p.pityThreshold = null;
+    }
+    p.priceLadder = chLadder(p.ladderText);
+    p.revealAck = !!p.revealAck;
+    p.rerollEmpty = p.rerollEmpty !== false;
+    delete p.slots; delete p.ladderText; delete p.jackpotRow; delete p.slotsHint;
     if (!p.price || !p.price.currencyId) p.price = null;
     if (p.intervalTime === '' || p.intervalTime === undefined) p.intervalTime = null;
     if (p.sort == null) p.sort = 0;
