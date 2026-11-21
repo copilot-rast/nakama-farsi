@@ -1,0 +1,6 @@
+{
+  "$comment": "Each fork generates its own client RPC list; this project lists its RPCs at /docs/openapi.json.",
+  "version": 1,
+  "transport": 4,
+  "rpcs": []
+}
