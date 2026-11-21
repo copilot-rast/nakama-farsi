@@ -16,11 +16,41 @@ import (
 	"github.com/heroiclabs/nakama/v3/internal/pluginkit"
 )
 
-var queueLocks sync.Map
+var (
+	queueLocks   sync.Map
+	queueLobbies = struct {
+		sync.Mutex
+		ids map[string][]string
+	}{ids: map[string][]string{}}
+)
 
 func queueLock(key string) *sync.Mutex {
 	m, _ := queueLocks.LoadOrStore(key, &sync.Mutex{})
 	return m.(*sync.Mutex)
+}
+
+func recentLobbies(key string) []string {
+	queueLobbies.Lock()
+	defer queueLobbies.Unlock()
+	return append([]string{}, queueLobbies.ids[key]...)
+}
+
+func rememberLobby(key, id string, keep bool) {
+	queueLobbies.Lock()
+	defer queueLobbies.Unlock()
+	list := []string{}
+	for _, x := range queueLobbies.ids[key] {
+		if x != id {
+			list = append(list, x)
+		}
+	}
+	if keep {
+		list = append(list, id)
+	}
+	if len(list) > 50 {
+		list = list[len(list)-50:]
+	}
+	queueLobbies.ids[key] = list
 }
 
 func (s *service) gameLiveRPCs() map[string]clientRPC {
@@ -66,9 +96,17 @@ func (s *service) rpcGameQueue(ctx context.Context, userID, payload string) (any
 		ok, _ := friendroom.ParseAnswer(ans)
 		return ok
 	}
-	lock := queueLock(g.Key + "/" + room.Key)
+	lockKey := g.Key + "/" + room.Key
+	lock := queueLock(lockKey)
 	lock.Lock()
 	defer lock.Unlock()
+	for _, id := range recentLobbies(lockKey) {
+		if try(id) {
+			out["matchId"], out["created"] = id, false
+			return out, nil
+		}
+		rememberLobby(lockKey, id, false)
+	}
 	query := "+label.game:" + g.Key + " +label.mode:" + friendroom.ModeMatchmaking + " +label.status:" + friendroom.StatusWaiting + " +label.free:>=1"
 	if room.Key != "" {
 		query += " +label.room:" + room.Key
@@ -91,6 +129,7 @@ func (s *service) rpcGameQueue(ctx context.Context, userID, payload string) (any
 	if !try(id) {
 		return nil, fail(http.StatusServiceUnavailable, "MATCH_CREATE_FAILED", "", "the match could not be made, try again")
 	}
+	rememberLobby(lockKey, id, true)
 	out["matchId"], out["created"] = id, true
 	return out, nil
 }
