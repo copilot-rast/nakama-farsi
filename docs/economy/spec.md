@@ -529,6 +529,10 @@ Economy section after «روزهای پیاپی»: «تسک‌ها» (`#/economy
 
 Room field `feeAt`: `seat` (default, stored as empty) or `start` (`INVALID_FEE_AT`). `seat` keeps today's behaviour: `Enter` takes the fee, `Leave` before the start and `Cancel` give it back. `start` (Mench, as the legacy MatchFunding): `Enter` and `economy_game_join` only check the balance (`INSUFFICIENT_BALANCE`, also with `overdraft` on), the entry stays `free`; `Start` takes the fee from every `free` entry (bots only with `botsPay`) in one transaction, with `overdraft` letting any wallet, bots included, go below zero, and marks them `paid`. A lobby leave or a cancel before the start moves no money; `Void` of a started match and `refunded` results in `Settle` give the fee back, once. Console: «زمان گرفتن ورودی» in the room play box.
 
+### Action log retention (2026-11-21)
+
+The game setting `actionLogDays` (integer in the game's `settings`; a game plugin lists it in its schema to show it in the console) says how long `economy_game_action` rows of that game's matches are kept: missing = 60 days (today's behaviour), 0 = forever (Mench, as the legacy match_actions table). The sweep deletes at most 5000 rows per pass and per retention.
+
 ### Entry requirements (phase 24)
 
 Owner's request (2026-11-14, Ludo-style games): a room, or a whole game, can ask for items, player tags, a level and meta values, optionally using up a ticket.

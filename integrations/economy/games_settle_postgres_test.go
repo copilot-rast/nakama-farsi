@@ -413,3 +413,33 @@ func TestGameFeeAtStartOverdraftAndRefunds(t *testing.T) {
 		t.Fatalf("refunded row gets its fee back and leaves the pot: a %d b %d %v", h.wallet(a)["coin"]-beforeA, h.wallet(b)["coin"]-beforeB, pay)
 	}
 }
+
+func TestGameActionLogRetentionSetting(t *testing.T) {
+	h := newSettleHarness(t)
+	h.ludoGame([]map[string]any{{"key": "two", "players": 2}}, nil)
+	h.mustAPI(201, http.MethodPost, "/games", map[string]any{"key": "tst_short", "isActive": true, "name": map[string]string{"fa": "کوتاه"}, "minPlayers": 2, "maxPlayers": 2, "rooms": []map[string]any{{"key": "one"}}})
+	if _, err := h.s.db.ExecContext(h.ctx, `UPDATE economy_game SET settings = settings || CASE key WHEN 'tst_board' THEN '{"actionLogDays":0}'::jsonb ELSE '{"actionLogDays":5}'::jsonb END WHERE key IN ('tst_board','tst_short')`); err != nil {
+		t.Fatal(err)
+	}
+	keep, short, plain := "tst-keep-"+randomSuffix(), "tst-short-"+randomSuffix(), "tst-plain-"+randomSuffix()
+	for _, m := range [][2]string{{keep, "tst_board"}, {short, "tst_short"}} {
+		if _, err := h.s.db.ExecContext(h.ctx, `INSERT INTO economy_game_match (id, game_key, room_key) VALUES ($1,$2,'x')`, m[0], m[1]); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, m := range []string{keep, short, plain} {
+		if _, err := h.s.db.ExecContext(h.ctx, `INSERT INTO economy_game_action (match_id, seq, kind, at) VALUES ($1,1,'old',now()-interval '90 days'), ($1,2,'week',now()-interval '7 days')`, m); err != nil {
+			t.Fatal(err)
+		}
+	}
+	h.s.sweepGameHistory(h.ctx)
+	if n := h.count(`SELECT count(*) FROM economy_game_action WHERE match_id=$1`, keep); n != 2 {
+		t.Fatalf("actionLogDays 0 keeps every action: %d", n)
+	}
+	if n := h.count(`SELECT count(*) FROM economy_game_action WHERE match_id=$1`, short); n != 0 {
+		t.Fatalf("actionLogDays 5 drops both: %d", n)
+	}
+	if n := h.count(`SELECT count(*) FROM economy_game_action WHERE match_id=$1`, plain); n != 1 {
+		t.Fatalf("the 60 day default drops only the old one: %d", n)
+	}
+}

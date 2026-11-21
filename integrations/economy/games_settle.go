@@ -17,11 +17,12 @@ import (
 )
 
 const (
-	gamePotReason      = "game_pot"
-	gameActionDays     = 60
-	gameStaleLiveAfter = 2 * time.Minute
-	maxSettleResults   = 100
-	maxLogActions      = 200
+	gamePotReason         = "game_pot"
+	gameActionDays        = 60
+	gameActionDaysSetting = "actionLogDays"
+	gameStaleLiveAfter    = 2 * time.Minute
+	maxSettleResults      = 100
+	maxLogActions         = 200
 )
 
 func (s *service) walletChangeOverdraft(ctx context.Context, tx *sql.Tx, userID, grantID string, changes map[string]int64, meta map[string]any) error {
@@ -589,8 +590,31 @@ func (s *service) logActions(ctx context.Context, matchID string, actions []game
 }
 
 func (s *service) sweepGameHistory(ctx context.Context) {
-	if _, err := s.db.ExecContext(ctx, `DELETE FROM economy_game_action WHERE (match_id, seq) IN (SELECT match_id, seq FROM economy_game_action WHERE at < $1 LIMIT 5000)`, s.now().UTC().AddDate(0, 0, -gameActionDays)); err != nil {
+	games, _, err := s.gameRecords(ctx)
+	if err != nil {
 		s.logger.Warn("Economy game action sweep failed: %v", err)
+		return
+	}
+	exclude, days := []string{}, map[int][]string{}
+	for _, g := range games {
+		d := gameSettingInt(g, gameActionDaysSetting, gameActionDays)
+		if d != gameActionDays {
+			exclude = append(exclude, g.Key)
+		}
+		if d > 0 && d != gameActionDays {
+			days[d] = append(days[d], g.Key)
+		}
+	}
+	if _, err := s.db.ExecContext(ctx, `DELETE FROM economy_game_action WHERE (match_id, seq) IN (SELECT a.match_id, a.seq FROM economy_game_action a
+		LEFT JOIN economy_game_match m ON m.id=a.match_id WHERE a.at < $1 AND (m.game_key IS NULL OR NOT (m.game_key = ANY($2::text[]))) LIMIT 5000)`,
+		s.now().UTC().AddDate(0, 0, -gameActionDays), exclude); err != nil {
+		s.logger.Warn("Economy game action sweep failed: %v", err)
+	}
+	for d, keys := range days {
+		if _, err := s.db.ExecContext(ctx, `DELETE FROM economy_game_action WHERE (match_id, seq) IN (SELECT a.match_id, a.seq FROM economy_game_action a
+			JOIN economy_game_match m ON m.id=a.match_id WHERE a.at < $1 AND m.game_key = ANY($2::text[]) LIMIT 5000)`, s.now().UTC().AddDate(0, 0, -d), keys); err != nil {
+			s.logger.Warn("Economy game action sweep failed: %v", err)
+		}
 	}
 }
 
