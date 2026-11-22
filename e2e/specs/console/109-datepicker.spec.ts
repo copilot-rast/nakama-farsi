@@ -292,6 +292,7 @@ test.describe('date picker', () => {
     await page.evaluate(() => {
       const box = document.createElement('div');
       box.id = 'e2e-native-form';
+      box.className = 'form-mode';
       box.style.cssText = 'position:fixed;top:120px;inset-inline-start:340px;width:320px;z-index:50;padding:16px;background:var(--surface);border:1px solid var(--line-1);border-radius:8px';
       box.innerHTML = '<label for="e2e-native-dt" class="block text-sm mb-1">endTime</label>';
       const el = document.createElement('input');
@@ -315,6 +316,15 @@ test.describe('date picker', () => {
     expect(await page.evaluate(() => (window as any).__nativeOut.at(-1))).toBe('2026-01-02T04:30:00.000Z');
     await page.evaluate(() => { (document.getElementById('e2e-native-dt') as HTMLInputElement).value = '2026-03-20T20:30'; });
     await expect(up.locator('input')).toHaveValue('۱۴۰۵/۰۱/۰۱ ۰۰:۰۰');
+    await page.evaluate(() => {
+      const other = document.createElement('input');
+      other.type = 'datetime-local';
+      other.id = 'e2e-overlay-dt';
+      document.querySelector('#app')!.appendChild(other);
+    });
+    await page.waitForTimeout(300);
+    await expect(page.locator('#e2e-overlay-dt')).toBeVisible();
+    await expect(page.locator('#e2e-overlay-dt + .nd-field')).toHaveCount(0);
   });
 
   test('mobile: the picker opens as a bottom sheet', async ({ spawn }) => {

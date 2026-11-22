@@ -1420,6 +1420,7 @@ function ndInput(o) {
 }
 
 var ND_NATIVE_TYPES = { date: 'date', 'datetime-local': 'datetime', time: 'time' };
+var ND_NATIVE_SCOPE = '.form-mode';
 var ndNative = { observer: null, items: [] };
 var ndValueDesc = typeof HTMLInputElement !== 'undefined' ? Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value') : null;
 
@@ -1443,7 +1444,7 @@ function wireToNative(v, mode, withSeconds) {
 function upgradeNative(el) {
   if (el.__ndUpgraded || !ndValueDesc) return;
   var mode = ND_NATIVE_TYPES[(el.getAttribute('type') || '').toLowerCase()];
-  if (!mode || el.closest('.nd-field, [data-nd-skip]')) return;
+  if (!mode || !el.closest(ND_NATIVE_SCOPE) || el.closest('.nd-field, [data-nd-skip]')) return;
   el.__ndUpgraded = true;
   var withSeconds = mode === 'time' && el.getAttribute('step') === '1';
   var syncing = false;
