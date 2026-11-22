@@ -136,7 +136,7 @@ test.describe('banners: console', () => {
     await expect(row.locator('[data-bn-target]')).toContainText('ساعت ۰۹:۰۰ تا ۲۱:۳۰');
     await row.locator('td').first().click();
     await settlePanel(page);
-    await expect(field(panel(page), /^شروع$/).locator('input')).toHaveValue('2030-01-01T10:00');
+    await expect(field(panel(page), /^شروع$/).locator('input')).toHaveValue('۱۴۰۸/۱۰/۱۲ ۱۰:۰۰');
 
     const bad = await consoleApi('POST', '/v2/console/publication/banners', { key: bkey + '_x', listId: placeId, title: { fa: 'x' }, action: { type: 'url', url: { fa: 'javascript:alert(1)' } } });
     expect(bad.status).toBe(400);
