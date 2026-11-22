@@ -1157,7 +1157,9 @@ a.eco-ov-kpi:focus-visible,.eco-ov-tile:focus-visible,.eco-ov-legend-row:focus-v
 .eco-tbx .eco-tbf:has(option[value=""]):not(:has(option[value=""]:checked)) > .eco-tf-label,.eco-tbx .eco-tbf:has(> input:not([type=checkbox]):not(:placeholder-shown)) > .eco-tf-label{color:var(--lt-accent-ink)}
 .eco-tbx .x-button,.eco-tbx button[class*="-btn"]{height:var(--lt-h)}
 @media (max-width:640px){.eco-tbx.eco-tbx{flex-direction:row;align-items:center}.eco-tbx .eco-tbf{flex:1 1 100%}.eco-tbx .eco-tbf > :is(select,input:not([type=checkbox])){flex:1 1 auto;max-width:none}}
-.eco-tbx .eco-tbf-q{flex:0 1 18rem;padding-inline-start:32px;position:relative;cursor:text}
+.eco-tbx .eco-tbf-q{order:-1;flex:0 1 18rem;padding-inline-start:32px;position:relative;cursor:text}
+@media (max-width:640px){.eco-tbx .eco-tbf-q{flex:1 1 100%}}
 .eco-tbx .eco-tbf-q::before{content:'';position:absolute;inset-inline-start:10px;top:50%;width:16px;height:16px;transform:translateY(-50%);background:currentColor;opacity:.6;-webkit-mask:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3e%3ccircle cx='11' cy='11' r='7'/%3e%3cpath d='M21 21l-4.3-4.3'/%3e%3c/svg%3e") center/contain no-repeat;mask:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3e%3ccircle cx='11' cy='11' r='7'/%3e%3cpath d='M21 21l-4.3-4.3'/%3e%3c/svg%3e") center/contain no-repeat}
 .eco-tbx .eco-tbf-q > .eco-tf-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .eco-tbx .eco-tbf-q > input:not([type=checkbox]){flex:1 1 auto;width:auto}
+.eco-tbx .eco-tbf > select,.eco-filter-select{min-width:4.5rem}

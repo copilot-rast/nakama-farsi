@@ -2990,13 +2990,11 @@ html.pl :is(#main, [data-economy]) .eco-tbx .eco-tbf > select {
 html.pl :is(#main, [data-economy]) table.eco-table > thead th {
   height: 40px;
   padding-block: 0 2px;
-  padding-inline: 12px;
   background: transparent;
   color: var(--ink-3);
   font-size: 12px;
   font-weight: 500;
   text-align: start;
-  white-space: nowrap;
   border-bottom: 1px solid var(--line);
 }
 
