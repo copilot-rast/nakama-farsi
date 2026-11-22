@@ -3623,54 +3623,6 @@
     "en": "Upload not found.",
     "fa": "فایل ارسالی پیدا نشد."
   },
-  "UPM_PACKAGE_EMPTY": {
-    "en": "The request body must be the package .tgz.",
-    "fa": "بدنهٔ درخواست باید فایل ‎.tgz پکیج باشد."
-  },
-  "UPM_PACKAGE_INVALID": {
-    "en": "The file is not a valid npm package archive.",
-    "fa": "فایل یک بستهٔ npm درست نیست."
-  },
-  "UPM_PACKAGE_NAME_INVALID": {
-    "en": "Package names use lower-case letters, digits, dots, dashes or underscores.",
-    "fa": "نام پکیج فقط حرف کوچک انگلیسی، رقم، نقطه، خط تیره یا زیرخط دارد."
-  },
-  "UPM_PACKAGE_NAME_NOT_ALLOWED": {
-    "en": "Package names must start with one of: {prefixes}.",
-    "fa": "نام پکیج باید با یکی از این‌ها شروع شود: {prefixes}."
-  },
-  "UPM_PACKAGE_NOT_FOUND": {
-    "en": "Package not found.",
-    "fa": "پکیج پیدا نشد."
-  },
-  "UPM_PACKAGE_TOO_LARGE": {
-    "en": "The package is larger than {maxMB} MB.",
-    "fa": "پکیج از {maxMB} مگابایت بزرگ‌تر است."
-  },
-  "UPM_PACKAGE_VERSION_EXISTS": {
-    "en": "{name}@{version} is already published; raise the version.",
-    "fa": "{name}@{version} قبلاً منتشر شده است؛ نسخه را بالا ببرید."
-  },
-  "UPM_PACKAGE_VERSION_INVALID": {
-    "en": "The version must look like 1.2.3 or 1.2.3-beta.1.",
-    "fa": "نسخه باید شبیه 1.2.3 یا 1.2.3-beta.1 باشد."
-  },
-  "UPM_PART_INVALID": {
-    "en": "Invalid upload part (each part at most {partBytes} bytes).",
-    "fa": "بخش بارگذاری درست نیست (هر بخش حداکثر {partBytes} بایت)."
-  },
-  "UPM_PART_MISSING": {
-    "en": "Part {part} of the upload is missing; send the parts again.",
-    "fa": "بخش {part} بارگذاری نرسیده است؛ بخش‌ها را دوباره بفرستید."
-  },
-  "UPM_REGISTRY_DISABLED": {
-    "en": "The package registry is turned off.",
-    "fa": "رجیستری پکیج‌ها خاموش است."
-  },
-  "UPM_STORAGE_UNAVAILABLE": {
-    "en": "The package registry has no storage configured.",
-    "fa": "برای رجیستری پکیج‌ها فضای ذخیره تنظیم نشده است."
-  },
   "URL_TOO_LONG": {
     "en": "The link is too long.",
     "fa": "پیوند خیلی طولانی است."

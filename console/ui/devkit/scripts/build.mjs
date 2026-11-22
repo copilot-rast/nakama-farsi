@@ -10,7 +10,7 @@ const INDEX = path.join(DIST, 'index.html');
 const MANIFEST = path.join(ROOT, 'dist-manifest.json');
 export const START = '<!-- nakama-devkit:start -->';
 export const END = '<!-- nakama-devkit:end -->';
-export const SOURCES = ['i18n.js', 'core.js', 'errors.js', 'keys.js', 'schema.js', 'packages.js', 'shell.js'];
+export const SOURCES = ['i18n.js', 'core.js', 'errors.js', 'keys.js', 'schema.js', 'shell.js'];
 
 function hash(content) {
   return crypto.createHash('sha256').update(content).digest('hex').slice(0, 10);

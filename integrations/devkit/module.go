@@ -14,7 +14,6 @@ import (
 	"github.com/heroiclabs/nakama/v3/integrations/devkit/apierr"
 	"github.com/heroiclabs/nakama/v3/integrations/devkit/apikey"
 	"github.com/heroiclabs/nakama/v3/integrations/devkit/internal/settings"
-	"github.com/heroiclabs/nakama/v3/internal/objectstore"
 )
 
 //go:generate go run -mod=vendor ./cmd/devkitgen -root ../..
@@ -35,11 +34,6 @@ type service struct {
 	logger runtime.Logger
 	now    func() time.Time
 	schema schemaDoc
-	// store keeps the Unity package archives (nil: the registry answers unavailable).
-	store objectstore.Store
-	// publicBase is the API address from the environment (DEVKIT_PUBLIC_BASE_URL, else the assets or
-	// economy one), used for the registry address the console shows.
-	publicBase string
 }
 
 type schemaDoc struct {
@@ -57,26 +51,10 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 			return err
 		}
 	}
-	env, _ := ctx.Value(runtime.RUNTIME_CTX_ENV).(map[string]string)
-	for _, k := range []string{"DEVKIT_PUBLIC_BASE_URL", "ASSETS_PUBLIC_BASE_URL", "ECONOMY_PUBLIC_BASE_URL"} {
-		if v := strings.TrimRight(strings.TrimSpace(env[k]), "/"); v != "" {
-			svc.publicBase = v
-			break
-		}
-	}
-	if store, err := packageStore(env); err != nil {
-		logger.Warn("Devkit package registry has no storage: %v", err)
-	} else {
-		svc.store = store
-	}
-	if err := apikey.RegisterScopes(ctx, db, "devkit", map[string]string{ScopeSchema: "Read the client RPC schema",
-		ScopeUpmRead: "Install Unity packages from the registry (/upm)", ScopeUpmPublish: "Publish Unity packages to the registry"}); err != nil {
+	if err := apikey.RegisterScopes(ctx, db, "devkit", map[string]string{ScopeSchema: "Read the client RPC schema"}); err != nil {
 		logger.Warn("Devkit could not register its API scopes: %v", err)
 	}
 	if err := svc.registerPublicHTTP(initializer); err != nil {
-		return err
-	}
-	if err := svc.registerPackageHTTP(initializer); err != nil {
 		return err
 	}
 	if err := svc.registerConsoleHTTP(initializer); err != nil {

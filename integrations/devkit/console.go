@@ -50,8 +50,6 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/api-scopes", http.MethodPost, s.scopeCreate},
 		{consolePrefix + "/api-scopes/{name}", http.MethodDelete, s.scopeDelete},
 		{consolePrefix + "/rpc-schema", http.MethodGet, s.schemaConsole},
-		{consolePrefix + "/packages", http.MethodGet, s.consolePackages},
-		{consolePrefix + "/packages/{name}/{version}", http.MethodDelete, s.consolePackageDelete},
 	}
 	for _, r := range routes {
 		if err := initializer.RegisterConsoleHttp(r.path, r.handler, r.method); err != nil {
