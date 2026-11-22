@@ -4237,6 +4237,72 @@ var MESSAGES = {
     'code.HANDOFF_ADMINS_ONLY': "راهنمای فرانت فقط برای مدیرهای کنسول است.",
     'code.MAINTENANCE': "بازی در حال تعمیر است.",
     'desc.sdk': "پکیج یونیتی این سرور: چه چیزهایی دارد، چطور نصب می‌شود و اولین کدها.",
+    'nav.sample-data': "داده‌های نمونه",
+    'desc.sample-data': "داده‌هایی که بازی نمونهٔ ستاره‌چین روی این سرور ساخته است. اول پیش‌نمایش را ببینید، بعد حذفشان کنید.",
+    'sc.title': "حذف داده‌های نمونهٔ ستاره‌چین",
+    'sc.intro': "ستاره‌چین یک بازی آزمایشی است. هر بار که سرور بالا می‌آید، محصول، جایزه، کد هدیه، بنر و روش پرداخت آزمایشی خودش را می‌سازد.\nاین کار فقط ردیف‌هایی را پاک می‌کند که کلید و محتوای همان نمونه را دارند. زبان‌ها، ارز coin و داده‌های واقعی بازیکنان دست نمی‌خورند. اجرای دوباره هم ضرری ندارد.",
+    'sc.plugin.on': "افزونهٔ ستاره‌چین روی این سرور فعال است. تا وقتی STARGAME_SEED=false نباشد، این داده‌ها با راه‌اندازی بعدی دوباره ساخته می‌شوند.",
+    'sc.plugin.off': "افزونهٔ ستاره‌چین روی این سرور نیست، پس داده‌های حذف‌شده برنمی‌گردند.",
+    'sc.last': "آخرین اجرا: {by}، {at}. {n} ردیف حذف شد.",
+    'sc.never': "این کار هنوز روی این سرور اجرا نشده است.",
+    'sc.stat.deleted': "ردیف نمونه حذف می‌شود",
+    'sc.stat.related': "ردیف وابستهٔ بازیکن پاک می‌شود",
+    'sc.stat.kept': "ردیف نمونه می‌ماند",
+    'sc.stat.changed': "تنظیم بازنشانی می‌شود",
+    'sc.preview': "پیش‌نمایش",
+    'sc.col.part': "بخش",
+    'sc.col.delete': "حذف می‌شود",
+    'sc.col.keep': "می‌ماند",
+    'sc.count': "{n} ردیف",
+    'sc.related': "{n} ردیف وابسته",
+    'sc.reason.edited': "ادمین تغییرش داده است",
+    'sc.reason.in_use': "داده‌های دیگر به آن وابسته‌اند",
+    'sc.reason.in_use_switched_off': "داده‌های دیگر به آن وابسته‌اند؛ فقط غیرفعال می‌شود",
+    'sc.reason.no_secret': "کلید رمز سرور تنظیم نشده و بررسی ممکن نیست",
+    'sc.reason.not_sample': "تنظیمات خود ادمین را دارد",
+    'sc.reason.sample_package_edited': "هنوز بستهٔ ir.nakama.stargame را دارد؛ دستی بررسی کنید",
+    'sc.changes': "تنظیمات",
+    'sc.change.payment_method': "روش پرداخت {key}",
+    'sc.change.referral_rule': "قانون دعوت دوستان",
+    'sc.action.reset': "به حالت تنظیم‌نشده برمی‌گردد و خاموش می‌شود",
+    'sc.action.kept': "دست نمی‌خورد",
+    'sc.leaderboard': "جدول امتیاز و همهٔ رکوردهایش حذف می‌شود:",
+    'sc.empty': "داده‌ای از نمونهٔ ستاره‌چین نمانده است",
+    'sc.empty.hint': "اجرای دوباره چیزی را تغییر نمی‌دهد.",
+    'sc.run': "حذف داده‌های نمونهٔ ستاره‌چین",
+    'sc.adminOnly': "فقط مدیر کنسول می‌تواند داده‌های نمونه را حذف کند.",
+    'sc.confirm.title': "داده‌های نمونه حذف شود؟",
+    'sc.confirm.text': "{n} ردیف نمونه و {r} ردیف وابستهٔ بازیکن پاک می‌شود و {c} تنظیم بازنشانی می‌شود. همه در یک تراکنش انجام می‌شود و برگشت ندارد.",
+    'sc.confirm.ok': "حذف کن",
+    'sc.done': "داده‌های نمونه حذف شد: {n} ردیف.",
+    'sc.k.banner': "بنرها",
+    'sc.k.banner_list': "جایگاه‌های بنر",
+    'sc.k.sponsor': "حامیان",
+    'sc.k.auto_rule': "اعلان‌های خودکار",
+    'sc.k.config_key': "پیکربندی بازی",
+    'sc.k.gift': "کدهای هدیه",
+    'sc.k.game': "بازی‌ها",
+    'sc.k.game_category': "دسته‌های بازی",
+    'sc.k.chance_game': "بازی‌های شانس",
+    'sc.k.prize_group': "گروه‌های جایزه",
+    'sc.k.achievement': "دستاوردها",
+    'sc.k.achievement_category': "دسته‌های دستاورد",
+    'sc.k.task': "تسک‌ها",
+    'sc.k.task_group': "گروه‌های تسک",
+    'sc.k.task_category': "دسته‌های تسک",
+    'sc.k.product': "محصولات",
+    'sc.k.product_category': "دسته‌های محصول",
+    'sc.k.item': "آیتم‌ها",
+    'sc.k.event_rule': "جایزه‌های رویداد",
+    'sc.k.meta_rule': "قانون‌های متا",
+    'sc.k.level_table': "جدول سطح",
+    'sc.k.streak': "جایزهٔ ورود روزانه",
+    'sc.k.prize': "جایزه‌ها",
+    'sc.k.event_type': "رویدادها",
+    'sc.k.player_tag': "برچسب بازیکن",
+    'sc.k.app_version': "نسخه‌های برنامه",
+    'code.CONSOLE_ADMIN_ONLY': "فقط مدیر کنسول اجازهٔ این کار را دارد.",
+    'code.SAMPLE_CONFIRM_REQUIRED': "تأیید حذف همراه درخواست نیامد. دوباره امتحان کنید.",
     'sdk.what': "این پکیج چیست؟",
     'sdk.what.text': "یک پکیج یونیتی که بازی را به همین سرور وصل می‌کند. نسخهٔ گسترش‌یافتهٔ کلاینت رسمی Nakama است و همه‌چیز در همین یک پکیج است؛ پکیج رسمی Nakama را جدا نصب نکنید.",
     'sdk.f.login': "ورود مهمان با شناسهٔ دستگاه و ورود پیامکی، با حفظ پیشرفت مهمان",
@@ -10419,6 +10485,72 @@ var MESSAGES = {
     'code.HANDOFF_ADMINS_ONLY': "The front-end handoff is for console admins only.",
     'code.MAINTENANCE': "The game is under maintenance.",
     'desc.sdk': "This server's Unity package: what it has, how to install it and the first lines of code.",
+    'nav.sample-data': "Sample data",
+    'desc.sample-data': "Data the Star Catcher sample game created on this server. Check the preview first, then remove it.",
+    'sc.title': "Remove the Star Catcher sample data",
+    'sc.intro': "Star Catcher is a test game. Every time the server starts it creates its own test products, prizes, gift codes, banners and payment methods.\nThis removes only rows that still have the sample's keys and content. Languages, the coin currency and real player data are left alone. Running it again is safe.",
+    'sc.plugin.on': "The Star Catcher plugin runs on this server. Unless STARGAME_SEED=false is set, the next start creates this data again.",
+    'sc.plugin.off': "The Star Catcher plugin is not on this server, so removed data does not come back.",
+    'sc.last': "Last run: {by}, {at}. {n} rows removed.",
+    'sc.never': "This has not run on this server yet.",
+    'sc.stat.deleted': "sample rows to remove",
+    'sc.stat.related': "related player rows to remove",
+    'sc.stat.kept': "sample rows that stay",
+    'sc.stat.changed': "settings to reset",
+    'sc.preview': "Preview",
+    'sc.col.part': "Part",
+    'sc.col.delete': "Removed",
+    'sc.col.keep': "Stays",
+    'sc.count': "{n} rows",
+    'sc.related': "{n} related rows",
+    'sc.reason.edited': "changed by an admin",
+    'sc.reason.in_use': "other data depends on it",
+    'sc.reason.in_use_switched_off': "other data depends on it; it is only switched off",
+    'sc.reason.no_secret': "the server secret is not set, so it cannot be checked",
+    'sc.reason.not_sample': "has the admin's own settings",
+    'sc.reason.sample_package_edited': "still uses the package ir.nakama.stargame; check it by hand",
+    'sc.changes': "Settings",
+    'sc.change.payment_method': "Payment method {key}",
+    'sc.change.referral_rule': "Referral rule",
+    'sc.action.reset': "goes back to not set and is switched off",
+    'sc.action.kept': "left alone",
+    'sc.leaderboard': "This leaderboard and all its records are removed:",
+    'sc.empty': "No Star Catcher sample data is left",
+    'sc.empty.hint': "Running it again changes nothing.",
+    'sc.run': "Remove the Star Catcher sample data",
+    'sc.adminOnly': "Only a console admin can remove the sample data.",
+    'sc.confirm.title': "Remove the sample data?",
+    'sc.confirm.text': "{n} sample rows and {r} related player rows are removed and {c} settings are reset. It all runs in one transaction and cannot be undone.",
+    'sc.confirm.ok': "Remove",
+    'sc.done': "Sample data removed: {n} rows.",
+    'sc.k.banner': "Banners",
+    'sc.k.banner_list': "Banner placements",
+    'sc.k.sponsor': "Sponsors",
+    'sc.k.auto_rule': "Automatic notifications",
+    'sc.k.config_key': "Game config",
+    'sc.k.gift': "Gift codes",
+    'sc.k.game': "Games",
+    'sc.k.game_category': "Game categories",
+    'sc.k.chance_game': "Chance games",
+    'sc.k.prize_group': "Prize groups",
+    'sc.k.achievement': "Achievements",
+    'sc.k.achievement_category': "Achievement categories",
+    'sc.k.task': "Tasks",
+    'sc.k.task_group': "Task groups",
+    'sc.k.task_category': "Task categories",
+    'sc.k.product': "Products",
+    'sc.k.product_category': "Product categories",
+    'sc.k.item': "Items",
+    'sc.k.event_rule': "Event prizes",
+    'sc.k.meta_rule': "Meta rules",
+    'sc.k.level_table': "Level table",
+    'sc.k.streak': "Daily sign-in reward",
+    'sc.k.prize': "Prizes",
+    'sc.k.event_type': "Events",
+    'sc.k.player_tag': "Player tag",
+    'sc.k.app_version': "App versions",
+    'code.CONSOLE_ADMIN_ONLY': "Only a console admin can do this.",
+    'code.SAMPLE_CONFIRM_REQUIRED': "The removal was not confirmed. Try again.",
     'sdk.what': "What is it?",
     'sdk.what.text': "A Unity package that connects a game to this server. It extends the official Nakama client and holds everything in one package; do not install the official Nakama package next to it.",
     'sdk.f.login': "Guest sign-in with the device id and phone (SMS) sign-in that keeps the guest progress",
@@ -14992,11 +15124,11 @@ var SECTIONS = {
   publication: ['faqs', 'news', 'news-review', 'news-sources', 'news-ingest', 'news-reactions', 'news-settings', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'comm-settings', 'comm-channels', 'voice-rooms', 'activity'],
   support: ['tickets', 'live-chat'],
-  system: ['updates', 'server-rules', 'content-packs', 'content-settings', 'insights-overview', 'insights-sessions', 'heatmaps', 'insights-settings', 'sdk']
+  system: ['updates', 'server-rules', 'content-packs', 'content-settings', 'insights-overview', 'insights-sessions', 'heatmaps', 'insights-settings', 'sdk', 'sample-data']
 };
 var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'];
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
-var PAGE_ACL = { 'server-rules': 'SETTINGS', players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', 'comm-settings': 'CHANNEL_MESSAGE', 'comm-channels': 'CHANNEL_MESSAGE', 'voice-rooms': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
+var PAGE_ACL = { 'server-rules': 'SETTINGS', 'sample-data': 'SETTINGS', players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', 'comm-settings': 'CHANNEL_MESSAGE', 'comm-channels': 'CHANNEL_MESSAGE', 'voice-rooms': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
 var HUBS = {
   metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['meta-relations', 'relations'], ['level-tables', 'levels']] },
@@ -15021,7 +15153,7 @@ var NAV = {
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
   moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers', 'voice-rooms'] }],
   support: ['tickets', 'live-chat'],
-  system: ['updates', 'server-rules', 'content', 'insights', 'sdk']
+  system: ['updates', 'server-rules', 'content', 'insights', 'sdk', 'sample-data']
 };
 var HUB_OF = {};
 Object.keys(HUBS).forEach(function (hub) { HUBS[hub].tabs.forEach(function (tab) { HUB_OF[tab[0]] = hub; }); });
@@ -27973,6 +28105,138 @@ function sdkPage(container) {
 }
 
 CUSTOM_PAGES['sdk'] = function (root) { sdkPage(root); };
+
+ICONS['sample-data'] = ICONS.trash;
+PH_ICONS['sample-data'] = PH_ICONS.trash;
+
+var SC_PATH = '/sample-data/stargame';
+
+function scKindLabel(kind) {
+  return has('sc.k.' + kind) ? t('sc.k.' + kind) : kind;
+}
+
+function scReason(reason) {
+  return has('sc.reason.' + reason) ? t('sc.reason.' + reason) : reason;
+}
+
+function scKeys(keys) {
+  return h('div', { class: 'flex flex-wrap gap-1', 'data-l10n-skip': '' }, keys.map(function (k) {
+    return h('span', { class: 'eco-sc-key font-mono text-xs', dir: 'ltr', text: k });
+  }));
+}
+
+function scStat(name, value, label, tone) {
+  return h('div', { class: 'eco-sc-stat', 'data-tone': tone, 'data-sc-stat': name },
+    h('div', { class: 'eco-sc-num tabular-nums', text: fmtNum(value) }),
+    h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: label }));
+}
+
+function scTable(p) {
+  var rows = (p.tables || []).filter(function (tb) { return tb.deleted.length || tb.kept.length; });
+  var columns = [{ label: t('sc.col.part'), width: '22%' }, { label: t('sc.col.delete') }, { label: t('sc.col.keep'), width: '30%' }];
+  return table(columns, rows.map(function (tb) {
+    var del = h('div', { class: 'flex flex-col gap-1' },
+      tb.deleted.length ? h('div', { class: 'text-xs text-secondary-500', text: t('sc.count', { n: tb.deleted.length }) + (tb.related ? ' · ' + t('sc.related', { n: tb.related }) : '') }) : h('span', { class: 'text-xs text-secondary-400', text: '-' }),
+      tb.deleted.length ? scKeys(tb.deleted) : null);
+    var keep = tb.kept.length ? h('ul', { class: 'flex flex-col gap-1' }, tb.kept.map(function (k) {
+      return h('li', { class: 'text-xs', 'data-sc-kept': k.key, 'data-reason': k.reason },
+        h('span', { class: 'eco-sc-key font-mono', dir: 'ltr', 'data-l10n-skip': '', text: k.key }),
+        h('span', { class: 'text-secondary-500 dark:text-secondary-400', text: ' ' + scReason(k.reason) }));
+    })) : h('span', { class: 'text-xs text-secondary-400', text: '-' });
+    var cell = h('div', { class: 'flex flex-col gap-1' },
+      h('span', { class: 'font-medium text-sm', text: scKindLabel(tb.kind) }),
+      h('span', { class: 'font-mono text-xs text-secondary-400', dir: 'ltr', 'data-l10n-skip': '', text: tb.table }));
+    return { item: tb, cells: [cell, del, keep] };
+  }));
+}
+
+function scChanges(p) {
+  var items = (p.changes || []).map(function (c) {
+    var what = c.kind === 'payment_method' ? t('sc.change.payment_method', { key: c.key }) : t('sc.change.' + c.kind);
+    var how = c.action === 'reset' ? t('sc.action.reset') : t('sc.action.kept') + (c.reason ? '، ' + scReason(c.reason) : '');
+    return h('li', { class: 'flex flex-wrap items-center gap-2 text-sm', 'data-sc-change': c.kind + ':' + c.key, 'data-action': c.action },
+      tag(what, c.action === 'reset' ? 'warning' : 'secondary'), h('span', { class: 'text-secondary-600 dark:text-secondary-300', text: how }));
+  });
+  (p.leaderboards || []).forEach(function (id) {
+    items.push(h('li', { class: 'text-sm text-secondary-600 dark:text-secondary-300', 'data-sc-board': id }, h('span', { text: t('sc.leaderboard') + ' ' }), mono(id)));
+  });
+  if (!items.length) return null;
+  return h('div', { class: 'flex flex-col gap-2', 'data-sc-changes': '' },
+    h('h3', { class: 'font-semibold text-sm', text: t('sc.changes') }),
+    h('ul', { class: 'flex flex-col gap-2' }, items));
+}
+
+function scLast(last) {
+  if (!last) return h('p', { class: 'text-sm text-secondary-500', 'data-sc-last': '', text: t('sc.never') });
+  var by = String(last.by || '').replace(/^console:/, '').replace(/^rpc:/, 'RPC ');
+  return h('p', { class: 'text-sm text-secondary-500', 'data-sc-last': last.by || '', text: t('sc.last', { by: by, at: fmtDate(last.at), n: last.deleted || 0 }) });
+}
+
+function samplesPage(container) {
+  var frame = pageFrame(t('nav.sample-data'), t('desc.sample-data'));
+  clear(container).appendChild(frame.el);
+  var body = h('div', { class: 'flex flex-col gap-4 eco-sc', 'data-sample-page': 'stargame' });
+  frame.content.appendChild(body);
+
+  function skeleton() {
+    clear(body).appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('40%', 'h-4'), bar('85%'), bar('70%'))));
+    body.appendChild(h('div', { class: 'eco-sc-stats' }, [0, 1, 2, 3].map(function () { return h('div', { class: 'eco-sc-stat' }, bar('2.5rem', 'h-6'), bar('70%')); })));
+    body.appendChild(table([{ label: t('sc.col.part') }, { label: t('sc.col.delete') }, { label: t('sc.col.keep') }], skeletonRows([{}, {}, {}], 5)));
+  }
+
+  function run(data) {
+    var p = data.preview;
+    var n = p.deleted + p.changed + (p.leaderboards || []).length;
+    return confirmModal({ danger: true, icon: 'trash', title: t('sc.confirm.title'), text: t('sc.confirm.text', { n: p.deleted, r: p.related, c: p.changed }), ok: t('sc.confirm.ok') }).then(function (ok) {
+      if (!ok || !n) return;
+      return baseApi('POST', SC_PATH + '/cleanup', { confirm: 'stargame' }).then(function (res) {
+        toast('success', t('sc.done', { n: res && res.result ? res.result.deleted : 0 }));
+        load();
+      }, function (err) { toast('error', errorText(err)); });
+    });
+  }
+
+  function paint(data) {
+    var p = data.preview;
+    var work = p.deleted + p.changed + (p.leaderboards || []).length;
+    clear(body);
+    var runBtn = button({ variant: data.admin && work ? 'dangerSolid' : 'disabled', size: 'footer', icon: 'trash', label: t('sc.run'), disabled: !data.admin || !work, onclick: function () { run(data); } });
+    runBtn.setAttribute('data-sc-run', '');
+    body.appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' },
+      h('h2', { class: 'font-semibold', text: t('sc.title') }),
+      h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300 eco-pre-line', text: t('sc.intro') }),
+      h('div', { 'data-sc-plugin': data.pluginLoaded ? 'on' : 'off' }, notice(data.pluginLoaded ? 'warning' : 'info', t(data.pluginLoaded ? 'sc.plugin.on' : 'sc.plugin.off'))),
+      scLast(data.lastRun))));
+    body.appendChild(h('div', { class: 'eco-sc-stats' },
+      scStat('deleted', p.deleted, t('sc.stat.deleted'), 'danger'),
+      scStat('related', p.related, t('sc.stat.related'), 'neutral'),
+      scStat('kept', p.kept, t('sc.stat.kept'), 'neutral'),
+      scStat('changed', p.changed, t('sc.stat.changed'), 'warning')));
+    if (!work && !p.kept) {
+      body.appendChild(card(h('div', { 'data-sc-empty': '' }, emptyBlock(t('sc.empty'), t('sc.empty.hint')))));
+    } else {
+      body.appendChild(h('div', { class: 'flex flex-col gap-2' },
+        h('h3', { class: 'font-semibold text-sm', text: t('sc.preview') }),
+        scTable(p)));
+      var changes = scChanges(p);
+      if (changes) body.appendChild(card(h('div', { class: 'p-4' }, changes)));
+    }
+    body.appendChild(h('div', { class: 'flex flex-wrap items-center justify-end gap-3' },
+      data.admin ? null : h('span', { class: 'text-sm text-secondary-500', 'data-sc-admin-only': '', text: t('sc.adminOnly') }),
+      !work && data.admin ? h('span', { class: 'text-sm text-secondary-500', text: t('sc.empty.hint') }) : null,
+      runBtn));
+  }
+
+  function load() {
+    skeleton();
+    baseApi('GET', SC_PATH).then(paint, function (err) {
+      clear(body).appendChild(errorBlock(err, load));
+    });
+  }
+  load();
+}
+
+CUSTOM_PAGES['sample-data'] = function (root) { samplesPage(root); };
 
 ICONS['handoff'] = '<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/>';
 PH_ICONS['handoff'] = '<path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/>';
