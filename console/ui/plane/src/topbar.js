@@ -213,20 +213,20 @@ function placeStats(b) {
 
 function buildEnd() {
   var box = el('div', { class: 'pl-tb-end', 'data-l10n-skip': '' });
-  var search = el('button', { type: 'button', class: 'pl-search', 'aria-label': pst('top.searchPages'), 'aria-haspopup': 'dialog', onclick: function () { openPalette(); } });
+  var search = el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-search', 'aria-label': pst('top.searchPages'), 'aria-haspopup': 'dialog', onclick: function () { openPalette(); } });
   search.innerHTML = plIcon('search');
   search.appendChild(el('span', { class: 'pl-search-ph', text: pst('top.search') }));
   search.appendChild(el('span', { class: 'pl-keys', dir: 'ltr' }, el('kbd', { text: 'Ctrl' }), el('kbd', { text: 'K' })));
-  var status = el('button', { type: 'button', class: 'pl-status', 'aria-expanded': 'false', 'aria-label': pst('top.status'), title: pst('top.status'), onclick: function (e) { e.stopPropagation(); toggleStats(); } });
+  var status = el('button', { type: 'button', class: 'pl-ctl pl-status', 'aria-expanded': 'false', 'aria-label': pst('top.status'), title: pst('top.status'), onclick: function (e) { e.stopPropagation(); toggleStats(); } });
   status.appendChild(el('span', { class: 'pl-dot', 'aria-hidden': 'true' }));
   status.appendChild(el('span', { class: 'pl-status-label', text: pst('top.live') }));
   status.setAttribute('aria-controls', 'pl-stats');
   tb.stats = el('div', { class: 'pl-stats', id: 'pl-stats', role: 'region', 'aria-label': pst('top.status'), 'data-l10n-skip': '' });
-  tb.up = el('a', { class: 'pl-up', href: '#/system/updates', hidden: true, 'data-pl-updates': '' });
-  tb.sdk = el('a', { class: 'pl-sdk', href: '#/system/sdk', 'data-pl-sdk': '' });
-  tb.handoff = el('button', { type: 'button', class: 'pl-sdk pl-handoff', hidden: true, 'aria-haspopup': 'dialog', 'data-pl-handoff': '', onclick: function () { var api = nc(); if (api && api.handoff) api.handoff.open(); } });
+  tb.up = el('a', { class: 'pl-ctl pl-up', href: '#/system/updates', hidden: true, 'data-pl-updates': '' });
+  tb.sdk = el('a', { class: 'pl-ctl pl-sdk', href: '#/system/sdk', 'data-pl-sdk': '' });
+  tb.handoff = el('button', { type: 'button', class: 'pl-ctl pl-sdk pl-handoff', hidden: true, 'aria-haspopup': 'dialog', 'data-pl-handoff': '', onclick: function () { var api = nc(); if (api && api.handoff) api.handoff.open(); } });
   tb.seg = buildLangSeg();
-  tb.theme = el('button', { type: 'button', class: 'pl-round pl-theme', onclick: themeClick });
+  tb.theme = el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-round pl-theme', onclick: themeClick });
   paintTheme();
   box.appendChild(tb.up);
   box.appendChild(tb.handoff);
@@ -234,6 +234,7 @@ function buildEnd() {
   box.appendChild(search);
   box.appendChild(status);
   box.appendChild(tb.stats);
+  box.appendChild(el('span', { class: 'pl-tb-sep', 'aria-hidden': 'true' }));
   box.appendChild(tb.seg);
   box.appendChild(tb.theme);
   return box;
@@ -303,7 +304,8 @@ function paintTopbar() {
   if (!holder || !end) return;
   if (!tb.start) {
     tb.start = el('div', { class: 'pl-tb-start', 'data-l10n-skip': '' },
-      el('button', { type: 'button', class: 'pl-round pl-menu', 'aria-label': pst('top.menu'), html: plIcon('menu'), onclick: function () { openSheet(); } }),
+      el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-round pl-menu', 'aria-label': pst('top.menu'), html: plIcon('menu'), onclick: function () { openSheet(); } }),
+      el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-side-toggle', 'aria-expanded': 'false', html: plIcon('panel'), onclick: function () { setCompact(false); } }),
       el('nav', { class: 'pl-crumbs' }),
       el('nav', { class: 'pl-seg pl-tabs', hidden: true }));
   }
@@ -313,6 +315,8 @@ function paintTopbar() {
   var info = pageInfo();
   var crumbs = crumbsFor(bar);
   var key = plLang() + '|' + JSON.stringify(crumbs);
+  var tog = tb.start.querySelector('.pl-side-toggle');
+  if (tog.getAttribute('aria-label') !== pst('rail.expand')) { tog.setAttribute('aria-label', pst('rail.expand')); tog.setAttribute('title', pst('rail.expand')); }
   var cb = tb.start.querySelector('.pl-crumbs');
   cb.setAttribute('aria-label', pst('crumb.label'));
   if (tb.key !== key) {

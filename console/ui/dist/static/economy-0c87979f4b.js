@@ -33372,6 +33372,10 @@ window.NakamaConsole = {
     if (!b) return null;
     return { name: brandName(), shortName: b.shortName || '', markUrl: b.markUrl || '', logoUrl: b.logoUrl || '', logoDarkUrl: b.logoDarkUrl || '' };
   },
+  brandMark: function () {
+    var b = BRAND.data || {};
+    return signinMark(b, brandText(b.name) || b.shortName || '');
+  },
   toggleTheme: function () { toggleTheme(); },
   isDark: function () { return isDarkTheme(); },
   handoff: {

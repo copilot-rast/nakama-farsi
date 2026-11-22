@@ -39,6 +39,14 @@ html.pl {
   --side: 248px;
   --rail-full: 248px;
   --topbar-h: 52px;
+  --ctl-h: 32px;
+  --ctl-r: var(--r-control);
+  --ctl-px: 10px;
+  --ctl-gap: 6px;
+  --ctl-fs: var(--fs-sm);
+  --ctl-ic: 16px;
+  --app-icon: 32px;
+  --app-icon-r: 8px;
   --rail-space: calc(var(--rail) + var(--side));
   --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --fs-xs: 12px;

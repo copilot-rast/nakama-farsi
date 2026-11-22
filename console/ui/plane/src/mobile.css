@@ -2,6 +2,7 @@
   html.pl {
     --gap: 12px;
     --topbar-h: 56px;
+    --ctl-h: 36px;
   }
 
   html.pl .pl-round.pl-menu {
@@ -19,8 +20,11 @@
   }
 
   html.pl .pl-tabs,
-  html.pl .pl-status,
-  html.pl .pl-seg-lang,
+  html.pl .pl-tb-end .pl-status,
+  html.pl .pl-tb-end .pl-seg-lang,
+  html.pl .pl-tb-end .pl-sdk,
+  html.pl .pl-tb-end .pl-theme,
+  html.pl .pl-tb-sep,
   html.pl .pl-crumbs .pl-crumb-link,
   html.pl .pl-crumbs .pl-crumb-sep {
     display: none;
@@ -28,45 +32,6 @@
 
   html.pl .pl-crumb-current {
     font-size: 15px;
-  }
-
-  html.pl .pl-search {
-    width: 40px;
-    padding: 0;
-    justify-content: center;
-  }
-
-  html.pl .pl-search-ph,
-  html.pl .pl-keys {
-    display: none;
-  }
-
-  html.pl .pl-up-label,
-  html.pl .pl-sdk-label {
-    display: none;
-  }
-
-  html.pl .pl-sdk {
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    justify-content: center;
-  }
-
-  html.pl .pl-up {
-    padding-inline: 8px 4px;
-  }
-
-  html.pl #main > div.sticky:first-child .justify-end,
-  html.pl .pl-tb-end {
-    gap: 4px;
-  }
-
-  html.pl .pl-round,
-  html.pl #main > div.sticky:first-child .economy-ps,
-  html.pl #main > div.sticky:first-child .justify-end > .x-popover > button.x-button {
-    width: 40px;
-    height: 40px;
   }
 
   html.pl .pl-pal-holder {

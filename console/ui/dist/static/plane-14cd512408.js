@@ -10,6 +10,9 @@ var PL_MESSAGES = {
     'rail.home': 'صفحهٔ اصلی',
     'rail.sections': 'بخش‌ها',
     'rail.console': 'کنسول مدیریت',
+    'rail.collapse': 'بستن منوی کناری',
+    'rail.expand': 'باز کردن منوی کناری',
+    'rail.tools': 'ابزارها',
     'group.game': 'بازی',
     'attn.title': 'نیاز به رسیدگی',
     'attn.count': '{n} مورد',
@@ -62,6 +65,9 @@ var PL_MESSAGES = {
     'rail.home': 'Home',
     'rail.sections': 'Sections',
     'rail.console': 'Admin console',
+    'rail.collapse': 'Collapse the sidebar',
+    'rail.expand': 'Expand the sidebar',
+    'rail.tools': 'Tools',
     'group.game': 'Game',
     'attn.title': 'Needs attention',
     'attn.count': '{n} items',
@@ -696,12 +702,26 @@ function brandInfo() {
   return info || {};
 }
 
+function brandIcon() {
+  var api = nc();
+  if (!api || !api.brandMark) return null;
+  var icon = api.brandMark();
+  icon.classList.add('pl-app-icon');
+  icon.querySelectorAll('.brand-signin-initial').forEach(function (s) { s.textContent = plNum(s.textContent); });
+  return icon;
+}
+
 function brandMark(cls) {
-  var b = el('a', { class: cls || 'pl-brand', href: '#/', 'aria-label': pst('rail.home') });
-  var info = brandInfo();
-  if (!info.markUrl) return null;
-  b.appendChild(el('img', { src: info.markUrl, alt: '' }));
+  var icon = brandIcon();
+  if (!icon) return null;
+  var b = el('a', { class: cls || 'pl-brand', href: '#/', 'aria-label': pst('rail.home'), 'data-pl-tip': brandLabel() || pst('rail.home') });
+  b.appendChild(icon);
   return b;
+}
+
+function brandLabel() {
+  var info = brandInfo();
+  return plNum(String(info.name || info.shortName || '').trim());
 }
 
 function modeItem(g, on) {
@@ -764,7 +784,7 @@ function sideLinks(box, mode) {
 function buildRail(model, mode) {
   var nav = rail.el;
   nav.innerHTML = '';
-  var mark = brandMark();
+  var mark = compactOn() ? brandMark() : null;
   if (mark) nav.appendChild(mark);
   modesOf(model).forEach(function (g) { nav.appendChild(modeItem(g, g === mode)); });
   nav.appendChild(el('div', { class: 'pl-grow' }));
@@ -783,16 +803,11 @@ function buildRail(model, mode) {
 function buildSide(model, mode) {
   var p = rail.side;
   p.innerHTML = '';
-  var info = brandInfo();
-  var name = String(info.name || info.shortName || '').trim();
-  var dark = root.classList.contains('dark');
-  var logo = dark ? info.logoDarkUrl || info.logoUrl : info.logoUrl;
-  var head = logo ? el('img', { class: 'pl-ws-logo', src: logo, alt: name || pst('rail.console') })
-    : info.markUrl ? el('img', { class: 'pl-ws-mark pl-ws-mark--img', src: info.markUrl, alt: '' })
-    : name ? el('span', { class: 'pl-ws-mark', text: name.charAt(0) }) : null;
-  var ws = el('a', { class: 'pl-ws' + (head ? '' : ' pl-ws--plain'), href: '#/', 'data-pl-ws': name ? 'brand' : 'neutral' }, head,
-    el('span', { class: 'pl-ws-name' }, !logo && name ? el('b', { text: name }) : null, el('span', { text: pst('rail.console') })));
-  p.appendChild(ws);
+  var name = brandLabel();
+  var ws = el('a', { class: 'pl-ws', href: '#/', 'data-pl-ws': name ? 'brand' : 'neutral' }, brandIcon(),
+    el('span', { class: 'pl-ws-name' }, name ? el('b', { text: name, title: name }) : null, el('span', { text: pst('rail.console') })));
+  var toggle = el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-side-toggle', 'aria-label': pst('rail.collapse'), title: pst('rail.collapse'), 'aria-expanded': 'true', html: plIcon('panel'), onclick: function () { setCompact(true); } });
+  p.appendChild(el('div', { class: 'pl-side-head' }, ws, toggle));
   var search = el('button', { type: 'button', class: 'pl-side-search', 'aria-haspopup': 'dialog', onclick: function () { closeSheet(); openPalette(); } });
   search.innerHTML = plIcon('search');
   search.appendChild(el('span', { class: 'pl-side-search-ph', text: pst('top.search') }));
@@ -809,12 +824,34 @@ function buildSide(model, mode) {
     });
   }
   p.appendChild(scroll);
+  if (mqMobile.matches) p.appendChild(sideTools());
 
+}
+
+function sideTools() {
+  var box = el('div', { class: 'pl-side-tools', role: 'group', 'aria-label': pst('rail.tools') });
+  var api = nc();
+  var st = api && api.handoff ? api.handoff.state() : null;
+  if (st && st.visible) {
+    var h = el('button', { type: 'button', class: 'pl-nav', 'data-pl-tool': 'handoff', html: plIcon('download'), onclick: function () { closeSheet(); if (api.handoff) api.handoff.open(); } });
+    h.appendChild(el('span', { class: 'pl-nav-label', text: pst('top.handoff') }));
+    box.appendChild(h);
+  }
+  var sdk = el('a', { class: 'pl-nav', href: '#/system/sdk', 'data-pl-tool': 'sdk', 'aria-current': currentHash().indexOf('#/system/sdk') === 0 ? 'page' : null, html: plIcon('code'), onclick: function () { closeSheet(); } });
+  sdk.appendChild(el('span', { class: 'pl-nav-label', text: pst('top.sdk') }));
+  box.appendChild(sdk);
+  var dark = root.classList.contains('dark');
+  var theme = el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-theme', 'data-pl-tool': 'theme', 'aria-label': pst(dark ? 'top.toLight' : 'top.toDark'), title: pst(dark ? 'top.toLight' : 'top.toDark'), 'aria-pressed': dark ? 'true' : 'false', html: plIcon(dark ? 'sun' : 'moon'), onclick: themeClick });
+  var seg = buildLangSeg();
+  box.appendChild(el('div', { class: 'pl-side-tools-row' }, seg, theme));
+  requestAnimationFrame(function () { segIndicator(seg); });
+  return box;
 }
 
 function railKey(model, mode) {
   var b = brandInfo();
-  return [plLang(), currentHash(), mqMobile.matches, root.classList.contains('dark'), mode && mode.id, JSON.stringify(b), JSON.stringify([model.direct, model.groups, model.settings, model.help].map(function (x) {
+  var ho = nc() && nc().handoff ? nc().handoff.state() : null;
+  return [plLang(), currentHash(), mqMobile.matches, compactOn(), !!(ho && ho.visible), root.classList.contains('dark'), mode && mode.id, JSON.stringify(b), JSON.stringify([model.direct, model.groups, model.settings, model.help].map(function (x) {
     return x ? JSON.stringify(x.links || x, function (k, v) { return k === 'svg' ? undefined : v; }) : '';
   }))].join('|');
 }
@@ -875,6 +912,24 @@ function renderRail(force) {
   root.classList.add('pl-railed');
   if (typeof paintTopbar === 'function') paintTopbar();
 }
+
+var COMPACT_KEY = 'nakama.plane.compact';
+
+function compactOn() {
+  return !mqMobile.matches && root.classList.contains('pl-compact');
+}
+
+function setCompact(on) {
+  root.classList.toggle('pl-compact', !!on);
+  try { if (on) localStorage.setItem(COMPACT_KEY, '1'); else localStorage.removeItem(COMPACT_KEY); } catch (e) { on = !!on; }
+  hideTip();
+  rail.key = '';
+  renderRail(true);
+  var next = on ? document.querySelector('.pl-tb-start .pl-side-toggle') : rail.side && rail.side.querySelector('.pl-side-toggle');
+  if (next) next.focus({ preventScroll: true });
+}
+
+try { if (localStorage.getItem(COMPACT_KEY) === '1') root.classList.add('pl-compact'); } catch (e) { root.classList.remove('pl-compact'); }
 
 function closeFly() {}
 
@@ -1131,20 +1186,20 @@ function placeStats(b) {
 
 function buildEnd() {
   var box = el('div', { class: 'pl-tb-end', 'data-l10n-skip': '' });
-  var search = el('button', { type: 'button', class: 'pl-search', 'aria-label': pst('top.searchPages'), 'aria-haspopup': 'dialog', onclick: function () { openPalette(); } });
+  var search = el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-search', 'aria-label': pst('top.searchPages'), 'aria-haspopup': 'dialog', onclick: function () { openPalette(); } });
   search.innerHTML = plIcon('search');
   search.appendChild(el('span', { class: 'pl-search-ph', text: pst('top.search') }));
   search.appendChild(el('span', { class: 'pl-keys', dir: 'ltr' }, el('kbd', { text: 'Ctrl' }), el('kbd', { text: 'K' })));
-  var status = el('button', { type: 'button', class: 'pl-status', 'aria-expanded': 'false', 'aria-label': pst('top.status'), title: pst('top.status'), onclick: function (e) { e.stopPropagation(); toggleStats(); } });
+  var status = el('button', { type: 'button', class: 'pl-ctl pl-status', 'aria-expanded': 'false', 'aria-label': pst('top.status'), title: pst('top.status'), onclick: function (e) { e.stopPropagation(); toggleStats(); } });
   status.appendChild(el('span', { class: 'pl-dot', 'aria-hidden': 'true' }));
   status.appendChild(el('span', { class: 'pl-status-label', text: pst('top.live') }));
   status.setAttribute('aria-controls', 'pl-stats');
   tb.stats = el('div', { class: 'pl-stats', id: 'pl-stats', role: 'region', 'aria-label': pst('top.status'), 'data-l10n-skip': '' });
-  tb.up = el('a', { class: 'pl-up', href: '#/system/updates', hidden: true, 'data-pl-updates': '' });
-  tb.sdk = el('a', { class: 'pl-sdk', href: '#/system/sdk', 'data-pl-sdk': '' });
-  tb.handoff = el('button', { type: 'button', class: 'pl-sdk pl-handoff', hidden: true, 'aria-haspopup': 'dialog', 'data-pl-handoff': '', onclick: function () { var api = nc(); if (api && api.handoff) api.handoff.open(); } });
+  tb.up = el('a', { class: 'pl-ctl pl-up', href: '#/system/updates', hidden: true, 'data-pl-updates': '' });
+  tb.sdk = el('a', { class: 'pl-ctl pl-sdk', href: '#/system/sdk', 'data-pl-sdk': '' });
+  tb.handoff = el('button', { type: 'button', class: 'pl-ctl pl-sdk pl-handoff', hidden: true, 'aria-haspopup': 'dialog', 'data-pl-handoff': '', onclick: function () { var api = nc(); if (api && api.handoff) api.handoff.open(); } });
   tb.seg = buildLangSeg();
-  tb.theme = el('button', { type: 'button', class: 'pl-round pl-theme', onclick: themeClick });
+  tb.theme = el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-round pl-theme', onclick: themeClick });
   paintTheme();
   box.appendChild(tb.up);
   box.appendChild(tb.handoff);
@@ -1152,6 +1207,7 @@ function buildEnd() {
   box.appendChild(search);
   box.appendChild(status);
   box.appendChild(tb.stats);
+  box.appendChild(el('span', { class: 'pl-tb-sep', 'aria-hidden': 'true' }));
   box.appendChild(tb.seg);
   box.appendChild(tb.theme);
   return box;
@@ -1221,7 +1277,8 @@ function paintTopbar() {
   if (!holder || !end) return;
   if (!tb.start) {
     tb.start = el('div', { class: 'pl-tb-start', 'data-l10n-skip': '' },
-      el('button', { type: 'button', class: 'pl-round pl-menu', 'aria-label': pst('top.menu'), html: plIcon('menu'), onclick: function () { openSheet(); } }),
+      el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-round pl-menu', 'aria-label': pst('top.menu'), html: plIcon('menu'), onclick: function () { openSheet(); } }),
+      el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-side-toggle', 'aria-expanded': 'false', html: plIcon('panel'), onclick: function () { setCompact(false); } }),
       el('nav', { class: 'pl-crumbs' }),
       el('nav', { class: 'pl-seg pl-tabs', hidden: true }));
   }
@@ -1231,6 +1288,8 @@ function paintTopbar() {
   var info = pageInfo();
   var crumbs = crumbsFor(bar);
   var key = plLang() + '|' + JSON.stringify(crumbs);
+  var tog = tb.start.querySelector('.pl-side-toggle');
+  if (tog.getAttribute('aria-label') !== pst('rail.expand')) { tog.setAttribute('aria-label', pst('rail.expand')); tog.setAttribute('title', pst('rail.expand')); }
   var cb = tb.start.querySelector('.pl-crumbs');
   cb.setAttribute('aria-label', pst('crumb.label'));
   if (tb.key !== key) {
