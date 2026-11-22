@@ -283,7 +283,7 @@ func saveRun(ctx context.Context, tx *sql.Tx, res *Result) error {
 		return err
 	}
 	_, err = tx.ExecContext(ctx, `INSERT INTO storage (collection, key, user_id, value, version, read, write, create_time, update_time)
-		VALUES ($1, $2, $3, $4::jsonb, md5($4), 0, 0, now(), now())
+		VALUES ($1, $2, $3, $4::jsonb, md5($4::jsonb::text), 0, 0, now(), now())
 		ON CONFLICT (collection, key, user_id) DO UPDATE SET value=EXCLUDED.value, version=EXCLUDED.version, update_time=now()`, RunCollection, RunKey, systemUserID, string(raw))
 	return err
 }

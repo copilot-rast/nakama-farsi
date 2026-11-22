@@ -20,7 +20,7 @@ var seedKindToCleanup = map[string]string{
 	"config key": "config_key", "task category": "task_category", "task group": "task_group", "task": "task", "item": "item",
 	"achievement category": "achievement_category", "achievement": "achievement", "prize group": "prize_group", "chance game": "chance_game",
 	"game category": "game_category", "game": "game", "banner placement": "banner_list", "banner": "banner", "sponsor": "sponsor",
-	"auto rule": "auto_rule", "app version": "app_version",
+	"automatic notification": "auto_rule", "app version": "app_version",
 }
 
 func methodConfig(t *testing.T, db *sql.DB, key []byte, method string) (string, bool) {
@@ -118,7 +118,7 @@ func TestSampleCleanupPostgres(t *testing.T) {
 		`UPDATE economy_payment_method SET config=$1 WHERE method='myket'`:  {adminMyket},
 		`UPDATE economy_payment_method SET config=$1 WHERE method='bazaar'`: {editedBazaar},
 		`INSERT INTO economy_product (id, key, name, description, is_active, payment_methods, sku, prize_id) SELECT gen_random_uuid(), 'real_pack', '{"en":"Real"}', '{}', true, '{in_app}', '{}', id FROM economy_prize WHERE key='star_coins_100'`: nil,
-		`INSERT INTO economy_payment (id, user_id, product_id, method, status) SELECT gen_random_uuid(), '11111111-1111-4111-8111-111111111111', id, 'zarinpal', 'paid' FROM economy_product WHERE key='star_pack_small'`:                            nil,
+		`INSERT INTO economy_payment (id, user_id, product_id, method, status) SELECT gen_random_uuid(), '11111111-1111-4111-8111-111111111111', id, 'zarinpal', 'success' FROM economy_product WHERE key='star_pack_small'`:                            nil,
 		`INSERT INTO economy_user_item (user_id, item_id, source) SELECT '11111111-1111-4111-8111-111111111111', id, 'starter' FROM economy_item WHERE key='star_basket_classic'`:                                                                    nil,
 		`UPDATE publication_banner_list SET name='{"fa":"بنرهای ما","en":"Our banners"}' WHERE key='menu_carousel'`:                                                                                                                                  nil,
 	} {
