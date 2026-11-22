@@ -48,8 +48,8 @@ RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -
 RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/campaign.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/campaign
 RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/assets.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/assets
 RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/itemkinds.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./integrations/itemkinds
-RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/stargame.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./samples/stargame
 RUN --mount=type=cache,target=/root/.cache/go-build go run -mod=vendor ./tools/rpcschema -root . -openapi /go/build-out/modules/openapi.json -buildflag=-buildmode=plugin -buildflag=-trimpath -buildflag=-mod=vendor "-buildflag=-gcflags=-trimpath $PWD" "-buildflag=-asmflags=-trimpath $PWD"
+RUN --mount=type=cache,target=/root/.cache/go-build go build -buildmode=plugin -o /go/build-out/modules/stargame.so -trimpath -mod=vendor -gcflags "-trimpath $PWD" -asmflags "-trimpath $PWD" -ldflags "$(cat /go/buildinfo.ldflags)" ./samples/stargame
 
 FROM ${DEBIAN_IMAGE}
 

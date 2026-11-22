@@ -2,6 +2,8 @@
 
 Playwright specs that drive the real console overlay and the Star Catcher sample (`samples/stargame`) against a running server. Every phase adds specs here and runs the whole suite before it is reported done.
 
+In a fork whose `build/plugins.exclude` lists `stargame`, `playwright.config.ts` ignores every spec that needs the Star Catcher sample (`lib/samples.ts` finds them by the sample's keys and `/stargame/`), and `105-sample-cleanup` skips itself.
+
 ## Run
 
 ```sh
@@ -138,6 +140,7 @@ Read from the environment first, then from `~/.config/nakama-farsi/mac-dev.env` 
 | `game/81-campaign.spec.ts` | `campaign_chapters` with chapter and stage locks and rewards, `STAGE_LOCKED`; a run longer than the server clock is `INVALID_RESULT`, a 2-star run pays half the reward and XP (into the economy meta), a resend answers `replayed` and pays nothing, a 3-star replay pays only the difference plus the 3-star prize and the 50% chapter milestone, a worse replay pays nothing, `ATTEMPT_CLOSED` after a newer start, the next chapter opens; a one-time stage pays once; a repeatable stage hits its cooldown (`rewardLimited`); a free ride claim needs a `requestId`, a repeat answers `replayed`, the next claim is `REWARD_LIMITED` with `meta.reason` |
 | `console/100-campaign-stage-form.spec.ts` | chapter steps keep their ids after a percent edit, chapter settings form; a stage from the panel with the «مسابقه» star template (rules shown without health), «بعد از برد دوباره بازی نشود», the mission form built from `fields.stage` (text, i18n, bool default, missions list with select, number range error and nested enemies); `live/campaign-play.mjs` plays it with nakama-js over the socket: reads `settings`, `starRules`, `minSeconds`, chapter `settings`, wins with `timesSeen` 1 (2 stars, `criteria` tiers, half reward, step paid), then `STAGE_ALREADY_WON`; settings page templates and the free ride table switch (off, nav hidden); EN dark 390px |
 | `console/103-itemkinds-console.spec.ts` | «دارایی‌های بازی»: the kinds API and a sidebar group that only shows with a registered kind; a route added, edited (bad JSON refused, Persian digits in priority) and removed on «مسیریاب یونیتی»; router settings saved, a bad depth refused; runs and router pages at 390px |
+| `console/105-sample-cleanup.spec.ts` | «داده‌های نمونه» (Star Catcher cleanup): preview by table without changes, Ctrl K, plugin notice, a SETTINGS-only console user sees the page but gets `CONSOLE_ADMIN_ONLY` and a disabled button, `base_sample_cleanup` refuses a player (`SERVER_ONLY`) and previews with the http key, the admin runs it from the page (confirm dialog, toast, last run), sample rows gone while languages and `coin` stay, a second run and the deploy RPC change nothing, English dark 390px; `stargame_seed` brings the sample back |
 | `console/63-mail-prize.spec.ts` | an in-app message with an attached prize reaches two players, each claims it once from the inbox (`publication_inbox_claim`, wallet up by the prize, `ALREADY_CLAIMED`, two `mail` prize rows), `PRIZE_IN_APP_ONLY` on SMS, `MESSAGE_HAS_NO_PRIZE` and `MESSAGE_NOT_FOUND`; the compose page shows the prize picker only for in-app channels |
 
 ## Multi-node cluster suite (phase 6)

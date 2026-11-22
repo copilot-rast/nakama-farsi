@@ -1,5 +1,8 @@
 import { defineConfig } from '@playwright/test';
 import { CONSOLE_URL } from './lib/env';
+import { sampleSpecIgnores } from './lib/samples';
+
+const sampleIgnores = sampleSpecIgnores();
 
 export default defineConfig({
   testDir: './specs',
@@ -26,7 +29,7 @@ export default defineConfig({
   projects: [
     { name: 'setup', testMatch: /global\.setup\.ts/, teardown: 'teardown', use: { pageOpts: { signedIn: false } } as any },
     { name: 'teardown', testMatch: /global\.teardown\.ts/ },
-    { name: 'console', testDir: './specs/console', dependencies: ['setup'], use: { pageOpts: { signedIn: true } } as any },
-    { name: 'game', testDir: './specs/game', dependencies: ['setup'], use: { pageOpts: { signedIn: false } } as any },
+    { name: 'console', testDir: './specs/console', testIgnore: sampleIgnores, dependencies: ['setup'], use: { pageOpts: { signedIn: true } } as any },
+    { name: 'game', testDir: './specs/game', testIgnore: sampleIgnores, dependencies: ['setup'], use: { pageOpts: { signedIn: false } } as any },
   ],
 });
