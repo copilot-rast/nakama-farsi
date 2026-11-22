@@ -6,7 +6,7 @@ function statsPage(root) {
   var daySel = select(String(days), [7, 30, 90].map(function (d) { return { value: String(d), label: t('sx.d', { n: d }) }; }), { name: 'days', label: t('sx.days') });
   daySel.addEventListener('change', function () { location.hash = '#/quiz/stats?days=' + daySel.value; });
   var box = h('div', { class: 'flex flex-col gap-4' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end qz-filters' }, field(t('sx.days'), daySel)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx qz-filters' }, field(t('sx.days'), daySel)));
   frame.content.appendChild(box);
   box.appendChild(h('p', { class: 'text-sm text-secondary-500', text: t('loading') }));
   api('GET', '/quiz/stats' + qs({ days: days, lang: qzLang() })).then(function (d) {

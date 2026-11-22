@@ -14,7 +14,7 @@ function packsPage(root) {
   var missionSel = h('select', { class: QZ_INPUT + ' eco-select', name: 'missionId', 'aria-label': t('f.mission') });
   var search = input('', { name: 'q', placeholder: t('search') });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end qz-filters' }, field(t('f.mission'), missionSel), field(t('search'), search)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx qz-filters' }, field(t('f.mission'), missionSel), field(t('search'), search)));
   frame.content.appendChild(listBox);
   missionSel.addEventListener('change', function () { state.missionId = missionSel.value; state.page = 1; reload(); });
   var timer = null;

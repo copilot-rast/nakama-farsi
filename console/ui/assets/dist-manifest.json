@@ -1,9 +1,9 @@
 {
   "note": "Files generated in console/ui/dist by scripts/build.mjs.",
   "files": [
-    "static/assets-ae82619abd.js",
-    "static/assets-ae82619abd.js.gz",
     "static/assets-c1e768af8c.css",
-    "static/assets-c1e768af8c.css.gz"
+    "static/assets-c1e768af8c.css.gz",
+    "static/assets-cfa2cafd70.js",
+    "static/assets-cfa2cafd70.js.gz"
   ]
 }

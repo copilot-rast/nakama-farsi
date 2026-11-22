@@ -6,7 +6,7 @@ function reportsPage(root) {
   var statusSel = select(state.status, [{ value: '', label: t('all') }].concat(['open', 'resolved', 'dismissed'].map(function (s) { return { value: s, label: t('st.' + s) }; })), { name: 'status', label: t('rp.status') });
   var reasonSel = h('select', { class: QZ_INPUT + ' eco-select', name: 'reasonKey', 'aria-label': t('rp.reason') });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end qz-filters' }, field(t('rp.status'), statusSel), field(t('rp.reason'), reasonSel)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx qz-filters' }, field(t('rp.status'), statusSel), field(t('rp.reason'), reasonSel)));
   frame.content.appendChild(listBox);
   statusSel.addEventListener('change', function () { state.status = statusSel.value; state.page = 1; reload(); });
   reasonSel.addEventListener('change', function () { state.reasonKey = reasonSel.value; state.page = 1; reload(); });

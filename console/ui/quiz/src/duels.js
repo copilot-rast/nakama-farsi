@@ -9,7 +9,7 @@ function duelCategoriesPage(root) {
   clear(root).appendChild(frame.el);
   var search = input('', { name: 'q', placeholder: t('search') });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end qz-filters' }, field(t('search'), search)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx qz-filters' }, field(t('search'), search)));
   frame.content.appendChild(listBox);
   var timer = null;
   search.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { state.q = search.value.trim(); state.page = 1; reload(); }, 300); });
@@ -106,7 +106,7 @@ function duelsPage(root) {
   var player = input(state.player, { name: 'player', placeholder: t('du.playerHint') });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
   frame.content.appendChild(tiles);
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end qz-filters' }, field(t('du.status'), statusSel), field(t('du.mode'), modeSel), field(t('du.player'), player)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx qz-filters' }, field(t('du.status'), statusSel), field(t('du.mode'), modeSel), field(t('du.player'), player)));
   frame.content.appendChild(listBox);
   statusSel.addEventListener('change', function () { state.status = statusSel.value; state.page = 1; reload(); });
   modeSel.addEventListener('change', function () { state.mode = modeSel.value; state.page = 1; reload(); });

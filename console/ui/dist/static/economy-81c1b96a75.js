@@ -145,6 +145,16 @@ var MESSAGES = {
     'search.payments': 'جستجو در شناسه، کد پیگیری یا محصول…',
     'range': '{from} تا {to} از {total}',
     'range.none': 'موردی وجود ندارد',
+    'page.last': 'صفحهٔ آخر',
+    'page.of': 'صفحهٔ {page} از {pages}',
+    'list.count': '{n} مورد',
+    'list.count.one': '{n} مورد',
+    'list.pager': 'صفحه‌بندی',
+    'list.toolbar': 'جستجو و فیلتر',
+    'filters.clear': 'پاک کردن فیلترها',
+    'sel.all': 'انتخاب همهٔ ردیف‌های این صفحه',
+    'sel.bar': 'کارهای گروهی',
+    'bt.selected': '{n} ربات انتخاب شده',
     'page.first': 'صفحهٔ اول',
     'page.prev': 'صفحهٔ قبل',
     'page.next': 'صفحهٔ بعد',
@@ -6401,6 +6411,16 @@ var MESSAGES = {
     'search.payments': 'Search by ID, reference or product…',
     'range': '{from} to {to} of {total}',
     'range.none': 'No items',
+    'page.last': 'Last page',
+    'page.of': 'Page {page} of {pages}',
+    'list.count': '{n} items',
+    'list.count.one': '{n} item',
+    'list.pager': 'Pagination',
+    'list.toolbar': 'Search and filters',
+    'filters.clear': 'Clear filters',
+    'sel.all': 'Select all rows on this page',
+    'sel.bar': 'Bulk actions',
+    'bt.selected': '{n} bots selected',
     'page.first': 'First page',
     'page.prev': 'Previous page',
     'page.next': 'Next page',
@@ -12915,6 +12935,7 @@ var ICONS = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   close: '<path d="M18 6L6 18M6 6l12 12"/>',
   first: '<path d="M7 6v12M17 18l-6-6 6-6"/>',
+  last: '<g transform="matrix(-1 0 0 1 24 0)"><path d="M7 6v12M17 18l-6-6 6-6"/></g>',
   prev: '<path d="M15 18l-6-6 6-6"/>',
   next: '<path d="M9 18l6-6-6-6"/>',
   back: '<path d="M19 12H5M12 19l-7-7 7-7"/>',
@@ -12960,7 +12981,7 @@ var ICONS = {
   star: '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',
   history: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>'
 };
-var MIRROR = { first: 1, prev: 1, next: 1, back: 1, reply: 1 };
+var MIRROR = { first: 1, last: 1, prev: 1, next: 1, back: 1, reply: 1 };
 
 var PH_ICONS = {
   'updates': '<path d="M208,112a32.05,32.05,0,0,0-30.69,23l-42.21-6a8,8,0,0,1-4.95-2.71L94.43,84.55A32,32,0,1,0,72,87v82a32,32,0,1,0,16,0V101.63l30,35a24,24,0,0,0,14.83,8.14l44,6.28A32,32,0,1,0,208,112ZM64,56A16,16,0,1,1,80,72,16,16,0,0,1,64,56ZM96,200a16,16,0,1,1-16-16A16,16,0,0,1,96,200Zm112-40a16,16,0,1,1,16-16A16,16,0,0,1,208,160Z"/>',
@@ -12983,6 +13004,7 @@ var PH_ICONS = {
   plus: '<path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"/>',
   close: '<path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/>',
   first: '<path d="M197.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L123.31,128ZM72,40a8,8,0,0,0-8,8V208a8,8,0,0,0,16,0V48A8,8,0,0,0,72,40Z"/>',
+  last: '<g transform="matrix(-1 0 0 1 256 0)"><path d="M197.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L123.31,128ZM72,40a8,8,0,0,0-8,8V208a8,8,0,0,0,16,0V48A8,8,0,0,0,72,40Z"/></g>',
   prev: '<path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"/>',
   next: '<path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/>',
   back: '<path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/>',
@@ -13137,28 +13159,100 @@ var SELECT_SM = INPUT_SM + ' eco-select';
 
 function searchInput(value, placeholder, oninput) {
   var input = h('input', {
-    class: INPUT_SM + ' !pl-10',
-    type: 'text',
+    class: INPUT_SM + ' !pl-10 eco-search-input',
+    type: 'search',
     value: value || '',
     placeholder: placeholder,
-    'aria-label': placeholder
+    'aria-label': placeholder,
+    autocomplete: 'off',
+    spellcheck: 'false'
   });
   input.addEventListener('input', oninput);
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && input.value) {
+      e.preventDefault();
+      e.stopPropagation();
+      input.value = '';
+      input.dispatchEvent(new Event('input'));
+    }
+  });
   return h('label', { class: 'x-label block relative align-bottom focus:outline-none x-input eco-search', style: INPUT_VARS },
     h('div', { class: 'relative' },
-      icon('search', 'h-4 w-4 ml-2 left-1 text-secondary-600 dark:text-secondary-300 absolute my-auto inset-y-0'),
+      icon('search', 'h-4 w-4 ml-2 left-1 text-secondary-600 dark:text-secondary-300 absolute my-auto inset-y-0 eco-search-ic'),
       input));
 }
 
-function filterSelect(label, value, options, onchange) {
-  var sel = h('select', { class: SELECT_SM, 'aria-label': label, onchange: function () { onchange(sel.value); } });
-  sel.appendChild(h('option', { value: '', text: label + ': ' + t('all') }));
+function filterBox(label, control, on) {
+  var box = h('label', { class: 'eco-filter' + (on ? ' eco-filter-on' : '') },
+    h('span', { class: 'eco-filter-label', text: label }),
+    control);
+  box.mark = function (v) { box.classList.toggle('eco-filter-on', !!v); };
+  return box;
+}
+
+function filterSelect(label, value, options, onchange, cfg) {
+  cfg = cfg || {};
+  var def = cfg.def == null ? '' : String(cfg.def);
+  var sel = h('select', { class: 'eco-filter-select', 'aria-label': label, onchange: function () { box.mark(sel.value !== def); onchange(sel.value); } });
+  if (cfg.def == null) sel.appendChild(h('option', { value: '', text: t('all') }));
   options.forEach(function (o) {
     var opt = h('option', { value: o.value, text: o.label });
     if (String(o.value) === String(value || '')) opt.selected = true;
     sel.appendChild(opt);
   });
-  return h('label', { class: 'x-label block relative x-input', style: INPUT_VARS }, sel);
+  if (cfg.def != null && !sel.value) sel.value = def;
+  var box = filterBox(label, sel, sel.value !== def);
+  box.select = sel;
+  return box;
+}
+
+function filterText(label, value, onchange, opts) {
+  opts = opts || {};
+  var inp = h('input', { class: 'eco-filter-input eco-filter-text' + (opts.mono === false ? '' : ' font-mono'), dir: 'auto', type: 'text', value: value || '', placeholder: opts.placeholder || t('all'), 'aria-label': label, autocomplete: 'off', spellcheck: 'false' });
+  var box = filterBox(label, inp, !!value);
+  inp.addEventListener('input', function () { box.mark(inp.value.trim()); });
+  inp.addEventListener('input', debounce(function () { onchange(toLatinDigits(inp.value).trim()); }, opts.wait == null ? 300 : opts.wait));
+  box.input = inp;
+  return box;
+}
+
+function clearFiltersButton(onclick) {
+  var b = button({ variant: 'muted', size: 'sm', icon: 'close', iconClass: 'h-3.5 w-3.5', label: t('filters.clear'), class: 'eco-filters-clear', onclick: onclick });
+  b.setAttribute('data-filters-clear', '');
+  return b;
+}
+
+function refreshButton(onclick) {
+  var b = button({ variant: 'ghost', size: 'icon', icon: 'refresh', iconClass: 'h-4 w-4', title: t('refresh'), class: 'eco-iconbtn', onclick: function () {
+    b.classList.remove('eco-spin');
+    void b.offsetWidth;
+    b.classList.add('eco-spin');
+    onclick();
+  } });
+  b.setAttribute('data-list-refresh', '');
+  return b;
+}
+
+function listCount(state) {
+  var el = h('span', { class: 'eco-list-count tabular-nums', 'aria-live': 'polite', 'data-list-count': '' });
+  if (state.loading && !state.loaded) el.appendChild(bar('3.5rem'));
+  else if (state.total) el.textContent = t(state.total === 1 ? 'list.count.one' : 'list.count', { n: state.total });
+  return el;
+}
+
+function listToolbar(parts) {
+  var bar2 = h('div', { class: 'eco-toolbar' + ((parts.filters || []).length > 3 ? ' eco-toolbar--stack' : ''), role: 'search', 'aria-label': t('list.toolbar') });
+  if (parts.search) bar2.appendChild(parts.search);
+  var filters = h('div', { class: 'eco-filters' });
+  (parts.filters || []).forEach(function (f) { filters.appendChild(f); });
+  if (parts.clear) filters.appendChild(parts.clear);
+  if ((parts.filters || []).length || parts.clear) bar2.appendChild(filters);
+  var meta = h('div', { class: 'eco-toolbar-meta' });
+  if (parts.meta) meta.appendChild(parts.meta);
+  if (parts.refresh) meta.appendChild(parts.refresh);
+  bar2.appendChild(meta);
+  bar2.meta = meta;
+  return bar2;
 }
 
 function toggle(checked, label, onchange, size) {
@@ -13192,6 +13286,7 @@ function toggle(checked, label, onchange, size) {
 
 function checkbox(checked, label, onchange) {
   var on = !!checked;
+  var mixed = false;
   var box = h('div', {});
   var mark = document.createElementNS(SVG_NS, 'svg');
   mark.setAttribute('viewBox', '0 0 20 20');
@@ -13199,18 +13294,21 @@ function checkbox(checked, label, onchange) {
   box.appendChild(mark);
   var wrap = h('label', { class: 'x-checkbox inline-block relative cursor-pointer align-middle', tabindex: '0', role: 'checkbox' });
   function paint() {
-    wrap.setAttribute('style', on
+    var fill = on || mixed;
+    mark.innerHTML = mixed ? '<path d="M4 9h12v2H4z"/>' : '<path d="M0 11l2-2 5 5L18 3l2 2L7 18z"/>';
+    wrap.setAttribute('style', fill
       ? '--x-checkbox-bg: rgb(var(--primary-color-500)); --x-checkbox-border: rgb(var(--primary-color-500)); --x-checkbox-dark-bg: rgb(var(--primary-color-500)); --x-checkbox-dark-border: rgb(var(--primary-color-500));'
       : '--x-checkbox-bg: #fff; --x-checkbox-border: #d1d5db; --x-checkbox-dark-bg: #111827; --x-checkbox-dark-border: #9ca3af;');
     box.setAttribute('class', 'rounded flex justify-center items-center shrink-0 border border-[color:var(--x-checkbox-border)] bg-[color:var(--x-checkbox-bg)] dark:border-[color:var(--x-checkbox-dark-border)] dark:bg-[color:var(--x-checkbox-dark-bg)] h-4 w-4');
-    mark.setAttribute('class', 'fill-current text-white h-2.5 w-2.5' + (on ? '' : ' opacity-0'));
-    wrap.setAttribute('aria-checked', on ? 'true' : 'false');
+    mark.setAttribute('class', 'fill-current text-white h-2.5 w-2.5' + (fill ? '' : ' opacity-0'));
+    wrap.setAttribute('aria-checked', mixed ? 'mixed' : on ? 'true' : 'false');
   }
   wrap.appendChild(h('div', { class: 'flex items-center' }, box,
-    h('div', { class: 'inline-block text-secondary-800 dark:text-secondary-200 pl-2 font-medium' }, h('span', { text: label }))));
-  function flip(e) { e.preventDefault(); on = !on; paint(); onchange(on); }
+    label ? h('div', { class: 'inline-block text-secondary-800 dark:text-secondary-200 pl-2 font-medium' }, h('span', { text: label })) : null));
+  function flip(e) { e.preventDefault(); on = mixed ? true : !on; mixed = false; paint(); onchange(on); }
   wrap.addEventListener('click', flip);
   wrap.addEventListener('keydown', function (e) { if (e.key === ' ' || e.key === 'Enter') flip(e); });
+  wrap.set = function (v) { mixed = v === 'mixed'; on = v === true; paint(); };
   paint();
   return wrap;
 }
@@ -13296,21 +13394,99 @@ function card(children, extra) {
   return h('div', { class: 'bg-white dark:bg-secondary-800 overflow-hidden rounded-md shadow' + (extra ? ' ' + extra : '') }, children);
 }
 
-function pager(state, onpage, onrefresh) {
+function pagerButton(name, title, disabled, go) {
+  var b = h('button', { type: 'button', class: 'eco-pager-btn', title: title, 'aria-label': title, disabled: !!disabled, onclick: go });
+  b.appendChild(icon(name, 'h-4 w-4'));
+  b.setAttribute('data-page', name);
+  return b;
+}
+
+function pager(state, onpage) {
   var total = state.total || 0;
-  var from = total ? (state.page - 1) * state.limit + 1 : 0;
+  var nav = h('nav', { class: 'eco-pager', 'aria-label': t('list.pager') });
+  if (state.loading && !state.loaded) { nav.appendChild(bar('8rem')); return nav; }
+  if (!total) { nav.hidden = true; return nav; }
+  var from = (state.page - 1) * state.limit + 1;
   var to = Math.min(total, state.page * state.limit);
   var last = Math.max(1, Math.ceil(total / state.limit));
-  var info = h('div', { class: 'text-xs text-secondary-500 shrink-0' });
-  if (state.loading && !state.loaded) info.appendChild(bar('5rem'));
-  else if (!total) info.appendChild(h('div', { text: t('range.none') }));
-  else info.appendChild(h('div', { class: 'flex items-center gap-1' }, h('span', { class: 'tabular-nums', text: t('range', { from: from, to: to, total: total }) })));
-  return h('div', { class: 'flex items-center gap-2 justify-end shrink-0' },
-    info,
-    onrefresh ? button({ variant: 'muted', size: 'icon', icon: 'refresh', iconClass: 'h-3 w-3', title: t('refresh'), onclick: onrefresh }) : null,
-    button({ variant: 'muted', size: 'icon', icon: 'first', iconClass: 'h-3 w-3', title: t('page.first'), disabled: state.page <= 1, onclick: function () { onpage(1); } }),
-    button({ variant: 'muted', size: 'icon', icon: 'prev', iconClass: 'h-3 w-3', title: t('page.prev'), disabled: state.page <= 1, onclick: function () { onpage(state.page - 1); } }),
-    button({ variant: 'muted', size: 'icon', icon: 'next', iconClass: 'h-3 w-3', title: t('page.next'), disabled: state.page >= last, onclick: function () { onpage(state.page + 1); } }));
+  nav.appendChild(h('span', { class: 'eco-pager-range tabular-nums', text: t('range', { from: from, to: to, total: total }) }));
+  if (last > 1) {
+    nav.appendChild(h('div', { class: 'eco-pager-nav' },
+      pagerButton('first', t('page.first'), state.page <= 1, function () { onpage(1); }),
+      pagerButton('prev', t('page.prev'), state.page <= 1, function () { onpage(state.page - 1); }),
+      h('span', { class: 'eco-pager-page tabular-nums', 'aria-current': 'page', text: t('page.of', { page: state.page, pages: last }) }),
+      pagerButton('next', t('page.next'), state.page >= last, function () { onpage(state.page + 1); }),
+      pagerButton('last', t('page.last'), state.page >= last, function () { onpage(last); })));
+  }
+  return nav;
+}
+
+function selection(opts) {
+  var sel = { ids: {}, page: [], idOf: opts.idOf || function (it) { return it.id; }, bar: null, heads: [] };
+  sel.count = function () { return Object.keys(sel.ids).length; };
+  sel.list = function () { return Object.keys(sel.ids); };
+  sel.paint = function () {
+    var n = sel.count();
+    if (sel.bar) sel.bar.paint(n);
+    var onPage = sel.page.filter(function (it) { return sel.ids[sel.idOf(it)]; }).length;
+    sel.heads.forEach(function (hd) { if (hd.isConnected) hd.set(onPage && onPage === sel.page.length ? true : onPage ? 'mixed' : false); });
+    sel.heads = sel.heads.filter(function (hd) { return hd.isConnected; });
+    document.querySelectorAll('[data-economy-sel="' + opts.name + '"]').forEach(function (box) {
+      var tr = box.closest('tr');
+      if (tr) tr.classList.toggle('eco-row-on', !!sel.ids[box.getAttribute('data-id')]);
+    });
+  };
+  sel.selectPage = function () { sel.page.forEach(function (it) { sel.ids[sel.idOf(it)] = true; }); sel.paint(); sel.sync(); };
+  sel.clear = function () { sel.ids = {}; sel.paint(); sel.sync(); };
+  sel.sync = function () { document.querySelectorAll('[data-economy-sel="' + opts.name + '"]').forEach(function (box) { box.set(!!sel.ids[box.getAttribute('data-id')]); }); };
+  sel.rowCheck = function (it, label) {
+    var id = sel.idOf(it);
+    var box = checkbox(!!sel.ids[id], '', function (on) {
+      if (on) sel.ids[id] = true;
+      else delete sel.ids[id];
+      sel.paint();
+    });
+    box.setAttribute('aria-label', label);
+    box.setAttribute('data-economy-sel', opts.name);
+    box.setAttribute('data-id', id);
+    box.classList.add('eco-sel-box');
+    return box;
+  };
+  sel.headCheck = function () {
+    var box = checkbox(false, '', function (on) { if (on) sel.selectPage(); else { sel.page.forEach(function (it) { delete sel.ids[sel.idOf(it)]; }); sel.paint(); sel.sync(); } });
+    box.setAttribute('aria-label', t('sel.all'));
+    box.setAttribute('data-select-all', '');
+    box.classList.add('eco-sel-box');
+    sel.heads.push(box);
+    setTimeout(sel.paint, 0);
+    return box;
+  };
+  return sel;
+}
+
+function selectionBar(sel, opts) {
+  var count = h('span', { class: 'eco-selbar-count tabular-nums', 'aria-live': 'polite' });
+  if (opts.countAttr) count.setAttribute(opts.countAttr, '');
+  var pageAll = button({ variant: 'link', size: 'sm', label: t('pl.bulk.page'), class: 'eco-selbar-link', onclick: function () { sel.selectPage(); } });
+  var none = button({ variant: 'muted', size: 'icon', icon: 'close', iconClass: 'h-4 w-4', title: t('pl.bulk.clear'), class: 'eco-iconbtn', onclick: function () { sel.clear(); } });
+  if (opts.pageAttr) pageAll.setAttribute(opts.pageAttr[0], opts.pageAttr[1]);
+  none.setAttribute('data-sel-clear', '');
+  var el = h('div', { class: 'eco-selbar', role: 'region', 'aria-label': t('sel.bar'), hidden: true },
+    h('div', { class: 'eco-selbar-lead' }, none, count, pageAll),
+    h('div', { class: 'eco-selbar-actions' }, opts.actions || []));
+  if (opts.attr) el.setAttribute(opts.attr, '');
+  el.paint = function (n) {
+    var was = !el.hidden;
+    el.hidden = !n;
+    count.textContent = t(opts.countKey, { n: n });
+    var pageIds = sel.page.map(sel.idOf);
+    pageAll.hidden = !pageIds.length || pageIds.every(function (id) { return sel.ids[id]; });
+    if (opts.onpaint) opts.onpaint(n);
+    if (!was && n) { el.classList.remove('eco-selbar-in'); void el.offsetWidth; el.classList.add('eco-selbar-in'); }
+  };
+  sel.bar = el;
+  el.paint(sel.count());
+  return el;
 }
 
 function table(columns, rows, opts) {
@@ -13318,8 +13494,8 @@ function table(columns, rows, opts) {
   var thead = h('thead', { class: 'x-table-head align-bottom bg-secondary-100 dark:bg-secondary-700 sticky top-0 z-10' });
   var tr = h('tr', { class: 'text-sm text-secondary-700 dark:text-secondary-200 border-b' });
   columns.forEach(function (c) {
-    tr.appendChild(h('th', { class: 'x-table-header relative p-2.5 font-medium', width: c.width },
-      h('div', { class: 'flex items-center gap-1 select-none ' + (c.align === 'center' ? 'justify-center' : 'justify-start') }, h('div', { class: 'flex items-center gap-1', text: c.label }))));
+    tr.appendChild(h('th', { class: 'x-table-header relative p-2.5 font-medium' + (c.head ? ' eco-th-sel' : ''), width: c.width, scope: 'col', 'aria-label': c.head ? c.label : null },
+      c.head ? c.head() : h('div', { class: 'flex items-center gap-1 select-none ' + (c.align === 'center' ? 'justify-center' : 'justify-start') }, h('div', { class: 'flex items-center gap-1', text: c.label }))));
   });
   thead.appendChild(tr);
   var tbody = h('tbody', {});
@@ -13356,11 +13532,11 @@ function field(label, control, hint, opts) {
   opts = opts || {};
   var err = h('p', { class: 'text-error-600 dark:text-error-400', hidden: true });
   var wrap = h(opts.tag || 'div', { class: 'x-label block relative align-bottom focus:outline-none mb-5 x-input eco-field', style: INPUT_VARS },
-    label ? h('p', { class: 'flex items-center gap-2 font-medium text-secondary-800 dark:text-secondary-200 mb-1' },
+    label ? h('p', { class: 'flex items-center gap-2 font-medium text-secondary-800 dark:text-secondary-200 eco-field-label' },
       h('span', { text: label }),
       opts.optional ? h('span', { class: 'text-xs font-normal text-secondary-500', text: '(' + t('optional') + ')' }) : null) : null,
     h('div', { class: 'relative' }, control),
-    h('div', { class: 'x-input-footer text-xs mt-1' },
+    h('div', { class: 'x-input-footer eco-field-foot' },
       hint ? h('p', { class: 'text-secondary-500 dark:text-secondary-400', text: hint }) : null,
       err));
   wrap.setError = function (msg) {
@@ -15240,60 +15416,78 @@ function errorBlock(err, retry) {
 function listPage(container, name, query, ctx) {
   var def = RESOURCES[name] || LISTS[name];
   var call = apiFor(name);
-  var columns = def.columns.map(function (c) { return { label: t(c.label), width: c.width, align: c.align, skeleton: c.skeleton }; });
+  var columns = def.columns.map(function (c) { return { label: t(c.label), width: c.width, align: c.align, skeleton: c.skeleton, head: c.head }; });
   var state = { q: query.q || '', page: Math.max(1, parseInt(query.page, 10) || 1), limit: LIMIT, filters: {}, total: 0, loading: true, loaded: false };
   (def.filters || []).forEach(function (f) { if (query[f.name]) state.filters[f.name] = query[f.name]; });
   lastQuery[name] = currentQuery();
 
   var create = def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new', currentQuery()); } }) : def.create ? def.create() : null;
   var frame = def.settings || sectionOf(name) === PS_ROUTE ? tabFrame(t('desc.' + name), create) : pageFrame(t('nav.' + name), t('desc.' + name), create);
-  var pagerTop = h('div', { class: 'relative flex items-center justify-end' });
-  var pagerBottom = h('div', { class: 'flex gap-2 py-4 items-center justify-end' });
+  var pagerBottom = h('div', { class: 'eco-pager-slot' });
+  var countBox = h('div', { class: 'eco-count-slot' });
   var tableBox = h('div', {});
-  var search = searchInput(state.q, t(has('search.' + name) ? 'search.' + name : 'search'), debounce(function (e) {
-    state.q = toLatinDigits(e.target.value).trim();
+  var muted = false;
+  function changed() {
+    if (muted) return;
     state.page = 1;
+    paintClear();
     sync();
     load();
+  }
+  var search = searchInput(state.q, t(has('search.' + name) ? 'search.' + name : 'search'), debounce(function (e) {
+    state.q = toLatinDigits(e.target.value).trim();
+    changed();
   }, 300));
+  var resets = [];
   var filters = (def.filters || []).map(function (f) {
     var opts2 = typeof f.options === 'function' ? f.options() : f.options;
     if (f.type === 'ref') {
-      var picker = refPicker({ resource: f.resource, api: typeof f.api === 'function' ? f.api : f.api === 'publication' ? pubApi : api, filter: f.filter, value: state.filters[f.name] || '', label: t(f.label), placeholder: t(f.label) + ': ' + t('all'), onchange: function (v) {
+      var picker = refPicker({ resource: f.resource, api: typeof f.api === 'function' ? f.api : f.api === 'publication' ? pubApi : api, filter: f.filter, value: state.filters[f.name] || '', label: t(f.label), placeholder: t('all'), onchange: function (v) {
         state.filters[f.name] = v || '';
-        state.page = 1;
-        sync();
-        load();
+        box.mark(v);
+        changed();
       } });
-      return h('div', { class: 'x-label x-input eco-filter-ref', style: INPUT_VARS }, picker);
+      var box = filterBox(t(f.label), picker, !!state.filters[f.name]);
+      box.classList.add('eco-filter-ref');
+      box.setAttribute('data-filter', f.name);
+      resets.push(function () { var x = picker.querySelector('.eco-ref-clear'); if (x && !x.hidden) x.click(); });
+      return box;
     }
     if (f.type === 'text') {
-      var inp = h('input', { class: INPUT_SM + ' font-mono eco-filter-text', dir: 'ltr', 'data-ltr': '', 'data-ph-rtl': /[\u0600-\u06FF]/.test(t(f.label)) ? '' : null, type: 'text', value: state.filters[f.name] || '', placeholder: t(f.label), 'aria-label': t(f.label) });
-      inp.addEventListener('input', debounce(function () { state.filters[f.name] = toLatinDigits(inp.value).trim(); state.page = 1; sync(); load(); }, 300));
-      return h('label', { class: 'x-label block relative x-input', style: INPUT_VARS }, inp);
+      var tb = filterText(t(f.label), state.filters[f.name], function (v) { state.filters[f.name] = v; changed(); });
+      tb.setAttribute('data-filter', f.name);
+      resets.push(function () { tb.input.value = ''; tb.mark(''); });
+      return tb;
     }
-    return filterSelect(t(f.label), state.filters[f.name], opts2, function (v) { state.filters[f.name] = v; state.page = 1; sync(); load(); });
+    var sb = filterSelect(t(f.label), state.filters[f.name], opts2, function (v) { state.filters[f.name] = v; changed(); });
+    sb.setAttribute('data-filter', f.name);
+    resets.push(function () { sb.select.value = ''; sb.mark(''); });
+    return sb;
   });
+  var clearBtn = filters.length ? clearFiltersButton(function () {
+    muted = true;
+    resets.forEach(function (r) { r(); });
+    muted = false;
+    state.filters = {};
+    changed();
+    search.querySelector('input').focus();
+  }) : null;
+  function paintClear() {
+    if (clearBtn) clearBtn.hidden = !Object.keys(state.filters).some(function (k) { return state.filters[k]; });
+  }
+  paintClear();
+  var toolbar = listToolbar({ search: search, filters: filters, clear: clearBtn, meta: countBox, refresh: refreshButton(function () { load(); }) });
   if (def.top) frame.content.appendChild(def.top());
-  frame.content.appendChild(h('div', {},
-    h('div', { class: 'flex flex-col items-start pb-2 gap-2' },
-      filters.length > 3 ? h('div', { class: 'flex flex-col gap-2 w-full' },
-        h('div', { class: 'flex flex-col lg:flex-row lg:items-center gap-2 w-full' },
-          search,
-          h('div', { class: 'flex-grow hidden lg:block' }),
-          pagerTop),
-        h('div', { class: 'eco-filters eco-filters-wrap flex flex-wrap items-center gap-2' }, filters))
-      : h('div', { class: 'flex flex-col lg:flex-row lg:items-center gap-2 w-full' },
-        search,
-        filters.length ? h('div', { class: 'eco-filters flex flex-wrap items-center gap-2' }, filters) : null,
-        h('div', { class: 'flex-grow hidden lg:block' }),
-        pagerTop)),
+  frame.content.appendChild(h('div', { class: 'eco-list' },
+    toolbar,
+    h('div', { class: 'eco-list-sel' }),
     tableBox,
     pagerBottom));
   clear(container).appendChild(frame.el);
 
   function currentQuery() {
     var q = Object.assign({}, state.filters);
+    Object.keys(q).forEach(function (k) { if (!q[k]) delete q[k]; });
     if (state.q) q.q = state.q;
     if (state.page > 1) q.page = state.page;
     return q;
@@ -15304,8 +15498,14 @@ function listPage(container, name, query, ctx) {
     replaceHash(hashFor(name, ctx.id, lastQuery[name]));
   }
   function paintPager() {
-    clear(pagerTop).appendChild(pager(state, function (p) { state.page = p; sync(); load(); }, function () { load(); }));
-    clear(pagerBottom).appendChild(pager(state, function (p) { state.page = p; sync(); load(); window.scrollTo(0, 0); }));
+    clear(countBox).appendChild(listCount(state));
+    clear(pagerBottom).appendChild(pager(state, function (p) {
+      state.page = p;
+      sync();
+      load();
+      var top = toolbar.getBoundingClientRect().top;
+      if (top < 0) toolbar.scrollIntoView({ block: 'start' });
+    }));
   }
   function open(item) {
     if (def.onRow) { def.onRow(item, currentQuery()); return; }
@@ -15339,14 +15539,16 @@ function listPage(container, name, query, ctx) {
       clear(tableBox);
       if (!items.length) {
         var filtered = state.q || Object.keys(state.filters).some(function (k) { return state.filters[k]; });
+        var reset = filtered && clearBtn && !clearBtn.hidden ? button({ variant: 'ghost', size: 'sm', icon: 'close', label: t('filters.clear'), onclick: function () { clearBtn.click(); } }) : null;
         tableBox.appendChild(card(emptyBlock(filtered ? t('empty.search') : t('empty.title'), filtered ? null : t('empty.hint.' + name),
-          !filtered && def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new'); } }) : !filtered && def.create ? def.create() : null)));
+          reset || (!filtered && def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new'); } }) : !filtered && def.create ? def.create() : null))));
       } else {
         tableBox.appendChild(table(columns, items.map(function (it) {
           return { item: it, cells: def.columns.map(function (c) { return c.render(it); }) };
         }), { onrow: def.noRow ? null : open }));
       }
       paintPager();
+      if (def.rendered) def.rendered();
     }, function (err) {
       if (my !== seq) return;
       state.loading = false;
@@ -15357,7 +15559,7 @@ function listPage(container, name, query, ctx) {
   }
   load();
   if (def.mounted) def.mounted(query);
-  return { reload: load, name: name };
+  return { reload: load, name: name, selSlot: frame.content.querySelector('.eco-list-sel'), toolbar: toolbar };
 }
 
 function formSkeleton(def) {
@@ -16458,7 +16660,7 @@ function notificationDetail(container, id) {
   }
 
   function paintRecPager() {
-    clear(recPagerTop).appendChild(pager(rState, function (p) { rState.page = p; loadRecipients(); }));
+    clear(recPagerTop).appendChild(listCount(rState));
     clear(recPagerBottom).appendChild(pager(rState, function (p) { rState.page = p; loadRecipients(); }));
   }
 
@@ -17756,7 +17958,7 @@ var DURATIONS = [60, 1440, 4320, 10080, 43200];
 var REPORT_ACTIONS = ['dismiss', 'delete', 'warn', 'mute', 'suspend'];
 var pendingReports = null;
 var reportBadgeAt = 0;
-var playerSel = { ids: {}, items: {}, bar: null, page: [] };
+var playerSel = selection({ name: 'players' });
 
 function refreshReportBadge(force) {
   var now = Date.now();
@@ -17986,10 +18188,9 @@ function liftDialog(r) {
 
 function bulkTagBar(reload) {
   var tagIds = [];
-  var count = h('span', { class: 'text-sm font-medium tabular-nums', 'aria-live': 'polite' });
   var picker = refMulti({ resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', value: [], label: t('pl.bulk.tags'), placeholder: t('pl.bulk.pick'), onchange: function (v) { tagIds = v; } });
   function run(op, btn) {
-    var ids = Object.keys(playerSel.ids);
+    var ids = playerSel.list();
     if (!ids.length) return;
     if (!tagIds.length) { toast('error', t('code.TAGS_REQUIRED')); return; }
     setBusy(btn, true, t('saving'));
@@ -18004,34 +18205,17 @@ function bulkTagBar(reload) {
   }
   var add = button({ variant: 'primary', size: 'sm', icon: 'plus', label: t('pl.bulk.add'), onclick: function (e) { run('add', e.currentTarget); } });
   var remove = button({ variant: 'danger', size: 'sm', icon: 'trash', label: t('pl.bulk.remove'), onclick: function (e) { run('remove', e.currentTarget); } });
-  var pageAll = button({ variant: 'link', size: 'sm', label: t('pl.bulk.page'), onclick: function () {
-    playerSel.page.forEach(function (it) { playerSel.ids[it.id] = true; });
-    paint();
-    reload();
-  } });
-  var none = button({ variant: 'ghost', size: 'sm', label: t('pl.bulk.clear'), onclick: function () { playerSel.ids = {}; paint(); reload(); } });
   add.setAttribute('data-bulk', 'add');
   remove.setAttribute('data-bulk', 'remove');
-  var el = h('div', { class: 'eco-bulk rounded-md border border-secondary-200 dark:border-secondary-700 p-3 mb-3', 'data-bulk-bar': '' },
-    h('div', { class: 'flex flex-wrap items-center gap-2 mb-2' }, count, pageAll, none),
-    h('div', { class: 'eco-bulk-row' }, h('div', { class: 'min-w-0 flex-1' }, picker), h('div', { class: 'flex flex-wrap gap-2' }, add, remove)));
-  function paint() {
-    var n = Object.keys(playerSel.ids).length;
-    count.textContent = n ? t('pl.bulk.selected', { n: n }) : t('pl.bulk.none');
-    add.disabled = remove.disabled = !n;
-  }
-  el.paint = paint;
-  paint();
-  return el;
+  return selectionBar(playerSel, {
+    attr: 'data-bulk-bar',
+    countKey: 'pl.bulk.selected',
+    actions: [h('div', { class: 'eco-selbar-picker' }, picker), add, remove]
+  });
 }
 
 function playerCheck(it) {
-  var box = checkbox(!!playerSel.ids[it.id], '', function (on) {
-    if (on) playerSel.ids[it.id] = true;
-    else delete playerSel.ids[it.id];
-    if (playerSel.bar) playerSel.bar.paint();
-  });
-  box.setAttribute('aria-label', t('pl.select', { name: it.displayName || it.username }));
+  var box = playerSel.rowCheck(it, t('pl.select', { name: it.displayName || it.username }));
   box.setAttribute('data-select', it.id);
   return box;
 }
@@ -18046,12 +18230,13 @@ LISTS.players = {
   },
   rowHref: function (it) { return '#/players/' + encodeURIComponent(it.id); },
   onItems: function (items) { playerSel.page = items; },
+  rendered: function () { playerSel.paint(); },
   filters: [
     { name: 'tagId', label: 'filter.tag', type: 'ref', resource: 'tags', api: baseApi, filter: { keyType: 'user' } },
     { name: 'status', label: 'filter.status', options: function () { return ['suspended', 'muted', 'banned', 'tagged'].map(function (s) { return { value: s, label: t('pl.status.' + s) }; }); } }
   ],
   columns: [
-    { label: 'col.select', render: playerCheck, width: 48 },
+    { label: 'col.select', render: playerCheck, width: 48, head: function () { return playerSel.headCheck(); } },
     { label: 'col.player', render: function (it) {
       return h('div', { class: 'min-w-0' },
         h('div', { class: 'font-medium truncate', text: it.displayName || it.username }),
@@ -18106,12 +18291,10 @@ function playerCreatePanel() {
 
 function playersPage(container, query, ctx) {
   playerSel.ids = {};
+  playerSel.page = [];
   var list = listPage(container, 'players', query, ctx);
   var bar = bulkTagBar(function () { list.reload(); });
-  playerSel.bar = bar;
-  var table = container.querySelector('.eco-filters');
-  var anchor = table ? table.closest('.flex.flex-col.items-start') : null;
-  if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(bar, anchor.nextSibling);
+  if (list.selSlot) list.selSlot.appendChild(bar);
   return list;
 }
 
@@ -20396,9 +20579,9 @@ function offerReportPage(container, query) {
     if (state.kind) q.kind = state.kind;
     replaceHash(hashFor('offer-report', null, q));
   }
-  var days = filterSelect(t('filter.of.days'), state.days, [7, 30, 90, 365].map(function (n) { return { value: String(n), label: t('of.daysN', { n: n }) }; }), function (v) { state.days = v || '30'; sync(); load(); });
+  var days = filterSelect(t('filter.of.days'), state.days, [7, 30, 90, 365].map(function (n) { return { value: String(n), label: t('of.daysN', { n: n }) }; }), function (v) { state.days = v || '30'; sync(); load(); }, { def: '30' });
   var kind = filterSelect(t('filter.of.kind'), state.kind, opts('of.kind.', ['daily', 'entry'])(), function (v) { state.kind = v || ''; sync(); load(); });
-  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2' }, days, kind));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-filters' }, days, kind));
   frame.content.appendChild(stats);
   frame.content.appendChild(box);
   var cols = [
@@ -23188,8 +23371,8 @@ function friendGiftReportPage(container, query) {
     state.days = v || '30';
     replaceHash(hashFor('friend-gift-report', null, state.days !== '30' ? { days: state.days } : {}));
     load();
-  });
-  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2' }, days));
+  }, { def: '30' });
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-filters' }, days));
   frame.content.appendChild(stats);
   frame.content.appendChild(box);
   function topTable(titleKey, rows, cell) {
@@ -23518,8 +23701,8 @@ function chatQuotaReportPage(container, query) {
     state.days = v || '30';
     replaceHash(hashFor('chat-quota-report', null, state.days !== '30' ? { days: state.days } : {}));
     load();
-  });
-  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2' }, days));
+  }, { def: '30' });
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-filters' }, days));
   frame.content.appendChild(stats);
   frame.content.appendChild(box);
   function load() {
@@ -23944,15 +24127,19 @@ function commChannelsPage(container, query) {
   var status = filterSelect(t('filter.status'), state.status, ['open', 'closed', 'all'].map(function (s) { return { value: s, label: t('cm.filter.' + s) }; }), function (v) { state.status = v || 'open'; state.page = 1; load(); });
   var timer = null;
   var search = searchInput(state.q, t('search.comm-channels'), function (e) { clearTimeout(timer); timer = setTimeout(function () { state.q = e.target.value.trim(); state.page = 1; load(); }, 250); });
-  var pagerBox = h('div', {});
-  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center justify-between gap-2 pb-2' }, h('div', { class: 'flex flex-wrap items-center gap-2' }, search, status), pagerBox));
+  var pagerBox = h('div', { class: 'eco-pager-slot' });
+  var countBox = h('div', { class: 'eco-count-slot' });
+  frame.content.appendChild(listToolbar({ search: search, filters: [status], meta: countBox, refresh: refreshButton(function () { load(); }) }));
   frame.content.appendChild(box);
+  frame.content.appendChild(pagerBox);
   var cols = [{ label: t('cm.col.match'), skeleton: '60%' }, { label: t('col.status'), width: 110 }, { label: t('cm.col.members'), skeleton: '50%' }, { label: t('cm.col.messages'), width: 90 }, { label: t('cm.col.expires'), width: 150 }, { label: '', width: 120 }];
   function load() {
     clear(box).appendChild(table(cols, skeletonRows(cols, 3)));
     baseApi('GET', '/comms/channels' + qs({ status: state.status, q: state.q, page: state.page, limit: state.limit })).then(function (res) {
       state.total = res.total || 0;
-      clear(pagerBox).appendChild(pager(state, function (p) { state.page = p; load(); }, load));
+      state.loaded = true;
+      clear(countBox).appendChild(listCount(state));
+      clear(pagerBox).appendChild(pager(state, function (p) { state.page = p; load(); }));
       var list = res.items || [];
       clear(box);
       if (!list.length) {
@@ -23996,8 +24183,7 @@ function voiceRoomsPage(container, query) {
   var box = h('div', { class: 'flex flex-col gap-3' });
   var timer = null;
   var search = searchInput(state.q, t('search.voice-rooms'), function (e) { clearTimeout(timer); timer = setTimeout(function () { state.q = e.target.value.trim(); load(); }, 250); });
-  var refresh = button({ variant: 'secondary', size: 'sm', icon: 'refresh', label: t('refresh'), onclick: function () { load(); } });
-  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center justify-between gap-2 pb-2' }, search, refresh));
+  frame.content.appendChild(listToolbar({ search: search, refresh: refreshButton(function () { load(); }) }));
   frame.content.appendChild(box);
   var cols = [{ label: t('vr.col.room'), skeleton: '50%' }, { label: t('vr.col.player'), skeleton: '40%' }, { label: t('vr.col.mic'), width: 150 }, { label: t('vr.col.expires'), width: 150 }, { label: '', width: 120 }];
   function load() {
@@ -25637,7 +25823,7 @@ function newsReviewPage(container, query) {
           button({ variant: 'ghost', size: 'sm', label: t('rv.reject'), onclick: one('reject') }))
       ] };
     })));
-    var pg = h('div', { class: 'flex justify-end py-3' });
+    var pg = h('div', { class: 'eco-pager-slot' });
     pg.appendChild(pager({ page: state.page, limit: 50, total: state.total, loading: false }, function (p) { state.page = p; load(); }));
     box.appendChild(pg);
     paintCount();
@@ -26876,7 +27062,8 @@ PH_ICONS['game-matches'] = '<path d="M232,64H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8
 SECTIONS.economy.push('game-matches', 'bots');
 NAV.economy.forEach(function (g) { if (g && g.id === 'play') g.items.splice(g.items.indexOf('games') + 1, 0, 'game-matches', 'bots'); });
 
-var BOT_SEL = { ids: {}, page: [], bar: null, reload: null };
+var BOT_SEL = selection({ name: 'bots', idOf: function (it) { return it.userId; } });
+BOT_SEL.reload = null;
 var GM_STATUSES = ['open', 'started', 'finished', 'cancelled'];
 
 function walletMap(rows) {
@@ -26901,12 +27088,7 @@ function roomsText(rooms) {
 }
 
 function botCheck(it) {
-  var box = checkbox(!!BOT_SEL.ids[it.userId], '', function (on) {
-    if (on) BOT_SEL.ids[it.userId] = true;
-    else delete BOT_SEL.ids[it.userId];
-    if (BOT_SEL.bar) BOT_SEL.bar.paint();
-  });
-  box.setAttribute('aria-label', t('bt.select', { name: it.username }));
+  var box = BOT_SEL.rowCheck(it, t('bt.select', { name: it.username }));
   box.setAttribute('data-bot-select', it.userId);
   return box;
 }
@@ -26917,7 +27099,7 @@ LISTS.bots = {
     var wrap = h('div', { class: 'flex flex-wrap gap-2' },
       button({ variant: 'primary', size: 'page', icon: 'plus', label: t('bt.bulk'), onclick: botBulkPanel }),
       button({ variant: 'ghost', size: 'page', icon: 'upload', label: t('bt.import'), onclick: botImportPanel }),
-      button({ variant: 'ghost', size: 'page', icon: 'currencies', label: t('bt.topup'), onclick: function () { botTopupPanel(Object.keys(BOT_SEL.ids)); } }));
+      button({ variant: 'ghost', size: 'page', icon: 'currencies', label: t('bt.topup'), onclick: function () { botTopupPanel(BOT_SEL.list()); } }));
     wrap.querySelectorAll('button')[0].setAttribute('data-bot-action', 'bulk');
     wrap.querySelectorAll('button')[1].setAttribute('data-bot-action', 'import');
     wrap.querySelectorAll('button')[2].setAttribute('data-bot-action', 'topup');
@@ -26925,6 +27107,7 @@ LISTS.bots = {
   },
   top: function () { return botKpis(); },
   onItems: function (items) { BOT_SEL.page = items; keyNames(); },
+  rendered: function () { BOT_SEL.paint(); },
   onRow: function (it) { botEditPanel(it.userId); },
   filters: [
     { name: 'enabled', label: 'filter.status', options: function () { return [{ value: 'true', label: t('bt.on') }, { value: 'false', label: t('bt.off') }]; } },
@@ -26936,7 +27119,7 @@ LISTS.bots = {
     { name: 'sort', label: 'filter.bt.sort', options: function () { return ['level', 'games', 'recent'].map(function (s) { return { value: s, label: t('bt.sort.' + s) }; }); } }
   ],
   columns: [
-    { label: 'col.select', render: botCheck, width: 48 },
+    { label: 'col.select', render: botCheck, width: 48, head: function () { return BOT_SEL.headCheck(); } },
     { label: 'col.bt.bot', render: function (it) {
       return h('div', { class: 'min-w-0', 'data-bot-row': it.userId },
         h('div', { class: 'font-medium truncate', dir: 'auto', text: it.displayName || it.username }),
@@ -26979,49 +27162,39 @@ function botKpis() {
 }
 
 function botBulkBar(reload) {
-  var count = h('span', { class: 'text-sm font-medium tabular-nums', 'aria-live': 'polite', 'data-bot-selected': '' });
   function run(enabled, btn) {
-    var ids = Object.keys(BOT_SEL.ids);
+    var ids = BOT_SEL.list();
     if (!ids.length) return;
     setBusy(btn, true, t('saving'));
     api('POST', '/bots/status', { ids: ids, enabled: enabled }).then(function (res) {
       setBusy(btn, false);
       toast('success', t('bt.status.done', { n: fmtNum(res.updated) }));
-      BOT_SEL.ids = {};
-      paint();
+      BOT_SEL.clear();
       reload();
     }, function (err) { setBusy(btn, false); toast('error', errorText(err)); });
   }
   var on = button({ variant: 'primary', size: 'sm', label: t('bt.enable'), onclick: function (e) { run(true, e.currentTarget); } });
   var off = button({ variant: 'danger', size: 'sm', label: t('bt.disable'), onclick: function (e) { run(false, e.currentTarget); } });
-  var top = button({ variant: 'ghost', size: 'sm', icon: 'currencies', label: t('bt.topup.sel'), onclick: function () { botTopupPanel(Object.keys(BOT_SEL.ids)); } });
+  var top = button({ variant: 'ghost', size: 'sm', icon: 'currencies', label: t('bt.topup.sel'), onclick: function () { botTopupPanel(BOT_SEL.list()); } });
   on.setAttribute('data-bot-bulk', 'enable');
   off.setAttribute('data-bot-bulk', 'disable');
   top.setAttribute('data-bot-bulk', 'topup');
-  var pageAll = button({ variant: 'link', size: 'sm', label: t('pl.bulk.page'), onclick: function () { BOT_SEL.page.forEach(function (it) { BOT_SEL.ids[it.userId] = true; }); paint(); reload(); } });
-  pageAll.setAttribute('data-bot-bulk', 'page');
-  var none = button({ variant: 'ghost', size: 'sm', label: t('pl.bulk.clear'), onclick: function () { BOT_SEL.ids = {}; paint(); reload(); } });
-  var el = h('div', { class: 'eco-bulk rounded-md border border-secondary-200 dark:border-secondary-700 p-3 mb-3', 'data-bot-bulkbar': '' },
-    h('div', { class: 'flex flex-wrap items-center gap-2' }, count, pageAll, none, h('span', { class: 'flex-1' }), on, off, top));
-  function paint() {
-    var n = Object.keys(BOT_SEL.ids).length;
-    count.textContent = n ? t('pl.bulk.selected', { n: n }) : t('pl.bulk.none');
-    on.disabled = off.disabled = top.disabled = !n;
-  }
-  el.paint = paint;
-  paint();
-  return el;
+  return selectionBar(BOT_SEL, {
+    attr: 'data-bot-bulkbar',
+    countAttr: 'data-bot-selected',
+    countKey: 'bt.selected',
+    pageAttr: ['data-bot-bulk', 'page'],
+    actions: [on, off, top]
+  });
 }
 
 function botsPage(container, query, ctx) {
   BOT_SEL.ids = {};
+  BOT_SEL.page = [];
   var list = listPage(container, 'bots', query, ctx);
   BOT_SEL.reload = list.reload;
   var bar = botBulkBar(function () { list.reload(); });
-  BOT_SEL.bar = bar;
-  var table2 = container.querySelector('.eco-filters');
-  var anchor = table2 ? table2.closest('.flex.flex-col.items-start') : null;
-  if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(bar, anchor.nextSibling);
+  if (list.selSlot) list.selSlot.appendChild(bar);
   return list;
 }
 
@@ -28873,7 +29046,7 @@ function contentPacksPage(container, query) {
   if (upload) upload.setAttribute('data-ct-new', '');
   var frame = pageFrame(t('nav.content-packs'), t('desc.content-packs'), upload ? [upload] : null);
   clear(container).appendChild(frame.el);
-  var filters = h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2' });
+  var filters = h('div', { class: 'eco-toolbar eco-filters' });
   var live = h('div', { class: 'eco-stat-grid mb-4', 'data-ct-live': '' });
   var previewBox = h('div', { class: 'mb-4' });
   var listBox = h('div', { 'data-ct-list': '' });
@@ -29184,7 +29357,7 @@ function inTile(label, value, sub, id) {
 }
 
 function inRangeFilter(state, onchange) {
-  return filterSelect(t('filter.of.days'), state.days, [7, 14, 30, 90, 180, 365].map(function (n) { return { value: String(n), label: t('of.daysN', { n: localDigits(String(n)) }) }; }), function (v) { state.days = v || '30'; onchange(); });
+  return filterSelect(t('filter.of.days'), state.days, [7, 14, 30, 90, 180, 365].map(function (n) { return { value: String(n), label: t('of.daysN', { n: localDigits(String(n)) }) }; }), function (v) { state.days = v || '30'; onchange(); }, { def: '30' });
 }
 
 function inIsoDay(d) {
@@ -29204,7 +29377,7 @@ function insightsPage(container, query) {
   var frame = pageFrame(t('nav.insights-overview'), t('desc.insights-overview'));
   clear(container).appendChild(frame.el);
   var state = { days: query.days || '30', platform: query.platform || '', appVersion: query.appVersion || '' };
-  var filters = h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2', 'data-in-filters': '' });
+  var filters = h('div', { class: 'eco-toolbar eco-filters', role: 'search', 'aria-label': t('list.toolbar'), 'data-in-filters': '' });
   var body = h('div', { class: 'flex flex-col gap-4', 'data-in-overview': '' });
   frame.content.appendChild(filters);
   frame.content.appendChild(body);
@@ -29221,7 +29394,7 @@ function insightsPage(container, query) {
     filters.appendChild(inRangeFilter(state, route));
     filters.appendChild(filterSelect(t('in.platform'), state.platform, IN_DIMS.platforms.map(function (p) { return { value: p, label: p }; }), function (v) { state.platform = v; route(); }));
     filters.appendChild(filterSelect(t('in.version'), state.appVersion, IN_DIMS.versions.map(function (p) { return { value: p, label: p }; }), function (v) { state.appVersion = v; route(); }));
-    filters.appendChild(button({ variant: 'muted', size: 'icon', icon: 'refresh', iconClass: 'h-3 w-3', title: t('refresh'), onclick: load }));
+    filters.appendChild(h('div', { class: 'eco-toolbar-meta' }, refreshButton(function () { load(); })));
   }
   function skeleton() {
     clear(body);
@@ -29293,11 +29466,9 @@ function insightsSessionsPage(container, query) {
   var frame = pageFrame(t('nav.insights-sessions'), t('desc.insights-sessions'));
   clear(container).appendChild(frame.el);
   var state = { page: Number(query.page) || 1, limit: 20, total: 0, status: query.status || '', platform: query.platform || '', userId: query.userId || '' };
-  var filters = h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2' });
-  var pagerBox = h('div', {});
+  var pagerBox = h('div', { class: 'eco-pager-slot' });
+  var countBox = h('div', { class: 'eco-count-slot' });
   var listBox = h('div', { 'data-in-sessions': '' });
-  frame.content.appendChild(filters);
-  frame.content.appendChild(listBox);
   var cols = [{ label: t('in.col.player'), skeleton: '40%' }, { label: t('in.col.started'), width: 150 }, { label: t('in.length'), width: 90 }, { label: t('in.col.device'), width: 200 }, { label: t('col.status'), width: 110 }];
   function route() {
     var q = {};
@@ -29307,17 +29478,21 @@ function insightsSessionsPage(container, query) {
     load();
   }
   var search = searchInput(state.userId, t('in.f.userId'), debounce(function (e) { state.userId = toLatinDigits(e.target.value).trim(); state.page = 1; route(); }, 400));
-  filters.appendChild(search);
-  filters.appendChild(filterSelect(t('col.status'), state.status, [{ value: 'open', label: t('in.status.open') }, { value: 'ended', label: t('in.status.ended') }], function (v) { state.status = v; state.page = 1; route(); }));
-  filters.appendChild(filterSelect(t('in.platform'), state.platform, IN_DIMS.platforms.map(function (p) { return { value: p, label: p }; }), function (v) { state.platform = v; state.page = 1; route(); }));
+  frame.content.appendChild(listToolbar({ search: search, filters: [
+    filterSelect(t('col.status'), state.status, [{ value: 'open', label: t('in.status.open') }, { value: 'ended', label: t('in.status.ended') }], function (v) { state.status = v; state.page = 1; route(); }),
+    filterSelect(t('in.platform'), state.platform, IN_DIMS.platforms.map(function (p) { return { value: p, label: p }; }), function (v) { state.platform = v; state.page = 1; route(); })
+  ], meta: countBox, refresh: refreshButton(function () { load(); }) }));
+  frame.content.appendChild(listBox);
+  frame.content.appendChild(pagerBox);
   function load() {
     clear(listBox).appendChild(table(cols, skeletonRows(cols, 5)));
     baseApi('GET', '/insights/sessions' + qs({ page: state.page, limit: state.limit, status: state.status, platform: state.platform, userId: state.userId })).then(function (res) {
       state.total = res.total || 0;
       var items = res.items || [];
       clear(listBox);
-      clear(pagerBox).appendChild(pager(state, function (p) { state.page = p; route(); }, load));
-      listBox.appendChild(h('div', { class: 'flex justify-end pb-2' }, pagerBox));
+      state.loaded = true;
+      clear(countBox).appendChild(listCount(state));
+      clear(pagerBox).appendChild(pager(state, function (p) { state.page = p; route(); }));
       if (!items.length) { listBox.appendChild(card(emptyBlock(t('in.sessions.empty'), t('in.sessions.empty.hint')))); return; }
       listBox.appendChild(table(cols, items.map(function (s) {
         var length = s.seconds !== null && s.seconds !== undefined ? s.seconds : Math.max(0, (new Date(s.lastSeenAt) - new Date(s.startedAt)) / 1000);
@@ -29787,7 +29962,7 @@ function heatmapsPage(container, query) {
   clear(container).appendChild(frame.el);
   var state = { map: query.map || '', days: query.days || '30', layer: query.layer || 'density', trace: null };
   var maps = [];
-  var filters = h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2', 'data-in-hm-filters': '' });
+  var filters = h('div', { class: 'eco-toolbar eco-filters', 'data-in-hm-filters': '' });
   var stats = h('div', { class: 'eco-stat-grid mb-4', 'data-in-hm-stats': '' });
   var view = h('div', { class: 'mb-4' });
   var uploads = h('div', { 'data-in-hm-uploads': '' });

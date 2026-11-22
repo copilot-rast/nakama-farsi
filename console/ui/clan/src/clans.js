@@ -27,7 +27,7 @@ function clansPage(root) {
   jt.addEventListener('change', function () { state.joinType = jt.value; state.page = 1; reload(); });
   sort.addEventListener('change', function () { state.sort = sort.value; state.page = 1; reload(); });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end cl-filters' }, field(t('cl.search'), search, t('cl.hint.search')), field(t('cl.joinType'), jt), field(t('cl.sortL'), sort)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx cl-filters' }, field(t('cl.search'), search, t('cl.hint.search')), field(t('cl.joinType'), jt), field(t('cl.sortL'), sort)));
   frame.content.appendChild(listBox);
   function reload() {
     clear(listBox).appendChild(loading());

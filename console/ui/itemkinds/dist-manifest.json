@@ -1,9 +1,9 @@
 {
   "note": "Files generated in console/ui/dist by scripts/build.mjs.",
   "files": [
+    "static/itemkinds-49ad6d8b10.js",
+    "static/itemkinds-49ad6d8b10.js.gz",
     "static/itemkinds-6f4fe3d56e.css",
-    "static/itemkinds-6f4fe3d56e.css.gz",
-    "static/itemkinds-fbfe949376.js",
-    "static/itemkinds-fbfe949376.js.gz"
+    "static/itemkinds-6f4fe3d56e.css.gz"
   ]
 }

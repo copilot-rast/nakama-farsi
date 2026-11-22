@@ -355,7 +355,7 @@ function contentPacksPage(container, query) {
   if (upload) upload.setAttribute('data-ct-new', '');
   var frame = pageFrame(t('nav.content-packs'), t('desc.content-packs'), upload ? [upload] : null);
   clear(container).appendChild(frame.el);
-  var filters = h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2' });
+  var filters = h('div', { class: 'eco-toolbar eco-filters' });
   var live = h('div', { class: 'eco-stat-grid mb-4', 'data-ct-live': '' });
   var previewBox = h('div', { class: 'mb-4' });
   var listBox = h('div', { 'data-ct-list': '' });

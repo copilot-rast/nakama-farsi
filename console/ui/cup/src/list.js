@@ -29,7 +29,7 @@ function cupsPage(root) {
   var search = searchBox(function (v) { state.q = v; state.page = 1; reload(); });
   status.addEventListener('change', function () { state.status = status.value; state.page = 1; reload(); });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end cu-filters' }, field(t('f.state'), status), field(t('search'), search, t('cu.hint.search'))));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx cu-filters' }, field(t('f.state'), status), field(t('search'), search, t('cu.hint.search'))));
   if (state.template) frame.content.appendChild(h('div', { class: 'flex flex-wrap items-center gap-2 text-sm' }, h('span', { text: t('cu.byTemplate') }), mono(state.template),
     h('a', { href: '#/cups/list', class: 'eco-link', 'data-cup-clear-template': '', text: t('cu.allCups') })));
   frame.content.appendChild(listBox);

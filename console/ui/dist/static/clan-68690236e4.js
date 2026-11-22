@@ -15,7 +15,7 @@ var CL_TEXT = {
     'desc.clans/rounds': 'هر دور یک بار اجرای یک قالب جنگ است: ثبت‌نام، شروع، جنگ‌ها و نتیجه. اینجا دور تازه بسازید، شروع کنید، زودتر تمامش کنید یا لغوش کنید.',
     'desc.clans/settings': 'قانون‌های کلن: ساختن کلن و هزینه‌اش، نشان‌ها، اختیار هر نقش، زمان‌های انتظار، راه‌های گرفتن امتیاز تجربه و رویدادها.',
     'save': 'ذخیره', 'saved': 'ذخیره شد', 'deleted': 'حذف شد', 'cancel': 'انصراف', 'close': 'بستن', 'remove': 'حذف', 'delete': 'حذف', 'search': 'جستجو', 'all': 'همه',
-    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'yes': 'بله', 'no': 'خیر',
+    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'page.first': 'صفحهٔ اول', 'page.last': 'صفحهٔ آخر', 'page.of': 'صفحهٔ {page} از {pages}', 'pager': 'صفحه‌بندی', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'yes': 'بله', 'no': 'خیر',
     'active': 'فعال', 'inactive': 'غیرفعال', 'on': 'روشن', 'off': 'خاموش', 'confirm.title': 'مطمئن هستید؟', 'lang.text': '{label} ({lang})', 'updated': 'آخرین تغییر: {by} · {at}', 'none': '—',
     'missing': 'پیدا نشد', 'noPrizes': 'افزونهٔ جایزه بارگذاری نشده است؛ جایزه‌ها ثبت می‌شوند ولی پرداخت نمی‌شوند.',
     'f.name': 'نام', 'f.description': 'توضیح', 'f.key': 'کلید', 'f.icon': 'نشانی آیکون', 'f.color': 'رنگ', 'f.active': 'فعال باشد', 'f.state': 'وضعیت', 'f.metadata': 'داده‌ی اضافه (JSON)',
@@ -179,7 +179,7 @@ var CL_TEXT = {
     'desc.clans/rounds': 'A round is one run of a war template: signup, start, wars and results. Create a round, start it, end it early or cancel it.',
     'desc.clans/settings': 'Clan rules: creating a clan and its cost, badges, what each role may do, cooldowns, XP sources and events.',
     'save': 'Save', 'saved': 'Saved', 'deleted': 'Deleted', 'cancel': 'Cancel', 'close': 'Close', 'remove': 'Remove', 'delete': 'Delete', 'search': 'Search', 'all': 'All',
-    'loading': 'Loading…', 'empty': 'Nothing found', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'yes': 'Yes', 'no': 'No',
+    'loading': 'Loading…', 'empty': 'Nothing found', 'page.first': 'First page', 'page.last': 'Last page', 'page.of': 'Page {page} of {pages}', 'pager': 'Pagination', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'yes': 'Yes', 'no': 'No',
     'active': 'Active', 'inactive': 'Inactive', 'on': 'On', 'off': 'Off', 'confirm.title': 'Are you sure?', 'lang.text': '{label} ({lang})', 'updated': 'Last change: {by} · {at}', 'none': '—',
     'missing': 'missing', 'noPrizes': 'The prize plugin is not loaded; prizes are recorded but not paid.',
     'f.name': 'Name', 'f.description': 'Description', 'f.key': 'Key', 'f.icon': 'Icon URL', 'f.color': 'Color', 'f.active': 'Active', 'f.state': 'Status', 'f.metadata': 'Extra data (JSON)',
@@ -509,13 +509,14 @@ function card(children, cls) {
 }
 
 function field(label, control, hint, extra) {
-  var err = h('p', { class: 'cl-field-error text-xs text-error-600 dark:text-error-400', hidden: true });
-  var wrap = h('label', { class: 'cl-field block mb-4' + (extra ? ' ' + extra : '') },
-    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 mb-1', text: label }) : null,
+  var err = h('p', { class: 'cl-field-error eco-tf-err text-xs text-error-600 dark:text-error-400', hidden: true });
+  var wrap = h('label', { class: 'cl-field eco-tbf block mb-4' + (extra ? ' ' + extra : '') },
+    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 eco-tf-label', text: label }) : null,
     control,
-    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 mt-1', text: hint }) : null,
+    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 eco-tf-hint', text: hint }) : null,
     err);
   wrap.setError = function (msg) { err.textContent = msg || ''; err.hidden = !msg; };
+  if (label && control && control.tagName === 'INPUT' && control.getAttribute('placeholder') === label) wrap.classList.add('eco-tbf-q');
   return wrap;
 }
 
@@ -620,13 +621,26 @@ function table(columns, rows, onrow) {
 
 function pager(state, onpage) {
   var total = state.total || 0;
-  var from = total ? (state.page - 1) * state.limit + 1 : 0;
+  var nav = h('nav', { class: 'eco-pager', 'aria-label': t('pager') });
+  if (!total) { nav.hidden = true; return nav; }
+  var from = (state.page - 1) * state.limit + 1;
   var to = Math.min(total, state.page * state.limit);
   var last = Math.max(1, Math.ceil(total / state.limit));
-  return h('div', { class: 'flex items-center justify-end gap-2 text-xs text-secondary-500' },
-    h('span', { 'data-clan-range': '', text: total ? t('range', { from: from, to: to, total: total }) : t('empty') }),
-    button({ label: t('prev'), disabled: state.page <= 1, onclick: function () { onpage(state.page - 1); } }),
-    button({ label: t('next'), disabled: state.page >= last, onclick: function () { onpage(state.page + 1); } }));
+  function btn(name, path, label, disabled, go) {
+    var b = h('button', { type: 'button', class: 'eco-pager-btn', title: label, 'aria-label': label, disabled: !!disabled, onclick: go, 'data-page': name });
+    b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true" data-l10n-icon="mirror">' + path + '</svg>';
+    return b;
+  }
+  nav.appendChild(h('span', { class: 'eco-pager-range tabular-nums', 'data-clan-range': '', text: t('range', { from: from, to: to, total: total }) }));
+  if (last > 1) {
+    nav.appendChild(h('div', { class: 'eco-pager-nav' },
+      btn('first', '<path d="M7 6v12M17 18l-6-6 6-6"/>', t('page.first'), state.page <= 1, function () { onpage(1); }),
+      btn('prev', '<path d="M15 18l-6-6 6-6"/>', t('prev'), state.page <= 1, function () { onpage(state.page - 1); }),
+      h('span', { class: 'eco-pager-page tabular-nums', 'aria-current': 'page', text: t('page.of', { page: state.page, pages: last }) }),
+      btn('next', '<path d="M9 18l6-6-6-6"/>', t('next'), state.page >= last, function () { onpage(state.page + 1); }),
+      btn('last', '<path d="M17 6v12M7 18l6-6-6-6"/>', t('page.last'), state.page >= last, function () { onpage(last); })));
+  }
+  return nav;
 }
 
 function loadSettings(base) {
@@ -1006,7 +1020,7 @@ function trPlayersPage(root) {
   var league = select('*', [{ value: '*', label: t('all') }], { name: 'league' });
   league.addEventListener('change', function () { state.league = league.value; state.page = 1; reload(); });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end cl-filters' }, field(t('tp.search'), search, t('tp.hint.search')), field(t('tp.league'), league)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx cl-filters' }, field(t('tp.search'), search, t('tp.hint.search')), field(t('tp.league'), league)));
   frame.content.appendChild(listBox);
   loadLeagues(true).then(function (d) {
     clear(league);
@@ -1636,7 +1650,7 @@ function clansPage(root) {
   jt.addEventListener('change', function () { state.joinType = jt.value; state.page = 1; reload(); });
   sort.addEventListener('change', function () { state.sort = sort.value; state.page = 1; reload(); });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end cl-filters' }, field(t('cl.search'), search, t('cl.hint.search')), field(t('cl.joinType'), jt), field(t('cl.sortL'), sort)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx cl-filters' }, field(t('cl.search'), search, t('cl.hint.search')), field(t('cl.joinType'), jt), field(t('cl.sortL'), sort)));
   frame.content.appendChild(listBox);
   function reload() {
     clear(listBox).appendChild(loading());
@@ -2035,7 +2049,7 @@ function roundsPage(root) {
   status.addEventListener('change', function () { state.status = status.value; state.page = 1; reload(); });
   cfg.addEventListener('change', function () { state.configKey = cfg.value; state.page = 1; reload(); });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end cl-filters' }, field(t('f.state'), status), field(t('wr.config'), cfg)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx cl-filters' }, field(t('f.state'), status), field(t('wr.config'), cfg)));
   frame.content.appendChild(listBox);
   loadWarConfigs(true).then(function (list) {
     list.forEach(function (c) { cfg.appendChild(h('option', { value: c.key, text: textOf(c.name, c.key) + ' · ' + c.key })); });

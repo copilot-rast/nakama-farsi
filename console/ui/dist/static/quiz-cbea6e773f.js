@@ -48,7 +48,7 @@ var QZ_TEXT = {
     'desc.stats': 'بازی، قبولی، میانگین امتیاز و زمان هر پک در روزهای اخیر، و سخت‌ترین سوال‌ها.',
     'desc.settings': 'سیاست‌های آزمون: ارسال سوال‌ها، زمان، قبولی، نمایش پاسخ، جایزه، سقف‌ها، راهنما، گزارش، رویدادها و اتصال به کمپین.',
     'save': 'ذخیره', 'saved': 'ذخیره شد', 'cancel': 'انصراف', 'close': 'بستن', 'remove': 'حذف', 'delete': 'حذف', 'search': 'جستجو', 'all': 'همه', 'edit': 'ویرایش',
-    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'yes': 'بله', 'no': 'خیر',
+    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'page.first': 'صفحهٔ اول', 'page.last': 'صفحهٔ آخر', 'page.of': 'صفحهٔ {page} از {pages}', 'pager': 'صفحه‌بندی', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'yes': 'بله', 'no': 'خیر',
     'inactive': 'غیرفعال', 'active': 'فعال', 'confirm.title': 'مطمئن هستید؟', 'lang.text': '{label} ({lang})', 'updated': 'آخرین تغییر: {by} · {at}', 'none': '—', 'default': 'پیش‌فرض تنظیمات',
     'f.key': 'کلید', 'f.name': 'نام', 'f.description': 'توضیح', 'f.icon': 'آدرس آیکون', 'f.sort': 'ترتیب', 'f.active': 'فعال باشد', 'f.mission': 'ماموریت', 'f.pack': 'پک',
     'f.category': 'دسته', 'f.tags': 'برچسب‌ها', 'f.language': 'زبان', 'f.difficulty': 'سختی', 'f.reward': 'جایزه', 'f.metadata': 'دادهٔ اضافه (JSON)',
@@ -200,7 +200,7 @@ var QZ_TEXT = {
     'desc.stats': 'Plays, passes, average score and time per pack over the last days, and the hardest questions.',
     'desc.settings': 'Quiz policies: question delivery, timing, passing, answer reveal, rewards, limits, hints, reports, events and the campaign link.',
     'save': 'Save', 'saved': 'Saved', 'cancel': 'Cancel', 'close': 'Close', 'remove': 'Remove', 'delete': 'Delete', 'search': 'Search', 'all': 'All', 'edit': 'Edit',
-    'loading': 'Loading…', 'empty': 'Nothing found', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'yes': 'Yes', 'no': 'No',
+    'loading': 'Loading…', 'empty': 'Nothing found', 'page.first': 'First page', 'page.last': 'Last page', 'page.of': 'Page {page} of {pages}', 'pager': 'Pagination', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'yes': 'Yes', 'no': 'No',
     'inactive': 'Inactive', 'active': 'Active', 'confirm.title': 'Are you sure?', 'lang.text': '{label} ({lang})', 'updated': 'Last change: {by} · {at}', 'none': '—', 'default': 'Settings default',
     'f.key': 'Key', 'f.name': 'Name', 'f.description': 'Description', 'f.icon': 'Icon address', 'f.sort': 'Order', 'f.active': 'Active', 'f.mission': 'Mission', 'f.pack': 'Pack',
     'f.category': 'Category', 'f.tags': 'Tags', 'f.language': 'Language', 'f.difficulty': 'Difficulty', 'f.reward': 'Reward', 'f.metadata': 'Extra data (JSON)',
@@ -485,13 +485,14 @@ function card(children, cls) {
 }
 
 function field(label, control, hint, extra) {
-  var err = h('p', { class: 'qz-field-error text-xs text-error-600 dark:text-error-400', hidden: true });
-  var wrap = h('label', { class: 'qz-field block mb-4' + (extra ? ' ' + extra : '') },
-    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 mb-1', text: label }) : null,
+  var err = h('p', { class: 'qz-field-error eco-tf-err text-xs text-error-600 dark:text-error-400', hidden: true });
+  var wrap = h('label', { class: 'qz-field eco-tbf block mb-4' + (extra ? ' ' + extra : '') },
+    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 eco-tf-label', text: label }) : null,
     control,
-    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 mt-1', text: hint }) : null,
+    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 eco-tf-hint', text: hint }) : null,
     err);
   wrap.setError = function (msg) { err.textContent = msg || ''; err.hidden = !msg; };
+  if (label && control && control.tagName === 'INPUT' && control.getAttribute('placeholder') === label) wrap.classList.add('eco-tbf-q');
   return wrap;
 }
 
@@ -596,13 +597,26 @@ function table(columns, rows, onrow) {
 
 function pager(state, onpage) {
   var total = state.total || 0;
-  var from = total ? (state.page - 1) * state.limit + 1 : 0;
+  var nav = h('nav', { class: 'eco-pager', 'aria-label': t('pager') });
+  if (!total) { nav.hidden = true; return nav; }
+  var from = (state.page - 1) * state.limit + 1;
   var to = Math.min(total, state.page * state.limit);
   var last = Math.max(1, Math.ceil(total / state.limit));
-  return h('div', { class: 'flex items-center justify-end gap-2 text-xs text-secondary-500' },
-    h('span', { 'data-quiz-range': '', text: total ? t('range', { from: from, to: to, total: total }) : t('empty') }),
-    button({ label: t('prev'), disabled: state.page <= 1, onclick: function () { onpage(state.page - 1); } }),
-    button({ label: t('next'), disabled: state.page >= last, onclick: function () { onpage(state.page + 1); } }));
+  function btn(name, path, label, disabled, go) {
+    var b = h('button', { type: 'button', class: 'eco-pager-btn', title: label, 'aria-label': label, disabled: !!disabled, onclick: go, 'data-page': name });
+    b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true" data-l10n-icon="mirror">' + path + '</svg>';
+    return b;
+  }
+  nav.appendChild(h('span', { class: 'eco-pager-range tabular-nums', 'data-quiz-range': '', text: t('range', { from: from, to: to, total: total }) }));
+  if (last > 1) {
+    nav.appendChild(h('div', { class: 'eco-pager-nav' },
+      btn('first', '<path d="M7 6v12M17 18l-6-6 6-6"/>', t('page.first'), state.page <= 1, function () { onpage(1); }),
+      btn('prev', '<path d="M15 18l-6-6 6-6"/>', t('prev'), state.page <= 1, function () { onpage(state.page - 1); }),
+      h('span', { class: 'eco-pager-page tabular-nums', 'aria-current': 'page', text: t('page.of', { page: state.page, pages: last }) }),
+      btn('next', '<path d="M9 18l6-6-6-6"/>', t('next'), state.page >= last, function () { onpage(state.page + 1); }),
+      btn('last', '<path d="M17 6v12M7 18l6-6-6-6"/>', t('page.last'), state.page >= last, function () { onpage(last); })));
+  }
+  return nav;
 }
 
 function loadSettings(base) {
@@ -863,7 +877,7 @@ function packsPage(root) {
   var missionSel = h('select', { class: QZ_INPUT + ' eco-select', name: 'missionId', 'aria-label': t('f.mission') });
   var search = input('', { name: 'q', placeholder: t('search') });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end qz-filters' }, field(t('f.mission'), missionSel), field(t('search'), search)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx qz-filters' }, field(t('f.mission'), missionSel), field(t('search'), search)));
   frame.content.appendChild(listBox);
   missionSel.addEventListener('change', function () { state.missionId = missionSel.value; state.page = 1; reload(); });
   var timer = null;
@@ -998,7 +1012,7 @@ function questionsPage(root) {
   var reported = check(state.reported === 'true', t('qs.reportedOnly'), 'reported');
   var search = input('', { name: 'q', placeholder: t('search') });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end qz-filters' }, field(t('f.pack'), packSel), field(t('qs.type'), typeSel), field(t('f.category'), catSel),
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx qz-filters' }, field(t('f.pack'), packSel), field(t('qs.type'), typeSel), field(t('f.category'), catSel),
     field(t('f.active'), activeSel), field(t('search'), search), reported));
   frame.content.appendChild(listBox);
   packSel.addEventListener('change', function () { state.packId = packSel.value; state.page = 1; reload(); });
@@ -1313,7 +1327,7 @@ function reportsPage(root) {
   var statusSel = select(state.status, [{ value: '', label: t('all') }].concat(['open', 'resolved', 'dismissed'].map(function (s) { return { value: s, label: t('st.' + s) }; })), { name: 'status', label: t('rp.status') });
   var reasonSel = h('select', { class: QZ_INPUT + ' eco-select', name: 'reasonKey', 'aria-label': t('rp.reason') });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end qz-filters' }, field(t('rp.status'), statusSel), field(t('rp.reason'), reasonSel)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx qz-filters' }, field(t('rp.status'), statusSel), field(t('rp.reason'), reasonSel)));
   frame.content.appendChild(listBox);
   statusSel.addEventListener('change', function () { state.status = statusSel.value; state.page = 1; reload(); });
   reasonSel.addEventListener('change', function () { state.reasonKey = reasonSel.value; state.page = 1; reload(); });
@@ -1588,7 +1602,7 @@ function statsPage(root) {
   var daySel = select(String(days), [7, 30, 90].map(function (d) { return { value: String(d), label: t('sx.d', { n: d }) }; }), { name: 'days', label: t('sx.days') });
   daySel.addEventListener('change', function () { location.hash = '#/quiz/stats?days=' + daySel.value; });
   var box = h('div', { class: 'flex flex-col gap-4' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end qz-filters' }, field(t('sx.days'), daySel)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx qz-filters' }, field(t('sx.days'), daySel)));
   frame.content.appendChild(box);
   box.appendChild(h('p', { class: 'text-sm text-secondary-500', text: t('loading') }));
   api('GET', '/quiz/stats' + qs({ days: days, lang: qzLang() })).then(function (d) {
@@ -1630,7 +1644,7 @@ function duelCategoriesPage(root) {
   clear(root).appendChild(frame.el);
   var search = input('', { name: 'q', placeholder: t('search') });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end qz-filters' }, field(t('search'), search)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx qz-filters' }, field(t('search'), search)));
   frame.content.appendChild(listBox);
   var timer = null;
   search.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { state.q = search.value.trim(); state.page = 1; reload(); }, 300); });
@@ -1727,7 +1741,7 @@ function duelsPage(root) {
   var player = input(state.player, { name: 'player', placeholder: t('du.playerHint') });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
   frame.content.appendChild(tiles);
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end qz-filters' }, field(t('du.status'), statusSel), field(t('du.mode'), modeSel), field(t('du.player'), player)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx qz-filters' }, field(t('du.status'), statusSel), field(t('du.mode'), modeSel), field(t('du.player'), player)));
   frame.content.appendChild(listBox);
   statusSel.addEventListener('change', function () { state.status = statusSel.value; state.page = 1; reload(); });
   modeSel.addEventListener('change', function () { state.mode = modeSel.value; state.page = 1; reload(); });

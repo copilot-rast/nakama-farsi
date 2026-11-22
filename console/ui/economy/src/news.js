@@ -277,7 +277,7 @@ function newsReviewPage(container, query) {
           button({ variant: 'ghost', size: 'sm', label: t('rv.reject'), onclick: one('reject') }))
       ] };
     })));
-    var pg = h('div', { class: 'flex justify-end py-3' });
+    var pg = h('div', { class: 'eco-pager-slot' });
     pg.appendChild(pager({ page: state.page, limit: 50, total: state.total, loading: false }, function (p) { state.page = p; load(); }));
     box.appendChild(pg);
     paintCount();

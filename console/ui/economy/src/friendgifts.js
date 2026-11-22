@@ -317,8 +317,8 @@ function friendGiftReportPage(container, query) {
     state.days = v || '30';
     replaceHash(hashFor('friend-gift-report', null, state.days !== '30' ? { days: state.days } : {}));
     load();
-  });
-  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2' }, days));
+  }, { def: '30' });
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-filters' }, days));
   frame.content.appendChild(stats);
   frame.content.appendChild(box);
   function topTable(titleKey, rows, cell) {

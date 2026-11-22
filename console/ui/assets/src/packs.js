@@ -1,4 +1,3 @@
-// Content packs: list per platform, which pack the game gets, activate / deactivate / roll back, files and events.
 var asPackState = { platform: '', status: '' };
 
 function rangeText(p) {
@@ -24,7 +23,7 @@ function packsPage(root) {
     status.addEventListener('change', change);
     c.appendChild(notice('secondary', t('pk.upload.hint')));
     c.appendChild(resolverCard(platforms));
-    c.appendChild(h('div', { class: 'as-filters flex flex-wrap gap-3 items-end' }, field(t('pk.platform'), plat), field(t('pk.status'), status)));
+    c.appendChild(h('div', { class: 'eco-toolbar eco-tbx as-filters' }, field(t('pk.platform'), plat), field(t('pk.status'), status)));
     if (!d.items.length) c.appendChild(notice('secondary', t('empty')));
     else c.appendChild(h('div', { 'data-assets-list': 'packs' }, table([
       { label: t('pk.platform') }, { label: t('pk.version') }, { label: t('pk.range') }, { label: t('pk.status') }, { label: t('pk.files') }, { label: t('pk.created') }, { label: t('pk.activated') }

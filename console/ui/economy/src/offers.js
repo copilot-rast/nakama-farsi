@@ -429,9 +429,9 @@ function offerReportPage(container, query) {
     if (state.kind) q.kind = state.kind;
     replaceHash(hashFor('offer-report', null, q));
   }
-  var days = filterSelect(t('filter.of.days'), state.days, [7, 30, 90, 365].map(function (n) { return { value: String(n), label: t('of.daysN', { n: n }) }; }), function (v) { state.days = v || '30'; sync(); load(); });
+  var days = filterSelect(t('filter.of.days'), state.days, [7, 30, 90, 365].map(function (n) { return { value: String(n), label: t('of.daysN', { n: n }) }; }), function (v) { state.days = v || '30'; sync(); load(); }, { def: '30' });
   var kind = filterSelect(t('filter.of.kind'), state.kind, opts('of.kind.', ['daily', 'entry'])(), function (v) { state.kind = v || ''; sync(); load(); });
-  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2' }, days, kind));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-filters' }, days, kind));
   frame.content.appendChild(stats);
   frame.content.appendChild(box);
   var cols = [

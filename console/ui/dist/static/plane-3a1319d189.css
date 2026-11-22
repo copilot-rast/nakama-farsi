@@ -2928,6 +2928,86 @@ html.pl .setup-need {
     border-bottom: 1px solid var(--line);
   }
 }
+
+html.pl :is(#main, [data-economy]) .eco-toolbar .eco-search input.eco-search-input {
+  height: var(--ctl-h);
+  min-height: var(--ctl-h);
+  border-color: var(--lt-line);
+  background-color: var(--lt-bg);
+  font-size: var(--ctl-fs);
+}
+
+html.pl :is(#main, [data-economy]) .eco-toolbar .eco-search input.eco-search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+html.pl :is(#main, [data-economy]) .eco-filter-ref .eco-ref > button.eco-select {
+  height: calc(var(--ctl-h) - 2px);
+  min-height: 0;
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+  color: inherit;
+}
+
+html.pl :is(#main, [data-economy]) .eco-selbar-picker .eco-ref > button.eco-select {
+  height: var(--ctl-h);
+  min-height: var(--ctl-h);
+  background-color: var(--surface);
+}
+
+html.pl :is(#main, [data-economy]) .eco-toolbar .x-button,
+html.pl :is(#main, [data-economy]) .eco-selbar .x-button {
+  min-height: 0;
+}
+
+html.pl :is(#main, [data-economy]) .eco-field-foot > p.text-secondary-500 {
+  color: var(--ink-3);
+}
+
+html.pl :is(#main, [data-economy]) .eco-filter .eco-filter-input {
+  width: 7.5rem;
+  min-height: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+html.pl :is(#main, [data-economy]) .eco-tbx .eco-tbf > :is(select, input:not([type="checkbox"]):not([type="radio"])) {
+  height: calc(var(--ctl-h) - 2px);
+  min-height: 0;
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+  color: inherit;
+}
+
+html.pl :is(#main, [data-economy]) .eco-tbx .eco-tbf > select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23808590' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+}
+
+html.pl :is(#main, [data-economy]) table.eco-table > thead th {
+  height: 40px;
+  padding-block: 0 2px;
+  padding-inline: 12px;
+  background: transparent;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: start;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+}
+
+html.pl :is(#main, [data-economy]) .eco-tbx .eco-tbf > .eco-tf-label {
+  color: var(--ink-3);
+}
+
+html.pl :is(#main, [data-economy]) .eco-tbx .eco-tbf:has(option[value=""]):not(:has(option[value=""]:checked)) > .eco-tf-label,
+html.pl :is(#main, [data-economy]) .eco-tbx .eco-tbf:has(> input:not([type="checkbox"]):not(:placeholder-shown)) > .eco-tf-label {
+  color: var(--accent-ink);
+}
 @media (max-width: 767px) {
   html.pl {
     --gap: 12px;

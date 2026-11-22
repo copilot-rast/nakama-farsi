@@ -12,7 +12,7 @@ function questionsPage(root) {
   var reported = check(state.reported === 'true', t('qs.reportedOnly'), 'reported');
   var search = input('', { name: 'q', placeholder: t('search') });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end qz-filters' }, field(t('f.pack'), packSel), field(t('qs.type'), typeSel), field(t('f.category'), catSel),
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx qz-filters' }, field(t('f.pack'), packSel), field(t('qs.type'), typeSel), field(t('f.category'), catSel),
     field(t('f.active'), activeSel), field(t('search'), search), reported));
   frame.content.appendChild(listBox);
   packSel.addEventListener('change', function () { state.packId = packSel.value; state.page = 1; reload(); });

@@ -1,4 +1,3 @@
-// Game data entries: folder list, search, entry editor with history and rollback, deleted entries, bulk JSON upload.
 var asEntryState = { folder: '', recursive: true, type: '', q: '', page: 1, limit: 50, tab: 'live' };
 
 function entriesPage(root) {
@@ -37,7 +36,7 @@ function entriesPage(root) {
     rec.input.addEventListener('change', reload);
     var timer = null;
     q.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(reload, 300); });
-    body.appendChild(h('div', { class: 'as-filters flex flex-wrap gap-3 items-end' }, field(t('f.folder'), folderSel), field(t('f.type'), typeSel), field(t('search'), q), rec));
+    body.appendChild(h('div', { class: 'eco-toolbar eco-tbx as-filters' }, field(t('f.folder'), folderSel), field(t('f.type'), typeSel), field(t('search'), q), rec));
     var list = h('div', { 'data-assets-list': 'entries' });
     body.appendChild(list);
     function loadList() {
@@ -59,7 +58,6 @@ function entriesPage(root) {
   }, function (err) { clear(top).appendChild(notice('error', asErrText(err))); });
 }
 
-// folderOptions lists every folder and its parents with entry counts (sub-folders included).
 function folderOptions(rows) {
   var counts = {};
   rows.forEach(function (r) {

@@ -9,7 +9,7 @@ var CU_TEXT = {
     'desc.cups/settings': 'روشن و خاموش کردن تورنمنت‌ها، اعلان‌ها، سقف‌ها و قانون‌های پیش‌فرض تورنمنت تازه.',
     'desc.cups/view': '',
     'save': 'ذخیره', 'saved': 'ذخیره شد', 'deleted': 'حذف شد', 'done': 'انجام شد', 'cancel': 'انصراف', 'close': 'بستن', 'remove': 'حذف', 'delete': 'حذف', 'search': 'جستجو', 'all': 'همه',
-    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'yes': 'بله', 'no': 'خیر',
+    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'page.first': 'صفحهٔ اول', 'page.last': 'صفحهٔ آخر', 'page.of': 'صفحهٔ {page} از {pages}', 'pager': 'صفحه‌بندی', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'yes': 'بله', 'no': 'خیر',
     'active': 'فعال', 'inactive': 'غیرفعال', 'confirm.title': 'مطمئن هستید؟', 'lang.text': '{label} ({lang})', 'updated': 'آخرین تغییر: {by} · {at}', 'none': '—', 'missing': 'پیدا نشد',
     'f.name': 'نام', 'f.description': 'توضیح', 'f.key': 'کلید', 'f.icon': 'نشانی آیکون', 'f.color': 'رنگ', 'f.state': 'وضعیت', 'f.player': 'بازیکن', 'f.date': 'زمان', 'f.updated': 'آخرین تغییر',
     'f.sort': 'ترتیب', 'f.id': 'شناسه',
@@ -158,7 +158,7 @@ var CU_TEXT = {
     'desc.cups/settings': 'Turn tournaments on or off, notifications, limits and the default rules for a new tournament.',
     'desc.cups/view': '',
     'save': 'Save', 'saved': 'Saved', 'deleted': 'Deleted', 'done': 'Done', 'cancel': 'Cancel', 'close': 'Close', 'remove': 'Remove', 'delete': 'Delete', 'search': 'Search', 'all': 'All',
-    'loading': 'Loading…', 'empty': 'Nothing found', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'yes': 'Yes', 'no': 'No',
+    'loading': 'Loading…', 'empty': 'Nothing found', 'page.first': 'First page', 'page.last': 'Last page', 'page.of': 'Page {page} of {pages}', 'pager': 'Pagination', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'yes': 'Yes', 'no': 'No',
     'active': 'Active', 'inactive': 'Inactive', 'confirm.title': 'Are you sure?', 'lang.text': '{label} ({lang})', 'updated': 'Last change: {by} · {at}', 'none': '—', 'missing': 'missing',
     'f.name': 'Name', 'f.description': 'Description', 'f.key': 'Key', 'f.icon': 'Icon URL', 'f.color': 'Colour', 'f.state': 'Status', 'f.player': 'Player', 'f.date': 'Time', 'f.updated': 'Last change',
     'f.sort': 'Order', 'f.id': 'ID',
@@ -479,13 +479,14 @@ function card(children, cls) {
 }
 
 function field(label, control, hint, extra) {
-  var err = h('p', { class: 'cu-field-error text-xs text-error-600 dark:text-error-400', hidden: true });
-  var wrap = h('label', { class: 'cu-field block mb-4' + (extra ? ' ' + extra : '') },
-    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 mb-1', text: label }) : null,
+  var err = h('p', { class: 'cu-field-error eco-tf-err text-xs text-error-600 dark:text-error-400', hidden: true });
+  var wrap = h('label', { class: 'cu-field eco-tbf block mb-4' + (extra ? ' ' + extra : '') },
+    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 eco-tf-label', text: label }) : null,
     control,
-    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 mt-1', text: hint }) : null,
+    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 eco-tf-hint', text: hint }) : null,
     err);
   wrap.setError = function (msg) { err.textContent = msg || ''; err.hidden = !msg; };
+  if (label && control && control.tagName === 'INPUT' && control.getAttribute('placeholder') === label) wrap.classList.add('eco-tbf-q');
   return wrap;
 }
 
@@ -590,13 +591,26 @@ function table(columns, rows, onrow) {
 
 function pager(state, onpage) {
   var total = state.total || 0;
-  var from = total ? (state.page - 1) * state.limit + 1 : 0;
+  var nav = h('nav', { class: 'eco-pager', 'aria-label': t('pager') });
+  if (!total) { nav.hidden = true; return nav; }
+  var from = (state.page - 1) * state.limit + 1;
   var to = Math.min(total, state.page * state.limit);
   var last = Math.max(1, Math.ceil(total / state.limit));
-  return h('div', { class: 'flex items-center justify-end gap-2 text-xs text-secondary-500' },
-    h('span', { 'data-cup-range': '', text: total ? t('range', { from: from, to: to, total: total }) : t('empty') }),
-    button({ label: t('prev'), disabled: state.page <= 1, onclick: function () { onpage(state.page - 1); } }),
-    button({ label: t('next'), disabled: state.page >= last, onclick: function () { onpage(state.page + 1); } }));
+  function btn(name, path, label, disabled, go) {
+    var b = h('button', { type: 'button', class: 'eco-pager-btn', title: label, 'aria-label': label, disabled: !!disabled, onclick: go, 'data-page': name });
+    b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true" data-l10n-icon="mirror">' + path + '</svg>';
+    return b;
+  }
+  nav.appendChild(h('span', { class: 'eco-pager-range tabular-nums', 'data-cup-range': '', text: t('range', { from: from, to: to, total: total }) }));
+  if (last > 1) {
+    nav.appendChild(h('div', { class: 'eco-pager-nav' },
+      btn('first', '<path d="M7 6v12M17 18l-6-6 6-6"/>', t('page.first'), state.page <= 1, function () { onpage(1); }),
+      btn('prev', '<path d="M15 18l-6-6 6-6"/>', t('prev'), state.page <= 1, function () { onpage(state.page - 1); }),
+      h('span', { class: 'eco-pager-page tabular-nums', 'aria-current': 'page', text: t('page.of', { page: state.page, pages: last }) }),
+      btn('next', '<path d="M9 18l6-6-6-6"/>', t('next'), state.page >= last, function () { onpage(state.page + 1); }),
+      btn('last', '<path d="M17 6v12M7 18l6-6-6-6"/>', t('page.last'), state.page >= last, function () { onpage(last); })));
+  }
+  return nav;
 }
 
 function loadSettings(base) {
@@ -1127,7 +1141,7 @@ function cupsPage(root) {
   var search = searchBox(function (v) { state.q = v; state.page = 1; reload(); });
   status.addEventListener('change', function () { state.status = status.value; state.page = 1; reload(); });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end cu-filters' }, field(t('f.state'), status), field(t('search'), search, t('cu.hint.search'))));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx cu-filters' }, field(t('f.state'), status), field(t('search'), search, t('cu.hint.search'))));
   if (state.template) frame.content.appendChild(h('div', { class: 'flex flex-wrap items-center gap-2 text-sm' }, h('span', { text: t('cu.byTemplate') }), mono(state.template),
     h('a', { href: '#/cups/list', class: 'eco-link', 'data-cup-clear-template': '', text: t('cu.allCups') })));
   frame.content.appendChild(listBox);

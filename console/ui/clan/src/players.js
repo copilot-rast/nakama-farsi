@@ -11,7 +11,7 @@ function trPlayersPage(root) {
   var league = select('*', [{ value: '*', label: t('all') }], { name: 'league' });
   league.addEventListener('change', function () { state.league = league.value; state.page = 1; reload(); });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end cl-filters' }, field(t('tp.search'), search, t('tp.hint.search')), field(t('tp.league'), league)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx cl-filters' }, field(t('tp.search'), search, t('tp.hint.search')), field(t('tp.league'), league)));
   frame.content.appendChild(listBox);
   loadLeagues(true).then(function (d) {
     clear(league);

@@ -24,7 +24,7 @@ var DK_TEXT = {
     'error.load': 'بارگذاری نشد',
     'retry': 'تلاش دوباره',
     'settings': 'تنظیمات',
-    'range': '{from} تا {to} از {total}',
+    'page.first': 'صفحهٔ اول', 'page.last': 'صفحهٔ آخر', 'page.of': 'صفحهٔ {page} از {pages}', 'pager': 'صفحه‌بندی', 'range': '{from} تا {to} از {total}',
     'prev': 'قبلی',
     'next': 'بعدی',
     'yes': 'بله',
@@ -160,7 +160,7 @@ var DK_TEXT = {
     'error.load': 'Could not load',
     'retry': 'Try again',
     'settings': 'Settings',
-    'range': '{from}-{to} of {total}',
+    'page.first': 'First page', 'page.last': 'Last page', 'page.of': 'Page {page} of {pages}', 'pager': 'Pagination', 'range': '{from}-{to} of {total}',
     'prev': 'Previous',
     'next': 'Next',
     'yes': 'Yes',
@@ -436,13 +436,14 @@ function card(children, cls) {
 }
 
 function field(label, control, hint, extra) {
-  var err = h('p', { class: 'dk-field-error text-xs text-error-600 dark:text-error-400', hidden: true });
-  var wrap = h('label', { class: 'dk-field block mb-4' + (extra ? ' ' + extra : '') },
-    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 mb-1', text: label }) : null,
+  var err = h('p', { class: 'dk-field-error eco-tf-err text-xs text-error-600 dark:text-error-400', hidden: true });
+  var wrap = h('label', { class: 'dk-field eco-tbf block mb-4' + (extra ? ' ' + extra : '') },
+    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 eco-tf-label', text: label }) : null,
     control,
-    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 mt-1', text: hint }) : null,
+    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 eco-tf-hint', text: hint }) : null,
     err);
   wrap.setError = function (msg) { err.textContent = msg || ''; err.hidden = !msg; };
+  if (label && control && control.tagName === 'INPUT' && control.getAttribute('placeholder') === label) wrap.classList.add('eco-tbf-q');
   return wrap;
 }
 
@@ -547,13 +548,26 @@ function table(columns, rows, onrow) {
 
 function pager(state, onpage) {
   var total = state.total || 0;
-  var from = total ? (state.page - 1) * state.limit + 1 : 0;
+  var nav = h('nav', { class: 'eco-pager', 'aria-label': t('pager') });
+  if (!total) { nav.hidden = true; return nav; }
+  var from = (state.page - 1) * state.limit + 1;
   var to = Math.min(total, state.page * state.limit);
   var last = Math.max(1, Math.ceil(total / state.limit));
-  return h('div', { class: 'flex items-center justify-end gap-2 text-xs text-secondary-500' },
-    h('span', { 'data-devkit-range': '', text: total ? t('range', { from: from, to: to, total: total }) : t('empty') }),
-    button({ label: t('prev'), disabled: state.page <= 1, onclick: function () { onpage(state.page - 1); } }),
-    button({ label: t('next'), disabled: state.page >= last, onclick: function () { onpage(state.page + 1); } }));
+  function btn(name, path, label, disabled, go) {
+    var b = h('button', { type: 'button', class: 'eco-pager-btn', title: label, 'aria-label': label, disabled: !!disabled, onclick: go, 'data-page': name });
+    b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true" data-l10n-icon="mirror">' + path + '</svg>';
+    return b;
+  }
+  nav.appendChild(h('span', { class: 'eco-pager-range tabular-nums', 'data-devkit-range': '', text: t('range', { from: from, to: to, total: total }) }));
+  if (last > 1) {
+    nav.appendChild(h('div', { class: 'eco-pager-nav' },
+      btn('first', '<path d="M7 6v12M17 18l-6-6 6-6"/>', t('page.first'), state.page <= 1, function () { onpage(1); }),
+      btn('prev', '<path d="M15 18l-6-6 6-6"/>', t('prev'), state.page <= 1, function () { onpage(state.page - 1); }),
+      h('span', { class: 'eco-pager-page tabular-nums', 'aria-current': 'page', text: t('page.of', { page: state.page, pages: last }) }),
+      btn('next', '<path d="M9 18l6-6-6-6"/>', t('next'), state.page >= last, function () { onpage(state.page + 1); }),
+      btn('last', '<path d="M17 6v12M7 18l6-6-6-6"/>', t('page.last'), state.page >= last, function () { onpage(last); })));
+  }
+  return nav;
 }
 
 var dkSettings = null;
@@ -646,15 +660,15 @@ function errorsPage(root, route) {
       clearTimeout(searchTimer);
       searchTimer = setTimeout(function () { errorQuery.q = search.value.trim(); errorQuery.page = 1; load(); }, 250);
     });
-    var mods = [{ value: '', label: t('err.module') + ': ' + t('all') }].concat((errorsPage.modules || []).map(function (m) { return { value: m, label: m }; })).concat([{ value: 'custom', label: t('err.state.custom') }]);
+    var mods = [{ value: '', label: t('all') }].concat((errorsPage.modules || []).map(function (m) { return { value: m, label: m }; })).concat([{ value: 'custom', label: t('err.state.custom') }]);
     var mod = select(errorQuery.module, mods, { name: 'module', label: t('err.module') });
     mod.addEventListener('change', function () { errorQuery.module = mod.value; errorQuery.page = 1; load(); });
-    var state = select(errorQuery.state, [{ value: '', label: t('err.state') + ': ' + t('all') }, { value: 'edited', label: t('err.state.edited') }, { value: 'custom', label: t('err.state.custom') }, { value: 'default', label: t('err.state.default') }], { name: 'state', label: t('err.state') });
+    var state = select(errorQuery.state, [{ value: '', label: t('all') }, { value: 'edited', label: t('err.state.edited') }, { value: 'custom', label: t('err.state.custom') }, { value: 'default', label: t('err.state.default') }], { name: 'state', label: t('err.state') });
     state.addEventListener('change', function () { errorQuery.state = state.value; errorQuery.page = 1; load(); });
-    var miss = select(errorQuery.missing, [{ value: '', label: t('err.missing') + ': -' }].concat((errorsPage.languages || []).map(function (l) { return { value: l.code, label: t('err.missing') + ' ' + l.name }; })), { name: 'missing', label: t('err.missing') });
+    var miss = select(errorQuery.missing, [{ value: '', label: t('all') }].concat((errorsPage.languages || []).map(function (l) { return { value: l.code, label: l.name }; })), { name: 'missing', label: t('err.missing') });
     miss.addEventListener('change', function () { errorQuery.missing = miss.value; errorQuery.page = 1; load(); });
-    clear(bar).appendChild(h('div', { class: 'flex flex-wrap gap-2 w-full' },
-      h('div', { class: 'flex-1 min-w-[12rem]' }, search), h('div', {}, mod), h('div', {}, state), h('div', {}, miss)));
+    clear(bar).appendChild(h('div', { class: 'eco-toolbar eco-tbx dk-filters w-full' },
+      field(t('search'), search), field(t('err.module'), mod), field(t('err.state'), state), field(t('err.missing'), miss)));
   }
 
   function load() {
@@ -798,13 +812,13 @@ function keysPage(root) {
   clear(root).appendChild(frame.el);
   var list = h('div', { 'data-devkit-list': 'api-keys' });
   var scopesBox = h('div', { 'data-devkit-list': 'api-scopes' });
-  var status = select(keyQuery.status, [{ value: '', label: t('key.status') + ': ' + t('all') }, { value: 'active', label: t('key.status.active') }, { value: 'revoked', label: t('key.status.revoked') }, { value: 'expired', label: t('key.status.expired') }], { name: 'status', label: t('key.status') });
+  var status = select(keyQuery.status, [{ value: '', label: t('all') }, { value: 'active', label: t('key.status.active') }, { value: 'revoked', label: t('key.status.revoked') }, { value: 'expired', label: t('key.status.expired') }], { name: 'status', label: t('key.status') });
   status.addEventListener('change', function () { keyQuery.status = status.value; keyQuery.page = 1; load(); });
   var search = input(keyQuery.q, { placeholder: t('search'), name: 'q', label: t('search') });
   var timer = null;
   search.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { keyQuery.q = search.value.trim(); keyQuery.page = 1; load(); }, 250); });
   frame.content.appendChild(settingsCard('apiKeys', keysSettings));
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2' }, h('div', { class: 'flex-1 min-w-[12rem]' }, search), h('div', {}, status)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx dk-filters' }, field(t('search'), search), field(t('key.status'), status)));
   frame.content.appendChild(list);
   frame.content.appendChild(scopesBox);
 

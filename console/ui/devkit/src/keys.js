@@ -35,13 +35,13 @@ function keysPage(root) {
   clear(root).appendChild(frame.el);
   var list = h('div', { 'data-devkit-list': 'api-keys' });
   var scopesBox = h('div', { 'data-devkit-list': 'api-scopes' });
-  var status = select(keyQuery.status, [{ value: '', label: t('key.status') + ': ' + t('all') }, { value: 'active', label: t('key.status.active') }, { value: 'revoked', label: t('key.status.revoked') }, { value: 'expired', label: t('key.status.expired') }], { name: 'status', label: t('key.status') });
+  var status = select(keyQuery.status, [{ value: '', label: t('all') }, { value: 'active', label: t('key.status.active') }, { value: 'revoked', label: t('key.status.revoked') }, { value: 'expired', label: t('key.status.expired') }], { name: 'status', label: t('key.status') });
   status.addEventListener('change', function () { keyQuery.status = status.value; keyQuery.page = 1; load(); });
   var search = input(keyQuery.q, { placeholder: t('search'), name: 'q', label: t('search') });
   var timer = null;
   search.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { keyQuery.q = search.value.trim(); keyQuery.page = 1; load(); }, 250); });
   frame.content.appendChild(settingsCard('apiKeys', keysSettings));
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2' }, h('div', { class: 'flex-1 min-w-[12rem]' }, search), h('div', {}, status)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx dk-filters' }, field(t('search'), search), field(t('key.status'), status)));
   frame.content.appendChild(list);
   frame.content.appendChild(scopesBox);
 

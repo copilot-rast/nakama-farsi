@@ -3,7 +3,7 @@ function winnersPage(root) {
   var state = { board: q.board || '', page: 1, limit: 20 };
   var frame = pageFrame('winners', t('desc.winners'));
   clear(root).appendChild(frame.el);
-  var head = h('div', { class: 'flex flex-wrap gap-2 items-end lb-filters' });
+  var head = h('div', { class: 'eco-toolbar eco-tbx lb-filters' });
   var body = h('div', { class: 'flex flex-col gap-3' });
   frame.content.appendChild(head);
   frame.content.appendChild(body);

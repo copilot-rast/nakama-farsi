@@ -129,13 +129,14 @@ function card(children, cls) {
 }
 
 function field(label, control, hint, extra) {
-  var err = h('p', { class: 'dk-field-error text-xs text-error-600 dark:text-error-400', hidden: true });
-  var wrap = h('label', { class: 'dk-field block mb-4' + (extra ? ' ' + extra : '') },
-    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 mb-1', text: label }) : null,
+  var err = h('p', { class: 'dk-field-error eco-tf-err text-xs text-error-600 dark:text-error-400', hidden: true });
+  var wrap = h('label', { class: 'dk-field eco-tbf block mb-4' + (extra ? ' ' + extra : '') },
+    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 eco-tf-label', text: label }) : null,
     control,
-    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 mt-1', text: hint }) : null,
+    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 eco-tf-hint', text: hint }) : null,
     err);
   wrap.setError = function (msg) { err.textContent = msg || ''; err.hidden = !msg; };
+  if (label && control && control.tagName === 'INPUT' && control.getAttribute('placeholder') === label) wrap.classList.add('eco-tbf-q');
   return wrap;
 }
 
@@ -240,13 +241,26 @@ function table(columns, rows, onrow) {
 
 function pager(state, onpage) {
   var total = state.total || 0;
-  var from = total ? (state.page - 1) * state.limit + 1 : 0;
+  var nav = h('nav', { class: 'eco-pager', 'aria-label': t('pager') });
+  if (!total) { nav.hidden = true; return nav; }
+  var from = (state.page - 1) * state.limit + 1;
   var to = Math.min(total, state.page * state.limit);
   var last = Math.max(1, Math.ceil(total / state.limit));
-  return h('div', { class: 'flex items-center justify-end gap-2 text-xs text-secondary-500' },
-    h('span', { 'data-devkit-range': '', text: total ? t('range', { from: from, to: to, total: total }) : t('empty') }),
-    button({ label: t('prev'), disabled: state.page <= 1, onclick: function () { onpage(state.page - 1); } }),
-    button({ label: t('next'), disabled: state.page >= last, onclick: function () { onpage(state.page + 1); } }));
+  function btn(name, path, label, disabled, go) {
+    var b = h('button', { type: 'button', class: 'eco-pager-btn', title: label, 'aria-label': label, disabled: !!disabled, onclick: go, 'data-page': name });
+    b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true" data-l10n-icon="mirror">' + path + '</svg>';
+    return b;
+  }
+  nav.appendChild(h('span', { class: 'eco-pager-range tabular-nums', 'data-devkit-range': '', text: t('range', { from: from, to: to, total: total }) }));
+  if (last > 1) {
+    nav.appendChild(h('div', { class: 'eco-pager-nav' },
+      btn('first', '<path d="M7 6v12M17 18l-6-6 6-6"/>', t('page.first'), state.page <= 1, function () { onpage(1); }),
+      btn('prev', '<path d="M15 18l-6-6 6-6"/>', t('prev'), state.page <= 1, function () { onpage(state.page - 1); }),
+      h('span', { class: 'eco-pager-page tabular-nums', 'aria-current': 'page', text: t('page.of', { page: state.page, pages: last }) }),
+      btn('next', '<path d="M9 18l6-6-6-6"/>', t('next'), state.page >= last, function () { onpage(state.page + 1); }),
+      btn('last', '<path d="M17 6v12M7 18l6-6-6-6"/>', t('page.last'), state.page >= last, function () { onpage(last); })));
+  }
+  return nav;
 }
 
 var dkSettings = null;

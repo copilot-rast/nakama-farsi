@@ -14,7 +14,7 @@ var LB_TEXT = {
     'desc.report': 'امتیازهای ثبت‌شده، امتیازهای ردشده، بازیکن‌های دورهٔ جاری و جایزه‌های پرداخت‌شده در روزهای اخیر.',
     'desc.settings': 'تعداد ردیف‌ها، روش پرداخت جایزه، سقف ارسال امتیاز، نگهداری تاریخچه و رویدادهای پایان دوره.',
     'save': 'ذخیره', 'saved': 'ذخیره شد', 'cancel': 'انصراف', 'close': 'بستن', 'remove': 'حذف', 'delete': 'حذف', 'all': 'همه',
-    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'yes': 'بله', 'no': 'خیر',
+    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'page.first': 'صفحهٔ اول', 'page.last': 'صفحهٔ آخر', 'page.of': 'صفحهٔ {page} از {pages}', 'pager': 'صفحه‌بندی', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'yes': 'بله', 'no': 'خیر',
     'inactive': 'غیرفعال', 'active': 'فعال', 'confirm.title': 'مطمئن هستید؟', 'lang.text': '{label} ({lang})', 'updated': 'آخرین تغییر: {by} · {at}',
     'none': '—', 'new': 'جدول تازه', 'search': 'جستجو',
     'f.key': 'کلید', 'f.name': 'نام', 'f.description': 'توضیح', 'f.icon': 'آدرس آیکون', 'f.sort': 'ترتیب نمایش', 'f.active': 'فعال باشد',
@@ -92,7 +92,7 @@ var LB_TEXT = {
     'desc.report': 'Scores written and refused, players of the running periods and rewards paid in the last days.',
     'desc.settings': 'Row counts, how rewards are paid, submit caps, history retention and period-end events.',
     'save': 'Save', 'saved': 'Saved', 'cancel': 'Cancel', 'close': 'Close', 'remove': 'Remove', 'delete': 'Delete', 'all': 'All',
-    'loading': 'Loading…', 'empty': 'Nothing found', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'yes': 'Yes', 'no': 'No',
+    'loading': 'Loading…', 'empty': 'Nothing found', 'page.first': 'First page', 'page.last': 'Last page', 'page.of': 'Page {page} of {pages}', 'pager': 'Pagination', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'yes': 'Yes', 'no': 'No',
     'inactive': 'Inactive', 'active': 'Active', 'confirm.title': 'Are you sure?', 'lang.text': '{label} ({lang})', 'updated': 'Last change: {by} · {at}',
     'none': '—', 'new': 'New board', 'search': 'Search',
     'f.key': 'Key', 'f.name': 'Name', 'f.description': 'Description', 'f.icon': 'Icon URL', 'f.sort': 'Display order', 'f.active': 'Active',
@@ -337,13 +337,14 @@ function card(children, cls) {
 }
 
 function field(label, control, hint, extra) {
-  var err = h('p', { class: 'lb-field-error text-xs text-error-600 dark:text-error-400', hidden: true });
-  var wrap = h('label', { class: 'lb-field block mb-4' + (extra ? ' ' + extra : '') },
-    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 mb-1', text: label }) : null,
+  var err = h('p', { class: 'lb-field-error eco-tf-err text-xs text-error-600 dark:text-error-400', hidden: true });
+  var wrap = h('label', { class: 'lb-field eco-tbf block mb-4' + (extra ? ' ' + extra : '') },
+    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 eco-tf-label', text: label }) : null,
     control,
-    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 mt-1', text: hint }) : null,
+    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 eco-tf-hint', text: hint }) : null,
     err);
   wrap.setError = function (msg) { err.textContent = msg || ''; err.hidden = !msg; };
+  if (label && control && control.tagName === 'INPUT' && control.getAttribute('placeholder') === label) wrap.classList.add('eco-tbf-q');
   return wrap;
 }
 
@@ -448,13 +449,26 @@ function table(columns, rows, onrow) {
 
 function pager(state, onpage) {
   var total = state.total || 0;
-  var from = total ? (state.page - 1) * state.limit + 1 : 0;
+  var nav = h('nav', { class: 'eco-pager', 'aria-label': t('pager') });
+  if (!total) { nav.hidden = true; return nav; }
+  var from = (state.page - 1) * state.limit + 1;
   var to = Math.min(total, state.page * state.limit);
   var last = Math.max(1, Math.ceil(total / state.limit));
-  return h('div', { class: 'flex items-center justify-end gap-2 text-xs text-secondary-500' },
-    h('span', { 'data-lbx-range': '', text: total ? t('range', { from: from, to: to, total: total }) : t('empty') }),
-    button({ label: t('prev'), disabled: state.page <= 1, onclick: function () { onpage(state.page - 1); } }),
-    button({ label: t('next'), disabled: state.page >= last, onclick: function () { onpage(state.page + 1); } }));
+  function btn(name, path, label, disabled, go) {
+    var b = h('button', { type: 'button', class: 'eco-pager-btn', title: label, 'aria-label': label, disabled: !!disabled, onclick: go, 'data-page': name });
+    b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true" data-l10n-icon="mirror">' + path + '</svg>';
+    return b;
+  }
+  nav.appendChild(h('span', { class: 'eco-pager-range tabular-nums', 'data-lbx-range': '', text: t('range', { from: from, to: to, total: total }) }));
+  if (last > 1) {
+    nav.appendChild(h('div', { class: 'eco-pager-nav' },
+      btn('first', '<path d="M7 6v12M17 18l-6-6 6-6"/>', t('page.first'), state.page <= 1, function () { onpage(1); }),
+      btn('prev', '<path d="M15 18l-6-6 6-6"/>', t('prev'), state.page <= 1, function () { onpage(state.page - 1); }),
+      h('span', { class: 'eco-pager-page tabular-nums', 'aria-current': 'page', text: t('page.of', { page: state.page, pages: last }) }),
+      btn('next', '<path d="M9 18l6-6-6-6"/>', t('next'), state.page >= last, function () { onpage(state.page + 1); }),
+      btn('last', '<path d="M17 6v12M7 18l6-6-6-6"/>', t('page.last'), state.page >= last, function () { onpage(last); })));
+  }
+  return nav;
 }
 
 function loadSettings(base) {
@@ -486,7 +500,6 @@ function loadLanguages() {
   });
 }
 
-// translated renders one input per active language; .read() returns {lang: text}.
 function translated(label, name, value, opts) {
   opts = opts || {};
   var inputs = {};
@@ -539,7 +552,6 @@ function section(title, children, name) {
     h('h2', { class: 'font-semibold mb-3', text: title }), children));
 }
 
-// settingsPage loads a plugin's settings once, lets build add its sections and saves everything with one button.
 function settingsPage(root, page, base, build) {
   var frame = pageFrame(page, t('desc.' + page));
   clear(root).appendChild(frame.el);
@@ -576,7 +588,6 @@ function settingsPage(root, page, base, build) {
   });
 }
 
-// numInput accepts Persian and Latin digits (type=number refuses Persian ones).
 function numInput(value, name, label) {
   var el = input(value == null ? '' : digits(String(value)), { ltr: true, name: name, label: label });
   el.setAttribute('inputmode', 'numeric');
@@ -925,7 +936,6 @@ function boardEditor(b, done) {
   sidePanel(creating ? t('new') : textOf(b.name, b.key), body, [button({ label: t('cancel'), onclick: closePanel }), save], 'board');
 }
 
-// boardPicker loads the boards and calls onpick with the chosen one (kept in the hash as ?board=key).
 function boardPicker(list, current, onpick, allLabel) {
   var opts = allLabel ? [{ value: '', label: allLabel }] : [];
   list.forEach(function (x) { opts.push({ value: x.board.key, label: textOf(x.board.name, x.board.key) + ' · ' + x.board.key }); });
@@ -940,7 +950,7 @@ function standingsPage(root) {
   var state = { board: q.board || '', find: '', cursor: '', stack: [] };
   var frame = pageFrame('standings', t('desc.standings'));
   clear(root).appendChild(frame.el);
-  var head = h('div', { class: 'flex flex-wrap gap-2 items-end lb-filters' });
+  var head = h('div', { class: 'eco-toolbar eco-tbx lb-filters' });
   var body = h('div', { class: 'flex flex-col gap-3' });
   frame.content.appendChild(head);
   frame.content.appendChild(body);
@@ -1030,7 +1040,7 @@ function winnersPage(root) {
   var state = { board: q.board || '', page: 1, limit: 20 };
   var frame = pageFrame('winners', t('desc.winners'));
   clear(root).appendChild(frame.el);
-  var head = h('div', { class: 'flex flex-wrap gap-2 items-end lb-filters' });
+  var head = h('div', { class: 'eco-toolbar eco-tbx lb-filters' });
   var body = h('div', { class: 'flex flex-col gap-3' });
   frame.content.appendChild(head);
   frame.content.appendChild(body);
@@ -1109,7 +1119,7 @@ function reportPage(root) {
   clear(root).appendChild(frame.el);
   var daysSel = select(String(state.days), [7, 30, 90].map(function (n) { return { value: String(n), label: t('rp.d', { n: n }) }; }), { name: 'days', label: t('rp.days') });
   var body = h('div', { class: 'flex flex-col gap-4' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end lb-filters' }, field(t('rp.days'), daysSel)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx lb-filters' }, field(t('rp.days'), daysSel)));
   frame.content.appendChild(body);
   daysSel.addEventListener('change', function () { state.days = Number(daysSel.value); reload(); });
   function kpi(name, value) {

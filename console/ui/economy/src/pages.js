@@ -92,60 +92,78 @@ function errorBlock(err, retry) {
 function listPage(container, name, query, ctx) {
   var def = RESOURCES[name] || LISTS[name];
   var call = apiFor(name);
-  var columns = def.columns.map(function (c) { return { label: t(c.label), width: c.width, align: c.align, skeleton: c.skeleton }; });
+  var columns = def.columns.map(function (c) { return { label: t(c.label), width: c.width, align: c.align, skeleton: c.skeleton, head: c.head }; });
   var state = { q: query.q || '', page: Math.max(1, parseInt(query.page, 10) || 1), limit: LIMIT, filters: {}, total: 0, loading: true, loaded: false };
   (def.filters || []).forEach(function (f) { if (query[f.name]) state.filters[f.name] = query[f.name]; });
   lastQuery[name] = currentQuery();
 
   var create = def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new', currentQuery()); } }) : def.create ? def.create() : null;
   var frame = def.settings || sectionOf(name) === PS_ROUTE ? tabFrame(t('desc.' + name), create) : pageFrame(t('nav.' + name), t('desc.' + name), create);
-  var pagerTop = h('div', { class: 'relative flex items-center justify-end' });
-  var pagerBottom = h('div', { class: 'flex gap-2 py-4 items-center justify-end' });
+  var pagerBottom = h('div', { class: 'eco-pager-slot' });
+  var countBox = h('div', { class: 'eco-count-slot' });
   var tableBox = h('div', {});
-  var search = searchInput(state.q, t(has('search.' + name) ? 'search.' + name : 'search'), debounce(function (e) {
-    state.q = toLatinDigits(e.target.value).trim();
+  var muted = false;
+  function changed() {
+    if (muted) return;
     state.page = 1;
+    paintClear();
     sync();
     load();
+  }
+  var search = searchInput(state.q, t(has('search.' + name) ? 'search.' + name : 'search'), debounce(function (e) {
+    state.q = toLatinDigits(e.target.value).trim();
+    changed();
   }, 300));
+  var resets = [];
   var filters = (def.filters || []).map(function (f) {
     var opts2 = typeof f.options === 'function' ? f.options() : f.options;
     if (f.type === 'ref') {
-      var picker = refPicker({ resource: f.resource, api: typeof f.api === 'function' ? f.api : f.api === 'publication' ? pubApi : api, filter: f.filter, value: state.filters[f.name] || '', label: t(f.label), placeholder: t(f.label) + ': ' + t('all'), onchange: function (v) {
+      var picker = refPicker({ resource: f.resource, api: typeof f.api === 'function' ? f.api : f.api === 'publication' ? pubApi : api, filter: f.filter, value: state.filters[f.name] || '', label: t(f.label), placeholder: t('all'), onchange: function (v) {
         state.filters[f.name] = v || '';
-        state.page = 1;
-        sync();
-        load();
+        box.mark(v);
+        changed();
       } });
-      return h('div', { class: 'x-label x-input eco-filter-ref', style: INPUT_VARS }, picker);
+      var box = filterBox(t(f.label), picker, !!state.filters[f.name]);
+      box.classList.add('eco-filter-ref');
+      box.setAttribute('data-filter', f.name);
+      resets.push(function () { var x = picker.querySelector('.eco-ref-clear'); if (x && !x.hidden) x.click(); });
+      return box;
     }
     if (f.type === 'text') {
-      var inp = h('input', { class: INPUT_SM + ' font-mono eco-filter-text', dir: 'ltr', 'data-ltr': '', 'data-ph-rtl': /[\u0600-\u06FF]/.test(t(f.label)) ? '' : null, type: 'text', value: state.filters[f.name] || '', placeholder: t(f.label), 'aria-label': t(f.label) });
-      inp.addEventListener('input', debounce(function () { state.filters[f.name] = toLatinDigits(inp.value).trim(); state.page = 1; sync(); load(); }, 300));
-      return h('label', { class: 'x-label block relative x-input', style: INPUT_VARS }, inp);
+      var tb = filterText(t(f.label), state.filters[f.name], function (v) { state.filters[f.name] = v; changed(); });
+      tb.setAttribute('data-filter', f.name);
+      resets.push(function () { tb.input.value = ''; tb.mark(''); });
+      return tb;
     }
-    return filterSelect(t(f.label), state.filters[f.name], opts2, function (v) { state.filters[f.name] = v; state.page = 1; sync(); load(); });
+    var sb = filterSelect(t(f.label), state.filters[f.name], opts2, function (v) { state.filters[f.name] = v; changed(); });
+    sb.setAttribute('data-filter', f.name);
+    resets.push(function () { sb.select.value = ''; sb.mark(''); });
+    return sb;
   });
+  var clearBtn = filters.length ? clearFiltersButton(function () {
+    muted = true;
+    resets.forEach(function (r) { r(); });
+    muted = false;
+    state.filters = {};
+    changed();
+    search.querySelector('input').focus();
+  }) : null;
+  function paintClear() {
+    if (clearBtn) clearBtn.hidden = !Object.keys(state.filters).some(function (k) { return state.filters[k]; });
+  }
+  paintClear();
+  var toolbar = listToolbar({ search: search, filters: filters, clear: clearBtn, meta: countBox, refresh: refreshButton(function () { load(); }) });
   if (def.top) frame.content.appendChild(def.top());
-  frame.content.appendChild(h('div', {},
-    h('div', { class: 'flex flex-col items-start pb-2 gap-2' },
-      filters.length > 3 ? h('div', { class: 'flex flex-col gap-2 w-full' },
-        h('div', { class: 'flex flex-col lg:flex-row lg:items-center gap-2 w-full' },
-          search,
-          h('div', { class: 'flex-grow hidden lg:block' }),
-          pagerTop),
-        h('div', { class: 'eco-filters eco-filters-wrap flex flex-wrap items-center gap-2' }, filters))
-      : h('div', { class: 'flex flex-col lg:flex-row lg:items-center gap-2 w-full' },
-        search,
-        filters.length ? h('div', { class: 'eco-filters flex flex-wrap items-center gap-2' }, filters) : null,
-        h('div', { class: 'flex-grow hidden lg:block' }),
-        pagerTop)),
+  frame.content.appendChild(h('div', { class: 'eco-list' },
+    toolbar,
+    h('div', { class: 'eco-list-sel' }),
     tableBox,
     pagerBottom));
   clear(container).appendChild(frame.el);
 
   function currentQuery() {
     var q = Object.assign({}, state.filters);
+    Object.keys(q).forEach(function (k) { if (!q[k]) delete q[k]; });
     if (state.q) q.q = state.q;
     if (state.page > 1) q.page = state.page;
     return q;
@@ -156,8 +174,14 @@ function listPage(container, name, query, ctx) {
     replaceHash(hashFor(name, ctx.id, lastQuery[name]));
   }
   function paintPager() {
-    clear(pagerTop).appendChild(pager(state, function (p) { state.page = p; sync(); load(); }, function () { load(); }));
-    clear(pagerBottom).appendChild(pager(state, function (p) { state.page = p; sync(); load(); window.scrollTo(0, 0); }));
+    clear(countBox).appendChild(listCount(state));
+    clear(pagerBottom).appendChild(pager(state, function (p) {
+      state.page = p;
+      sync();
+      load();
+      var top = toolbar.getBoundingClientRect().top;
+      if (top < 0) toolbar.scrollIntoView({ block: 'start' });
+    }));
   }
   function open(item) {
     if (def.onRow) { def.onRow(item, currentQuery()); return; }
@@ -191,14 +215,16 @@ function listPage(container, name, query, ctx) {
       clear(tableBox);
       if (!items.length) {
         var filtered = state.q || Object.keys(state.filters).some(function (k) { return state.filters[k]; });
+        var reset = filtered && clearBtn && !clearBtn.hidden ? button({ variant: 'ghost', size: 'sm', icon: 'close', label: t('filters.clear'), onclick: function () { clearBtn.click(); } }) : null;
         tableBox.appendChild(card(emptyBlock(filtered ? t('empty.search') : t('empty.title'), filtered ? null : t('empty.hint.' + name),
-          !filtered && def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new'); } }) : !filtered && def.create ? def.create() : null)));
+          reset || (!filtered && def.fields ? button({ variant: 'primary', size: 'page', icon: 'plus', label: t('new.' + name), onclick: function () { go(name, 'new'); } }) : !filtered && def.create ? def.create() : null))));
       } else {
         tableBox.appendChild(table(columns, items.map(function (it) {
           return { item: it, cells: def.columns.map(function (c) { return c.render(it); }) };
         }), { onrow: def.noRow ? null : open }));
       }
       paintPager();
+      if (def.rendered) def.rendered();
     }, function (err) {
       if (my !== seq) return;
       state.loading = false;
@@ -209,7 +235,7 @@ function listPage(container, name, query, ctx) {
   }
   load();
   if (def.mounted) def.mounted(query);
-  return { reload: load, name: name };
+  return { reload: load, name: name, selSlot: frame.content.querySelector('.eco-list-sel'), toolbar: toolbar };
 }
 
 function formSkeleton(def) {

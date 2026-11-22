@@ -10,7 +10,7 @@ var AS_TEXT = {
     'desc.packs': 'بسته‌های محتوای ریموت (کاتالوگ و باندل‌های Addressables) برای هر پلتفرم. بازی آخرین بستهٔ فعالِ سازگار با نسخهٔ خودش را می‌گیرد.',
     'desc.settings': 'سقف اندازه و تعداد، رفتار تعارض نسخه‌ها، دسترسی بازی، نگه‌داری تاریخچه و بسته‌ها و آدرس دانلود محتوا.',
     'save': 'ذخیره', 'saved': 'ذخیره شد', 'cancel': 'انصراف', 'close': 'بستن', 'delete': 'حذف', 'search': 'جستجو', 'all': 'همه',
-    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'yes': 'بله', 'no': 'خیر',
+    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'page.first': 'صفحهٔ اول', 'page.last': 'صفحهٔ آخر', 'page.of': 'صفحهٔ {page} از {pages}', 'pager': 'صفحه‌بندی', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'yes': 'بله', 'no': 'خیر',
     'confirm.title': 'مطمئن هستید؟', 'updated': 'آخرین تغییر: {by} · {at}', 'refresh': 'تازه‌سازی', 'copy': 'کپی', 'copied': 'کپی شد', 'none': '—',
     'f.assetId': 'شناسه', 'f.type': 'نوع', 'f.folder': 'پوشه', 'f.name': 'نام', 'f.version': 'نسخه', 'f.size': 'اندازه', 'f.updated': 'آخرین تغییر', 'f.data': 'داده (JSON)',
     'f.sourceGuid': 'فایل مبدأ (GUID)', 'f.hash': 'هش', 'f.recursive': 'با زیرپوشه‌ها', 'f.root': 'ریشه', 'f.allFolders': 'همهٔ پوشه‌ها', 'f.allTypes': 'همهٔ نوع‌ها',
@@ -66,7 +66,7 @@ var AS_TEXT = {
     'desc.packs': 'Remote content packs (Addressables catalog and bundles) per platform. The game takes the latest active pack that fits its app version.',
     'desc.settings': 'Size and count limits, version conflicts, game access, history and pack retention, and where content is downloaded from.',
     'save': 'Save', 'saved': 'Saved', 'cancel': 'Cancel', 'close': 'Close', 'delete': 'Delete', 'search': 'Search', 'all': 'All',
-    'loading': 'Loading…', 'empty': 'Nothing found', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'yes': 'Yes', 'no': 'No',
+    'loading': 'Loading…', 'empty': 'Nothing found', 'page.first': 'First page', 'page.last': 'Last page', 'page.of': 'Page {page} of {pages}', 'pager': 'Pagination', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'yes': 'Yes', 'no': 'No',
     'confirm.title': 'Are you sure?', 'updated': 'Last change: {by} · {at}', 'refresh': 'Refresh', 'copy': 'Copy', 'copied': 'Copied', 'none': '—',
     'f.assetId': 'Id', 'f.type': 'Type', 'f.folder': 'Folder', 'f.name': 'Name', 'f.version': 'Version', 'f.size': 'Size', 'f.updated': 'Last change', 'f.data': 'Data (JSON)',
     'f.sourceGuid': 'Source file (GUID)', 'f.hash': 'Hash', 'f.recursive': 'Include sub-folders', 'f.root': 'Root', 'f.allFolders': 'All folders', 'f.allTypes': 'All types',
@@ -155,7 +155,6 @@ function fmtDate(v) {
   }
 }
 
-// tr is t() with raw values (keys) that keep their Latin digits.
 function tr(key, vars, raw) {
   var s = t(key, vars);
   Object.keys(raw || {}).forEach(function (k) { s = s.split('{' + k + '}').join(String(raw[k])); });
@@ -293,13 +292,14 @@ function card(children, cls) {
 }
 
 function field(label, control, hint, extra) {
-  var err = h('p', { class: 'as-field-error text-xs text-error-600 dark:text-error-400', hidden: true });
-  var wrap = h('label', { class: 'as-field block mb-4' + (extra ? ' ' + extra : '') },
-    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 mb-1', text: label }) : null,
+  var err = h('p', { class: 'as-field-error eco-tf-err text-xs text-error-600 dark:text-error-400', hidden: true });
+  var wrap = h('label', { class: 'as-field eco-tbf block mb-4' + (extra ? ' ' + extra : '') },
+    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 eco-tf-label', text: label }) : null,
     control,
-    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 mt-1', text: hint }) : null,
+    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 eco-tf-hint', text: hint }) : null,
     err);
   wrap.setError = function (msg) { err.textContent = msg || ''; err.hidden = !msg; };
+  if (label && control && control.tagName === 'INPUT' && control.getAttribute('placeholder') === label) wrap.classList.add('eco-tbf-q');
   return wrap;
 }
 
@@ -404,13 +404,26 @@ function table(columns, rows, onrow) {
 
 function pager(state, onpage) {
   var total = state.total || 0;
-  var from = total ? (state.page - 1) * state.limit + 1 : 0;
+  var nav = h('nav', { class: 'eco-pager', 'aria-label': t('pager') });
+  if (!total) { nav.hidden = true; return nav; }
+  var from = (state.page - 1) * state.limit + 1;
   var to = Math.min(total, state.page * state.limit);
   var last = Math.max(1, Math.ceil(total / state.limit));
-  return h('div', { class: 'flex items-center justify-end gap-2 text-xs text-secondary-500' },
-    h('span', { 'data-assets-range': '', text: total ? t('range', { from: from, to: to, total: total }) : t('empty') }),
-    button({ label: t('prev'), disabled: state.page <= 1, onclick: function () { onpage(state.page - 1); } }),
-    button({ label: t('next'), disabled: state.page >= last, onclick: function () { onpage(state.page + 1); } }));
+  function btn(name, path, label, disabled, go) {
+    var b = h('button', { type: 'button', class: 'eco-pager-btn', title: label, 'aria-label': label, disabled: !!disabled, onclick: go, 'data-page': name });
+    b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true" data-l10n-icon="mirror">' + path + '</svg>';
+    return b;
+  }
+  nav.appendChild(h('span', { class: 'eco-pager-range tabular-nums', 'data-assets-range': '', text: t('range', { from: from, to: to, total: total }) }));
+  if (last > 1) {
+    nav.appendChild(h('div', { class: 'eco-pager-nav' },
+      btn('first', '<path d="M7 6v12M17 18l-6-6 6-6"/>', t('page.first'), state.page <= 1, function () { onpage(1); }),
+      btn('prev', '<path d="M15 18l-6-6 6-6"/>', t('prev'), state.page <= 1, function () { onpage(state.page - 1); }),
+      h('span', { class: 'eco-pager-page tabular-nums', 'aria-current': 'page', text: t('page.of', { page: state.page, pages: last }) }),
+      btn('next', '<path d="M9 18l6-6-6-6"/>', t('next'), state.page >= last, function () { onpage(state.page + 1); }),
+      btn('last', '<path d="M17 6v12M7 18l6-6-6-6"/>', t('page.last'), state.page >= last, function () { onpage(last); })));
+  }
+  return nav;
 }
 
 function loadSettings(base) {
@@ -442,7 +455,6 @@ function loadLanguages() {
   });
 }
 
-// translated renders one input per active language; .read() returns {lang: text}.
 function translated(label, name, value, opts) {
   opts = opts || {};
   var inputs = {};
@@ -495,7 +507,6 @@ function section(title, children, name) {
     h('h2', { class: 'font-semibold mb-3', text: title }), children));
 }
 
-// settingsPage loads a plugin's settings once, lets build add its sections and saves everything with one button.
 function settingsPage(root, page, base, build) {
   var frame = pageFrame(page, t('desc.' + page));
   clear(root).appendChild(frame.el);
@@ -532,7 +543,6 @@ function settingsPage(root, page, base, build) {
   });
 }
 
-// numInput accepts Persian and Latin digits (type=number refuses Persian ones).
 function numInput(value, name, label) {
   var el = input(value == null ? '' : digits(String(value)), { ltr: true, name: name, label: label });
   el.setAttribute('inputmode', 'numeric');
@@ -581,7 +591,6 @@ function actionTag(action) {
   return tag(has('act.' + action) ? t('act.' + action) : action, color);
 }
 
-// Game data entries: folder list, search, entry editor with history and rollback, deleted entries, bulk JSON upload.
 var asEntryState = { folder: '', recursive: true, type: '', q: '', page: 1, limit: 50, tab: 'live' };
 
 function entriesPage(root) {
@@ -620,7 +629,7 @@ function entriesPage(root) {
     rec.input.addEventListener('change', reload);
     var timer = null;
     q.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(reload, 300); });
-    body.appendChild(h('div', { class: 'as-filters flex flex-wrap gap-3 items-end' }, field(t('f.folder'), folderSel), field(t('f.type'), typeSel), field(t('search'), q), rec));
+    body.appendChild(h('div', { class: 'eco-toolbar eco-tbx as-filters' }, field(t('f.folder'), folderSel), field(t('f.type'), typeSel), field(t('search'), q), rec));
     var list = h('div', { 'data-assets-list': 'entries' });
     body.appendChild(list);
     function loadList() {
@@ -642,7 +651,6 @@ function entriesPage(root) {
   }, function (err) { clear(top).appendChild(notice('error', asErrText(err))); });
 }
 
-// folderOptions lists every folder and its parents with entry counts (sub-folders included).
 function folderOptions(rows) {
   var counts = {};
   rows.forEach(function (r) {
@@ -811,7 +819,6 @@ function importPanel(done) {
     [button({ label: t('cancel'), onclick: closePanel }), checkBtn, applyBtn], 'import');
 }
 
-// Content packs: list per platform, which pack the game gets, activate / deactivate / roll back, files and events.
 var asPackState = { platform: '', status: '' };
 
 function rangeText(p) {
@@ -837,7 +844,7 @@ function packsPage(root) {
     status.addEventListener('change', change);
     c.appendChild(notice('secondary', t('pk.upload.hint')));
     c.appendChild(resolverCard(platforms));
-    c.appendChild(h('div', { class: 'as-filters flex flex-wrap gap-3 items-end' }, field(t('pk.platform'), plat), field(t('pk.status'), status)));
+    c.appendChild(h('div', { class: 'eco-toolbar eco-tbx as-filters' }, field(t('pk.platform'), plat), field(t('pk.status'), status)));
     if (!d.items.length) c.appendChild(notice('secondary', t('empty')));
     else c.appendChild(h('div', { 'data-assets-list': 'packs' }, table([
       { label: t('pk.platform') }, { label: t('pk.version') }, { label: t('pk.range') }, { label: t('pk.status') }, { label: t('pk.files') }, { label: t('pk.created') }, { label: t('pk.activated') }

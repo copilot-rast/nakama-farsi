@@ -51,7 +51,7 @@ function kindPage(root) {
   var timer = null;
   search.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { state.q = search.value.trim(); state.page = 1; paint(); }, 300); });
   status.addEventListener('change', function () { state.status = status.value; state.page = 1; paint(); });
-  var filters = h('div', { class: 'ik-filters flex flex-wrap gap-3 items-end' }, field(t('search'), search), field(t('f.status'), status));
+  var filters = h('div', { class: 'eco-toolbar eco-tbx ik-filters' }, field(t('search'), search), field(t('f.status'), status));
   var list = h('div', { 'data-ik-list': kind.key });
   frame.content.appendChild(counts);
   frame.content.appendChild(filters);

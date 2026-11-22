@@ -5,7 +5,7 @@ function reportPage(root) {
   clear(root).appendChild(frame.el);
   var daysSel = select(String(state.days), [7, 30, 90].map(function (n) { return { value: String(n), label: t('rp.d', { n: n }) }; }), { name: 'days', label: t('rp.days') });
   var body = h('div', { class: 'flex flex-col gap-4' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end lb-filters' }, field(t('rp.days'), daysSel)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx lb-filters' }, field(t('rp.days'), daysSel)));
   frame.content.appendChild(body);
   daysSel.addEventListener('change', function () { state.days = Number(daysSel.value); reload(); });
   function kpi(name, value) {

@@ -14,7 +14,7 @@ function stagesPage(root) {
   var modeSel = select('', [{ value: '', label: t('all') }].concat(['ordered', 'repeatable', 'once'].map(function (m) { return { value: m, label: t('mode.' + m) }; })), { name: 'mode', label: t('f.mode') });
   var search = input(state.q, { name: 'q', placeholder: t('search') });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end cg-filters' }, field(t('f.chapter'), chapterSel), field(t('f.mode'), modeSel), field(t('search'), search)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx cg-filters' }, field(t('f.chapter'), chapterSel), field(t('f.mode'), modeSel), field(t('search'), search)));
   frame.content.appendChild(listBox);
   chapterSel.addEventListener('change', function () { state.chapterId = chapterSel.value; state.page = 1; reload(); });
   modeSel.addEventListener('change', function () { state.mode = modeSel.value; state.page = 1; reload(); });

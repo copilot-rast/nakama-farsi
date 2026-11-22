@@ -17,7 +17,7 @@ var INS_TEXT = {
     'desc.insights/imports': 'داده را از Google Analytics 4 و GameAnalytics بیاورید. سرور در زمان‌بندی خودش داده را می‌کشد و به همین استاندارد تبدیل می‌کند.',
     'desc.insights/settings': 'سقف‌ها، محدودیت سرعت، سیاست رویدادهای ناشناخته و نگهداری داده.',
     'save': 'ذخیره', 'saved': 'ذخیره شد', 'deleted': 'حذف شد', 'cancel': 'انصراف', 'close': 'بستن', 'delete': 'حذف', 'yes': 'بله', 'no': 'خیر', 'add': 'افزودن', 'edit': 'ویرایش',
-    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'none': '—', 'all': 'همه',
+    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'page.first': 'صفحهٔ اول', 'page.last': 'صفحهٔ آخر', 'page.of': 'صفحهٔ {page} از {pages}', 'pager': 'صفحه‌بندی', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'none': '—', 'all': 'همه',
     'confirm.title': 'مطمئن هستید؟', 'lang.text': '{label} ({lang})', 'updated': 'آخرین تغییر: {by} · {at}', 'missing': 'پیدا نشد',
     'f.from': 'از', 'f.to': 'تا', 'f.range': 'بازهٔ تاریخ', 'f.game': 'بازی', 'f.platform': 'پلتفرم', 'f.version': 'نسخه', 'f.apply': 'اعمال', 'f.days': '{n} روز', 'f.flagged': 'رویدادهای علامت‌خورده هم حساب شوند',
     'f.allGames': 'همهٔ بازی‌ها', 'f.mainGame': 'بازی اصلی', 'f.any': 'هر کدام',
@@ -84,7 +84,7 @@ var INS_TEXT = {
     'desc.insights/imports': 'Bring data from Google Analytics 4 and GameAnalytics. The server pulls on its schedule and maps it to the same standard.',
     'desc.insights/settings': 'Limits, rate limits, unknown event policies and data retention.',
     'save': 'Save', 'saved': 'Saved', 'deleted': 'Deleted', 'cancel': 'Cancel', 'close': 'Close', 'delete': 'Delete', 'yes': 'Yes', 'no': 'No', 'add': 'Add', 'edit': 'Edit',
-    'loading': 'Loading…', 'empty': 'Nothing found', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'none': '—', 'all': 'All',
+    'loading': 'Loading…', 'empty': 'Nothing found', 'page.first': 'First page', 'page.last': 'Last page', 'page.of': 'Page {page} of {pages}', 'pager': 'Pagination', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'none': '—', 'all': 'All',
     'confirm.title': 'Are you sure?', 'lang.text': '{label} ({lang})', 'updated': 'Last change: {by} · {at}', 'missing': 'Not found',
     'f.from': 'From', 'f.to': 'To', 'f.range': 'Date range', 'f.game': 'Game', 'f.platform': 'Platform', 'f.version': 'Version', 'f.apply': 'Apply', 'f.days': '{n} days', 'f.flagged': 'Count flagged events too',
     'f.allGames': 'All games', 'f.mainGame': 'Main game', 'f.any': 'Any',
@@ -346,13 +346,14 @@ function card(children, cls) {
 }
 
 function field(label, control, hint, extra) {
-  var err = h('p', { class: 'ia-field-error text-xs text-error-600 dark:text-error-400', hidden: true });
-  var wrap = h('label', { class: 'ia-field block mb-4' + (extra ? ' ' + extra : '') },
-    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 mb-1', text: label }) : null,
+  var err = h('p', { class: 'ia-field-error eco-tf-err text-xs text-error-600 dark:text-error-400', hidden: true });
+  var wrap = h('label', { class: 'ia-field eco-tbf block mb-4' + (extra ? ' ' + extra : '') },
+    label ? h('span', { class: 'block font-medium text-sm text-secondary-800 dark:text-secondary-200 eco-tf-label', text: label }) : null,
     control,
-    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 mt-1', text: hint }) : null,
+    hint ? h('span', { class: 'block text-xs text-secondary-500 dark:text-secondary-400 eco-tf-hint', text: hint }) : null,
     err);
   wrap.setError = function (msg) { err.textContent = msg || ''; err.hidden = !msg; };
+  if (label && control && control.tagName === 'INPUT' && control.getAttribute('placeholder') === label) wrap.classList.add('eco-tbf-q');
   return wrap;
 }
 
@@ -457,13 +458,26 @@ function table(columns, rows, onrow) {
 
 function pager(state, onpage) {
   var total = state.total || 0;
-  var from = total ? (state.page - 1) * state.limit + 1 : 0;
+  var nav = h('nav', { class: 'eco-pager', 'aria-label': t('pager') });
+  if (!total) { nav.hidden = true; return nav; }
+  var from = (state.page - 1) * state.limit + 1;
   var to = Math.min(total, state.page * state.limit);
   var last = Math.max(1, Math.ceil(total / state.limit));
-  return h('div', { class: 'flex items-center justify-end gap-2 text-xs text-secondary-500' },
-    h('span', { 'data-ins-range': '', text: total ? t('range', { from: from, to: to, total: total }) : t('empty') }),
-    button({ label: t('prev'), disabled: state.page <= 1, onclick: function () { onpage(state.page - 1); } }),
-    button({ label: t('next'), disabled: state.page >= last, onclick: function () { onpage(state.page + 1); } }));
+  function btn(name, path, label, disabled, go) {
+    var b = h('button', { type: 'button', class: 'eco-pager-btn', title: label, 'aria-label': label, disabled: !!disabled, onclick: go, 'data-page': name });
+    b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true" data-l10n-icon="mirror">' + path + '</svg>';
+    return b;
+  }
+  nav.appendChild(h('span', { class: 'eco-pager-range tabular-nums', 'data-ins-range': '', text: t('range', { from: from, to: to, total: total }) }));
+  if (last > 1) {
+    nav.appendChild(h('div', { class: 'eco-pager-nav' },
+      btn('first', '<path d="M7 6v12M17 18l-6-6 6-6"/>', t('page.first'), state.page <= 1, function () { onpage(1); }),
+      btn('prev', '<path d="M15 18l-6-6 6-6"/>', t('prev'), state.page <= 1, function () { onpage(state.page - 1); }),
+      h('span', { class: 'eco-pager-page tabular-nums', 'aria-current': 'page', text: t('page.of', { page: state.page, pages: last }) }),
+      btn('next', '<path d="M9 18l6-6-6-6"/>', t('next'), state.page >= last, function () { onpage(state.page + 1); }),
+      btn('last', '<path d="M17 6v12M7 18l6-6-6-6"/>', t('page.last'), state.page >= last, function () { onpage(last); })));
+  }
+  return nav;
 }
 
 function loadSettings(base) {
@@ -1139,8 +1153,8 @@ function sessionsPage(root) {
   var status = select(q.status || '', [{ value: '', label: t('all') }, { value: 'open', label: t('s.open') }, { value: 'ended', label: t('s.ended') }], { name: 'status', label: t('s.status') });
   var platform = input(q.platform || '', { ltr: true, name: 'platform', placeholder: t('f.any') });
   var body = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(card(h('div', { class: 'ia-filters p-3 flex flex-wrap items-end gap-3' }, field(t('s.userId'), user), field(t('s.status'), status), field(t('f.platform'), platform),
-    button({ label: t('f.apply'), variant: 'primary', data: { 'ins-apply': '' }, onclick: function () { setQuery({ userId: user.value.trim(), status: status.value, platform: platform.value.trim(), page: '' }); } }))));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx ia-filters' }, field(t('s.userId'), user), field(t('s.status'), status), field(t('f.platform'), platform),
+    button({ label: t('f.apply'), variant: 'primary', data: { 'ins-apply': '' }, onclick: function () { setQuery({ userId: user.value.trim(), status: status.value, platform: platform.value.trim(), page: '' }); } })));
   frame.content.appendChild(body);
   var page = Number(q.page) || 1;
   loadingInto(body);

@@ -8,7 +8,7 @@ var AS_TEXT = {
     'desc.packs': 'بسته‌های محتوای ریموت (کاتالوگ و باندل‌های Addressables) برای هر پلتفرم. بازی آخرین بستهٔ فعالِ سازگار با نسخهٔ خودش را می‌گیرد.',
     'desc.settings': 'سقف اندازه و تعداد، رفتار تعارض نسخه‌ها، دسترسی بازی، نگه‌داری تاریخچه و بسته‌ها و آدرس دانلود محتوا.',
     'save': 'ذخیره', 'saved': 'ذخیره شد', 'cancel': 'انصراف', 'close': 'بستن', 'delete': 'حذف', 'search': 'جستجو', 'all': 'همه',
-    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'yes': 'بله', 'no': 'خیر',
+    'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'page.first': 'صفحهٔ اول', 'page.last': 'صفحهٔ آخر', 'page.of': 'صفحهٔ {page} از {pages}', 'pager': 'صفحه‌بندی', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'yes': 'بله', 'no': 'خیر',
     'confirm.title': 'مطمئن هستید؟', 'updated': 'آخرین تغییر: {by} · {at}', 'refresh': 'تازه‌سازی', 'copy': 'کپی', 'copied': 'کپی شد', 'none': '—',
     'f.assetId': 'شناسه', 'f.type': 'نوع', 'f.folder': 'پوشه', 'f.name': 'نام', 'f.version': 'نسخه', 'f.size': 'اندازه', 'f.updated': 'آخرین تغییر', 'f.data': 'داده (JSON)',
     'f.sourceGuid': 'فایل مبدأ (GUID)', 'f.hash': 'هش', 'f.recursive': 'با زیرپوشه‌ها', 'f.root': 'ریشه', 'f.allFolders': 'همهٔ پوشه‌ها', 'f.allTypes': 'همهٔ نوع‌ها',
@@ -64,7 +64,7 @@ var AS_TEXT = {
     'desc.packs': 'Remote content packs (Addressables catalog and bundles) per platform. The game takes the latest active pack that fits its app version.',
     'desc.settings': 'Size and count limits, version conflicts, game access, history and pack retention, and where content is downloaded from.',
     'save': 'Save', 'saved': 'Saved', 'cancel': 'Cancel', 'close': 'Close', 'delete': 'Delete', 'search': 'Search', 'all': 'All',
-    'loading': 'Loading…', 'empty': 'Nothing found', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'yes': 'Yes', 'no': 'No',
+    'loading': 'Loading…', 'empty': 'Nothing found', 'page.first': 'First page', 'page.last': 'Last page', 'page.of': 'Page {page} of {pages}', 'pager': 'Pagination', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'yes': 'Yes', 'no': 'No',
     'confirm.title': 'Are you sure?', 'updated': 'Last change: {by} · {at}', 'refresh': 'Refresh', 'copy': 'Copy', 'copied': 'Copied', 'none': '—',
     'f.assetId': 'Id', 'f.type': 'Type', 'f.folder': 'Folder', 'f.name': 'Name', 'f.version': 'Version', 'f.size': 'Size', 'f.updated': 'Last change', 'f.data': 'Data (JSON)',
     'f.sourceGuid': 'Source file (GUID)', 'f.hash': 'Hash', 'f.recursive': 'Include sub-folders', 'f.root': 'Root', 'f.allFolders': 'All folders', 'f.allTypes': 'All types',
@@ -153,7 +153,6 @@ function fmtDate(v) {
   }
 }
 
-// tr is t() with raw values (keys) that keep their Latin digits.
 function tr(key, vars, raw) {
   var s = t(key, vars);
   Object.keys(raw || {}).forEach(function (k) { s = s.split('{' + k + '}').join(String(raw[k])); });

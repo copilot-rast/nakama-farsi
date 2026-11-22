@@ -42,15 +42,15 @@ function errorsPage(root, route) {
       clearTimeout(searchTimer);
       searchTimer = setTimeout(function () { errorQuery.q = search.value.trim(); errorQuery.page = 1; load(); }, 250);
     });
-    var mods = [{ value: '', label: t('err.module') + ': ' + t('all') }].concat((errorsPage.modules || []).map(function (m) { return { value: m, label: m }; })).concat([{ value: 'custom', label: t('err.state.custom') }]);
+    var mods = [{ value: '', label: t('all') }].concat((errorsPage.modules || []).map(function (m) { return { value: m, label: m }; })).concat([{ value: 'custom', label: t('err.state.custom') }]);
     var mod = select(errorQuery.module, mods, { name: 'module', label: t('err.module') });
     mod.addEventListener('change', function () { errorQuery.module = mod.value; errorQuery.page = 1; load(); });
-    var state = select(errorQuery.state, [{ value: '', label: t('err.state') + ': ' + t('all') }, { value: 'edited', label: t('err.state.edited') }, { value: 'custom', label: t('err.state.custom') }, { value: 'default', label: t('err.state.default') }], { name: 'state', label: t('err.state') });
+    var state = select(errorQuery.state, [{ value: '', label: t('all') }, { value: 'edited', label: t('err.state.edited') }, { value: 'custom', label: t('err.state.custom') }, { value: 'default', label: t('err.state.default') }], { name: 'state', label: t('err.state') });
     state.addEventListener('change', function () { errorQuery.state = state.value; errorQuery.page = 1; load(); });
-    var miss = select(errorQuery.missing, [{ value: '', label: t('err.missing') + ': -' }].concat((errorsPage.languages || []).map(function (l) { return { value: l.code, label: t('err.missing') + ' ' + l.name }; })), { name: 'missing', label: t('err.missing') });
+    var miss = select(errorQuery.missing, [{ value: '', label: t('all') }].concat((errorsPage.languages || []).map(function (l) { return { value: l.code, label: l.name }; })), { name: 'missing', label: t('err.missing') });
     miss.addEventListener('change', function () { errorQuery.missing = miss.value; errorQuery.page = 1; load(); });
-    clear(bar).appendChild(h('div', { class: 'flex flex-wrap gap-2 w-full' },
-      h('div', { class: 'flex-1 min-w-[12rem]' }, search), h('div', {}, mod), h('div', {}, state), h('div', {}, miss)));
+    clear(bar).appendChild(h('div', { class: 'eco-toolbar eco-tbx dk-filters w-full' },
+      field(t('search'), search), field(t('err.module'), mod), field(t('err.state'), state), field(t('err.missing'), miss)));
   }
 
   function load() {

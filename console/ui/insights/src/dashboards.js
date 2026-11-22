@@ -283,8 +283,8 @@ function sessionsPage(root) {
   var status = select(q.status || '', [{ value: '', label: t('all') }, { value: 'open', label: t('s.open') }, { value: 'ended', label: t('s.ended') }], { name: 'status', label: t('s.status') });
   var platform = input(q.platform || '', { ltr: true, name: 'platform', placeholder: t('f.any') });
   var body = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(card(h('div', { class: 'ia-filters p-3 flex flex-wrap items-end gap-3' }, field(t('s.userId'), user), field(t('s.status'), status), field(t('f.platform'), platform),
-    button({ label: t('f.apply'), variant: 'primary', data: { 'ins-apply': '' }, onclick: function () { setQuery({ userId: user.value.trim(), status: status.value, platform: platform.value.trim(), page: '' }); } }))));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx ia-filters' }, field(t('s.userId'), user), field(t('s.status'), status), field(t('f.platform'), platform),
+    button({ label: t('f.apply'), variant: 'primary', data: { 'ins-apply': '' }, onclick: function () { setQuery({ userId: user.value.trim(), status: status.value, platform: platform.value.trim(), page: '' }); } })));
   frame.content.appendChild(body);
   var page = Number(q.page) || 1;
   loadingInto(body);

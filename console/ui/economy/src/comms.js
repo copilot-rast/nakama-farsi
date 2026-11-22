@@ -75,15 +75,19 @@ function commChannelsPage(container, query) {
   var status = filterSelect(t('filter.status'), state.status, ['open', 'closed', 'all'].map(function (s) { return { value: s, label: t('cm.filter.' + s) }; }), function (v) { state.status = v || 'open'; state.page = 1; load(); });
   var timer = null;
   var search = searchInput(state.q, t('search.comm-channels'), function (e) { clearTimeout(timer); timer = setTimeout(function () { state.q = e.target.value.trim(); state.page = 1; load(); }, 250); });
-  var pagerBox = h('div', {});
-  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center justify-between gap-2 pb-2' }, h('div', { class: 'flex flex-wrap items-center gap-2' }, search, status), pagerBox));
+  var pagerBox = h('div', { class: 'eco-pager-slot' });
+  var countBox = h('div', { class: 'eco-count-slot' });
+  frame.content.appendChild(listToolbar({ search: search, filters: [status], meta: countBox, refresh: refreshButton(function () { load(); }) }));
   frame.content.appendChild(box);
+  frame.content.appendChild(pagerBox);
   var cols = [{ label: t('cm.col.match'), skeleton: '60%' }, { label: t('col.status'), width: 110 }, { label: t('cm.col.members'), skeleton: '50%' }, { label: t('cm.col.messages'), width: 90 }, { label: t('cm.col.expires'), width: 150 }, { label: '', width: 120 }];
   function load() {
     clear(box).appendChild(table(cols, skeletonRows(cols, 3)));
     baseApi('GET', '/comms/channels' + qs({ status: state.status, q: state.q, page: state.page, limit: state.limit })).then(function (res) {
       state.total = res.total || 0;
-      clear(pagerBox).appendChild(pager(state, function (p) { state.page = p; load(); }, load));
+      state.loaded = true;
+      clear(countBox).appendChild(listCount(state));
+      clear(pagerBox).appendChild(pager(state, function (p) { state.page = p; load(); }));
       var list = res.items || [];
       clear(box);
       if (!list.length) {
@@ -127,8 +131,7 @@ function voiceRoomsPage(container, query) {
   var box = h('div', { class: 'flex flex-col gap-3' });
   var timer = null;
   var search = searchInput(state.q, t('search.voice-rooms'), function (e) { clearTimeout(timer); timer = setTimeout(function () { state.q = e.target.value.trim(); load(); }, 250); });
-  var refresh = button({ variant: 'secondary', size: 'sm', icon: 'refresh', label: t('refresh'), onclick: function () { load(); } });
-  frame.content.appendChild(h('div', { class: 'eco-filters flex flex-wrap items-center justify-between gap-2 pb-2' }, search, refresh));
+  frame.content.appendChild(listToolbar({ search: search, refresh: refreshButton(function () { load(); }) }));
   frame.content.appendChild(box);
   var cols = [{ label: t('vr.col.room'), skeleton: '50%' }, { label: t('vr.col.player'), skeleton: '40%' }, { label: t('vr.col.mic'), width: 150 }, { label: t('vr.col.expires'), width: 150 }, { label: '', width: 120 }];
   function load() {

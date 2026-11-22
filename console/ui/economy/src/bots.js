@@ -4,7 +4,8 @@ PH_ICONS['game-matches'] = '<path d="M232,64H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8
 SECTIONS.economy.push('game-matches', 'bots');
 NAV.economy.forEach(function (g) { if (g && g.id === 'play') g.items.splice(g.items.indexOf('games') + 1, 0, 'game-matches', 'bots'); });
 
-var BOT_SEL = { ids: {}, page: [], bar: null, reload: null };
+var BOT_SEL = selection({ name: 'bots', idOf: function (it) { return it.userId; } });
+BOT_SEL.reload = null;
 var GM_STATUSES = ['open', 'started', 'finished', 'cancelled'];
 
 function walletMap(rows) {
@@ -29,12 +30,7 @@ function roomsText(rooms) {
 }
 
 function botCheck(it) {
-  var box = checkbox(!!BOT_SEL.ids[it.userId], '', function (on) {
-    if (on) BOT_SEL.ids[it.userId] = true;
-    else delete BOT_SEL.ids[it.userId];
-    if (BOT_SEL.bar) BOT_SEL.bar.paint();
-  });
-  box.setAttribute('aria-label', t('bt.select', { name: it.username }));
+  var box = BOT_SEL.rowCheck(it, t('bt.select', { name: it.username }));
   box.setAttribute('data-bot-select', it.userId);
   return box;
 }
@@ -45,7 +41,7 @@ LISTS.bots = {
     var wrap = h('div', { class: 'flex flex-wrap gap-2' },
       button({ variant: 'primary', size: 'page', icon: 'plus', label: t('bt.bulk'), onclick: botBulkPanel }),
       button({ variant: 'ghost', size: 'page', icon: 'upload', label: t('bt.import'), onclick: botImportPanel }),
-      button({ variant: 'ghost', size: 'page', icon: 'currencies', label: t('bt.topup'), onclick: function () { botTopupPanel(Object.keys(BOT_SEL.ids)); } }));
+      button({ variant: 'ghost', size: 'page', icon: 'currencies', label: t('bt.topup'), onclick: function () { botTopupPanel(BOT_SEL.list()); } }));
     wrap.querySelectorAll('button')[0].setAttribute('data-bot-action', 'bulk');
     wrap.querySelectorAll('button')[1].setAttribute('data-bot-action', 'import');
     wrap.querySelectorAll('button')[2].setAttribute('data-bot-action', 'topup');
@@ -53,6 +49,7 @@ LISTS.bots = {
   },
   top: function () { return botKpis(); },
   onItems: function (items) { BOT_SEL.page = items; keyNames(); },
+  rendered: function () { BOT_SEL.paint(); },
   onRow: function (it) { botEditPanel(it.userId); },
   filters: [
     { name: 'enabled', label: 'filter.status', options: function () { return [{ value: 'true', label: t('bt.on') }, { value: 'false', label: t('bt.off') }]; } },
@@ -64,7 +61,7 @@ LISTS.bots = {
     { name: 'sort', label: 'filter.bt.sort', options: function () { return ['level', 'games', 'recent'].map(function (s) { return { value: s, label: t('bt.sort.' + s) }; }); } }
   ],
   columns: [
-    { label: 'col.select', render: botCheck, width: 48 },
+    { label: 'col.select', render: botCheck, width: 48, head: function () { return BOT_SEL.headCheck(); } },
     { label: 'col.bt.bot', render: function (it) {
       return h('div', { class: 'min-w-0', 'data-bot-row': it.userId },
         h('div', { class: 'font-medium truncate', dir: 'auto', text: it.displayName || it.username }),
@@ -107,49 +104,39 @@ function botKpis() {
 }
 
 function botBulkBar(reload) {
-  var count = h('span', { class: 'text-sm font-medium tabular-nums', 'aria-live': 'polite', 'data-bot-selected': '' });
   function run(enabled, btn) {
-    var ids = Object.keys(BOT_SEL.ids);
+    var ids = BOT_SEL.list();
     if (!ids.length) return;
     setBusy(btn, true, t('saving'));
     api('POST', '/bots/status', { ids: ids, enabled: enabled }).then(function (res) {
       setBusy(btn, false);
       toast('success', t('bt.status.done', { n: fmtNum(res.updated) }));
-      BOT_SEL.ids = {};
-      paint();
+      BOT_SEL.clear();
       reload();
     }, function (err) { setBusy(btn, false); toast('error', errorText(err)); });
   }
   var on = button({ variant: 'primary', size: 'sm', label: t('bt.enable'), onclick: function (e) { run(true, e.currentTarget); } });
   var off = button({ variant: 'danger', size: 'sm', label: t('bt.disable'), onclick: function (e) { run(false, e.currentTarget); } });
-  var top = button({ variant: 'ghost', size: 'sm', icon: 'currencies', label: t('bt.topup.sel'), onclick: function () { botTopupPanel(Object.keys(BOT_SEL.ids)); } });
+  var top = button({ variant: 'ghost', size: 'sm', icon: 'currencies', label: t('bt.topup.sel'), onclick: function () { botTopupPanel(BOT_SEL.list()); } });
   on.setAttribute('data-bot-bulk', 'enable');
   off.setAttribute('data-bot-bulk', 'disable');
   top.setAttribute('data-bot-bulk', 'topup');
-  var pageAll = button({ variant: 'link', size: 'sm', label: t('pl.bulk.page'), onclick: function () { BOT_SEL.page.forEach(function (it) { BOT_SEL.ids[it.userId] = true; }); paint(); reload(); } });
-  pageAll.setAttribute('data-bot-bulk', 'page');
-  var none = button({ variant: 'ghost', size: 'sm', label: t('pl.bulk.clear'), onclick: function () { BOT_SEL.ids = {}; paint(); reload(); } });
-  var el = h('div', { class: 'eco-bulk rounded-md border border-secondary-200 dark:border-secondary-700 p-3 mb-3', 'data-bot-bulkbar': '' },
-    h('div', { class: 'flex flex-wrap items-center gap-2' }, count, pageAll, none, h('span', { class: 'flex-1' }), on, off, top));
-  function paint() {
-    var n = Object.keys(BOT_SEL.ids).length;
-    count.textContent = n ? t('pl.bulk.selected', { n: n }) : t('pl.bulk.none');
-    on.disabled = off.disabled = top.disabled = !n;
-  }
-  el.paint = paint;
-  paint();
-  return el;
+  return selectionBar(BOT_SEL, {
+    attr: 'data-bot-bulkbar',
+    countAttr: 'data-bot-selected',
+    countKey: 'bt.selected',
+    pageAttr: ['data-bot-bulk', 'page'],
+    actions: [on, off, top]
+  });
 }
 
 function botsPage(container, query, ctx) {
   BOT_SEL.ids = {};
+  BOT_SEL.page = [];
   var list = listPage(container, 'bots', query, ctx);
   BOT_SEL.reload = list.reload;
   var bar = botBulkBar(function () { list.reload(); });
-  BOT_SEL.bar = bar;
-  var table2 = container.querySelector('.eco-filters');
-  var anchor = table2 ? table2.closest('.flex.flex-col.items-start') : null;
-  if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(bar, anchor.nextSibling);
+  if (list.selSlot) list.selSlot.appendChild(bar);
   return list;
 }
 

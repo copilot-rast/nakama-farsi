@@ -169,7 +169,7 @@ function inTile(label, value, sub, id) {
 }
 
 function inRangeFilter(state, onchange) {
-  return filterSelect(t('filter.of.days'), state.days, [7, 14, 30, 90, 180, 365].map(function (n) { return { value: String(n), label: t('of.daysN', { n: localDigits(String(n)) }) }; }), function (v) { state.days = v || '30'; onchange(); });
+  return filterSelect(t('filter.of.days'), state.days, [7, 14, 30, 90, 180, 365].map(function (n) { return { value: String(n), label: t('of.daysN', { n: localDigits(String(n)) }) }; }), function (v) { state.days = v || '30'; onchange(); }, { def: '30' });
 }
 
 function inIsoDay(d) {
@@ -189,7 +189,7 @@ function insightsPage(container, query) {
   var frame = pageFrame(t('nav.insights-overview'), t('desc.insights-overview'));
   clear(container).appendChild(frame.el);
   var state = { days: query.days || '30', platform: query.platform || '', appVersion: query.appVersion || '' };
-  var filters = h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2', 'data-in-filters': '' });
+  var filters = h('div', { class: 'eco-toolbar eco-filters', role: 'search', 'aria-label': t('list.toolbar'), 'data-in-filters': '' });
   var body = h('div', { class: 'flex flex-col gap-4', 'data-in-overview': '' });
   frame.content.appendChild(filters);
   frame.content.appendChild(body);
@@ -206,7 +206,7 @@ function insightsPage(container, query) {
     filters.appendChild(inRangeFilter(state, route));
     filters.appendChild(filterSelect(t('in.platform'), state.platform, IN_DIMS.platforms.map(function (p) { return { value: p, label: p }; }), function (v) { state.platform = v; route(); }));
     filters.appendChild(filterSelect(t('in.version'), state.appVersion, IN_DIMS.versions.map(function (p) { return { value: p, label: p }; }), function (v) { state.appVersion = v; route(); }));
-    filters.appendChild(button({ variant: 'muted', size: 'icon', icon: 'refresh', iconClass: 'h-3 w-3', title: t('refresh'), onclick: load }));
+    filters.appendChild(h('div', { class: 'eco-toolbar-meta' }, refreshButton(function () { load(); })));
   }
   function skeleton() {
     clear(body);
@@ -278,11 +278,9 @@ function insightsSessionsPage(container, query) {
   var frame = pageFrame(t('nav.insights-sessions'), t('desc.insights-sessions'));
   clear(container).appendChild(frame.el);
   var state = { page: Number(query.page) || 1, limit: 20, total: 0, status: query.status || '', platform: query.platform || '', userId: query.userId || '' };
-  var filters = h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2' });
-  var pagerBox = h('div', {});
+  var pagerBox = h('div', { class: 'eco-pager-slot' });
+  var countBox = h('div', { class: 'eco-count-slot' });
   var listBox = h('div', { 'data-in-sessions': '' });
-  frame.content.appendChild(filters);
-  frame.content.appendChild(listBox);
   var cols = [{ label: t('in.col.player'), skeleton: '40%' }, { label: t('in.col.started'), width: 150 }, { label: t('in.length'), width: 90 }, { label: t('in.col.device'), width: 200 }, { label: t('col.status'), width: 110 }];
   function route() {
     var q = {};
@@ -292,17 +290,21 @@ function insightsSessionsPage(container, query) {
     load();
   }
   var search = searchInput(state.userId, t('in.f.userId'), debounce(function (e) { state.userId = toLatinDigits(e.target.value).trim(); state.page = 1; route(); }, 400));
-  filters.appendChild(search);
-  filters.appendChild(filterSelect(t('col.status'), state.status, [{ value: 'open', label: t('in.status.open') }, { value: 'ended', label: t('in.status.ended') }], function (v) { state.status = v; state.page = 1; route(); }));
-  filters.appendChild(filterSelect(t('in.platform'), state.platform, IN_DIMS.platforms.map(function (p) { return { value: p, label: p }; }), function (v) { state.platform = v; state.page = 1; route(); }));
+  frame.content.appendChild(listToolbar({ search: search, filters: [
+    filterSelect(t('col.status'), state.status, [{ value: 'open', label: t('in.status.open') }, { value: 'ended', label: t('in.status.ended') }], function (v) { state.status = v; state.page = 1; route(); }),
+    filterSelect(t('in.platform'), state.platform, IN_DIMS.platforms.map(function (p) { return { value: p, label: p }; }), function (v) { state.platform = v; state.page = 1; route(); })
+  ], meta: countBox, refresh: refreshButton(function () { load(); }) }));
+  frame.content.appendChild(listBox);
+  frame.content.appendChild(pagerBox);
   function load() {
     clear(listBox).appendChild(table(cols, skeletonRows(cols, 5)));
     baseApi('GET', '/insights/sessions' + qs({ page: state.page, limit: state.limit, status: state.status, platform: state.platform, userId: state.userId })).then(function (res) {
       state.total = res.total || 0;
       var items = res.items || [];
       clear(listBox);
-      clear(pagerBox).appendChild(pager(state, function (p) { state.page = p; route(); }, load));
-      listBox.appendChild(h('div', { class: 'flex justify-end pb-2' }, pagerBox));
+      state.loaded = true;
+      clear(countBox).appendChild(listCount(state));
+      clear(pagerBox).appendChild(pager(state, function (p) { state.page = p; route(); }));
       if (!items.length) { listBox.appendChild(card(emptyBlock(t('in.sessions.empty'), t('in.sessions.empty.hint')))); return; }
       listBox.appendChild(table(cols, items.map(function (s) {
         var length = s.seconds !== null && s.seconds !== undefined ? s.seconds : Math.max(0, (new Date(s.lastSeenAt) - new Date(s.startedAt)) / 1000);
@@ -772,7 +774,7 @@ function heatmapsPage(container, query) {
   clear(container).appendChild(frame.el);
   var state = { map: query.map || '', days: query.days || '30', layer: query.layer || 'density', trace: null };
   var maps = [];
-  var filters = h('div', { class: 'eco-filters flex flex-wrap items-center gap-2 pb-2', 'data-in-hm-filters': '' });
+  var filters = h('div', { class: 'eco-toolbar eco-filters', 'data-in-hm-filters': '' });
   var stats = h('div', { class: 'eco-stat-grid mb-4', 'data-in-hm-stats': '' });
   var view = h('div', { class: 'mb-4' });
   var uploads = h('div', { 'data-in-hm-uploads': '' });

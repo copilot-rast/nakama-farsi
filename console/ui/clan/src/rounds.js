@@ -15,7 +15,7 @@ function roundsPage(root) {
   status.addEventListener('change', function () { state.status = status.value; state.page = 1; reload(); });
   cfg.addEventListener('change', function () { state.configKey = cfg.value; state.page = 1; reload(); });
   var listBox = h('div', { class: 'flex flex-col gap-3' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end cl-filters' }, field(t('f.state'), status), field(t('wr.config'), cfg)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx cl-filters' }, field(t('f.state'), status), field(t('wr.config'), cfg)));
   frame.content.appendChild(listBox);
   loadWarConfigs(true).then(function (list) {
     list.forEach(function (c) { cfg.appendChild(h('option', { value: c.key, text: textOf(c.name, c.key) + ' · ' + c.key })); });

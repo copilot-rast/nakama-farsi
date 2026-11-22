@@ -6,7 +6,7 @@ function reportPage(root) {
   var daysSel = select(String(state.days), [7, 30, 90].map(function (n) { return { value: String(n), label: t('rp.d', { n: n }) }; }), { name: 'days', label: t('rp.days') });
   var chapterSel = h('select', { class: CG_INPUT + ' eco-select', name: 'chapterId', 'aria-label': t('f.chapter') });
   var body = h('div', { class: 'flex flex-col gap-4' });
-  frame.content.appendChild(h('div', { class: 'flex flex-wrap gap-2 items-end cg-filters' }, field(t('rp.days'), daysSel), field(t('f.chapter'), chapterSel)));
+  frame.content.appendChild(h('div', { class: 'eco-toolbar eco-tbx cg-filters' }, field(t('rp.days'), daysSel), field(t('f.chapter'), chapterSel)));
   frame.content.appendChild(body);
   daysSel.addEventListener('change', function () { state.days = Number(daysSel.value); reload(); });
   chapterSel.addEventListener('change', function () { state.chapterId = chapterSel.value; reload(); });

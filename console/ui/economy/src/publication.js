@@ -294,7 +294,7 @@ function notificationDetail(container, id) {
   }
 
   function paintRecPager() {
-    clear(recPagerTop).appendChild(pager(rState, function (p) { rState.page = p; loadRecipients(); }));
+    clear(recPagerTop).appendChild(listCount(rState));
     clear(recPagerBottom).appendChild(pager(rState, function (p) { rState.page = p; loadRecipients(); }));
   }
 

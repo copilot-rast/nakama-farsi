@@ -7,7 +7,7 @@ var DURATIONS = [60, 1440, 4320, 10080, 43200];
 var REPORT_ACTIONS = ['dismiss', 'delete', 'warn', 'mute', 'suspend'];
 var pendingReports = null;
 var reportBadgeAt = 0;
-var playerSel = { ids: {}, items: {}, bar: null, page: [] };
+var playerSel = selection({ name: 'players' });
 
 function refreshReportBadge(force) {
   var now = Date.now();
@@ -237,10 +237,9 @@ function liftDialog(r) {
 
 function bulkTagBar(reload) {
   var tagIds = [];
-  var count = h('span', { class: 'text-sm font-medium tabular-nums', 'aria-live': 'polite' });
   var picker = refMulti({ resource: 'tags', api: baseApi, filter: { keyType: 'user' }, quick: 'user', value: [], label: t('pl.bulk.tags'), placeholder: t('pl.bulk.pick'), onchange: function (v) { tagIds = v; } });
   function run(op, btn) {
-    var ids = Object.keys(playerSel.ids);
+    var ids = playerSel.list();
     if (!ids.length) return;
     if (!tagIds.length) { toast('error', t('code.TAGS_REQUIRED')); return; }
     setBusy(btn, true, t('saving'));
@@ -255,34 +254,17 @@ function bulkTagBar(reload) {
   }
   var add = button({ variant: 'primary', size: 'sm', icon: 'plus', label: t('pl.bulk.add'), onclick: function (e) { run('add', e.currentTarget); } });
   var remove = button({ variant: 'danger', size: 'sm', icon: 'trash', label: t('pl.bulk.remove'), onclick: function (e) { run('remove', e.currentTarget); } });
-  var pageAll = button({ variant: 'link', size: 'sm', label: t('pl.bulk.page'), onclick: function () {
-    playerSel.page.forEach(function (it) { playerSel.ids[it.id] = true; });
-    paint();
-    reload();
-  } });
-  var none = button({ variant: 'ghost', size: 'sm', label: t('pl.bulk.clear'), onclick: function () { playerSel.ids = {}; paint(); reload(); } });
   add.setAttribute('data-bulk', 'add');
   remove.setAttribute('data-bulk', 'remove');
-  var el = h('div', { class: 'eco-bulk rounded-md border border-secondary-200 dark:border-secondary-700 p-3 mb-3', 'data-bulk-bar': '' },
-    h('div', { class: 'flex flex-wrap items-center gap-2 mb-2' }, count, pageAll, none),
-    h('div', { class: 'eco-bulk-row' }, h('div', { class: 'min-w-0 flex-1' }, picker), h('div', { class: 'flex flex-wrap gap-2' }, add, remove)));
-  function paint() {
-    var n = Object.keys(playerSel.ids).length;
-    count.textContent = n ? t('pl.bulk.selected', { n: n }) : t('pl.bulk.none');
-    add.disabled = remove.disabled = !n;
-  }
-  el.paint = paint;
-  paint();
-  return el;
+  return selectionBar(playerSel, {
+    attr: 'data-bulk-bar',
+    countKey: 'pl.bulk.selected',
+    actions: [h('div', { class: 'eco-selbar-picker' }, picker), add, remove]
+  });
 }
 
 function playerCheck(it) {
-  var box = checkbox(!!playerSel.ids[it.id], '', function (on) {
-    if (on) playerSel.ids[it.id] = true;
-    else delete playerSel.ids[it.id];
-    if (playerSel.bar) playerSel.bar.paint();
-  });
-  box.setAttribute('aria-label', t('pl.select', { name: it.displayName || it.username }));
+  var box = playerSel.rowCheck(it, t('pl.select', { name: it.displayName || it.username }));
   box.setAttribute('data-select', it.id);
   return box;
 }
@@ -297,12 +279,13 @@ LISTS.players = {
   },
   rowHref: function (it) { return '#/players/' + encodeURIComponent(it.id); },
   onItems: function (items) { playerSel.page = items; },
+  rendered: function () { playerSel.paint(); },
   filters: [
     { name: 'tagId', label: 'filter.tag', type: 'ref', resource: 'tags', api: baseApi, filter: { keyType: 'user' } },
     { name: 'status', label: 'filter.status', options: function () { return ['suspended', 'muted', 'banned', 'tagged'].map(function (s) { return { value: s, label: t('pl.status.' + s) }; }); } }
   ],
   columns: [
-    { label: 'col.select', render: playerCheck, width: 48 },
+    { label: 'col.select', render: playerCheck, width: 48, head: function () { return playerSel.headCheck(); } },
     { label: 'col.player', render: function (it) {
       return h('div', { class: 'min-w-0' },
         h('div', { class: 'font-medium truncate', text: it.displayName || it.username }),
@@ -357,12 +340,10 @@ function playerCreatePanel() {
 
 function playersPage(container, query, ctx) {
   playerSel.ids = {};
+  playerSel.page = [];
   var list = listPage(container, 'players', query, ctx);
   var bar = bulkTagBar(function () { list.reload(); });
-  playerSel.bar = bar;
-  var table = container.querySelector('.eco-filters');
-  var anchor = table ? table.closest('.flex.flex-col.items-start') : null;
-  if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(bar, anchor.nextSibling);
+  if (list.selSlot) list.selSlot.appendChild(bar);
   return list;
 }
 
