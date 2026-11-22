@@ -4,7 +4,7 @@ import { expect, test } from '../../lib/fixtures';
 import { base } from '../../lib/api';
 import { restoreConfig } from '../../lib/db';
 import { FIXTURES } from '../../lib/env';
-import { inkOffsets, type Ink } from '../../lib/ink';
+import { inkOffsets, tagOffsets, type Ink } from '../../lib/ink';
 import type { Page } from '@playwright/test';
 
 const LOGO = 'https://e2e-shell.invalid/logo.svg';
@@ -62,6 +62,16 @@ function expectCentred(ink: Ink[], label: string) {
   }
 }
 
+function expectBadge(ink: Ink[], label: string) {
+  console.log(label, JSON.stringify(ink));
+  expect(ink.length, label).toBe(1);
+  expect(ink[0].dot, `${label} badge dot`).not.toBeNull();
+  for (const i of ink) {
+    expect(Math.abs(i.box), `${label} ${i.name} «${i.text}» ink vs box`).toBeLessThanOrEqual(1);
+    expect(Math.abs(i.dot!), `${label} ${i.name} «${i.text}» ink vs dot`).toBeLessThanOrEqual(1);
+  }
+}
+
 test.describe('shell controls', () => {
   test('top bar controls share one height; brand name and app icon in the sidebar head; search matches the controls', async ({ spawn }) => {
     await base.put('/brand', PP);
@@ -105,16 +115,18 @@ test.describe('shell controls', () => {
   });
 
   for (const mode of ['light', 'dark'] as const) {
-    test(`labels sit on the optical middle of their controls and the title in ${mode}, fa and en`, async ({ spawn }) => {
+    test(`labels sit on the optical middle of their controls, the title and the dashboard badge in ${mode}, fa and en`, async ({ spawn }) => {
       await base.put('/brand', PP);
       const page = await spawn({ signedIn: true, mode, scale: 2 });
       await visit(page);
       expectCentred(await inkOffsets(page, BAR), `fa-${mode}`);
+      expectBadge(await tagOffsets(page, '#main .x-badge .x-tag'), `fa-${mode} dashboard badge`);
       await page.locator('.pl-seg-lang [data-locale="en"]').click();
       await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
       await page.evaluate(() => document.fonts.ready);
       await page.waitForTimeout(400);
       expectCentred(await inkOffsets(page, BAR), `en-${mode}`);
+      expectBadge(await tagOffsets(page, '#main .x-badge .x-tag'), `en-${mode} dashboard badge`);
       await page.locator('.pl-seg-lang [data-locale="fa-IR"]').click();
       await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
     });

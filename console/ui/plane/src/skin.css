@@ -337,6 +337,10 @@ html.pl .x-tag {
   font-weight: 500;
 }
 
+html.pl :is(.x-tag, .eco-tag) {
+  align-items: center;
+}
+
 html.pl .x-tag[style*="success-color"] {
   color: var(--pos);
   background-color: color-mix(in srgb, var(--pos) 12%, transparent);
@@ -561,8 +565,13 @@ html.pl[data-pl-route="dashboard"] #main .grid.md\:grid-cols-2 .h-60 {
   height: 15.5rem;
 }
 
+html.pl #main .x-badge > .relative {
+  display: flex;
+}
+
 html.pl #main .x-badge .x-tag {
   height: 28px;
+  padding-block: 0;
   padding-inline: 22px 10px;
   border-radius: var(--r-pill);
   background: var(--well);
