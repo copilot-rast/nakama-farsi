@@ -19,7 +19,7 @@ test.describe('bots console', () => {
     await open(page, '#/economy/bots');
     await expect(page.locator('a[href^="#/economy/bots"]').first()).toBeAttached();
     await expect(root(page).locator('[data-bot-kpis] [data-bot-kpi="total"]')).toBeVisible();
-    await root(page).locator('[data-bot-action="bulk"]').click();
+    await root(page).locator('[data-bot-action="bulk"]').first().click();
     const form = page.locator('[data-bot-bulk-form]');
     await form.locator('textarea').first().fill([prefix + 'a', prefix + 'b', prefix + 'c'].join('\n'));
     await page.locator('[data-bot-bulk-go]').click();
