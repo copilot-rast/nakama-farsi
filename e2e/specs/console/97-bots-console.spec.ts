@@ -32,7 +32,9 @@ test.describe('bots console', () => {
     await expect(edit.locator('[data-game-stats]')).toBeVisible();
     await page.locator('[data-bot-save]').click();
     await expect(page.locator('[data-bot-edit]')).toHaveCount(0);
-    await root(page).locator('[data-bot-bulk="page"]').click();
+    await expect(root(page).locator('[data-bot-bulkbar]')).toBeHidden();
+    await root(page).locator('[data-select-all]').click();
+    await expect(root(page).locator('[data-bot-bulkbar]')).toBeVisible();
     await expect(root(page).locator('[data-bot-selected]')).toContainText('۳');
     await root(page).locator('[data-bot-bulk="disable"]').click();
     await expect(rows(page).first()).toContainText('خاموش');
