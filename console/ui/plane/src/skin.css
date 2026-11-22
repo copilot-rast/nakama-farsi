@@ -498,6 +498,7 @@ html.pl :is(#main, [data-economy]) .animate-pulse :is(.bg-secondary-200, .bg-sec
 
 html.pl :is(#main, [data-economy]) [_echarts_instance_] text {
   fill: var(--ink-3);
+  font-family: var(--font-family-sans) !important;
 }
 
 html.pl :is(#main, [data-economy]) [_echarts_instance_] path[stroke="#E0E6F1"],

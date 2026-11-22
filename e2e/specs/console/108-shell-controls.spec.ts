@@ -4,6 +4,7 @@ import { expect, test } from '../../lib/fixtures';
 import { base } from '../../lib/api';
 import { restoreConfig } from '../../lib/db';
 import { FIXTURES } from '../../lib/env';
+import { inkOffsets, type Ink } from '../../lib/ink';
 import type { Page } from '@playwright/test';
 
 const LOGO = 'https://e2e-shell.invalid/logo.svg';
@@ -52,6 +53,15 @@ function expectEven(m: { boxes: Box[]; title: number | null; scroll: boolean }, 
   expect(m.scroll).toBe(false);
 }
 
+function expectCentred(ink: Ink[], label: string) {
+  console.log(label, JSON.stringify(ink));
+  expect(ink.length, label).toBeGreaterThanOrEqual(5);
+  for (const i of ink) {
+    expect(Math.abs(i.box), `${label} ${i.name} «${i.text}» ink vs box`).toBeLessThanOrEqual(1);
+    if (i.dot !== null) expect(Math.abs(i.dot), `${label} ${i.name} «${i.text}» ink vs dot`).toBeLessThanOrEqual(1);
+  }
+}
+
 test.describe('shell controls', () => {
   test('top bar controls share one height; brand name and app icon in the sidebar head; search matches the controls', async ({ spawn }) => {
     await base.put('/brand', PP);
@@ -93,6 +103,52 @@ test.describe('shell controls', () => {
     await page.locator('.pl-seg-lang [data-locale="fa-IR"]').click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   });
+
+  for (const mode of ['light', 'dark'] as const) {
+    test(`labels sit on the optical middle of their controls and the title in ${mode}, fa and en`, async ({ spawn }) => {
+      await base.put('/brand', PP);
+      const page = await spawn({ signedIn: true, mode, scale: 2 });
+      await visit(page);
+      expectCentred(await inkOffsets(page, BAR), `fa-${mode}`);
+      await page.locator('.pl-seg-lang [data-locale="en"]').click();
+      await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(400);
+      expectCentred(await inkOffsets(page, BAR), `en-${mode}`);
+      await page.locator('.pl-seg-lang [data-locale="fa-IR"]').click();
+      await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+    });
+  }
+
+  for (const [locale, mode] of [['fa-IR', 'light'], ['en', 'dark']] as const) {
+    test(`charts use the console font and text colour (${locale}, ${mode})`, async ({ spawn }) => {
+      const page = await spawn({ signedIn: true, mode, locale });
+      await visit(page);
+      const chart = page.locator('#main [_echarts_instance_]').first();
+      await expect(chart.locator('text').first()).toBeAttached();
+      const native = await chart.evaluate((e) => {
+        const tone = (v: string) => {
+          const probe = document.createElement('span');
+          probe.style.color = `var(${v})`;
+          document.body.appendChild(probe);
+          const c = getComputedStyle(probe).color;
+          probe.remove();
+          return c;
+        };
+        const texts = [...e.querySelectorAll('text')];
+        return { body: getComputedStyle(document.body).fontFamily, axis: tone('--ink-3'), title: tone('--ink-2'), fonts: [...new Set(texts.map((t) => getComputedStyle(t).fontFamily))], fills: [...new Set(texts.map((t) => getComputedStyle(t).fill))] };
+      });
+      expect(native.body).toContain('Yekan Bakh');
+      expect(native.fonts).toEqual([native.body]);
+      expect(native.fills).toContain(native.axis);
+      expect(native.fills.filter((f) => f !== native.axis && f !== native.title)).toEqual([]);
+      await page.goto('/#/system/insights');
+      const svg = page.locator('[data-in-chart="players"] svg');
+      await expect(svg).toBeVisible();
+      const overlay = await svg.evaluate((e) => [...new Set([...e.querySelectorAll('text')].map((t) => getComputedStyle(t).fontFamily))]);
+      expect(overlay).toEqual([native.body]);
+    });
+  }
 
   test('at 1024px the labelled buttons fold to icons and nothing wraps', async ({ spawn }) => {
     await base.put('/brand', PP);

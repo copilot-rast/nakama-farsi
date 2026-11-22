@@ -992,6 +992,25 @@ html.pl #main > div.sticky:first-child .justify-end > .x-popover > button.x-butt
   transition: background-color var(--d1) var(--ease), border-color var(--d1) var(--ease), color var(--d1) var(--ease);
 }
 
+@supports (text-box: trim-both cap alphabetic) {
+  html.pl :is(.pl-status-label, .pl-sdk-label, .pl-up-label, .pl-seg-label, .pl-crumb-link, .pl-crumb-current) {
+    text-box: trim-both cap alphabetic;
+  }
+
+  html.pl :is(.pl-status-label, .pl-sdk-label, .pl-up-label, .pl-crumb-link, .pl-crumb-current):lang(fa) {
+    text-box-edge: ex alphabetic;
+  }
+
+  html.pl .pl-seg-label:lang(fa) {
+    position: relative;
+    top: 1px;
+  }
+
+  html.pl .pl-crumb-current {
+    overflow: clip visible;
+  }
+}
+
 html.pl .pl-ctl[hidden] {
   display: none;
 }

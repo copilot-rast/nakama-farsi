@@ -45,6 +45,11 @@ function chartAccent() {
   return b && b.accent ? brandHex(b.accent) : null;
 }
 
+function chartFont() {
+  var f = document.body ? getComputedStyle(document.body).fontFamily : '';
+  return f || null;
+}
+
 function asList(v) {
   return Array.isArray(v) ? v : [v];
 }
@@ -94,6 +99,8 @@ function chartOption(opt) {
   var fa = lang() === 'fa';
   var accent = chartAccent();
   var o = Object.assign({}, opt);
+  var font = chartFont();
+  if (font) o.textStyle = Object.assign({}, o.textStyle, { fontFamily: font });
   if (o.xAxis) {
     o.xAxis = mapAxis(o.xAxis, function (a) {
       var x = Object.assign({}, a, { inverse: rtl });
@@ -171,13 +178,14 @@ function restyleChart(chart) {
   if (!o) return;
   var part = {};
   ['xAxis', 'yAxis', 'grid', 'title', 'legend', 'tooltip', 'series'].forEach(function (k) { if (o[k] && o[k].length) part[k] = o[k]; });
+  part.textStyle = Object.assign({}, o.textStyle);
   chart.setOption(part);
 }
 
 function syncCharts() {
   var els = document.querySelectorAll('[_echarts_instance_]');
   if (!els.length) return;
-  var key = Array.prototype.map.call(els, function (e) { return e.getAttribute('_echarts_instance_'); }).join(',') + '|' + chartAccent() + '|' + lang();
+  var key = Array.prototype.map.call(els, function (e) { return e.getAttribute('_echarts_instance_'); }).join(',') + '|' + chartAccent() + '|' + lang() + '|' + chartFont();
   if (key === CHART.key) return;
   CHART.key = key;
   vueFind(function (inst) { return inst.type && inst.type.name === 'echarts'; }).forEach(function (inst) {

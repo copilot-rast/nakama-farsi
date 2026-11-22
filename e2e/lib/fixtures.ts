@@ -2,7 +2,7 @@ import { test as base, chromium, expect, type Browser, type BrowserContext, type
 import fs from 'node:fs';
 import { AUTH_FILE, CHROME, CONSOLE_URL } from './env';
 
-export type PageOpts = { locale?: string; mode?: 'light' | 'dark'; mobile?: boolean; signedIn?: boolean; width?: number; height?: number };
+export type PageOpts = { locale?: string; mode?: 'light' | 'dark'; mobile?: boolean; signedIn?: boolean; width?: number; height?: number; scale?: number };
 
 async function launch(): Promise<Browser> {
   return chromium.launch({ executablePath: CHROME, headless: true });
@@ -12,7 +12,7 @@ async function makePage(browser: Browser, opts: PageOpts): Promise<{ ctx: Browse
   const mobile = !!opts.mobile;
   const ctx = await browser.newContext({
     viewport: { width: opts.width || (mobile ? 390 : 1440), height: opts.height || (mobile ? 844 : 900) },
-    deviceScaleFactor: mobile ? 2 : 1,
+    deviceScaleFactor: opts.scale || (mobile ? 2 : 1),
     isMobile: mobile,
     hasTouch: mobile,
     locale: 'fa-IR',

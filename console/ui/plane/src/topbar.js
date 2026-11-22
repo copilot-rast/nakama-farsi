@@ -104,7 +104,7 @@ function buildLangSeg() {
   codes.forEach(function (code) {
     var info = L && L.locales ? L.locales[code] : { short: code === 'en' ? 'EN' : 'فا', lang: code };
     var on = L ? L.locale === code : (code === 'en') === (plLang() === 'en');
-    var b = el('button', { type: 'button', role: 'radio', class: 'pl-seg-item', lang: info.lang, 'aria-checked': on ? 'true' : 'false', 'aria-label': info.name || code, 'data-locale': code, text: info.short || code });
+    var b = el('button', { type: 'button', role: 'radio', class: 'pl-seg-item', lang: info.lang, 'aria-checked': on ? 'true' : 'false', 'aria-label': info.name || code, 'data-locale': code }, el('span', { class: 'pl-seg-label', text: info.short || code }));
     b.addEventListener('click', function () {
       if (b.getAttribute('aria-checked') === 'true') return;
       Array.prototype.forEach.call(seg.querySelectorAll('[role="radio"]'), function (x) { x.setAttribute('aria-checked', x === b ? 'true' : 'false'); });
