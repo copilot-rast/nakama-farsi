@@ -587,6 +587,86 @@ html.pl.pl-auth #app .sm\:w-\[512px\] :is(input.appearance-none, input) {
   border-radius: 6px;
 }
 
+html.pl.pl-auth #app .sm\:w-\[512px\]:has([data-brand-signin]) {
+  padding-block: 32px 24px;
+}
+
+html.pl .brand-signin-mark {
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line-1), 0 1px 2px rgb(0 0 0 / .05), 0 8px 20px -10px rgb(0 0 0 / .22);
+}
+
+html.pl .brand-signin-mark[data-empty] {
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .08), 0 8px 20px -10px var(--accent);
+}
+
+html.pl .brand-signin-mark[data-empty="neutral"] {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  box-shadow: 0 0 0 1px var(--accent-line);
+}
+
+html.pl.pl-auth #app .brand-signin .brand-signin-title {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink-1);
+}
+
+html.pl .brand-signin-sub {
+  font-size: var(--fs-base);
+  color: var(--ink-3);
+}
+
+html.pl .brand-signin-tools {
+  border-top-color: var(--line);
+}
+
+html.pl .brand-signin-langs {
+  border-color: var(--line);
+  border-radius: var(--r-pill);
+  background: var(--well);
+}
+
+html.pl .brand-signin-lang {
+  height: 28px;
+  border-radius: var(--r-control);
+  color: var(--ink-2);
+  font-size: var(--fs-sm);
+}
+
+html.pl .brand-signin-lang:hover {
+  color: var(--ink-1);
+}
+
+html.pl .brand-signin-lang[aria-checked="true"] {
+  background: var(--capsule-hi);
+  color: var(--ink-1);
+  box-shadow: var(--seg-shadow);
+}
+
+html.pl .brand-signin-theme {
+  width: 34px;
+  height: 34px;
+  border-color: var(--line-1);
+  border-radius: var(--r-control);
+  color: var(--ink-2);
+}
+
+html.pl .brand-signin-theme:hover {
+  background: var(--hover);
+  border-color: var(--line-2);
+  color: var(--ink-1);
+}
+
+html.pl .brand-signin-lang:focus-visible,
+html.pl .brand-signin-theme:focus-visible {
+  outline-color: var(--accent-ink);
+}
+
 .pl-attn {
   margin-block: 16px;
   border: 1px solid var(--line);

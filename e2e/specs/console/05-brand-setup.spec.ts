@@ -8,6 +8,7 @@ import type { Page } from '@playwright/test';
 
 const W = '[data-economy="setup"]';
 const k = uid();
+const faDigits = (v: string) => v.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d]);
 
 test.describe.configure({ mode: 'serial' });
 test.afterEach(() => restoreConfig());
@@ -232,16 +233,16 @@ test.describe('brand and setup wizard', () => {
     });
     const fa = await spawn({ signedIn: false });
     await fa.goto(CONSOLE_URL + '/#/login');
-    await expect(fa.locator('[data-brand-signin]')).toContainText('ستاره‌چین ' + k);
-    await expect(fa.locator('[data-brand-signin]')).toContainText('خوش آمدید');
-    await expect(fa.locator('[data-brand-signin]')).toContainText('برای ادامه به داشبورد');
+    await expect(fa.locator('[data-brand-signin] .brand-signin-title')).toHaveText(faDigits('ستاره‌چین ' + k));
+    await expect(fa.locator('[data-brand-signin] .brand-signin-sub')).toHaveText('به پنل ستاره‌چین خوش آمدید.');
+    await expect(fa.locator('[data-brand-signin] [data-brand-mark]')).toHaveAttribute('data-empty', 'initial');
     await expect.poll(async () => (await applied(fa)).p500).toBe('37 99 235');
     expect((await applied(fa)).title).toContain('ستاره‌چین ' + k);
 
     const en = await spawn({ signedIn: false, locale: 'en', mode: 'dark' });
     await en.goto(CONSOLE_URL + '/#/login');
     await expect(en.locator('html')).toHaveClass(/\bdark\b/);
-    await expect(en.locator('[data-brand-signin]')).toContainText('Starpicker ' + k);
+    await expect(en.locator('[data-brand-signin] .brand-signin-title')).toHaveText('Starpicker ' + k);
     await expect(en.locator('[data-brand-signin]')).toContainText('Welcome to the Starpicker panel.');
     await loginAs(en, ADMIN);
     await expect.poll(async () => (await applied(en)).title).toContain('Starpicker ' + k);
@@ -258,8 +259,9 @@ test.describe('brand and setup wizard', () => {
     await fresh.goto(CONSOLE_URL + '/#/login');
     await fresh.locator('input[name="username"]').waitFor();
     await fresh.waitForTimeout(800);
-    await expect(fresh.locator('[data-brand-signin]')).toHaveCount(0);
-    await expect(fresh.locator('a[href="/"] [data-brand-logo]')).toHaveText('کنسول مدیریت');
+    await expect(fresh.locator('[data-brand-signin] .brand-signin-title')).toHaveText('کنسول مدیریت');
+    await expect(fresh.locator('[data-brand-signin] .brand-signin-sub')).toHaveText('برای ادامه وارد شوید');
+    await expect(fresh.locator('[data-brand-signin] [data-brand-mark]')).toHaveAttribute('data-empty', 'neutral');
     await expect(fresh.locator('a[href="/"] img:visible')).toHaveCount(0);
     await expect(fresh.locator('h1').first()).toContainText('کنسول مدیریت');
     expect(await fresh.title()).toBe('کنسول مدیریت');

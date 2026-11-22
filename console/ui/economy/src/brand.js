@@ -339,35 +339,113 @@ function applyLogos(b) {
   for (var j = 0; j < login.length; j++) if (login[j].querySelector('img')) placeLogo(login[j], b, false);
 }
 
+var SIGNIN_GLYPH = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="3.75"/></svg>';
+
+function signinFit(img) {
+  function fit() {
+    var w = img.naturalWidth, hgt = img.naturalHeight;
+    if (!w || !hgt) return;
+    var r = w / hgt;
+    img.setAttribute('data-fit', r > 0.8 && r < 1.25 ? 'cover' : 'contain');
+  }
+  if (img.complete) fit();
+  else img.addEventListener('load', fit);
+  return img;
+}
+
+function signinMark(b, name) {
+  var box = h('span', { class: 'brand-signin-mark', 'data-brand-mark': '', 'aria-hidden': 'true' });
+  if (b.markUrl) {
+    box.appendChild(signinFit(h('img', { src: b.markUrl, alt: '' })));
+    return box;
+  }
+  if (b.logoUrl || b.logoDarkUrl) {
+    var light = b.logoUrl || b.logoDarkUrl;
+    box.appendChild(signinFit(h('img', { src: light, alt: '', class: b.logoDarkUrl && b.logoUrl ? 'brand-only-light' : null })));
+    if (b.logoDarkUrl && b.logoUrl) box.appendChild(signinFit(h('img', { src: b.logoDarkUrl, alt: '', class: 'brand-only-dark' })));
+    return box;
+  }
+  var initial = Array.from(name || b.shortName || '')[0];
+  box.setAttribute('data-empty', initial ? 'initial' : 'neutral');
+  if (initial) box.appendChild(h('span', { class: 'brand-signin-initial', text: localDigits(initial) }));
+  else box.innerHTML = SIGNIN_GLYPH;
+  return box;
+}
+
+function signinThemeButton() {
+  var btn = h('button', { type: 'button', class: 'brand-signin-tool brand-signin-theme', 'data-signin-theme': '' });
+  function paint() {
+    var dark = isDarkTheme();
+    var label = t(dark ? 'theme.toLight' : 'theme.toDark');
+    btn.innerHTML = dark ? THEME_ICONS.sun : THEME_ICONS.moon;
+    btn.setAttribute('title', label);
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+  }
+  btn.addEventListener('click', function () { toggleTheme(); paint(); });
+  paint();
+  return btn;
+}
+
+function signinLangs() {
+  var L = window.NakamaL10n;
+  if (!L || !L.locales || Object.keys(L.locales).length < 2) return null;
+  var seg = h('div', { class: 'brand-signin-langs', role: 'radiogroup', 'aria-label': t('brand.signInLang'), 'data-signin-langs': '' });
+  Object.keys(L.locales).forEach(function (code) {
+    var info = L.locales[code] || {};
+    var on = L.locale === code;
+    seg.appendChild(h('button', {
+      type: 'button', role: 'radio', class: 'brand-signin-lang', lang: info.lang || code,
+      'aria-checked': on ? 'true' : 'false', 'aria-label': info.name || code, 'data-locale': code, text: info.short || code,
+      onclick: function () { if (!on && L.setLocale) L.setLocale(code); }
+    }));
+  });
+  return seg;
+}
+
 function applyLogin(b) {
   var input = document.querySelector('form input[name="username"]');
-  var heads = document.querySelectorAll('h1[data-brand-hidden]');
   var native = null;
   if (input) {
     var box = input.closest('form');
     for (var k = 0; k < 4 && box && !native; k++) {
       box = box.parentElement;
-      native = box && box.querySelector('h1:not([data-brand-signin])');
+      native = box && box.querySelector('h1:not([data-brand-signin] h1)');
     }
   }
-  var name = b ? brandText(b.name) || b.shortName : '';
-  var welcome = b ? brandText(b.welcome) : '';
   var ours = document.querySelector('[data-brand-signin]');
-  if (!native || (!name && !welcome)) {
+  var tools = document.querySelector('[data-signin-tools]');
+  var heads = document.querySelectorAll('h1[data-brand-hidden]');
+  if (!native) {
     if (ours) ours.remove();
+    if (tools) tools.remove();
     for (var i = 0; i < heads.length; i++) { heads[i].style.display = ''; heads[i].removeAttribute('data-brand-hidden'); }
+    document.documentElement.classList.remove('brand-signin-on');
     return;
   }
-  var key = lang() + '|' + name + '|' + welcome;
-  if (!ours || ours.getAttribute('data-key') !== key || ours.previousElementSibling !== native) {
+  b = b || {};
+  var name = brandText(b.name) || b.shortName || '';
+  var welcome = brandText(b.welcome);
+  var card = native.parentElement;
+  var key = lang() + '|' + JSON.stringify([b.name, b.shortName, b.logoUrl, b.logoDarkUrl, b.markUrl, b.welcome]);
+  if (!ours || ours.getAttribute('data-key') !== key || ours.nextElementSibling !== native) {
     var built = h('div', { 'data-brand-signin': '', 'data-l10n-skip': '', 'data-key': key, class: 'brand-signin', dir: document.documentElement.getAttribute('dir') || 'ltr' },
-      h('h1', { class: native.className, text: name ? t('brand.signIn', { name: name }) : native.textContent }),
-      welcome ? h('p', { class: 'brand-welcome', text: welcome }) : null);
+      signinMark(b, name),
+      h('div', { class: 'brand-signin-text' },
+        h('h1', { class: 'brand-signin-title', text: localDigits(name || t('brand.neutral')) }),
+        h('p', { class: 'brand-signin-sub' + (welcome ? ' brand-welcome' : ''), text: localDigits(welcome || t('brand.signInShort')) })));
     if (ours) ours.remove();
-    native.after(built);
+    native.before(built);
   }
   if (native.style.display !== 'none') native.style.display = 'none';
   native.setAttribute('data-brand-hidden', '');
+  var tkey = lang() + '|' + (window.NakamaL10n ? window.NakamaL10n.locale : '');
+  if (!tools || tools.getAttribute('data-key') !== tkey || tools.parentElement !== card || tools.nextElementSibling) {
+    var row = h('div', { class: 'brand-signin-tools', 'data-signin-tools': '', 'data-l10n-skip': '', 'data-key': tkey }, signinLangs(), signinThemeButton());
+    if (tools) tools.remove();
+    card.appendChild(row);
+  }
+  document.documentElement.classList.add('brand-signin-on');
 }
 
 function applyBrand() {
