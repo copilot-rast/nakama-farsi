@@ -26,6 +26,8 @@ func (s *service) registerConsoleHTTP(initializer runtime.Initializer) error {
 		{consolePrefix + "/brand", http.MethodGet, s.brandGet},
 		{consolePrefix + "/brand", http.MethodPut, s.brandPut},
 		{consolePrefix + "/brand/public", http.MethodGet, s.brandPublic},
+		{consolePrefix + "/console-settings", http.MethodGet, s.consoleSettingsGet},
+		{consolePrefix + "/console-settings", http.MethodPut, s.consoleSettingsPut},
 		{consolePrefix + "/setup", http.MethodGet, s.setupGet},
 		{consolePrefix + "/setup", http.MethodPut, s.setupPut},
 		{consolePrefix + "/setup/claim", http.MethodPost, s.setupClaim},

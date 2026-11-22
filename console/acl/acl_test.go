@@ -229,6 +229,19 @@ func TestCheckACLHttpBaseBrandSetup(t *testing.T) {
 	}
 }
 
+func TestCheckACLHttpBaseConsoleSettings(t *testing.T) {
+	path := "/v2/console/base/console-settings"
+	economyRead := NewPermission(console.AclResources_HIRO_ECONOMY, PermissionRead)
+	settingsRead := NewPermission(console.AclResources_SETTINGS, PermissionRead)
+	settingsWrite := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
+	if !CheckACLHttp(http.MethodGet, path, economyRead) {
+		t.Fatal("every console user reads the console time zone")
+	}
+	if !CheckACLHttp(http.MethodPut, path, settingsWrite) || CheckACLHttp(http.MethodPut, path, settingsRead) || CheckACLHttp(http.MethodPut, path, economyRead) {
+		t.Fatal("PUT console-settings must need settings write")
+	}
+}
+
 func TestCheckACLHttpBaseAccounts(t *testing.T) {
 	settingsRead := NewPermission(console.AclResources_SETTINGS, PermissionRead)
 	settingsWrite := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
