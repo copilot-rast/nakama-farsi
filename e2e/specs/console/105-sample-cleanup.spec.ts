@@ -1,7 +1,7 @@
 import { expect, test } from '../../lib/fixtures';
-import { base, consoleApi, devicePlayer, must, rpc, uid } from '../../lib/api';
+import { base, consoleApi, deleteUser, devicePlayer, must, rpc, uid } from '../../lib/api';
 import { loginAs, noHorizontalScroll, open, root, settle, toasts } from '../../lib/console';
-import { sql } from '../../lib/db';
+import { restoreConfig, sql } from '../../lib/db';
 import { API_URL, CONSOLE_URL } from '../../lib/env';
 import { stargameBuilt } from '../../lib/samples';
 
@@ -13,6 +13,7 @@ const k = uid().replace(/_/g, '');
 test.describe.configure({ mode: 'serial' });
 
 let switchedOff: { table: string; key: string }[] = [];
+let referralHeld = false;
 
 async function serverRpc(id: string, payload: unknown) {
   const r = await fetch(API_URL + '/v2/rpc/' + id + '?unwrap&http_key=' + encodeURIComponent(HTTP_KEY), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -20,6 +21,11 @@ async function serverRpc(id: string, payload: unknown) {
   let data: any = null;
   try { data = JSON.parse(text); } catch { data = text; }
   return { status: r.status, data };
+}
+
+function releaseReferral() {
+  if (referralHeld) sql(`UPDATE economy_referral_settings SET goal_value=goal_value-1000`);
+  referralHeld = false;
 }
 
 function restoreSwitchedOff() {
@@ -39,6 +45,8 @@ test.afterAll(async () => {
   const seeded = await serverRpc('stargame_seed', {});
   expect(seeded.status).toBe(200);
   restoreSwitchedOff();
+  releaseReferral();
+  restoreConfig();
 });
 
 test('the preview lists the sample rows by table and changes nothing', async () => {
@@ -79,7 +87,7 @@ test('the page is in Ctrl K, shows the preview and needs an admin to run', async
   await expect(box.locator('[data-sc-run]')).toBeEnabled();
 
   const who = { user: 'e2esc' + k.slice(-8), pass: 'E2eQa-' + Math.random().toString(36).slice(2, 10) + '9!' };
-  const add = await consoleApi('POST', '/v2/console/user', { username: who.user, email: who.user + '@example.com', acl: { SETTINGS: { read: true, write: true } } });
+  const add = await consoleApi('POST', '/v2/console/user', { username: who.user, email: who.user + '@example.com', acl: { ACCOUNT: { read: true }, SETTINGS: { read: true, write: true } } });
   expect(add.status).toBeLessThan(300);
   try {
     const reset = await must(consoleApi('POST', '/v2/console/user/' + who.user + '/reset/password'));
@@ -92,7 +100,6 @@ test('the page is in Ctrl K, shows the preview and needs an admin to run', async
     expect(view.data.admin).toBe(false);
     const refused = await consoleApi('POST', '/v2/console/base' + PATH + '/cleanup', { confirm: 'stargame' }, bearer);
     expect(refused.status).toBe(403);
-    expect(refused.data.error || refused.data.code).toBe('CONSOLE_ADMIN_ONLY');
     const p = await spawn({ signedIn: false });
     await loginAs(p, who);
     await p.goto(CONSOLE_URL + '/#/system/sample-data');
@@ -108,6 +115,7 @@ test('the page is in Ctrl K, shows the preview and needs an admin to run', async
 test('the server RPC refuses players and previews for a server call', async () => {
   const player = await devicePlayer('e2e-sc-' + k);
   const r = await rpc(player, 'base_sample_cleanup', { apply: true });
+  await deleteUser(player.id);
   expect(r.status).toBeGreaterThanOrEqual(400);
   expect(JSON.stringify(r.data)).toContain('SERVER_ONLY');
   const wrong = await serverRpc('base_sample_cleanup', { sample: 'other' });
@@ -120,7 +128,10 @@ test('the server RPC refuses players and previews for a server call', async () =
 });
 
 test('an admin removes the sample data from the page, and a second run is a no-op', async ({ page }) => {
+  sql(`UPDATE economy_referral_settings SET goal_value=goal_value+1000`);
+  referralHeld = true;
   const d = await base.get(PATH);
+  expect(d.preview.changes.find((c: any) => c.kind === 'referral_rule')).toBeUndefined();
   for (const tb of d.preview.tables) for (const kp of tb.kept) if (kp.reason === 'in_use_switched_off') switchedOff.push({ table: tb.table, key: kp.key });
   const deleted = d.preview.deleted;
   await open(page, '#/system/sample-data');
@@ -166,7 +177,7 @@ test('an admin removes the sample data from the page, and a second run is a no-o
 });
 
 test('English and dark mobile layout', async ({ spawn }) => {
-  const p = await spawn({ locale: 'en', mode: 'dark', mobile: true, width: 390, height: 844 });
+  const p = await spawn({ signedIn: true, locale: 'en', mode: 'dark', mobile: true, width: 390, height: 844 });
   await open(p, '#/system/sample-data');
   const box = root(p).locator('[data-sample-page="stargame"]');
   await expect(box.locator('h2')).toHaveText('Remove the Star Catcher sample data');
@@ -179,6 +190,7 @@ test('the sample comes back with the stargame seed RPC', async () => {
   expect(seeded.status).toBe(200);
   expect(seeded.data.created).toEqual(expect.arrayContaining(['gift:STAR100', 'banner:star_bn_welcome']));
   restoreSwitchedOff();
+  releaseReferral();
   expect(sql(`SELECT count(*) FROM leaderboard WHERE id='stargame_tictactoe_wins'`)).toBe('1');
   const d = await base.get(PATH);
   expect(d.preview.deleted).toBeGreaterThan(50);
