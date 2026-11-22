@@ -3,6 +3,7 @@ var PS_SECTIONS = [
   { id: 'brand', label: 'tab.brand', icon: 'image', acl: 'SETTINGS', render: function (box) { brandPage(box); } },
   { id: 'setup', label: 'tab.setup', icon: 'flask', acl: 'SETTINGS', render: function (box) { setupPage(box); } },
   { id: 'languages', label: 'tab.languages', icon: 'languages', acl: 'SETTINGS', render: function (box, route, ctx) { return languagesPage(box, route.query, ctx); } },
+  { id: 'datetime', label: 'tab.datetime', icon: 'history', acl: 'SETTINGS', render: function (box) { dateSettingsPage(box); } },
   { id: 'countries', label: 'tab.countries', icon: 'flag', acl: 'SETTINGS', render: function (box, route, ctx) { return countriesPage(box, route.query, ctx); } },
   { id: 'accounts', label: 'tab.accounts', icon: 'users', acl: 'SETTINGS', render: function (box) { accountRulesPage(box); } },
   { id: 'friends', label: 'tab.friends', icon: 'users', acl: 'SETTINGS', render: function (box, route, ctx) { return friendRulesPage(box, route.query, ctx); } },

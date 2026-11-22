@@ -52,7 +52,10 @@ var PL_MESSAGES = {
     'crumb.label': 'مسیر صفحه',
     'palette.hint': 'برای رفتن Enter و برای بستن Esc',
     'palette.group.pages': 'صفحه‌ها',
-    'palette.group.settings': 'تنظیمات'
+    'palette.group.settings': 'تنظیمات',
+    'top.calendar': 'تقویم',
+    'top.calendarLabel': 'تقویم: {name}',
+    'palette.calendar': 'تقویم: {name}'
   },
   en: {
     'rail.label': 'Main menu',
@@ -107,7 +110,10 @@ var PL_MESSAGES = {
     'crumb.label': 'Breadcrumb',
     'palette.hint': 'Enter to open, Esc to close',
     'palette.group.pages': 'Pages',
-    'palette.group.settings': 'Settings'
+    'palette.group.settings': 'Settings',
+    'top.calendar': 'Calendar',
+    'top.calendarLabel': 'Calendar: {name}',
+    'palette.calendar': 'Calendar: {name}'
   }
 };
 

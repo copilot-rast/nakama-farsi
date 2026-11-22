@@ -159,6 +159,12 @@ function panelCard(title, body, actions, name) {
 function insQuery() {
   var q = hashQuery();
   var today = new Date();
+  if (window.NakamaDate && (!q.to || !q.from)) {
+    var D = window.NakamaDate.days;
+    var tj = D.fromDay(window.NakamaDate.today());
+    if (!q.to) q.to = D.toDay(tj);
+    if (!q.from) q.from = D.toDay(tj - 29);
+  }
   if (!q.to) q.to = isoDay(today);
   if (!q.from) { var f = new Date(today); f.setDate(f.getDate() - 29); q.from = isoDay(f); }
   return q;
@@ -187,8 +193,13 @@ function loadGames() {
 
 function filterBar(q, opts) {
   opts = opts || {};
-  var from = dateInput(q.from, 'from');
-  var to = dateInput(q.to, 'to');
+  var range = window.NakamaDate ? window.NakamaDate.input({ mode: 'range', value: { from: q.from, to: q.to }, name: 'range', label: t('f.range'), inputClass: INS_INPUT, max: window.NakamaDate.today(), required: true }) : null;
+  var from = range ? { get value() { return (range.value && range.value.from) || ''; } } : dateInput(q.from, 'from');
+  var to = range ? { get value() { return (range.value && range.value.to) || ''; } } : dateInput(q.to, 'to');
+  if (range) {
+    range.setAttribute('data-ins-range', '');
+    range.input.addEventListener('change', function () { if (range.value && range.value.from && range.value.to && (range.value.from !== q.from || range.value.to !== q.to)) apply(); });
+  }
   var game = select(q.game || '*', [{ value: '*', label: t('f.allGames') }, { value: '~', label: t('f.mainGame') }], { name: 'game', label: t('f.game') });
   loadGames().then(function (list) { list.forEach(function (g) { if (g) game.appendChild(h('option', { value: g, text: g, selected: g === q.game })); }); });
   var platform = input(q.platform || '', { ltr: true, name: 'platform', placeholder: t('f.any') });
@@ -208,8 +219,9 @@ function filterBar(q, opts) {
     } });
   };
   return card(h('div', { class: 'ia-filters p-3 flex flex-wrap items-end gap-3', 'data-ins-filters': '' },
-    field(t('f.from'), from), field(t('f.to'), to),
-    h('div', { class: 'flex gap-1 mb-0.5' }, preset(7), preset(30), preset(90)),
+    range ? field(t('f.range'), range) : field(t('f.from'), from),
+    range ? null : field(t('f.to'), to),
+    range ? null : h('div', { class: 'flex gap-1 mb-0.5' }, preset(7), preset(30), preset(90)),
     opts.noGame ? null : field(t('f.game'), game), field(t('f.platform'), platform), field(t('f.version'), version),
     opts.flagged ? flagged : null,
     button({ label: t('f.apply'), variant: 'primary', data: { 'ins-apply': '' }, onclick: function () { apply(); } })));

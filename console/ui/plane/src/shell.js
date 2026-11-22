@@ -134,6 +134,10 @@ function allPages() {
   if (m.settings) m.settings.links.forEach(function (l) { out.push({ label: l.label, href: l.href, icon: l.icon, group: m.settings.label, ps: l.ps }); });
   var api = nc() && nc().projectSettings;
   if (api && api.allowed()) api.sections().forEach(function (s) { out.push({ label: s.label, href: s.href, group: pst('settings.project'), psSection: true }); });
+  var D = window.NakamaDate;
+  if (D) CAL_IDS.forEach(function (id) {
+    out.push({ label: pst('palette.calendar', { name: D.t('cal.' + id) }), href: '#' + location.hash.slice(1), icon: 'calendar', group: pst('palette.group.settings'), action: function () { if (id !== D.calendarPref()) D.setCalendarPref(id); } });
+  });
   return out;
 }
 
@@ -343,7 +347,9 @@ function sideTools() {
   var theme = el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-theme', 'data-pl-tool': 'theme', 'aria-label': pst(dark ? 'top.toLight' : 'top.toDark'), title: pst(dark ? 'top.toLight' : 'top.toDark'), 'aria-pressed': dark ? 'true' : 'false', html: plIcon(dark ? 'sun' : 'moon'), onclick: themeClick });
   var seg = buildLangSeg();
   box.appendChild(el('div', { class: 'pl-side-tools-row' }, seg, theme));
-  requestAnimationFrame(function () { segIndicator(seg); });
+  var calSeg = buildCalSeg();
+  if (calSeg) box.appendChild(el('div', { class: 'pl-side-tools-row pl-side-cal' }, calSeg));
+  requestAnimationFrame(function () { segIndicator(seg); if (calSeg) segIndicator(calSeg); });
   return box;
 }
 

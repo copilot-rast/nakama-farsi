@@ -34,12 +34,22 @@ function fmtNum(n, opts) {
   return new Intl.NumberFormat(locale(), opts || { maximumFractionDigits: 4 }).format(v);
 }
 
+function calendarId() {
+  return window.NakamaDate ? window.NakamaDate.calendar() : lang() === 'fa' ? 'persian' : 'gregory';
+}
+
+function dateOpts(o) {
+  o.calendar = calendarId();
+  return o;
+}
+
 function fmtDate(v, withTime) {
   if (!v) return '';
+  if (window.NakamaDate) return window.NakamaDate.format(v, { time: withTime !== false });
   var d = new Date(v);
   if (isNaN(d.getTime())) return String(v);
   var o = withTime === false ? { dateStyle: 'medium' } : { dateStyle: 'medium', timeStyle: 'short' };
-  return new Intl.DateTimeFormat(locale(), o).format(d);
+  return new Intl.DateTimeFormat(locale(), dateOpts(o)).format(d);
 }
 
 function t(key, vars) {

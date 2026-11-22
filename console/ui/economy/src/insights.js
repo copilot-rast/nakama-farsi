@@ -34,7 +34,7 @@ function inCompact(n) {
 function inDay(d) {
   var x = new Date(d + 'T12:00:00');
   if (isNaN(x.getTime())) return d;
-  return new Intl.DateTimeFormat(locale(), { month: 'short', day: 'numeric' }).format(x);
+  return new Intl.DateTimeFormat(locale(), dateOpts({ month: 'short', day: 'numeric' })).format(x);
 }
 
 function inDur(sec) {

@@ -17,7 +17,7 @@ var INS_TEXT = {
     'save': 'ذخیره', 'saved': 'ذخیره شد', 'deleted': 'حذف شد', 'cancel': 'انصراف', 'close': 'بستن', 'delete': 'حذف', 'yes': 'بله', 'no': 'خیر', 'add': 'افزودن', 'edit': 'ویرایش',
     'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'none': '—', 'all': 'همه',
     'confirm.title': 'مطمئن هستید؟', 'lang.text': '{label} ({lang})', 'updated': 'آخرین تغییر: {by} · {at}', 'missing': 'پیدا نشد',
-    'f.from': 'از', 'f.to': 'تا', 'f.game': 'بازی', 'f.platform': 'پلتفرم', 'f.version': 'نسخه', 'f.apply': 'اعمال', 'f.days': '{n} روز', 'f.flagged': 'رویدادهای علامت‌خورده هم حساب شوند',
+    'f.from': 'از', 'f.to': 'تا', 'f.range': 'بازهٔ تاریخ', 'f.game': 'بازی', 'f.platform': 'پلتفرم', 'f.version': 'نسخه', 'f.apply': 'اعمال', 'f.days': '{n} روز', 'f.flagged': 'رویدادهای علامت‌خورده هم حساب شوند',
     'f.allGames': 'همهٔ بازی‌ها', 'f.mainGame': 'بازی اصلی', 'f.any': 'هر کدام',
     'csv': 'خروجی CSV', 'store': 'منبع داده: {s}',
     'k.dau': 'فعال امروز', 'k.wau': 'فعال ۷ روز', 'k.mau': 'فعال ۳۰ روز', 'k.stick': 'چسبندگی (DAU/MAU)', 'k.new': 'کاربر تازه', 'k.events': 'رویدادها', 'k.users': 'کاربران بازه',
@@ -84,7 +84,7 @@ var INS_TEXT = {
     'save': 'Save', 'saved': 'Saved', 'deleted': 'Deleted', 'cancel': 'Cancel', 'close': 'Close', 'delete': 'Delete', 'yes': 'Yes', 'no': 'No', 'add': 'Add', 'edit': 'Edit',
     'loading': 'Loading…', 'empty': 'Nothing found', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'none': '—', 'all': 'All',
     'confirm.title': 'Are you sure?', 'lang.text': '{label} ({lang})', 'updated': 'Last change: {by} · {at}', 'missing': 'Not found',
-    'f.from': 'From', 'f.to': 'To', 'f.game': 'Game', 'f.platform': 'Platform', 'f.version': 'Version', 'f.apply': 'Apply', 'f.days': '{n} days', 'f.flagged': 'Count flagged events too',
+    'f.from': 'From', 'f.to': 'To', 'f.range': 'Date range', 'f.game': 'Game', 'f.platform': 'Platform', 'f.version': 'Version', 'f.apply': 'Apply', 'f.days': '{n} days', 'f.flagged': 'Count flagged events too',
     'f.allGames': 'All games', 'f.mainGame': 'Main game', 'f.any': 'Any',
     'csv': 'Export CSV', 'store': 'Data source: {s}',
     'k.dau': 'Active today', 'k.wau': 'Active 7 days', 'k.mau': 'Active 30 days', 'k.stick': 'Stickiness (DAU/MAU)', 'k.new': 'New users', 'k.events': 'Events', 'k.users': 'Users in range',
@@ -170,10 +170,11 @@ function fmtPct(r) {
 
 function fmtDate(v) {
   if (!v) return '';
+  if (window.NakamaDate) return window.NakamaDate.format(v);
   var d = new Date(v);
   if (isNaN(d)) return '';
   try {
-    return d.toLocaleString(insLang() === 'fa' ? 'fa-IR' : 'en-GB', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleString(insLang() === 'fa' ? 'fa-IR' : 'en-GB', { calendar: insLang() === 'fa' ? 'persian' : 'gregory', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   } catch (e) {
     return d.toISOString();
   }
@@ -181,6 +182,7 @@ function fmtDate(v) {
 
 function fmtTime(v) {
   if (!v) return '';
+  if (window.NakamaDate) return window.NakamaDate.format(v, { parts: { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' } });
   var d = new Date(v);
   if (isNaN(d)) return '';
   try {
@@ -192,10 +194,11 @@ function fmtTime(v) {
 
 function fmtDay(s) {
   if (!s) return '';
+  if (window.NakamaDate && /^\d{4}-\d{2}-\d{2}$/.test(s)) return window.NakamaDate.format(s, { parts: { month: 'short', day: 'numeric' } });
   var d = new Date(s + 'T12:00:00Z');
   if (isNaN(d)) return digits(s);
   try {
-    return d.toLocaleDateString(insLang() === 'fa' ? 'fa-IR' : 'en-GB', { month: 'short', day: 'numeric' });
+    return d.toLocaleDateString(insLang() === 'fa' ? 'fa-IR' : 'en-GB', { calendar: insLang() === 'fa' ? 'persian' : 'gregory', timeZone: 'UTC', month: 'short', day: 'numeric' });
   } catch (e) {
     return s;
   }

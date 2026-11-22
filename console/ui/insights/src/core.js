@@ -312,6 +312,7 @@ function options(list, value) {
 }
 
 function dateInput(value, name, type) {
+  if (window.NakamaDate && (!type || type === 'date')) return window.NakamaDate.input({ mode: 'date', value: value || null, name: name, label: name, inputClass: INS_INPUT });
   var el = h('input', { type: type || 'date', class: INS_INPUT, name: name, dir: 'ltr', 'aria-label': name });
   el.value = value || '';
   return el;

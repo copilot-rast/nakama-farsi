@@ -51,14 +51,16 @@ function isoToWall(iso, zone) {
 
 function zoneFmt(iso, zone) {
   if (!iso) return '';
+  if (window.NakamaDate) return window.NakamaDate.format(iso, { zone: zone || window.NakamaDate.zone() });
   try {
-    return new Intl.DateTimeFormat(locale(), { timeZone: zone || bnZone(), year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+    return new Intl.DateTimeFormat(locale(), { timeZone: zone || bnZone(), calendar: calendarId(), year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
   } catch (e) {
     return fmtDate(iso, true);
   }
 }
 
 function zoneDateInput(value, onchange) {
+  if (window.NakamaDate) return window.NakamaDate.input({ mode: 'datetime', value: value, inputClass: INPUT_MD, attrs: { 'data-zone-input': '' }, zoneAttrs: { 'data-zone-shown': '' }, onchange: function (v) { onchange(v); } });
   var zone = bnZone();
   var el = h('input', { type: 'datetime-local', class: INPUT_MD + ' tabular-nums', dir: 'ltr', 'data-ltr': '', 'data-zone-input': '' });
   el.value = isoToWall(value, zone);
@@ -72,7 +74,13 @@ function zoneDateInput(value, onchange) {
   return h('div', {}, el, shown);
 }
 
-function timeOfDayInput(value, onchange) {
+function timeOfDayInput(value, onchange, opts) {
+  opts = opts || {};
+  var plain = !!opts.plain;
+  var cur = value && value !== '24:00' ? value : value === '24:00' && !plain ? '23:59' : '';
+  if (window.NakamaDate) {
+    return window.NakamaDate.input({ mode: 'time', value: cur, inputClass: INPUT_MD, name: opts.name, zone: opts.zone || bnZone(), zoneLine: opts.zoneLine, passInvalid: plain, onchange: function (v) { onchange(v ? (v === '23:59' && !plain ? '24:00' : v) : null); } });
+  }
   var el = h('input', { type: 'time', class: INPUT_MD + ' tabular-nums', dir: 'ltr', 'data-ltr': '', step: 60 });
   el.value = value && value !== '24:00' ? value : value === '24:00' ? '23:59' : '';
   el.addEventListener('input', function () { onchange(el.value ? (el.value === '23:59' ? '24:00' : el.value) : null); });
@@ -332,7 +340,7 @@ RESOURCES.banners = {
       check: function (v) { return !v || !Object.keys(v).length ? t('err.required') : null; } },
     tr('action.label', { label: 'f.bn.cta', hint: 'f.bn.cta.hint', max: 40, optional: true, when: function (v) { return (v.action || {}).type && v.action.type !== 'none'; } }),
     { type: 'heading', label: 'bn.h.when' },
-    { name: 'zoneNote', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300', 'data-bn-zone': '', text: t('bn.zoneNote', { zone: bnZone() }) }); } },
+    { name: 'zoneNote', type: 'static', readonly: true, render: function () { return h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300', 'data-bn-zone': '', text: t('bn.zoneNote', { console: window.NakamaDate ? window.NakamaDate.zone() : bnZone(), zone: bnZone() }) }); } },
     { type: 'row', fields: [
       { name: 'startsAt', type: 'custom', label: 'f.ev.startsAt', optional: true, build: function (cur, change) { return zoneDateInput(cur, change); } },
       { name: 'endsAt', type: 'custom', label: 'f.ev.endsAt', optional: true, build: function (cur, change) { return zoneDateInput(cur, change); },

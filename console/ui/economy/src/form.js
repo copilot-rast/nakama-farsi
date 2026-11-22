@@ -382,6 +382,7 @@ function toLocalInput(v) {
 }
 
 function dateInput(value, onchange) {
+  if (window.NakamaDate) return window.NakamaDate.input({ mode: 'datetime', value: value, inputClass: INPUT_MD, onchange: function (v) { onchange(v); } });
   var el = h('input', { type: 'datetime-local', class: INPUT_MD + ' tabular-nums', dir: 'ltr', 'data-ltr': '' });
   el.value = toLocalInput(value);
   var shown = h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mt-1' });

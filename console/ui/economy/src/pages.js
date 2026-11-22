@@ -798,7 +798,7 @@ function ovSection(titleText, aside, body, attrs) {
 function ovShortDay(day) {
   var d = new Date(day + 'T12:00:00');
   if (isNaN(d.getTime())) return day;
-  return new Intl.DateTimeFormat(locale(), { month: 'short', day: 'numeric' }).format(d);
+  return new Intl.DateTimeFormat(locale(), dateOpts({ month: 'short', day: 'numeric' })).format(d);
 }
 
 function ovChart(daily, metric) {

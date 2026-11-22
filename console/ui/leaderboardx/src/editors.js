@@ -99,6 +99,7 @@ function rewardSentence(r, b) {
 }
 
 function localInput(iso, name) {
+  if (window.NakamaDate) return window.NakamaDate.input({ mode: 'datetime', value: iso || null, name: name, label: name, inputClass: LB_INPUT });
   var el = h('input', { type: 'datetime-local', class: LB_INPUT, name: name, dir: 'ltr', 'aria-label': name });
   if (iso) {
     var d = new Date(iso);

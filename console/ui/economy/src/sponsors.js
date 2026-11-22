@@ -97,7 +97,7 @@ function sponsorReportField() {
 function fmtDay(d) {
   if (!d) return '';
   try {
-    return new Intl.DateTimeFormat(locale(), { timeZone: 'UTC', month: 'short', day: 'numeric' }).format(new Date(d + 'T00:00:00Z'));
+    return new Intl.DateTimeFormat(locale(), dateOpts({ timeZone: 'UTC', month: 'short', day: 'numeric' })).format(new Date(d + 'T00:00:00Z'));
   } catch (e) {
     return d;
   }

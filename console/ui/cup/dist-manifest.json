@@ -1,9 +1,9 @@
 {
   "note": "Files generated in console/ui/dist by scripts/build.mjs.",
   "files": [
-    "static/cup-01372a6802.js",
-    "static/cup-01372a6802.js.gz",
     "static/cup-a3855691dc.css",
-    "static/cup-a3855691dc.css.gz"
+    "static/cup-a3855691dc.css.gz",
+    "static/cup-c74f2a4446.js",
+    "static/cup-c74f2a4446.js.gz"
   ]
 }

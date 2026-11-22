@@ -1,3 +1,5 @@
+if (window.NakamaDate) window.NakamaDate.installIntl();
+
 var tickQueued = false;
 var lastTick = 0;
 

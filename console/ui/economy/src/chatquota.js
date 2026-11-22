@@ -65,7 +65,7 @@ var CQ_SETTINGS_FIELDS = [
   ] },
   { name: 'conversationScope', type: 'select', label: 'f.cq.scope', hint: 'f.cq.scope.hint', required: true, noPlaceholder: true, options: opts('cq.scope.', ['day', 'ever']), when: function (v) { return v.countMode !== 'messages'; } },
   { type: 'row', fields: [
-    { name: 'resetTime', type: 'text', ltr: true, label: 'f.cq.resetTime', hint: 'f.cq.resetTime.hint', required: true, check: function (v) { return v && !/^([01]\d|2[0-3]):[0-5]\d$/.test(toLatinDigits(String(v))) ? t('cq.err.time') : null; } },
+    { name: 'resetTime', type: 'custom', label: 'f.cq.resetTime', hint: 'f.cq.resetTime.hint', required: true, build: function (cur, change) { return timeOfDayInput(cur, change, { plain: true, name: 'resetTime', zoneLine: false }); }, check: function (v) { return v && !/^([01]\d|2[0-3]):[0-5]\d$/.test(toLatinDigits(String(v))) ? t('cq.err.time') : null; } },
     { name: 'timeZone', type: 'select', label: 'f.es.timezone', required: true, noPlaceholder: true, options: function () { return TIMEZONES.map(function (z) { return { value: z, label: z === 'UTC' ? 'UTC' : z.replace('_', ' ') }; }); } }
   ] },
   { type: 'heading', label: 'cq.h.scope' },

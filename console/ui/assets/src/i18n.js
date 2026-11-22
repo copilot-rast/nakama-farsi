@@ -143,10 +143,11 @@ function fmtNum(n) {
 
 function fmtDate(v) {
   if (!v) return '';
+  if (window.NakamaDate) return window.NakamaDate.format(v);
   var d = new Date(v);
   if (isNaN(d)) return '';
   try {
-    return d.toLocaleString(asLang() === 'fa' ? 'fa-IR' : 'en-GB', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleString(asLang() === 'fa' ? 'fa-IR' : 'en-GB', { calendar: asLang() === 'fa' ? 'persian' : 'gregory', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   } catch (e) {
     return d.toISOString();
   }

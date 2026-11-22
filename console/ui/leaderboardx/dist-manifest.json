@@ -1,9 +1,9 @@
 {
   "note": "Files generated in console/ui/dist by scripts/build.mjs.",
   "files": [
+    "static/leaderboardx-7bff55e301.js",
+    "static/leaderboardx-7bff55e301.js.gz",
     "static/leaderboardx-a7f2cff941.css",
-    "static/leaderboardx-a7f2cff941.css.gz",
-    "static/leaderboardx-b3163b8e63.js",
-    "static/leaderboardx-b3163b8e63.js.gz"
+    "static/leaderboardx-a7f2cff941.css.gz"
   ]
 }

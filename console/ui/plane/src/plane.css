@@ -1118,7 +1118,8 @@ html.pl .pl-tb-sep {
   background: var(--line-1);
 }
 
-html.pl .pl-seg-lang {
+html.pl .pl-seg-lang,
+html.pl .pl-seg-cal {
   box-sizing: border-box;
   height: var(--ctl-h);
   padding: 3px;
@@ -1128,7 +1129,8 @@ html.pl .pl-seg-lang {
   gap: 0;
 }
 
-html.pl .pl-seg-lang .pl-seg-item {
+html.pl .pl-seg-lang .pl-seg-item,
+html.pl .pl-seg-cal .pl-seg-item {
   height: calc(var(--ctl-h) - 8px);
   min-width: 34px;
   padding: 0 8px;
@@ -1138,12 +1140,14 @@ html.pl .pl-seg-lang .pl-seg-item {
   line-height: 1;
 }
 
-html.pl .pl-seg-lang .pl-seg-ind {
+html.pl .pl-seg-lang .pl-seg-ind,
+html.pl .pl-seg-cal .pl-seg-ind {
   border-radius: calc(var(--ctl-r) - 2px);
   background: var(--surface);
 }
 
-html.pl .pl-seg-lang .pl-seg-item:focus-visible {
+html.pl .pl-seg-lang .pl-seg-item:focus-visible,
+html.pl .pl-seg-cal .pl-seg-item:focus-visible {
   outline: 2px solid var(--accent-ink);
   outline-offset: 1px;
 }
@@ -1228,4 +1232,90 @@ html.pl .brand-signin-theme {
 html.pl .brand-signin-theme svg {
   width: var(--ctl-ic);
   height: var(--ctl-ic);
+}
+
+html.pl .pl-cal-menu {
+  position: fixed;
+  z-index: var(--z-flyout);
+  min-width: 220px;
+  padding: 4px;
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-flyout);
+  background: var(--surface);
+  color: var(--ink-1);
+  box-shadow: var(--thick-shadow);
+  font-family: var(--font-family-sans);
+  font-size: var(--fs-sm);
+}
+
+html.pl .pl-cal-head {
+  padding: 6px 10px 4px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+html.pl .pl-cal-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: var(--ctl-h);
+  padding: 6px 10px;
+  border: 0;
+  border-radius: var(--r-control);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+html.pl .pl-cal-item:hover,
+html.pl .pl-cal-item:focus-visible {
+  background: var(--hover);
+  outline: none;
+}
+
+html.pl .pl-cal-item:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--accent-ink);
+}
+
+html.pl .pl-cal-item[aria-checked="true"] {
+  color: var(--accent-ink);
+}
+
+html.pl .pl-cal-check {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+html.pl .pl-cal-check svg {
+  width: 16px;
+  height: 16px;
+}
+
+html.pl .pl-cal-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+html.pl .pl-cal-text b {
+  font-weight: 500;
+}
+
+html.pl .pl-cal-text small {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+
+html.pl .pl-side-cal .pl-seg-cal {
+  flex: 1;
+}
+
+html.pl .pl-side-cal .pl-seg-cal .pl-seg-item {
+  flex: 1;
 }

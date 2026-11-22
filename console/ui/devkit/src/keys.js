@@ -136,7 +136,7 @@ function keyEditor(k) {
   opts.push({ value: 'date', label: t('key.expiry.date') });
   var mode = select(opts[0].value, opts, { name: 'expiryMode' });
   var days = input(30, { name: 'expiresInDays', ltr: true });
-  var date = input('', { name: 'expiresAt', type: 'datetime-local', ltr: true });
+  var date = window.NakamaDate ? window.NakamaDate.input({ mode: 'datetime', name: 'expiresAt', label: t('key.date'), inputClass: DK_INPUT, min: new Date().toISOString() }) : input('', { name: 'expiresAt', type: 'datetime-local', ltr: true });
   var daysField = field(t('key.days'), days);
   var dateField = field(t('key.date'), date);
   function sync() { daysField.hidden = mode.value !== 'days'; dateField.hidden = mode.value !== 'date'; }

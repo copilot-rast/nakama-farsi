@@ -119,6 +119,97 @@ function buildLangSeg() {
   return seg;
 }
 
+function nd() {
+  return window.NakamaDate || null;
+}
+
+var CAL_IDS = ['auto', 'persian', 'gregory'];
+
+function calName(id) {
+  var D = nd();
+  if (!D) return id;
+  return id === 'auto' ? D.t('cal.auto') + ' · ' + D.calendarName(D.calendar()) : D.calendarName(id);
+}
+
+function buildCalMenu() {
+  var D = nd();
+  if (!D) return null;
+  var pref = D.calendarPref();
+  var label = pst('top.calendarLabel', { name: calName(pref) });
+  var btn = el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-round pl-cal', 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': label, title: label, 'data-pl-calendar': D.calendar(), html: plIcon('calendar') });
+  var menu = null;
+  function close(focus) {
+    if (!menu) return;
+    menu.remove();
+    menu = null;
+    btn.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('mousedown', outside, true);
+    if (focus) btn.focus();
+  }
+  function outside(e) { if (menu && !menu.contains(e.target) && !btn.contains(e.target)) close(false); }
+  function choose(id) {
+    close(true);
+    if (id === D.calendarPref()) return;
+    D.setCalendarPref(id);
+  }
+  function open() {
+    if (menu) { close(true); return; }
+    var cur = D.calendarPref();
+    menu = el('div', { class: 'pl-cal-menu', role: 'menu', 'aria-label': pst('top.calendar'), 'data-l10n-skip': '', 'data-pl-calendar-menu': '' });
+    menu.appendChild(el('div', { class: 'pl-cal-head', 'aria-hidden': 'true', text: pst('top.calendar') }));
+    CAL_IDS.forEach(function (id) {
+      var item = el('button', { type: 'button', role: 'menuitemradio', class: 'pl-cal-item', 'aria-checked': id === cur ? 'true' : 'false', tabindex: id === cur ? '0' : '-1', 'data-cal': id, onclick: function () { choose(id); } },
+        el('span', { class: 'pl-cal-check', 'aria-hidden': 'true', html: id === cur ? plIcon('check') : '' }),
+        el('span', { class: 'pl-cal-text' }, el('b', { text: D.t('cal.' + id) }), id === 'auto' ? el('small', { text: D.t('cal.autoHint') + ' · ' + D.calendarName(D.calendar()) }) : null));
+      menu.appendChild(item);
+    });
+    menu.addEventListener('keydown', function (e) {
+      var items = Array.prototype.slice.call(menu.querySelectorAll('[role="menuitemradio"]'));
+      var i = items.indexOf(document.activeElement);
+      var to = null;
+      if (e.key === 'ArrowDown') to = (i + 1) % items.length;
+      else if (e.key === 'ArrowUp') to = (i - 1 + items.length) % items.length;
+      else if (e.key === 'Home') to = 0;
+      else if (e.key === 'End') to = items.length - 1;
+      else if (e.key === 'Escape' || e.key === 'Tab') { e.preventDefault(); e.stopPropagation(); close(true); return; }
+      if (to === null) return;
+      e.preventDefault();
+      items.forEach(function (x, j) { x.setAttribute('tabindex', j === to ? '0' : '-1'); });
+      items[to].focus();
+    });
+    document.body.appendChild(menu);
+    var r = btn.getBoundingClientRect();
+    var w = menu.offsetWidth;
+    var x = isRtl() ? r.left : r.right - w;
+    menu.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, x)) + 'px';
+    menu.style.top = Math.round(r.bottom + 6) + 'px';
+    btn.setAttribute('aria-expanded', 'true');
+    document.addEventListener('mousedown', outside, true);
+    var on = menu.querySelector('[tabindex="0"]');
+    if (on) on.focus();
+  }
+  btn.addEventListener('click', function (e) { e.stopPropagation(); open(); });
+  btn.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' && !menu) { e.preventDefault(); open(); } });
+  return btn;
+}
+
+function buildCalSeg() {
+  var D = nd();
+  if (!D) return null;
+  var cur = D.calendarPref();
+  var seg = el('div', { class: 'pl-seg pl-seg-cal', role: 'radiogroup', 'aria-label': pst('top.calendar'), 'data-l10n-skip': '' });
+  seg.appendChild(el('span', { class: 'pl-seg-ind', 'aria-hidden': 'true' }));
+  CAL_IDS.forEach(function (id) {
+    seg.appendChild(el('button', { type: 'button', role: 'radio', class: 'pl-seg-item', 'aria-checked': id === cur ? 'true' : 'false', 'aria-label': pst('top.calendarLabel', { name: calName(id) }), 'data-cal': id, onclick: function () {
+      if (id === D.calendarPref()) return;
+      Array.prototype.forEach.call(seg.querySelectorAll('[role="radio"]'), function (x) { x.setAttribute('aria-checked', x.getAttribute('data-cal') === id ? 'true' : 'false'); });
+      segIndicator(seg);
+      setTimeout(function () { D.setCalendarPref(id); }, reduced() ? 0 : 200);
+    } }, el('span', { class: 'pl-seg-label', text: D.t('cal.' + id) })));
+  });
+  return seg;
+}
+
 function themeClick() {
   var api = nc();
   if (api && api.toggleTheme) api.toggleTheme();
@@ -226,6 +317,7 @@ function buildEnd() {
   tb.sdk = el('a', { class: 'pl-ctl pl-sdk', href: '#/system/sdk', 'data-pl-sdk': '' });
   tb.handoff = el('button', { type: 'button', class: 'pl-ctl pl-sdk pl-handoff', hidden: true, 'aria-haspopup': 'dialog', 'data-pl-handoff': '', onclick: function () { var api = nc(); if (api && api.handoff) api.handoff.open(); } });
   tb.seg = buildLangSeg();
+  tb.cal = buildCalMenu();
   tb.theme = el('button', { type: 'button', class: 'pl-ctl pl-ctl-icon pl-round pl-theme', onclick: themeClick });
   paintTheme();
   box.appendChild(tb.up);
@@ -236,6 +328,7 @@ function buildEnd() {
   box.appendChild(tb.stats);
   box.appendChild(el('span', { class: 'pl-tb-sep', 'aria-hidden': 'true' }));
   box.appendChild(tb.seg);
+  if (tb.cal) box.appendChild(tb.cal);
   box.appendChild(tb.theme);
   return box;
 }
@@ -366,6 +459,7 @@ function openPalette() {
   var rows = [];
   function go(it) {
     close();
+    if (it.action) { it.action(); return; }
     if (it.ps) { var api = nc() && nc().projectSettings; if (api) { api.open(); return; } }
     location.hash = it.href;
   }

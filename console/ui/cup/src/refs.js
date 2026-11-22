@@ -118,6 +118,7 @@ function isUUID(s) {
 }
 
 function localInput(v, name) {
+  if (window.NakamaDate) return window.NakamaDate.input({ mode: 'datetime', value: v || null, name: name, label: name, inputClass: CU_INPUT });
   var el = h('input', { type: 'datetime-local', class: CU_INPUT, name: name, dir: 'ltr', 'aria-label': name });
   if (v) {
     var d = new Date(v);

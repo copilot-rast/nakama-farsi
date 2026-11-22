@@ -1,0 +1,12 @@
+{
+  "name": "nakama-console-datepicker",
+  "private": true,
+  "description": "Jalali and Gregorian date picker shared by every console overlay (window.NakamaDate).",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check",
+    "test": "node --test \"test/*.test.mjs\""
+  }
+}
