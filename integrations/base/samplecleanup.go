@@ -111,7 +111,7 @@ func (s *service) rpcSampleCleanup(ctx context.Context, _ runtime.Logger, _ *sql
 		res, err = samplecleanup.Run(ctx, s.db, samplecleanup.Options{Env: s.env, Now: s.now()})
 	}
 	if err != nil {
-		return "", s.runtimeError(err)
+		return "", runtime.NewError("INTERNAL_ERROR", int(codes.Internal))
 	}
 	body, err := json.Marshal(map[string]any{"result": res, "pluginLoaded": samplePluginLoaded()})
 	if err != nil {

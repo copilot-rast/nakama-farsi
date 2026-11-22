@@ -1,6 +1,6 @@
 var DK_ROOT = 'devkit-root';
-var DK_PAGES = ['errors', 'api-keys', 'rpc-schema', 'packages'];
-var DK_RENDER = { errors: errorsPage, 'api-keys': keysPage, 'rpc-schema': schemaPage, packages: packagesPage };
+var DK_PAGES = ['errors', 'api-keys', 'rpc-schema'];
+var DK_RENDER = { errors: errorsPage, 'api-keys': keysPage, 'rpc-schema': schemaPage };
 var DK_HASH = /^#\/devkit(?:\/([^/?]*))?/;
 var dkPending = null;
 var dkRouter = null;

@@ -351,3 +351,16 @@ func TestHandoffReadableByEveryConsoleUser(t *testing.T) {
 		t.Fatal("only the three handoff routes are open")
 	}
 }
+
+func TestCheckACLHttpSampleCleanup(t *testing.T) {
+	settingsWrite := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
+	if !CheckACLHttp(http.MethodGet, "/v2/console/base/sample-data/stargame", NewPermission(console.AclResources_SETTINGS, PermissionRead)) {
+		t.Fatal("settings read must see the sample cleanup preview")
+	}
+	if CheckACLHttp(http.MethodPost, "/v2/console/base/sample-data/stargame/cleanup", settingsWrite) {
+		t.Fatal("only an admin may run the sample cleanup")
+	}
+	if !CheckACLHttp(http.MethodPost, "/v2/console/base/sample-data/stargame/cleanup", Admin()) {
+		t.Fatal("an admin must run the sample cleanup")
+	}
+}

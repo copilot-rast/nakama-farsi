@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"strings"
 	"sync"
 	"time"
 )
@@ -35,27 +34,12 @@ type Schema struct {
 	Access string `json:"access"`
 }
 
-type Packages struct {
-	Enabled bool `json:"enabled"`
-
-	Access string `json:"access"`
-
-	NamePrefixes []string `json:"namePrefixes"`
-
-	MaxPackageMB int `json:"maxPackageMB"`
-
-	PublicURL string `json:"publicUrl"`
-
-	KeepVersions int `json:"keepVersions"`
-}
-
 type All struct {
-	Errors    Errors   `json:"errors"`
-	APIKeys   APIKeys  `json:"apiKeys"`
-	Schema    Schema   `json:"schema"`
-	Packages  Packages `json:"packages"`
-	UpdatedBy string   `json:"updatedBy,omitempty"`
-	UpdatedAt string   `json:"updatedAt,omitempty"`
+	Errors    Errors  `json:"errors"`
+	APIKeys   APIKeys `json:"apiKeys"`
+	Schema    Schema  `json:"schema"`
+	UpdatedBy string  `json:"updatedBy,omitempty"`
+	UpdatedAt string  `json:"updatedAt,omitempty"`
 }
 
 const (
@@ -82,8 +66,7 @@ func Defaults() All {
 			CatalogScopesOnly:    true,
 			LastUsedEverySeconds: 60,
 		},
-		Schema:   Schema{Access: AccessSession},
-		Packages: Packages{Enabled: true, Access: AccessAPIKey, NamePrefixes: []string{}, MaxPackageMB: 50},
+		Schema: Schema{Access: AccessSession},
 	}
 }
 
@@ -120,24 +103,6 @@ func (a All) Validate() (string, string) {
 	case AccessPublic, AccessSession, AccessAPIKey, AccessConsole:
 	default:
 		return "schema.access", "INVALID_ACCESS"
-	}
-	p := a.Packages
-	switch {
-	case p.Access != AccessAPIKey && p.Access != AccessPublic:
-		return "packages.access", "INVALID_ACCESS"
-	case p.MaxPackageMB < 1 || p.MaxPackageMB > 500:
-		return "packages.maxPackageMB", "VALUE_OUT_OF_RANGE"
-	case p.KeepVersions < 0 || p.KeepVersions > 1000:
-		return "packages.keepVersions", "VALUE_OUT_OF_RANGE"
-	case len(p.NamePrefixes) > 20:
-		return "packages.namePrefixes", "VALUE_OUT_OF_RANGE"
-	case len(p.PublicURL) > 300 || (p.PublicURL != "" && !strings.HasPrefix(p.PublicURL, "http://") && !strings.HasPrefix(p.PublicURL, "https://")):
-		return "packages.publicUrl", "INVALID_URL"
-	}
-	for _, n := range p.NamePrefixes {
-		if n == "" || len(n) > 100 || strings.ToLower(n) != n || strings.ContainsAny(n, " /@") {
-			return "packages.namePrefixes", "INVALID_PREFIX"
-		}
 	}
 	return "", ""
 }

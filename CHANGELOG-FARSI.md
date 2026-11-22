@@ -44,6 +44,9 @@ Releases are tagged on `main` as `v3.42-fa.N`: the upstream version this fork is
 - Cluster mode on Redis (off by default).
 - Updates page: this server's version and the parent repo's new commits, releases, changed files and warnings, with a copy-only update guide; build info is embedded by `build/buildinfo.sh` and the base commit is recorded in `build/upstream.json` by `build/upstream-sync.sh record`.
 
+### Removed
+- Unity package registry: the developer kit's «پکیج‌های یونیتی» page and its settings card, the `/upm` registry routes, the `/v2/devkit/packages` publish API and the `upm:read` / `upm:publish` scopes. The Unity SDK installs from git only; the console's SDK page (`#/system/sdk`) shows the line. Migration `20270129000000-devkit-drop-upm.sql` removes the two scopes from the scope list and from API keys, drops the `packages` block from the devkit settings and clears non-custom `UPM_*` error text overrides. It keeps the `devkit_package_version` rows and the archives in storage (`devkit/upm/…`); nothing reads them any more, so delete them by hand if you want the space back. CI jobs that published with `upm:publish` must stop.
+
 ### Migrations
 - Many new `migrate/sql/2026*` files for the base, economy and publication plugins; run `nakama migrate up` (the Docker image does it on start unless `NAKAMA_MIGRATE_ON_START=false`).
 

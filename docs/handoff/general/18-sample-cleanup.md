@@ -24,10 +24,10 @@ summary: ستاره‌چین از سرورهای پروژه برداشته شد�
 
 ## برای اسکریپت دیپلوی
 
-همین کار با RPC سرور به سرور هم انجام می‌شود (فقط با `http_key`، نه با نشست بازیکن):
+همین کار با RPC سرور به سرور هم انجام می‌شود. کلید HTTP سرور را مثل بقیهٔ RPCهای سرور به سرور در پارامتر `http_key` آدرس بفرستید؛ با نشست بازیکن جواب `SERVER_ONLY` می‌گیرید.
 
 ```
-POST /v2/rpc/base_sample_cleanup?unwrap&http_key=<HTTP_KEY>
+POST /v2/rpc/base_sample_cleanup?unwrap
 {"apply": true, "by": "deploy"}
 ```
 
