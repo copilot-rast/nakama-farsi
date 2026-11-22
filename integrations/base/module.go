@@ -60,6 +60,9 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := svc.registerConsoleHTTP(initializer); err != nil {
 		return err
 	}
+	if err := svc.registerSampleCleanup(initializer); err != nil {
+		return err
+	}
 	if err := svc.registerRuleHooks(initializer); err != nil {
 		return err
 	}

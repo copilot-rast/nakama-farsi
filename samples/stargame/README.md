@@ -42,6 +42,12 @@ On every start the plugin creates what the game needs if it is missing, in one t
 
 Rows are matched by key and never updated: names, prices or methods changed in the console stay as they are. A seeded row that an admin deletes comes back on the next start. The log shows one line, `Star Catcher seed: created …` or `nothing new`. Set the runtime env `STARGAME_SEED=false` (compose: `STARGAME_SEED=false` in the environment) to turn it off.
 
+## Only in nakama-farsi
+
+Forks do not build `stargame.so`: their `build/plugins.exclude` lists `stargame`, `sh build/dockerfiles.sh` drops the plugin line from `build/Dockerfile.local` (and the generated Dockerfiles), and `--check` fails while it is still there. The e2e suite skips the specs that need the sample when the exclusion is set (`e2e/lib/samples.ts`).
+
+To remove the rows the seed left on a server, use the console page «سامانه ← داده‌های نمونه» (base plugin, admins only, preview first) or the server-to-server RPC `base_sample_cleanup` (`{"apply": true, "by": "deploy"}`). It deletes only rows with the sample's exact keys (and, for generic keys like `daily_login` or `menu_carousel`, the sample's own texts), in one transaction, dependents first; languages, the `coin` currency, the `xp`/`level` metas and payments stay; rows other data still uses are switched off instead. Sandbox payment methods are reset only while they hold the exact sample config. The server-to-server RPC `stargame_seed` runs the seed again (the e2e suite uses it after the cleanup spec).
+
 ## Server side
 
 - The Docker image (`build/Dockerfile.local`) ships `stargame.so` next to the other plugins.

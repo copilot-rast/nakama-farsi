@@ -54,10 +54,11 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	if err := registerGames(initializer); err != nil {
 		return err
 	}
-	if err := nk.LeaderboardCreate(ctx, tttLeaderboard, true, "desc", "incr", "", map[string]interface{}{"game": tttGameKey}, true); err != nil {
-		logger.Warn("Tic-tac-toe leaderboard not created: %v", err)
-	}
+	createBoard(ctx, logger, nk)
 	env, _ := ctx.Value(runtime.RUNTIME_CTX_ENV).(map[string]string)
+	if err := initializer.RegisterRpc("stargame_seed", rpcSeed(env)); err != nil {
+		return err
+	}
 	site, err := newWebSite(strings.TrimSpace(env["STARGAME_SERVER_KEY"]))
 	if err != nil {
 		return err
@@ -76,6 +77,32 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	}
 	logger.Info("Star Catcher sample module registered")
 	return nil
+}
+
+func createBoard(ctx context.Context, logger runtime.Logger, nk runtime.NakamaModule) {
+	if err := nk.LeaderboardCreate(ctx, tttLeaderboard, true, "desc", "incr", "", map[string]interface{}{"game": tttGameKey}, true); err != nil {
+		logger.Warn("Tic-tac-toe leaderboard not created: %v", err)
+	}
+}
+
+func rpcSeed(env map[string]string) func(context.Context, runtime.Logger, *sql.DB, runtime.NakamaModule, string) (string, error) {
+	return func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, payload string) (string, error) {
+		if id, _ := ctx.Value(runtime.RUNTIME_CTX_USER_ID).(string); id != "" {
+			return "", runtime.NewError("SERVER_ONLY", 7)
+		}
+		if !seedEnabled(env) {
+			return "", runtime.NewError("SEED_DISABLED", 9)
+		}
+		report, err := seed(ctx, db, env)
+		if err != nil {
+			logger.Error("Star Catcher seed failed: %v", err)
+			return "", errInternal
+		}
+		createBoard(ctx, logger, nk)
+		logger.Info("Star Catcher seed (rpc): %s", report)
+		body, _ := json.Marshal(map[string]any{"created": report.created, "skipped": report.skipped})
+		return string(body), nil
+	}
 }
 
 func userID(ctx context.Context) (string, error) {
