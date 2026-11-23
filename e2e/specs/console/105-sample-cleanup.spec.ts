@@ -62,8 +62,8 @@ test('the preview lists the sample rows by table and changes nothing', async () 
   const gifts = d.preview.tables.find((x: any) => x.kind === 'gift');
   expect([...gifts.deleted, ...gifts.kept.map((x: any) => x.key)]).toEqual(expect.arrayContaining(['STAR100', 'HALF50', 'STARFAN']));
   for (const tb of d.preview.tables) {
-    expect(['language', 'currency', 'meta']).not.toContain(tb.kind);
-    expect(tb.deleted).not.toContain('coin');
+    expect(['language', 'meta']).not.toContain(tb.kind);
+    if (tb.kind === 'currency') expect([...tb.deleted, ...tb.kept.map((x: any) => x.key)]).toEqual(['coin']);
   }
   expect(sql(`SELECT count(*) FROM economy_product WHERE key LIKE 'star\\_%'`)).toBe(before);
 });
@@ -153,9 +153,11 @@ test('an admin removes the sample data from the page, and a second run is a no-o
     [`SELECT count(*) FROM economy_chance_game WHERE key IN ('star_wheel_daily','star_lucky_box')`, '0'],
     [`SELECT count(*) FROM base_tag WHERE key='star-vip'`, '0'],
     [`SELECT count(*) FROM base_language WHERE code IN ('fa','en','ar')`, '3'],
-    [`SELECT count(*) FROM economy_currency WHERE key='coin'`, '1'],
     [`SELECT count(*) FROM leaderboard WHERE id='stargame_tictactoe_wins'`, '0'],
   ] as const) expect(sql(q), q).toBe(want);
+  const coinLeft = sql(`SELECT count(*) FROM economy_currency WHERE key='coin'`);
+  const coinUsed = sql(`SELECT count(*) FROM economy_prize WHERE items @> '[{"type":"currency","key":"coin"}]'`);
+  expect(coinLeft, 'coin stays only while a kept row still pays it').toBe(coinUsed === '0' ? '0' : '1');
 
   const last = await base.get(PATH);
   expect(last.lastRun.by).toMatch(/^console:/);
