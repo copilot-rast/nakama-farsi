@@ -815,6 +815,10 @@
     "en": "Too many comms token requests. Please wait a little.",
     "fa": "درخواست‌های توکن comms زیاد شد. کمی صبر کنید."
   },
+  "CONFIRM_REQUIRED": {
+    "en": "Confirm this action first.",
+    "fa": "اول این کار را تأیید کنید."
+  },
   "CONTENT_INDEX_PRIVATE": {
     "en": "The content index needs a player session.",
     "fa": "فهرست محتوا بدون ورود بازیکن بسته است."

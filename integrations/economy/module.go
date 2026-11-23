@@ -142,6 +142,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	economyhooks.SetItemSaver(svc.saveItemHook)
 	economyhooks.SetRegen(svc.regenViewHook, svc.spendRegenHook, svc.refundRegenHook)
 	economyhooks.SetCatalog(svc.catalogHook, svc.balancesHook)
+	economyhooks.SetTasks(svc.listTasksHook, svc.claimTaskHook)
 	playerevents.SetRecorder(svc.playerEventRecorder())
 	economyhooks.SetPrizeGranter(svc.grantPrizeHook)
 	go svc.reconcileLoop(ctx)

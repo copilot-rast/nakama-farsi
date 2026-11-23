@@ -1090,6 +1090,12 @@
       "base"
     ]
   },
+  "CONFIRM_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "economy"
+    ]
+  },
   "CONTENT_INDEX_PRIVATE": {
     "status": 403,
     "modules": [

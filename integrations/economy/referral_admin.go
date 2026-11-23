@@ -13,7 +13,7 @@ import (
 	"github.com/heroiclabs/nakama/v3/internal/activity"
 )
 
-const referralJSON = `jsonb_build_object('id',r.id,'referrerId',r.referrer_id,'referrerName',ru.username,'refereeId',r.referee_id,'refereeName',eu.username,'code',r.code,'status',r.status,
+const referralJSON = `jsonb_build_object('id',r.id,'referrerId',r.referrer_id,'referrerName',ru.username,'referrerDisplayName',COALESCE(ru.display_name,''),'refereeId',r.referee_id,'refereeName',eu.username,'refereeDisplayName',COALESCE(eu.display_name,''),'code',r.code,'status',r.status,
 	'flags',to_jsonb(r.flags),'goalEventTypeId',r.goal_event_type_id,'goalEventKey',(SELECT et.key FROM economy_event_type et WHERE et.id=r.goal_event_type_id),'goalMeasure',r.goal_measure,'goalValue',r.goal_value,
 	'goalProgress',(SELECT CASE r.goal_measure WHEN 'sum' THEN t.sum WHEN 'max' THEN COALESCE(t.max,0) ELSE t.count END FROM economy_player_event_total t WHERE t.user_id=r.referee_id AND t.type_id=r.goal_event_type_id),
 	'ip',r.ip,'note',r.note,'decidedBy',r.decided_by,'decidedAt',r.decided_at,'createdAt',r.created_at,'completedAt',r.completed_at,'refereeCreatedAt',eu.create_time,
@@ -38,6 +38,8 @@ func (s *service) referralConsoleRoutes() []consoleRoute {
 		{consolePrefix + "/referrals/{id}/reject", http.MethodPost, s.consoleReferralDecide(false)},
 		{consolePrefix + "/referral-settings", http.MethodGet, s.consoleReferralSettingsGet},
 		{consolePrefix + "/referral-settings", http.MethodPut, s.consoleReferralSettingsPut},
+		{consolePrefix + "/referral-rebind", http.MethodGet, s.consoleReferralRebindPreview},
+		{consolePrefix + "/referral-rebind", http.MethodPost, s.consoleReferralRebindApply},
 	}
 }
 
@@ -48,7 +50,7 @@ func (s *service) consoleReferralList(w http.ResponseWriter, r *http.Request) {
 	if p.Q != "" {
 		n := where.next()
 		where.args = append(where.args, likePattern(p.Q))
-		where.parts = append(where.parts, "(ru.username ILIKE "+n+" OR eu.username ILIKE "+n+" OR r.code ILIKE "+n+" OR r.referrer_id::text ILIKE "+n+" OR r.referee_id::text ILIKE "+n+")")
+		where.parts = append(where.parts, "(ru.username ILIKE "+n+" OR eu.username ILIKE "+n+" OR ru.display_name ILIKE "+n+" OR eu.display_name ILIKE "+n+" OR r.code ILIKE "+n+" OR r.referrer_id::text ILIKE "+n+" OR r.referee_id::text ILIKE "+n+")")
 	}
 	if v := q.Get("status"); v == "pending" || v == "held" || v == "completed" || v == "rejected" {
 		where.add("r.status = ?", v)
@@ -100,8 +102,8 @@ func (s *service) consoleReferralSummary(w http.ResponseWriter, r *http.Request)
 		s.writeError(w, err)
 		return
 	}
-	rows, err := s.db.QueryContext(r.Context(), `SELECT r.referrer_id::text, u.username, count(*), count(*) FILTER (WHERE r.status='completed'), count(*) FILTER (WHERE cardinality(r.flags) > 0)
-		FROM economy_referral r JOIN users u ON u.id=r.referrer_id WHERE r.status <> 'rejected' GROUP BY 1, 2 ORDER BY 3 DESC, 2 LIMIT 10`)
+	rows, err := s.db.QueryContext(r.Context(), `SELECT r.referrer_id::text, u.username, COALESCE(u.display_name,''), count(*), count(*) FILTER (WHERE r.status='completed'), count(*) FILTER (WHERE cardinality(r.flags) > 0)
+		FROM economy_referral r JOIN users u ON u.id=r.referrer_id WHERE r.status <> 'rejected' GROUP BY 1, 2, 3 ORDER BY 4 DESC, 2 LIMIT 10`)
 	if err != nil {
 		s.writeError(w, err)
 		return
@@ -109,10 +111,10 @@ func (s *service) consoleReferralSummary(w http.ResponseWriter, r *http.Request)
 	defer rows.Close()
 	top := []map[string]any{}
 	for rows.Next() {
-		var id, name string
+		var id, name, display string
 		var n, done, fl int
-		if rows.Scan(&id, &name, &n, &done, &fl) == nil {
-			top = append(top, map[string]any{"userId": id, "username": name, "total": n, "completed": done, "flagged": fl})
+		if rows.Scan(&id, &name, &display, &n, &done, &fl) == nil {
+			top = append(top, map[string]any{"userId": id, "username": name, "displayName": display, "total": n, "completed": done, "flagged": fl})
 		}
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"total": total, "completed": completed, "pending": pending, "held": held, "rejected": rejected, "flagged": flagged, "today": today, "topReferrers": top})
@@ -316,4 +318,137 @@ func (s *service) consoleReferralSettingsPut(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	s.consoleReferralSettingsGet(w, r)
+}
+
+const referralRebindDiffers = `r.status IN ('pending','held') AND (r.goal_event_type_id IS DISTINCT FROM $1::uuid OR r.goal_measure IS DISTINCT FROM $2 OR r.goal_value IS DISTINCT FROM $3::numeric
+	OR ($4 AND (r.referrer_prize_id IS DISTINCT FROM $5::uuid OR r.referee_prize_id IS DISTINCT FROM $6::uuid)))`
+
+func nullUUID(v string) any {
+	if v == "" {
+		return nil
+	}
+	return v
+}
+
+func referralRebindArgs(st referralSettings, prizes bool) []any {
+	return []any{nullUUID(st.GoalEventTypeID), st.GoalMeasure, formatAmount(st.GoalValue), prizes, nullUUID(st.ReferrerPrizeID), nullUUID(st.RefereePrizeID)}
+}
+
+func (s *service) referralRebindView(r *http.Request, q dbRunner, prizes bool) (map[string]any, error) {
+	st, err := loadReferralSettings(r.Context(), q)
+	if err != nil {
+		return nil, err
+	}
+	args := referralRebindArgs(st, prizes)
+	rows, err := q.QueryContext(r.Context(), `SELECT COALESCE(et.key,''), r.status, count(*),
+		count(*) FILTER (WHERE $1::uuid IS NOT NULL AND (SELECT CASE $2 WHEN 'sum' THEN t.sum WHEN 'max' THEN COALESCE(t.max,0) ELSE t.count END FROM economy_player_event_total t WHERE t.user_id=r.referee_id AND t.type_id=$1::uuid) >= $3::numeric)
+		FROM economy_referral r LEFT JOIN economy_event_type et ON et.id=r.goal_event_type_id WHERE `+referralRebindDiffers+` GROUP BY 1, 2 ORDER BY 1, 2`, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	groups := []map[string]any{}
+	total, reached := 0, 0
+	for rows.Next() {
+		var key, status string
+		var n, done int
+		if err := rows.Scan(&key, &status, &n, &done); err != nil {
+			return nil, err
+		}
+		total += n
+		if status == "pending" {
+			reached += done
+		}
+		groups = append(groups, map[string]any{"goalEventKey": key, "status": status, "count": n, "reached": done})
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	goalKey := ""
+	if st.GoalEventTypeID != "" {
+		_ = q.QueryRowContext(r.Context(), `SELECT key FROM economy_event_type WHERE id=$1`, st.GoalEventTypeID).Scan(&goalKey)
+	}
+	return map[string]any{"goal": map[string]any{"eventTypeId": st.GoalEventTypeID, "eventKey": goalKey, "measure": st.GoalMeasure, "value": st.GoalValue},
+		"prizes": prizes, "total": total, "willComplete": reached, "groups": groups}, nil
+}
+
+func (s *service) consoleReferralRebindPreview(w http.ResponseWriter, r *http.Request) {
+	out, err := s.referralRebindView(r, s.db, r.URL.Query().Get("prizes") != "false")
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, out)
+}
+
+func (s *service) consoleReferralRebindApply(w http.ResponseWriter, r *http.Request) {
+	var in struct {
+		Confirm string `json:"confirm"`
+		Prizes  *bool  `json:"prizes"`
+	}
+	if err := readBody(r, &in); err != nil {
+		s.writeError(w, err)
+		return
+	}
+	if in.Confirm != "rebind" {
+		s.writeError(w, badRequest("CONFIRM_REQUIRED", "confirm", "send confirm: rebind"))
+		return
+	}
+	prizes := in.Prizes == nil || *in.Prizes
+	me := consoleName(r)
+	var preview map[string]any
+	var ids, done []string
+	var claims []claimRef
+	err := s.inTx(r.Context(), func(tx *sql.Tx) error {
+		if _, err := tx.ExecContext(r.Context(), `SELECT pg_advisory_xact_lock(hashtext('referral:rebind'))`); err != nil {
+			return err
+		}
+		v, err := s.referralRebindView(r, tx, prizes)
+		if err != nil {
+			return err
+		}
+		preview = v
+		st, err := loadReferralSettings(r.Context(), tx)
+		if err != nil {
+			return err
+		}
+		args := referralRebindArgs(st, prizes)
+		set := `goal_event_type_id=$1::uuid, goal_measure=$2, goal_value=$3::numeric`
+		if prizes {
+			set += `, referrer_prize_id=$5::uuid, referee_prize_id=$6::uuid`
+		}
+		if ids, err = stringsOf(r.Context(), tx, `UPDATE economy_referral r SET `+set+` WHERE `+referralRebindDiffers+` RETURNING r.id::text`, args...); err != nil {
+			return err
+		}
+		if len(ids) == 0 {
+			return nil
+		}
+		if st.GoalEventTypeID == "" {
+			done, err = stringsOf(r.Context(), tx, `SELECT id::text FROM economy_referral WHERE id = ANY($1::uuid[]) AND status='pending'`, "{"+strings.Join(ids, ",")+"}")
+		} else {
+			done, err = stringsOf(r.Context(), tx, `SELECT r.id::text FROM economy_referral r JOIN economy_player_event_total t ON t.user_id=r.referee_id AND t.type_id=r.goal_event_type_id
+				WHERE r.id = ANY($1::uuid[]) AND r.status='pending' AND (CASE r.goal_measure WHEN 'sum' THEN t.sum WHEN 'max' THEN COALESCE(t.max,0) ELSE t.count END) >= r.goal_value`, "{"+strings.Join(ids, ",")+"}")
+		}
+		if err != nil {
+			return err
+		}
+		for _, id := range done {
+			c, err := s.completeReferral(r.Context(), tx, id)
+			if err != nil {
+				return err
+			}
+			claims = append(claims, c...)
+		}
+		return nil
+	})
+	if err != nil {
+		s.writeError(w, err)
+		return
+	}
+	s.settleReferralClaims(r.Context(), claims)
+	if len(done) > 0 {
+		s.noteReferralDone(r.Context(), done)
+	}
+	s.logger.Info("Economy referral rebind by %s: %d moved to the current rule, %d completed", me, len(ids), len(done))
+	writeJSON(w, http.StatusOK, map[string]any{"rebound": len(ids), "completed": len(done), "before": preview})
 }

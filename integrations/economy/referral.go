@@ -402,11 +402,11 @@ func (s *service) referralView(ctx context.Context, userID, lang string) (map[st
 		return nil, err
 	}
 	out := map[string]any{"lang": lang, "code": code, "enabled": st.IsEnabled, "referredBy": nil, "newAccountDays": st.NewAccountDays}
-	var rid, rname, rstatus string
+	var rid, rname, rdisplay, rstatus string
 	var rat time.Time
-	err = s.db.QueryRowContext(ctx, `SELECT r.id::text, u.username, r.status, r.created_at FROM economy_referral r JOIN users u ON u.id=r.referrer_id WHERE r.referee_id=$1`, userID).Scan(&rid, &rname, &rstatus, &rat)
+	err = s.db.QueryRowContext(ctx, `SELECT r.id::text, u.username, COALESCE(u.display_name,''), r.status, r.created_at FROM economy_referral r JOIN users u ON u.id=r.referrer_id WHERE r.referee_id=$1`, userID).Scan(&rid, &rname, &rdisplay, &rstatus, &rat)
 	if err == nil {
-		out["referredBy"] = map[string]any{"id": rid, "username": rname, "status": rstatus, "createdAt": rat.UTC().Format(time.RFC3339)}
+		out["referredBy"] = map[string]any{"id": rid, "username": rname, "displayName": rdisplay, "status": rstatus, "createdAt": rat.UTC().Format(time.RFC3339)}
 	} else if !errors.Is(err, sql.ErrNoRows) {
 		return nil, err
 	}
@@ -424,19 +424,19 @@ func (s *service) referralView(ctx context.Context, userID, lang string) (map[st
 		return nil, err
 	}
 	out["counts"] = map[string]int{"total": total, "completed": completed, "pending": pending + held}
-	rows, err := s.db.QueryContext(ctx, `SELECT u.username, r.status, r.created_at FROM economy_referral r JOIN users u ON u.id=r.referee_id WHERE r.referrer_id=$1 AND r.status <> 'rejected' ORDER BY r.created_at DESC LIMIT 10`, userID)
+	rows, err := s.db.QueryContext(ctx, `SELECT u.username, COALESCE(u.display_name,''), r.status, r.created_at FROM economy_referral r JOIN users u ON u.id=r.referee_id WHERE r.referrer_id=$1 AND r.status <> 'rejected' ORDER BY r.created_at DESC LIMIT 10`, userID)
 	if err != nil {
 		return nil, err
 	}
 	recent := []map[string]any{}
 	for rows.Next() {
-		var name, status string
+		var name, display, status string
 		var at time.Time
-		if rows.Scan(&name, &status, &at) == nil {
+		if rows.Scan(&name, &display, &status, &at) == nil {
 			if status == "held" {
 				status = "pending"
 			}
-			recent = append(recent, map[string]any{"username": name, "status": status, "createdAt": at.UTC().Format(time.RFC3339)})
+			recent = append(recent, map[string]any{"username": name, "displayName": display, "status": status, "createdAt": at.UTC().Format(time.RFC3339)})
 		}
 	}
 	rows.Close()
