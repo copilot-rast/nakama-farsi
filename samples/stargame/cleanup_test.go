@@ -157,8 +157,11 @@ func TestSampleCleanupPostgres(t *testing.T) {
 	if r := kept(res, "banner_list", "menu_carousel"); r != "edited" {
 		t.Errorf("menu_carousel reason %q", r)
 	}
-	if res.Kept != 4 {
-		t.Errorf("kept %d rows, want 4: %+v", res.Kept, res.Tables)
+	if r := kept(res, "currency", "coin"); r != "edited" {
+		t.Errorf("coin must stay while a kept prize pays it, reason %q", r)
+	}
+	if res.Kept != 5 {
+		t.Errorf("kept %d rows, want 5: %+v", res.Kept, res.Tables)
 	}
 	if res.Related < 1 {
 		t.Errorf("the owned starter basket must count as a related row, got %d", res.Related)
@@ -242,7 +245,78 @@ func TestSampleCleanupPostgres(t *testing.T) {
 		}
 	}
 	sort.Strings(keptKeys)
-	if strings.Join(keptKeys, ",") != "banner_list:menu_carousel,prize:star_coins_100,product:star_pack_small,product_category:star_coin_packs" {
+	if strings.Join(keptKeys, ",") != "banner_list:menu_carousel,currency:coin,prize:star_coins_100,product:star_pack_small,product_category:star_coin_packs" {
 		t.Fatalf("second run kept = %v", keptKeys)
+	}
+}
+
+func TestSampleCleanupForkPostgres(t *testing.T) {
+	db := openDisposableTestDB(t)
+	resetSeedData(t, db)
+	const referee = "22222222-2222-4222-8222-222222222222"
+	const referrer = "33333333-3333-4333-8333-333333333333"
+	cleanup := func() {
+		db.Exec(`DELETE FROM economy_referral`)
+		db.Exec(`DELETE FROM economy_event_type WHERE key='rs_match_finished'`)
+		db.Exec(`DELETE FROM economy_prize WHERE key IN ('rs_oil_100','rs_oil_50')`)
+		db.Exec(`DELETE FROM users WHERE id IN ($1,$2)`, referee, referrer)
+	}
+	cleanup()
+	t.Cleanup(func() {
+		cleanup()
+		resetSeedData(t, db)
+	})
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	env := map[string]string{secretbox.SecretEnv: testSecret}
+	if _, err := seed(ctx, db, env); err != nil {
+		t.Fatal(err)
+	}
+	for _, q := range []string{
+		`INSERT INTO users (id, username) VALUES ('` + referee + `','fork_referee'), ('` + referrer + `','fork_referrer')`,
+		`INSERT INTO economy_event_type (id, key, name, client_allowed, value_min, value_max) VALUES (gen_random_uuid(), 'rs_match_finished', '{"en":"Match finished"}', true, 1, 1)`,
+		`INSERT INTO economy_prize (id, key, name, items) VALUES (gen_random_uuid(), 'rs_oil_100', '{"en":"100 Oil"}', '[{"type":"currency","key":"oil","action":"add","value":100}]'), (gen_random_uuid(), 'rs_oil_50', '{"en":"50 Oil"}', '[{"type":"currency","key":"oil","action":"add","value":50}]')`,
+		`INSERT INTO economy_referral (id, referrer_id, referee_id, code, status, referrer_prize_id, referee_prize_id, goal_event_type_id, goal_measure, goal_value)
+			SELECT gen_random_uuid(), '` + referrer + `', '` + referee + `', 'FORKCODE', 'pending', (SELECT id FROM economy_prize WHERE key='referral_inviter'), (SELECT id FROM economy_prize WHERE key='referral_invited'), (SELECT id FROM economy_event_type WHERE key='round_finished'), 'count', 1`,
+		`UPDATE economy_referral_settings SET goal_event_type_id=(SELECT id FROM economy_event_type WHERE key='rs_match_finished'), referrer_prize_id=(SELECT id FROM economy_prize WHERE key='rs_oil_100'), referee_prize_id=(SELECT id FROM economy_prize WHERE key='rs_oil_50')`,
+		`UPDATE base_app_version SET update_message='{"en":"Road Storm has an update"}', store_links='[{"store":"bazaar","url":"https://cafebazaar.ir/app/ir.roadstorm.game","label":{}},{"store":"myket","url":"https://myket.ir/app/ir.nakama.stargame","label":{}}]' WHERE platform='android'`,
+		`UPDATE base_app_version SET update_message='{"en":"Play on the web"}' WHERE platform='web'`,
+	} {
+		if _, err := db.Exec(q); err != nil {
+			t.Fatalf("%s: %v", q, err)
+		}
+	}
+	res, err := samplecleanup.Run(ctx, db, samplecleanup.Options{Apply: true, By: "test", Env: env})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c := change(res, "app_version_link", "android"); c != "reset:removed_1" {
+		t.Errorf("android link change %q: %+v", c, res.Changes)
+	}
+	if c := change(res, "app_version", "web"); c != "deleted:only_sample_links" {
+		t.Errorf("web change %q: %+v", c, res.Changes)
+	}
+	if r := kept(res, "event_type", "round_finished"); r != "in_use_switched_off" {
+		t.Errorf("round_finished reason %q", r)
+	}
+	for q, want := range map[string]int{
+		`SELECT count(*) FROM base_app_version WHERE platform='web'`:                                                       0,
+		`SELECT count(*) FROM base_app_version WHERE platform='android' AND store_links::text LIKE '%ir.roadstorm.game%'`:  1,
+		`SELECT count(*) FROM base_app_version WHERE platform='android' AND store_links::text LIKE '%ir.nakama.stargame%'`: 0,
+		`SELECT count(*) FROM economy_currency WHERE key='coin'`:                                                           0,
+		`SELECT count(*) FROM economy_event_type WHERE key='rs_match_finished' AND is_active`:                              1,
+		`SELECT count(*) FROM economy_event_type WHERE key='round_finished' AND NOT is_active`:                             1,
+		`SELECT count(*) FROM economy_referral_settings WHERE goal_event_type_id=(SELECT id FROM economy_event_type WHERE key='rs_match_finished')`: 1,
+	} {
+		if got := count(t, db, q); got != want {
+			t.Errorf("%s = %d, want %d", q, got, want)
+		}
+	}
+	again, err := samplecleanup.Run(ctx, db, samplecleanup.Options{Apply: true, By: "test-2", Env: env})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if again.Changed != 0 || again.Deleted != 0 {
+		t.Fatalf("second run is not a no-op: %+v", again)
 	}
 }
