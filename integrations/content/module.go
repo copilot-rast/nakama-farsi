@@ -33,10 +33,16 @@ type service struct {
 	baseURL  string
 	now      func() time.Time
 	packFile *fileCache
+	bg       context.Context
+	holder   string
+	asm      *assembler
+
+	assembleHook func(sha string)
 }
 
 func newService(db *sql.DB, logger runtime.Logger, store objectstore.Store, baseURL string) *service {
-	return &service{db: db, logger: logger, store: store, baseURL: strings.TrimRight(baseURL, "/"), now: time.Now, packFile: newFileCache(64)}
+	return &service{db: db, logger: logger, store: store, baseURL: strings.TrimRight(baseURL, "/"), now: time.Now, packFile: newFileCache(64),
+		bg: context.Background(), holder: clusterkit.Holder(context.Background()), asm: newAssembler()}
 }
 
 func storageDir(env map[string]string, args []string) string {
@@ -70,6 +76,8 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		base = strings.TrimSpace(env["ECONOMY_PUBLIC_BASE_URL"])
 	}
 	svc := newService(db, logger, store, base)
+	svc.bg = ctx
+	svc.holder = clusterkit.Holder(ctx)
 	for name, fn := range svc.clientRPCs() {
 		if err := initializer.RegisterRpc(name, apierr.RPC(db, apierr.RPCOptions{Logger: logger, MaxPayload: maxPayload}, fn)); err != nil {
 			return err
@@ -83,6 +91,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 	}
 	contenthooks.SetCatalog(svc.catalogHook)
 	go svc.loop(ctx)
+	go svc.assembleLoop(ctx)
 	logger.Info("Content module registered (%d client RPCs, packs in %s storage)", len(svc.clientRPCs()), store.Driver())
 	return nil
 }

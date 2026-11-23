@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
@@ -125,7 +126,7 @@ func (s *service) packList(w http.ResponseWriter, r *http.Request) {
 	}
 	var stored, bytes int64
 	_ = s.db.QueryRowContext(ctx, `SELECT count(*), coalesce(sum(size),0) FROM content_blob WHERE stored`).Scan(&stored, &bytes)
-	pluginkit.WriteJSON(w, http.StatusOK, map[string]any{"items": list, "current": current, "platforms": platforms, "partBytes": cfg.PartBytes,
+	pluginkit.WriteJSON(w, http.StatusOK, map[string]any{"items": list, "current": current, "platforms": platforms, "partBytes": cfg.PartBytes, "upload": uploadHints(cfg),
 		"storage": map[string]any{"driver": s.store.Driver(), "files": stored, "bytes": bytes}})
 }
 
@@ -136,23 +137,45 @@ func (s *service) packGet(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, err)
 		return
 	}
-	rows, err := s.db.QueryContext(ctx, `SELECT f.path, f.sha256, f.size, coalesce(b.stored, false) FROM content_pack_file f LEFT JOIN content_blob b ON b.sha256=f.sha256 WHERE f.pack_id=$1 ORDER BY f.path LIMIT 5000`, p.ID)
+	rows, err := s.db.QueryContext(ctx, `SELECT f.path, f.sha256, f.size, coalesce(b.stored, false), coalesce(cardinality(b.received) >= b.parts, false), coalesce(b.assemble_error, '')
+		FROM content_pack_file f LEFT JOIN content_blob b ON b.sha256=f.sha256 WHERE f.pack_id=$1 ORDER BY f.path LIMIT 5000`, p.ID)
 	if err != nil {
 		s.fail(w, err)
 		return
 	}
 	files := []map[string]any{}
 	for rows.Next() {
-		var path, sha string
+		var path, sha, asmErr string
 		var size int64
-		var stored bool
-		if rows.Scan(&path, &sha, &size, &stored) == nil {
-			files = append(files, map[string]any{"path": path, "sha256": sha, "size": size, "stored": stored})
+		var stored, full bool
+		if rows.Scan(&path, &sha, &size, &stored, &full, &asmErr) == nil {
+			state := StateUploading
+			switch {
+			case stored:
+				state = StateStored
+			case full:
+				state = StateAssembling
+			}
+			f := map[string]any{"path": path, "sha256": sha, "size": size, "stored": stored, "state": state}
+			if asmErr != "" && !stored {
+				f["error"] = asmErr
+			}
+			files = append(files, f)
 		}
 	}
 	rows.Close()
+	missing := []missingFile{}
+	if p.Status == "uploading" {
+		if missing, err = missingBlobs(ctx, s.db, p.ID); err != nil {
+			s.fail(w, err)
+			return
+		}
+		s.kickAssembly(assemblingShas(missing)...)
+	}
 	events, _ := s.events(ctx, p.ID, 50)
-	pluginkit.WriteJSON(w, http.StatusOK, map[string]any{"item": p, "files": files, "events": events, "index": indexView(&p, s.indexBaseFor(r))})
+	cfg := s.settings(ctx).Packs
+	pluginkit.WriteJSON(w, http.StatusOK, map[string]any{"item": p, "files": files, "events": events, "index": indexView(&p, s.indexBaseFor(r)),
+		"missing": missing, "partBytes": cfg.PartBytes, "upload": uploadHints(cfg)})
 }
 
 func (s *service) indexBaseFor(r *http.Request) string {
@@ -163,7 +186,7 @@ func (s *service) indexBaseFor(r *http.Request) string {
 }
 
 func (s *service) events(ctx context.Context, packID string, limit int) ([]map[string]any, error) {
-	q := `SELECT id, pack_id::text, platform, version, action, actor, created_at FROM content_pack_event`
+	q := `SELECT id, pack_id::text, platform, version, action, actor, created_at, detail::text FROM content_pack_event`
 	args := []any{}
 	if packID != "" {
 		q += ` WHERE pack_id=$1`
@@ -179,12 +202,17 @@ func (s *service) events(ctx context.Context, packID string, limit int) ([]map[s
 	out := []map[string]any{}
 	for rows.Next() {
 		var id int64
-		var pid, platform, version, action, actor string
+		var pid, platform, version, action, actor, rawDetail string
 		var at any
-		if err := rows.Scan(&id, &pid, &platform, &version, &action, &actor, &at); err != nil {
+		if err := rows.Scan(&id, &pid, &platform, &version, &action, &actor, &at, &rawDetail); err != nil {
 			return nil, err
 		}
-		out = append(out, map[string]any{"id": id, "packId": pid, "platform": platform, "version": version, "action": action, "actor": actor, "createdAt": at})
+		ev := map[string]any{"id": id, "packId": pid, "platform": platform, "version": version, "action": action, "actor": actor, "createdAt": at}
+		detail := map[string]any{}
+		if json.Unmarshal([]byte(rawDetail), &detail) == nil && len(detail) > 0 {
+			ev["detail"] = detail
+		}
+		out = append(out, ev)
 	}
 	return out, rows.Err()
 }

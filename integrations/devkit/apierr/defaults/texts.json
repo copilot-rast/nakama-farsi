@@ -2263,6 +2263,10 @@
     "en": "An active pack cannot be deleted; deactivate it first.",
     "fa": "بستهٔ فعال را نمی‌توان حذف کرد؛ اول غیرفعالش کنید."
   },
+  "PACK_ASSEMBLING": {
+    "en": "The server is still joining the files; try again in a moment.",
+    "fa": "سرور هنوز در حال سرهم کردن فایل‌هاست؛ چند لحظهٔ دیگر دوباره امتحان کنید."
+  },
   "PACK_CATALOG_AMBIGUOUS": {
     "en": "The pack has more than one catalog.",
     "fa": "بیش از یک کاتالوگ در بسته هست."

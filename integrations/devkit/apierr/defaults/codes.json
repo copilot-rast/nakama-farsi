@@ -3326,6 +3326,12 @@
       "content"
     ]
   },
+  "PACK_ASSEMBLING": {
+    "status": 409,
+    "modules": [
+      "content"
+    ]
+  },
   "PACK_CATALOG_AMBIGUOUS": {
     "status": 400,
     "modules": [

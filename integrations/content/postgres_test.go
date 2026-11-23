@@ -34,9 +34,13 @@ func newFixture(t *testing.T) *fixture {
 		t.Fatal(err)
 	}
 	f := &fixture{t: t, s: newService(db, plugintest.Logger{}, store, "http://cdn.test"), prefix: plugintest.Key("ct")}
+	unused := `DELETE FROM content_blob b WHERE NOT EXISTS (SELECT 1 FROM content_pack_file f WHERE f.sha256=b.sha256)`
+	_, _ = db.Exec(unused)
 	t.Cleanup(func() {
+		f.s.waitAssembly()
 		_, _ = db.Exec(`DELETE FROM content_pack WHERE version LIKE $1`, f.prefix+"%")
 		_, _ = db.Exec(`DELETE FROM content_pack_event WHERE version LIKE $1`, f.prefix+"%")
+		_, _ = db.Exec(unused)
 		_, _ = db.Exec(`DELETE FROM content_settings WHERE id=1`)
 		settings.Invalidate()
 	})
@@ -106,6 +110,7 @@ func (f *fixture) uploadKind(kind, platform, version, min, max string, u upload,
 			}
 		}
 	}
+	f.s.waitAssembly()
 	p, err = f.s.completePack(ctx, p.ID, activate, "t")
 	if err != nil {
 		f.t.Fatal(err)
@@ -216,8 +221,30 @@ func TestPackPartChecksAndRetention(t *testing.T) {
 	if _, err := f.s.putPart(ctx, id, bsha, 0, bytes.NewReader(wrong)); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := f.s.putPart(ctx, id, bsha, 1, bytes.NewReader(data[64*1024:])); errCode(err) != "PACK_FILE_HASH_MISMATCH" {
-		t.Fatalf("hash = %v", err)
+	res, err := f.s.putPart(ctx, id, bsha, 1, bytes.NewReader(data[64*1024:]))
+	if err != nil || res["state"] != StateAssembling {
+		t.Fatalf("last part = %v %v", res, err)
+	}
+	f.s.waitAssembly()
+	if _, err := f.s.completePack(ctx, id, false, "t"); errCode(err) != "PACK_FILES_MISSING" {
+		t.Fatalf("complete after bad file = %v", err)
+	}
+	missing, err := missingBlobs(ctx, f.s.db, id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rejected := false
+	for _, m := range missing {
+		if m.SHA256 == bsha {
+			rejected = len(m.Received) == 0 && m.Error == "PACK_FILE_HASH_MISMATCH" && m.State == StateUploading
+		}
+	}
+	if !rejected {
+		t.Fatalf("missing after hash mismatch = %+v", missing)
+	}
+	evs, _ := f.s.events(ctx, id, 10)
+	if len(evs) == 0 || evs[0]["action"] != "file_rejected" || evs[0]["detail"].(map[string]any)["path"] != "b.bundle" {
+		t.Fatalf("events = %+v", evs)
 	}
 	if _, err := f.s.createPack(ctx, packCreateIn{Platform: "Switch2", Version: f.prefix + "-x", Files: u.list()}, "t"); errCode(err) != "PACK_PLATFORM_NOT_ALLOWED" {
 		t.Fatalf("platform = %v", err)
@@ -339,6 +366,7 @@ func TestConsoleUploadCatalogRPCAndFiles(t *testing.T) {
 			}
 		}
 	}
+	f.s.waitAssembly()
 	w, out = call(t, f.s.packComplete, http.MethodPost, "/complete", []byte(`{"activate":true}`), map[string]string{"id": id})
 	item := out["item"].(map[string]any)
 	if w.Code != 200 || item["status"] != "ready" || item["active"] != true || item["catalogHash"] != "abc123" || item["catalogPath"] != "catalog_2026.json" {
