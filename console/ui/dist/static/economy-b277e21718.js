@@ -1581,6 +1581,8 @@ var MESSAGES = {
     'pc.tags.hint': 'فقط برچسب‌های نوع «بازیکن» اینجا می‌آیند.',
     'pc.tags.saved': 'برچسب‌ها ذخیره شد.',
     'pc.status': 'وضعیت',
+    'pc.phone': 'شمارهٔ موبایل',
+    'pc.phone.none': 'ثبت نشده',
     'pc.history': 'سابقه',
     'pc.historyN': '{n} مورد در سابقه',
     'pc.reportsN': '{n} گزارش علیه او',
@@ -7988,6 +7990,8 @@ var MESSAGES = {
     'pc.tags.hint': 'Only tags of the "Player" type are listed.',
     'pc.tags.saved': 'Tags saved.',
     'pc.status': 'Status',
+    'pc.phone': 'Phone number',
+    'pc.phone.none': 'Not set',
     'pc.history': 'History',
     'pc.historyN': '{n} items in history',
     'pc.reportsN': '{n} reports against them',
@@ -19186,7 +19190,7 @@ function playerModCard() {
   if (PLAYER_CARD.id !== id) { PLAYER_CARD.id = id; PLAYER_CARD.data = null; PLAYER_CARD.err = null; PLAYER_CARD.at = 0; }
   if (!PLAYER_CARD.loading && Date.now() - PLAYER_CARD.at > 20000) loadPlayerCard(id);
   var p = PLAYER_CARD.data;
-  var key = lang() + '|' + id + '|' + (p ? JSON.stringify([p.tags, p.suspension, p.mute, p.banned, (p.history || []).length]) : PLAYER_CARD.err ? 'err' : 'loading');
+  var key = lang() + '|' + id + '|' + (p ? JSON.stringify([p.tags, p.suspension, p.mute, p.banned, p.phone, (p.history || []).length]) : PLAYER_CARD.err ? 'err' : 'loading');
   if (existing && existing.getAttribute('data-key') === key && existing.parentNode === grid && grid.firstChild === existing) return;
   if (existing) existing.remove();
   var body = h('div', { class: 'px-4 py-3' });
@@ -19221,6 +19225,9 @@ function playerModCard() {
       playerStatus(p),
       p.suspension && i18nText(p.suspension.reason) ? h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300 mt-1 eco-clamp', text: i18nText(p.suspension.reason) }) : null,
       p.mute && i18nText(p.mute.reason) ? h('p', { class: 'text-xs text-secondary-600 dark:text-secondary-300 mt-1 eco-clamp', text: i18nText(p.mute.reason) }) : null),
+    h('div', { class: 'min-w-0' },
+      h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('pc.phone') }),
+      p.phone ? h('span', { class: 'font-mono text-sm tabular-nums', dir: 'ltr', 'data-player-phone': p.phone, text: p.phone }) : h('span', { class: 'text-sm text-secondary-400', 'data-player-phone': '', text: t('pc.phone.none') })),
     h('div', { class: 'min-w-0' },
       h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-1', text: t('pc.history') }),
       h('div', { class: 'flex flex-wrap gap-3 text-sm' },
