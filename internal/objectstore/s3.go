@@ -61,28 +61,7 @@ func (s *s3Store) objectURL(key string) (*url.URL, error) {
 }
 
 func (s *s3Store) do(ctx context.Context, method, key string, body []byte, header http.Header) (*http.Response, error) {
-	u, err := s.objectURL(key)
-	if err != nil {
-		return nil, err
-	}
-	var reader io.Reader
-	if body != nil {
-		reader = bytes.NewReader(body)
-	}
-	req, err := http.NewRequestWithContext(ctx, method, u.String(), reader)
-	if err != nil {
-		return nil, err
-	}
-	for k, v := range header {
-		req.Header[k] = v
-	}
-	hash := emptySHA256Hex
-	if body != nil {
-		sum := sha256.Sum256(body)
-		hash = hex.EncodeToString(sum[:])
-	}
-	SignV4(req, hash, s.cfg.AccessKey, s.cfg.SecretKey, s.cfg.Region, "s3", s.now())
-	return s.client.Do(req)
+	return s.doQuery(ctx, method, key, nil, body, header)
 }
 
 func s3Error(op string, resp *http.Response) error {

@@ -25,6 +25,11 @@ type Packs struct {
 	RedirectToStorage bool     `json:"redirectToStorage"`
 	CatalogPattern    string   `json:"catalogPattern"`
 	RequireHash       bool     `json:"requireHash"`
+	UploadParallel    int      `json:"uploadParallel"`
+	UploadRetries     int      `json:"uploadRetries"`
+	AssembleWorkers   int      `json:"assembleWorkers"`
+	AssembleLeaseSec  int      `json:"assembleLeaseSeconds"`
+	AssembleSweepSec  int      `json:"assembleSweepSeconds"`
 }
 
 type All struct {
@@ -44,6 +49,8 @@ func Defaults() All {
 			UploadHours: 24, KeepInactive: 5, SingleActive: false, RequireAppVersion: false,
 			PublicIndex: true, IndexCacheSeconds: 60, RedirectToStorage: true,
 			CatalogPattern: `^catalog[^/]*\.(json|bin)$`, RequireHash: false,
+			UploadParallel: 4, UploadRetries: 5,
+			AssembleWorkers: 2, AssembleLeaseSec: 120, AssembleSweepSec: 30,
 		},
 	}
 }
@@ -67,6 +74,16 @@ func (a All) Validate() (string, string) {
 		return "packs.keepInactive", "VALUE_OUT_OF_RANGE"
 	case p.IndexCacheSeconds < 0 || p.IndexCacheSeconds > 86400:
 		return "packs.indexCacheSeconds", "VALUE_OUT_OF_RANGE"
+	case p.UploadParallel < 1 || p.UploadParallel > 8:
+		return "packs.uploadParallel", "VALUE_OUT_OF_RANGE"
+	case p.UploadRetries < 0 || p.UploadRetries > 20:
+		return "packs.uploadRetries", "VALUE_OUT_OF_RANGE"
+	case p.AssembleWorkers < 1 || p.AssembleWorkers > 16:
+		return "packs.assembleWorkers", "VALUE_OUT_OF_RANGE"
+	case p.AssembleLeaseSec < 30 || p.AssembleLeaseSec > 3600:
+		return "packs.assembleLeaseSeconds", "VALUE_OUT_OF_RANGE"
+	case p.AssembleSweepSec < 5 || p.AssembleSweepSec > 3600:
+		return "packs.assembleSweepSeconds", "VALUE_OUT_OF_RANGE"
 	}
 	seen := map[string]bool{}
 	for _, pl := range p.Platforms {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"crypto/sha256"
 	"database/sql"
@@ -253,12 +252,16 @@ type packCreateIn struct {
 }
 
 type missingFile struct {
-	Path      string `json:"path"`
-	SHA256    string `json:"sha256"`
-	Size      int64  `json:"size"`
-	PartBytes int    `json:"partBytes"`
-	Parts     int    `json:"parts"`
-	Received  []int  `json:"received"`
+	Path      string     `json:"path"`
+	SHA256    string     `json:"sha256"`
+	Size      int64      `json:"size"`
+	PartBytes int        `json:"partBytes"`
+	Parts     int        `json:"parts"`
+	Received  []int      `json:"received"`
+	State     string     `json:"state"`
+	Error     string     `json:"error,omitempty"`
+	Attempts  int        `json:"attempts,omitempty"`
+	StartedAt *time.Time `json:"startedAt,omitempty"`
 }
 
 func (s *service) createPack(ctx context.Context, in packCreateIn, actor string) (map[string]any, error) {
@@ -406,7 +409,22 @@ func (s *service) createPack(ctx context.Context, in packCreateIn, actor string)
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"pack": p, "partBytes": cfg.PartBytes, "missing": missing}, nil
+	s.kickAssembly(assemblingShas(missing)...)
+	return map[string]any{"pack": p, "partBytes": cfg.PartBytes, "missing": missing, "upload": uploadHints(cfg)}, nil
+}
+
+func uploadHints(cfg settings.Packs) map[string]any {
+	return map[string]any{"parallel": cfg.UploadParallel, "retries": cfg.UploadRetries, "maxPartBytes": settings.MaxPartBytes}
+}
+
+func assemblingShas(list []missingFile) []string {
+	out := []string{}
+	for _, m := range list {
+		if m.State == StateAssembling {
+			out = append(out, m.SHA256)
+		}
+	}
+	return out
 }
 
 func firstPath(files []packFileIn, sha string) string {
@@ -449,7 +467,8 @@ func findCatalog(files []packFileIn, cfg settings.Packs) (string, string, error)
 }
 
 func missingBlobs(ctx context.Context, q queryer, packID string) ([]missingFile, error) {
-	rows, err := q.QueryContext(ctx, `SELECT f.path, f.sha256, b.size, b.part_bytes, b.parts, array_to_json(b.received)::text FROM content_pack_file f JOIN content_blob b ON b.sha256=f.sha256
+	rows, err := q.QueryContext(ctx, `SELECT f.path, f.sha256, b.size, b.part_bytes, b.parts, array_to_json(b.received)::text, b.assemble_error, b.assemble_attempts, b.assemble_started_at
+		FROM content_pack_file f JOIN content_blob b ON b.sha256=f.sha256
 		WHERE f.pack_id=$1 AND NOT b.stored ORDER BY f.path`, packID)
 	if err != nil {
 		return nil, err
@@ -460,7 +479,8 @@ func missingBlobs(ctx context.Context, q queryer, packID string) ([]missingFile,
 	for rows.Next() {
 		var m missingFile
 		var raw string
-		if err := rows.Scan(&m.Path, &m.SHA256, &m.Size, &m.PartBytes, &m.Parts, &raw); err != nil {
+		var started sql.NullTime
+		if err := rows.Scan(&m.Path, &m.SHA256, &m.Size, &m.PartBytes, &m.Parts, &raw, &m.Error, &m.Attempts, &started); err != nil {
 			return nil, err
 		}
 		received := []int64{}
@@ -474,9 +494,23 @@ func missingBlobs(ctx context.Context, q queryer, packID string) ([]missingFile,
 			m.Received = append(m.Received, int(r))
 		}
 		sort.Ints(m.Received)
+		m.State = StateUploading
+		if len(m.Received) >= m.Parts {
+			m.State = StateAssembling
+			if started.Valid {
+				t := started.Time
+				m.StartedAt = &t
+			}
+		} else {
+			m.Attempts = 0
+		}
 		out = append(out, m)
 	}
 	return out, rows.Err()
+}
+
+func partAnswer(sha string, part, parts, received int, state string) map[string]any {
+	return map[string]any{"sha256": sha, "part": part, "parts": parts, "received": received, "stored": state == StateStored, "state": state}
 }
 
 func (s *service) putPart(ctx context.Context, packID, sha string, part int, body io.Reader) (map[string]any, error) {
@@ -495,19 +529,24 @@ func (s *service) putPart(ctx context.Context, packID, sha string, part int, bod
 		return nil, apierr.NotFound("PACK_FILE_UNKNOWN").With("sha256", sha)
 	}
 	var size int64
-	var partBytes, parts int
+	var partBytes, parts, received int
 	var stored bool
-	if err := s.db.QueryRowContext(ctx, `SELECT size, part_bytes, parts, stored FROM content_blob WHERE sha256=$1`, sha).Scan(&size, &partBytes, &parts, &stored); err != nil {
+	var ctype string
+	if err := s.db.QueryRowContext(ctx, `SELECT size, part_bytes, parts, stored, cardinality(received), content_type FROM content_blob WHERE sha256=$1`, sha).Scan(&size, &partBytes, &parts, &stored, &received, &ctype); err != nil {
 		if isNoRows(err) {
 			return nil, apierr.NotFound("PACK_FILE_UNKNOWN").With("sha256", sha)
 		}
 		return nil, err
 	}
 	if stored {
-		return map[string]any{"sha256": sha, "part": part, "parts": parts, "stored": true}, nil
+		return partAnswer(sha, part, parts, parts, StateStored), nil
 	}
 	if part < 0 || part >= parts {
 		return nil, apierr.BadRequest("PACK_PART_INVALID").With("parts", parts)
+	}
+	if received >= parts {
+		s.kickAssembly(sha)
+		return partAnswer(sha, part, parts, parts, StateAssembling), nil
 	}
 	want := int64(partBytes)
 	if part == parts-1 {
@@ -525,65 +564,29 @@ func (s *service) putPart(ctx context.Context, packID, sha string, part int, bod
 		if hex.EncodeToString(sum[:]) != sha {
 			return nil, apierr.BadRequest("PACK_FILE_HASH_MISMATCH").With("sha256", sha)
 		}
+		if err := s.store.Put(ctx, blobKey(sha), data, ctype); err != nil {
+			return nil, err
+		}
+		if _, err := s.db.ExecContext(ctx, `UPDATE content_blob SET stored=true, stored_at=now(), received='{0}', assemble_error='' WHERE sha256=$1 AND NOT stored`, sha); err != nil {
+			return nil, err
+		}
+		return partAnswer(sha, part, parts, parts, StateStored), nil
 	}
 	if err := s.store.Put(ctx, partKey(sha, part), data, "application/octet-stream"); err != nil {
 		return nil, err
 	}
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer func() { _ = tx.Rollback() }()
-	var received int
-	if err := tx.QueryRowContext(ctx, `UPDATE content_blob SET received = CASE WHEN $2::int = ANY(received) THEN received ELSE array_append(received, $2::int) END
+	if err := s.db.QueryRowContext(ctx, `UPDATE content_blob SET received = CASE WHEN $2::int = ANY(received) THEN received ELSE array_append(received, $2::int) END, assemble_error=''
 		WHERE sha256=$1 AND NOT stored RETURNING cardinality(received)`, sha, part).Scan(&received); err != nil {
 		if isNoRows(err) {
-			return map[string]any{"sha256": sha, "part": part, "parts": parts, "stored": true}, nil
+			return partAnswer(sha, part, parts, parts, StateStored), nil
 		}
 		return nil, err
 	}
 	if received < parts {
-		if err := tx.Commit(); err != nil {
-			return nil, err
-		}
-		return map[string]any{"sha256": sha, "part": part, "parts": parts, "received": received, "stored": false}, nil
+		return partAnswer(sha, part, parts, received, StateUploading), nil
 	}
-	var buf bytes.Buffer
-	for i := 0; i < parts; i++ {
-		chunk := data
-		if i != part {
-			obj, err := s.store.Get(ctx, partKey(sha, i))
-			if err != nil {
-				return nil, err
-			}
-			chunk, err = io.ReadAll(obj.Body)
-			obj.Body.Close()
-			if err != nil {
-				return nil, err
-			}
-		}
-		buf.Write(chunk)
-	}
-	sum := sha256.Sum256(buf.Bytes())
-	if hex.EncodeToString(sum[:]) != sha || int64(buf.Len()) != size {
-		_, _ = tx.ExecContext(ctx, `UPDATE content_blob SET received='{}' WHERE sha256=$1`, sha)
-		_ = tx.Commit()
-		s.deleteParts(ctx, sha, parts)
-		return nil, apierr.BadRequest("PACK_FILE_HASH_MISMATCH").With("sha256", sha)
-	}
-	var ctype string
-	_ = tx.QueryRowContext(ctx, `SELECT content_type FROM content_blob WHERE sha256=$1`, sha).Scan(&ctype)
-	if err := s.store.Put(ctx, blobKey(sha), buf.Bytes(), ctype); err != nil {
-		return nil, err
-	}
-	if _, err := tx.ExecContext(ctx, `UPDATE content_blob SET stored=true, stored_at=now() WHERE sha256=$1`, sha); err != nil {
-		return nil, err
-	}
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-	s.deleteParts(ctx, sha, parts)
-	return map[string]any{"sha256": sha, "part": part, "parts": parts, "received": parts, "stored": true}, nil
+	s.kickAssembly(sha)
+	return partAnswer(sha, part, parts, parts, StateAssembling), nil
 }
 
 func (s *service) deleteParts(ctx context.Context, sha string, parts int) {
@@ -610,11 +613,20 @@ func (s *service) completePack(ctx context.Context, packID string, activate bool
 		return pack{}, err
 	}
 	if len(missing) > 0 {
-		paths := []string{}
+		need, waiting := []string{}, []string{}
 		for _, m := range missing {
-			paths = append(paths, m.Path)
+			if m.State == StateAssembling {
+				waiting = append(waiting, m.Path)
+			} else {
+				need = append(need, m.Path)
+			}
 		}
-		return pack{}, apierr.Conflict("PACK_FILES_MISSING").With("paths", paths).With("missing", missing)
+		_ = tx.Rollback()
+		s.kickAssembly(assemblingShas(missing)...)
+		if len(need) > 0 {
+			return pack{}, apierr.Conflict("PACK_FILES_MISSING").With("paths", need).With("missing", missing)
+		}
+		return pack{}, apierr.Conflict("PACK_ASSEMBLING").With("paths", waiting).With("missing", missing)
 	}
 	catalogHash := ""
 	if p.HashPath != "" {

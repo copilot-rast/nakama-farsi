@@ -47,16 +47,17 @@ type Store interface {
 }
 
 type Config struct {
-	Driver        string
-	LocalDir      string
-	Endpoint      string
-	Bucket        string
-	Region        string
-	AccessKey     string
-	SecretKey     string
-	PathStyle     bool
-	PublicBaseURL string
-	Prefix        string
+	Driver         string
+	LocalDir       string
+	Endpoint       string
+	Bucket         string
+	Region         string
+	AccessKey      string
+	SecretKey      string
+	PathStyle      bool
+	PublicBaseURL  string
+	Prefix         string
+	MultipartBytes int64
 }
 
 type Namespace struct {
