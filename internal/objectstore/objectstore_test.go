@@ -183,6 +183,20 @@ func TestS3StoreAgainstRealServer(t *testing.T) {
 		}
 	}
 	exercise(t, store)
+	big := bytes.Repeat([]byte("multipart-"), 1300000)
+	if err := PutStream(context.Background(), store, "stream-test.bin", bytes.NewReader(big), "application/octet-stream"); err != nil {
+		t.Fatal(err)
+	}
+	obj, err := store.Get(context.Background(), "stream-test.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, _ := io.ReadAll(obj.Body)
+	obj.Body.Close()
+	_ = store.Delete(context.Background(), "stream-test.bin")
+	if !bytes.Equal(got, big) {
+		t.Fatalf("multipart round trip: %d of %d bytes", len(got), len(big))
+	}
 	bad := &s3Store{cfg: store.(*s3Store).cfg, client: http.DefaultClient, now: time.Now}
 	bad.cfg.SecretKey = "wrong"
 	if err := bad.Put(context.Background(), "denied.png", []byte("x"), "image/png"); err == nil || !strings.Contains(err.Error(), "SignatureDoesNotMatch") {
