@@ -81,6 +81,7 @@ type step struct {
 	guard   string
 	related []string
 	before  []string
+	inUse   string
 	off     bool
 }
 
@@ -136,6 +137,7 @@ func steps() []step {
 			guard: `message->>'en'='You got 50 coins for using a referral code' AND items @> '[{"type":"currency","key":"coin","value":50}]' AND ` + notReferral, before: prizeBefore},
 		{table: "economy_event_type", kind: "event_type", match: "key=$1", keys: []string{"round_finished"},
 			guard:   `name->>'en'='Round finished' AND NOT is_system AND NOT EXISTS (SELECT 1 FROM economy_referral_settings WHERE goal_event_type_id=economy_event_type.id)`,
+			inUse:   `SELECT EXISTS (SELECT 1 FROM economy_referral WHERE goal_event_type_id::text=$1 AND status IN ('pending','held'))`,
 			related: []string{`SELECT count(*) FROM economy_player_event WHERE type_id=$1`}, off: true},
 		{table: "economy_event_type", kind: "event_type", match: "key=$1", keys: []string{"golden_star"},
 			guard:   `name->>'en'='Golden star caught' AND NOT is_system`,
@@ -146,8 +148,16 @@ func steps() []step {
 			guard: `store_links::text LIKE '%/stargame/%' AND update_message->>'en'='` + appUpdateEn + `'`, off: true},
 		{table: "base_app_version", kind: "app_version", match: "platform=$1", keys: []string{"android"},
 			guard: `store_links::text LIKE '%` + StorePackage + `%' AND update_message->>'en'='` + appUpdateEn + `'`, off: true},
+		{table: "economy_currency", kind: "currency", match: "key=$1", keys: []string{"coin"}, guard: coinGuard,
+			before: []string{`DELETE FROM economy_user_currency_init WHERE currency_id=$1`}},
 	}
 }
+
+const coinGuard = `name->>'en'='Coin' AND name->>'ar'='عملة' AND default_value=50
+	AND NOT EXISTS (SELECT 1 FROM economy_prize p WHERE p.items @> '[{"type":"currency","key":"coin"}]')
+	AND NOT EXISTS (SELECT 1 FROM economy_product p WHERE p.coin_price->>'currencyKey'='coin')
+	AND NOT EXISTS (SELECT 1 FROM economy_item i WHERE i.price->>'currencyKey'='coin' OR i.upgrades @> '[{"currencyKey":"coin"}]')
+	AND NOT EXISTS (SELECT 1 FROM economy_game g WHERE g.rooms::text LIKE '%"coin"%' OR g.settings::text LIKE '%"coin"%')`
 
 const (
 	streakDescEn    = "Sign in every day and collect that day''s prize. Missing one day is fine; two days away start you again from day one, but once you reach day 7 you are safe up to day 7 and win 100 coins too."
@@ -232,6 +242,9 @@ func Run(ctx context.Context, db *sql.DB, opt Options) (*Result, error) {
 	if err := resetMethods(ctx, tx, opt.Env, res); err != nil {
 		return nil, err
 	}
+	if err := stripStoreLinks(ctx, tx, res); err != nil {
+		return nil, err
+	}
 	var board int
 	if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM leaderboard WHERE id=$1 AND metadata->>'game'='stargame_tictactoe'`, Leaderboard).Scan(&board); err != nil {
 		return nil, err
@@ -245,7 +258,7 @@ func Run(ctx context.Context, db *sql.DB, opt Options) (*Result, error) {
 		res.Related += t.Related
 	}
 	for _, m := range res.Changes {
-		if m.Action == actionReset {
+		if m.Action == actionReset || m.Action == "deleted" {
 			res.Changed++
 		}
 	}
@@ -313,6 +326,18 @@ func runStep(ctx context.Context, tx *sql.Tx, s step, out *Table) error {
 			out.Kept = append(out.Kept, Kept{Key: key, Reason: reasonEdited})
 			continue
 		}
+		busy := false
+		if s.inUse != "" {
+			if err := tx.QueryRowContext(ctx, s.inUse, id).Scan(&busy); err != nil {
+				return err
+			}
+		}
+		if busy {
+			if err := keepInUse(ctx, tx, s, id, key, out); err != nil {
+				return err
+			}
+			continue
+		}
 		if _, err := tx.ExecContext(ctx, `SAVEPOINT samplecleanup_row`); err != nil {
 			return err
 		}
@@ -342,15 +367,22 @@ func runStep(ctx context.Context, tx *sql.Tx, s step, out *Table) error {
 		if _, err := tx.ExecContext(ctx, `RELEASE SAVEPOINT samplecleanup_row`); err != nil {
 			return err
 		}
-		reason := reasonInUse
-		if s.off {
-			if _, err := tx.ExecContext(ctx, `UPDATE `+s.table+` SET is_active=false, updated_at=now() WHERE id::text=$1 AND is_active`, id); err != nil {
-				return err
-			}
-			reason = reasonInUseOff
+		if err := keepInUse(ctx, tx, s, id, key, out); err != nil {
+			return err
 		}
-		out.Kept = append(out.Kept, Kept{Key: key, Reason: reason})
 	}
+	return nil
+}
+
+func keepInUse(ctx context.Context, tx *sql.Tx, s step, id, key string, out *Table) error {
+	reason := reasonInUse
+	if s.off {
+		if _, err := tx.ExecContext(ctx, `UPDATE `+s.table+` SET is_active=false, updated_at=now() WHERE id::text=$1 AND is_active`, id); err != nil {
+			return err
+		}
+		reason = reasonInUseOff
+	}
+	out.Kept = append(out.Kept, Kept{Key: key, Reason: reason})
 	return nil
 }
 
@@ -453,4 +485,64 @@ func sameConfig(got, want map[string]any) bool {
 	a, _ := json.Marshal(got)
 	b, _ := json.Marshal(want)
 	return string(a) == string(b)
+}
+
+func sampleLink(url string) bool {
+	return strings.Contains(url, StorePackage) || strings.Contains(url, "/stargame/")
+}
+
+func stripStoreLinks(ctx context.Context, tx *sql.Tx, res *Result) error {
+	ok, err := tableExists(ctx, tx, "base_app_version")
+	if err != nil || !ok {
+		return err
+	}
+	rows, err := tx.QueryContext(ctx, `SELECT id::text, platform, store_links::text FROM base_app_version ORDER BY platform`)
+	if err != nil {
+		return err
+	}
+	type row struct{ id, platform, links string }
+	var list []row
+	for rows.Next() {
+		var r row
+		if err := rows.Scan(&r.id, &r.platform, &r.links); err != nil {
+			rows.Close()
+			return err
+		}
+		list = append(list, r)
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	for _, r := range list {
+		var links []map[string]any
+		if json.Unmarshal([]byte(r.links), &links) != nil {
+			continue
+		}
+		kept := []map[string]any{}
+		removed := 0
+		for _, l := range links {
+			if u, _ := l["url"].(string); sampleLink(u) {
+				removed++
+				continue
+			}
+			kept = append(kept, l)
+		}
+		if removed == 0 {
+			continue
+		}
+		if len(kept) == 0 && r.platform == "web" {
+			if _, err := tx.ExecContext(ctx, `DELETE FROM base_app_version WHERE id::text=$1`, r.id); err != nil {
+				return err
+			}
+			res.Changes = append(res.Changes, Change{Kind: "app_version", Key: r.platform, Action: "deleted", Reason: "only_sample_links"})
+			continue
+		}
+		raw, _ := json.Marshal(kept)
+		if _, err := tx.ExecContext(ctx, `UPDATE base_app_version SET store_links=$2::jsonb, updated_at=now() WHERE id::text=$1`, r.id, string(raw)); err != nil {
+			return err
+		}
+		res.Changes = append(res.Changes, Change{Kind: "app_version_link", Key: r.platform, Action: actionReset, Reason: fmt.Sprintf("removed_%d", removed)})
+	}
+	return nil
 }
