@@ -48,7 +48,8 @@ test.describe('console: create a player without verification', () => {
     const id = page.url().split('/').pop()!;
     made.push(id);
     expect(sql(`SELECT phone FROM publication_phone_account WHERE user_id='${id}'`)).toBe(phone.e164);
-    expect(sql(`SELECT username || '|' || display_name || '|' || (metadata->>'phone') FROM users WHERE id='${id}'`)).toBe(name + '|بازیکن آزمایشی|' + phone.e164);
+    expect(sql(`SELECT username || '|' || display_name || '|' || COALESCE(metadata->>'phone', 'none') FROM users WHERE id='${id}'`)).toBe(name + '|بازیکن آزمایشی|none');
+    await expect(page.locator(`[data-player-phone="${phone.e164}"]`)).toBeVisible();
     expect(codeCount(phone.e164)).toBe(sentBefore);
 
     const guest = await devicePlayer('e2e-pc-' + Date.now());

@@ -3,7 +3,8 @@ import path from 'node:path';
 import { expect, test } from '../../lib/fixtures';
 import { base, consoleApi, deleteUser, devicePlayer, must, pub, rpc, uid, type Player } from '../../lib/api';
 import { field, fillTranslated, go, open, panel, root, rows, savePanel, settle, settlePanel, toasts, translated } from '../../lib/console';
-import { restoreConfig } from '../../lib/db';
+import { testPhone } from '../../lib/accounts';
+import { restoreConfig, sql } from '../../lib/db';
 import { FIXTURES, SERVER_LOG } from '../../lib/env';
 import { openGame, persian, screen, toast } from '../../lib/game';
 
@@ -27,7 +28,7 @@ async function newPlayer(tag: string, extra: { phone?: string; email?: string; l
   const p = await devicePlayer('e2e-' + tag + '-' + k, (k + tag).replace(/_/g, ''));
   made.users.push(p.id);
   const body: Record<string, string> = {};
-  if (extra.phone) body.metadata = JSON.stringify({ phone: extra.phone });
+  if (extra.phone) sql(`INSERT INTO publication_phone_account (phone, user_id) VALUES ('${extra.phone}', '${p.id}')`);
   if (extra.email) body.email = extra.email;
   if (extra.lang) body.lang_tag = extra.lang;
   if (Object.keys(body).length) await must(consoleApi('POST', '/v2/console/account/' + p.id, body));
@@ -247,7 +248,8 @@ test.describe('publication', () => {
 
   for (const ch of [{ key: 'sms', label: 'پیامک' }, { key: 'email', label: 'ایمیل' }] as const) {
     test(`${ch.key} sandbox to one user with an address and one without`, async ({ page }) => {
-      const withAddr = await newPlayer(ch.key + 'a', { phone: '09120000000', email: ch.key + '.' + k + '@example.com', lang: 'en' });
+      const phone = testPhone();
+      const withAddr = await newPlayer(ch.key + 'a', { phone: phone.e164, email: ch.key + '.' + k + '@example.com', lang: 'en' });
       const without = await newPlayer(ch.key + 'b');
       await open(page, '#/publication/notifications/new');
       await settle(page);
@@ -275,7 +277,7 @@ test.describe('publication', () => {
       const sentRow = rows(page).filter({ hasText: withAddr.username });
       await expect(sentRow).toContainText('ارسال‌شده');
       await expect(sentRow).toContainText('آزمایشی');
-      await expect(sentRow).toContainText(ch.key === 'sms' ? '+989120000000' : ch.key + '.' + k + '@example.com');
+      await expect(sentRow).toContainText(ch.key === 'sms' ? phone.e164 : ch.key + '.' + k + '@example.com');
       await expect(sentRow.locator('[data-recipient-lang="en"]')).toBeVisible();
       await expect(rows(page).filter({ hasText: without.username })).toContainText('بدون نشانی');
       const id = page.url().split('/').pop()!.split('?')[0];
