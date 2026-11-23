@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"net/http"
 	"net/mail"
 	"regexp"
@@ -76,13 +75,7 @@ func (s *service) consolePlayerCreate(w http.ResponseWriter, r *http.Request) {
 			s.writeError(w, err)
 			return
 		}
-		err = s.inTx(ctx, func(tx *sql.Tx) error {
-			if _, err := tx.ExecContext(ctx, `INSERT INTO publication_phone_account (phone, user_id, login_key) VALUES ($1,$2,$3)`, phone, uid, key); err != nil {
-				return err
-			}
-			_, err := tx.ExecContext(ctx, `UPDATE users SET metadata = jsonb_set(coalesce(metadata,'{}'::jsonb), '{phone}', to_jsonb($2::text)), update_time=now() WHERE id=$1`, uid, phone)
-			return err
-		})
+		_, err = s.db.ExecContext(ctx, `INSERT INTO publication_phone_account (phone, user_id, login_key) VALUES ($1,$2,$3)`, phone, uid, key)
 		if err != nil {
 			_ = s.nk.AccountDeleteId(ctx, uid, false)
 			if strings.Contains(err.Error(), "publication_phone_account_pkey") {

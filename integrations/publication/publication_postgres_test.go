@@ -107,10 +107,14 @@ func newHarness(t *testing.T) *harness {
 func (h *harness) user(metadata map[string]any, email, lang string) string {
 	h.t.Helper()
 	id := uuid.Must(uuid.NewV4()).String()
-	md, _ := json.Marshal(metadata)
-	if metadata == nil {
-		md = []byte("{}")
+	phone, _ := metadata["phone"].(string)
+	rest := map[string]any{}
+	for k, v := range metadata {
+		if k != "phone" {
+			rest[k] = v
+		}
 	}
+	md, _ := json.Marshal(rest)
 	var e any
 	if email != "" {
 		e = email
@@ -118,6 +122,15 @@ func (h *harness) user(metadata map[string]any, email, lang string) string {
 	if _, err := h.s.db.ExecContext(h.ctx, `INSERT INTO users (id, username, metadata, email, lang_tag) VALUES ($1,$2,$3,$4,$5)`,
 		id, "u"+strings.ReplaceAll(id[:13], "-", ""), string(md), e, lang); err != nil {
 		h.t.Fatal(err)
+	}
+	if phone != "" {
+		e164, ok := normalizePhone(phone)
+		if !ok {
+			h.t.Fatalf("test phone %q", phone)
+		}
+		if _, err := h.s.db.ExecContext(h.ctx, `INSERT INTO publication_phone_account (phone, user_id) VALUES ($1,$2)`, e164, id); err != nil {
+			h.t.Fatal(err)
+		}
 	}
 	return id
 }

@@ -133,8 +133,7 @@ func stringsOf(ctx context.Context, tx *sql.Tx, q string, args ...any) ([]string
 }
 
 func userPhones(ctx context.Context, tx *sql.Tx, userID string) ([]string, error) {
-	return stringsOf(ctx, tx, `SELECT metadata->>'phone' FROM users WHERE id=$1
-		UNION SELECT phone FROM publication_phone_account WHERE user_id=$1`, userID)
+	return stringsOf(ctx, tx, `SELECT phone FROM publication_phone_account WHERE user_id=$1`, userID)
 }
 
 type referralOutcome struct {

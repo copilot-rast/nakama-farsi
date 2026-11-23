@@ -556,10 +556,7 @@ func (s *service) otpAccount(ctx context.Context, tx *sql.Tx, phone, caller stri
 		}
 		out.UserID, out.LoginKey, out.Created = uid, key, created
 	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO publication_phone_account (phone, user_id, login_key) VALUES ($1,$2,$3)`, phone, out.UserID, out.LoginKey); err != nil {
-		return out, err
-	}
-	_, err = tx.ExecContext(ctx, `UPDATE users SET metadata = jsonb_set(coalesce(metadata,'{}'::jsonb), '{phone}', to_jsonb($2::text)), update_time=now() WHERE id=$1`, out.UserID, phone)
+	_, err = tx.ExecContext(ctx, `INSERT INTO publication_phone_account (phone, user_id, login_key) VALUES ($1,$2,$3)`, phone, out.UserID, out.LoginKey)
 	return out, err
 }
 

@@ -50,6 +50,10 @@ func (s *service) playerList(w http.ResponseWriter, r *http.Request) {
 			where.args = append(where.args, p.Q)
 			cond += " OR u.id = $" + itoa(len(where.args)) + "::uuid"
 		}
+		if digits := phoneSearchDigits(p.Q); digits != "" {
+			where.args = append(where.args, "%"+digits+"%")
+			cond += " OR EXISTS (SELECT 1 FROM publication_phone_account pa WHERE pa.user_id=u.id AND pa.phone LIKE $" + itoa(len(where.args)) + ")"
+		}
 		where.parts = append(where.parts, cond+")")
 	}
 	q := r.URL.Query()
@@ -80,6 +84,28 @@ func (s *service) playerList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, out)
+}
+
+func phoneSearchDigits(q string) string {
+	var b strings.Builder
+	for _, r := range strings.TrimSpace(q) {
+		switch {
+		case r >= '0' && r <= '9':
+			b.WriteRune(r)
+		case r >= '۰' && r <= '۹':
+			b.WriteRune('0' + (r - '۰'))
+		case r >= '٠' && r <= '٩':
+			b.WriteRune('0' + (r - '٠'))
+		case r == '+' || r == ' ' || r == '-' || r == '(' || r == ')':
+		default:
+			return ""
+		}
+	}
+	d := strings.TrimLeft(b.String(), "0")
+	if len(d) < 6 {
+		return ""
+	}
+	return d
 }
 
 func (s *service) userExists(ctx context.Context, q queryer, id string) error {
@@ -137,6 +163,16 @@ func (s *service) playerGet(w http.ResponseWriter, r *http.Request) {
 	if err := s.db.QueryRowContext(r.Context(), `SELECT count(*) FILTER (WHERE target_id=$1), count(*) FILTER (WHERE reporter_id=$1), count(*) FILTER (WHERE target_id=$1 AND status IN ('open','reviewing')) FROM base_player_report WHERE target_id=$1 OR reporter_id=$1`, id).Scan(&pAgainst, &pBy, &pOpen); err != nil {
 		s.writeError(w, err)
 		return
+	}
+	var phone sql.NullString
+	var verified sql.NullTime
+	if err := s.db.QueryRowContext(r.Context(), `SELECT phone, verified_at FROM publication_phone_account WHERE user_id=$1`, id).Scan(&phone, &verified); err != nil && !errors.Is(err, sql.ErrNoRows) {
+		s.writeError(w, err)
+		return
+	}
+	out["phone"] = phone.String
+	if verified.Valid {
+		out["phoneVerifiedAt"] = verified.Time
 	}
 	out["history"] = history
 	out["reports"] = map[string]int64{"against": against, "by": by, "open": open}

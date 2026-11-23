@@ -83,17 +83,18 @@ func TestReferralRulesAndAbuse(t *testing.T) {
 		t.Fatal(c)
 	}
 
-	h.s.db.Exec(`UPDATE users SET metadata='{"phone":"+989991110000"}' WHERE id=$1`, a)
-	twin := h.user()
-	h.s.db.Exec(`UPDATE users SET metadata='{"phone":"+989991110000"}' WHERE id=$1`, twin)
-	if c := h.rpcCode(twin, "economy_referral_enter", map[string]any{"code": code}); c != "SELF_REFERRAL" {
-		t.Fatal(c)
-	}
+	h.s.db.Exec(`DELETE FROM publication_phone_account WHERE phone IN ('+989991110000','+989991112222')`)
+	h.s.db.Exec(`DELETE FROM economy_referral_mark WHERE kind='phone'`)
+	h.s.db.Exec(`INSERT INTO publication_phone_account (phone, user_id) VALUES ('+989991110000',$1)`, a)
+	stale := h.user()
+	h.s.db.Exec(`UPDATE users SET metadata='{"phone":"+989991110000"}' WHERE id=$1`, stale)
 	p1 := h.user()
-	h.s.db.Exec(`UPDATE users SET metadata='{"phone":"+989991112222"}' WHERE id=$1`, p1)
+	h.s.db.Exec(`INSERT INTO publication_phone_account (phone, user_id) VALUES ('+989991112222',$1)`, p1)
 	h.mustRPC(p1, "economy_referral_enter", map[string]any{"code": code})
+	h.mustRPC(stale, "economy_referral_enter", map[string]any{"code": code})
+	h.s.db.Exec(`DELETE FROM users WHERE id=$1`, stale)
 	p2 := h.user()
-	h.s.db.Exec(`UPDATE users SET metadata='{"phone":"+989991112222"}' WHERE id=$1`, p2)
+	h.s.db.Exec(`UPDATE publication_phone_account SET user_id=$1 WHERE phone='+989991112222'`, p2)
 	if c := h.rpcCode(p2, "economy_referral_enter", map[string]any{"code": code}); c != "PHONE_ALREADY_USED" {
 		t.Fatal(c)
 	}

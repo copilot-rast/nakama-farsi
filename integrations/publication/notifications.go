@@ -108,19 +108,15 @@ func uuidArray(ids []string) string {
 type targetUser struct {
 	ID       string
 	Email    string
+	Phone    string
 	Metadata string
 }
 
 func (t targetUser) phone() (string, bool) {
-	var md map[string]any
-	_ = json.Unmarshal([]byte(t.Metadata), &md)
-	switch v := md["phone"].(type) {
-	case string:
-		return normalizePhone(v)
-	case float64:
-		return normalizePhone("0" + strconv.FormatFloat(v, 'f', 0, 64))
+	if strings.TrimSpace(t.Phone) == "" {
+		return "", false
 	}
-	return "", false
+	return normalizePhone(t.Phone)
 }
 
 func (t targetUser) email() (string, bool) {
@@ -156,14 +152,14 @@ func (s *service) eachTargetBatch(ctx context.Context, q interface {
 	last := systemUserID
 	n := len(args)
 	for {
-		rows, err := q.QueryContext(ctx, `SELECT u.id::text, COALESCE(u.email,''), u.metadata::text `+base+` AND u.id > $`+itoa(n+1)+`::uuid ORDER BY u.id LIMIT 1000`, append(append([]any{}, args...), last)...)
+		rows, err := q.QueryContext(ctx, `SELECT u.id::text, COALESCE(u.email,''), COALESCE((SELECT p.phone FROM publication_phone_account p WHERE p.user_id=u.id),''), u.metadata::text `+base+` AND u.id > $`+itoa(n+1)+`::uuid ORDER BY u.id LIMIT 1000`, append(append([]any{}, args...), last)...)
 		if err != nil {
 			return err
 		}
 		batch := []targetUser{}
 		for rows.Next() {
 			var u targetUser
-			if err := rows.Scan(&u.ID, &u.Email, &u.Metadata); err != nil {
+			if err := rows.Scan(&u.ID, &u.Email, &u.Phone, &u.Metadata); err != nil {
 				rows.Close()
 				return err
 			}

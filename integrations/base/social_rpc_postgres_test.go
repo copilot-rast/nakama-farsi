@@ -17,7 +17,6 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-// Minimal user_edge behaviour of Nakama's friend calls, enough for the RPCs.
 func (n *fakeNakama) FriendsAdd(ctx context.Context, userID, _ string, ids, _ []string, _ map[string]any) error {
 	for _, id := range ids {
 		mine, theirs := -1, -1
@@ -52,7 +51,7 @@ func (n *fakeNakama) FriendsBlock(ctx context.Context, userID, _ string, ids, _ 
 }
 
 func (n *fakeNakama) edges(ctx context.Context, q string, args ...any) ([]*api.Friend, error) {
-	rows, err := n.db.QueryContext(ctx, `SELECT u.id::text, u.username, u.display_name, e.state FROM user_edge e JOIN users u ON u.id=e.destination_id WHERE `+q+` ORDER BY u.username`, args...)
+	rows, err := n.db.QueryContext(ctx, `SELECT u.id::text, u.username, u.display_name, u.metadata::text, e.state FROM user_edge e JOIN users u ON u.id=e.destination_id WHERE `+q+` ORDER BY u.username`, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +61,7 @@ func (n *fakeNakama) edges(ctx context.Context, q string, args ...any) ([]*api.F
 		u := &api.User{}
 		var display sql.NullString
 		var state int32
-		if err := rows.Scan(&u.Id, &u.Username, &display, &state); err != nil {
+		if err := rows.Scan(&u.Id, &u.Username, &display, &u.Metadata, &state); err != nil {
 			return nil, err
 		}
 		u.DisplayName = display.String
@@ -88,7 +87,7 @@ func (n *fakeNakama) UsersGetFriendStatus(ctx context.Context, userID string, id
 }
 
 func (n *fakeNakama) users(ctx context.Context, q string, arg any) ([]*api.User, error) {
-	rows, err := n.db.QueryContext(ctx, `SELECT id::text, username, display_name FROM users WHERE `+q+` ORDER BY username`, arg)
+	rows, err := n.db.QueryContext(ctx, `SELECT id::text, username, display_name, metadata::text FROM users WHERE `+q+` ORDER BY username`, arg)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +96,7 @@ func (n *fakeNakama) users(ctx context.Context, q string, arg any) ([]*api.User,
 	for rows.Next() {
 		u := &api.User{}
 		var display sql.NullString
-		if err := rows.Scan(&u.Id, &u.Username, &display); err != nil {
+		if err := rows.Scan(&u.Id, &u.Username, &display, &u.Metadata); err != nil {
 			return nil, err
 		}
 		u.DisplayName = display.String
@@ -122,8 +121,6 @@ func (n *fakeNakama) AccountGetId(ctx context.Context, userID string) (*api.Acco
 	return &api.Account{User: users[0], DisableTime: timestamppb.Now()}, nil
 }
 
-// The hook chain is process wide; the hooks forward to the service of the
-// running test so a closed database from an earlier test is never used.
 var (
 	socialHookOnce sync.Once
 	socialHookSvc  *service
@@ -174,8 +171,6 @@ func (h *harness) mustSocial(user, name string, payload any) map[string]any {
 	return out
 }
 
-// socialCode returns the error code: the code of a JSON message, the message of
-// a runtime error, or the code of an app error.
 func (h *harness) socialCode(user, name string, payload any) (string, int) {
 	h.t.Helper()
 	_, err := h.social(user, name, payload)
@@ -231,7 +226,6 @@ func TestSocialFriendRPCsApplyFriendRules(t *testing.T) {
 	if !errors.As(err, &rt) || json.Unmarshal([]byte(rt.Message), &fe) != nil || fe.Lang != "en" || fe.Remaining == nil || *fe.Remaining != 0 {
 		t.Fatalf("lang in the body picks the message language: %v", err)
 	}
-	// Accepting is not a new request and is not counted.
 	var bName string
 	h.s.db.QueryRow(`SELECT username FROM users WHERE id=$1`, b).Scan(&bName)
 	out = h.mustSocial(b, "base_friends_add", map[string]any{"usernames": []string{mustName(h, a)}})
@@ -247,7 +241,6 @@ func TestSocialFriendRPCsApplyFriendRules(t *testing.T) {
 		t.Fatalf("Nakama JSON shape (snake_case) = %v", first)
 	}
 
-	// Declining an invite over RPC starts the cooldown for the sender.
 	h.setFriendRules(0, 0, 0, 24)
 	h.mustSocial(c, "base_friends_add", map[string]any{"ids": []string{a}})
 	h.mustSocial(a, "base_friends_remove", map[string]any{"ids": []string{c}})
@@ -255,14 +248,12 @@ func TestSocialFriendRPCsApplyFriendRules(t *testing.T) {
 		t.Fatalf("cooldown after decline = %s", code)
 	}
 
-	// Max friends.
 	h.setFriendRules(0, 1, 0, 0)
 	d := h.user("fa")
 	if code, _ := h.socialCode(a, "base_friends_add", map[string]any{"ids": []string{d}}); code != CodeFriendLimit {
 		t.Fatalf("max friends = %s", code)
 	}
 
-	// Block, then unblock with remove.
 	out = h.mustSocial(a, "base_friends_block", map[string]any{"ids": []string{d}})
 	if friendRows(out)[d] != edgeBlocked {
 		t.Fatalf("block = %v", out)

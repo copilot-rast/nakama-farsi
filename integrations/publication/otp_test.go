@@ -199,8 +199,9 @@ func TestOTPLoginFlowPostgres(t *testing.T) {
 	}
 	uid := login["userId"].(string)
 	var phone, custom string
-	if err := h.s.db.QueryRowContext(h.ctx, `SELECT metadata->>'phone', custom_id FROM users WHERE id=$1`, uid).Scan(&phone, &custom); err != nil || phone != "+989121234567" || custom != login["loginKey"] {
-		t.Fatalf("account = %q %q %v", phone, custom, err)
+	var inMeta bool
+	if err := h.s.db.QueryRowContext(h.ctx, `SELECT p.phone, u.custom_id, u.metadata ? 'phone' FROM users u JOIN publication_phone_account p ON p.user_id=u.id WHERE u.id=$1`, uid).Scan(&phone, &custom, &inMeta); err != nil || phone != "+989121234567" || custom != login["loginKey"] || inMeta {
+		t.Fatalf("account = %q %q metadata phone %v %v", phone, custom, inMeta, err)
 	}
 	if _, err := h.s.rpcOTPVerify(ctx, guest, `{"phone":"09121234567","code":"`+code+`"}`); appCode(err) != "OTP_NOT_FOUND" {
 		t.Fatalf("a used code must not work twice: %v", err)

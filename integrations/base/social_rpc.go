@@ -9,18 +9,12 @@ import (
 	"github.com/heroiclabs/nakama-common/api"
 	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/internal/hookchain"
+	"github.com/heroiclabs/nakama/v3/internal/privatemeta"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
-
-// Friends, own account and user lookup as RPCs, so a client can send them over
-// the socket like every other call. Nakama has these only as HTTP API calls.
-// Each RPC runs the before and after hooks registered for the matching API call
-// (friend limits, invite expiry, rejection cooldown, account rules), so the
-// result is the same as the HTTP call. Objects come back in Nakama's own JSON
-// shape (snake_case), the same as the HTTP API.
 
 const (
 	socialListMax = 100
@@ -53,9 +47,6 @@ func (s *service) socialRPCs() map[string]clientRPC {
 	return rpcs
 }
 
-// withBodyLang lets an optional "lang" in the body pick the language of the
-// texts in errors (friend limits), like the other RPCs. A socket opened without
-// a lang parameter otherwise answers in English.
 func withBodyLang(fn clientRPC) clientRPC {
 	return func(ctx context.Context, userID, payload string) (any, error) {
 		var in struct {
@@ -119,6 +110,7 @@ func (s *service) rpcFriendsList(ctx context.Context, userID, payload string) (a
 	}
 	out := &api.FriendList{Friends: friends, Cursor: cursor}
 	_ = hookchain.RunAfterIn(ctx, "ListFriends", s.logger, s.db, s.nk, out)
+	privatemeta.Friends(out.Friends)
 	return protoOut(out)
 }
 
@@ -128,8 +120,6 @@ type friendTargetsIn struct {
 	Codes     []string `json:"codes"`
 }
 
-// targets checks ids and usernames the way the HTTP call does and resolves the
-// usernames, so the Nakama call below gets plain IDs.
 func (s *service) socialTargets(ctx context.Context, userID, payload string) (friendTargetsIn, error) {
 	var in friendTargetsIn
 	if err := decodeStrict(payload, &in); err != nil {
@@ -194,6 +184,7 @@ func (s *service) friendStatus(ctx context.Context, userID string, ids []string)
 	if err != nil {
 		return nil, err
 	}
+	privatemeta.Friends(friends)
 	return protoOut(&api.FriendList{Friends: friends})
 }
 
@@ -288,6 +279,7 @@ func (s *service) rpcAccountGet(ctx context.Context, userID, payload string) (an
 		return nil, err
 	}
 	account.DisableTime = nil
+	privatemeta.Account(account)
 	return protoOut(account)
 }
 
@@ -388,5 +380,6 @@ func (s *service) rpcUsersGet(ctx context.Context, _ string, payload string) (an
 		add(users)
 	}
 	_ = hookchain.RunAfter(ctx, "GetUsers", s.logger, s.db, s.nk, out, req)
+	privatemeta.Users(out.Users)
 	return protoOut(out)
 }
