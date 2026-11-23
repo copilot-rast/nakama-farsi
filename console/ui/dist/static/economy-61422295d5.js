@@ -4330,6 +4330,7 @@ var MESSAGES = {
     'ct.reason.keys_missing': "این روش روی این سرور کلید ندارد. اول کلیدهایش را در صفحهٔ روش‌های پرداخت وارد کنید.",
     'ct.reason.table_missing': "جدول این بخش روی این سرور نیست.",
     'ct.reason.cycle': "این ردیف و ردیف دیگری به هم وابسته‌اند.",
+    'ct.reason.source_broken': "این ارجاع در خود سرور مبدأ هم به ردیفی اشاره می‌کند که دیگر وجود ندارد. آن را روی سرور مبدأ درست کنید و دوباره خروجی بگیرید.",
     'ct.reason.config_unreadable': "تنظیم فعلی این روش خوانده نشد.",
     'ct.f.search': "جست‌وجوی کلید",
     'ct.f.area': "بخش",
@@ -10701,6 +10702,7 @@ var MESSAGES = {
     'ct.reason.keys_missing': "This method has no keys on this server. Enter its keys on the payment methods page first.",
     'ct.reason.table_missing': "The table of this part does not exist on this server.",
     'ct.reason.cycle': "This row and another row depend on each other.",
+    'ct.reason.source_broken': "On the source server this reference already points to a row that no longer exists. Fix it there and export again.",
     'ct.reason.config_unreadable': "The current settings of this method could not be read.",
     'ct.f.search': "Search keys",
     'ct.f.area': "Part",
@@ -28959,9 +28961,11 @@ function ctPreview(body, data, file, res, onapplied) {
 
   function changesCell(r) {
     if (r.missing && r.missing.length) {
-      return h('ul', { class: 'flex flex-col gap-0.5 text-xs' }, r.missing.map(function (m) {
-        return h('li', { 'data-ct-missing': m.key }, h('span', { text: t('ct.miss', { field: m.field }) + ' ' }), mono(m.table + ' · ' + m.key));
+      var ml = h('ul', { class: 'flex flex-col gap-0.5 text-xs' }, r.missing.map(function (m) {
+        return h('li', { 'data-ct-missing': m.key, 'data-source-broken': m.sourceBroken ? 'true' : null }, h('span', { text: t('ct.miss', { field: m.field }) + ' ' }), mono(m.table + ' · ' + m.key));
       }));
+      if (r.reason && has('ct.reason.' + r.reason)) ml.appendChild(h('li', { class: 'text-secondary-500', 'data-ct-reason': r.reason, text: t('ct.reason.' + r.reason) }));
+      return ml;
     }
     if (r.changes && r.changes.length) {
       var shown = r.changes.slice(0, 4);

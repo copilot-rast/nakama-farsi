@@ -301,9 +301,11 @@ function ctPreview(body, data, file, res, onapplied) {
 
   function changesCell(r) {
     if (r.missing && r.missing.length) {
-      return h('ul', { class: 'flex flex-col gap-0.5 text-xs' }, r.missing.map(function (m) {
-        return h('li', { 'data-ct-missing': m.key }, h('span', { text: t('ct.miss', { field: m.field }) + ' ' }), mono(m.table + ' · ' + m.key));
+      var ml = h('ul', { class: 'flex flex-col gap-0.5 text-xs' }, r.missing.map(function (m) {
+        return h('li', { 'data-ct-missing': m.key, 'data-source-broken': m.sourceBroken ? 'true' : null }, h('span', { text: t('ct.miss', { field: m.field }) + ' ' }), mono(m.table + ' · ' + m.key));
       }));
+      if (r.reason && has('ct.reason.' + r.reason)) ml.appendChild(h('li', { class: 'text-secondary-500', 'data-ct-reason': r.reason, text: t('ct.reason.' + r.reason) }));
+      return ml;
     }
     if (r.changes && r.changes.length) {
       var shown = r.changes.slice(0, 4);
