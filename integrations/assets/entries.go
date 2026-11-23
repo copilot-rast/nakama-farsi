@@ -894,10 +894,17 @@ func (s *service) rpcManifest(ctx context.Context, _ string, payload string) (an
 		return nil, err
 	}
 	etag := manifestETag(items)
+	client := s.clientPolicy(ctx)
+	now := time.Now().UTC().Format(time.RFC3339)
 	if in.ETag != "" && in.ETag == etag {
-		return map[string]any{"etag": etag, "notModified": true, "count": len(items)}, nil
+		return map[string]any{"etag": etag, "notModified": true, "count": len(items), "client": client, "serverTime": now}, nil
 	}
-	return map[string]any{"etag": etag, "notModified": false, "count": len(items), "items": items}, nil
+	return map[string]any{"etag": etag, "notModified": false, "count": len(items), "items": items, "client": client, "serverTime": now}, nil
+}
+
+func (s *service) clientPolicy(ctx context.Context) map[string]any {
+	c := s.settings(ctx).Client
+	return map[string]any{"requireOnline": c.RequireOnline, "maxCacheAgeHours": c.MaxCacheAgeHours}
 }
 
 func (s *service) rpcFetch(ctx context.Context, _ string, payload string) (any, error) {
@@ -944,7 +951,7 @@ func (s *service) httpManifest(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotModified)
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"etag": etag, "count": len(items), "items": items}, false)
+	writeJSON(w, http.StatusOK, map[string]any{"etag": etag, "count": len(items), "items": items, "client": s.clientPolicy(r.Context()), "serverTime": time.Now().UTC().Format(time.RFC3339)}, false)
 }
 
 func (s *service) httpFetch(w http.ResponseWriter, r *http.Request) {

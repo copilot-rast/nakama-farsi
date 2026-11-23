@@ -71,10 +71,16 @@ type Packs struct {
 	RequireHash bool `json:"requireHash"`
 }
 
+type Client struct {
+	RequireOnline    bool `json:"requireOnline"`
+	MaxCacheAgeHours int  `json:"maxCacheAgeHours"`
+}
+
 type All struct {
 	Entries Entries `json:"entries"`
 	History History `json:"history"`
 	Packs   Packs   `json:"packs"`
+	Client  Client  `json:"client"`
 }
 
 const (
@@ -107,6 +113,8 @@ func Defaults() All {
 func (a All) Validate() (string, string) {
 	e, h, p := a.Entries, a.History, a.Packs
 	switch {
+	case a.Client.MaxCacheAgeHours < 0 || a.Client.MaxCacheAgeHours > 8760:
+		return "client.maxCacheAgeHours", "VALUE_OUT_OF_RANGE"
 	case e.MaxEntryBytes < 1024 || e.MaxEntryBytes > 16<<20:
 		return "entries.maxEntryBytes", "VALUE_OUT_OF_RANGE"
 	case e.MaxPushItems < 1 || e.MaxPushItems > 5000:

@@ -23,6 +23,9 @@ function assetsSettingsPage(root) {
     var redirect = check(p.redirectToStorage, t('se.redirect'), 'packs.redirectToStorage');
     var pattern = input(p.catalogPattern, { name: 'packs.catalogPattern', ltr: true, mono: true });
     var reqHash = check(p.requireHash, t('se.requireHash'), 'packs.requireHash');
+    var cl = cur.client || {};
+    var reqOnline = check(cl.requireOnline, t('se.requireOnline'), 'client.requireOnline');
+    var maxAge = numInput(cl.maxCacheAgeHours || 0, 'client.maxCacheAgeHours');
     var grid = function () { return h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, Array.prototype.slice.call(arguments)); };
     var info = h('div', { class: 'flex flex-col gap-1 text-sm' }, h('div', { text: tr('se.storage', {}, { d: d.storage }) }),
       d.publicStorage ? h('div', { text: t('se.publicStorage') }) : null, h('div', { dir: 'auto' }, tr('se.scopes', {}, { s: (d.scopes || []).join(', ') })));
@@ -33,7 +36,8 @@ function assetsSettingsPage(root) {
         section(t('se.history'), grid(field(t('se.keepVersions'), keepV), field(t('se.keepDays'), keepD), field(t('se.keepDeletedDays'), keepDel)), 'history'),
         section(t('se.packs'), h('div', {}, field(t('se.platforms'), platforms), grid(field(t('se.partKb'), part, t('se.partHint')), field(t('se.maxFiles'), maxFiles), field(t('se.maxFileMb'), maxFile), field(t('se.maxPackMb'), maxPack),
           field(t('se.uploadHours'), uploadH), field(t('se.keepInactive'), keepI)), fromEditor, single, pub, field(t('se.indexCacheSeconds'), idxCache, null, 'as-num'),
-          field(t('se.baseUrl'), base), redirect, field(t('se.catalogPattern'), pattern), reqHash), 'packs')],
+          field(t('se.baseUrl'), base), redirect, field(t('se.catalogPattern'), pattern), reqHash), 'packs'),
+        section(t('se.client'), h('div', {}, reqOnline, field(t('se.maxCacheAgeHours'), maxAge, t('se.maxCacheAgeHint'), 'as-num')), 'client')],
       read: function (c) {
         c.entries = { maxEntryBytes: numberValue(maxEntry) * 1024, maxPushItems: numberValue(maxPush), maxFetchItems: numberValue(maxFetch), maxEntries: numberValue(maxEntries) || 0,
           conflictMode: conflict.value, allowForce: force.input.checked, access: access.value, cacheSeconds: numberValue(cache) || 0 };
@@ -42,6 +46,7 @@ function assetsSettingsPage(root) {
           maxFileBytes: numberValue(maxFile) * 1048576, maxPackBytes: numberValue(maxPack) * 1048576, maxFiles: numberValue(maxFiles), uploadHours: numberValue(uploadH),
           keepInactive: numberValue(keepI) || 0, activateFromEditor: fromEditor.input.checked, singleActive: single.input.checked, publicIndex: pub.input.checked,
           indexCacheSeconds: numberValue(idxCache) || 0, baseUrl: base.value.trim(), redirectToStorage: redirect.input.checked, catalogPattern: pattern.value.trim(), requireHash: reqHash.input.checked };
+        c.client = { requireOnline: reqOnline.input.checked, maxCacheAgeHours: numberValue(maxAge) || 0 };
         return null;
       }
     };

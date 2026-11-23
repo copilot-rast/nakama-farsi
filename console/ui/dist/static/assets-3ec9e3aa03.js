@@ -47,6 +47,8 @@ var AS_TEXT = {
     'se.keepInactive': 'بسته‌های غیرفعال نگه‌داشته برای هر پلتفرم (۰ = همه)', 'se.activateFromEditor': 'ابزار بتواند بسته را همان موقع فعال کند (با دسترسی content:publish)',
     'se.singleActive': 'با فعال کردن یک بسته، بسته‌های فعال دیگرِ همان بازهٔ نسخه غیرفعال شوند', 'se.publicIndex': 'فهرست محتوا بدون ورود بازیکن هم خوانده شود (Addressables پیش از ورود)',
     'se.indexCacheSeconds': 'زمان کش فهرست محتوا (ثانیه)', 'se.baseUrl': 'آدرس دانلود محتوا (CDN؛ خالی = آدرس خود سرور)', 'se.redirect': 'وقتی ذخیره‌ساز S3 آدرس عمومی دارد، دانلود مستقیم از آن باشد',
+    'se.client': 'بازی و حالت آفلاین', 'se.requireOnline': 'بازی فقط با اتصال به سرور شروع شود (دادهٔ ذخیره‌شده روی گوشی استفاده نشود)',
+    'se.maxCacheAgeHours': 'بیشترین عمر دادهٔ ذخیره‌شده برای حالت آفلاین (ساعت، ۰ = بدون محدودیت)', 'se.maxCacheAgeHint': 'بازی در شروع این دو مقدار را از پاسخ assets_manifest می‌خواند.',
     'se.catalogPattern': 'الگوی نام فایل کاتالوگ (regex)', 'se.requireHash': 'بسته بدون فایل .hash کاتالوگ پذیرفته نشود',
     'se.info': 'اطلاعات', 'se.storage': 'ذخیره‌ساز فایل‌ها: {d}', 'se.scopes': 'دسترسی‌های کلید API: {s}', 'se.publicStorage': 'آدرس عمومی ذخیره‌ساز تنظیم شده است.',
     'code.ASSET_VERSION_CONFLICT': 'این داده بعد از دریافت شما تغییر کرده است.', 'code.ASSET_INVALID': 'دادهٔ فرستاده‌شده درست نیست.', 'code.ASSET_TOO_LARGE': 'داده از سقف اندازه بزرگ‌تر است.',
@@ -103,6 +105,8 @@ var AS_TEXT = {
     'se.keepInactive': 'Inactive packs kept per platform (0 = all)', 'se.activateFromEditor': 'Tools may activate a pack right away (with content:publish)',
     'se.singleActive': 'Activating a pack deactivates other active packs of the same app range', 'se.publicIndex': 'The content index is readable without a session (Addressables before login)',
     'se.indexCacheSeconds': 'Content index cache (seconds)', 'se.baseUrl': 'Content download URL (CDN; empty = this server)', 'se.redirect': 'Download straight from S3 when the store has a public URL',
+    'se.client': 'Game and offline mode', 'se.requireOnline': 'The game starts only when it reaches the server (the copy saved on the phone is not used)',
+    'se.maxCacheAgeHours': 'Oldest saved copy the game may use offline (hours, 0 = no limit)', 'se.maxCacheAgeHint': 'The game reads both values from the assets_manifest answer at start.',
     'se.catalogPattern': 'Catalog file name pattern (regex)', 'se.requireHash': 'Refuse packs without the catalog .hash file',
     'se.info': 'Info', 'se.storage': 'File storage: {d}', 'se.scopes': 'API key scopes: {s}', 'se.publicStorage': 'The storage has a public URL.',
     'code.ASSET_VERSION_CONFLICT': 'The entry changed after you read it.', 'code.ASSET_INVALID': 'The entry is not valid.', 'code.ASSET_TOO_LARGE': 'The entry is over the size limit.',
@@ -937,6 +941,9 @@ function assetsSettingsPage(root) {
     var redirect = check(p.redirectToStorage, t('se.redirect'), 'packs.redirectToStorage');
     var pattern = input(p.catalogPattern, { name: 'packs.catalogPattern', ltr: true, mono: true });
     var reqHash = check(p.requireHash, t('se.requireHash'), 'packs.requireHash');
+    var cl = cur.client || {};
+    var reqOnline = check(cl.requireOnline, t('se.requireOnline'), 'client.requireOnline');
+    var maxAge = numInput(cl.maxCacheAgeHours || 0, 'client.maxCacheAgeHours');
     var grid = function () { return h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, Array.prototype.slice.call(arguments)); };
     var info = h('div', { class: 'flex flex-col gap-1 text-sm' }, h('div', { text: tr('se.storage', {}, { d: d.storage }) }),
       d.publicStorage ? h('div', { text: t('se.publicStorage') }) : null, h('div', { dir: 'auto' }, tr('se.scopes', {}, { s: (d.scopes || []).join(', ') })));
@@ -947,7 +954,8 @@ function assetsSettingsPage(root) {
         section(t('se.history'), grid(field(t('se.keepVersions'), keepV), field(t('se.keepDays'), keepD), field(t('se.keepDeletedDays'), keepDel)), 'history'),
         section(t('se.packs'), h('div', {}, field(t('se.platforms'), platforms), grid(field(t('se.partKb'), part, t('se.partHint')), field(t('se.maxFiles'), maxFiles), field(t('se.maxFileMb'), maxFile), field(t('se.maxPackMb'), maxPack),
           field(t('se.uploadHours'), uploadH), field(t('se.keepInactive'), keepI)), fromEditor, single, pub, field(t('se.indexCacheSeconds'), idxCache, null, 'as-num'),
-          field(t('se.baseUrl'), base), redirect, field(t('se.catalogPattern'), pattern), reqHash), 'packs')],
+          field(t('se.baseUrl'), base), redirect, field(t('se.catalogPattern'), pattern), reqHash), 'packs'),
+        section(t('se.client'), h('div', {}, reqOnline, field(t('se.maxCacheAgeHours'), maxAge, t('se.maxCacheAgeHint'), 'as-num')), 'client')],
       read: function (c) {
         c.entries = { maxEntryBytes: numberValue(maxEntry) * 1024, maxPushItems: numberValue(maxPush), maxFetchItems: numberValue(maxFetch), maxEntries: numberValue(maxEntries) || 0,
           conflictMode: conflict.value, allowForce: force.input.checked, access: access.value, cacheSeconds: numberValue(cache) || 0 };
@@ -956,6 +964,7 @@ function assetsSettingsPage(root) {
           maxFileBytes: numberValue(maxFile) * 1048576, maxPackBytes: numberValue(maxPack) * 1048576, maxFiles: numberValue(maxFiles), uploadHours: numberValue(uploadH),
           keepInactive: numberValue(keepI) || 0, activateFromEditor: fromEditor.input.checked, singleActive: single.input.checked, publicIndex: pub.input.checked,
           indexCacheSeconds: numberValue(idxCache) || 0, baseUrl: base.value.trim(), redirectToStorage: redirect.input.checked, catalogPattern: pattern.value.trim(), requireHash: reqHash.input.checked };
+        c.client = { requireOnline: reqOnline.input.checked, maxCacheAgeHours: numberValue(maxAge) || 0 };
         return null;
       }
     };
