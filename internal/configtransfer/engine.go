@@ -79,9 +79,21 @@ type Change struct {
 }
 
 type Missing struct {
-	Field string `json:"field"`
-	Table string `json:"table"`
-	Key   string `json:"key"`
+	Field        string `json:"field"`
+	Table        string `json:"table"`
+	Key          string `json:"key"`
+	SourceBroken bool   `json:"sourceBroken,omitempty"`
+}
+
+const ReasonSourceBroken = "source_broken"
+
+func missingReason(list []Missing) string {
+	for _, m := range list {
+		if m.SourceBroken {
+			return ReasonSourceBroken
+		}
+	}
+	return ""
 }
 
 type RowResult struct {
@@ -464,7 +476,7 @@ func (s *session) applyTable(ctx context.Context, tx Querier, ti *tableInfo, ft 
 			progress = true
 			delete(pendingSelf, fr.key)
 			if len(missing) > 0 {
-				out[i] = RowResult{Table: ti.t.Name, Key: fr.key, Status: StatusMissingRefs, Missing: missing}
+				out[i] = RowResult{Table: ti.t.Name, Key: fr.key, Status: StatusMissingRefs, Missing: missing, Reason: missingReason(missing)}
 				continue
 			}
 			rr, err := s.writeRow(ctx, tx, ti, fr, resolved, curBy[fr.ident], by)
@@ -532,7 +544,7 @@ func (s *session) resolve(ctx context.Context, ti *tableInfo, values map[string]
 					return v, true
 				}
 			}
-			missing = append(missing, Missing{Field: r.Column, Table: r.Table, Key: strings.TrimPrefix(key, missingPrefix)})
+			missing = append(missing, Missing{Field: r.Column, Table: r.Table, Key: strings.TrimPrefix(key, missingPrefix), SourceBroken: strings.HasPrefix(key, missingPrefix)})
 			return v, true
 		})
 	}

@@ -56,6 +56,7 @@ func ctClean(t *testing.T, db *sql.DB) {
 		`DELETE FROM economy_meta WHERE key LIKE 'ct\_%'`,
 		`DELETE FROM economy_currency WHERE key LIKE 'ct\_%'`,
 		`DELETE FROM economy_game WHERE key LIKE 'ct\_%'`,
+		`DELETE FROM economy_chance_game WHERE key LIKE 'ct\_%'`,
 		`DELETE FROM leaderboardx_board WHERE key LIKE 'ct\_%'`,
 		`DELETE FROM base_tag WHERE key LIKE 'ct\_%'`,
 		`DELETE FROM base_category WHERE key LIKE 'ct\_%'`,
@@ -106,6 +107,8 @@ func ctSeedA(t *testing.T, db *sql.DB, s *service) {
 		(gen_random_uuid(),'ct_game','{"en":"Race"}','{"mode":"x","apiKey":"SECRET-GAME-KEY-123","nested":{"webhookSecret":"SECRET-WEBHOOK-555","keep":1}}',
 		 jsonb_build_array(jsonb_build_object('key','r1','prizeId',(SELECT id::text FROM economy_prize WHERE key='ct_prize1'),'requirements',jsonb_build_object('itemIds',jsonb_build_array((SELECT id::text FROM economy_item WHERE key='ct_car1')),'metas',jsonb_build_array(jsonb_build_object('metaId',(SELECT id::text FROM economy_meta WHERE key='ct_xp'),'operator','gte','value',1))))),
 		 jsonb_build_object('tagIds',jsonb_build_array((SELECT id::text FROM base_tag WHERE key='ct_vip_user'))),2,4)`)
+	ctExec(t, db, `INSERT INTO economy_chance_game (id, key, name, prize_type, prize, price) VALUES
+		(gen_random_uuid(),'ct_chest','{"en":"Chest"}','prize', jsonb_build_array(jsonb_build_object('chance',100,'prizeId',(SELECT id::text FROM economy_prize WHERE key='ct_prize1'))), jsonb_build_object('currencyId',gen_random_uuid()::text,'amount',5))`)
 	ctExec(t, db, `INSERT INTO leaderboardx_board (id, key, name, metadata, rewards) VALUES (gen_random_uuid(),'ct_board','{"en":"Weekly"}','{"password":"SECRET-BOARD-PASS-42","color":"red"}','[{"fromRank":1,"toRank":1,"prizeKey":"ct_prize1"}]')`)
 	ctExec(t, db, `INSERT INTO base_app_version (id, platform, latest_version, min_version, store_links, update_message, force_message, is_active) VALUES (gen_random_uuid(),'web','9.9.9','1.0.0','{}','{}','{}',true)`)
 	ctExec(t, db, `INSERT INTO base_server_rules (id, value, updated_by) VALUES (1, jsonb_build_object('maintenance',jsonb_build_object('enabled',false,'allowTagIds',jsonb_build_array((SELECT id::text FROM base_tag WHERE key='ct_vip_user'))),'docs',jsonb_build_object('enabled',true),'integration',jsonb_build_object('apiToken','SECRET-RULES-TOKEN-321','url','https://x.test')),'test')
@@ -296,6 +299,10 @@ func TestConfigTransferRoundTripPostgres(t *testing.T) {
 			t.Fatalf("%s %s: want %s, got %+v", c.table, c.key, c.status, st)
 		}
 	}
+	broken := ctStatus(res, "economy_chance_game", "ct_chest")
+	if broken == nil || broken.Status != configtransfer.StatusMissingRefs || broken.Reason != configtransfer.ReasonSourceBroken || len(broken.Missing) != 1 || broken.Missing[0].Field != "price" || !broken.Missing[0].SourceBroken {
+		t.Fatalf("a ref that is already broken in the source must be named and marked: %+v", broken)
+	}
 	if st := ctStatus(res, "economy_item", "ct_only_b"); st != nil {
 		t.Fatal("rows not in the file must not be touched without switch off")
 	}
@@ -347,6 +354,9 @@ func TestConfigTransferRoundTripPostgres(t *testing.T) {
 				if !strings.Contains(r.Key, "ct_") {
 					continue
 				}
+				if st := ctStatus(res, ft.Table, r.Key); st != nil && st.Status == configtransfer.StatusMissingRefs {
+					continue
+				}
 				other := ctRow(fb, fa.Key, ft.Table, r.Key)
 				if other == nil {
 					t.Fatalf("%s %s missing in B", ft.Table, r.Key)
@@ -369,7 +379,14 @@ func TestConfigTransferRoundTripPostgres(t *testing.T) {
 			if r.Status == configtransfer.StatusSame || (r.Table == "economy_payment_method" && r.Key == "zarinpal" && r.Status == configtransfer.StatusSecretNeeded) {
 				continue
 			}
-			t.Fatalf("second import must be all same: %s %s %s %+v", r.Table, r.Key, r.Status, r.Changes)
+			if r.Status == configtransfer.StatusMissingRefs && r.Reason == configtransfer.ReasonSourceBroken {
+				first := ctStatus(res, r.Table, r.Key)
+				if first == nil || first.Status != r.Status || first.Reason != r.Reason || len(r.Missing) == 0 {
+					t.Fatalf("a source-broken row must be stable and named: %+v first %+v", r, first)
+				}
+				continue
+			}
+			t.Fatalf("second import must be all same: %s %s %s %+v %+v %s", r.Table, r.Key, r.Status, r.Changes, r.Missing, r.Reason)
 		}
 	}
 
