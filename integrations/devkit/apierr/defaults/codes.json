@@ -1090,6 +1090,60 @@
       "base"
     ]
   },
+  "CONFIG_APPLY_FAILED": {
+    "status": 409,
+    "modules": [
+      "base"
+    ]
+  },
+  "CONFIG_AREA_UNKNOWN": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "CONFIG_EXPORT_OFF": {
+    "status": 403,
+    "modules": [
+      "base"
+    ]
+  },
+  "CONFIG_FILE_INVALID": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "CONFIG_FILE_REQUIRED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "CONFIG_FILE_TOO_LARGE": {
+    "status": 413,
+    "modules": [
+      "base"
+    ]
+  },
+  "CONFIG_FILE_VERSION": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
+  "CONFIG_IMPORT_OFF": {
+    "status": 403,
+    "modules": [
+      "base"
+    ]
+  },
+  "CONFIG_NOTHING_SELECTED": {
+    "status": 400,
+    "modules": [
+      "base"
+    ]
+  },
   "CONTENT_INDEX_PRIVATE": {
     "status": 403,
     "modules": [

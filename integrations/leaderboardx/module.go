@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"github.com/heroiclabs/nakama/v3/internal/configtransfer"
 	"net/http"
 	"time"
 
@@ -56,6 +57,9 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		}
 	}
 	if err := svc.registerConsoleHTTP(initializer); err != nil {
+		return err
+	}
+	if err := configtransfer.Register(svc.transferAreas()...); err != nil {
 		return err
 	}
 

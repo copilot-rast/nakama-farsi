@@ -232,6 +232,10 @@ func CheckACLHttp(method, path string, userPermissions Permission) bool {
 		requiredPermissions = None()
 	case method == http.MethodGet && path == "/v2/console/base/sample-data/stargame":
 		requiredPermissions = NewPermission(console.AclResources_SETTINGS, PermissionRead)
+	case method == http.MethodGet && path == "/v2/console/base/config-transfer":
+		requiredPermissions = NewPermission(console.AclResources_SETTINGS, PermissionRead)
+	case strings.HasPrefix(path, "/v2/console/base/config-transfer"):
+		requiredPermissions = Admin()
 	case method == http.MethodGet && strings.HasPrefix(path, "/v2/console/base/trophies"):
 		requiredPermissions = NewPermission(console.AclResources_LEADERBOARD, PermissionRead)
 	case method != "" && strings.HasPrefix(path, "/v2/console/base/trophies"):
