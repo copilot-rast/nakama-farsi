@@ -254,6 +254,16 @@ func (s *service) startWith(ctx context.Context, userID, stageKey string, server
 	if err != nil {
 		return nil, err
 	}
+	usedItem := itemKey
+	if item != nil {
+		usedItem, _ = item["itemKey"].(string)
+	}
+	if len(usedItem) > 128 {
+		usedItem = ""
+	}
+	if err := campaignhooks.CheckStart(ctx, campaignhooks.StartCheck{UserID: userID, StageKey: st.Key, ChapterKey: st.ChapterKey, ItemKey: usedItem, Server: server}); err != nil {
+		return nil, err
+	}
 	now := s.now().UTC()
 	id := uuid.Must(uuid.NewV4()).String()
 	expires := now.Add(time.Duration(cfg.Attempts.Hours) * time.Hour)
@@ -273,7 +283,7 @@ func (s *service) startWith(ctx context.Context, userID, stageKey string, server
 				return err
 			}
 		}
-		_, err := tx.ExecContext(ctx, `INSERT INTO campaign_attempt (id, user_id, stage_id, started_at, expires_at, play_cost) VALUES ($1,$2,$3,$4,$5,$6)`, id, userID, st.ID, now, expires, rawCost)
+		_, err := tx.ExecContext(ctx, `INSERT INTO campaign_attempt (id, user_id, stage_id, started_at, expires_at, play_cost, item_key) VALUES ($1,$2,$3,$4,$5,$6,$7)`, id, userID, st.ID, now, expires, rawCost, usedItem)
 		return err
 	})
 	if err != nil {
@@ -530,10 +540,34 @@ func (s *service) complete(ctx context.Context, userID string, in completeIn) (a
 	if err != nil {
 		return nil, err
 	}
-	if m, ok := done.(map[string]any); ok && replayed {
-		m["replayed"] = true
+	if m, ok := done.(map[string]any); ok {
+		if replayed {
+			m["replayed"] = true
+		}
+		s.observe(ctx, userID, in, replayed, m)
 	}
 	return done, nil
+}
+
+func (s *service) observe(ctx context.Context, userID string, in completeIn, replayed bool, answer map[string]any) {
+	if !campaignhooks.HasResultObservers() {
+		return
+	}
+	r := campaignhooks.Result{UserID: userID, AttemptID: in.AttemptID, Success: in.Success, HealthPercent: in.HealthPercent, Fields: in.Fields, Replayed: replayed}
+	if in.ElapsedSecond != nil {
+		r.ElapsedSeconds = *in.ElapsedSecond
+	}
+	if err := s.db.QueryRowContext(ctx, `SELECT a.item_key, s.key, COALESCE(c.key,'') FROM campaign_attempt a JOIN campaign_stage s ON s.id=a.stage_id LEFT JOIN campaign_chapter c ON c.id=s.chapter_id WHERE a.id=$1`, in.AttemptID).Scan(&r.ItemKey, &r.StageKey, &r.ChapterKey); err != nil {
+		s.logger.Warn("Campaign result observers skipped for %s: %v", in.AttemptID, err)
+		return
+	}
+	out, errs := campaignhooks.Observe(ctx, r)
+	for name, err := range errs {
+		s.logger.Warn("Campaign result observer %s failed for %s: %v", name, in.AttemptID, err)
+	}
+	if len(out) > 0 {
+		answer["extensions"] = out
+	}
 }
 
 func (s *service) score(ctx context.Context, tx *sql.Tx, p *player, st *stage, in completeIn, numbers map[string]float64, extra map[string]any, now time.Time, serverSeconds float64) (map[string]any, plan, error) {
