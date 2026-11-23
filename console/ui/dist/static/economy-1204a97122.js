@@ -4281,6 +4281,111 @@ var MESSAGES = {
     'desc.sdk': "پکیج یونیتی این سرور: چه چیزهایی دارد، چطور نصب می‌شود و اولین کدها.",
     'nav.sample-data': "داده‌های نمونه",
     'desc.sample-data': "داده‌هایی که بازی نمونهٔ ستاره‌چین روی این سرور ساخته است. اول پیش‌نمایش را ببینید، بعد حذفشان کنید.",
+    'nav.config-transfer': "انتقال تنظیمات",
+    'desc.config-transfer': "تنظیمات بازی را از یک سرور خروجی بگیرید و روی سرور دیگر وارد کنید؛ مثلاً از سرور آزمایشی به سرور اصلی.",
+    'ct.kb': "{n} کیلوبایت",
+    'ct.mb': "{n} مگابایت",
+    'ct.st.new': "تازه",
+    'ct.st.changed': "تغییر کرده",
+    'ct.st.same': "بدون تغییر",
+    'ct.st.missing_refs': "وابستگی پیدا نشد",
+    'ct.st.secret_needed': "کلید لازم است",
+    'ct.st.switched_off': "خاموش می‌شود",
+    'ct.st.skipped': "کنار گذاشته شد",
+    'ct.st.error': "خطا",
+    'ct.stat.attention': "نیازمند بررسی",
+    'ct.warn.table_unknown': "جدول {x} روی این سرور شناخته نشد و نادیده گرفته شد.",
+    'ct.warn.table_missing': "جدول {x} روی این سرور نیست.",
+    'ct.warn.column_unknown': "ستون {x} روی این سرور نیست و نادیده گرفته شد.",
+    'ct.warn.core_not_synced': "جدول امتیاز {x} ساخته نشد؛ آن را از صفحهٔ خودش ذخیره کنید.",
+    'ct.warn.core_LEADERBOARD_RESTART_REQUIRED': "زمان‌بندی جدول {x} عوض شده و بازیکن دارد؛ از صفحهٔ خود جدول دوباره شروعش کنید.",
+    'ct.warn.core_LEADERBOARD_KEY_IS_TOURNAMENT': "کلید {x} مال یک تورنمنت است و جدول امتیاز ساخته نشد.",
+    'ct.set.title': "تنظیمات انتقال",
+    'ct.set.export': "خروجی گرفتن روی این سرور مجاز است",
+    'ct.set.import': "وارد کردن فایل روی این سرور مجاز است",
+    'ct.set.name': "نام این سرور در فایل خروجی",
+    'ct.set.name.hint': "مثلاً «سرور آزمایشی». اگر خالی بماند، نام نود سرور نوشته می‌شود.",
+    'ct.set.size': "بیشترین حجم فایل ورودی (مگابایت)",
+    'ct.set.size.hint': "پیش‌فرض {n} مگابایت.",
+    'ct.set.keep': "تعداد سابقه‌هایی که نگه داشته می‌شود",
+    'ct.set.keep.hint': "پیش‌فرض {n} مورد.",
+    'ct.set.saved': "تنظیمات انتقال ذخیره شد.",
+    'ct.exp.title': "خروجی گرفتن",
+    'ct.exp.intro': "بخش‌هایی را که می‌خواهید انتخاب کنید. فایل با نام سرور «{name}» ساخته می‌شود. کلیدها و رمزها هیچ‌وقت در فایل نمی‌آیند.",
+    'ct.exp.all': "همهٔ بخش‌ها",
+    'ct.exp.picked': "{n} بخش از {all} بخش",
+    'ct.exp.run': "دانلود فایل تنظیمات",
+    'ct.exp.done': "فایل {name} دانلود شد.",
+    'ct.exp.off': "خروجی گرفتن روی این سرور خاموش است. از تنظیمات انتقال روشنش کنید.",
+    'ct.imp.title': "وارد کردن",
+    'ct.imp.intro': "فایل خروجی سرور دیگر را انتخاب کنید. اول پیش‌نمایش می‌آید و تا دکمهٔ اعمال را نزنید چیزی عوض نمی‌شود.\nبیشترین حجم فایل {n} مگابایت است.",
+    'ct.imp.none': "هنوز فایلی انتخاب نشده است.",
+    'ct.imp.pick': "انتخاب فایل",
+    'ct.imp.preview': "پیش‌نمایش",
+    'ct.imp.off': "وارد کردن فایل روی این سرور خاموش است. از تنظیمات انتقال روشنش کنید.",
+    'ct.imp.rule.keys': "ردیف‌ها با کلیدشان پیدا می‌شوند، نه با شناسه. ارجاع‌ها به شناسه‌های همین سرور تبدیل می‌شوند.",
+    'ct.imp.rule.delete': "هیچ ردیفی پاک نمی‌شود. کلیدها و رمزهای این سرور هم دست نمی‌خورند.",
+    'ct.imp.rule.tx': "اعمال در یک تراکنش انجام می‌شود؛ اگر یک ردیف خطا بدهد، هیچ تغییری ثبت نمی‌شود.",
+    'ct.runs': "سابقهٔ انتقال",
+    'ct.runs.none': "هنوز خروجی یا ورودی‌ای روی این سرور ثبت نشده است.",
+    'ct.runs.kind': "نوع",
+    'ct.runs.when': "زمان",
+    'ct.runs.by': "انجام‌دهنده",
+    'ct.runs.source': "سرور مبدأ",
+    'ct.runs.totals': "نتیجه",
+    'ct.runs.rows': "{n} ردیف",
+    'ct.runs.applied': "{a} تازه، {b} تغییر، {c} خاموش",
+    'ct.runs.export': "خروجی",
+    'ct.runs.import': "ورودی",
+    'ct.pv.title': "پیش‌نمایش تغییرات",
+    'ct.pv.dry': "هنوز اعمال نشده",
+    'ct.res.title': "نتیجهٔ اعمال",
+    'ct.res.applied': "اعمال شد",
+    'ct.pv.source': "از سرور «{name}»، ساخته‌شده در {at} به دست {by}",
+    'ct.pv.unknown': "این بخش‌ها روی این سرور نیستند و وارد نمی‌شوند: {list}",
+    'ct.pv.areas': "بخش‌ها",
+    'ct.pv.rows': "ردیف‌ها",
+    'ct.pv.again': "پیش‌نمایش دوباره",
+    'ct.col.area': "بخش",
+    'ct.col.counts': "خلاصه",
+    'ct.col.switch': "ردیف‌های بیرون از فایل",
+    'ct.col.switch.on': "خاموش شوند",
+    'ct.col.inFile': "{n} ردیف در فایل",
+    'ct.col.row': "ردیف",
+    'ct.col.status': "وضعیت",
+    'ct.col.changes': "تغییرها",
+    'ct.miss': "{field} پیدا نشد:",
+    'ct.more': "و {n} تغییر دیگر",
+    'ct.reason.unknown_method': "این روش پرداخت روی این سرور نیست.",
+    'ct.reason.keys_missing': "این روش روی این سرور کلید ندارد. اول کلیدهایش را در صفحهٔ روش‌های پرداخت وارد کنید.",
+    'ct.reason.table_missing': "جدول این بخش روی این سرور نیست.",
+    'ct.reason.cycle': "این ردیف و ردیف دیگری به هم وابسته‌اند.",
+    'ct.reason.config_unreadable': "تنظیم فعلی این روش خوانده نشد.",
+    'ct.f.search': "جست‌وجوی کلید",
+    'ct.f.area': "بخش",
+    'ct.f.status': "وضعیت",
+    'ct.excluded': "اعمال نمی‌شود",
+    'ct.rows.empty': "ردیفی نیست",
+    'ct.rows.empty.hint': "فیلترها را عوض کنید.",
+    'ct.sel.count': "{n} ردیف انتخاب شد",
+    'ct.sel.exclude': "اعمال نشوند",
+    'ct.sel.include': "اعمال شوند",
+    'ct.apply': "اعمال تغییرات",
+    'ct.apply.hint': "بخش یا ردیفی را که نمی‌خواهید کنار بگذارید.",
+    'ct.apply.title': "تغییرات اعمال شود؟",
+    'ct.apply.text': "تنظیمات {n} بخش از سرور «{name}» روی این سرور نوشته می‌شود: {a} ردیف تازه و {b} ردیف تغییر. همه در یک تراکنش انجام می‌شود.",
+    'ct.apply.ok': "اعمال کن",
+    'ct.apply.done': "تنظیمات وارد شد: {a} ردیف تازه، {b} ردیف تغییر.",
+    'ct.adminOnly': "فقط مدیر کنسول می‌تواند از تنظیمات خروجی بگیرد یا فایلی وارد کند.",
+    'code.CONFIG_FILE_REQUIRED': "فایل خروجی تنظیمات را انتخاب کنید.",
+    'code.CONFIG_FILE_INVALID': "این فایل، فایل انتقال تنظیمات نیست.",
+    'code.CONFIG_FILE_VERSION': "این فایل را نسخهٔ تازه‌تری از سرور ساخته است. اول این سرور را به‌روز کنید.",
+    'code.CONFIG_FILE_TOO_LARGE': "حجم فایل از حد مجاز بیشتر است.",
+    'code.CONFIG_EXPORT_OFF': "خروجی گرفتن از تنظیمات روی این سرور خاموش است.",
+    'code.CONFIG_IMPORT_OFF': "وارد کردن تنظیمات روی این سرور خاموش است.",
+    'code.CONFIG_AREA_UNKNOWN': "این سرور یکی از بخش‌های انتخاب‌شده را نمی‌شناسد.",
+    'code.CONFIG_NOTHING_SELECTED': "دست‌کم یک بخش را انتخاب کنید.",
+    'code.CONFIG_APPLY_FAILED': "چند ردیف نوشته نشد، برای همین هیچ تغییری ثبت نشد. پیش‌نمایش را دوباره بگیرید.",
     'sc.title': "حذف داده‌های نمونهٔ ستاره‌چین",
     'sc.intro': "ستاره‌چین یک بازی آزمایشی است. هر بار که سرور بالا می‌آید، محصول، جایزه، کد هدیه، بنر و روش پرداخت آزمایشی خودش را می‌سازد.\nاین کار فقط ردیف‌هایی را پاک می‌کند که کلید و محتوای همان نمونه را دارند. زبان‌ها، ارز coin و داده‌های واقعی بازیکنان دست نمی‌خورند. اجرای دوباره هم ضرری ندارد.",
     'sc.plugin.on': "افزونهٔ ستاره‌چین روی این سرور فعال است. تا وقتی STARGAME_SEED=false نباشد، این داده‌ها با راه‌اندازی بعدی دوباره ساخته می‌شوند.",
@@ -10582,6 +10687,111 @@ var MESSAGES = {
     'desc.sdk': "This server's Unity package: what it has, how to install it and the first lines of code.",
     'nav.sample-data': "Sample data",
     'desc.sample-data': "Data the Star Catcher sample game created on this server. Check the preview first, then remove it.",
+    'nav.config-transfer': "Config transfer",
+    'desc.config-transfer': "Export the game settings from one server and import them on another, for example from the test server to production.",
+    'ct.kb': "{n} KB",
+    'ct.mb': "{n} MB",
+    'ct.st.new': "New",
+    'ct.st.changed': "Changed",
+    'ct.st.same': "Same",
+    'ct.st.missing_refs': "Missing reference",
+    'ct.st.secret_needed': "Needs keys",
+    'ct.st.switched_off': "Switched off",
+    'ct.st.skipped': "Skipped",
+    'ct.st.error': "Error",
+    'ct.stat.attention': "Need a look",
+    'ct.warn.table_unknown': "Table {x} is not known on this server and was ignored.",
+    'ct.warn.table_missing': "Table {x} does not exist on this server.",
+    'ct.warn.column_unknown': "Column {x} does not exist on this server and was ignored.",
+    'ct.warn.core_not_synced': "Leaderboard {x} was not created; save it from its own page.",
+    'ct.warn.core_LEADERBOARD_RESTART_REQUIRED': "The schedule of board {x} changed and it has players; restart it from the board page.",
+    'ct.warn.core_LEADERBOARD_KEY_IS_TOURNAMENT': "Key {x} belongs to a tournament, so the leaderboard was not created.",
+    'ct.set.title': "Transfer settings",
+    'ct.set.export': "Allow exports on this server",
+    'ct.set.import': "Allow imports on this server",
+    'ct.set.name': "Name of this server in the export",
+    'ct.set.name.hint': "For example “Test server”. When empty, the server node name is used.",
+    'ct.set.size': "Largest import file (MB)",
+    'ct.set.size.hint': "Default {n} MB.",
+    'ct.set.keep': "History entries to keep",
+    'ct.set.keep.hint': "Default {n}.",
+    'ct.set.saved': "Transfer settings saved.",
+    'ct.exp.title': "Export",
+    'ct.exp.intro': "Pick the parts you want. The file is made with the server name “{name}”. Keys and passwords never go into the file.",
+    'ct.exp.all': "All parts",
+    'ct.exp.picked': "{n} of {all} parts",
+    'ct.exp.run': "Download the settings file",
+    'ct.exp.done': "{name} downloaded.",
+    'ct.exp.off': "Exports are switched off on this server. Turn them on in the transfer settings.",
+    'ct.imp.title': "Import",
+    'ct.imp.intro': "Pick the file exported from the other server. You see a preview first, and nothing changes until you press apply.\nThe largest file is {n} MB.",
+    'ct.imp.none': "No file picked yet.",
+    'ct.imp.pick': "Pick a file",
+    'ct.imp.preview': "Preview",
+    'ct.imp.off': "Imports are switched off on this server. Turn them on in the transfer settings.",
+    'ct.imp.rule.keys': "Rows are matched by their key, not their id. References are turned into this server's ids.",
+    'ct.imp.rule.delete': "No row is deleted. This server's keys and passwords stay as they are.",
+    'ct.imp.rule.tx': "Apply runs in one transaction; if one row fails, nothing is saved.",
+    'ct.runs': "Transfer history",
+    'ct.runs.none': "No export or import on this server yet.",
+    'ct.runs.kind': "Kind",
+    'ct.runs.when': "When",
+    'ct.runs.by': "By",
+    'ct.runs.source': "Source server",
+    'ct.runs.totals': "Result",
+    'ct.runs.rows': "{n} rows",
+    'ct.runs.applied': "{a} new, {b} changed, {c} switched off",
+    'ct.runs.export': "Export",
+    'ct.runs.import': "Import",
+    'ct.pv.title': "Preview of the changes",
+    'ct.pv.dry': "Not applied yet",
+    'ct.res.title': "Apply result",
+    'ct.res.applied': "Applied",
+    'ct.pv.source': "From server “{name}”, made at {at} by {by}",
+    'ct.pv.unknown': "These parts do not exist on this server and are not imported: {list}",
+    'ct.pv.areas': "Parts",
+    'ct.pv.rows': "Rows",
+    'ct.pv.again': "Preview again",
+    'ct.col.area': "Part",
+    'ct.col.counts': "Summary",
+    'ct.col.switch': "Rows not in the file",
+    'ct.col.switch.on': "Switch off",
+    'ct.col.inFile': "{n} rows in the file",
+    'ct.col.row': "Row",
+    'ct.col.status': "Status",
+    'ct.col.changes': "Changes",
+    'ct.miss': "{field} not found:",
+    'ct.more': "and {n} more changes",
+    'ct.reason.unknown_method': "This payment method does not exist on this server.",
+    'ct.reason.keys_missing': "This method has no keys on this server. Enter its keys on the payment methods page first.",
+    'ct.reason.table_missing': "The table of this part does not exist on this server.",
+    'ct.reason.cycle': "This row and another row depend on each other.",
+    'ct.reason.config_unreadable': "The current settings of this method could not be read.",
+    'ct.f.search': "Search keys",
+    'ct.f.area': "Part",
+    'ct.f.status': "Status",
+    'ct.excluded': "Not applied",
+    'ct.rows.empty': "No rows",
+    'ct.rows.empty.hint': "Change the filters.",
+    'ct.sel.count': "{n} rows selected",
+    'ct.sel.exclude': "Do not apply",
+    'ct.sel.include': "Apply",
+    'ct.apply': "Apply changes",
+    'ct.apply.hint': "Leave out any part or row you do not want.",
+    'ct.apply.title': "Apply the changes?",
+    'ct.apply.text': "The settings of {n} parts from server “{name}” are written to this server: {a} new rows and {b} changed rows. It all runs in one transaction.",
+    'ct.apply.ok': "Apply",
+    'ct.apply.done': "Settings imported: {a} new rows, {b} changed rows.",
+    'ct.adminOnly': "Only a console admin can export the settings or import a file.",
+    'code.CONFIG_FILE_REQUIRED': "Pick the exported settings file.",
+    'code.CONFIG_FILE_INVALID': "This is not a settings transfer file.",
+    'code.CONFIG_FILE_VERSION': "This file was made by a newer server. Update this server first.",
+    'code.CONFIG_FILE_TOO_LARGE': "The file is larger than the allowed size.",
+    'code.CONFIG_EXPORT_OFF': "Exporting settings is switched off on this server.",
+    'code.CONFIG_IMPORT_OFF': "Importing settings is switched off on this server.",
+    'code.CONFIG_AREA_UNKNOWN': "This server does not know one of the chosen parts.",
+    'code.CONFIG_NOTHING_SELECTED': "Pick at least one part.",
+    'code.CONFIG_APPLY_FAILED': "Some rows could not be written, so nothing was saved. Take the preview again.",
     'sc.title': "Remove the Star Catcher sample data",
     'sc.intro': "Star Catcher is a test game. Every time the server starts it creates its own test products, prizes, gift codes, banners and payment methods.\nThis removes only rows that still have the sample's keys and content. Languages, the coin currency and real player data are left alone. Running it again is safe.",
     'sc.plugin.on': "The Star Catcher plugin runs on this server. Unless STARGAME_SEED=false is set, the next start creates this data again.",
@@ -15397,11 +15607,11 @@ var SECTIONS = {
   publication: ['faqs', 'news', 'news-review', 'news-sources', 'news-ingest', 'news-reactions', 'news-settings', 'banners', 'banner-lists', 'sponsors', 'comments', 'notifications', 'auto-rules', 'notify-categories', 'remote-config'],
   moderation: ['players', 'reports', 'player-reports', 'restrictions', 'chat-words', 'chat-quota', 'chat-quota-settings', 'chat-quota-report', 'sticker-packs', 'sticker-settings', 'comm-settings', 'comm-channels', 'voice-rooms', 'activity'],
   support: ['tickets', 'live-chat'],
-  system: ['updates', 'server-rules', 'content-packs', 'content-settings', 'insights-overview', 'insights-sessions', 'heatmaps', 'insights-settings', 'sdk', 'sample-data']
+  system: ['updates', 'server-rules', 'content-packs', 'content-settings', 'insights-overview', 'insights-sessions', 'heatmaps', 'insights-settings', 'sdk', 'sample-data', 'config-transfer']
 };
 var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'];
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
-var PAGE_ACL = { 'server-rules': 'SETTINGS', 'sample-data': 'SETTINGS', players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', 'comm-settings': 'CHANNEL_MESSAGE', 'comm-channels': 'CHANNEL_MESSAGE', 'voice-rooms': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
+var PAGE_ACL = { 'server-rules': 'SETTINGS', 'sample-data': 'SETTINGS', 'config-transfer': 'SETTINGS', players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', 'comm-settings': 'CHANNEL_MESSAGE', 'comm-channels': 'CHANNEL_MESSAGE', 'voice-rooms': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
 var HUBS = {
   metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['meta-relations', 'relations'], ['level-tables', 'levels']] },
@@ -15426,7 +15636,7 @@ var NAV = {
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
   moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers', 'voice-rooms'] }],
   support: ['tickets', 'live-chat'],
-  system: ['updates', 'server-rules', 'content', 'insights', 'sdk', 'sample-data']
+  system: ['updates', 'server-rules', 'content', 'insights', 'sdk', 'sample-data', 'config-transfer']
 };
 var HUB_OF = {};
 Object.keys(HUBS).forEach(function (hub) { HUBS[hub].tabs.forEach(function (tab) { HUB_OF[tab[0]] = hub; }); });
@@ -28564,6 +28774,490 @@ function samplesPage(container) {
 }
 
 CUSTOM_PAGES['sample-data'] = function (root) { samplesPage(root); };
+
+ICONS['config-transfer'] = '<path d="M7 7h13M16 3l4 4-4 4"/><path d="M17 17H4M8 13l-4 4 4 4"/>';
+PH_ICONS['config-transfer'] = '<path d="M213.66,181.66l-32,32a8,8,0,0,1-11.32-11.32L188.69,184H48a8,8,0,0,1,0-16H188.69l-18.35-18.34a8,8,0,0,1,11.32-11.32l32,32A8,8,0,0,1,213.66,181.66Zm-139.32-64a8,8,0,0,0,11.32-11.32L67.31,88H208a8,8,0,0,0,0-16H67.31L85.66,53.66A8,8,0,0,0,74.34,42.34l-32,32a8,8,0,0,0,0,11.32Z"/>';
+if (!PH_ICONS.download) PH_ICONS.download = '<path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/>';
+if (!ICONS.download) ICONS.download = '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>';
+
+var CT_PATH = '/config-transfer';
+var CT_STATUSES = ['new', 'changed', 'same', 'missing_refs', 'secret_needed', 'switched_off', 'skipped', 'error'];
+var CT_TONE = { new: 'success', changed: 'warning', same: 'secondary', missing_refs: 'error', secret_needed: 'warning', switched_off: 'warning', skipped: 'secondary', error: 'error' };
+var CT_PAGE = 50;
+
+function ctIso(s) {
+  return '\u2068' + s + '\u2069';
+}
+
+function ctTitle(a) {
+  var tl = a && a.title;
+  if (!tl) return a ? a.key : '';
+  return tl[lang()] || tl.en || a.key;
+}
+
+function ctStatusTag(s) {
+  return tag(t('ct.st.' + s), CT_TONE[s] || 'secondary', 'eco-cx-status');
+}
+
+function ctSize(bytes) {
+  if (bytes < 1024 * 1024) return t('ct.kb', { n: Math.max(1, Math.round(bytes / 1024)) });
+  return t('ct.mb', { n: Math.round(bytes / 104857.6) / 10 });
+}
+
+function ctValue(v) {
+  if (v === null || v === undefined) return '-';
+  if (typeof v === 'string') return v === '' ? '""' : v;
+  var s = JSON.stringify(v);
+  return s.length > 120 ? s.slice(0, 117) + '...' : s;
+}
+
+function ctWarn(w) {
+  var i = w.indexOf(':');
+  var code = i < 0 ? w : w.slice(0, i);
+  var arg = i < 0 ? '' : w.slice(i + 1);
+  return has('ct.warn.' + code) ? t('ct.warn.' + code, { x: arg }) : w;
+}
+
+function ctStat(name, value, label, tone) {
+  return h('div', { class: 'eco-sc-stat', 'data-tone': tone, 'data-ct-stat': name },
+    h('div', { class: 'eco-sc-num tabular-nums', text: fmtNum(value) }),
+    h('div', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: label }));
+}
+
+function ctSend(path, file, opts) {
+  var form = new FormData();
+  form.append('file', file, file.name || 'config.json');
+  form.append('options', JSON.stringify(opts || {}));
+  return baseApi('POST', CT_PATH + path, form, true);
+}
+
+function ctDownload(areas) {
+  var headers = { Accept: 'application/json', 'Content-Type': 'application/json' };
+  var tk = token();
+  if (tk) headers.Authorization = 'Bearer ' + tk;
+  return fetch(BASE_BASE + CT_PATH + '/export', { method: 'POST', headers: headers, credentials: 'same-origin', body: JSON.stringify({ areas: areas }) }).then(function (res) {
+    if (res.status === 401) { toLogin(); throw new ApiError(401, 'UNAUTHENTICATED', ''); }
+    if (!res.ok) {
+      return res.json().catch(function () { return {}; }).then(function (d) { throw new ApiError(res.status, d && d.error, d && d.message); });
+    }
+    var cd = res.headers.get('Content-Disposition') || '';
+    var m = /filename="([^"]+)"/.exec(cd);
+    var name = m ? m[1] : 'config.json';
+    return res.blob().then(function (blob) {
+      var url = URL.createObjectURL(blob);
+      var a = h('a', { href: url, download: name, class: 'hidden', 'data-ct-file': name });
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1000);
+      return name;
+    });
+  }, function () { throw new ApiError(0, 'NETWORK', ''); });
+}
+
+function ctSettingsPanel(data, onsaved) {
+  var st = Object.assign({}, data.defaults || {}, data.settings || {});
+  var name = h('input', { type: 'text', class: 'x-input-field w-full', value: st.serverName || '', dir: 'auto', maxlength: 64, placeholder: data.serverName || '', 'data-ct-set': 'serverName' });
+  var size = h('input', { type: 'number', class: 'x-input-field w-full', value: st.maxFileMB, min: 1, max: 200, dir: 'ltr', 'data-ct-set': 'maxFileMB' });
+  var keep = h('input', { type: 'number', class: 'x-input-field w-full', value: st.keepRuns, min: 1, max: 500, dir: 'ltr', 'data-ct-set': 'keepRuns' });
+  var exp = toggle(st.exportEnabled, t('ct.set.export'), function (v) { st.exportEnabled = v; });
+  var imp = toggle(st.importEnabled, t('ct.set.import'), function (v) { st.importEnabled = v; });
+  exp.setAttribute('data-ct-set', 'exportEnabled');
+  imp.setAttribute('data-ct-set', 'importEnabled');
+  var fName = field(t('ct.set.name'), name, t('ct.set.name.hint'), { optional: true });
+  var fSize = field(t('ct.set.size'), size, t('ct.set.size.hint', { n: (data.defaults || {}).maxFileMB || 20 }));
+  var fKeep = field(t('ct.set.keep'), keep, t('ct.set.keep.hint', { n: (data.defaults || {}).keepRuns || 50 }));
+  var body = h('div', { class: 'flex flex-col', 'data-ct-settings': '' }, fName, fSize, fKeep,
+    h('div', { class: 'flex flex-col gap-3 mb-5' }, exp, imp));
+  var root;
+  function close() { if (root) root.remove(); }
+  var save = button({ variant: 'primary', size: 'footer', label: t('save'), onclick: function () {
+    [fSize, fKeep].forEach(function (f) { f.setError(''); });
+    var body2 = { serverName: name.value.trim(), maxFileMB: Number(toLatinDigits(size.value)), keepRuns: Number(toLatinDigits(keep.value)), exportEnabled: !!st.exportEnabled, importEnabled: !!st.importEnabled };
+    setBusy(save, true);
+    baseApi('PUT', CT_PATH + '/settings', body2).then(function (res) {
+      toast('success', t('ct.set.saved'));
+      close();
+      onsaved(res);
+    }, function (err) {
+      setBusy(save, false, t('save'));
+      var target = err.field === 'maxFileMB' ? fSize : err.field === 'keepRuns' ? fKeep : err.field === 'serverName' ? fName : null;
+      if (target) target.setError(errorText(err));
+      else toast('error', errorText(err));
+    });
+  } });
+  save.setAttribute('data-ct-save', '');
+  root = sidePanel(t('ct.set.title'), body, [button({ variant: 'ghost', size: 'footer', label: t('cancel'), onclick: close }), save], close);
+  document.body.appendChild(root);
+  name.focus();
+}
+
+function ctExportCard(data) {
+  var picked = {};
+  (data.areas || []).forEach(function (a) { picked[a.key] = true; });
+  var boxes = [];
+  var count = h('span', { class: 'text-xs text-secondary-500 tabular-nums', 'data-ct-export-count': '' });
+  var allBox;
+  var dl;
+  function paint() {
+    var n = Object.keys(picked).filter(function (k) { return picked[k]; }).length;
+    count.textContent = t('ct.exp.picked', { n: n, all: (data.areas || []).length });
+    allBox.set(n && n === boxes.length ? true : n ? 'mixed' : false);
+    var off = !data.admin || !n || !data.settings.exportEnabled;
+    dl.disabled = off;
+    dl.className = dl.className.replace(/cursor-(pointer|not-allowed)/, off ? 'cursor-not-allowed' : 'cursor-pointer');
+    dl.style.opacity = off ? '0.5' : '';
+  }
+  allBox = checkbox(true, t('ct.exp.all'), function (on) {
+    (data.areas || []).forEach(function (a) { picked[a.key] = on; });
+    boxes.forEach(function (b) { b.set(on); });
+    paint();
+  });
+  allBox.setAttribute('data-ct-export-all', '');
+  var list = h('ul', { class: 'eco-cx-areas', 'data-ct-export-areas': '' }, (data.areas || []).map(function (a) {
+    var b = checkbox(true, ctTitle(a), function (on) { picked[a.key] = on; paint(); });
+    b.setAttribute('data-ct-area', a.key);
+    boxes.push(b);
+    return h('li', { class: 'eco-cx-area' }, b);
+  }));
+  dl = button({ variant: 'primary', size: 'footer', icon: 'download', label: t('ct.exp.run'), onclick: function () {
+    var keys = Object.keys(picked).filter(function (k) { return picked[k]; });
+    if (!keys.length) return;
+    setBusy(dl, true);
+    ctDownload(keys.length === (data.areas || []).length ? [] : keys).then(function (name) {
+      setBusy(dl, false, t('ct.exp.run'));
+      paint();
+      toast('success', t('ct.exp.done', { name: name }));
+      if (data.reload) data.reload(true);
+    }, function (err) {
+      setBusy(dl, false, t('ct.exp.run'));
+      paint();
+      toast('error', errorText(err));
+    });
+  } });
+  dl.setAttribute('data-ct-export', '');
+  var foot = h('div', { class: 'flex flex-wrap items-center justify-between gap-3 eco-cx-foot pt-3 border-t border-secondary-200 dark:border-secondary-700' }, count, dl);
+  var el = card(h('div', { class: 'p-4 flex flex-col gap-3 h-full', 'data-ct-export-card': '' },
+    h('div', { class: 'flex flex-col gap-1' },
+      h('h2', { class: 'font-semibold', text: t('ct.exp.title') }),
+      h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300', text: t('ct.exp.intro', { name: ctIso(data.serverName || '-') }) })),
+    data.settings.exportEnabled ? null : notice('warning', t('ct.exp.off')),
+    h('div', { class: 'flex items-center justify-between gap-2' }, allBox),
+    list, foot), 'h-full');
+  paint();
+  return el;
+}
+
+function ctImportCard(data, onfile) {
+  var max = (data.settings.maxFileMB || 20) * 1024 * 1024;
+  var input = h('input', { type: 'file', accept: '.json,application/json', class: 'sr-only', 'data-ct-input': '' });
+  var name = h('div', { class: 'text-sm text-secondary-500 dark:text-secondary-400 min-w-0 truncate', 'data-ct-file-name': '', text: t('ct.imp.none') });
+  var file = null;
+  var off = !data.admin || !data.settings.importEnabled;
+  var pick = button({ variant: off ? 'disabled' : 'ghost', size: 'footer', icon: 'upload', label: t('ct.imp.pick'), disabled: off, onclick: function () { input.click(); } });
+  pick.setAttribute('data-ct-pick', '');
+  var run = button({ variant: 'disabled', size: 'footer', label: t('ct.imp.preview'), disabled: true, onclick: function () { if (file) onfile(file, run); } });
+  run.setAttribute('data-ct-preview', '');
+  input.addEventListener('change', function () {
+    var f = input.files && input.files[0];
+    input.value = '';
+    if (!f) return;
+    if (f.size > max) {
+      toast('error', t('code.CONFIG_FILE_TOO_LARGE'));
+      return;
+    }
+    file = f;
+    name.textContent = f.name + ' · ' + ctSize(f.size);
+    name.setAttribute('title', f.name);
+    var fresh = button({ variant: 'primary', size: 'footer', label: t('ct.imp.preview'), onclick: function () { onfile(file, fresh); } });
+    fresh.setAttribute('data-ct-preview', '');
+    run.replaceWith(fresh);
+    run = fresh;
+    onfile(file, fresh);
+  });
+  return card(h('div', { class: 'p-4 flex flex-col gap-3 h-full', 'data-ct-import-card': '' },
+    h('div', { class: 'flex flex-col gap-1' },
+      h('h2', { class: 'font-semibold', text: t('ct.imp.title') }),
+      h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300 eco-pre-line', text: t('ct.imp.intro', { n: data.settings.maxFileMB || 20 }) })),
+    data.settings.importEnabled ? null : notice('warning', t('ct.imp.off')),
+    h('div', { class: 'eco-cx-drop' }, input, pick, name),
+    h('ul', { class: 'eco-sdk-list text-sm text-secondary-600 dark:text-secondary-300' },
+      h('li', { text: t('ct.imp.rule.keys') }),
+      h('li', { text: t('ct.imp.rule.delete') }),
+      h('li', { text: t('ct.imp.rule.tx') })),
+    h('div', { class: 'flex justify-end eco-cx-foot pt-3 border-t border-secondary-200 dark:border-secondary-700' }, run)), 'h-full');
+}
+
+function ctRunsCard(runs) {
+  if (!runs || !runs.length) {
+    return card(h('div', { class: 'p-4 flex flex-col gap-2', 'data-ct-runs': '' },
+      h('h2', { class: 'font-semibold text-sm', text: t('ct.runs') }),
+      h('p', { class: 'text-sm text-secondary-500', text: t('ct.runs.none') })));
+  }
+  var columns = [{ label: t('ct.runs.kind'), width: '14%' }, { label: t('ct.runs.when'), width: '22%' }, { label: t('ct.runs.by') }, { label: t('ct.runs.source') }, { label: t('ct.runs.totals') }];
+  return h('div', { class: 'flex flex-col gap-2', 'data-ct-runs': '' },
+    h('h2', { class: 'font-semibold text-sm', text: t('ct.runs') }),
+    table(columns, runs.map(function (r) {
+      var tot = r.totals || {};
+      var sum = r.kind === 'export'
+        ? t('ct.runs.rows', { n: Object.keys(tot).reduce(function (s, k) { return s + (Number(tot[k]) || 0); }, 0) })
+        : t('ct.runs.applied', { a: Number(tot.new) || 0, b: Number(tot.changed) || 0, c: Number(tot.switchedOff) || 0 });
+      return { item: r, cells: [
+        h('span', { 'data-ct-run': r.kind }, tag(t('ct.runs.' + r.kind), r.kind === 'import' ? 'primary' : 'secondary')),
+        h('span', { class: 'text-sm tabular-nums', text: fmtDate(r.at) }),
+        h('span', { class: 'text-sm', dir: 'auto', text: r.by || '-' }),
+        h('span', { class: 'text-sm', dir: 'auto', text: (r.source && r.source.name) || '-' }),
+        h('span', { class: 'text-sm text-secondary-600 dark:text-secondary-300', text: sum })] };
+    })));
+}
+
+function ctPreview(body, data, file, res, onapplied) {
+  var state = { q: '', area: '', status: '', page: 1, limit: CT_PAGE };
+  var pickedAreas = {};
+  var switchOff = {};
+  var excluded = {};
+  res.areas.forEach(function (a) { pickedAreas[a.key] = a.selected; switchOff[a.key] = !!a.switchOff; });
+  var rowsAll = [];
+  res.areas.forEach(function (a) {
+    a.rows.forEach(function (r) { rowsAll.push({ area: a.key, areaTitle: ctTitle(a), r: r, id: a.key + '|' + r.table + ':' + r.key }); });
+  });
+  var sel = selection({ name: 'ct-rows', idOf: function (it) { return it.id; } });
+  var wrap = h('div', { class: 'flex flex-col gap-4', 'data-ct-preview-result': res.applied ? 'applied' : 'preview' });
+  clear(body).appendChild(wrap);
+
+  var src = res.source || {};
+  var head = card(h('div', { class: 'p-4 flex flex-col gap-3' },
+    h('div', { class: 'flex flex-wrap items-center justify-between gap-2' },
+      h('h2', { class: 'font-semibold', text: res.applied ? t('ct.res.title') : t('ct.pv.title') }),
+      res.applied ? tag(t('ct.res.applied'), 'success') : tag(t('ct.pv.dry'), 'secondary')),
+    h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300', 'data-ct-source': src.name || '' }, h('span', { text: t('ct.pv.source', { name: ctIso(src.name || '-'), at: src.exportedAt ? fmtDate(src.exportedAt) : '-', by: ctIso(src.by || '-') }) })),
+    res.unknownAreas && res.unknownAreas.length ? notice('warning', t('ct.pv.unknown', { list: res.unknownAreas.join('، ') })) : null));
+  wrap.appendChild(head);
+  var tot = res.totals;
+  wrap.appendChild(h('div', { class: 'eco-sc-stats eco-cx-stats' },
+    ctStat('new', tot.new, t('ct.st.new'), 'success'),
+    ctStat('changed', tot.changed, t('ct.st.changed'), 'warning'),
+    ctStat('same', tot.same, t('ct.st.same'), 'neutral'),
+    ctStat('missing', tot.missingRefs + tot.secretNeeded + tot.errors, t('ct.stat.attention'), 'danger')));
+
+  var areaCols = [{ label: '', width: '2.5rem' }, { label: t('ct.col.area') }, { label: t('ct.col.counts') }, { label: t('ct.col.switch'), width: '22%' }];
+  var areaTable = table(areaCols, res.areas.map(function (a) {
+    var c = a.counts;
+    var box = checkbox(pickedAreas[a.key], '', function (on) { pickedAreas[a.key] = on; paintApply(); });
+    box.setAttribute('aria-label', ctTitle(a));
+    box.setAttribute('data-ct-pick-area', a.key);
+    if (res.applied) box.style.pointerEvents = 'none';
+    var counts = h('div', { class: 'flex flex-wrap gap-1' });
+    CT_STATUSES.forEach(function (s) {
+      var key = { missing_refs: 'missingRefs', secret_needed: 'secretNeeded', switched_off: 'switchedOff', error: 'errors' }[s] || s;
+      if (c[key]) counts.appendChild(tag(t('ct.st.' + s) + ' ' + fmtNum(c[key]), CT_TONE[s]));
+    });
+    if (!counts.childNodes.length) counts.appendChild(h('span', { class: 'text-xs text-secondary-400', text: '-' }));
+    var sw = a.canSwitchOff && !res.applied ? toggle(switchOff[a.key], t('ct.col.switch.on'), function (v) { switchOff[a.key] = v; }, 'sm') : h('span', { class: 'text-xs text-secondary-400', text: a.canSwitchOff ? (a.switchOff ? t('yes') : t('no')) : '-' });
+    if (sw.setAttribute) sw.setAttribute('data-ct-switch', a.key);
+    var info = h('div', { class: 'flex flex-col gap-0.5 min-w-0' },
+      h('span', { class: 'font-medium text-sm', text: ctTitle(a) }),
+      h('span', { class: 'text-xs text-secondary-500', text: t('ct.col.inFile', { n: a.inFile }) }),
+      (a.warnings || []).length ? h('span', { class: 'text-xs eco-cx-warn', 'data-ct-warn': a.key, text: a.warnings.map(ctWarn).join('، ') }) : null);
+    var row = h('div', { 'data-ct-area-row': a.key }, info);
+    return { item: a, cells: [box, row, counts, sw] };
+  }));
+  wrap.appendChild(h('div', { class: 'flex flex-col gap-2' }, h('h3', { class: 'font-semibold text-sm', text: t('ct.pv.areas') }), areaTable));
+
+  var listBox = h('div', { class: 'flex flex-col gap-2', 'data-ct-rows': '' });
+  wrap.appendChild(h('div', { class: 'flex flex-col gap-2' }, h('h3', { class: 'font-semibold text-sm', text: t('ct.pv.rows') }), listBox));
+
+  function filtered() {
+    var q = state.q.toLowerCase();
+    return rowsAll.filter(function (it) {
+      if (state.area && it.area !== state.area) return false;
+      if (state.status && it.r.status !== state.status) return false;
+      if (q && (it.r.key + ' ' + it.r.table).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+  }
+
+  function changesCell(r) {
+    if (r.missing && r.missing.length) {
+      return h('ul', { class: 'flex flex-col gap-0.5 text-xs' }, r.missing.map(function (m) {
+        return h('li', { 'data-ct-missing': m.key }, h('span', { text: t('ct.miss', { field: m.field }) + ' ' }), mono(m.table + ' · ' + m.key));
+      }));
+    }
+    if (r.changes && r.changes.length) {
+      var shown = r.changes.slice(0, 4);
+      var list = h('ul', { class: 'flex flex-col gap-0.5 text-xs' }, shown.map(function (c) {
+        return h('li', { class: 'eco-cx-change', 'data-ct-change': c.field },
+          h('span', { class: 'font-mono text-secondary-700 dark:text-secondary-200', dir: 'ltr', text: c.field }),
+          h('span', { class: 'eco-cx-from font-mono', dir: 'ltr', 'data-l10n-skip': '', text: ctValue(c.from) }),
+          h('span', { class: 'text-secondary-400', 'aria-hidden': 'true', text: '→' }),
+          h('span', { class: 'eco-cx-to font-mono', dir: 'ltr', 'data-l10n-skip': '', text: ctValue(c.to) }));
+      }));
+      if (r.changes.length > shown.length) list.appendChild(h('li', { class: 'text-secondary-500', text: t('ct.more', { n: r.changes.length - shown.length }) }));
+      return list;
+    }
+    if (r.reason) return h('span', { class: 'text-xs text-secondary-500', text: has('ct.reason.' + r.reason) ? t('ct.reason.' + r.reason) : r.reason });
+    return h('span', { class: 'text-xs text-secondary-400', text: '-' });
+  }
+
+  function paintRows() {
+    var list = filtered();
+    var total = list.length;
+    var pages = Math.max(1, Math.ceil(total / state.limit));
+    if (state.page > pages) state.page = pages;
+    var page = list.slice((state.page - 1) * state.limit, state.page * state.limit);
+    sel.page = res.applied ? [] : page;
+    var search = searchInput(state.q, t('ct.f.search'), function (v) { state.q = v; state.page = 1; paintRows(); });
+    var areaF = filterSelect(t('ct.f.area'), state.area, res.areas.map(function (a) { return { value: a.key, label: ctTitle(a) }; }), function (v) { state.area = v; state.page = 1; paintRows(); });
+    var statusF = filterSelect(t('ct.f.status'), state.status, CT_STATUSES.map(function (s) { return { value: s, label: t('ct.st.' + s) }; }), function (v) { state.status = v; state.page = 1; paintRows(); });
+    areaF.setAttribute('data-ct-filter', 'area');
+    statusF.setAttribute('data-ct-filter', 'status');
+    var on = state.q || state.area || state.status;
+    var bar2 = listToolbar({ search: search, filters: [areaF, statusF], clear: on ? clearFiltersButton(function () { state.q = ''; state.area = ''; state.status = ''; state.page = 1; paintRows(); }) : null, meta: listCount({ total: total, loaded: true }) });
+    var cols = [];
+    if (!res.applied) cols.push({ label: t('sel.all'), width: '2.5rem', head: sel.headCheck });
+    cols.push({ label: t('ct.col.row') }, { label: t('ct.col.status'), width: '16%' }, { label: t('ct.col.changes'), width: '44%' });
+    var tableEl = total ? table(cols, page.map(function (it) {
+      var r = it.r;
+      var cells = [];
+      if (!res.applied) cells.push(sel.rowCheck(it, r.key));
+      var out = excluded[it.id];
+      cells.push(h('div', { class: 'flex flex-col gap-0.5 min-w-0', 'data-ct-row': r.table + ':' + r.key, 'data-status': r.status, 'data-excluded': out ? 'true' : null },
+        h('span', { class: 'font-mono text-sm break-all', dir: 'ltr', 'data-l10n-skip': '', text: r.key }),
+        h('span', { class: 'text-xs text-secondary-500' }, h('span', { text: it.areaTitle + ' · ' }), mono(r.table))));
+      cells.push(h('div', { class: 'flex flex-wrap gap-1' }, ctStatusTag(r.status), out ? tag(t('ct.excluded'), 'secondary') : null));
+      cells.push(changesCell(r));
+      return { item: it, cells: cells };
+    })) : card(h('div', { 'data-ct-rows-empty': '' }, emptyBlock(t('ct.rows.empty'), on ? t('ct.rows.empty.hint') : '')));
+    var selBar = res.applied ? null : selectionBar(sel, { countKey: 'ct.sel.count', attr: 'data-ct-selbar', actions: [
+      button({ variant: 'ghost', size: 'sm', label: t('ct.sel.exclude'), onclick: function () { sel.list().forEach(function (id) { excluded[id] = true; }); sel.clear(); paintRows(); paintApply(); } }),
+      button({ variant: 'ghost', size: 'sm', label: t('ct.sel.include'), onclick: function () { sel.list().forEach(function (id) { delete excluded[id]; }); sel.clear(); paintRows(); paintApply(); } })
+    ] });
+    clear(listBox);
+    listBox.appendChild(bar2);
+    if (selBar) listBox.appendChild(selBar);
+    listBox.appendChild(tableEl);
+    listBox.appendChild(pager({ total: total, page: state.page, limit: state.limit, loaded: true }, function (p) { state.page = p; paintRows(); }));
+    sel.paint();
+  }
+
+  function options() {
+    var areas = res.areas.filter(function (a) { return pickedAreas[a.key]; }).map(function (a) { return a.key; });
+    var rows = {};
+    res.areas.forEach(function (a) {
+      if (!pickedAreas[a.key]) return;
+      var ids = rowsAll.filter(function (it) { return it.area === a.key && it.r.status !== 'switched_off'; });
+      if (!ids.some(function (it) { return excluded[it.id]; })) return;
+      rows[a.key] = ids.filter(function (it) { return !excluded[it.id]; }).map(function (it) { return it.r.table + ':' + it.r.key; });
+    });
+    var sw = {};
+    Object.keys(switchOff).forEach(function (k) { if (switchOff[k] && pickedAreas[k]) sw[k] = true; });
+    return { areas: areas, rows: rows, switchOff: sw };
+  }
+
+  var actions = h('div', { class: 'flex flex-wrap items-center justify-end gap-3', 'data-ct-actions': '' });
+  wrap.appendChild(actions);
+  var applyBtn;
+  function paintApply() {
+    if (res.applied) return;
+    var opts = options();
+    var n = opts.areas.length;
+    applyBtn.disabled = !n;
+    applyBtn.style.opacity = n ? '' : '0.5';
+  }
+  if (!res.applied) {
+    var again = button({ variant: 'ghost', size: 'footer', icon: 'refresh', label: t('ct.pv.again'), onclick: function () {
+      setBusy(again, true);
+      ctSend('/preview', file, options()).then(function (out) { ctPreview(body, data, file, out.result, onapplied); }, function (err) { setBusy(again, false, t('ct.pv.again')); toast('error', errorText(err)); });
+    } });
+    again.setAttribute('data-ct-again', '');
+    applyBtn = button({ variant: 'primary', size: 'footer', icon: 'check', label: t('ct.apply'), onclick: function () {
+      var opts = options();
+      var sum = res.totals;
+      confirmModal({ title: t('ct.apply.title'), text: t('ct.apply.text', { n: opts.areas.length, a: sum.new, b: sum.changed, name: ctIso(src.name || '-') }), ok: t('ct.apply.ok') }).then(function (ok) {
+        if (!ok) return;
+        setBusy(applyBtn, true);
+        ctSend('/apply', file, opts).then(function (out) {
+          toast('success', t('ct.apply.done', { a: out.result.totals.new, b: out.result.totals.changed }));
+          ctPreview(body, data, file, out.result, onapplied);
+          onapplied();
+        }, function (err) {
+          setBusy(applyBtn, false, t('ct.apply'));
+          toast('error', errorText(err));
+        });
+      });
+    } });
+    applyBtn.setAttribute('data-ct-apply', '');
+    actions.appendChild(h('span', { class: 'text-sm text-secondary-500', text: t('ct.apply.hint') }));
+    actions.appendChild(again);
+    actions.appendChild(applyBtn);
+    paintApply();
+  }
+  paintRows();
+}
+
+function configTransferPage(container) {
+  var settingsBtn = button({ variant: 'ghost', size: 'footer', icon: 'gear', label: t('ct.set.title'), onclick: function () { if (current) ctSettingsPanel(current, function () { load(); }); } });
+  settingsBtn.setAttribute('data-ct-open-settings', '');
+  var frame = pageFrame(t('nav.config-transfer'), t('desc.config-transfer'), [settingsBtn]);
+  clear(container).appendChild(frame.el);
+  var body = h('div', { class: 'flex flex-col gap-4 eco-cx', 'data-ct-page': '' });
+  frame.content.appendChild(body);
+  var top = h('div', { class: 'eco-cx-grid' });
+  var preview = h('div', { class: 'flex flex-col gap-4', 'data-ct-preview-box': '' });
+  var runsBox = h('div', {});
+  var current = null;
+
+  function skeleton() {
+    clear(body);
+    body.appendChild(h('div', { class: 'eco-cx-grid' }, [0, 1].map(function () {
+      return card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('40%', 'h-4'), bar('85%'), bar('70%'), bar('60%'), bar('50%')));
+    })));
+    body.appendChild(table([{ label: t('ct.runs.kind') }, { label: t('ct.runs.when') }, { label: t('ct.runs.by') }], skeletonRows([{}, {}, {}], 3)));
+  }
+
+  function onfile(file, btn) {
+    var label = t('ct.imp.preview');
+    setBusy(btn, true);
+    clear(preview).appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('30%', 'h-4'), bar('90%'), bar('75%'))));
+    ctSend('/preview', file, {}).then(function (out) {
+      setBusy(btn, false, label);
+      ctPreview(preview, current, file, out.result, function () { load(true); });
+      preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, function (err) {
+      setBusy(btn, false, label);
+      clear(preview).appendChild(h('div', { 'data-ct-error': err.code || '' }, notice('error', errorText(err))));
+    });
+  }
+
+  function paint(data) {
+    current = data;
+    data.reload = load;
+    settingsBtn.disabled = !data.admin;
+    settingsBtn.style.display = data.admin ? '' : 'none';
+    clear(body);
+    if (!data.admin) body.appendChild(h('div', { 'data-ct-admin-only': '' }, notice('info', t('ct.adminOnly'))));
+    clear(top);
+    top.appendChild(ctExportCard(data));
+    top.appendChild(ctImportCard(data, onfile));
+    body.appendChild(top);
+    body.appendChild(preview);
+    clear(runsBox).appendChild(ctRunsCard(data.runs));
+    body.appendChild(runsBox);
+  }
+
+  function load(runsOnly) {
+    if (runsOnly && current) {
+      baseApi('GET', CT_PATH).then(function (data) { current.runs = data.runs; clear(runsBox).appendChild(ctRunsCard(data.runs)); }, function () {});
+      return;
+    }
+    skeleton();
+    baseApi('GET', CT_PATH).then(paint, function (err) {
+      clear(body).appendChild(errorBlock(err, load));
+    });
+  }
+  load();
+}
+
+CUSTOM_PAGES['config-transfer'] = function (root) { configTransferPage(root); };
 
 ICONS['handoff'] = '<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/>';
 PH_ICONS['handoff'] = '<path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/>';

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"github.com/heroiclabs/nakama/v3/internal/configtransfer"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -128,6 +129,9 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		return err
 	}
 	if err := svc.registerEventHooks(initializer); err != nil {
+		return err
+	}
+	if err := configtransfer.Register(svc.transferAreas()...); err != nil {
 		return err
 	}
 	if err := svc.registerGameHooks(initializer); err != nil {

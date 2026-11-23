@@ -815,6 +815,42 @@
     "en": "Too many comms token requests. Please wait a little.",
     "fa": "درخواست‌های توکن comms زیاد شد. کمی صبر کنید."
   },
+  "CONFIG_APPLY_FAILED": {
+    "en": "Some rows could not be written, so nothing was changed.",
+    "fa": "چند ردیف نوشته نشد، برای همین هیچ تغییری اعمال نشد."
+  },
+  "CONFIG_AREA_UNKNOWN": {
+    "en": "This server does not know one of the chosen parts.",
+    "fa": "این سرور یکی از بخش‌های انتخاب‌شده را نمی‌شناسد."
+  },
+  "CONFIG_EXPORT_OFF": {
+    "en": "Exporting settings is turned off on this server.",
+    "fa": "خروجی گرفتن از تنظیمات روی این سرور خاموش است."
+  },
+  "CONFIG_FILE_INVALID": {
+    "en": "This is not a settings transfer file.",
+    "fa": "این فایل، فایل انتقال تنظیمات نیست."
+  },
+  "CONFIG_FILE_REQUIRED": {
+    "en": "Choose the exported settings file.",
+    "fa": "فایل خروجی تنظیمات را انتخاب کنید."
+  },
+  "CONFIG_FILE_TOO_LARGE": {
+    "en": "The file is larger than the allowed size.",
+    "fa": "حجم فایل از حد مجاز بیشتر است."
+  },
+  "CONFIG_FILE_VERSION": {
+    "en": "This file was made by a newer server version.",
+    "fa": "این فایل را نسخهٔ تازه‌تری از سرور ساخته است."
+  },
+  "CONFIG_IMPORT_OFF": {
+    "en": "Importing settings is turned off on this server.",
+    "fa": "وارد کردن تنظیمات روی این سرور خاموش است."
+  },
+  "CONFIG_NOTHING_SELECTED": {
+    "en": "Choose at least one part.",
+    "fa": "دست‌کم یک بخش را انتخاب کنید."
+  },
   "CONFIRM_REQUIRED": {
     "en": "Confirm this action first.",
     "fa": "اول این کار را تأیید کنید."

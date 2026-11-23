@@ -377,3 +377,22 @@ func TestCheckACLHttpSampleCleanup(t *testing.T) {
 		t.Fatal("an admin must run the sample cleanup")
 	}
 }
+
+func TestCheckACLHttpConfigTransfer(t *testing.T) {
+	settingsWrite := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
+	if !CheckACLHttp(http.MethodGet, "/v2/console/base/config-transfer", NewPermission(console.AclResources_SETTINGS, PermissionRead)) {
+		t.Fatal("settings read must see the config transfer page")
+	}
+	for _, p := range []string{"/export", "/preview", "/apply", "/settings"} {
+		method := http.MethodPost
+		if p == "/settings" {
+			method = http.MethodPut
+		}
+		if CheckACLHttp(method, "/v2/console/base/config-transfer"+p, settingsWrite) {
+			t.Fatalf("only an admin may call %s", p)
+		}
+		if !CheckACLHttp(method, "/v2/console/base/config-transfer"+p, Admin()) {
+			t.Fatalf("an admin must call %s", p)
+		}
+	}
+}
