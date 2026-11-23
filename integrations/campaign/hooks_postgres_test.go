@@ -33,10 +33,10 @@ func TestPostgresStartGateAndResultObserversSeeTheItem(t *testing.T) {
 		campaignhooks.SetResultObserver("test", nil)
 	})
 
-	if _, err := f.s.rpcStart(context.Background(), user, `{"stageKey":"`+st+`","vehicleKey":"broken-car"}`); code(err) != "CAR_NEEDS_SERVICE" {
+	if _, err := f.s.rpcStart(context.Background(), user, `{"stageKey":"`+st+`","itemKey":"broken-car"}`); code(err) != "CAR_NEEDS_SERVICE" {
 		t.Fatalf("gate = %v", err)
 	}
-	out, err := f.s.rpcStart(context.Background(), user, `{"stageKey":"`+st+`","vehicleKey":"audi"}`)
+	out, err := f.s.rpcStart(context.Background(), user, `{"stageKey":"`+st+`","itemKey":"audi"}`)
 	if err != nil {
 		t.Fatal(err)
 	}
