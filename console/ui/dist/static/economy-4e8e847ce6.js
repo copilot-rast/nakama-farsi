@@ -3828,6 +3828,26 @@ var MESSAGES = {
     'ct.upload': "آپلود بستهٔ تازه",
     'ct.upload.go': "آپلود",
     'ct.uploading': "در حال آپلود…",
+    'ct.step.assemble': "سرور در حال سرهم کردن {n} فایل است…",
+    'ct.step.retry': "اتصال قطع شد؛ تلاش دوباره ({n})…",
+    'ct.step.resume': "بخشی به حجم {done} از قبل رسیده بود؛ بقیه فرستاده می‌شود.",
+    'ct.assembling': "در حال سرهم شدن",
+    'ct.ev.file_rejected': "فایل رد شد",
+    'ct.asm.err.PACK_FILE_HASH_MISMATCH': "فایل سرهم‌شده با هش خودش نخواند؛ دوباره آپلودش کنید.",
+    'ct.asm.err.PACK_PART_LOST': "یک تکه در فضای ذخیره پیدا نشد؛ همان تکه را دوباره بفرستید.",
+    'ct.asm.err.STORAGE_ERROR': "نوشتن در فضای ذخیره نشد؛ سرور خودش دوباره تلاش می‌کند.",
+    'ct.resume': "ادامهٔ آپلود",
+    'ct.resume.hint': "برای ادامه، همان فایل‌ها را دوباره انتخاب کنید؛ فقط تکه‌های نرسیده فرستاده می‌شوند.",
+    'ct.h.large': "آپلود فایل‌های بزرگ",
+    'ct.s.parallel': "تعداد تکه‌های هم‌زمان",
+    'ct.s.parallel.hint': "کنسول این تعداد تکه را با هم می‌فرستد. روی اینترنت کند عدد کمتری بگذارید.",
+    'ct.s.retries': "تلاش دوباره برای هر تکه",
+    'ct.s.workers': "سرهم کردن هم‌زمان در هر سرور",
+    'ct.s.lease': "مهلت قفل سرهم کردن (ثانیه)",
+    'ct.s.lease.hint': "اگر سروری وسط کار از کار بیفتد، بعد از این مدت سرور دیگری کار را ادامه می‌دهد.",
+    'ct.s.sweep': "بررسی کارهای مانده (ثانیه)",
+    'ct.s.sweep.hint': "هر چند ثانیه سرور دنبال فایل‌هایی می‌گردد که همهٔ تکه‌هایشان رسیده ولی هنوز ساخته نشده‌اند.",
+    'code.PACK_ASSEMBLING': "سرور هنوز در حال سرهم کردن فایل‌هاست؛ چند لحظهٔ دیگر دوباره امتحان کنید.",
     'ct.uploaded': "بسته آپلود شد.",
     'ct.pack': "بستهٔ محتوا",
     'ct.f.platform': "پلتفرم",
@@ -10094,6 +10114,26 @@ var MESSAGES = {
     'ct.upload': "Upload a pack",
     'ct.upload.go': "Upload",
     'ct.uploading': "Uploading…",
+    'ct.step.assemble': "The server is joining {n} files…",
+    'ct.step.retry': "Connection dropped; retrying ({n})…",
+    'ct.step.resume': "{done} had already arrived; sending the rest.",
+    'ct.assembling': "Assembling",
+    'ct.ev.file_rejected': "File rejected",
+    'ct.asm.err.PACK_FILE_HASH_MISMATCH': "The joined file did not match its hash; upload it again.",
+    'ct.asm.err.PACK_PART_LOST': "A part was missing from storage; send that part again.",
+    'ct.asm.err.STORAGE_ERROR': "Could not write to storage; the server retries on its own.",
+    'ct.resume': "Continue upload",
+    'ct.resume.hint': "To continue, pick the same files again; only the missing parts are sent.",
+    'ct.h.large': "Large uploads",
+    'ct.s.parallel': "Parts sent at once",
+    'ct.s.parallel.hint': "The console sends this many parts together. Use a lower number on slow links.",
+    'ct.s.retries': "Retries per part",
+    'ct.s.workers': "Files joined at once per server",
+    'ct.s.lease': "Assembly lock time (seconds)",
+    'ct.s.lease.hint': "If a server stops mid-way, another server takes over after this time.",
+    'ct.s.sweep': "Check for waiting files (seconds)",
+    'ct.s.sweep.hint': "How often the server looks for files whose parts have all arrived but are not built yet.",
+    'code.PACK_ASSEMBLING': "The server is still joining the files; try again in a moment.",
     'ct.uploaded': "Pack uploaded.",
     'ct.pack': "Content pack",
     'ct.f.platform': "Platform",
@@ -28733,11 +28773,84 @@ function ctHex(buf) {
   return Array.prototype.map.call(new Uint8Array(buf), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
 }
 
+var CT_HASHES = {};
+var CT_INFO = { platforms: [], pattern: '' };
+
 function ctSha256(file) {
+  var key = file.name + '|' + file.size + '|' + file.lastModified;
+  if (CT_HASHES[key]) return Promise.resolve(CT_HASHES[key]);
   return file.arrayBuffer().then(function (buf) {
     if (window.crypto && window.crypto.subtle && window.isSecureContext) return window.crypto.subtle.digest('SHA-256', buf).then(ctHex);
     return ctSha256Js(new Uint8Array(buf));
+  }).then(function (sha) {
+    CT_HASHES[key] = sha;
+    return sha;
   });
+}
+
+function ctWait(ms) {
+  return new Promise(function (resolve) { setTimeout(resolve, ms); });
+}
+
+function ctRetryable(err) {
+  var st = err && err.status;
+  return st === 0 || st === 408 || st === 429 || st >= 500 || !st;
+}
+
+function ctRetry(fn, retries, onRetry) {
+  var attempt = 0;
+  function go() {
+    return fn().catch(function (err) {
+      if (attempt >= retries || !ctRetryable(err)) throw err;
+      attempt++;
+      if (onRetry) onRetry(attempt);
+      return ctWait(Math.min(15000, 500 * Math.pow(2, attempt - 1)) + Math.floor(Math.random() * 250)).then(go);
+    });
+  }
+  return go();
+}
+
+function ctSendParts(packId, missing, bySha, opts, onProgress) {
+  var jobs = [];
+  var total = 0;
+  var done = 0;
+  (missing || []).forEach(function (m) {
+    if (m.state === 'assembling') return;
+    var have = {};
+    (m.received || []).forEach(function (n) { have[n] = true; });
+    for (var n = 0; n < m.parts; n++) {
+      var start = n * m.partBytes;
+      var end = Math.min(m.size, start + m.partBytes);
+      total += end - start;
+      if (have[n]) { done += end - start; continue; }
+      jobs.push({ sha: m.sha256, n: n, start: start, end: end });
+    }
+  });
+  var resumed = done;
+  var next = 0;
+  var failed = null;
+  onProgress(done, total, resumed, 0);
+  function worker() {
+    if (failed || next >= jobs.length) return Promise.resolve();
+    var job = jobs[next++];
+    var file = bySha[job.sha];
+    if (!file) { failed = { code: 'PACK_FILES_MISSING' }; return Promise.reject(failed); }
+    return ctRetry(function () {
+      return file.slice(job.start, job.end).arrayBuffer().then(function (buf) {
+        return baseApi('PUT', '/content/packs/' + encodeURIComponent(packId) + '/blobs/' + job.sha + '/' + job.n, buf, true);
+      });
+    }, opts.retries, function (k) { onProgress(done, total, resumed, k); }).then(function () {
+      done += job.end - job.start;
+      onProgress(done, total, resumed, 0);
+      return worker();
+    }, function (err) {
+      failed = err;
+      throw err;
+    });
+  }
+  var pool = [];
+  for (var i = 0; i < Math.max(1, Math.min(opts.parallel || 1, jobs.length)); i++) pool.push(worker());
+  return Promise.all(pool);
 }
 
 function ctBytes(n) {
@@ -28831,8 +28944,10 @@ function ctPackPanel(id, onchange) {
       var files = res.files || [];
       body.appendChild(h('section', { 'data-ct-files': '' },
         h('h3', { class: 'font-medium mb-2', text: t('ct.files') }),
-        table([{ label: t('ct.col.path') }, { label: t('ct.col.size'), width: 110 }, { label: t('col.status'), width: 110 }], files.slice(0, 500).map(function (f) {
-          return { item: f, cells: [ctLtr(f.path), h('span', { class: 'tabular-nums whitespace-nowrap', text: ctBytes(f.size) }), f.stored ? tag(t('ct.stored'), 'success') : tag(t('ct.missing'), 'warning')] };
+        table([{ label: t('ct.col.path') }, { label: t('ct.col.size'), width: 110 }, { label: t('col.status'), width: 150 }], files.slice(0, 500).map(function (f) {
+          var st = f.stored ? tag(t('ct.stored'), 'success') : f.state === 'assembling' ? tag(t('ct.assembling'), 'primary') : tag(t('ct.missing'), 'warning');
+          return { item: f, cells: [h('div', { class: 'flex flex-col gap-1 min-w-0' }, ctLtr(f.path), f.error ? h('span', { class: 'text-xs text-secondary-500', text: t('ct.asm.err.' + f.error) }) : null),
+            h('span', { class: 'tabular-nums whitespace-nowrap', text: ctBytes(f.size) }), h('span', { 'data-ct-file-state': f.state || '' }, st)] };
         }))));
       var events = res.events || [];
       if (events.length) {
@@ -28840,13 +28955,22 @@ function ctPackPanel(id, onchange) {
           h('h3', { class: 'font-medium mb-2', text: t('ct.events') }),
           h('div', { class: 'flex flex-col text-sm' }, events.map(function (ev) {
             return h('div', { class: 'flex flex-wrap items-center gap-2 py-1 eco-fg-row' },
-              tag(t('ct.ev.' + ev.action), ev.action === 'activated' ? 'success' : 'secondary'),
+              tag(t('ct.ev.' + ev.action), ev.action === 'activated' ? 'success' : ev.action === 'file_rejected' ? 'warning' : 'secondary'),
               h('span', { class: 'text-secondary-500', text: ev.actor || '' }),
+              ev.detail && ev.detail.path ? ctLtr(ev.detail.path, 'text-secondary-500') : null,
+              ev.detail && ev.detail.code ? h('span', { class: 'text-xs text-secondary-500', text: t('ct.asm.err.' + ev.detail.code) }) : null,
               h('span', { class: 'flex-1' }),
               h('span', { class: 'text-xs text-secondary-500 whitespace-nowrap', text: fmtDate(ev.createdAt, true) }));
           }))));
       }
       if (!write) return;
+      if (p.status === 'uploading') {
+        var more = button({ variant: 'primary', size: 'footer', icon: 'upload', label: t('ct.resume'), onclick: function () {
+          ctUploadPanel(CT_INFO, onchange, { kind: p.kind, platform: p.platform, version: p.version, minAppVersion: p.minAppVersion, maxAppVersion: p.maxAppVersion, note: p.note });
+        } });
+        more.setAttribute('data-ct-action', 'resume');
+        footer.appendChild(more);
+      }
       if (p.status === 'ready' && !p.active) {
         var on = button({ variant: 'primary', size: 'footer', icon: 'check', label: t('ct.activate'), onclick: function () { setBusy(on, true); act('/activate', 'POST', 'ct.packOn'); } });
         on.setAttribute('data-ct-action', 'activate');
@@ -28878,23 +29002,26 @@ function ctCommonRoot(paths) {
   return root;
 }
 
-function ctUploadPanel(info, onDone) {
-  var state = { kind: 'addressables', platform: info.platforms[0] || 'Android', version: '', minAppVersion: '', maxAppVersion: '', note: '', activate: true, files: [], busy: false };
+function ctUploadPanel(info, onDone, preset) {
+  preset = preset || {};
+  var platforms = info.platforms.slice();
+  if (preset.platform && platforms.indexOf(preset.platform) === -1) platforms.unshift(preset.platform);
+  var state = { kind: preset.kind || 'addressables', platform: preset.platform || platforms[0] || 'Android', version: preset.version || '', minAppVersion: preset.minAppVersion || '', maxAppVersion: preset.maxAppVersion || '', note: preset.note || '', activate: true, files: [], busy: false };
   var body = h('div', { 'data-ct-upload': '' });
   var footer = h('div', { class: 'flex gap-2 w-full items-center justify-end' });
   ctOpenPanel('content/upload', t('ct.upload'), body, footer, function () { if (!state.busy) closePanel(); });
   var top = h('div', {});
-  var platform = selectInput(state.platform, info.platforms.map(function (p) { return { value: p, label: p }; }), function (v) { state.platform = v; summary(); }, { label: t('ct.f.platform'), placeholder: false });
+  var platform = selectInput(state.platform, platforms.map(function (p) { return { value: p, label: p }; }), function (v) { state.platform = v; summary(); }, { label: t('ct.f.platform'), placeholder: false });
   platform.setAttribute('data-ct-field', 'platform');
   var kind = selectInput(state.kind, ['addressables', 'files'].map(function (k) { return { value: k, label: t('ct.kind.' + k) }; }), function (v) { state.kind = v; summary(); }, { label: t('ct.f.kind'), placeholder: false });
   kind.setAttribute('data-ct-field', 'kind');
-  var version = textInput('', { ltr: true, mono: true, label: t('ct.f.version'), placeholder: '1.0.0', oninput: function (v) { state.version = toLatinDigits(v).trim(); } });
+  var version = textInput(state.version, { ltr: true, mono: true, label: t('ct.f.version'), placeholder: '1.0.0', oninput: function (v) { state.version = toLatinDigits(v).trim(); } });
   version.setAttribute('data-ct-field', 'version');
-  var minV = textInput('', { ltr: true, mono: true, label: t('ct.f.min'), placeholder: '1.0', oninput: function (v) { state.minAppVersion = toLatinDigits(v).trim(); } });
+  var minV = textInput(state.minAppVersion, { ltr: true, mono: true, label: t('ct.f.min'), placeholder: '1.0', oninput: function (v) { state.minAppVersion = toLatinDigits(v).trim(); } });
   minV.setAttribute('data-ct-field', 'min');
-  var maxV = textInput('', { ltr: true, mono: true, label: t('ct.f.max'), placeholder: '1.9', oninput: function (v) { state.maxAppVersion = toLatinDigits(v).trim(); } });
+  var maxV = textInput(state.maxAppVersion, { ltr: true, mono: true, label: t('ct.f.max'), placeholder: '1.9', oninput: function (v) { state.maxAppVersion = toLatinDigits(v).trim(); } });
   maxV.setAttribute('data-ct-field', 'max');
-  var note = textInput('', { label: t('ct.f.note'), oninput: function (v) { state.note = v; } });
+  var note = textInput(state.note, { label: t('ct.f.note'), oninput: function (v) { state.note = v; } });
   var activate = checkbox(true, t('ct.f.activate'), function (on) { state.activate = on; });
   activate.setAttribute('data-ct-field', 'activate');
   var dirInput = h('input', { type: 'file', multiple: true, hidden: true, 'data-ct-input': 'folder' });
@@ -28954,6 +29081,7 @@ function ctUploadPanel(info, onDone) {
     progBar.firstChild.style.width = (total ? Math.min(100, Math.round(done / total * 100)) : 0) + '%';
     progText.textContent = text;
   }
+  if (preset.version) top.appendChild(h('div', { class: 'mb-4', 'data-ct-resume-hint': '' }, notice('info', t('ct.resume.hint'))));
   body.appendChild(h('div', {}, top,
     field(t('ct.f.kind'), kind),
     h('div', { class: 'eco-form-row' }, field(t('ct.f.platform'), platform), field(t('ct.f.version'), version, t('ct.f.version.hint'))),
@@ -28993,44 +29121,51 @@ function ctUploadPanel(info, onDone) {
       });
     }
     var packId = null;
+    var opts = { parallel: 4, retries: 5 };
+    function sendProgress(done, total, resumed, retry) {
+      var text = t('ct.step.send', { done: ctBytes(done), total: ctBytes(total) });
+      if (resumed) text += ' · ' + t('ct.step.resume', { done: ctBytes(resumed) });
+      if (retry) text += ' · ' + t('ct.step.retry', { n: localDigits(String(retry)) });
+      progress.setAttribute('data-ct-phase', 'send');
+      setProgress(done, total, text);
+    }
+    var deadline = 0;
+    function finish(round) {
+      return ctRetry(function () {
+        return baseApi('POST', '/content/packs/' + encodeURIComponent(packId) + '/complete', { activate: state.activate });
+      }, opts.retries).catch(function (err) {
+        if (err.code !== 'PACK_ASSEMBLING' && err.code !== 'PACK_FILES_MISSING') throw err;
+        return ctRetry(function () { return baseApi('GET', '/content/packs/' + encodeURIComponent(packId)); }, opts.retries).then(function (res) {
+          var miss = res.missing || [];
+          var need = miss.filter(function (m) { return m.state !== 'assembling'; });
+          if (need.length) {
+            if (round >= 3) throw err;
+            var bad = need.filter(function (m) { return m.error; })[0];
+            if (bad) clear(top).appendChild(h('div', { class: 'mb-4' }, notice('warning', t('ct.asm.err.' + bad.error))));
+            return ctSendParts(packId, need, bySha, opts, sendProgress).then(function () { return finish(round + 1); });
+          }
+          if (!deadline) deadline = Date.now() + 3600 * 1000;
+          if (Date.now() > deadline) throw err;
+          progress.setAttribute('data-ct-phase', 'assembling');
+          setProgress(1, 1, t('ct.step.assemble', { n: localDigits(String(miss.length || 1)) }));
+          return ctWait(2000).then(function () { return finish(round); });
+        });
+      });
+    }
     hashNext().then(function () {
       setProgress(0, 1, t('ct.step.plan'));
       return baseApi('POST', '/content/packs', { kind: state.kind, platform: state.platform, version: state.version, minAppVersion: state.minAppVersion, maxAppVersion: state.maxAppVersion, note: state.note.trim(), files: list });
     }).then(function (res) {
       packId = res.pack.id;
-      var jobs = [];
-      var bytes = 0;
-      (res.missing || []).forEach(function (m) {
-        var have = {};
-        (m.received || []).forEach(function (n) { have[n] = true; });
-        for (var n = 0; n < m.parts; n++) {
-          if (have[n]) continue;
-          var start = n * m.partBytes;
-          var end = Math.min(m.size, start + m.partBytes);
-          jobs.push({ sha: m.sha256, n: n, start: start, end: end });
-          bytes += end - start;
-        }
-      });
-      var sent = 0;
-      var j = 0;
-      function next() {
-        if (j >= jobs.length) return Promise.resolve();
-        var job = jobs[j];
-        setProgress(sent, bytes, t('ct.step.send', { done: ctBytes(sent), total: ctBytes(bytes) }));
-        return bySha[job.sha].slice(job.start, job.end).arrayBuffer().then(function (buf) {
-          return baseApi('PUT', '/content/packs/' + encodeURIComponent(packId) + '/blobs/' + job.sha + '/' + job.n, buf, true);
-        }).then(function () {
-          sent += job.end - job.start;
-          j++;
-          return next();
-        });
-      }
-      return next();
+      if (res.upload) opts = { parallel: res.upload.parallel || 1, retries: res.upload.retries || 0 };
+      return ctSendParts(packId, res.missing, bySha, opts, sendProgress);
     }).then(function () {
+      progress.setAttribute('data-ct-phase', 'finish');
       setProgress(1, 1, t('ct.step.finish'));
-      return baseApi('POST', '/content/packs/' + encodeURIComponent(packId) + '/complete', { activate: state.activate });
+      return finish(0);
     }).then(function (res) {
       state.busy = false;
+      progress.setAttribute('data-ct-phase', 'done');
       toast('success', t('ct.uploaded'));
       onDone();
       ctPackPanel(res.item.id, onDone);
@@ -29041,7 +29176,8 @@ function ctUploadPanel(info, onDone) {
 function contentPacksPage(container, query) {
   var write = aclCan('SETTINGS', 1);
   var state = { platform: query.platform || '', status: query.status || '' };
-  var info = { platforms: [], pattern: '' };
+  var info = CT_INFO;
+  var painted = false;
   var upload = write ? button({ variant: 'primary', size: 'sm', icon: 'upload', label: t('ct.upload'), onclick: function () { ctUploadPanel(info, load); } }) : null;
   if (upload) upload.setAttribute('data-ct-new', '');
   var frame = pageFrame(t('nav.content-packs'), t('desc.content-packs'), upload ? [upload] : null);
@@ -29085,7 +29221,8 @@ function contentPacksPage(container, query) {
   function load() {
     clear(listBox).appendChild(table(cols, skeletonRows(cols, 3)));
     baseApi('GET', '/content/packs' + qs(state)).then(function (res) {
-      var first = !info.platforms.length;
+      var first = !painted;
+      painted = true;
       info.platforms = res.platforms || [];
       if (first) { paintFilters(); paintPreview(); }
       var current = res.current || {};
@@ -29132,6 +29269,16 @@ var CT_SETTINGS_FIELDS = [
   ] },
   { name: 'packs.catalogPattern', type: 'text', ltr: true, label: 'ct.s.pattern', hint: 'ct.s.pattern.hint', required: true },
   { name: 'packs.requireHash', type: 'bool', inline: true, label: 'ct.s.requireHash' },
+  { type: 'heading', label: 'ct.h.large' },
+  { type: 'row', fields: [
+    { name: 'packs.uploadParallel', type: 'number', label: 'ct.s.parallel', hint: 'ct.s.parallel.hint', min: 1, max: 8, required: true },
+    { name: 'packs.uploadRetries', type: 'number', label: 'ct.s.retries', min: 0, max: 20, required: true }
+  ] },
+  { type: 'row', fields: [
+    { name: 'packs.assembleWorkers', type: 'number', label: 'ct.s.workers', min: 1, max: 16, required: true },
+    { name: 'packs.assembleLeaseSeconds', type: 'number', label: 'ct.s.lease', hint: 'ct.s.lease.hint', min: 30, max: 3600, required: true }
+  ] },
+  { name: 'packs.assembleSweepSeconds', type: 'number', label: 'ct.s.sweep', hint: 'ct.s.sweep.hint', min: 5, max: 3600, required: true },
   { type: 'heading', label: 'ct.h.serve' },
   { name: 'packs.singleActive', type: 'bool', inline: true, label: 'ct.s.single', hint: 'ct.s.single.hint' },
   { name: 'packs.requireAppVersion', type: 'bool', inline: true, label: 'ct.s.requireVersion', hint: 'ct.s.requireVersion.hint' },
