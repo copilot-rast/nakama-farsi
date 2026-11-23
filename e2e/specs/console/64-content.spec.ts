@@ -2,7 +2,8 @@ import { expect, test } from '../../lib/fixtures';
 import { noHorizontalScroll, open, panel, root } from '../../lib/console';
 import { base, deleteUser, devicePlayer, rpc, type Player } from '../../lib/api';
 import { sql } from '../../lib/db';
-import { API_URL } from '../../lib/env';
+import { API_URL, CONSOLE_URL, CONSOLE_PASSWORD, CONSOLE_USER } from '../../lib/env';
+import crypto from 'node:crypto';
 
 const VERSION = 'e2e-' + Date.now().toString(36);
 const BUNDLE = Buffer.alloc(1_600_000, 'roadstorm');
@@ -111,6 +112,50 @@ test.describe('downloadable content: upload from the console, catalog for the ga
     await expect(root(page).locator('h1')).toHaveText('محتوای دانلودی');
   });
 
+  test('an interrupted large upload resumes from the server list and the server joins the file', async ({ page }) => {
+    const big = crypto.randomBytes(5 * 1024 * 1024 + 777);
+    const cat = Buffer.from(JSON.stringify({ m_LocatorId: 'AddressablesMainContentCatalog', resume: VERSION }));
+    const sha = (b: Buffer) => crypto.createHash('sha256').update(b).digest('hex');
+    const version = VERSION + '-resume';
+    const plan = await base.post('/content/packs', { platform: 'Android', version, files: [
+      { path: 'catalog_resume.json', sha256: sha(cat), size: cat.length },
+      { path: 'yard_e2e.bundle', sha256: sha(big), size: big.length },
+    ] });
+    const id = plan.pack.id;
+    const m = plan.missing.find((x: any) => x.sha256 === sha(big));
+    expect(m.parts).toBe(6);
+    const auth = 'Basic ' + Buffer.from(CONSOLE_USER + ':' + CONSOLE_PASSWORD).toString('base64');
+    const put = (s: string, n: number, b: Buffer) => fetch(CONSOLE_URL + '/v2/console/base/content/packs/' + id + '/blobs/' + s + '/' + n, { method: 'PUT', headers: { Authorization: auth }, body: b }).then((r) => r.json());
+    expect((await put(sha(cat), 0, cat)).state).toBe('stored');
+    for (const n of [0, 2, 3]) expect((await put(sha(big), n, big.subarray(n * m.partBytes, (n + 1) * m.partBytes))).state).toBe('uploading');
+    const sent: string[] = [];
+    const states: string[] = [];
+    page.on('request', (r) => { if (r.method() === 'PUT' && r.url().includes('/blobs/')) sent.push(r.url().split('/').pop() || ''); });
+    page.on('response', async (r) => { if (r.request().method() === 'PUT' && r.url().includes('/blobs/')) states.push((await r.json().catch(() => ({}))).state); });
+    await open(page, '#/system/content');
+    await root(page).locator('[data-ct-row="Android:' + version + '"]').click();
+    await expect(panel(page).locator('[data-ct-file-state="uploading"]')).toHaveCount(1);
+    await expect(panel(page).locator('[data-ct-file-state="stored"]')).toHaveCount(1);
+    await panel(page).locator('[data-ct-action="resume"]').click();
+    const form = panel(page).locator('[data-ct-upload]');
+    await expect(form.locator('[data-ct-resume-hint]')).toBeVisible();
+    await expect(form.locator('[data-ct-field="version"]')).toHaveValue(version);
+    await form.locator('[data-ct-input="files"]').setInputFiles([
+      { name: 'catalog_resume.json', mimeType: 'application/json', buffer: cat },
+      { name: 'yard_e2e.bundle', mimeType: 'application/octet-stream', buffer: big },
+    ]);
+    await panel(page).locator('[data-ct-send]').click();
+    const detail = panel(page).locator('[data-ct-pack]');
+    await expect(detail.locator('[data-ct-status="ready"]')).toBeVisible({ timeout: 60_000 });
+    expect(sent.sort()).toEqual(['1', '4', '5']);
+    expect(states).toContain('assembling');
+    const got = await base.get('/content/packs/' + id);
+    expect(got.item.status).toBe('ready');
+    expect(got.files.every((f: any) => f.state === 'stored')).toBe(true);
+    const file = await fetch(API_URL + '/v2/content/files/' + id + '/yard_e2e.bundle');
+    expect(sha(Buffer.from(await file.arrayBuffer()))).toBe(sha(big));
+  });
+
   test('English, dark, 390px', async ({ spawn }) => {
     const m = await spawn({ signedIn: true, mobile: true, locale: 'en', mode: 'dark', width: 390, height: 844 });
     await open(m, '#/system/content');
@@ -119,6 +164,7 @@ test.describe('downloadable content: upload from the console, catalog for the ga
     await noHorizontalScroll(m);
     await open(m, '#/system/content/settings');
     await expect(root(m).locator('[data-settings-form="content"]')).toContainText('Part size (KB)');
+    await expect(root(m).locator('[data-settings-form="content"]')).toContainText('Parts sent at once');
     await noHorizontalScroll(m);
   });
 });
