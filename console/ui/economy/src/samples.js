@@ -44,10 +44,10 @@ function scTable(p) {
 
 function scChanges(p) {
   var items = (p.changes || []).map(function (c) {
-    var what = c.kind === 'payment_method' ? t('sc.change.payment_method', { key: c.key }) : t('sc.change.' + c.kind);
-    var how = c.action === 'reset' ? t('sc.action.reset') : t('sc.action.kept') + (c.reason ? '، ' + scReason(c.reason) : '');
+    var what = t('sc.change.' + c.kind, { key: c.key });
+    var how = c.kind === 'app_version_link' ? t('sc.action.links') : c.action === 'deleted' ? t('sc.action.deleted') : c.action === 'reset' ? t('sc.action.reset') : t('sc.action.kept') + (c.reason ? '، ' + scReason(c.reason) : '');
     return h('li', { class: 'flex flex-wrap items-center gap-2 text-sm', 'data-sc-change': c.kind + ':' + c.key, 'data-action': c.action },
-      tag(what, c.action === 'reset' ? 'warning' : 'secondary'), h('span', { class: 'text-secondary-600 dark:text-secondary-300', text: how }));
+      tag(what, c.action === 'reset' || c.action === 'deleted' ? 'warning' : 'secondary'), h('span', { class: 'text-secondary-600 dark:text-secondary-300', text: how }));
   });
   (p.leaderboards || []).forEach(function (id) {
     items.push(h('li', { class: 'text-sm text-secondary-600 dark:text-secondary-300', 'data-sc-board': id }, h('span', { text: t('sc.leaderboard') + ' ' }), mono(id)));

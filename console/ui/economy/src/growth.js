@@ -233,6 +233,12 @@ function referralTree(userId) {
 
 var referralReload = null;
 
+function referralPerson(id, username, display, extra) {
+  var box = h('span', { class: 'inline-flex flex-col min-w-0', 'data-referral-person': id || '' }, playerLink(id, username, extra));
+  if (display && display !== username) box.appendChild(h('span', { class: 'text-xs text-secondary-500 truncate', dir: 'auto', 'data-display-name': '', text: display }));
+  return box;
+}
+
 LISTS.referrals = {
   path: 'referrals',
   noRow: true,
@@ -243,7 +249,7 @@ LISTS.referrals = {
     { name: 'referrerId', label: 'filter.referrerId', type: 'text' }
   ],
   columns: [
-    { label: 'col.referral', render: function (it) { return h('div', { class: 'flex flex-wrap items-center gap-1 min-w-0' }, playerLink(it.referrerId, it.referrerName), h('span', { class: 'text-secondary-400', text: '←' }), playerLink(it.refereeId, it.refereeName)); }, skeleton: '60%' },
+    { label: 'col.referral', render: function (it) { return h('div', { class: 'flex flex-wrap items-center gap-1 min-w-0' }, referralPerson(it.referrerId, it.referrerName, it.referrerDisplayName), h('span', { class: 'text-secondary-400', text: '←' }), referralPerson(it.refereeId, it.refereeName, it.refereeDisplayName)); }, skeleton: '60%' },
     { label: 'col.code', render: function (it) { return mono(it.code); }, width: 110 },
     { label: 'col.status', render: function (it) { return h('div', {}, referralStatusTag(it), referralFlags(it.flags)); }, width: 170 },
     { label: 'col.goal', render: referralGoal, width: 150 },
@@ -266,7 +272,7 @@ function referralTop() {
       var top = h('ol', { class: 'flex flex-col', 'data-top-referrers': '' });
       s.topReferrers.forEach(function (r, i) {
         top.appendChild(h('li', { class: 'flex flex-wrap items-center gap-2 px-4 py-2 border-b border-secondary-200 dark:border-secondary-700 text-sm' },
-          h('span', { class: 'tabular-nums text-secondary-500 w-6', text: localDigits(i + 1) }), playerLink(r.userId, r.username, 'font-medium'),
+          h('span', { class: 'tabular-nums text-secondary-500 w-6', text: localDigits(i + 1) }), referralPerson(r.userId, r.username, r.displayName, 'font-medium'),
           h('span', { class: 'tabular-nums', text: t('rf.top.line', { n: fmtNum(r.total), done: fmtNum(r.completed) }) }),
           r.flagged ? tag(t('rf.top.flagged', { n: fmtNum(r.flagged) }), 'warning') : null,
           h('span', { class: 'flex-1' }),
@@ -317,6 +323,49 @@ function referralRulesPage(container) {
   } });
   frame.content.appendChild(page.el);
   page.load();
+  frame.content.appendChild(referralRebindBox());
+}
+
+function referralRebindBox() {
+  var box = h('div', { class: 'mt-6', 'data-referral-rebind': '' });
+  function load() {
+    clear(box).appendChild(card(h('div', { class: 'p-4 flex flex-col gap-3' }, bar('40%'), bar('70%'))));
+    api('GET', '/referral-rebind').then(function (v) {
+      clear(box);
+      var body = h('div', { class: 'p-4 flex flex-col gap-3' },
+        h('h2', { class: 'text-base font-semibold', text: t('rb.title') }),
+        h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300', text: t('rb.text') }));
+      if (!v.total) {
+        body.appendChild(h('p', { class: 'text-sm text-secondary-500', 'data-rebind-none': '', text: t('rb.none') }));
+        box.appendChild(card(body));
+        return;
+      }
+      body.appendChild(h('p', { class: 'text-sm', 'data-rebind-total': v.total, text: t('rb.count', { n: fmtNum(v.total), done: fmtNum(v.willComplete) }) }));
+      var list = h('ul', { class: 'flex flex-col gap-1 text-sm' });
+      (v.groups || []).forEach(function (g) {
+        list.appendChild(h('li', { class: 'flex flex-wrap items-center gap-2', 'data-rebind-group': g.goalEventKey + ':' + g.status },
+          h('span', { class: 'font-mono text-xs', dir: 'ltr', text: g.goalEventKey || t('rf.noGoal') }), referralStatusTag(g),
+          h('span', { class: 'tabular-nums text-secondary-500', text: t('rb.line', { n: fmtNum(g.count) }) })));
+      });
+      body.appendChild(list);
+      if (aclCan('HIRO_ECONOMY', 1)) {
+        var prizes = { on: true };
+        var sw = toggle(true, t('rb.prizes'), function (on) { prizes.on = on; }, 'sm');
+        body.appendChild(sw);
+        var go = button({ variant: 'primary', size: 'sm', label: t('rb.apply'), onclick: function () {
+          formDialog({ id: 'referral-rebind', title: t('rb.confirm.title'), text: t('rb.confirm.text', { n: fmtNum(v.total) }), icon: 'referrals', ok: t('rb.apply'),
+            body: h('div', {}), submit: function () { return api('POST', '/referral-rebind', { confirm: 'rebind', prizes: prizes.on }); } }).then(function (res) {
+            if (res && res !== true) { toast('success', t('rb.done', { n: fmtNum(res.rebound), done: fmtNum(res.completed) })); load(); }
+          });
+        } });
+        go.setAttribute('data-rebind-apply', '');
+        body.appendChild(h('div', {}, go));
+      }
+      box.appendChild(card(body));
+    }, function (err) { clear(box).appendChild(notice('error', errorText(err))); });
+  }
+  load();
+  return box;
 }
 
 function configValuePreview(it) {
