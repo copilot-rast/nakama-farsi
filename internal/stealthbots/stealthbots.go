@@ -142,9 +142,12 @@ func (s Settings) Boost(winsToday int) int {
 	return s.GuardBoost
 }
 
-var hiddenKeys = map[string]bool{
-	"botsallowed": true, "humanseats": true, "botfillseconds": true, "botafterseconds": true, "bottimeoutseconds": true,
-	"bottemplate": true, "botspay": true, "botprize": true, "botpoints": true, "stealth": true, "autobot": true,
+func hiddenName(l string) bool {
+	switch l {
+	case "botsallowed", "humanseats", "botfillseconds", "botafterseconds", "bottimeoutseconds", "bottemplate", "botspay", "botprize", "botpoints", "stealth", "autobot":
+		return true
+	}
+	return false
 }
 
 func botPrefixed(k string) bool {
@@ -159,7 +162,7 @@ func botPrefixed(k string) bool {
 }
 
 func hiddenKey(k string) bool {
-	return hiddenKeys[strings.ToLower(k)] || botPrefixed(k)
+	return hiddenName(strings.ToLower(k)) || botPrefixed(k)
 }
 
 func Scrub(v any) any {
@@ -200,10 +203,13 @@ func WithoutStealth(settings map[string]any) map[string]any {
 	return out
 }
 
-var markerKeys = map[string]bool{
-	"isbot": true, "bot": true, "vsbot": true, "trophyfree": true, "opponentisbot": true, "botprize": true, "botpoints": true,
-	"botafterseconds": true, "botfillseconds": true, "humanseats": true, "botsallowed": true, "bottimeoutseconds": true,
-	"botid": true, "bots": true, "stealth": true, "botfillat": true,
+func markerName(l string) bool {
+	switch l {
+	case "isbot", "bot", "vsbot", "trophyfree", "opponentisbot", "botprize", "botpoints", "botafterseconds", "botfillseconds", "humanseats",
+		"botsallowed", "bottimeoutseconds", "botid", "bots", "stealth", "botfillat":
+		return true
+	}
+	return false
 }
 
 func markerValue(key, s string) bool {
@@ -236,7 +242,7 @@ func Markers(raw []byte) []string {
 		case map[string]any:
 			for k, x := range t {
 				l := strings.ToLower(k)
-				if markerKeys[l] || botPrefixed(k) {
+				if markerName(l) || botPrefixed(k) {
 					out = append(out, path+"."+k)
 				}
 				walk(path+"."+k, k, x)
