@@ -30,4 +30,4 @@ summary: STORE_CONFIGURATION_REJECTED و METHOD_UNAVAILABLE حالا کد ۹ (FA
 
 ## پکیج یونیتی
 
-از نسخهٔ `3.23.0-nf.7`، `PaymentClient` با این کدها فوراً می‌ایستد و `PurchaseResult` با `Outcome = Pending` و `IsStoreNotReady = true` برمی‌گرداند (کد در `Error`). خرید مصرف نمی‌شود و `RecoverAsync` در شروع بعدی آن را تحویل می‌گیرد.
+از نسخهٔ `3.23.0-nf.9`، `PaymentClient` با این کدها فوراً می‌ایستد و `PurchaseResult` با `Outcome = Pending` و `IsStoreNotReady = true` برمی‌گرداند (کد در `Error`). خرید مصرف نمی‌شود و `RecoverAsync` در شروع بعدی آن را تحویل می‌گیرد.
