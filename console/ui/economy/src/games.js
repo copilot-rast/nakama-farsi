@@ -362,6 +362,11 @@ RESOURCES.games = {
       { name: 'matchSeconds', type: 'number', label: 'f.gm.limit', hint: 'f.gm.limit.hint', optional: true, min: 1, max: 604800 }
     ] },
     { name: 'botsAllowed', type: 'bool', inline: true, label: 'f.gm.bots', hint: 'f.gm.bots.hint' },
+    { name: 'stealthLink', type: 'static', readonly: true, live: true, when: function (v) { return !!v.key; }, render: function (v) {
+      var on = v.stealth && v.stealth.enabled;
+      return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-gm-stealth': on ? 'on' : 'off' }, on ? t('gm.stealth.on') + ' ' : null,
+        h('a', { href: hashFor('stealth-bots', null, { game: v.key }), class: 'eco-link', text: t('gm.stealth.link') }));
+    } },
     { type: 'row', fields: [
       { name: 'voiceEnabled', type: 'bool', inline: true, label: 'f.gm.voice', hint: 'f.gm.voice.hint' },
       { name: 'voiceMaxPlayers', type: 'number', label: 'f.gm.voiceMax', hint: 'f.gm.voiceMax.hint', optional: true, min: 0, max: 1000, when: function (v) { return v.voiceEnabled !== false; } }
@@ -439,7 +444,7 @@ RESOURCES.games = {
     p.leaderboardId = p.leaderboardId || '';
     p.platforms = p.platforms || [];
     if (!p.settings || typeof p.settings !== 'object') p.settings = {};
-    delete p.stats; delete p.regLine; delete p.roomsHint;
+    delete p.stats; delete p.regLine; delete p.roomsHint; delete p.stealthLink; delete p.stealth;
     return p;
   },
   afterSave: function () { GAME_REG.at = 0; forgetRefs('games'); }

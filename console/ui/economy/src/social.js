@@ -15,14 +15,20 @@ FRIEND_FIELDS.push(
     { name: 'dayZone', type: 'text', ltr: true, label: 'f.fr.dayZone', hint: 'f.fr.dayZone.hint', optional: true },
     { name: 'dayStartMinute', type: 'number', label: 'f.fr.dayStart', hint: 'f.fr.dayStart.hint', required: true, min: 0, max: 1439 }
   ] },
-  { name: 'botDeclineHours', type: 'number', label: 'f.fr.botDecline', hint: 'f.fr.botDecline.hint', required: true, min: 0, max: 8760 }
+  { name: 'botDeclineHours', type: 'number', label: 'f.fr.botDecline', hint: 'f.fr.botDecline.hint', required: true, min: 0, max: 8760 },
+  { type: 'row', fields: [
+    { name: 'botDeclineMinMinutes', type: 'number', label: 'f.fr.botDeclineMin', hint: 'f.fr.botDeclineRange.hint', required: true, min: 0, max: 525600 },
+    { name: 'botDeclineMaxMinutes', type: 'number', label: 'f.fr.botDeclineMax', required: true, min: 0, max: 525600,
+      check: function (v, vals) { return Number(v) > 0 && Number(v) < Number(vals.botDeclineMinMinutes || 0) ? t('sb.err.range') : null; } }
+  ] }
 );
 
 function friendRulesPayload(p) {
   return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0,
     requestsBonusMeta: p.requestsBonusMeta || '', friendsBonusMeta: p.friendsBonusMeta || '', matchPolicy: p.matchPolicy || 'priority', overLimit: p.overLimit || 'refuse',
     notifyDeclined: !!p.notifyDeclined, notifyRemoved: !!p.notifyRemoved, presenceFriendsOnly: !!p.presenceFriendsOnly, dmFriendsOnly: !!p.dmFriendsOnly,
-    dayZone: (p.dayZone || '').trim(), dayStartMinute: Number(p.dayStartMinute) || 0, botDeclineHours: Number(p.botDeclineHours) || 0 };
+    dayZone: (p.dayZone || '').trim(), dayStartMinute: Number(p.dayStartMinute) || 0, botDeclineHours: Number(p.botDeclineHours) || 0,
+    botDeclineMinMinutes: Number(p.botDeclineMinMinutes) || 0, botDeclineMaxMinutes: Number(p.botDeclineMaxMinutes) || 0 };
 }
 
 function unLadder(text) {

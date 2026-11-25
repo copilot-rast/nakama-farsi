@@ -14,6 +14,7 @@ import (
 	"github.com/gofrs/uuid/v5"
 	"github.com/heroiclabs/nakama/v3/internal/gamecatalog"
 	"github.com/heroiclabs/nakama/v3/internal/pluginkit"
+	"github.com/heroiclabs/nakama/v3/internal/stealthbots"
 )
 
 const (
@@ -234,6 +235,7 @@ func (s *service) gameSettle(ctx context.Context, st gamecatalog.Settlement) ([]
 	var gameKey, roomKey string
 	first := false
 	winners := []string{}
+	var stealth stealthbots.Settings
 	type prizeDue struct{ user, prize, part string }
 	dues := []prizeDue{}
 	finished := []string{}
@@ -258,6 +260,7 @@ func (s *service) gameSettle(ctx context.Context, st gamecatalog.Settlement) ([]
 		var room *gamecatalog.Room
 		if g, gerr := s.gameByKey(ctx, gameKey); gerr == nil {
 			room, _ = g.room(roomKey)
+			stealth = g.stealth()
 		}
 		if room == nil {
 			room = &gamecatalog.Room{}
@@ -365,13 +368,13 @@ func (s *service) gameSettle(ctx context.Context, st gamecatalog.Settlement) ([]
 				matchID, e.user, r.Status, nullInt(r.Rank), amountJSON, prizeID); err != nil {
 				return err
 			}
-			if !e.bot {
+			if !e.bot || (stealth.Enabled && stealth.Progress) {
 				if err := s.addGameStats(ctx, tx, e.user, gameKey, r.Status, played, potCur, won); err != nil {
 					return err
 				}
-				if r.Status == gamecatalog.ResultWon || r.Status == gamecatalog.ResultLost || r.Status == gamecatalog.ResultTimeout {
-					finished = append(finished, e.user)
-				}
+			}
+			if !e.bot && (r.Status == gamecatalog.ResultWon || r.Status == gamecatalog.ResultLost || r.Status == gamecatalog.ResultTimeout) {
+				finished = append(finished, e.user)
 			}
 		}
 		list := make([]gamecatalog.Result, 0, len(results))
@@ -428,7 +431,12 @@ func (s *service) gameSettle(ctx context.Context, st gamecatalog.Settlement) ([]
 				humans = append(humans, w)
 			}
 		}
-		s.writeGameLeaderboard(ctx, gameKey, humans)
+		if stealth.Enabled && stealth.Leaderboard {
+			s.writeGameLeaderboard(ctx, gameKey, winners)
+		} else {
+			s.writeGameLeaderboard(ctx, gameKey, humans)
+		}
+		s.stealthAfterMatch(ctx, matchID, gameKey, humans)
 	}
 	return s.settledPayouts(ctx, matchID)
 }
@@ -516,6 +524,9 @@ func (s *service) pickBots(ctx context.Context, q gamecatalog.BotQuery) ([]gamec
 	}
 	if q.Count > 50 {
 		q.Count = 50
+	}
+	if q.MatchID != "" {
+		return s.leaseBots(ctx, q)
 	}
 	exclude := []string{}
 	for _, id := range q.Exclude {

@@ -10,6 +10,7 @@ import (
 	"github.com/heroiclabs/nakama-common/runtime"
 	"github.com/heroiclabs/nakama/v3/internal/hookchain"
 	"github.com/heroiclabs/nakama/v3/internal/privatemeta"
+	"github.com/heroiclabs/nakama/v3/internal/stealthbots"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -111,6 +112,7 @@ func (s *service) rpcFriendsList(ctx context.Context, userID, payload string) (a
 	out := &api.FriendList{Friends: friends, Cursor: cursor}
 	_ = hookchain.RunAfterIn(ctx, "ListFriends", s.logger, s.db, s.nk, out)
 	privatemeta.Friends(out.Friends)
+	stealthbots.MarkFriends(ctx, s.db, out.Friends)
 	return protoOut(out)
 }
 
@@ -185,6 +187,7 @@ func (s *service) friendStatus(ctx context.Context, userID string, ids []string)
 		return nil, err
 	}
 	privatemeta.Friends(friends)
+	stealthbots.MarkFriends(ctx, s.db, friends)
 	return protoOut(&api.FriendList{Friends: friends})
 }
 
@@ -381,5 +384,6 @@ func (s *service) rpcUsersGet(ctx context.Context, _ string, payload string) (an
 	}
 	_ = hookchain.RunAfter(ctx, "GetUsers", s.logger, s.db, s.nk, out, req)
 	privatemeta.Users(out.Users)
+	stealthbots.MarkUsers(ctx, s.db, out.Users)
 	return protoOut(out)
 }

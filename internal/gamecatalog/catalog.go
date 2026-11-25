@@ -188,6 +188,7 @@ type Game struct {
 	Rooms         []Room            `json:"rooms"`
 	Requirements  *Requirements     `json:"requirements,omitempty"`
 	Settings      map[string]any    `json:"settings"`
+	Stealth       json.RawMessage   `json:"-"`
 	Version       int64             `json:"version"`
 }
 
@@ -313,6 +314,21 @@ type Provider interface {
 // entering (bot and friend room RPCs call Check before they create a match).
 type Checker interface {
 	Check(ctx context.Context, e Entry) error
+}
+
+type BotReleaser interface {
+	ReleaseBots(ctx context.Context, matchID string) error
+}
+
+func ReleaseBots(ctx context.Context, matchID string) error {
+	p, err := current()
+	if err != nil {
+		return err
+	}
+	if r, ok := p.(BotReleaser); ok {
+		return r.ReleaseBots(ctx, matchID)
+	}
+	return nil
 }
 
 var (

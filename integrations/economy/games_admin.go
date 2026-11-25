@@ -17,7 +17,7 @@ import (
 const gameAdminJSON = `jsonb_build_object('id',t.id,'key',t.key,'isActive',t.is_active,'name',t.name,'description',t.description,'maintenance',t.maintenance,'iconUrl',t.icon_url,
 	'categoryId',t.category_id,'tagIds',to_jsonb(t.tag_ids),'minPlayers',t.min_players,'maxPlayers',t.max_players,'turnSeconds',t.turn_seconds,'matchSeconds',t.match_seconds,
 	'botsAllowed',t.bots_allowed,'rooms',t.rooms,'leaderboardId',t.leaderboard_id,'platforms',to_jsonb(t.platforms),'minVersion',t.min_version,'maxVersion',t.max_version,
-	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled,'voiceMaxPlayers',t.voice_max_players,'requirements',t.requirements,'oneMatchPerPlayer',t.one_match,'createdAt',t.created_at,'updatedAt',t.updated_at,
+	'settings',t.settings,'stealth',t.stealth,'sort',t.sort,'voiceEnabled',t.voice_enabled,'voiceMaxPlayers',t.voice_max_players,'requirements',t.requirements,'oneMatchPerPlayer',t.one_match,'createdAt',t.created_at,'updatedAt',t.updated_at,
 	'matches',(SELECT count(*) FROM economy_game_match m WHERE m.game_key=t.key),
 	'finished',(SELECT count(*) FROM economy_game_match m WHERE m.game_key=t.key AND m.status='finished'),
 	'cancelled',(SELECT count(*) FROM economy_game_match m WHERE m.game_key=t.key AND m.status='cancelled'),

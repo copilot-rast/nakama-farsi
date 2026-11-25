@@ -87,6 +87,10 @@ func (s *service) rpcGameQueue(ctx context.Context, userID, payload string) (any
 	}
 	pub := g.public()
 	out := map[string]any{"key": g.Key, "room": room.Key, "players": room.Seats(pub), "humanSeats": room.Humans(pub), "botFillSeconds": room.BotFillSeconds}
+	if g.stealth().Enabled {
+		delete(out, "humanSeats")
+		delete(out, "botFillSeconds")
+	}
 	reserve := friendroom.Signal{Action: friendroom.ActionReserve, UserID: userID}.Data()
 	try := func(id string) bool {
 		ans, err := s.nk.MatchSignal(ctx, id, reserve)

@@ -6545,7 +6545,87 @@ var MESSAGES = {
     'code.VETERAN_ROOM_FORBIDDEN': "این اتاق فقط برای تازه‌واردهاست.",
     'code.NEW_PLAYER_ROOM_REQUIRED': "تازه‌واردها از اتاق تازه‌واردها شروع می‌کنند.",
     'code.ROOM_DISABLED': "این اتاق فعلاً خاموش است.",
-    'code.INVALID_STAT': "آمار عدد صحیح صفر یا بیشتر است."
+    'code.INVALID_STAT': "آمار عدد صحیح صفر یا بیشتر است.",
+    'nav.stealth-bots': 'بات پنهان',
+    'tab.bots': 'ربات‌ها',
+    'tab.stealth-bots': 'بات پنهان',
+    'desc.stealth-bots': 'برای هر بازی: ربات طوری بازی کند که بازیکن خیال کند حریفش آدم است. هیچ نشانه‌ای از ربات به بازیکن نمی‌رسد و نتیجهٔ بازی مثل بازی با آدم حساب می‌شود.',
+    'sb.game': 'بازی',
+    'sb.on': 'روشن',
+    'sb.noGames': 'هنوز بازی‌ای ساخته نشده است.',
+    'sb.err.range': 'بیشترین مقدار از کمترین کمتر است.',
+    'f.sb.enabled': 'بات پنهان روشن باشد',
+    'f.sb.enabled.hint': 'روشن: پاسخ‌ها، برچسب مسابقه، تاریخچه و رویدادها هیچ نشانی از ربات ندارند. خاموش: همه‌چیز مثل امروز می‌ماند.',
+    'sb.h.who': 'ربات‌ها از کجا بیایند',
+    'f.sb.pool': 'از ربات‌های واقعی استخر',
+    'f.sb.pool.hint': 'حریف یکی از حساب‌های صفحهٔ «ربات‌ها» است: شناسه، نام، چهره، سطح و آمار واقعی دارد. هر ربات در یک زمان فقط در یک مسابقه است.',
+    'f.sb.fallback': 'اگر رباتی آزاد نبود، ربات ساختگی',
+    'f.sb.fallback.hint': 'وقتی همهٔ ربات‌های استخر در مسابقه‌اند یا استخر خالی است، بازی با ربات ساختگی ادامه پیدا کند. خاموش یعنی بازیکن منتظر می‌ماند.',
+    'f.sb.level': 'فاصلهٔ سطح با بازیکن',
+    'f.sb.level.hint': 'ربات از سطح بازیکن منهای این عدد تا بعلاوهٔ این عدد انتخاب می‌شود. اگر پیدا نشد، بازه کم‌کم بزرگ‌تر می‌شود.',
+    'sb.h.timing': 'زمان‌بندی طبیعی',
+    'f.sb.arriveMin': 'کمترین انتظار تا آمدن حریف (ثانیه)',
+    'f.sb.arriveMax': 'بیشترین انتظار (ثانیه)',
+    'f.sb.arrive.hint': 'هر بار عددی تصادفی بین این دو. ربات هیچ‌وقت فوری وارد نمی‌شود.',
+    'f.sb.thinkMin': 'کمترین فکر پیش از هر حرکت (میلی‌ثانیه)',
+    'f.sb.thinkMax': 'بیشترین فکر (میلی‌ثانیه)',
+    'f.sb.think.hint': 'برای هر حرکت عددی تصادفی بین این دو.',
+    'f.sb.pause': 'احتمال مکث طولانی (درصد)',
+    'f.sb.pause.hint': 'گاهی آدم‌ها هم مکث می‌کنند. ۰ یعنی هیچ‌وقت.',
+    'f.sb.pauseMin': 'کمترین مکث (میلی‌ثانیه)',
+    'f.sb.pauseMax': 'بیشترین مکث (میلی‌ثانیه)',
+    'f.sb.side': 'طرف زمین تصادفی',
+    'f.sb.side.hint': 'ربات همیشه یک طرف نمی‌نشیند.',
+    'sb.h.online': 'آنلاین بودن',
+    'f.sb.afterMin': 'آنلاین پس از مسابقه، کمترین (دقیقه)',
+    'f.sb.afterMax': 'بیشترین (دقیقه)',
+    'f.sb.after.hint': 'ربات در مسابقه آنلاین دیده می‌شود و پس از آن هم برای زمانی تصادفی بین این دو.',
+    'f.sb.idle': 'ربات‌های آزادی که آنلاین دیده شوند (درصد)',
+    'f.sb.idle.hint': 'بخشی از ربات‌ها گاه‌به‌گاه بدون مسابقه هم آنلاین دیده می‌شوند، مثل بازیکن‌هایی که فقط سر می‌زنند.',
+    'sb.friends.line': 'درخواست دوستی به ربات‌ها بعد از زمانی تصادفی رد می‌شود یا در انتظار می‌ماند. این را در قانون‌های دوستی تنظیم کنید:',
+    'sb.friends.link': 'قانون‌های دوستی',
+    'sb.h.outcome': 'نتیجهٔ مسابقه مثل بازی با آدم',
+    'f.sb.trophies': 'جام و لیگ تغییر کند',
+    'f.sb.trophies.hint': 'برد و باخت مقابل ربات جام می‌دهد یا می‌گیرد.',
+    'f.sb.prize': 'جایزهٔ کامل',
+    'f.sb.prize.hint': 'جایزهٔ برد همان جایزهٔ بازی با آدم است؛ نه کمتر و نه پس‌دادن ورودی.',
+    'f.sb.board': 'در جدول امتیاز حساب شود',
+    'f.sb.board.hint': 'برد بازیکن و ربات هر دو در جدول ثبت می‌شود.',
+    'f.sb.progress': 'تجربه، آمار، مأموریت‌ها و رویدادها حساب شوند',
+    'f.sb.progress.hint': 'آمار ربات هم با بازی‌هایش بالا می‌رود تا کارت بازیکنش واقعی به نظر برسد.',
+    'sb.h.guard': 'محافظ اقتصاد (پنهان)',
+    'f.sb.guard': 'محافظ روزانه روشن باشد',
+    'f.sb.guard.hint': 'بعد از چند برد مقابل ربات در یک روز، ربات‌ها قوی‌تر می‌شوند. جایزه کم نمی‌شود و بازیکن چیزی نمی‌بیند.',
+    'f.sb.guardWins': 'برد روزانه پیش از قوی‌تر شدن',
+    'f.sb.guardWins.hint': 'شمارش از ابتدای روز دوباره شروع می‌شود.',
+    'f.sb.guardBoost': 'چند پله قوی‌تر',
+    'f.sb.guardBoost.hint': 'هر بازی معنای پله را خودش تعیین می‌کند؛ مثلاً یک سطح سختی بالاتر.',
+    'sb.sum.off': 'خاموش است: ربات‌ها مثل امروز نشان داده می‌شوند.',
+    'sb.sum.arrive': 'حریف بعد از {a} تا {b} ثانیه می‌آید',
+    'sb.sum.pool': 'از ربات‌های استخر',
+    'sb.sum.synthetic': 'با ربات ساختگی',
+    'sb.sum.allCounted': 'نتیجه کامل حساب می‌شود',
+    'sb.sum.notCounted': 'حساب نمی‌شود: {list}',
+    'sb.sum.guard': 'محافظ بعد از {n} برد در روز',
+    'sb.out.trophies': 'جام',
+    'sb.out.fullPrize': 'جایزهٔ کامل',
+    'sb.out.leaderboard': 'جدول امتیاز',
+    'sb.out.progress': 'تجربه و آمار',
+    'sb.pool.pool': 'ربات‌های روشن',
+    'sb.pool.inMatch': 'الان در مسابقهٔ این بازی',
+    'sb.pool.online': 'آنلاین پس از مسابقه',
+    'sb.pool.guarded': 'بازیکن‌های به سقف رسیدهٔ امروز',
+    'sb.pool.empty': 'هیچ ربات روشنی در استخر نیست. چند ربات بسازید:',
+    'sb.staff': 'کنسول همچنان ربات‌ها را نشان می‌دهد: صفحهٔ ربات‌ها، فهرست مسابقه‌ها و کارت بازیکن.',
+    'col.bt.now': 'الان',
+    'bt.now.match': 'در مسابقه',
+    'bt.now.online': 'آنلاین',
+    'bt.now.idle': 'آزاد',
+    'f.fr.botDeclineMin': 'رد درخواست به ربات، کمترین انتظار (دقیقه)',
+    'f.fr.botDeclineMax': 'بیشترین انتظار (دقیقه)',
+    'f.fr.botDeclineRange.hint': 'هر درخواست بعد از زمانی تصادفی بین این دو رد می‌شود. اگر بیشترین ۰ باشد، عدد ساعت بالا به کار می‌رود؛ هر دو ۰ یعنی درخواست در انتظار می‌ماند.',
+    'gm.stealth.link': 'تنظیم بات پنهان این بازی',
+    'gm.stealth.on': 'بات پنهان روشن است.'
   },
   en: {
     'theme.toDark': 'Dark mode',
@@ -12994,7 +13074,87 @@ var MESSAGES = {
     'code.VETERAN_ROOM_FORBIDDEN': "This room is only for new players.",
     'code.NEW_PLAYER_ROOM_REQUIRED': "New players start in the new player rooms.",
     'code.ROOM_DISABLED': "This room is switched off for now.",
-    'code.INVALID_STAT': "Stats are whole numbers of 0 or more."
+    'code.INVALID_STAT': "Stats are whole numbers of 0 or more.",
+    'nav.stealth-bots': 'Stealth bots',
+    'tab.bots': 'Bots',
+    'tab.stealth-bots': 'Stealth bots',
+    'desc.stealth-bots': 'Per game: a bot plays so that the player believes the opponent is a person. No bot marker reaches the player and the match counts like a match against a person.',
+    'sb.game': 'Game',
+    'sb.on': 'on',
+    'sb.noGames': 'No game has been made yet.',
+    'sb.err.range': 'The largest value is below the smallest.',
+    'f.sb.enabled': 'Stealth bots on',
+    'f.sb.enabled.hint': 'On: answers, match labels, history and events carry no bot marker. Off: everything stays as it is today.',
+    'sb.h.who': 'Where bots come from',
+    'f.sb.pool': 'Real bots from the pool',
+    'f.sb.pool.hint': 'The opponent is one of the accounts on the Bots page, with a real id, name, look, level and stats. A bot plays one match at a time.',
+    'f.sb.fallback': 'Made-up bot when none is free',
+    'f.sb.fallback.hint': 'When every pool bot is busy or the pool is empty, the game goes on with a made-up bot. Off means the player keeps waiting.',
+    'f.sb.level': 'Level distance from the player',
+    'f.sb.level.hint': 'The bot is picked from the player level minus this number to plus this number; the range grows when none is found.',
+    'sb.h.timing': 'Natural timing',
+    'f.sb.arriveMin': 'Shortest wait for the opponent (seconds)',
+    'f.sb.arriveMax': 'Longest wait (seconds)',
+    'f.sb.arrive.hint': 'A random number between the two each time. A bot never joins at once.',
+    'f.sb.thinkMin': 'Shortest think before a move (ms)',
+    'f.sb.thinkMax': 'Longest think (ms)',
+    'f.sb.think.hint': 'A random number between the two for every move.',
+    'f.sb.pause': 'Chance of a long pause (percent)',
+    'f.sb.pause.hint': 'People pause sometimes too. 0 means never.',
+    'f.sb.pauseMin': 'Shortest pause (ms)',
+    'f.sb.pauseMax': 'Longest pause (ms)',
+    'f.sb.side': 'Random side',
+    'f.sb.side.hint': 'The bot does not always take the same side.',
+    'sb.h.online': 'Online',
+    'f.sb.afterMin': 'Online after the match, shortest (minutes)',
+    'f.sb.afterMax': 'Longest (minutes)',
+    'f.sb.after.hint': 'A bot shows online during the match and for a random time between these after it.',
+    'f.sb.idle': 'Free bots shown online (percent)',
+    'f.sb.idle.hint': 'Some bots show online now and then without a match, like players who just drop by.',
+    'sb.friends.line': 'Friend requests to bots are declined after a random wait or stay pending. Set this in the friend rules:',
+    'sb.friends.link': 'Friend rules',
+    'sb.h.outcome': 'Match result like a match against a person',
+    'f.sb.trophies': 'Trophies and league change',
+    'f.sb.trophies.hint': 'A win or loss against a bot gives or takes trophies.',
+    'f.sb.prize': 'Full prize',
+    'f.sb.prize.hint': 'The win prize is the same as against a person: not smaller and no fee refund.',
+    'f.sb.board': 'Counted on the leaderboard',
+    'f.sb.board.hint': 'Wins of the player and of the bot are written to the board.',
+    'f.sb.progress': 'XP, stats, tasks and events counted',
+    'f.sb.progress.hint': 'Bot stats grow with its games too, so its player card looks real.',
+    'sb.h.guard': 'Economy guard (hidden)',
+    'f.sb.guard': 'Daily guard on',
+    'f.sb.guard.hint': 'After some wins against bots in one day, bots play stronger. Prizes do not shrink and the player sees nothing.',
+    'f.sb.guardWins': 'Daily wins before bots get stronger',
+    'f.sb.guardWins.hint': 'The count starts again each day.',
+    'f.sb.guardBoost': 'Steps stronger',
+    'f.sb.guardBoost.hint': 'Each game decides what a step is, for example one difficulty level up.',
+    'sb.sum.off': 'Off: bots are shown as they are today.',
+    'sb.sum.arrive': 'The opponent comes after {a} to {b} seconds',
+    'sb.sum.pool': 'from the bot pool',
+    'sb.sum.synthetic': 'with a made-up bot',
+    'sb.sum.allCounted': 'the result counts in full',
+    'sb.sum.notCounted': 'not counted: {list}',
+    'sb.sum.guard': 'guard after {n} wins a day',
+    'sb.out.trophies': 'trophies',
+    'sb.out.fullPrize': 'full prize',
+    'sb.out.leaderboard': 'leaderboard',
+    'sb.out.progress': 'XP and stats',
+    'sb.pool.pool': 'Bots on',
+    'sb.pool.inMatch': 'In a match of this game now',
+    'sb.pool.online': 'Online after a match',
+    'sb.pool.guarded': 'Players at the cap today',
+    'sb.pool.empty': 'The pool has no bot switched on. Make some bots:',
+    'sb.staff': 'The console still shows bots: the Bots page, the match list and the player card.',
+    'col.bt.now': 'Now',
+    'bt.now.match': 'In a match',
+    'bt.now.online': 'Online',
+    'bt.now.idle': 'Free',
+    'f.fr.botDeclineMin': 'Decline requests to bots, shortest wait (minutes)',
+    'f.fr.botDeclineMax': 'Longest wait (minutes)',
+    'f.fr.botDeclineRange.hint': 'Each request is declined after a random wait between the two. When the longest is 0 the hours above are used; both 0 leaves requests pending.',
+    'gm.stealth.link': 'Stealth bot settings of this game',
+    'gm.stealth.on': 'Stealth bots are on.'
   }
 };
 
@@ -27522,6 +27682,11 @@ RESOURCES.games = {
       { name: 'matchSeconds', type: 'number', label: 'f.gm.limit', hint: 'f.gm.limit.hint', optional: true, min: 1, max: 604800 }
     ] },
     { name: 'botsAllowed', type: 'bool', inline: true, label: 'f.gm.bots', hint: 'f.gm.bots.hint' },
+    { name: 'stealthLink', type: 'static', readonly: true, live: true, when: function (v) { return !!v.key; }, render: function (v) {
+      var on = v.stealth && v.stealth.enabled;
+      return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', 'data-gm-stealth': on ? 'on' : 'off' }, on ? t('gm.stealth.on') + ' ' : null,
+        h('a', { href: hashFor('stealth-bots', null, { game: v.key }), class: 'eco-link', text: t('gm.stealth.link') }));
+    } },
     { type: 'row', fields: [
       { name: 'voiceEnabled', type: 'bool', inline: true, label: 'f.gm.voice', hint: 'f.gm.voice.hint' },
       { name: 'voiceMaxPlayers', type: 'number', label: 'f.gm.voiceMax', hint: 'f.gm.voiceMax.hint', optional: true, min: 0, max: 1000, when: function (v) { return v.voiceEnabled !== false; } }
@@ -27599,7 +27764,7 @@ RESOURCES.games = {
     p.leaderboardId = p.leaderboardId || '';
     p.platforms = p.platforms || [];
     if (!p.settings || typeof p.settings !== 'object') p.settings = {};
-    delete p.stats; delete p.regLine; delete p.roomsHint;
+    delete p.stats; delete p.regLine; delete p.roomsHint; delete p.stealthLink; delete p.stealth;
     return p;
   },
   afterSave: function () { GAME_REG.at = 0; forgetRefs('games'); }
@@ -27684,7 +27849,11 @@ LISTS.bots = {
     }, width: 140 },
     { label: 'col.status', render: function (it) {
       return h('div', { class: 'flex flex-wrap gap-1' }, it.enabled ? tag(t('bt.on'), 'success') : tag(t('bt.off'), 'secondary'), it.banned ? tag(t('bt.banned'), 'error') : null);
-    }, width: 120 }
+    }, width: 120 },
+    { label: 'col.bt.now', render: function (it) {
+      var el = it.inMatch ? tag(t('bt.now.match'), 'primary') : it.onlineUntil ? tag(t('bt.now.online'), 'success') : h('span', { class: 'text-sm text-secondary-500', text: t('bt.now.idle') });
+      return h('div', { 'data-bot-now': it.inMatch ? 'match' : it.onlineUntil ? 'online' : 'idle' }, el);
+    }, width: 110 }
   ]
 };
 
@@ -28342,6 +28511,121 @@ function roomPlayTo(p) {
     return out;
   };
 })();
+
+PH_ICONS['stealth-bots'] = '<path d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"/>';
+
+SECTIONS.economy.push('stealth-bots');
+HUBS.bots = { section: 'economy', tabs: [['bots', ''], ['stealth-bots', 'stealth']] };
+HUB_OF.bots = 'bots';
+HUB_OF['stealth-bots'] = 'bots';
+
+function stealthFields() {
+  var range = function (a, b, la, lb, hint, min, max, when) {
+    return { type: 'row', when: when, fields: [
+      { name: a, type: 'number', label: la, hint: hint, required: true, min: min, max: max },
+      { name: b, type: 'number', label: lb, required: true, min: min, max: max,
+        check: function (v, vals) { return v != null && vals[a] != null && Number(v) < Number(vals[a]) ? t('sb.err.range') : null; } }
+    ] };
+  };
+  var on = function (v) { return !!v.enabled; };
+  return [
+    { name: 'enabled', type: 'bool', inline: true, label: 'f.sb.enabled', hint: 'f.sb.enabled.hint' },
+    { type: 'heading', label: 'sb.h.who', when: on },
+    { type: 'row', when: on, fields: [
+      { name: 'poolBots', type: 'bool', inline: true, label: 'f.sb.pool', hint: 'f.sb.pool.hint' },
+      { name: 'syntheticFallback', type: 'bool', inline: true, label: 'f.sb.fallback', hint: 'f.sb.fallback.hint' }
+    ] },
+    { name: 'levelRange', type: 'number', label: 'f.sb.level', hint: 'f.sb.level.hint', required: true, min: 0, max: 100, when: on },
+    { type: 'heading', label: 'sb.h.timing', when: on },
+    range('arriveMinSeconds', 'arriveMaxSeconds', 'f.sb.arriveMin', 'f.sb.arriveMax', 'f.sb.arrive.hint', 0, 300, on),
+    range('thinkMinMs', 'thinkMaxMs', 'f.sb.thinkMin', 'f.sb.thinkMax', 'f.sb.think.hint', 0, 60000, on),
+    { name: 'pausePercent', type: 'number', label: 'f.sb.pause', hint: 'f.sb.pause.hint', required: true, min: 0, max: 100, when: on },
+    range('pauseMinMs', 'pauseMaxMs', 'f.sb.pauseMin', 'f.sb.pauseMax', null, 0, 60000, function (v) { return v.enabled && Number(v.pausePercent) > 0; }),
+    { name: 'randomSide', type: 'bool', inline: true, label: 'f.sb.side', hint: 'f.sb.side.hint', when: on },
+    { type: 'heading', label: 'sb.h.online', when: on },
+    range('onlineAfterMinMinutes', 'onlineAfterMaxMinutes', 'f.sb.afterMin', 'f.sb.afterMax', 'f.sb.after.hint', 0, 1440, on),
+    { name: 'onlineIdlePercent', type: 'number', label: 'f.sb.idle', hint: 'f.sb.idle.hint', required: true, min: 0, max: 100, when: on },
+    { name: 'friendsLine', type: 'static', readonly: true, when: on, render: function () {
+      return h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400' }, t('sb.friends.line') + ' ', h('a', { href: '#/' + PS_ROUTE + '/friends', class: 'eco-link', text: t('sb.friends.link') }));
+    } },
+    { type: 'heading', label: 'sb.h.outcome', when: on },
+    { type: 'row', when: on, fields: [
+      { name: 'trophies', type: 'bool', inline: true, label: 'f.sb.trophies', hint: 'f.sb.trophies.hint' },
+      { name: 'fullPrize', type: 'bool', inline: true, label: 'f.sb.prize', hint: 'f.sb.prize.hint' }
+    ] },
+    { type: 'row', when: on, fields: [
+      { name: 'leaderboard', type: 'bool', inline: true, label: 'f.sb.board', hint: 'f.sb.board.hint' },
+      { name: 'progress', type: 'bool', inline: true, label: 'f.sb.progress', hint: 'f.sb.progress.hint' }
+    ] },
+    { type: 'heading', label: 'sb.h.guard', when: on },
+    { name: 'guard', type: 'bool', inline: true, label: 'f.sb.guard', hint: 'f.sb.guard.hint', when: on },
+    { type: 'row', when: function (v) { return v.enabled && v.guard; }, fields: [
+      { name: 'guardDailyWins', type: 'number', label: 'f.sb.guardWins', hint: 'f.sb.guardWins.hint', required: true, min: 0, max: 10000 },
+      { name: 'guardBoost', type: 'number', label: 'f.sb.guardBoost', hint: 'f.sb.guardBoost.hint', required: true, min: 0, max: 10 }
+    ] }
+  ];
+}
+
+function stealthSummary(v, pool) {
+  var box = h('div', { class: 'mt-2 flex flex-col gap-3', 'data-sb-summary': '' });
+  if (!v.enabled) {
+    box.appendChild(notice('secondary', t('sb.sum.off')));
+    return box;
+  }
+  var parts = [t('sb.sum.arrive', { a: fmtNum(Number(v.arriveMinSeconds) || 0), b: fmtNum(Number(v.arriveMaxSeconds) || 0) })];
+  parts.push(t(v.poolBots ? 'sb.sum.pool' : 'sb.sum.synthetic'));
+  var counted = ['trophies', 'fullPrize', 'leaderboard', 'progress'].filter(function (k) { return !v[k]; });
+  parts.push(counted.length ? t('sb.sum.notCounted', { list: counted.map(function (k) { return t('sb.out.' + k); }).join('، ') }) : t('sb.sum.allCounted'));
+  if (v.guard) parts.push(t('sb.sum.guard', { n: fmtNum(Number(v.guardDailyWins) || 0) }));
+  box.appendChild(notice('info', parts.join(t('fr.sum.sep'))));
+  if (pool) {
+    box.appendChild(h('div', { class: 'eco-stat-grid', 'data-sb-pool': '' },
+      [['pool', pool.enabled], ['inMatch', pool.inMatch], ['online', pool.onlineAfterMatch], ['guarded', pool.guardedPlayersToday]].map(function (p) {
+        var c = statCard(t('sb.pool.' + p[0]), p[1] || 0, null, null);
+        c.setAttribute('data-sb-stat', p[0]);
+        return c;
+      })));
+    if (!pool.enabled && v.poolBots) box.appendChild(notice('warning', t('sb.pool.empty'), h('a', { href: hashFor('bots'), class: 'eco-link', text: t('nav.bots') })));
+  }
+  box.appendChild(h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('sb.staff') }));
+  return box;
+}
+
+function stealthBotsPage(container, query) {
+  var frame = pageFrame(t('nav.stealth-bots'), t('desc.stealth-bots'));
+  clear(container).appendChild(frame.el);
+  var head = h('div', { class: 'mb-4', 'data-sb-games': '' });
+  var body = h('div', {});
+  frame.content.appendChild(head);
+  frame.content.appendChild(body);
+  api('GET', '/game-stealth').then(function (res) {
+    var items = (res && res.items) || [];
+    if (!items.length) {
+      body.appendChild(notice('info', t('sb.noGames'), h('a', { href: hashFor('games'), class: 'eco-link', text: t('nav.games') })));
+      return;
+    }
+    var key = query && query.game && items.some(function (g) { return g.key === query.game; }) ? query.game : items[0].key;
+    head.appendChild(listToolbar({ filters: [filterSelect(t('sb.game'), key, items.map(function (g) {
+      return { value: g.key, label: (i18nText(g.name) || g.key) + (g.enabled ? ' · ' + t('sb.on') : '') };
+    }), function (v) { replaceHash(hashFor('stealth-bots', null, { game: v })); stealthBotsPage(container, { game: v }); }, { def: key })] }));
+    var pool = null;
+    var call = function (method, path, payload) {
+      return api(method, path, payload).then(function (out) {
+        pool = out.pool || null;
+        return Object.assign({}, out.settings || {});
+      });
+    };
+    var page = apiPage(call, '/game-stealth/' + encodeURIComponent(key), null, stealthFields(), {
+      id: 'stealth-bots',
+      onchange: function (v, extra) { clear(extra).appendChild(stealthSummary(v, pool)); },
+      fixPayload: function (p) { delete p.friendsLine; return p; }
+    });
+    body.appendChild(page.el);
+    page.load();
+  }, function (err) { body.appendChild(errorBlock(err, function () { stealthBotsPage(container, query); })); });
+}
+
+CUSTOM_PAGES['stealth-bots'] = function (root, route) { stealthBotsPage(root, (route && route.query) || {}); };
 
 var UPDATES = { summary: null, at: 0, busy: false };
 var UP_AREA_ICON = { migrations: 'database', core: 'server', plugins: 'puzzle', console: 'dashboard', deps: 'package', build: 'code', e2e: 'checklist', docs: 'book', other: 'files' };
@@ -31486,14 +31770,20 @@ FRIEND_FIELDS.push(
     { name: 'dayZone', type: 'text', ltr: true, label: 'f.fr.dayZone', hint: 'f.fr.dayZone.hint', optional: true },
     { name: 'dayStartMinute', type: 'number', label: 'f.fr.dayStart', hint: 'f.fr.dayStart.hint', required: true, min: 0, max: 1439 }
   ] },
-  { name: 'botDeclineHours', type: 'number', label: 'f.fr.botDecline', hint: 'f.fr.botDecline.hint', required: true, min: 0, max: 8760 }
+  { name: 'botDeclineHours', type: 'number', label: 'f.fr.botDecline', hint: 'f.fr.botDecline.hint', required: true, min: 0, max: 8760 },
+  { type: 'row', fields: [
+    { name: 'botDeclineMinMinutes', type: 'number', label: 'f.fr.botDeclineMin', hint: 'f.fr.botDeclineRange.hint', required: true, min: 0, max: 525600 },
+    { name: 'botDeclineMaxMinutes', type: 'number', label: 'f.fr.botDeclineMax', required: true, min: 0, max: 525600,
+      check: function (v, vals) { return Number(v) > 0 && Number(v) < Number(vals.botDeclineMinMinutes || 0) ? t('sb.err.range') : null; } }
+  ] }
 );
 
 function friendRulesPayload(p) {
   return { dailyRequests: Number(p.dailyRequests) || 0, maxFriends: Number(p.maxFriends) || 0, expiryDays: Number(p.expiryDays) || 0, rejectCooldownHours: Number(p.rejectCooldownHours) || 0,
     requestsBonusMeta: p.requestsBonusMeta || '', friendsBonusMeta: p.friendsBonusMeta || '', matchPolicy: p.matchPolicy || 'priority', overLimit: p.overLimit || 'refuse',
     notifyDeclined: !!p.notifyDeclined, notifyRemoved: !!p.notifyRemoved, presenceFriendsOnly: !!p.presenceFriendsOnly, dmFriendsOnly: !!p.dmFriendsOnly,
-    dayZone: (p.dayZone || '').trim(), dayStartMinute: Number(p.dayStartMinute) || 0, botDeclineHours: Number(p.botDeclineHours) || 0 };
+    dayZone: (p.dayZone || '').trim(), dayStartMinute: Number(p.dayStartMinute) || 0, botDeclineHours: Number(p.botDeclineHours) || 0,
+    botDeclineMinMinutes: Number(p.botDeclineMinMinutes) || 0, botDeclineMaxMinutes: Number(p.botDeclineMaxMinutes) || 0 };
 }
 
 function unLadder(text) {

@@ -82,3 +82,53 @@ func TestCategoryKeysKeepCamelCase(t *testing.T) {
 	}
 	h.s.db.Exec(`DELETE FROM base_category WHERE id=$1`, c["id"])
 }
+
+func TestBotRequestDeclineAfterRandomDelay(t *testing.T) {
+	h := newHarness(t)
+	resetFriendTables(h)
+	h.t.Cleanup(func() {
+		h.s.db.Exec(`UPDATE base_friend_rules SET bot_decline_hours=0, bot_decline_min_minutes=0, bot_decline_max_minutes=0 WHERE id=1`)
+	})
+	if c, out := h.api("PUT", "/friend-rules", map[string]any{"botDeclineMinMinutes": 90, "botDeclineMaxMinutes": 30}); c != 400 || out["field"] != "botDeclineMaxMinutes" {
+		t.Fatalf("bad range = %d %v", c, out)
+	}
+	rules := h.mustAPI(200, "PUT", "/friend-rules", map[string]any{"dailyRequests": 0, "botDeclineMinMinutes": 60, "botDeclineMaxMinutes": 120})
+	if rules["botDeclineMinMinutes"] != float64(60) || rules["botDeclineMaxMinutes"] != float64(120) {
+		t.Fatalf("rules %v", rules)
+	}
+	if _, err := h.s.db.Exec(`CREATE TABLE IF NOT EXISTS economy_bot (user_id UUID PRIMARY KEY)`); err != nil {
+		t.Fatal(err)
+	}
+	players := []string{}
+	bots := []string{}
+	for i := 0; i < 6; i++ {
+		p, b := h.user("fa"), h.user("fa")
+		if _, err := h.s.db.Exec(`INSERT INTO economy_bot (user_id) VALUES ($1) ON CONFLICT DO NOTHING`, b); err != nil {
+			t.Fatal(err)
+		}
+		bb := b
+		h.t.Cleanup(func() { h.s.db.Exec(`DELETE FROM economy_bot WHERE user_id=$1`, bb) })
+		players, bots = append(players, p), append(bots, b)
+	}
+	for i := range bots {
+		if i < 3 {
+			h.invite(players[i], bots[i], 50*time.Minute)
+		} else {
+			h.invite(players[i], bots[i], 121*time.Minute)
+		}
+	}
+	h.s.db.Exec(`DELETE FROM cluster_lease WHERE name=$1`, friendsLease)
+	if _, err := h.s.friendsSweep(context.Background(), "t1"); err != nil {
+		t.Fatal(err)
+	}
+	for i := range bots {
+		var n int
+		h.s.db.QueryRow(`SELECT count(*) FROM user_edge WHERE source_id=$1 AND destination_id=$2`, players[i], bots[i]).Scan(&n)
+		if i < 3 && n != 1 {
+			t.Fatalf("request %d is younger than the shortest wait", i)
+		}
+		if i >= 3 && n != 0 {
+			t.Fatalf("request %d is older than the longest wait", i)
+		}
+	}
+}

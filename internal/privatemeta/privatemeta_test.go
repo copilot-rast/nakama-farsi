@@ -24,7 +24,7 @@ func TestCleanDropsPrivateKeysAndKeepsTheRest(t *testing.T) {
 }
 
 func TestStripsUsersFriendsAccountsAndMaps(t *testing.T) {
-	u := &api.User{Id: "a", Metadata: `{"phone":"+989121234567","bot":true}`}
+	u := &api.User{Id: "a", Metadata: `{"phone":"+989121234567","bot":true,"level":2}`}
 	f := &api.Friend{User: &api.User{Metadata: `{"phone":"x"}`}}
 	g := &api.GroupUserList_GroupUser{User: &api.User{Metadata: `{"email":"x"}`}}
 	a := &api.Account{User: &api.User{Metadata: `{"phoneNumber":"x"}`}}
@@ -33,7 +33,7 @@ func TestStripsUsersFriendsAccountsAndMaps(t *testing.T) {
 	GroupUsers([]*api.GroupUserList_GroupUser{g, nil})
 	Account(a)
 	Account(nil)
-	if u.Metadata != `{"bot":true}` || f.User.Metadata != "{}" || g.User.Metadata != "{}" || a.User.Metadata != "{}" {
+	if u.Metadata != `{"level":2}` || f.User.Metadata != "{}" || g.User.Metadata != "{}" || a.User.Metadata != "{}" {
 		t.Fatal(u.Metadata, f.User.Metadata, g.User.Metadata, a.User.Metadata)
 	}
 	m := Map(map[string]any{"phone": "x", "level": 3})

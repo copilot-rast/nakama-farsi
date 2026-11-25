@@ -52,6 +52,10 @@ type BotQuery struct {
 	MinLevel int
 	Exclude  []string
 	Fee      *Fee
+
+	Level      int
+	LevelRange int
+	MatchID    string
 }
 
 type Bot struct {

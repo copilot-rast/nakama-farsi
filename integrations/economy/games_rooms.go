@@ -207,11 +207,15 @@ func (s *service) rpcGameBot(ctx context.Context, userID, payload string) (any, 
 	if !g.BotsAllowed {
 		return nil, fail(http.StatusForbidden, "BOTS_DISABLED", "key", "bot matches are off for this game")
 	}
-	p := friendroom.Params{Game: g.Key, Room: t.Room, Mode: friendroom.ModeBot, Users: []string{userID}}
+	stealth := g.stealth().Enabled
+	p := friendroom.Params{Game: g.Key, Room: t.Room, Mode: friendroom.ModeBot, Users: []string{userID}, Stealth: stealth}
 	id, err := s.nk.MatchCreate(ctx, g.Key, p.Map())
 	if err != nil {
 		s.logger.Error("Economy bot match for %s failed: %v", g.Key, err)
 		return nil, fail(http.StatusServiceUnavailable, "MATCH_CREATE_FAILED", "", "the match could not be made, try again")
+	}
+	if stealth {
+		return map[string]any{"matchId": id, "key": g.Key, "room": t.Room}, nil
 	}
 	return map[string]any{"matchId": id, "key": g.Key, "room": t.Room, "botAfterSeconds": gameSettingInt(g, "botAfterSeconds", defaultBotAfterSeconds)}, nil
 }

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"math"
 	"net/http"
 	"strings"
 
@@ -110,6 +111,9 @@ func (s *service) levelView(ctx context.Context, userID, table string, botLevel 
 		out["xp"], out["levelStart"], out["maxLevel"] = start.Float64, start.Float64, max
 		if next.Valid {
 			out["next"] = next.Float64
+			if s.stealthPool(ctx) && next.Float64 > start.Float64 {
+				out["xp"] = math.Floor(start.Float64 + (next.Float64-start.Float64)*botXPFraction(userID))
+			}
 		}
 		return out
 	}

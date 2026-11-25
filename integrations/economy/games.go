@@ -63,6 +63,7 @@ type gameRecord struct {
 	Voice         bool                      `json:"voiceEnabled"`
 	Requirements  *gamecatalog.Requirements `json:"requirements"`
 	OneMatch      bool                      `json:"oneMatchPerPlayer"`
+	Stealth       json.RawMessage           `json:"stealth"`
 }
 
 const gameRecordJSON = `jsonb_build_object('id',t.id,'key',t.key,'isActive',t.is_active,'name',t.name,'description',t.description,'maintenance',t.maintenance,'iconUrl',t.icon_url,
@@ -71,7 +72,7 @@ const gameRecordJSON = `jsonb_build_object('id',t.id,'key',t.key,'isActive',t.is
 	'tags',(SELECT COALESCE(jsonb_agg(g.key ORDER BY g.key),'[]'::jsonb) FROM base_tag g WHERE g.id::text = ANY(t.tag_ids)),
 	'minPlayers',t.min_players,'maxPlayers',t.max_players,'turnSeconds',COALESCE(t.turn_seconds,0),'matchSeconds',COALESCE(t.match_seconds,0),'botsAllowed',t.bots_allowed,
 	'rooms',t.rooms,'leaderboardId',COALESCE(t.leaderboard_id,''),'platforms',to_jsonb(t.platforms),'minVersion',COALESCE(t.min_version,''),'maxVersion',COALESCE(t.max_version,''),
-	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled,'requirements',t.requirements,'oneMatchPerPlayer',t.one_match)`
+	'settings',t.settings,'sort',t.sort,'voiceEnabled',t.voice_enabled,'requirements',t.requirements,'oneMatchPerPlayer',t.one_match,'stealth',t.stealth)`
 
 type gameCache struct {
 	mu      sync.Mutex
@@ -157,7 +158,7 @@ func (g *gameRecord) public() *gamecatalog.Game {
 	rooms := make([]gamecatalog.Room, len(g.Rooms))
 	copy(rooms, g.Rooms)
 	return &gamecatalog.Game{ID: g.ID, Key: g.Key, Active: g.Active, Name: map[string]string(g.Name), MinPlayers: g.MinPlayers, MaxPlayers: g.MaxPlayers,
-		TurnSeconds: g.TurnSeconds, MatchSeconds: g.MatchSeconds, BotsAllowed: g.BotsAllowed, LeaderboardID: g.LeaderboardID, OneMatch: g.OneMatch, Rooms: rooms, Settings: settings, Requirements: g.Requirements}
+		TurnSeconds: g.TurnSeconds, MatchSeconds: g.MatchSeconds, BotsAllowed: g.BotsAllowed, LeaderboardID: g.LeaderboardID, OneMatch: g.OneMatch, Rooms: rooms, Settings: settings, Requirements: g.Requirements, Stealth: g.Stealth}
 }
 
 func (g *gameRecord) room(key string) (*gamecatalog.Room, error) {
@@ -888,6 +889,7 @@ func (s *service) cancelMatch(ctx context.Context, matchID string, force bool, r
 		for user, t := range returnedTo {
 			s.logTickets(ctx, user, matchID, cancelledGame, "", "game_ticket_returned", t)
 		}
+		s.releaseBotLeases(ctx, matchID, cancelledGame)
 	}
 	return refunded, err
 }
@@ -1005,7 +1007,18 @@ func (s *service) gameFinish(ctx context.Context, matchID string, winners []stri
 		payouts = append(payouts, p)
 	}
 	if first {
-		s.writeGameLeaderboard(ctx, gameKey, clean)
+		humans := []string{}
+		for _, w := range clean {
+			if !s.isBot(ctx, w) {
+				humans = append(humans, w)
+			}
+		}
+		if st := s.stealthOf(ctx, gameKey); st.Enabled && !st.Leaderboard {
+			s.writeGameLeaderboard(ctx, gameKey, humans)
+		} else {
+			s.writeGameLeaderboard(ctx, gameKey, clean)
+		}
+		s.stealthAfterMatch(ctx, matchID, gameKey, humans)
 	}
 	return payouts, nil
 }

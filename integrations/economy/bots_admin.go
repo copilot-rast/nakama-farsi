@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"math/big"
+	mrand "math/rand/v2"
 	"net/http"
 	"strconv"
 	"strings"
@@ -44,7 +45,10 @@ func (s *service) botConsoleRoutes() []consoleRoute {
 
 const botJSON = `jsonb_build_object('userId',b.user_id,'username',u.username,'displayName',COALESCE(u.display_name,''),'avatarUrl',COALESCE(u.avatar_url,''),'enabled',b.enabled,
 	'banned',u.disable_time > '1970-01-01 00:00:01+00','level',b.level,'template',b.template,'rooms',b.rooms,'look',b.look,'note',b.note,'source',b.source,'games',b.games,
-	'lastUsedAt',b.last_used_at,'wallet',u.wallet,'createdAt',b.created_at,'updatedAt',b.updated_at,'updatedBy',b.updated_by)::text`
+	'lastUsedAt',b.last_used_at,'wallet',u.wallet,'createdAt',b.created_at,'updatedAt',b.updated_at,'updatedBy',b.updated_by,'accountCreatedAt',u.create_time,
+	'inMatch',COALESCE((SELECT l.busy AND l.leased_at > now() - interval '30 minutes' FROM economy_bot_lease l WHERE l.user_id=b.user_id),false),
+	'matchId',COALESCE((SELECT NULLIF(l.match_id,'') FROM economy_bot_lease l WHERE l.user_id=b.user_id AND l.busy),''),
+	'onlineUntil',(SELECT l.online_until FROM economy_bot_lease l WHERE l.user_id=b.user_id AND NOT l.busy AND l.online_until > now()))::text`
 
 func (s *service) consoleBotList(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
@@ -420,8 +424,8 @@ func (s *service) createBots(ctx context.Context, specs []botSpec, source, staff
 				}
 			}
 			walletJSON, _ := json.Marshal(wallet)
-			res, err := tx.ExecContext(ctx, `INSERT INTO users (id, username, display_name, avatar_url, metadata, wallet, create_time, update_time) VALUES ($1,$2,NULLIF($3,''),NULLIF($4,''),'{"bot":true}',$5::jsonb,now(),now()) ON CONFLICT (username) DO NOTHING`,
-				id.String(), name, truncate(sp.DisplayName, 255), truncate(sp.Avatar, 512), string(walletJSON))
+			res, err := tx.ExecContext(ctx, `INSERT INTO users (id, username, display_name, avatar_url, metadata, wallet, create_time, update_time) VALUES ($1,$2,NULLIF($3,''),NULLIF($4,''),'{}',$5::jsonb,now() - make_interval(days => $6::int, secs => $7::int),now()) ON CONFLICT (username) DO NOTHING`,
+				id.String(), name, truncate(sp.DisplayName, 255), truncate(sp.Avatar, 512), string(walletJSON), 20+mrand.IntN(400), mrand.IntN(86400))
 			if err != nil {
 				return err
 			}

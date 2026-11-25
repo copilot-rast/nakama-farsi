@@ -251,6 +251,7 @@ func (s *service) gameView(ctx context.Context, g *gameRecord, lk *gameLookups) 
 	if g.Tags == nil {
 		view["tags"] = []string{}
 	}
+	s.scrubGameView(g, view)
 	return view, nil
 }
 

@@ -7,7 +7,7 @@ import (
 	"github.com/heroiclabs/nakama-common/api"
 )
 
-var Keys = []string{"phone", "phoneNumber", "phone_number", "mobile", "email"}
+var Keys = []string{"phone", "phoneNumber", "phone_number", "mobile", "email", "bot"}
 
 func private(key string) bool {
 	for _, k := range Keys {

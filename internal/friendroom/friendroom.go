@@ -43,6 +43,7 @@ type Params struct {
 	Invited   string
 	Users     []string
 	ExpiresAt time.Time
+	Stealth   bool
 }
 
 func FromParams(in map[string]any) Params {
@@ -68,6 +69,7 @@ func FromParams(in map[string]any) Params {
 	if ms, err := strconv.ParseInt(str("expiresAt"), 10, 64); err == nil && ms > 0 {
 		p.ExpiresAt = time.UnixMilli(ms).UTC()
 	}
+	p.Stealth = str("stealth") == "1"
 	return p
 }
 
@@ -88,11 +90,21 @@ func (p Params) Map() map[string]any {
 	if !p.ExpiresAt.IsZero() {
 		out["expiresAt"] = strconv.FormatInt(p.ExpiresAt.UnixMilli(), 10)
 	}
+	if p.Stealth {
+		out["stealth"] = "1"
+	}
 	return out
 }
 
+func (p Params) PublicMode() string {
+	if p.Stealth && p.Mode == ModeBot {
+		return ModeMatchmaking
+	}
+	return p.Mode
+}
+
 func (p Params) Label(status string, extra map[string]any) string {
-	l := map[string]any{"game": p.Game, "room": p.Room, "mode": p.Mode, "status": status, "open": status == StatusWaiting}
+	l := map[string]any{"game": p.Game, "room": p.Room, "mode": p.PublicMode(), "status": status, "open": status == StatusWaiting}
 	if p.Mode == ModeFriend {
 		l["host"], l["code"] = p.Host, p.Code
 		if p.Invited != "" {

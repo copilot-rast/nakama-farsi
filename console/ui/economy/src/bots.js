@@ -77,7 +77,11 @@ LISTS.bots = {
     }, width: 140 },
     { label: 'col.status', render: function (it) {
       return h('div', { class: 'flex flex-wrap gap-1' }, it.enabled ? tag(t('bt.on'), 'success') : tag(t('bt.off'), 'secondary'), it.banned ? tag(t('bt.banned'), 'error') : null);
-    }, width: 120 }
+    }, width: 120 },
+    { label: 'col.bt.now', render: function (it) {
+      var el = it.inMatch ? tag(t('bt.now.match'), 'primary') : it.onlineUntil ? tag(t('bt.now.online'), 'success') : h('span', { class: 'text-sm text-secondary-500', text: t('bt.now.idle') });
+      return h('div', { 'data-bot-now': it.inMatch ? 'match' : it.onlineUntil ? 'online' : 'idle' }, el);
+    }, width: 110 }
   ]
 };
 
