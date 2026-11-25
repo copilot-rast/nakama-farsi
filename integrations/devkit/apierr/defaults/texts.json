@@ -3307,6 +3307,14 @@
     "en": "The store rejected its settings. Please try again later.",
     "fa": "فروشگاه تنظیمات را نپذیرفت. بعداً دوباره امتحان کنید."
   },
+  "STORE_MODE_CHANGED": {
+    "en": "The store is in test mode on the server. Your purchase is kept and will be checked later.",
+    "fa": "فروشگاه روی سرور در حالت آزمایشی است. خرید شما نگه داشته می‌شود و بعداً بررسی می‌شود."
+  },
+  "STORE_TOKEN_UNKNOWN": {
+    "en": "No purchase token was sent for this payment.",
+    "fa": "برای این پرداخت توکن خرید فرستاده نشده است."
+  },
   "STORE_UNAVAILABLE": {
     "en": "The store is not available right now.",
     "fa": "فروشگاه فعلاً در دسترس نیست."

@@ -164,7 +164,11 @@ func (s *service) consoleMethodsList(w http.ResponseWriter, r *http.Request) {
 			s.writeError(w, err)
 			return
 		}
-		out = append(out, methodView(pm))
+		view := methodView(pm)
+		if isStore(m) {
+			view["health"] = s.storeHealth(r.Context(), m)
+		}
+		out = append(out, view)
 	}
 	writeJSON(w, http.StatusOK, out)
 }
@@ -271,6 +275,9 @@ func (s *service) consoleMethodUpdate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		s.writeError(w, err)
 		return
+	}
+	if isStore(method) {
+		view["health"] = s.storeHealth(r.Context(), method)
 	}
 	if sandboxOff {
 		if st, err := loadPaymentSettings(r.Context(), s.db); err == nil && st.CloseSandboxOnOff {

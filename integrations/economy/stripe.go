@@ -109,7 +109,7 @@ func (s *service) startStripe(ctx context.Context, userID string, product produc
 	}
 	testMode := pm.Config.flag("testMode")
 	if checkStripeConfig(pm.Config) != nil {
-		return nil, fail(http.StatusServiceUnavailable, "METHOD_UNAVAILABLE", "method", "the Stripe keys do not match the test mode setting")
+		return nil, fail(http.StatusPreconditionFailed, "METHOD_UNAVAILABLE", "method", "the Stripe keys do not match the test mode setting")
 	}
 	currency := stripeCurrency(pm.Config)
 	amount := discounted(*product.PriceMinor, product.DiscountPercent)

@@ -186,18 +186,47 @@ func TestZibalGateway(t *testing.T) {
 
 func TestStoreReplyClassifier(t *testing.T) {
 	cases := []struct {
+		method string
 		status int
-		err    string
+		reply  string
 		want   storeClass
+		reason string
 	}{
-		{200, "", storeAccepted}, {204, "", storeAccepted},
-		{401, "", storeConfigRejected}, {403, "", storeConfigRejected}, {404, "invalid_value", storeConfigRejected},
-		{400, "", storeRejected}, {404, "", storeRejected}, {410, "", storeRejected},
-		{500, "", storeUnavailable}, {502, "", storeUnavailable}, {429, "", storeUnavailable}, {302, "", storeUnavailable},
+		{"bazaar", 200, `{}`, storeAccepted, ""},
+		{"bazaar", 204, `{}`, storeAccepted, ""},
+		{"bazaar", 401, `{"error":"invalid_credentials","error_description":"No access token was found in your request."}`, storeConfigRejected, reasonCredentials},
+		{"bazaar", 403, `{"error":"access_forbidden"}`, storeConfigRejected, reasonCredentials},
+		{"bazaar", 404, `{"error":"not_found","error_description":"The requested purchase is not found!"}`, storeRejected, reasonPurchaseNotFound},
+		{"bazaar", 404, `{"error":"invalid_value","error_description":"Package name is invalid"}`, storeConfigRejected, reasonPackage},
+		{"bazaar", 404, `{"error":"invalid_value","error_description":"Product is not found."}`, storeConfigRejected, reasonProduct},
+		{"bazaar", 404, `{"error":"invalid_value","error_description":"Invalid token!"}`, storeRejected, reasonTokenInvalid},
+		{"bazaar", 404, `{"error":"invalid_value"}`, storeConfigRejected, reasonUnknownValue},
+		{"bazaar", 400, `{"error":"invalid_credentials"}`, storeConfigRejected, reasonCredentials},
+		{"bazaar", 400, `{}`, storeRejected, reasonPurchaseNotFound},
+		{"bazaar", 404, `{}`, storeRejected, reasonPurchaseNotFound},
+		{"bazaar", 410, `{}`, storeRejected, reasonPurchaseNotFound},
+		{"bazaar", 500, `{}`, storeUnavailable, reasonStoreError},
+		{"bazaar", 502, `{}`, storeUnavailable, reasonStoreError},
+		{"bazaar", 429, `{}`, storeUnavailable, reasonRateLimited},
+		{"bazaar", 302, `{}`, storeUnavailable, reasonStoreError},
+		{"myket", 401, `{}`, storeConfigRejected, reasonCredentials},
+		{"myket", 404, `{"code":404,"messageCode":"SkuIdNotFound","translatedMessage":"x"}`, storeConfigRejected, reasonProduct},
+		{"myket", 404, `{"code":404,"messageCode":"ApplicationNotFound"}`, storeConfigRejected, reasonPackage},
+		{"myket", 404, `{"code":404,"messageCode":"PurchaseNotFound"}`, storeRejected, reasonPurchaseNotFound},
+		{"myket", 400, `{"code":400,"messageCode":"InvalidToken"}`, storeRejected, reasonTokenInvalid},
+		{"google_play", 404, `{"error":{"code":404,"message":"No application was found for the given package name.","errors":[{"reason":"applicationNotFound"}]}}`, storeConfigRejected, reasonPackage},
+		{"google_play", 400, `{"error":{"code":400,"message":"Invalid Value","errors":[{"reason":"invalid"}]}}`, storeRejected, reasonTokenInvalid},
+		{"google_play", 401, `{"error":{"code":401,"errors":[{"reason":"permissionDenied"}]}}`, storeConfigRejected, reasonCredentials},
+		{"google_play", 410, `{}`, storeRejected, reasonPurchaseNotFound},
+		{"apple", 404, `{"errorCode":4040010,"errorMessage":"Transaction id not found."}`, storeRejected, reasonPurchaseNotFound},
+		{"apple", 401, ``, storeConfigRejected, reasonCredentials},
 	}
 	for _, tc := range cases {
-		if got := classifyStoreReply(tc.status, tc.err); got != tc.want {
-			t.Fatalf("classify(%d,%q) = %v want %v", tc.status, tc.err, got, tc.want)
+		reply := map[string]any{}
+		_ = json.Unmarshal([]byte(tc.reply), &reply)
+		got, reason := classifyStore(tc.method, tc.status, reply)
+		if got != tc.want || reason != tc.reason {
+			t.Fatalf("classify(%s,%d,%s) = %v %q want %v %q", tc.method, tc.status, tc.reply, got, reason, tc.want, tc.reason)
 		}
 	}
 }
@@ -240,13 +269,18 @@ func TestBazaarAndMyketValidation(t *testing.T) {
 			t.Fatalf("status %d class %v want %v", status, check.Class, want)
 		}
 	}
-	srv = fakeServer(t, 404, `{"error":"invalid_value"}`, nil)
+	srv = fakeServer(t, 404, `{"error":"invalid_value","error_description":"Package name is invalid"}`, nil)
 	swap(t, &bazaarBase, srv.URL)
-	if check, _ = s.validateStore(ctx, "bazaar", cfg, "coin", "tok", false); check.Class != storeConfigRejected {
-		t.Fatalf("invalid_value = %v", check.Class)
+	if check, _ = s.validateStore(ctx, "bazaar", cfg, "coin", "tok", false); check.Class != storeConfigRejected || check.Reason != reasonPackage || check.StoreError != "invalid_value" || check.StoreErrorText != "Package name is invalid" {
+		t.Fatalf("invalid_value = %+v", check)
+	}
+	srv = fakeServer(t, 404, `{"error":"invalid_value","error_description":"Invalid token!"}`, nil)
+	swap(t, &bazaarBase, srv.URL)
+	if check, _ = s.validateStore(ctx, "bazaar", cfg, "coin", "tok", false); check.Class != storeRejected || check.Reason != reasonTokenInvalid {
+		t.Fatalf("invalid token = %+v", check)
 	}
 	swap(t, &bazaarBase, "http://127.0.0.1:1")
-	if check, _ = s.validateStore(ctx, "bazaar", cfg, "coin", "tok", false); check.Class != storeUnavailable {
+	if check, _ = s.validateStore(ctx, "bazaar", cfg, "coin", "tok", false); check.Class != storeUnavailable || check.Reason != reasonNetwork {
 		t.Fatalf("network = %v", check.Class)
 	}
 	if _, err := s.validateStore(ctx, "bazaar", cfg, "coin", "..", false); err == nil {

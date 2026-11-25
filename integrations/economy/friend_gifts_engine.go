@@ -417,7 +417,7 @@ func (s *service) checkGiftProduct(ctx context.Context, st friendGiftSettings, s
 		return product, prize, pm, err
 	}
 	if !pm.usable() {
-		return product, prize, pm, fail(http.StatusServiceUnavailable, "METHOD_UNAVAILABLE", "method", "this payment method is not available")
+		return product, prize, pm, fail(http.StatusPreconditionFailed, "METHOD_UNAVAILABLE", "method", "this payment method is not available")
 	}
 	if prize, err = loadPrize(ctx, s.db, product.PrizeID); err != nil {
 		return product, prize, pm, err

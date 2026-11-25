@@ -63,7 +63,7 @@ func grpcCode(status int) codes.Code {
 		return codes.PermissionDenied
 	case http.StatusNotFound:
 		return codes.NotFound
-	case http.StatusConflict, http.StatusPaymentRequired:
+	case http.StatusConflict, http.StatusPaymentRequired, http.StatusPreconditionFailed:
 		return codes.FailedPrecondition
 	case http.StatusServiceUnavailable, http.StatusBadGateway:
 		return codes.Unavailable

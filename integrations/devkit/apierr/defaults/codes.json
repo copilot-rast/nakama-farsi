@@ -3137,7 +3137,7 @@
     ]
   },
   "METHOD_UNAVAILABLE": {
-    "status": 503,
+    "status": 412,
     "modules": [
       "economy",
       "shopx"
@@ -4887,7 +4887,19 @@
     ]
   },
   "STORE_CONFIGURATION_REJECTED": {
-    "status": 503,
+    "status": 412,
+    "modules": [
+      "economy"
+    ]
+  },
+  "STORE_MODE_CHANGED": {
+    "status": 412,
+    "modules": [
+      "economy"
+    ]
+  },
+  "STORE_TOKEN_UNKNOWN": {
+    "status": 409,
     "modules": [
       "economy"
     ]

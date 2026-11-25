@@ -161,18 +161,22 @@ func (s *service) validateGoogle(ctx context.Context, cfg methodConfig, sku, tok
 	logged := map[string]any{"sku": sku, "token": token}
 	access, class := s.googleAccessToken(cfg.str("serviceAccountJson"))
 	if class != storeAccepted {
-		return storeCheck{Class: class, Exchange: exchange{URL: target, Request: logged, Response: map[string]any{"error": "OAUTH_TOKEN_FAILED"}}}, nil
+		reason := reasonCredentials
+		if class == storeUnavailable {
+			reason = reasonNetwork
+		}
+		return storeCheck{Class: class, Reason: reason, StoreError: "OAUTH_TOKEN_FAILED", Exchange: exchange{URL: target, Request: logged, Response: map[string]any{"error": "OAUTH_TOKEN_FAILED"}}}, nil
 	}
 	header := map[string]string{"Authorization": "Bearer " + access}
 	reply, ex, err := s.doJSON(ctx, http.MethodGet, target, header, nil, logged)
 	check := storeCheck{Exchange: ex, StoreKey: token}
 	if err != nil || ex.HTTPStatus == nil {
-		check.Class = storeUnavailable
+		check.Class, check.Reason = storeUnavailable, reasonNetwork
 		return check, nil
 	}
-	check.Class = classifyStoreReply(*ex.HTTPStatus, "")
+	check.noteReply("google_play", *ex.HTTPStatus, reply)
 	if check.Class == storeAccepted && reply == nil {
-		check.Class = storeUnavailable
+		check.Class, check.Reason = storeUnavailable, reasonStoreError
 	}
 	if check.Class != storeAccepted {
 		return check, nil
@@ -514,7 +518,7 @@ func (s *service) validateApple(ctx context.Context, cfg methodConfig, sku, toke
 func (s *service) appleLookup(ctx context.Context, cfg methodConfig, id, sku string, subscription bool) (storeCheck, error) {
 	bearer, err := s.appleJWT(cfg)
 	if err != nil {
-		return storeCheck{Class: storeConfigRejected, Exchange: exchange{URL: "apple://jwt", Response: map[string]any{"error": "KEY_INVALID"}}}, nil
+		return storeCheck{Class: storeConfigRejected, Reason: reasonCredentials, StoreError: "KEY_INVALID", Exchange: exchange{URL: "apple://jwt", Response: map[string]any{"error": "KEY_INVALID"}}}, nil
 	}
 	hosts := []string{appleAPIProduction}
 	if cfg.flag("sandbox") {
@@ -528,13 +532,10 @@ func (s *service) appleLookup(ctx context.Context, cfg methodConfig, id, sku str
 		reply, ex, err := s.doJSON(ctx, http.MethodGet, target, map[string]string{"Authorization": "Bearer " + bearer}, nil, map[string]any{"transactionId": id, "sku": sku})
 		check = storeCheck{Exchange: ex}
 		if err != nil || ex.HTTPStatus == nil {
-			check.Class = storeUnavailable
+			check.Class, check.Reason = storeUnavailable, reasonNetwork
 			return check, nil
 		}
-		check.Class = classifyStoreReply(*ex.HTTPStatus, "")
-		if *ex.HTTPStatus == http.StatusTooManyRequests {
-			check.Class = storeUnavailable
-		}
+		check.noteReply("apple", *ex.HTTPStatus, reply)
 		if check.Class == storeRejected {
 			continue
 		}
@@ -593,6 +594,15 @@ func (s *service) appleReceipt(ctx context.Context, cfg methodConfig, sku, recei
 	check.Class = appleReceiptClass(*status)
 	if check.Class != storeAccepted {
 		check.State = "STATUS_" + strconv.FormatInt(*status, 10)
+		check.StoreError = strconv.FormatInt(*status, 10)
+		switch check.Class {
+		case storeConfigRejected:
+			check.Reason = reasonCredentials
+		case storeUnavailable:
+			check.Reason = reasonStoreError
+		default:
+			check.Reason = reasonTokenInvalid
+		}
 		return check, nil
 	}
 	rec := section(reply, "receipt")

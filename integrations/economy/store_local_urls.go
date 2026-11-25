@@ -29,6 +29,8 @@ func applyLocalStoreURLs(env map[string]string) error {
 	}{
 		{"ECONOMY_LOCAL_STRIPE_URL", &stripeAPI, ""},
 		{"ECONOMY_LOCAL_GOOGLE_PLAY_URL", &googlePlayBase, "/androidpublisher/v3"},
+		{"ECONOMY_LOCAL_BAZAAR_URL", &bazaarBase, ""},
+		{"ECONOMY_LOCAL_MYKET_URL", &myketBase, ""},
 		{"ECONOMY_LOCAL_APPLE_URL", &appleAPIProduction, ""},
 		{"ECONOMY_LOCAL_APPLE_URL", &appleAPISandbox, ""},
 		{"ECONOMY_LOCAL_APPLE_URL", &appleReceiptProduction, "/verifyReceipt"},

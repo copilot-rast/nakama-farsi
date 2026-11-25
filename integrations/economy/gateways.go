@@ -398,32 +398,124 @@ const (
 	storeUnavailable
 )
 
-func classifyStoreReply(status int, errorField string) storeClass {
+const (
+	reasonCredentials      = "credentials"
+	reasonPackage          = "package"
+	reasonProduct          = "product"
+	reasonUnknownValue     = "unknown_value"
+	reasonPurchaseNotFound = "purchase_not_found"
+	reasonTokenInvalid     = "token_invalid"
+	reasonRateLimited      = "rate_limited"
+	reasonStoreError       = "store_error"
+	reasonNetwork          = "network"
+)
+
+func storeErrorOf(method string, reply map[string]any) (string, string) {
+	if reply == nil {
+		return "", ""
+	}
+	switch method {
+	case "myket":
+		return firstNonEmpty(textField(reply, "messageCode"), textField(reply, "error")), firstNonEmpty(textField(reply, "translatedMessage"), textField(reply, "message"), textField(reply, "error_description"))
+	case "google_play":
+		e := section(reply, "error")
+		reason := ""
+		if list, ok := e["errors"].([]any); ok && len(list) > 0 {
+			if first, ok := list[0].(map[string]any); ok {
+				reason = textField(first, "reason")
+			}
+		}
+		return firstNonEmpty(reason, textField(e, "status")), textField(e, "message")
+	case "apple":
+		return textField(reply, "errorCode"), textField(reply, "errorMessage")
+	}
+	return textField(reply, "error"), textField(reply, "error_description")
+}
+
+func hasAny(text string, words ...string) bool {
+	for _, w := range words {
+		if strings.Contains(text, w) {
+			return true
+		}
+	}
+	return false
+}
+
+func classifyStore(method string, status int, reply map[string]any) (storeClass, string) {
+	code, desc := storeErrorOf(method, reply)
+	lc, ld := strings.ToLower(code), strings.ToLower(desc)
 	switch {
 	case status >= 200 && status < 300:
-		return storeAccepted
+		return storeAccepted, ""
 	case status == 401 || status == 403:
-		return storeConfigRejected
-	case status == 404 && errorField == "invalid_value":
-		return storeConfigRejected
-	case status == 400 || status == 404 || status == 410:
-		return storeRejected
+		return storeConfigRejected, reasonCredentials
+	case status == http.StatusTooManyRequests:
+		return storeUnavailable, reasonRateLimited
+	case status != 400 && status != 404 && status != 410:
+		return storeUnavailable, reasonStoreError
 	}
-	return storeUnavailable
+	if hasAny(lc, "invalid_credentials", "access_forbidden", "unauthorized", "permission_denied", "permissiondenied", "forbidden") {
+		return storeConfigRejected, reasonCredentials
+	}
+	switch method {
+	case "bazaar":
+		if lc == "not_found" {
+			return storeRejected, reasonPurchaseNotFound
+		}
+		if lc == "invalid_value" {
+			switch {
+			case hasAny(ld, "package"):
+				return storeConfigRejected, reasonPackage
+			case hasAny(ld, "product", "sku"):
+				return storeConfigRejected, reasonProduct
+			case hasAny(ld, "token", "purchase"):
+				return storeRejected, reasonTokenInvalid
+			}
+			return storeConfigRejected, reasonUnknownValue
+		}
+	case "myket":
+		switch {
+		case hasAny(lc+" "+ld, "accesstoken", "access_token", "access token"):
+			return storeConfigRejected, reasonCredentials
+		case hasAny(lc, "sku", "product"):
+			return storeConfigRejected, reasonProduct
+		case hasAny(lc, "package", "application"):
+			return storeConfigRejected, reasonPackage
+		}
+	case "google_play":
+		switch {
+		case hasAny(lc, "applicationnotfound", "projectnotlinked") || hasAny(ld, "no application was found", "package name"):
+			return storeConfigRejected, reasonPackage
+		case hasAny(lc, "productnotfound", "inappproductnotfound") || hasAny(ld, "product not found", "no product"):
+			return storeConfigRejected, reasonProduct
+		}
+	}
+	if status == 400 && method != "bazaar" && method != "apple" {
+		return storeRejected, reasonTokenInvalid
+	}
+	return storeRejected, reasonPurchaseNotFound
+}
+
+func (c *storeCheck) noteReply(method string, status int, reply map[string]any) {
+	c.Class, c.Reason = classifyStore(method, status, reply)
+	c.StoreError, c.StoreErrorText = storeErrorOf(method, reply)
 }
 
 type storeCheck struct {
-	Class       storeClass
-	Valid       bool
-	State       string
-	Code        string
-	Payload     string
-	ValidUntil  *int64
-	LinkedToken string
-	StoreKey    string
-	RefID       string
-	Acknowledge func(context.Context, string)
-	Exchange    exchange
+	Class          storeClass
+	Reason         string
+	StoreError     string
+	StoreErrorText string
+	Valid          bool
+	State          string
+	Code           string
+	Payload        string
+	ValidUntil     *int64
+	LinkedToken    string
+	StoreKey       string
+	RefID          string
+	Acknowledge    func(context.Context, string)
+	Exchange       exchange
 }
 
 func storeSegment(value string) (string, error) {
@@ -505,12 +597,12 @@ func (s *service) validateStore(ctx context.Context, method string, cfg methodCo
 	reply, ex, err := s.doJSON(ctx, verb, target, header, body, logged)
 	check := storeCheck{Exchange: ex}
 	if err != nil || ex.HTTPStatus == nil {
-		check.Class = storeUnavailable
+		check.Class, check.Reason = storeUnavailable, reasonNetwork
 		return check, nil
 	}
-	check.Class = classifyStoreReply(*ex.HTTPStatus, textField(reply, "error"))
+	check.noteReply(method, *ex.HTTPStatus, reply)
 	if check.Class == storeAccepted && reply == nil {
-		check.Class = storeUnavailable
+		check.Class, check.Reason = storeUnavailable, reasonStoreError
 	}
 	if check.Class != storeAccepted {
 		return check, nil

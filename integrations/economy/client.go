@@ -489,7 +489,7 @@ func (s *service) purchaseStart(ctx context.Context, userID string, in purchaseI
 		return nil, err
 	}
 	if !pm.usable() {
-		return nil, fail(http.StatusServiceUnavailable, "METHOD_UNAVAILABLE", "method", "this payment method is not available")
+		return nil, fail(http.StatusPreconditionFailed, "METHOD_UNAVAILABLE", "method", "this payment method is not available")
 	}
 	prize, err := loadPrize(ctx, s.db, product.PrizeID)
 	if err != nil {
@@ -799,7 +799,7 @@ func (s *service) rpcPurchaseReview(ctx context.Context, userID, payload string)
 		return nil, err
 	}
 	if !methodConfigured(in.Method, pm.Config) {
-		return nil, fail(http.StatusServiceUnavailable, "METHOD_UNAVAILABLE", "method", "this payment method is not available")
+		return nil, fail(http.StatusPreconditionFailed, "METHOD_UNAVAILABLE", "method", "this payment method is not available")
 	}
 	var existing string
 	lookup := token
@@ -875,9 +875,10 @@ func (s *service) storeCheck(ctx context.Context, pm paymentMethod, sandbox bool
 	if err != nil {
 		return check, err
 	}
+	s.noteStoreCheck(ctx, pm.Method, check, "purchase")
 	switch check.Class {
 	case storeConfigRejected:
-		return check, fail(http.StatusServiceUnavailable, "STORE_CONFIGURATION_REJECTED", "", "the store rejected the server credentials")
+		return check, fail(http.StatusPreconditionFailed, "STORE_CONFIGURATION_REJECTED", "", "the store rejected the server credentials")
 	case storeUnavailable:
 		return check, fail(http.StatusServiceUnavailable, "STORE_UNAVAILABLE", "", "the store could not be reached; try again")
 	case storeRejected:
@@ -920,13 +921,13 @@ func (s *service) settleStore(ctx context.Context, p payment, product productVie
 	}
 	if !p.Sandbox && sandbox {
 		s.notePending(ctx, p.ID, "STORE_MODE_CHANGED")
-		return nil, fail(http.StatusServiceUnavailable, "STORE_MODE_CHANGED", "", "the store is in test mode; this payment is checked when test mode is off")
+		return nil, fail(http.StatusPreconditionFailed, "STORE_MODE_CHANGED", "", "the store is in test mode; this payment is checked when test mode is off")
 	}
 	if err := s.expiredAllowed(ctx, p, sandbox); err != nil {
 		return nil, err
 	}
 	if !methodConfigured(p.Method, pm.Config) && !(sandbox && fakeSandbox(p.Method)) {
-		return nil, fail(http.StatusServiceUnavailable, "METHOD_UNAVAILABLE", "", "this payment method is not available")
+		return nil, fail(http.StatusPreconditionFailed, "METHOD_UNAVAILABLE", "", "this payment method is not available")
 	}
 	check, err := s.storeCheck(ctx, pm, sandbox, product, token)
 	s.logExchange(ctx, p.ID, "store_validate", check.Exchange)
@@ -1088,7 +1089,7 @@ func (s *service) rpcStoreConfig(ctx context.Context, userID, payload string) (a
 		return nil, err
 	}
 	if !pm.usable() {
-		return nil, fail(http.StatusServiceUnavailable, "METHOD_UNAVAILABLE", "method", "this payment method is not available")
+		return nil, fail(http.StatusPreconditionFailed, "METHOD_UNAVAILABLE", "method", "this payment method is not available")
 	}
 	out := map[string]any{"method": in.Method, "sandbox": pm.Config.flag("sandbox"), "rsaPublicKey": pm.Config.str("rsaPublicKey"), "packageName": pm.Config.str("packageName")}
 	if in.Method == "apple" {
