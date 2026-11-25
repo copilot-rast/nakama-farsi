@@ -81,6 +81,8 @@ test('the payment method card shows the last failure and tests the credentials',
 
   await health.locator('[data-store-test="bazaar"]').click();
   await expect(health.locator('[data-result="credentials_rejected"]')).toBeVisible();
+  await health.locator('[data-store-test-sku]').fill(sku);
+  await health.locator('[data-store-test="bazaar"]').click();
   await expect(health.locator('[data-store-test-result]')).toContainText(sku);
 
   reply.status = 404;
@@ -114,13 +116,13 @@ test('the payment detail shows the store answer and re-checks after the fix', as
 });
 
 test('Ctrl+K finds the store credentials test', async ({ page }) => {
-  await open(page, '#/players');
-  await page.locator('.pl-search').first().click();
+  await open(page, '#/economy/payments');
+  await page.keyboard.press('Control+k');
   const input = page.locator('.pl-pal-input');
   await input.fill('آزمودن کلیدهای');
   const row = page.locator('.pl-pal-row').filter({ hasText: 'آزمودن کلیدهای فروشگاه' });
-  await expect(row).toBeVisible();
-  await row.click();
+  await expect(row).toHaveCount(1);
+  await page.keyboard.press('Enter');
   await expect(psWindow(page).locator('[data-store-health="bazaar"]')).toBeVisible();
   expect((await consoleApi('POST', '/v2/console/economy/payment-methods/zarinpal/test', {})).status).toBe(400);
 });

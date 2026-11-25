@@ -613,7 +613,13 @@ function storeHealthBlock(m, replace) {
   rows.push(['pm.health.lastFailure', f ? h('div', { class: 'flex flex-col gap-1', 'data-last-failure': '' },
     h('div', { class: 'flex flex-wrap items-center gap-1.5' }, h('span', { text: fmtDate(f.at) }), storeReasonText(f.reason) ? tag(storeReasonText(f.reason), 'error') : null),
     storeAnswerLine(f)) : h('span', { class: 'text-secondary-500', text: t('pm.health.never') })]);
-  rows.push(['pm.health.lastOk', hl.lastOkAt ? h('span', { 'data-last-ok': '', text: fmtDate(hl.lastOkAt) }) : h('span', { class: 'text-secondary-500', text: t('pm.health.never') })]);
+  var okCell = h('span', {});
+  function paintOk(at) {
+    clear(okCell);
+    okCell.appendChild(at ? h('span', { 'data-last-ok': '', text: fmtDate(at) }) : h('span', { class: 'text-secondary-500', text: t('pm.health.never') }));
+  }
+  paintOk(hl.lastOkAt);
+  rows.push(['pm.health.lastOk', okCell]);
   box.appendChild(dl(rows));
 
   var sku = textInput('', { ltr: true, mono: true, label: t('pm.health.sku'), placeholder: 'fir_oil_100' });
@@ -626,6 +632,7 @@ function storeHealthBlock(m, replace) {
     api('POST', '/payment-methods/' + encodeURIComponent(m.method) + '/test', { sku: (sku.value || '').trim() }).then(function (r) {
       setBusy(testBtn, false);
       showResult(r);
+      if (r.result === 'credentials_ok') paintOk(r.testedAt);
       toast(r.result === 'credentials_ok' ? 'success' : 'error', t('pm.test.' + r.result));
     }, function (err) {
       setBusy(testBtn, false);
