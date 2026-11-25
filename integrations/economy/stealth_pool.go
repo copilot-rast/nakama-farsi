@@ -31,73 +31,6 @@ func seededRand(id string) *rand.Rand {
 	return rand.New(rand.NewPCG(v, v^0x9e3779b97f4a7c15))
 }
 
-func (s *service) botMaxLevel(ctx context.Context) int {
-	var n int
-	_ = s.db.QueryRowContext(ctx, `SELECT COALESCE((SELECT max(s.level) FROM economy_level_step s JOIN economy_level_table t ON t.id=s.table_id WHERE t.key=$1),0)`, s.mainLevelTable(ctx)).Scan(&n)
-	if n < 2 {
-		n = 30
-	}
-	return n
-}
-
-type lookQueryer interface {
-	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
-	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
-}
-
-func lookItemsOfType(ctx context.Context, q lookQueryer, typeID string) []stealthbots.LookItem {
-	rows, err := q.QueryContext(ctx, `SELECT key, rarity, COALESCE(price->>'currencyKey',''), COALESCE((price->>'amount')::bigint,0), COALESCE(unlock_level,0), is_starter
-		FROM economy_item WHERE is_active AND type_id::text=$1`, typeID)
-	if err != nil {
-		return nil
-	}
-	defer rows.Close()
-	out := []stealthbots.LookItem{}
-	for rows.Next() {
-		var it stealthbots.LookItem
-		if rows.Scan(&it.Key, &it.Rarity, &it.Currency, &it.Price, &it.Unlock, &it.Starter) == nil {
-			out = append(out, it)
-		}
-	}
-	return out
-}
-
-func pickRandom(items []stealthbots.LookItem, level int, r *rand.Rand) string {
-	ok := []string{}
-	for _, it := range items {
-		if it.Unlock == 0 || it.Unlock <= level {
-			ok = append(ok, it.Key)
-		}
-	}
-	if len(ok) == 0 {
-		return ""
-	}
-	return ok[r.IntN(len(ok))]
-}
-
-func (s *service) levelLook(ctx context.Context, q lookQueryer, slots map[string]string, level, maxLevel int, st stealthbots.Settings, r *rand.Rand) map[string]string {
-	out := map[string]string{}
-	for slot, key := range slots {
-		var typeID string
-		if q.QueryRowContext(ctx, `SELECT type_id::text FROM economy_item WHERE key=$1`, key).Scan(&typeID) != nil {
-			out[slot] = key
-			continue
-		}
-		items := lookItemsOfType(ctx, q, typeID)
-		pick := ""
-		if st.LookByLevel {
-			pick = stealthbots.PickLook(items, level, maxLevel, st.LookSpread, r)
-		} else {
-			pick = pickRandom(items, level, r)
-		}
-		if pick == "" {
-			pick = key
-		}
-		out[slot] = pick
-	}
-	return out
-}
-
 func (s *service) growLook(ctx context.Context, tx *sql.Tx, level, maxLevel int, st stealthbots.Settings, r *rand.Rand) map[string]string {
 	var raw string
 	if tx.QueryRowContext(ctx, `SELECT look::text FROM economy_bot WHERE enabled AND look <> '{}'::jsonb ORDER BY random() LIMIT 1`).Scan(&raw) != nil {
@@ -105,10 +38,10 @@ func (s *service) growLook(ctx context.Context, tx *sql.Tx, level, maxLevel int,
 	}
 	slots := map[string]string{}
 	_ = json.Unmarshal([]byte(raw), &slots)
-	return s.levelLook(ctx, tx, slots, level, maxLevel, st, r)
+	return stealthbots.LevelLook(ctx, tx, slots, level, maxLevel, st, r)
 }
 
-func (s *service) poolSize(ctx context.Context, q lookQueryer) int {
+func (s *service) poolSize(ctx context.Context, q *sql.Tx) int {
 	var n int
 	_ = q.QueryRowContext(ctx, `SELECT count(*) FROM economy_bot WHERE enabled`).Scan(&n)
 	return n
@@ -119,7 +52,7 @@ func (s *service) growBots(ctx context.Context, q gamecatalog.BotQuery, st steal
 		return nil
 	}
 	r := newRand()
-	maxLevel := s.botMaxLevel(ctx)
+	maxLevel := stealthbots.MaxLevel(ctx, s.db)
 	out := []gamecatalog.Bot{}
 	seeds := map[string]stealthbots.CardStats{}
 	err := s.inTx(ctx, func(tx *sql.Tx) error {

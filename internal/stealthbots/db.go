@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"hash/fnv"
+	"math/rand/v2"
 	"strconv"
 	"sync"
 	"time"
@@ -163,6 +164,69 @@ func GhostUsers(ctx context.Context, db DB, ids, usernames []string, skip map[st
 		}
 		out = append(out, &api.User{Id: id, Username: username, DisplayName: display, AvatarUrl: avatar, Online: online, Metadata: "{}",
 			CreateTime: &timestamppb.Timestamp{Seconds: created}, UpdateTime: &timestamppb.Timestamp{Seconds: updated}})
+	}
+	return out
+}
+
+func MaxLevel(ctx context.Context, db DB) int {
+	var n int
+	_ = db.QueryRowContext(ctx, `SELECT COALESCE((SELECT max(s.level) FROM economy_level_step s JOIN economy_level_table t ON t.id=s.table_id
+		WHERE t.key=(SELECT key FROM economy_level_table WHERE is_active ORDER BY sort, created_at LIMIT 1)),0)`).Scan(&n)
+	if n < 2 {
+		n = 30
+	}
+	return n
+}
+
+func LookItemsOfType(ctx context.Context, db DB, typeID string) []LookItem {
+	rows, err := db.QueryContext(ctx, `SELECT key, rarity, COALESCE(price->>'currencyKey',''), COALESCE((price->>'amount')::bigint,0), COALESCE(unlock_level,0), is_starter
+		FROM economy_item WHERE is_active AND type_id::text=$1`, typeID)
+	if err != nil {
+		return nil
+	}
+	defer rows.Close()
+	out := []LookItem{}
+	for rows.Next() {
+		var it LookItem
+		if rows.Scan(&it.Key, &it.Rarity, &it.Currency, &it.Price, &it.Unlock, &it.Starter) == nil {
+			out = append(out, it)
+		}
+	}
+	return out
+}
+
+func randomLook(items []LookItem, level int, r *rand.Rand) string {
+	ok := []string{}
+	for _, it := range items {
+		if it.Unlock == 0 || it.Unlock <= level {
+			ok = append(ok, it.Key)
+		}
+	}
+	if len(ok) == 0 {
+		return ""
+	}
+	return ok[r.IntN(len(ok))]
+}
+
+func LevelLook(ctx context.Context, db DB, slots map[string]string, level, maxLevel int, st Settings, r *rand.Rand) map[string]string {
+	out := map[string]string{}
+	for slot, key := range slots {
+		var typeID string
+		if db.QueryRowContext(ctx, `SELECT type_id::text FROM economy_item WHERE key=$1`, key).Scan(&typeID) != nil {
+			out[slot] = key
+			continue
+		}
+		items := LookItemsOfType(ctx, db, typeID)
+		pick := ""
+		if st.LookByLevel {
+			pick = PickLook(items, level, maxLevel, st.LookSpread, r)
+		} else {
+			pick = randomLook(items, level, r)
+		}
+		if pick == "" {
+			pick = key
+		}
+		out[slot] = pick
 	}
 	return out
 }
