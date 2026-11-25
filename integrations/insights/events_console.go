@@ -15,6 +15,7 @@ import (
 	"github.com/heroiclabs/nakama/v3/integrations/insights/internal/events"
 	"github.com/heroiclabs/nakama/v3/integrations/insights/internal/settings"
 	"github.com/heroiclabs/nakama/v3/integrations/insights/internal/store"
+	"github.com/heroiclabs/nakama/v3/internal/eventcontext"
 	"github.com/heroiclabs/nakama/v3/internal/pluginkit"
 )
 
@@ -481,14 +482,16 @@ func (s *service) eventSettingsGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	d := settings.Defaults()
-	pluginkit.WriteJSON(w, http.StatusOK, map[string]any{"events": cfg.Events, "storage": cfg.Storage, "defaults": map[string]any{"events": d.Events, "storage": d.Storage},
+	pluginkit.WriteJSON(w, http.StatusOK, map[string]any{"events": cfg.Events, "storage": cfg.Storage, "context": cfg.Context,
+		"defaults": map[string]any{"events": d.Events, "storage": d.Storage, "context": d.Context}, "sources": eventcontext.Sources(), "providers": eventcontext.Has(),
 		"timezone": cfg.Timezone, "updatedBy": meta.UpdatedBy, "updatedAt": meta.UpdatedAt})
 }
 
 func (s *service) eventSettingsPut(w http.ResponseWriter, r *http.Request) {
 	var in struct {
-		Events  *settings.Events  `json:"events"`
-		Storage *settings.Storage `json:"storage"`
+		Events  *settings.Events     `json:"events"`
+		Storage *settings.Storage    `json:"storage"`
+		Context *eventcontext.Policy `json:"context"`
 	}
 	if err := pluginkit.ReadBody(r, &in, 64*1024); err != nil {
 		s.fail(w, err)
@@ -504,6 +507,12 @@ func (s *service) eventSettingsPut(w http.ResponseWriter, r *http.Request) {
 	}
 	if in.Storage != nil {
 		cfg.Storage = *in.Storage
+	}
+	if in.Context != nil {
+		if in.Context.Fills == nil {
+			in.Context.Fills = []eventcontext.Fill{}
+		}
+		cfg.Context = *in.Context
 	}
 	if field, code := cfg.Validate(); code != "" {
 		s.fail(w, pluginkit.Bad(code, field, ""))

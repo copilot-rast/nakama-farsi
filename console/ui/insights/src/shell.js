@@ -1,7 +1,7 @@
 var INS_ROOT = 'ins-root';
-var INS_GROUPS = { insights: ['overview', 'active', 'retention', 'funnels', 'explore', 'sessions', 'catalog', 'storage', 'imports', 'settings'] };
+var INS_GROUPS = { insights: ['overview', 'active', 'retention', 'funnels', 'explore', 'sessions', 'catalog', 'storage', 'imports', 'settings', 'context'] };
 var INS_ORDER = ['insights'];
-var INS_RENDER = { 'insights/overview': overviewPage, 'insights/active': activePage, 'insights/retention': retentionPage, 'insights/funnels': funnelsPage, 'insights/explore': explorePage, 'insights/sessions': sessionsPage, 'insights/catalog': catalogPage, 'insights/storage': storagePage, 'insights/imports': importsPage, 'insights/settings': analyticsSettingsPage };
+var INS_RENDER = { 'insights/overview': overviewPage, 'insights/active': activePage, 'insights/retention': retentionPage, 'insights/funnels': funnelsPage, 'insights/explore': explorePage, 'insights/sessions': sessionsPage, 'insights/catalog': catalogPage, 'insights/storage': storagePage, 'insights/imports': importsPage, 'insights/settings': analyticsSettingsPage, 'insights/context': contextFillPage };
 var INS_HASH = /^#\/(insights)(?:\/([^/?]*))?/;
 var insPending = null;
 var insRouter = null;

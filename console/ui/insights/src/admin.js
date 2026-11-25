@@ -274,3 +274,59 @@ function analyticsSettingsPage(root) {
     body.appendChild(h('div', { class: 'ia-savebar flex flex-wrap items-center justify-between gap-3' }, meta, h('div', { class: 'flex-1' }, msg), save));
   }, function (err) { failInto(body, err); });
 }
+
+function contextFillPage(root) {
+  var frame = dashFrame(root, 'insights/context');
+  var body = h('div', { class: 'flex flex-col gap-4' });
+  frame.content.appendChild(body);
+  loadingInto(body);
+  api('GET', '/insights/events/settings').then(function (d) {
+    clear(body);
+    var c = d.context || {}, def = (d.defaults || {}).context || {};
+    var sources = (d.sources || []).map(function (s) { return { value: s.key, label: s.key + ' · ' + ((insLang() === 'fa' ? s.labelFa || s.labelEn : s.labelEn || s.labelFa) || s.key) }; });
+    if (!d.providers) body.appendChild(notice('warning', t('ctx.noProviders')));
+    var enabled = check(c.enabled, t('ctx.enabled'), 'enabled');
+    var conflict = select(c.conflict, ['override', 'keep_client', 'reject'].map(function (p) { return { value: p, label: t('ctx.c.' + p) }; }), { name: 'conflict', label: t('ctx.conflict') });
+    var flag = check(c.flagMismatch, t('ctx.flagMismatch'), 'flagMismatch');
+    var outside = check(c.keepClientOutside, t('ctx.keepClientOutside'), 'keepClientOutside');
+    var grace = input(digits(String(c.graceSeconds == null ? def.graceSeconds : c.graceSeconds)), { ltr: true, name: 'graceSeconds' });
+    body.appendChild(panelCard(t('ctx.policy'), h('div', {}, enabled,
+      h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('ctx.conflict'), conflict, t('set.default', { v: t('ctx.c.' + def.conflict) })), field(t('ctx.grace'), grace, t('ctx.graceHint', { v: def.graceSeconds }))),
+      flag, h('p', { class: 'text-xs text-secondary-500 -mt-2 mb-3', text: t('ctx.flagHint') }), outside, h('p', { class: 'text-xs text-secondary-500 -mt-2 mb-1', text: t('ctx.outsideHint') })), null, 'context-policy'));
+    var rows = h('div', { class: 'flex flex-col gap-2', 'data-ins-fills': '' });
+    var readers = [];
+    var addRow = function (f) {
+      var opts = sources.slice();
+      if (f.source && !opts.some(function (o) { return o.value === f.source; })) opts.push({ value: f.source, label: f.source });
+      if (!opts.length) opts.push({ value: '', label: t('none') });
+      var on = check(f.enabled, t('ctx.fillOn'), 'fillEnabled');
+      var group = input(f.group, { ltr: true, name: 'group', label: t('ctx.group') });
+      var src = select(f.source, opts, { name: 'source', label: t('ctx.source') });
+      var row = h('div', { class: 'ia-fill flex flex-wrap items-end gap-x-4 border-b border-secondary-100 dark:border-secondary-700 pb-2', 'data-ins-fill': f.group || '' },
+        h('div', { class: 'pb-1' }, on), field(t('ctx.group'), group, null, 'flex-1 min-w-[8rem] !mb-1'), field(t('ctx.source'), src, null, 'flex-[2] min-w-[12rem] !mb-1'));
+      var reader = function () { return { group: group.value.trim(), source: src.value, enabled: on.input.checked }; };
+      readers.push(reader);
+      row.appendChild(button({ label: t('delete'), variant: 'danger', data: { 'ins-fill-delete': '' }, onclick: function () { readers.splice(readers.indexOf(reader), 1); row.remove(); } }));
+      rows.appendChild(row);
+    };
+    (c.fills || []).forEach(addRow);
+    body.appendChild(panelCard(t('ctx.fills'), h('div', {}, h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300 mb-3', text: t('ctx.fillsHint') }), rows,
+      h('p', { class: 'text-xs text-secondary-500 mt-3', text: t('ctx.defaults', { v: (def.fills || []).map(function (f) { return f.group + ' ← ' + f.source + (f.enabled ? '' : ' (' + t('ctx.off') + ')'); }).join('، ') }) })),
+      [button({ label: t('ctx.addFill'), data: { 'ins-fill-add': '' }, onclick: function () { addRow({ group: '', source: sources.length ? sources[0].value : '', enabled: true }); } })], 'context-fills'));
+    var msg = h('div', { 'data-ins-msg': '' });
+    var meta = h('p', { class: 'text-xs text-secondary-500', text: d.updatedBy ? t('updated', { by: d.updatedBy, at: fmtDate(d.updatedAt) }) : '' });
+    var reset = button({ label: t('ctx.reset'), data: { 'ins-context-reset': '' }, onclick: function () {
+      clear(rows); readers.length = 0; (def.fills || []).forEach(addRow);
+      enabled.input.checked = def.enabled; conflict.value = def.conflict; flag.input.checked = def.flagMismatch; outside.input.checked = def.keepClientOutside; grace.value = digits(String(def.graceSeconds));
+    } });
+    var save = button({ label: t('save'), variant: 'primary', data: { 'ins-context-save': '' }, onclick: function () {
+      var g = numberValue(grace);
+      var out = { context: { enabled: enabled.input.checked, conflict: conflict.value, flagMismatch: flag.input.checked, keepClientOutside: outside.input.checked, graceSeconds: g == null ? def.graceSeconds : g,
+        fills: readers.map(function (r) { return r(); }).filter(function (f) { return f.group || f.source; }) } };
+      busy(save, true);
+      clear(msg);
+      api('PUT', '/insights/events/settings', out).then(function (x) { busy(save, false); d = x; meta.textContent = t('updated', { by: x.updatedBy, at: fmtDate(x.updatedAt) }); toast('success', t('saved')); }, function (err) { busy(save, false); fieldError(msg, err); });
+    } });
+    body.appendChild(h('div', { class: 'ia-savebar flex flex-wrap items-center justify-between gap-3' }, meta, h('div', { class: 'flex-1' }, msg), h('div', { class: 'flex gap-2' }, reset, save)));
+  }, function (err) { failInto(body, err); });
+}

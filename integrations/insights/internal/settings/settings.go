@@ -3,8 +3,10 @@ package settings
 import (
 	"context"
 	"database/sql"
+	"regexp"
 	"time"
 
+	"github.com/heroiclabs/nakama/v3/internal/eventcontext"
 	"github.com/heroiclabs/nakama/v3/internal/settingsrow"
 )
 
@@ -72,12 +74,13 @@ type Storage struct {
 }
 
 type All struct {
-	Timezone  string    `json:"timezone"`
-	Sessions  Sessions  `json:"sessions"`
-	Retention Retention `json:"retention"`
-	Heatmap   Heatmap   `json:"heatmap"`
-	Events    Events    `json:"events"`
-	Storage   Storage   `json:"storage"`
+	Timezone  string              `json:"timezone"`
+	Sessions  Sessions            `json:"sessions"`
+	Retention Retention           `json:"retention"`
+	Heatmap   Heatmap             `json:"heatmap"`
+	Events    Events              `json:"events"`
+	Storage   Storage             `json:"storage"`
+	Context   eventcontext.Policy `json:"context"`
 }
 
 const (
@@ -100,6 +103,29 @@ func DefaultEvents() Events {
 		BatchesPerMinute: 60, EventsPerMinute: 1200, PastHours: 72, FutureMinutes: 5, ReceiptDays: 7,
 		UnknownEvents: PolicyAccept, UnknownTagGroups: PolicyAccept, UnknownTagValues: PolicyFlag, ValueOutOfRange: PolicyReject,
 		GameEvents: true, SessionEvents: true, FlushSeconds: 30, MaxQueue: 1000}
+}
+
+func DefaultContext() eventcontext.Policy {
+	return eventcontext.Policy{Enabled: true, Conflict: eventcontext.ConflictOverride, FlagMismatch: true, KeepClientOutside: true, GraceSeconds: 10,
+		Fills: []eventcontext.Fill{
+			{Group: "mission", Source: "campaign.stage", Enabled: true},
+			{Group: "car", Source: "campaign.item", Enabled: true},
+			{Group: "chapter", Source: "campaign.chapter", Enabled: false},
+		}}
+}
+
+var tagGroup = regexp.MustCompile(`^[a-z][a-z0-9_]{0,31}$`)
+
+func ValidateContext(c eventcontext.Policy) (string, string) {
+	if f, code := c.Validate("context"); code != "" {
+		return f, code
+	}
+	for _, f := range c.Fills {
+		if !tagGroup.MatchString(f.Group) {
+			return "context.fills.group", "INVALID_TAG_GROUP"
+		}
+	}
+	return "", ""
 }
 
 func DefaultStorage() Storage {
@@ -177,6 +203,7 @@ func Defaults() All {
 		Heatmap:   Heatmap{Enabled: true, UnknownMaps: MapsAccept, CellSize: 5, MaxPoints: 20000, MaxBytes: 512 * 1024, UploadsPerHour: 120, MaxKmh: 600, KeepRawDays: 14, KeepCellsDays: 365, MaxTracePoints: 20000, ImportMaxMB: 64, ImportMaxRows: 2000000, ImportMaxFiles: 100},
 		Events:    DefaultEvents(),
 		Storage:   DefaultStorage(),
+		Context:   DefaultContext(),
 	}
 }
 
@@ -242,6 +269,9 @@ func (a All) Validate() (string, string) {
 		return f, c
 	}
 	if f, c := a.Storage.Validate(); c != "" {
+		return f, c
+	}
+	if f, c := ValidateContext(a.Context); c != "" {
 		return f, c
 	}
 	seen := map[int]bool{}

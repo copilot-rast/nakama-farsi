@@ -197,6 +197,21 @@ Policies (settings `events`): `unknownEvents` accept / flag / reject (default ac
 | `storage.maxPendingEvents` | 2000000 | 1000..100000000 |
 | `storage.deadAfter` | 50 | 1..1000 |
 
+### Server-filled tags (`context` block, 2026-11-25)
+
+`insights_send` events get tags from the player's stage attempt that was open at the event time (client `time` clamped to the `pastHours`/`futureMinutes` window, else the receive time). Providers register through `internal/eventcontext` (`Register(Provider{Name, Sources, Spans})`); campaign registers `campaign.stage`, `campaign.chapter`, `campaign.item`, `campaign.attempt` and `campaign.item.<key>` for keys a project adds with `campaignhooks.SetAttemptItem` (PP: the equipped car when the start had no item, plus `gameId` and `class`). One attempt query per batch (`campaign_attempt_user_started_idx`). Without a provider or an open attempt nothing changes. Server-filled groups pass `allowedTags`; `requiredTags` is checked after the fill. Only client batches are filled (server events already carry their context).
+
+| Setting | Default |
+|---|---|
+| `context.enabled` | true |
+| `context.fills` | `mission` ← `campaign.stage`, `car` ← `campaign.item`, `chapter` ← `campaign.chapter` (off) |
+| `context.conflict` (`override` / `keep_client` / `reject`) | `override` (client value kept in field `clientTag.<group>`; `keep_client` keeps `serverTag.<group>`; `reject` = `ANALYTICS_CONTEXT_MISMATCH` with the group in `problems`) |
+| `context.flagMismatch` | true (flag reason `context_mismatch`, code `ANALYTICS_CONTEXT_MISMATCH`; case-only differences are not a mismatch) |
+| `context.keepClientOutside` | true (false drops these groups when no attempt is open) |
+| `context.graceSeconds` | 10 (0..3600, an event this long after the attempt closed still belongs to it) |
+
+Console page «تگ‌هایی که سرور پر می‌کند» `#/insights/context` (in Ctrl+K), `GET/PUT /insights/events/settings` with `context`, `defaults.context`, `sources`, `providers`.
+
 Rate limits use `cluster_rate_limit` (database), keys `ins:b:<user>` and `ins:e:<user>`.
 
 ## Importers

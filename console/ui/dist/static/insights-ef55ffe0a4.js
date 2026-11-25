@@ -16,6 +16,19 @@ var INS_TEXT = {
     'desc.insights/storage': 'رویدادها کجا ذخیره شوند: پستگرس خود سرور، پستگرس جدا، MongoDB یا ClickHouse. صف ارسال اگر مقصد قطع باشد رویدادی گم نمی‌کند.',
     'desc.insights/imports': 'داده را از Google Analytics 4 و GameAnalytics بیاورید. سرور در زمان‌بندی خودش داده را می‌کشد و به همین استاندارد تبدیل می‌کند.',
     'desc.insights/settings': 'سقف‌ها، محدودیت سرعت، سیاست رویدادهای ناشناخته و نگهداری داده.',
+    'nav.insights/context': 'تگ‌هایی که سرور پر می‌کند',
+    'desc.insights/context': 'سرور مأموریت و ماشین هر رویداد را از تلاش باز بازیکن برمی‌دارد. بازی لازم نیست این تگ‌ها را بفرستد و مقدار ساختگی هم جای مقدار درست را نمی‌گیرد.',
+    'ctx.policy': 'رفتار', 'ctx.enabled': 'سرور تگ‌ها را پر کند', 'ctx.conflict': 'اگر بازی هم همین تگ را فرستاد',
+    'ctx.c.override': 'مقدار سرور بماند', 'ctx.c.keep_client': 'مقدار بازی بماند', 'ctx.c.reject': 'رویداد رد شود',
+    'ctx.flagMismatch': 'رویدادی که مقدارش با سرور فرق دارد علامت بخورد',
+    'ctx.flagHint': 'رویداد علامت‌خورده در صفحهٔ جلسه‌ها با برچسب context_mismatch دیده می‌شود. مقدار بازی در فیلد clientTag.<گروه> می‌ماند. در کاوش رویدادها این رویدادها فقط با تیک «رویدادهای علامت‌خورده هم حساب شوند» شمرده می‌شوند.',
+    'ctx.keepClientOutside': 'بیرون از مرحله، مقدار بازی پذیرفته شود',
+    'ctx.outsideHint': 'مثلاً رویداد فروشگاه دربارهٔ یک ماشین وقتی هیچ مرحله‌ای باز نیست. اگر خاموش باشد، سرور این تگ‌ها را بیرون از مرحله دور می‌ریزد.',
+    'ctx.grace': 'مهلت بعد از پایان مرحله (ثانیه)', 'ctx.graceHint': 'رویدادی که تا این مدت بعد از پایان مرحله رسید هنوز مال همان مرحله است. پیش‌فرض: {v}',
+    'ctx.fills': 'گروه تگ و منبع', 'ctx.fillsHint': 'هر ردیف می‌گوید سرور کدام گروه تگ را از کجا پر کند. زمان رویداد (یا زمان رسیدن به سرور) تعیین می‌کند کدام تلاش باز بوده است.',
+    'ctx.group': 'گروه تگ', 'ctx.source': 'منبع', 'ctx.fillOn': 'روشن', 'ctx.off': 'خاموش', 'ctx.addFill': 'افزودن ردیف', 'ctx.reset': 'برگشت به پیش‌فرض',
+    'ctx.defaults': 'پیش‌فرض: {v}', 'ctx.noProviders': 'هیچ افزونه‌ای منبع نداده است (مثلاً افزونهٔ مرحله‌ها بار نشده). تا آن موقع سرور تگی پر نمی‌کند و تگ‌های بازی دست نمی‌خورند.',
+    'code.INVALID_TAG_GROUP': 'گروه تگ نامعتبر است (حروف کوچک انگلیسی، عدد و _)', 'code.INVALID_SOURCE': 'منبع نامعتبر است', 'code.DUPLICATE_TAG_GROUP': 'این گروه تگ دو بار آمده است',
     'save': 'ذخیره', 'saved': 'ذخیره شد', 'deleted': 'حذف شد', 'cancel': 'انصراف', 'close': 'بستن', 'delete': 'حذف', 'yes': 'بله', 'no': 'خیر', 'add': 'افزودن', 'edit': 'ویرایش',
     'loading': 'در حال بارگذاری…', 'empty': 'موردی پیدا نشد', 'page.first': 'صفحهٔ اول', 'page.last': 'صفحهٔ آخر', 'page.of': 'صفحهٔ {page} از {pages}', 'pager': 'صفحه‌بندی', 'range': '{from} تا {to} از {total}', 'prev': 'قبلی', 'next': 'بعدی', 'none': '—', 'all': 'همه',
     'confirm.title': 'مطمئن هستید؟', 'lang.text': '{label} ({lang})', 'updated': 'آخرین تغییر: {by} · {at}', 'missing': 'پیدا نشد',
@@ -83,6 +96,19 @@ var INS_TEXT = {
     'desc.insights/storage': 'Where events are stored: the server\'s own Postgres, a separate PostgreSQL, MongoDB or ClickHouse. The delivery queue loses nothing while the store is down.',
     'desc.insights/imports': 'Bring data from Google Analytics 4 and GameAnalytics. The server pulls on its schedule and maps it to the same standard.',
     'desc.insights/settings': 'Limits, rate limits, unknown event policies and data retention.',
+    'nav.insights/context': 'Server-filled tags',
+    'desc.insights/context': 'The server takes the mission and car of each event from the player\'s open attempt. The game does not need to send these tags, and a faked value cannot replace the real one.',
+    'ctx.policy': 'Behaviour', 'ctx.enabled': 'The server fills the tags', 'ctx.conflict': 'When the game sends the same tag',
+    'ctx.c.override': 'Keep the server value', 'ctx.c.keep_client': 'Keep the game value', 'ctx.c.reject': 'Reject the event',
+    'ctx.flagMismatch': 'Flag events whose value differs from the server',
+    'ctx.flagHint': 'Flagged events show up on the Sessions page with the context_mismatch label. The game value is kept in the field clientTag.<group>. The explorer counts them only with "Count flagged events too".',
+    'ctx.keepClientOutside': 'Accept game values outside a stage',
+    'ctx.outsideHint': 'For example a shop event about a car while no stage is open. When off, the server drops these tags outside a stage.',
+    'ctx.grace': 'Grace after the stage ends (seconds)', 'ctx.graceHint': 'An event up to this long after the stage ended still belongs to it. Default: {v}',
+    'ctx.fills': 'Tag groups and sources', 'ctx.fillsHint': 'Each row says which tag group the server fills and from where. The event time (or the server receive time) decides which attempt was open.',
+    'ctx.group': 'Tag group', 'ctx.source': 'Source', 'ctx.fillOn': 'On', 'ctx.off': 'off', 'ctx.addFill': 'Add row', 'ctx.reset': 'Back to defaults',
+    'ctx.defaults': 'Default: {v}', 'ctx.noProviders': 'No plugin offers a source yet (for example the campaign plugin is not loaded). Until then the server fills nothing and game tags are left alone.',
+    'code.INVALID_TAG_GROUP': 'Invalid tag group (lowercase letters, digits and _)', 'code.INVALID_SOURCE': 'Invalid source', 'code.DUPLICATE_TAG_GROUP': 'This tag group is listed twice',
     'save': 'Save', 'saved': 'Saved', 'deleted': 'Deleted', 'cancel': 'Cancel', 'close': 'Close', 'delete': 'Delete', 'yes': 'Yes', 'no': 'No', 'add': 'Add', 'edit': 'Edit',
     'loading': 'Loading…', 'empty': 'Nothing found', 'page.first': 'First page', 'page.last': 'Last page', 'page.of': 'Page {page} of {pages}', 'pager': 'Pagination', 'range': '{from}–{to} of {total}', 'prev': 'Previous', 'next': 'Next', 'none': '—', 'all': 'All',
     'confirm.title': 'Are you sure?', 'lang.text': '{label} ({lang})', 'updated': 'Last change: {by} · {at}', 'missing': 'Not found',
@@ -1453,10 +1479,66 @@ function analyticsSettingsPage(root) {
   }, function (err) { failInto(body, err); });
 }
 
+function contextFillPage(root) {
+  var frame = dashFrame(root, 'insights/context');
+  var body = h('div', { class: 'flex flex-col gap-4' });
+  frame.content.appendChild(body);
+  loadingInto(body);
+  api('GET', '/insights/events/settings').then(function (d) {
+    clear(body);
+    var c = d.context || {}, def = (d.defaults || {}).context || {};
+    var sources = (d.sources || []).map(function (s) { return { value: s.key, label: s.key + ' · ' + ((insLang() === 'fa' ? s.labelFa || s.labelEn : s.labelEn || s.labelFa) || s.key) }; });
+    if (!d.providers) body.appendChild(notice('warning', t('ctx.noProviders')));
+    var enabled = check(c.enabled, t('ctx.enabled'), 'enabled');
+    var conflict = select(c.conflict, ['override', 'keep_client', 'reject'].map(function (p) { return { value: p, label: t('ctx.c.' + p) }; }), { name: 'conflict', label: t('ctx.conflict') });
+    var flag = check(c.flagMismatch, t('ctx.flagMismatch'), 'flagMismatch');
+    var outside = check(c.keepClientOutside, t('ctx.keepClientOutside'), 'keepClientOutside');
+    var grace = input(digits(String(c.graceSeconds == null ? def.graceSeconds : c.graceSeconds)), { ltr: true, name: 'graceSeconds' });
+    body.appendChild(panelCard(t('ctx.policy'), h('div', {}, enabled,
+      h('div', { class: 'grid sm:grid-cols-2 gap-x-4' }, field(t('ctx.conflict'), conflict, t('set.default', { v: t('ctx.c.' + def.conflict) })), field(t('ctx.grace'), grace, t('ctx.graceHint', { v: def.graceSeconds }))),
+      flag, h('p', { class: 'text-xs text-secondary-500 -mt-2 mb-3', text: t('ctx.flagHint') }), outside, h('p', { class: 'text-xs text-secondary-500 -mt-2 mb-1', text: t('ctx.outsideHint') })), null, 'context-policy'));
+    var rows = h('div', { class: 'flex flex-col gap-2', 'data-ins-fills': '' });
+    var readers = [];
+    var addRow = function (f) {
+      var opts = sources.slice();
+      if (f.source && !opts.some(function (o) { return o.value === f.source; })) opts.push({ value: f.source, label: f.source });
+      if (!opts.length) opts.push({ value: '', label: t('none') });
+      var on = check(f.enabled, t('ctx.fillOn'), 'fillEnabled');
+      var group = input(f.group, { ltr: true, name: 'group', label: t('ctx.group') });
+      var src = select(f.source, opts, { name: 'source', label: t('ctx.source') });
+      var row = h('div', { class: 'ia-fill flex flex-wrap items-end gap-x-4 border-b border-secondary-100 dark:border-secondary-700 pb-2', 'data-ins-fill': f.group || '' },
+        h('div', { class: 'pb-1' }, on), field(t('ctx.group'), group, null, 'flex-1 min-w-[8rem] !mb-1'), field(t('ctx.source'), src, null, 'flex-[2] min-w-[12rem] !mb-1'));
+      var reader = function () { return { group: group.value.trim(), source: src.value, enabled: on.input.checked }; };
+      readers.push(reader);
+      row.appendChild(button({ label: t('delete'), variant: 'danger', data: { 'ins-fill-delete': '' }, onclick: function () { readers.splice(readers.indexOf(reader), 1); row.remove(); } }));
+      rows.appendChild(row);
+    };
+    (c.fills || []).forEach(addRow);
+    body.appendChild(panelCard(t('ctx.fills'), h('div', {}, h('p', { class: 'text-sm text-secondary-600 dark:text-secondary-300 mb-3', text: t('ctx.fillsHint') }), rows,
+      h('p', { class: 'text-xs text-secondary-500 mt-3', text: t('ctx.defaults', { v: (def.fills || []).map(function (f) { return f.group + ' ← ' + f.source + (f.enabled ? '' : ' (' + t('ctx.off') + ')'); }).join('، ') }) })),
+      [button({ label: t('ctx.addFill'), data: { 'ins-fill-add': '' }, onclick: function () { addRow({ group: '', source: sources.length ? sources[0].value : '', enabled: true }); } })], 'context-fills'));
+    var msg = h('div', { 'data-ins-msg': '' });
+    var meta = h('p', { class: 'text-xs text-secondary-500', text: d.updatedBy ? t('updated', { by: d.updatedBy, at: fmtDate(d.updatedAt) }) : '' });
+    var reset = button({ label: t('ctx.reset'), data: { 'ins-context-reset': '' }, onclick: function () {
+      clear(rows); readers.length = 0; (def.fills || []).forEach(addRow);
+      enabled.input.checked = def.enabled; conflict.value = def.conflict; flag.input.checked = def.flagMismatch; outside.input.checked = def.keepClientOutside; grace.value = digits(String(def.graceSeconds));
+    } });
+    var save = button({ label: t('save'), variant: 'primary', data: { 'ins-context-save': '' }, onclick: function () {
+      var g = numberValue(grace);
+      var out = { context: { enabled: enabled.input.checked, conflict: conflict.value, flagMismatch: flag.input.checked, keepClientOutside: outside.input.checked, graceSeconds: g == null ? def.graceSeconds : g,
+        fills: readers.map(function (r) { return r(); }).filter(function (f) { return f.group || f.source; }) } };
+      busy(save, true);
+      clear(msg);
+      api('PUT', '/insights/events/settings', out).then(function (x) { busy(save, false); d = x; meta.textContent = t('updated', { by: x.updatedBy, at: fmtDate(x.updatedAt) }); toast('success', t('saved')); }, function (err) { busy(save, false); fieldError(msg, err); });
+    } });
+    body.appendChild(h('div', { class: 'ia-savebar flex flex-wrap items-center justify-between gap-3' }, meta, h('div', { class: 'flex-1' }, msg), h('div', { class: 'flex gap-2' }, reset, save)));
+  }, function (err) { failInto(body, err); });
+}
+
 var INS_ROOT = 'ins-root';
-var INS_GROUPS = { insights: ['overview', 'active', 'retention', 'funnels', 'explore', 'sessions', 'catalog', 'storage', 'imports', 'settings'] };
+var INS_GROUPS = { insights: ['overview', 'active', 'retention', 'funnels', 'explore', 'sessions', 'catalog', 'storage', 'imports', 'settings', 'context'] };
 var INS_ORDER = ['insights'];
-var INS_RENDER = { 'insights/overview': overviewPage, 'insights/active': activePage, 'insights/retention': retentionPage, 'insights/funnels': funnelsPage, 'insights/explore': explorePage, 'insights/sessions': sessionsPage, 'insights/catalog': catalogPage, 'insights/storage': storagePage, 'insights/imports': importsPage, 'insights/settings': analyticsSettingsPage };
+var INS_RENDER = { 'insights/overview': overviewPage, 'insights/active': activePage, 'insights/retention': retentionPage, 'insights/funnels': funnelsPage, 'insights/explore': explorePage, 'insights/sessions': sessionsPage, 'insights/catalog': catalogPage, 'insights/storage': storagePage, 'insights/imports': importsPage, 'insights/settings': analyticsSettingsPage, 'insights/context': contextFillPage };
 var INS_HASH = /^#\/(insights)(?:\/([^/?]*))?/;
 var insPending = null;
 var insRouter = null;

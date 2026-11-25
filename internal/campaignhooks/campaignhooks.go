@@ -189,3 +189,48 @@ func OwnerOf(ctx context.Context, stageKey string) (owner, ref string) {
 	}
 	return "", ""
 }
+
+type ItemInfo struct {
+	Key    string
+	Values map[string]string
+}
+
+type AttemptItem func(ctx context.Context, userID, itemKey string) (ItemInfo, error)
+
+var (
+	itemHook AttemptItem
+	itemKeys []string
+)
+
+func SetAttemptItem(fn AttemptItem, keys ...string) {
+	mu.Lock()
+	defer mu.Unlock()
+	itemHook = fn
+	itemKeys = append([]string(nil), keys...)
+	if fn == nil {
+		itemKeys = nil
+	}
+}
+
+func AttemptItemKeys() []string {
+	mu.RLock()
+	defer mu.RUnlock()
+	return append([]string(nil), itemKeys...)
+}
+
+func ResolveAttemptItem(ctx context.Context, userID, itemKey string) (ItemInfo, error) {
+	mu.RLock()
+	fn := itemHook
+	mu.RUnlock()
+	if fn == nil {
+		return ItemInfo{Key: itemKey}, nil
+	}
+	info, err := fn(ctx, userID, itemKey)
+	if err != nil {
+		return ItemInfo{Key: itemKey}, err
+	}
+	if info.Key == "" {
+		info.Key = itemKey
+	}
+	return info, nil
+}
