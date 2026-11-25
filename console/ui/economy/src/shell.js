@@ -571,7 +571,11 @@ window.NakamaConsole = {
     href: function () { return psEntryHash(); },
     isOpen: function () { return !!ps; },
     open: function () { if (!ps) psNavigate(psEntryHash(), false); },
-    sections: function () { return psAllowed().map(function (s) { return { id: s.id, href: hashFor(s.id), label: t(s.label) }; }); }
+    sections: function () {
+      var out = psAllowed().map(function (s) { return { id: s.id, href: hashFor(s.id), label: t(s.label) }; });
+      if (out.some(function (s) { return s.id === 'payment-methods'; })) out.push({ id: 'payment-methods-test', href: hashFor('payment-methods'), label: t('palette.storeTest') });
+      return out;
+    }
   },
   brand: function () {
     var b = BRAND.data;

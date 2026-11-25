@@ -448,6 +448,12 @@ var MESSAGES = {
     'pay.trackId': 'Track ID',
     'pay.refId': 'کد پیگیری',
     'pay.storeToken': 'توکن فروشگاه',
+    'pay.storeAnswer': 'آخرین پاسخ فروشگاه',
+    'pay.recheck': 'بررسی دوباره با فروشگاه',
+    'pay.recheck.done': 'فروشگاه خرید را تأیید کرد.',
+    'pay.recheck.failed': 'فروشگاه هنوز تأیید نکرد: {code}',
+    'code.STORE_TOKEN_UNKNOWN': 'بازی هنوز توکن خرید را برای این پرداخت نفرستاده است.',
+    'code.STORE_MODE_CHANGED': 'فروشگاه در حالت آزمایشی است؛ این پرداخت وقتی بررسی می‌شود که حالت آزمایشی خاموش شود.',
     'pay.cardMask': 'کارت',
     'pay.outcome': 'نتیجه',
     'pay.error': 'خطا',
@@ -572,6 +578,40 @@ var MESSAGES = {
     'pm.hint.webhookSecret': 'از بخش Webhooks استرایپ (whsec_...). آدرس وب‌هوک: /v2/economy/stripe/webhook روی آدرس عمومی سرور.',
     'pm.hint.currency': 'کد سه‌حرفی، مثل usd. محصول باید قیمتی با همین واحد داشته باشد.',
     'pm.hint.sandbox.store': 'در حالت تست فقط خریدهای تست (حساب‌های تستر) قبول می‌شوند و در حالت واقعی فقط خریدهای واقعی.',
+    'pm.hint.apiSecret': 'کلید API پیشخوان بازار (Pishkhan API secret). در پیشخوان توسعه‌دهندگان بازار، در صفحهٔ «API پیشخوان» همین برنامه بسازید. کلید هر برنامه جداست و کلید برنامهٔ دیگر کار نمی‌کند.',
+    'pm.hint.accessToken': 'توکن دسترسی مایکت، از منوی «تنظیمات» پنل توسعه‌دهندگان مایکت برای همین برنامه.',
+    'pm.health.title': 'بررسی کلیدهای فروشگاه',
+    'pm.health.hint': 'سرور با یک خرید ساختگی از فروشگاه می‌پرسد. اگر فروشگاه جواب دهد «خرید پیدا نشد»، یعنی کلید و نام بسته درست است.',
+    'pm.health.sku': 'شناسهٔ محصول برای آزمون',
+    'pm.health.sku.hint': 'خالی بماند تا شناسهٔ نخستین محصولِ این روش به کار برود.',
+    'pm.health.test': 'آزمودن کلیدها',
+    'pm.health.testing': 'در حال آزمون…',
+    'pm.health.lastFailure': 'آخرین خطای فروشگاه',
+    'pm.health.lastOk': 'آخرین پاسخ سالم فروشگاه',
+    'pm.health.lastTest': 'آخرین آزمون',
+    'pm.health.never': 'هنوز ثبت نشده',
+    'pm.health.reason.credentials': 'کلید رد شد',
+    'pm.health.reason.package': 'نام بسته پیدا نشد',
+    'pm.health.reason.product': 'شناسهٔ محصول پیدا نشد',
+    'pm.health.reason.unknown_value': 'یکی از مقدارها پذیرفته نشد',
+    'pm.health.reason.rate_limited': 'سقف درخواست پر شد',
+    'pm.health.reason.store_error': 'خطای سرور فروشگاه',
+    'pm.health.reason.network': 'فروشگاه در دسترس نبود',
+    'pm.test.credentials_ok': 'کلیدها درست است. فروشگاه خرید ساختگی را نشناخت و این یعنی دسترسی برقرار است.',
+    'pm.test.credentials_rejected': 'فروشگاه کلید را رد کرد. کلید را دوباره از پنل فروشگاه بگیرید و مطمئن شوید برای همین برنامه ساخته شده است.',
+    'pm.test.package_not_found': 'فروشگاه این نام بسته را نمی‌شناسد. نام بسته باید دقیقاً همان نام بستهٔ برنامه در فروشگاه باشد.',
+    'pm.test.product_not_found': 'فروشگاه این شناسهٔ محصول را نمی‌شناسد. شناسهٔ محصول (SKU) در کنسول باید با محصولی که در فروشگاه ساخته‌اید یکی باشد.',
+    'pm.test.config_rejected': 'فروشگاه یکی از مقدارهای تنظیم را نپذیرفت. پاسخ فروشگاه زیر همین پیام آمده است.',
+    'pm.test.unreachable': 'سرور به فروشگاه نرسید. اتصال سرور به اینترنت یا وضعیت فروشگاه را بررسی کنید و دوباره بیازمایید.',
+    'pm.test.not_configured': 'اول نام بسته و کلید را پر و ذخیره کنید، بعد بیازمایید.',
+    'pm.test.not_testable': 'در اپل فقط کلیدهای App Store Server API آزمودنی است (Issuer ID، Key ID و فایل .p8).',
+    'pm.test.placeholder': 'هیچ محصولی با این روش تعریف نشده، پس آزمون با یک شناسهٔ ساختگی انجام شد.',
+    'pm.recheck': 'بررسی دوبارهٔ {n} خرید مانده',
+    'pm.recheck.title': 'خریدهای مانده دوباره بررسی شوند؟',
+    'pm.recheck.text': 'سرور آخرین توکنِ هر خرید در انتظار یا منقضی‌شده را دوباره برای فروشگاه می‌فرستد و خریدهای معتبر را تحویل می‌دهد.',
+    'pm.recheck.ok': 'بررسی کن',
+    'pm.recheck.done': '{checked} خرید بررسی شد: {delivered} تحویل شد و {stillPending} هنوز در انتظار است.',
+    'palette.storeTest': 'آزمودن کلیدهای فروشگاه',
 
     'ov.catalog': 'کاتالوگ',
     'ov.revenue30': 'درآمد ۳۰ روز اخیر',
@@ -6857,6 +6897,12 @@ var MESSAGES = {
     'pay.trackId': 'Track ID',
     'pay.refId': 'Reference ID',
     'pay.storeToken': 'Store token',
+    'pay.storeAnswer': 'Last store answer',
+    'pay.recheck': 'Check with the store again',
+    'pay.recheck.done': 'The store confirmed the purchase.',
+    'pay.recheck.failed': 'The store has not confirmed it yet: {code}',
+    'code.STORE_TOKEN_UNKNOWN': 'The game has not sent a purchase token for this payment yet.',
+    'code.STORE_MODE_CHANGED': 'The store is in test mode; this payment is checked once test mode is off.',
     'pay.cardMask': 'Card',
     'pay.outcome': 'Outcome',
     'pay.error': 'Error',
@@ -6981,6 +7027,40 @@ var MESSAGES = {
     'pm.hint.webhookSecret': 'From Stripe Webhooks (whsec_...). Webhook URL: /v2/economy/stripe/webhook on the server public address.',
     'pm.hint.currency': 'Three-letter code such as usd. Products need a price in this currency.',
     'pm.hint.sandbox.store': 'In test mode only test purchases (license testers) are accepted; in live mode only real ones.',
+    'pm.hint.apiSecret': 'Cafe Bazaar Pishkhan API secret. Create it on the "Pishkhan API" page of this app in the Bazaar developer panel. Each app has its own secret; a secret from another app does not work.',
+    'pm.hint.accessToken': 'Myket access token, from the Settings menu of this app in the Myket developer panel.',
+    'pm.health.title': 'Store credentials check',
+    'pm.health.hint': 'The server asks the store about a made-up purchase. If the store answers "purchase not found", the secret and the package name are right.',
+    'pm.health.sku': 'Product id to test',
+    'pm.health.sku.hint': 'Leave empty to use the first product of this method.',
+    'pm.health.test': 'Test credentials',
+    'pm.health.testing': 'Testing…',
+    'pm.health.lastFailure': 'Last store failure',
+    'pm.health.lastOk': 'Last good store answer',
+    'pm.health.lastTest': 'Last test',
+    'pm.health.never': 'Not recorded yet',
+    'pm.health.reason.credentials': 'Credentials rejected',
+    'pm.health.reason.package': 'Package not found',
+    'pm.health.reason.product': 'Product not found',
+    'pm.health.reason.unknown_value': 'A value was refused',
+    'pm.health.reason.rate_limited': 'Rate limited',
+    'pm.health.reason.store_error': 'Store server error',
+    'pm.health.reason.network': 'Store unreachable',
+    'pm.test.credentials_ok': 'Credentials OK. The store did not know the made-up purchase, so access works.',
+    'pm.test.credentials_rejected': 'The store rejected the credentials. Get the secret again from the store panel and make sure it belongs to this app.',
+    'pm.test.package_not_found': 'The store does not know this package name. It must be exactly the package name of the app in the store.',
+    'pm.test.product_not_found': 'The store does not know this product id. The SKU in the console must match a product created in the store.',
+    'pm.test.config_rejected': 'The store refused one of the settings. Its answer is shown below.',
+    'pm.test.unreachable': 'The server could not reach the store. Check the server connection or the store status and test again.',
+    'pm.test.not_configured': 'Fill in and save the package name and the secret first, then test.',
+    'pm.test.not_testable': 'For Apple only the App Store Server API keys can be tested (Issuer ID, Key ID and the .p8 key).',
+    'pm.test.placeholder': 'No product uses this method, so the test used a made-up product id.',
+    'pm.recheck': 'Check {n} stuck purchases again',
+    'pm.recheck.title': 'Check stuck purchases again?',
+    'pm.recheck.text': 'The server sends the last token of every pending or expired purchase to the store again and delivers the valid ones.',
+    'pm.recheck.ok': 'Check',
+    'pm.recheck.done': '{checked} purchases checked: {delivered} delivered, {stillPending} still pending.',
+    'palette.storeTest': 'Test store credentials',
 
     'ov.catalog': 'Catalog',
     'ov.revenue30': 'Revenue, last 30 days',
@@ -15999,6 +16079,20 @@ function jsonBlock(v) {
   return h('pre', { class: 'eco-pre font-mono text-xs bg-secondary-50 dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-700 rounded-md p-2 overflow-x-auto', dir: 'ltr', text: text });
 }
 
+var STORE_METHODS = ['bazaar', 'myket', 'google_play', 'apple'];
+
+function lastStoreAnswer(logs) {
+  var last = null;
+  (logs || []).forEach(function (l) { if (l.action === 'store_validate') last = l; });
+  if (!last) return null;
+  var r = last.response || {};
+  var err = r.error;
+  var desc = r.error_description || r.translatedMessage || r.errorMessage || '';
+  if (err && typeof err === 'object') { desc = err.message || ''; err = err.status || ''; }
+  if (!err) err = r.messageCode || r.errorCode || '';
+  return storeAnswerLine({ httpStatus: last.httpStatus, storeError: err ? String(err) : '', storeDescription: desc ? String(desc) : '' }) || (last.httpStatus ? tag(localDigits(String(last.httpStatus)), 'secondary') : null);
+}
+
 function paymentDetail(container, id) {
   var backBtn = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('back'), onclick: function () { go('payments', null, lastQuery.payments || {}); } });
   var frame = pageFrame(t('pay.title'), null, null);
@@ -16029,6 +16123,11 @@ function paymentDetail(container, id) {
     var gateway = GATEWAYS.indexOf(p.method) !== -1;
     var actions = h('div', { class: 'flex flex-wrap gap-2' });
     if (p.status === 'pending' && gateway) actions.appendChild(button({ variant: 'primary', size: 'page', icon: 'refresh', label: t('pay.inquire'), onclick: function (e) { act(e.currentTarget, 'inquire', 'pay.inquire.done'); } }));
+    if ((p.status === 'pending' || p.status === 'expired') && STORE_METHODS.indexOf(p.method) !== -1) {
+      var rb = button({ variant: 'primary', size: 'page', icon: 'refresh', label: t('pay.recheck'), onclick: function (e) { recheck(e.currentTarget); } });
+      rb.setAttribute('data-payment-recheck', '');
+      actions.appendChild(rb);
+    }
     if (p.status === 'success' && !p.rewardGranted && !p.refundStatus) actions.appendChild(button({ variant: 'primary', size: 'page', icon: 'prizes', label: t('pay.retry'), onclick: function (e) { act(e.currentTarget, 'retry-grant', 'pay.retry.done'); } }));
     clear(frame.actions).appendChild(actions);
     frame.actions.appendChild(backBtn);
@@ -16062,6 +16161,7 @@ function paymentDetail(container, id) {
       ['pay.trackId', p.trackId ? mono(p.trackId) : null],
       ['pay.refId', p.refId ? mono(p.refId) : null],
       ['pay.storeToken', p.storeToken ? mono(p.storeToken) : null],
+      ['pay.storeAnswer', lastStoreAnswer(p.logs)],
       ['pay.cardMask', p.cardMask ? mono(p.cardMask) : null],
       ['pay.inquiries', h('span', { class: 'tabular-nums', text: fmtNum(p.inquiryCount || 0) }) ],
       ['pay.createdAt', p.createdAt ? dateCell(p.createdAt) : null],
@@ -16124,6 +16224,19 @@ function paymentDetail(container, id) {
       buttons));
   }
 
+  function recheck(btn) {
+    setBusy(btn, true);
+    api('POST', '/payments/' + encodeURIComponent(id) + '/recheck', {}).then(function (res) {
+      var rc = (res && res.recheck) || {};
+      if (rc.error) toast('error', t('pay.recheck.failed', { code: has('code.' + rc.error) ? t('code.' + rc.error) : rc.error }));
+      else toast('success', t('pay.recheck.done'));
+      render(res);
+    }, function (err) {
+      setBusy(btn, false);
+      toast('error', errorText(err));
+    });
+  }
+
   function act(btn, path, doneKey) {
     setBusy(btn, true);
     api('POST', '/payments/' + encodeURIComponent(id) + '/' + path, {}).then(function () {
@@ -16144,6 +16257,96 @@ function paymentDetail(container, id) {
 
 function isSecretField(f) {
   return f.type === 'secret' || f.type === 'secretJson' || f.type === 'secretText';
+}
+
+var STORE_TEST_TONE = { credentials_ok: 'success', unreachable: 'warning', not_configured: 'warning', not_testable: 'secondary' };
+
+function storeReasonText(reason) {
+  return reason && has('pm.health.reason.' + reason) ? t('pm.health.reason.' + reason) : '';
+}
+
+function storeAnswerLine(rec) {
+  if (!rec) return null;
+  var parts = h('div', { class: 'flex flex-wrap items-center gap-1.5' });
+  if (rec.httpStatus) parts.appendChild(tag(localDigits(String(rec.httpStatus)), rec.httpStatus < 400 || rec.httpStatus === 404 ? 'secondary' : 'error'));
+  if (rec.storeError) parts.appendChild(mono(rec.storeError));
+  if (rec.storeDescription) parts.appendChild(h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', dir: 'auto', text: rec.storeDescription }));
+  return parts.childNodes.length ? parts : null;
+}
+
+function storeHealthBlock(m, replace) {
+  var hl = m.health || {};
+  var box = h('div', { class: 'eco-store-health mt-4 pt-4 border-t border-secondary-200 dark:border-secondary-700', 'data-store-health': m.method });
+  box.appendChild(h('div', { class: 'text-sm font-medium mb-1', text: t('pm.health.title') }));
+  box.appendChild(h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: t('pm.health.hint') }));
+  var resultBox = h('div', { 'data-store-test-result': '', 'aria-live': 'polite' });
+  function showResult(r) {
+    clear(resultBox);
+    if (!r || !r.result) return;
+    var tone = STORE_TEST_TONE[r.result] || 'error';
+    var wrap = h('div', { class: 'mb-3 flex flex-col gap-1.5' }, notice(tone, t('pm.test.' + r.result)));
+    wrap.firstChild.setAttribute('data-result', r.result);
+    var line = storeAnswerLine(r);
+    var meta = h('div', { class: 'flex flex-wrap items-center gap-1.5 text-xs text-secondary-500 dark:text-secondary-400' },
+      r.testedAt ? h('span', { text: t('pm.health.lastTest') + ': ' + fmtDate(r.testedAt) }) : null,
+      r.sku ? h('span', { text: t('pm.health.sku') + ':' }) : null, r.sku ? mono(r.sku) : null);
+    wrap.appendChild(meta);
+    if (line) wrap.appendChild(line);
+    if (r.skuSource === 'placeholder') wrap.appendChild(h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('pm.test.placeholder') }));
+    resultBox.appendChild(wrap);
+  }
+  showResult(hl.lastTest);
+  box.appendChild(resultBox);
+
+  var rows = [];
+  var f = hl.lastFailure;
+  rows.push(['pm.health.lastFailure', f ? h('div', { class: 'flex flex-col gap-1', 'data-last-failure': '' },
+    h('div', { class: 'flex flex-wrap items-center gap-1.5' }, h('span', { text: fmtDate(f.at) }), storeReasonText(f.reason) ? tag(storeReasonText(f.reason), 'error') : null),
+    storeAnswerLine(f)) : h('span', { class: 'text-secondary-500', text: t('pm.health.never') })]);
+  rows.push(['pm.health.lastOk', hl.lastOkAt ? h('span', { 'data-last-ok': '', text: fmtDate(hl.lastOkAt) }) : h('span', { class: 'text-secondary-500', text: t('pm.health.never') })]);
+  box.appendChild(dl(rows));
+
+  var sku = textInput('', { ltr: true, mono: true, label: t('pm.health.sku'), placeholder: 'fir_oil_100' });
+  sku.setAttribute('data-store-test-sku', '');
+  sku.classList.add('text-sm');
+  box.appendChild(field(t('pm.health.sku'), sku, t('pm.health.sku.hint'), { optional: true }));
+  var actions = h('div', { class: 'flex flex-wrap justify-end gap-2' });
+  var testBtn = button({ variant: 'secondary', size: 'sm', icon: 'refresh', label: t('pm.health.test'), onclick: function () {
+    setBusy(testBtn, true, t('pm.health.testing'));
+    api('POST', '/payment-methods/' + encodeURIComponent(m.method) + '/test', { sku: (sku.value || '').trim() }).then(function (r) {
+      setBusy(testBtn, false);
+      showResult(r);
+      toast(r.result === 'credentials_ok' ? 'success' : 'error', t('pm.test.' + r.result));
+    }, function (err) {
+      setBusy(testBtn, false);
+      toast('error', errorText(err));
+    });
+  } });
+  testBtn.setAttribute('data-store-test', m.method);
+  actions.appendChild(testBtn);
+  var stuck = Number(hl.stuckPayments || 0);
+  if (stuck > 0) {
+    var recheckBtn = button({ variant: 'primary', size: 'sm', label: t('pm.recheck', { n: fmtNum(stuck) }), onclick: function () {
+      confirmModal({ title: t('pm.recheck.title'), text: t('pm.recheck.text'), ok: t('pm.recheck.ok') }).then(function (yes) {
+        if (!yes) return;
+        setBusy(recheckBtn, true);
+        api('POST', '/payment-methods/' + encodeURIComponent(m.method) + '/recheck', {}).then(function (r) {
+          toast(r.delivered ? 'success' : 'warning', t('pm.recheck.done', { checked: fmtNum(r.checked || 0), delivered: fmtNum(r.delivered || 0), stillPending: fmtNum(r.stillPending || 0) }));
+          return api('GET', '/payment-methods').then(function (list) {
+            var next = (Array.isArray(list) ? list : []).filter(function (x) { return x.method === m.method; })[0];
+            if (next) replace(next); else setBusy(recheckBtn, false);
+          });
+        }, function (err) {
+          setBusy(recheckBtn, false);
+          toast('error', errorText(err));
+        });
+      });
+    } });
+    recheckBtn.setAttribute('data-store-recheck', m.method);
+    actions.appendChild(recheckBtn);
+  }
+  box.appendChild(actions);
+  return box;
 }
 
 function paymentMethodsPage(container) {
@@ -16212,7 +16415,8 @@ function paymentMethodsPage(container) {
         toggle(active, t('pm.active'), function (v) { active = v; }, 'sm')),
       errTop,
       h('div', { class: 'flex-1' }, body),
-      h('div', { class: 'flex justify-end pt-2' }, saveBtn)));
+      h('div', { class: 'flex justify-end pt-2' }, saveBtn),
+      m.health ? storeHealthBlock(m, function (next) { el.replaceWith(methodCard(next)); }) : null));
     el.setAttribute('data-method', m.method);
     return el;
   }
@@ -34578,7 +34782,11 @@ window.NakamaConsole = {
     href: function () { return psEntryHash(); },
     isOpen: function () { return !!ps; },
     open: function () { if (!ps) psNavigate(psEntryHash(), false); },
-    sections: function () { return psAllowed().map(function (s) { return { id: s.id, href: hashFor(s.id), label: t(s.label) }; }); }
+    sections: function () {
+      var out = psAllowed().map(function (s) { return { id: s.id, href: hashFor(s.id), label: t(s.label) }; });
+      if (out.some(function (s) { return s.id === 'payment-methods'; })) out.push({ id: 'payment-methods-test', href: hashFor('payment-methods'), label: t('palette.storeTest') });
+      return out;
+    }
   },
   brand: function () {
     var b = BRAND.data;

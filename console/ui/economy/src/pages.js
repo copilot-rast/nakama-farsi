@@ -389,6 +389,20 @@ function jsonBlock(v) {
   return h('pre', { class: 'eco-pre font-mono text-xs bg-secondary-50 dark:bg-secondary-900 border border-secondary-200 dark:border-secondary-700 rounded-md p-2 overflow-x-auto', dir: 'ltr', text: text });
 }
 
+var STORE_METHODS = ['bazaar', 'myket', 'google_play', 'apple'];
+
+function lastStoreAnswer(logs) {
+  var last = null;
+  (logs || []).forEach(function (l) { if (l.action === 'store_validate') last = l; });
+  if (!last) return null;
+  var r = last.response || {};
+  var err = r.error;
+  var desc = r.error_description || r.translatedMessage || r.errorMessage || '';
+  if (err && typeof err === 'object') { desc = err.message || ''; err = err.status || ''; }
+  if (!err) err = r.messageCode || r.errorCode || '';
+  return storeAnswerLine({ httpStatus: last.httpStatus, storeError: err ? String(err) : '', storeDescription: desc ? String(desc) : '' }) || (last.httpStatus ? tag(localDigits(String(last.httpStatus)), 'secondary') : null);
+}
+
 function paymentDetail(container, id) {
   var backBtn = button({ variant: 'ghost', size: 'sm', icon: 'back', label: t('back'), onclick: function () { go('payments', null, lastQuery.payments || {}); } });
   var frame = pageFrame(t('pay.title'), null, null);
@@ -419,6 +433,11 @@ function paymentDetail(container, id) {
     var gateway = GATEWAYS.indexOf(p.method) !== -1;
     var actions = h('div', { class: 'flex flex-wrap gap-2' });
     if (p.status === 'pending' && gateway) actions.appendChild(button({ variant: 'primary', size: 'page', icon: 'refresh', label: t('pay.inquire'), onclick: function (e) { act(e.currentTarget, 'inquire', 'pay.inquire.done'); } }));
+    if ((p.status === 'pending' || p.status === 'expired') && STORE_METHODS.indexOf(p.method) !== -1) {
+      var rb = button({ variant: 'primary', size: 'page', icon: 'refresh', label: t('pay.recheck'), onclick: function (e) { recheck(e.currentTarget); } });
+      rb.setAttribute('data-payment-recheck', '');
+      actions.appendChild(rb);
+    }
     if (p.status === 'success' && !p.rewardGranted && !p.refundStatus) actions.appendChild(button({ variant: 'primary', size: 'page', icon: 'prizes', label: t('pay.retry'), onclick: function (e) { act(e.currentTarget, 'retry-grant', 'pay.retry.done'); } }));
     clear(frame.actions).appendChild(actions);
     frame.actions.appendChild(backBtn);
@@ -452,6 +471,7 @@ function paymentDetail(container, id) {
       ['pay.trackId', p.trackId ? mono(p.trackId) : null],
       ['pay.refId', p.refId ? mono(p.refId) : null],
       ['pay.storeToken', p.storeToken ? mono(p.storeToken) : null],
+      ['pay.storeAnswer', lastStoreAnswer(p.logs)],
       ['pay.cardMask', p.cardMask ? mono(p.cardMask) : null],
       ['pay.inquiries', h('span', { class: 'tabular-nums', text: fmtNum(p.inquiryCount || 0) }) ],
       ['pay.createdAt', p.createdAt ? dateCell(p.createdAt) : null],
@@ -514,6 +534,19 @@ function paymentDetail(container, id) {
       buttons));
   }
 
+  function recheck(btn) {
+    setBusy(btn, true);
+    api('POST', '/payments/' + encodeURIComponent(id) + '/recheck', {}).then(function (res) {
+      var rc = (res && res.recheck) || {};
+      if (rc.error) toast('error', t('pay.recheck.failed', { code: has('code.' + rc.error) ? t('code.' + rc.error) : rc.error }));
+      else toast('success', t('pay.recheck.done'));
+      render(res);
+    }, function (err) {
+      setBusy(btn, false);
+      toast('error', errorText(err));
+    });
+  }
+
   function act(btn, path, doneKey) {
     setBusy(btn, true);
     api('POST', '/payments/' + encodeURIComponent(id) + '/' + path, {}).then(function () {
@@ -534,6 +567,96 @@ function paymentDetail(container, id) {
 
 function isSecretField(f) {
   return f.type === 'secret' || f.type === 'secretJson' || f.type === 'secretText';
+}
+
+var STORE_TEST_TONE = { credentials_ok: 'success', unreachable: 'warning', not_configured: 'warning', not_testable: 'secondary' };
+
+function storeReasonText(reason) {
+  return reason && has('pm.health.reason.' + reason) ? t('pm.health.reason.' + reason) : '';
+}
+
+function storeAnswerLine(rec) {
+  if (!rec) return null;
+  var parts = h('div', { class: 'flex flex-wrap items-center gap-1.5' });
+  if (rec.httpStatus) parts.appendChild(tag(localDigits(String(rec.httpStatus)), rec.httpStatus < 400 || rec.httpStatus === 404 ? 'secondary' : 'error'));
+  if (rec.storeError) parts.appendChild(mono(rec.storeError));
+  if (rec.storeDescription) parts.appendChild(h('span', { class: 'text-xs text-secondary-600 dark:text-secondary-300', dir: 'auto', text: rec.storeDescription }));
+  return parts.childNodes.length ? parts : null;
+}
+
+function storeHealthBlock(m, replace) {
+  var hl = m.health || {};
+  var box = h('div', { class: 'eco-store-health mt-4 pt-4 border-t border-secondary-200 dark:border-secondary-700', 'data-store-health': m.method });
+  box.appendChild(h('div', { class: 'text-sm font-medium mb-1', text: t('pm.health.title') }));
+  box.appendChild(h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400 mb-3', text: t('pm.health.hint') }));
+  var resultBox = h('div', { 'data-store-test-result': '', 'aria-live': 'polite' });
+  function showResult(r) {
+    clear(resultBox);
+    if (!r || !r.result) return;
+    var tone = STORE_TEST_TONE[r.result] || 'error';
+    var wrap = h('div', { class: 'mb-3 flex flex-col gap-1.5' }, notice(tone, t('pm.test.' + r.result)));
+    wrap.firstChild.setAttribute('data-result', r.result);
+    var line = storeAnswerLine(r);
+    var meta = h('div', { class: 'flex flex-wrap items-center gap-1.5 text-xs text-secondary-500 dark:text-secondary-400' },
+      r.testedAt ? h('span', { text: t('pm.health.lastTest') + ': ' + fmtDate(r.testedAt) }) : null,
+      r.sku ? h('span', { text: t('pm.health.sku') + ':' }) : null, r.sku ? mono(r.sku) : null);
+    wrap.appendChild(meta);
+    if (line) wrap.appendChild(line);
+    if (r.skuSource === 'placeholder') wrap.appendChild(h('p', { class: 'text-xs text-secondary-500 dark:text-secondary-400', text: t('pm.test.placeholder') }));
+    resultBox.appendChild(wrap);
+  }
+  showResult(hl.lastTest);
+  box.appendChild(resultBox);
+
+  var rows = [];
+  var f = hl.lastFailure;
+  rows.push(['pm.health.lastFailure', f ? h('div', { class: 'flex flex-col gap-1', 'data-last-failure': '' },
+    h('div', { class: 'flex flex-wrap items-center gap-1.5' }, h('span', { text: fmtDate(f.at) }), storeReasonText(f.reason) ? tag(storeReasonText(f.reason), 'error') : null),
+    storeAnswerLine(f)) : h('span', { class: 'text-secondary-500', text: t('pm.health.never') })]);
+  rows.push(['pm.health.lastOk', hl.lastOkAt ? h('span', { 'data-last-ok': '', text: fmtDate(hl.lastOkAt) }) : h('span', { class: 'text-secondary-500', text: t('pm.health.never') })]);
+  box.appendChild(dl(rows));
+
+  var sku = textInput('', { ltr: true, mono: true, label: t('pm.health.sku'), placeholder: 'fir_oil_100' });
+  sku.setAttribute('data-store-test-sku', '');
+  sku.classList.add('text-sm');
+  box.appendChild(field(t('pm.health.sku'), sku, t('pm.health.sku.hint'), { optional: true }));
+  var actions = h('div', { class: 'flex flex-wrap justify-end gap-2' });
+  var testBtn = button({ variant: 'secondary', size: 'sm', icon: 'refresh', label: t('pm.health.test'), onclick: function () {
+    setBusy(testBtn, true, t('pm.health.testing'));
+    api('POST', '/payment-methods/' + encodeURIComponent(m.method) + '/test', { sku: (sku.value || '').trim() }).then(function (r) {
+      setBusy(testBtn, false);
+      showResult(r);
+      toast(r.result === 'credentials_ok' ? 'success' : 'error', t('pm.test.' + r.result));
+    }, function (err) {
+      setBusy(testBtn, false);
+      toast('error', errorText(err));
+    });
+  } });
+  testBtn.setAttribute('data-store-test', m.method);
+  actions.appendChild(testBtn);
+  var stuck = Number(hl.stuckPayments || 0);
+  if (stuck > 0) {
+    var recheckBtn = button({ variant: 'primary', size: 'sm', label: t('pm.recheck', { n: fmtNum(stuck) }), onclick: function () {
+      confirmModal({ title: t('pm.recheck.title'), text: t('pm.recheck.text'), ok: t('pm.recheck.ok') }).then(function (yes) {
+        if (!yes) return;
+        setBusy(recheckBtn, true);
+        api('POST', '/payment-methods/' + encodeURIComponent(m.method) + '/recheck', {}).then(function (r) {
+          toast(r.delivered ? 'success' : 'warning', t('pm.recheck.done', { checked: fmtNum(r.checked || 0), delivered: fmtNum(r.delivered || 0), stillPending: fmtNum(r.stillPending || 0) }));
+          return api('GET', '/payment-methods').then(function (list) {
+            var next = (Array.isArray(list) ? list : []).filter(function (x) { return x.method === m.method; })[0];
+            if (next) replace(next); else setBusy(recheckBtn, false);
+          });
+        }, function (err) {
+          setBusy(recheckBtn, false);
+          toast('error', errorText(err));
+        });
+      });
+    } });
+    recheckBtn.setAttribute('data-store-recheck', m.method);
+    actions.appendChild(recheckBtn);
+  }
+  box.appendChild(actions);
+  return box;
 }
 
 function paymentMethodsPage(container) {
@@ -602,7 +725,8 @@ function paymentMethodsPage(container) {
         toggle(active, t('pm.active'), function (v) { active = v; }, 'sm')),
       errTop,
       h('div', { class: 'flex-1' }, body),
-      h('div', { class: 'flex justify-end pt-2' }, saveBtn)));
+      h('div', { class: 'flex justify-end pt-2' }, saveBtn),
+      m.health ? storeHealthBlock(m, function (next) { el.replaceWith(methodCard(next)); }) : null));
     el.setAttribute('data-method', m.method);
     return el;
   }
