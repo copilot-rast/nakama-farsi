@@ -13,6 +13,7 @@ import (
 	"github.com/heroiclabs/nakama/v3/internal/campaignhooks"
 	"github.com/heroiclabs/nakama/v3/internal/clusterkit"
 	"github.com/heroiclabs/nakama/v3/internal/economyhooks"
+	"github.com/heroiclabs/nakama/v3/internal/eventcontext"
 	"github.com/heroiclabs/nakama/v3/internal/pluginkit"
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -52,6 +53,7 @@ func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runti
 		return err
 	}
 	campaignhooks.SetCampaign(svc.hookStart, svc.hookComplete)
+	eventcontext.Register(eventcontext.Provider{Name: "campaign", Sources: contextSources, Spans: svc.contextSpans})
 	go svc.loop(ctx)
 	logger.Info("Campaign module registered (%d client RPCs)", len(svc.clientRPCs()))
 	return nil

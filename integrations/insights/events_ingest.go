@@ -15,6 +15,7 @@ import (
 	"github.com/heroiclabs/nakama/v3/integrations/insights/internal/events"
 	"github.com/heroiclabs/nakama/v3/integrations/insights/internal/settings"
 	"github.com/heroiclabs/nakama/v3/integrations/insights/internal/store"
+	"github.com/heroiclabs/nakama/v3/internal/eventcontext"
 	"github.com/heroiclabs/nakama/v3/internal/gameevents"
 	"github.com/heroiclabs/nakama/v3/internal/insightsapi"
 )
@@ -123,6 +124,9 @@ func (s *service) send(ctx context.Context, userID string, in sendIn) (*sendOut,
 	out := &sendOut{BatchID: in.BatchID, Received: len(in.Events), Results: make([]events.Result, 0, len(in.Events))}
 	list := make([]store.Event, 0, len(in.Events))
 	pol := policy(ev)
+	if pol.Enrich, err = s.contextFill(ctx, cfg, userID, in.Events, pol, now); err != nil {
+		return nil, err
+	}
 	for i, raw := range in.Events {
 		p, res := events.Prepare(i, raw, cat, pol, now)
 		out.Results = append(out.Results, res)
@@ -166,6 +170,52 @@ func (s *service) send(ctx context.Context, userID string, in sendIn) (*sendOut,
 	}
 	s.kick()
 	return out, nil
+}
+
+func (s *service) contextFill(ctx context.Context, cfg settings.All, userID string, raws []events.Raw, pol events.Policy, now time.Time) (func(*events.Prepared, time.Time) (string, []string), error) {
+	c := cfg.Context
+	if !c.Active() || !eventcontext.Has() {
+		return nil, nil
+	}
+	from, to := now, now
+	for _, r := range raws {
+		at := events.ContextTime(r.Time, pol, now)
+		if at.Before(from) {
+			from = at
+		}
+		if at.After(to) {
+			to = at
+		}
+	}
+	tl, err := eventcontext.Load(ctx, userID, from, to, c.Grace())
+	if err != nil {
+		return nil, err
+	}
+	return func(p *events.Prepared, at time.Time) (string, []string) {
+		o := eventcontext.Apply(c, tl.At(at), p.Tags, events.ValidTagID)
+		if o.Reject != "" {
+			return "ANALYTICS_CONTEXT_MISMATCH", []string{o.Reject}
+		}
+		p.ServerTags = append(p.ServerTags, o.Filled...)
+		if !o.Mismatched() {
+			return "", nil
+		}
+		if c.FlagMismatch {
+			p.Flag("context_mismatch")
+		}
+		if p.Fields == nil {
+			p.Fields = map[string]any{}
+		}
+		for g, v := range o.Mismatch {
+			if c.Conflict == eventcontext.ConflictKeepClient {
+				p.Fields["serverTag."+g] = o.Server[g]
+			} else {
+				p.Fields["clientTag."+g] = v
+				p.ServerTags = append(p.ServerTags, g)
+			}
+		}
+		return "", nil
+	}, nil
 }
 
 func buildEvent(p events.Prepared, id, game, userID, sessionID, platform, version, source string, now time.Time, loc *time.Location) store.Event {

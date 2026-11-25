@@ -122,6 +122,7 @@ type Policy struct {
 	UnknownTagGroups string
 	UnknownTagValues string
 	ValueOutOfRange  string
+	Enrich           func(p *Prepared, at time.Time) (string, []string)
 }
 
 func DefaultPolicy() Policy {
@@ -137,6 +138,7 @@ type Prepared struct {
 	ClientTime *time.Time
 	Flagged    bool
 	Reasons    []string
+	ServerTags []string
 }
 
 func (p *Prepared) flag(reason string) {
@@ -147,6 +149,23 @@ func (p *Prepared) flag(reason string) {
 		}
 	}
 	p.Reasons = append(p.Reasons, reason)
+}
+
+func (p *Prepared) Flag(reason string) { p.flag(reason) }
+
+func ContextTime(v any, pol Policy, now time.Time) time.Time {
+	t, ok := ParseTime(v)
+	if !ok {
+		return now
+	}
+	t = t.UTC()
+	if lo := now.Add(-time.Duration(pol.PastHours) * time.Hour); t.Before(lo) {
+		return lo
+	}
+	if hi := now.Add(time.Duration(pol.FutureMinutes) * time.Minute); t.After(hi) {
+		return hi
+	}
+	return t
 }
 
 func (p Prepared) Reason() string { return strings.Join(p.Reasons, ",") }
@@ -562,6 +581,11 @@ func Prepare(i int, ev Raw, cat *Catalog, pol Policy, now time.Time) (Prepared, 
 			p.flag("client_time")
 		}
 	}
+	if pol.Enrich != nil {
+		if code, problems := pol.Enrich(&p, ContextTime(ev.Time, pol, now)); code != "" {
+			return reject(code, problems...)
+		}
+	}
 	def, known := cat.def(name)
 	switch {
 	case !known:
@@ -590,6 +614,9 @@ func Prepare(i int, ev Raw, cat *Catalog, pol Policy, now time.Time) (Prepared, 
 				allowed[g] = true
 			}
 			for _, g := range def.PathGroups {
+				allowed[g] = true
+			}
+			for _, g := range p.ServerTags {
 				allowed[g] = true
 			}
 			for g := range p.Tags {
@@ -651,6 +678,8 @@ func Prepare(i int, ev Raw, cat *Catalog, pol Policy, now time.Time) (Prepared, 
 			res.Code = "ANALYTICS_UNKNOWN_TAG_VALUE"
 		case "value_range":
 			res.Code = "ANALYTICS_VALUE_OUT_OF_RANGE"
+		case "context_mismatch":
+			res.Code = "ANALYTICS_CONTEXT_MISMATCH"
 		default:
 			res.Code = "ANALYTICS_PATH_GROUPS"
 		}
