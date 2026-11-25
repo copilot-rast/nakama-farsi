@@ -396,7 +396,7 @@ func (s *service) gameSettle(ctx context.Context, st gamecatalog.Settlement) ([]
 		if reason == "" {
 			reason = "finished"
 		}
-		_, err = tx.ExecContext(ctx, `UPDATE economy_game_match SET status='finished', winners=ARRAY(SELECT jsonb_array_elements_text($2::jsonb)), results=$3::jsonb, end_reason=$4,
+		_, err = tx.ExecContext(ctx, `UPDATE economy_game_match SET status='finished', stats_done=true, winners=ARRAY(SELECT jsonb_array_elements_text($2::jsonb)), results=$3::jsonb, end_reason=$4,
 			forced_by=NULLIF($5,''), note=NULLIF($6,''), summary=COALESCE($7::jsonb, summary), started_at=COALESCE(started_at, now()), ended_at=now() WHERE id=$1`,
 			matchID, stringsJSON(winners), string(resultsJSON), truncate(reason, 64), truncate(st.ForcedBy, 200), truncate(st.Note, 500), summary)
 		return err
@@ -501,6 +501,8 @@ func (s *service) addGameStats(ctx context.Context, tx *sql.Tx, userID, gameKey,
 		forfeits = 1
 	case gamecatalog.ResultTimeout:
 		games, timeouts = 1, 1
+	case gamecatalog.ResultDraw:
+		games = 1
 	default:
 		return nil
 	}

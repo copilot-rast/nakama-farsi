@@ -716,7 +716,7 @@ func (r *LocalMatchRegistry) JoinAttempt(ctx context.Context, id uuid.UUID, node
 
 	if mh.PresenceList.Contains(&PresenceID{Node: fromNode, SessionID: sessionID}) {
 		// The user is already part of this match.
-		return true, true, false, "", mh.Label(), mh.PresenceList.ListPresences()
+		return true, true, false, "", mh.Label(), mh.PresenceList.ListVisible()
 	}
 
 	resultCh := make(chan *MatchJoinAttemptResult, 1)
@@ -735,7 +735,7 @@ func (r *LocalMatchRegistry) JoinAttempt(ctx context.Context, id uuid.UUID, node
 		// Doesn't matter if the timer has fired concurrently, we're in the desired case anyway.
 		timer.Stop()
 		// The join attempt has returned a result.
-		return true, r.Allow, true, r.Reason, r.Label, mh.PresenceList.ListPresences()
+		return true, r.Allow, true, r.Reason, r.Label, mh.PresenceList.ListVisible()
 	}
 }
 

@@ -395,3 +395,43 @@ func (r *RuntimeGoMatchCore) MatchLabelUpdate(label string) error {
 	r.ctx = context.WithValue(r.ctx, runtime.RUNTIME_CTX_MATCH_LABEL, label) //nolint:staticcheck
 	return nil
 }
+
+var ErrVirtualPresence = errors.New("virtual presence needs a match that has started and a user id")
+
+func (r *RuntimeGoMatchCore) virtualPresenceEvent(joins, leaves []*MatchPresence) {
+	wire := func(list []*MatchPresence) []*rtapi.UserPresence {
+		out := make([]*rtapi.UserPresence, 0, len(list))
+		for _, p := range list {
+			out = append(out, &rtapi.UserPresence{UserId: p.UserID.String(), SessionId: p.SessionID.String(), Username: p.Username})
+		}
+		return out
+	}
+	r.router.SendToStream(r.logger, r.stream, &rtapi.Envelope{Message: &rtapi.Envelope_MatchPresenceEvent{MatchPresenceEvent: &rtapi.MatchPresenceEvent{
+		MatchId: r.idStr,
+		Joins:   wire(joins),
+		Leaves:  wire(leaves),
+	}}}, true)
+}
+
+func (r *RuntimeGoMatchCore) VirtualPresenceJoin(userID, username string) error {
+	uid, err := uuid.FromString(userID)
+	if err != nil || r.presenceList == nil || r.stopped.Load() {
+		return ErrVirtualPresence
+	}
+	p := &MatchPresence{Node: r.node, UserID: uid, SessionID: uuid.NewV5(r.id, "virtual:"+userID), Username: username}
+	if r.presenceList.JoinVirtual(p) {
+		r.virtualPresenceEvent([]*MatchPresence{p}, nil)
+	}
+	return nil
+}
+
+func (r *RuntimeGoMatchCore) VirtualPresenceLeave(userID string) error {
+	uid, err := uuid.FromString(userID)
+	if err != nil || r.presenceList == nil {
+		return ErrVirtualPresence
+	}
+	if p := r.presenceList.LeaveVirtual(uid); p != nil && !r.stopped.Load() {
+		r.virtualPresenceEvent(nil, []*MatchPresence{p})
+	}
+	return nil
+}

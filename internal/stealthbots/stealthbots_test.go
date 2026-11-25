@@ -100,3 +100,16 @@ func TestScrubAndMarkers(t *testing.T) {
 		t.Fatal(m)
 	}
 }
+
+func TestNewPolicyDefaults(t *testing.T) {
+	s := Parse([]byte(`{"enabled":true,"poolMax":-4,"lookSpread":400,"ghostDays":0}`))
+	if !s.AutoGrow || !s.GrowNearLevel || !s.GrowStats || !s.LookByLevel || !s.OneLiveMatch || !s.Presences {
+		t.Fatalf("%+v", s)
+	}
+	if s.PoolMax != 0 || s.LookSpread != 100 || s.GhostDays != 1 {
+		t.Fatalf("%+v", s)
+	}
+	if d := Defaults(); d.PoolMax != 2000 || d.LookSpread != 15 || d.GhostDays != 90 {
+		t.Fatalf("%+v", d)
+	}
+}

@@ -135,3 +135,49 @@ func PotPayout(fees int64, percent int) int64 {
 	}
 	return fees * int64(percent) / 100
 }
+
+const ResultDraw = "draw"
+
+type StatsRecorder interface {
+	RecordStats(ctx context.Context, matchID string, results []Result) error
+}
+
+func RecordStats(ctx context.Context, matchID string, results []Result) error {
+	p, err := current()
+	if err != nil {
+		return err
+	}
+	if r, ok := p.(StatsRecorder); ok {
+		return r.RecordStats(ctx, matchID, results)
+	}
+	return nil
+}
+
+type MatchClaimer interface {
+	OneMatch(ctx context.Context, userID, game string, create func() (string, error)) (string, bool, error)
+}
+
+func OneMatch(ctx context.Context, userID, game string, create func() (string, error)) (string, bool, error) {
+	if p, err := current(); err == nil {
+		if c, ok := p.(MatchClaimer); ok {
+			return c.OneMatch(ctx, userID, game, create)
+		}
+	}
+	id, err := create()
+	return id, err == nil, err
+}
+
+type GhostKeeper interface {
+	KeepGhost(ctx context.Context, game string, b Bot) error
+}
+
+func KeepGhost(ctx context.Context, game string, b Bot) error {
+	p, err := current()
+	if err != nil {
+		return err
+	}
+	if k, ok := p.(GhostKeeper); ok {
+		return k.KeepGhost(ctx, game, b)
+	}
+	return nil
+}

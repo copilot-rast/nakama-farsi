@@ -209,7 +209,7 @@ func (s *service) rpcGameBot(ctx context.Context, userID, payload string) (any, 
 	}
 	stealth := g.stealth().Enabled
 	p := friendroom.Params{Game: g.Key, Room: t.Room, Mode: friendroom.ModeBot, Users: []string{userID}, Stealth: stealth}
-	id, err := s.nk.MatchCreate(ctx, g.Key, p.Map())
+	id, _, err := s.oneMatch(ctx, userID, g.Key, func() (string, error) { return s.nk.MatchCreate(ctx, g.Key, p.Map()) })
 	if err != nil {
 		s.logger.Error("Economy bot match for %s failed: %v", g.Key, err)
 		return nil, fail(http.StatusServiceUnavailable, "MATCH_CREATE_FAILED", "", "the match could not be made, try again")

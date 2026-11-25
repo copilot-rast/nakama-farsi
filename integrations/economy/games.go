@@ -1139,6 +1139,7 @@ func (s *service) matchmakerMatched(ctx context.Context, logger runtime.Logger, 
 
 func (s *service) sweepGames(ctx context.Context) {
 	s.sweepGameHistory(ctx)
+	s.sweepStealth(ctx)
 	if _, err := s.db.ExecContext(ctx, `DELETE FROM economy_game_entry WHERE (match_id, user_id) IN (SELECT e.match_id, e.user_id FROM economy_game_entry e
 		JOIN economy_game_match m ON m.id=e.match_id WHERE m.status IN ('finished','cancelled') AND NOT EXISTS (SELECT 1 FROM users u WHERE u.id = e.user_id) LIMIT 500)`); err != nil {
 		s.logger.Warn("Economy game entry sweep failed: %v", err)

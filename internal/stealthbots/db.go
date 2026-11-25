@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/heroiclabs/nakama-common/api"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type DB interface {
@@ -140,4 +141,28 @@ func (s Settings) BoostFor(ctx context.Context, db DB, userID, game string) int 
 		return 0
 	}
 	return s.Boost(GuardWins(ctx, db, userID, game))
+}
+
+func GhostUsers(ctx context.Context, db DB, ids, usernames []string, skip map[string]bool) []*api.User {
+	out := []*api.User{}
+	if len(ids)+len(usernames) == 0 {
+		return out
+	}
+	rows, err := db.QueryContext(ctx, `SELECT user_id::text, username, display_name, avatar_url, extract(epoch FROM create_time)::bigint, extract(epoch FROM created_at)::bigint, created_at > now() - interval '30 minutes'
+		FROM economy_bot_ghost WHERE user_id::text = ANY($1::text[]) OR username = ANY($2::text[]) LIMIT 200`, ids, usernames)
+	if err != nil {
+		return out
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id, username, display, avatar string
+		var created, updated int64
+		var online bool
+		if rows.Scan(&id, &username, &display, &avatar, &created, &updated, &online) != nil || skip[id] || skip["@"+username] {
+			continue
+		}
+		out = append(out, &api.User{Id: id, Username: username, DisplayName: display, AvatarUrl: avatar, Online: online, Metadata: "{}",
+			CreateTime: &timestamppb.Timestamp{Seconds: created}, UpdateTime: &timestamppb.Timestamp{Seconds: updated}})
+	}
+	return out
 }

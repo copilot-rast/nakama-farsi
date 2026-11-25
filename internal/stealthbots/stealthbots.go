@@ -42,6 +42,18 @@ type Settings struct {
 	Guard          bool `json:"guard"`
 	GuardDailyWins int  `json:"guardDailyWins"`
 	GuardBoost     int  `json:"guardBoost"`
+
+	AutoGrow      bool `json:"autoGrow"`
+	PoolMax       int  `json:"poolMax"`
+	GrowNearLevel bool `json:"growNearLevel"`
+	GrowStats     bool `json:"growStats"`
+	GhostDays     int  `json:"ghostDays"`
+
+	LookByLevel bool `json:"lookByLevel"`
+	LookSpread  int  `json:"lookSpread"`
+
+	OneLiveMatch bool `json:"oneLiveMatch"`
+	Presences    bool `json:"presences"`
 }
 
 func Defaults() Settings {
@@ -52,6 +64,9 @@ func Defaults() Settings {
 		OnlineAfterMinMinutes: 3, OnlineAfterMaxMinutes: 25, OnlineIdlePercent: 4,
 		Trophies: true, FullPrize: true, Leaderboard: true, Progress: true,
 		GuardDailyWins: 10, GuardBoost: 1,
+		AutoGrow: true, PoolMax: 2000, GrowNearLevel: true, GrowStats: true, GhostDays: 90,
+		LookByLevel: true, LookSpread: 15,
+		OneLiveMatch: true, Presences: true,
 	}
 }
 
@@ -102,6 +117,9 @@ func (s Settings) Clean() Settings {
 	s.OnlineIdlePercent = clamp(s.OnlineIdlePercent, 0, 100)
 	s.GuardDailyWins = clamp(s.GuardDailyWins, 0, 10000)
 	s.GuardBoost = clamp(s.GuardBoost, 0, 10)
+	s.PoolMax = clamp(s.PoolMax, 0, 100000)
+	s.GhostDays = clamp(s.GhostDays, 1, 3650)
+	s.LookSpread = clamp(s.LookSpread, 0, 100)
 	return s
 }
 

@@ -382,6 +382,13 @@ func (s *service) rpcUsersGet(ctx context.Context, _ string, payload string) (an
 		}
 		add(users)
 	}
+	if len(out.Users) < len(req.GetIds())+len(req.GetUsernames()) && stealthbots.Active(ctx, s.db) {
+		skip := map[string]bool{}
+		for _, u := range out.Users {
+			skip[u.Id], skip["@"+u.Username] = true, true
+		}
+		add(stealthbots.GhostUsers(ctx, s.db, req.GetIds(), req.GetUsernames(), skip))
+	}
 	_ = hookchain.RunAfter(ctx, "GetUsers", s.logger, s.db, s.nk, out, req)
 	privatemeta.Users(out.Users)
 	stealthbots.MarkUsers(ctx, s.db, out.Users)

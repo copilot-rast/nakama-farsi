@@ -74,7 +74,7 @@ func TestStealthClientViewsHideBotSettings(t *testing.T) {
 func TestStealthBotLeaseOutcomesAndPresence(t *testing.T) {
 	h := newStealthHarness(t)
 	h.ludoGame([]map[string]any{{"key": "two", "players": 2, "entryFee": map[string]any{"currencyKey": "coin", "amount": 10}}}, nil)
-	h.stealthOn("tst_board", map[string]any{"guard": true, "guardDailyWins": 1, "guardBoost": 2, "onlineAfterMinMinutes": 5, "onlineAfterMaxMinutes": 6, "onlineIdlePercent": 0})
+	h.stealthOn("tst_board", map[string]any{"guard": true, "guardDailyWins": 1, "guardBoost": 2, "onlineAfterMinMinutes": 5, "onlineAfterMaxMinutes": 6, "onlineIdlePercent": 0, "autoGrow": false})
 	b3, b5, b12 := h.bot(3, 1000), h.bot(5, 1000), h.bot(12, 1000)
 	for _, id := range []string{b3, b5, b12} {
 		var md string

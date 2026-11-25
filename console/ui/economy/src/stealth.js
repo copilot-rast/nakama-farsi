@@ -22,6 +22,23 @@ function stealthFields() {
       { name: 'syntheticFallback', type: 'bool', inline: true, label: 'f.sb.fallback', hint: 'f.sb.fallback.hint' }
     ] },
     { name: 'levelRange', type: 'number', label: 'f.sb.level', hint: 'f.sb.level.hint', required: true, min: 0, max: 100, when: on },
+    { type: 'row', when: on, fields: [
+      { name: 'oneLiveMatch', type: 'bool', inline: true, label: 'f.sb.oneMatch', hint: 'f.sb.oneMatch.hint' },
+      { name: 'presences', type: 'bool', inline: true, label: 'f.sb.presences', hint: 'f.sb.presences.hint' }
+    ] },
+    { type: 'heading', label: 'sb.h.grow', when: function (v) { return v.enabled && v.poolBots; } },
+    { name: 'autoGrow', type: 'bool', inline: true, label: 'f.sb.grow', hint: 'f.sb.grow.hint', when: function (v) { return v.enabled && v.poolBots; } },
+    { type: 'row', when: function (v) { return v.enabled && v.poolBots && v.autoGrow; }, fields: [
+      { name: 'poolMax', type: 'number', label: 'f.sb.poolMax', hint: 'f.sb.poolMax.hint', required: true, min: 0, max: 100000 },
+      { name: 'ghostDays', type: 'number', label: 'f.sb.ghostDays', hint: 'f.sb.ghostDays.hint', required: true, min: 1, max: 3650 }
+    ] },
+    { type: 'row', when: function (v) { return v.enabled && v.poolBots && v.autoGrow; }, fields: [
+      { name: 'growNearLevel', type: 'bool', inline: true, label: 'f.sb.growNear', hint: 'f.sb.growNear.hint' },
+      { name: 'growStats', type: 'bool', inline: true, label: 'f.sb.growStats', hint: 'f.sb.growStats.hint' }
+    ] },
+    { type: 'heading', label: 'sb.h.look', when: on },
+    { name: 'lookByLevel', type: 'bool', inline: true, label: 'f.sb.look', hint: 'f.sb.look.hint', when: on },
+    { name: 'lookSpread', type: 'number', label: 'f.sb.lookSpread', hint: 'f.sb.lookSpread.hint', required: true, min: 0, max: 100, when: function (v) { return v.enabled && v.lookByLevel; } },
     { type: 'heading', label: 'sb.h.timing', when: on },
     range('arriveMinSeconds', 'arriveMaxSeconds', 'f.sb.arriveMin', 'f.sb.arriveMax', 'f.sb.arrive.hint', 0, 300, on),
     range('thinkMinMs', 'thinkMaxMs', 'f.sb.thinkMin', 'f.sb.thinkMax', 'f.sb.think.hint', 0, 60000, on),
@@ -62,6 +79,7 @@ function stealthSummary(v, pool) {
   parts.push(t(v.poolBots ? 'sb.sum.pool' : 'sb.sum.synthetic'));
   var counted = ['trophies', 'fullPrize', 'leaderboard', 'progress'].filter(function (k) { return !v[k]; });
   parts.push(counted.length ? t('sb.sum.notCounted', { list: counted.map(function (k) { return t('sb.out.' + k); }).join('، ') }) : t('sb.sum.allCounted'));
+  if (v.poolBots && v.autoGrow) parts.push(t('sb.sum.grow', { n: fmtNum(Number(v.poolMax) || 0) }));
   if (v.guard) parts.push(t('sb.sum.guard', { n: fmtNum(Number(v.guardDailyWins) || 0) }));
   box.appendChild(notice('info', parts.join(t('fr.sum.sep'))));
   if (pool) {
@@ -109,6 +127,14 @@ function stealthBotsPage(container, query) {
     body.appendChild(page.el);
     page.load();
   }, function (err) { body.appendChild(errorBlock(err, function () { stealthBotsPage(container, query); })); });
+}
+
+function stealthSearchItems() {
+  var href = hashFor('stealth-bots');
+  var group = t('nav.bots') + ' · ' + t('nav.stealth-bots');
+  return ['f.sb.grow', 'f.sb.poolMax', 'f.sb.look', 'f.sb.oneMatch', 'f.sb.presences', 'f.sb.guard', 'f.sb.fallback'].map(function (k) {
+    return { label: t(k), href: href, group: group, icon: 'sliders' };
+  });
 }
 
 CUSTOM_PAGES['stealth-bots'] = function (root, route) { stealthBotsPage(root, (route && route.query) || {}); };

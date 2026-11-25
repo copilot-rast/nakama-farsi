@@ -555,6 +555,7 @@ window.NakamaConsole = {
   t: function (key, vars) { return t(key, vars); },
   sections: consoleSections,
   pageTabs: consoleTabs,
+  searchItems: function () { return token() && typeof stealthSearchItems === 'function' ? stealthSearchItems() : []; },
   navGroups: {
     isOpen: function (section, group) { return navGroupOpen(section, group); },
     set: function (section, group, open) { setNavGroupOpen(section, group, !!open); schedule(); }

@@ -80,6 +80,30 @@ test.describe('stealth bots console', () => {
     await expect(page.locator('.pl-pal-row[href^="#/economy/bots/stealth"]').first()).toBeVisible();
   });
 
+  test('pool growth, level look and one match are settings with defaults', async ({ page }) => {
+    await open(page, '#/economy/bots/stealth?game=' + key);
+    const r = root(page);
+    await expect(r.locator('[data-settings-form="stealth-bots"]')).toBeVisible();
+    await expect(field(r, 'بیشترین تعداد ربات‌های استخر').locator('input')).toHaveValue(/2[,٬]?000|۲[,٬]?۰۰۰/);
+    await expect(field(r, 'گوناگونی ظاهر (درصد)')).toBeVisible();
+    await expect(r.locator('[data-sb-summary]')).toContainText('خودش بزرگ می‌شود');
+    await field(r, 'بیشترین تعداد ربات‌های استخر').locator('input').fill('150');
+    await field(r, 'گوناگونی ظاهر (درصد)').locator('input').fill('5');
+    await r.locator('[data-settings-save]').click();
+    await expect(toasts(page).first()).toBeVisible();
+    const saved = await eco.get('/game-stealth/' + key);
+    expect(saved.settings.poolMax).toBe(150);
+    expect(saved.settings.lookSpread).toBe(5);
+    expect(saved.settings.autoGrow).toBe(true);
+    expect(saved.settings.lookByLevel).toBe(true);
+    expect(saved.settings.oneLiveMatch).toBe(true);
+    expect(saved.settings.presences).toBe(true);
+    expect(saved.defaults.poolMax).toBe(2000);
+    await page.keyboard.press('Control+k');
+    await page.locator('.pl-pal-input').fill('ربات تازه بساز');
+    await expect(page.locator('.pl-pal-row[href^="#/economy/bots/stealth"]').first()).toBeVisible();
+  });
+
   test('friend rules hold the random decline range', async ({ page }) => {
     const before = await consoleRules();
     await open(page, '#/project-settings/friends');

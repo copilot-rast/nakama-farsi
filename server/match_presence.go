@@ -115,6 +115,7 @@ type MatchPresenceList struct {
 	presenceMap     map[uuid.UUID]string
 	presencesRead   *atomic.Value
 	presenceIDsRead *atomic.Value
+	virtualRead     *atomic.Value
 }
 
 type MatchPresenceListItem struct {
@@ -129,7 +130,9 @@ func NewMatchPresenceList() *MatchPresenceList {
 		presenceMap:     make(map[uuid.UUID]string, 10),
 		presencesRead:   &atomic.Value{},
 		presenceIDsRead: &atomic.Value{},
+		virtualRead:     &atomic.Value{},
 	}
+	m.virtualRead.Store(make([]*MatchPresence, 0))
 	m.presencesRead.Store(make([]*MatchPresence, 0))
 	m.presenceIDsRead.Store(make([]*PresenceID, 0))
 	return m
@@ -230,6 +233,55 @@ func (m *MatchPresenceList) FilterPresenceIDs(ids []*PresenceID) []*PresenceID {
 
 func (m *MatchPresenceList) ListPresences() []*MatchPresence {
 	return m.presencesRead.Load().([]*MatchPresence)
+}
+
+func (m *MatchPresenceList) ListVirtual() []*MatchPresence {
+	return m.virtualRead.Load().([]*MatchPresence)
+}
+
+func (m *MatchPresenceList) ListVisible() []*MatchPresence {
+	virtual := m.ListVirtual()
+	if len(virtual) == 0 {
+		return m.ListPresences()
+	}
+	real := m.ListPresences()
+	out := make([]*MatchPresence, 0, len(real)+len(virtual))
+	out = append(out, real...)
+	return append(out, virtual...)
+}
+
+func (m *MatchPresenceList) JoinVirtual(p *MatchPresence) bool {
+	m.Lock()
+	defer m.Unlock()
+	cur := m.virtualRead.Load().([]*MatchPresence)
+	for _, v := range cur {
+		if v.UserID == p.UserID {
+			return false
+		}
+	}
+	next := make([]*MatchPresence, 0, len(cur)+1)
+	next = append(next, cur...)
+	m.virtualRead.Store(append(next, p))
+	return true
+}
+
+func (m *MatchPresenceList) LeaveVirtual(userID uuid.UUID) *MatchPresence {
+	m.Lock()
+	defer m.Unlock()
+	cur := m.virtualRead.Load().([]*MatchPresence)
+	next := make([]*MatchPresence, 0, len(cur))
+	var gone *MatchPresence
+	for _, v := range cur {
+		if v.UserID == userID {
+			gone = v
+			continue
+		}
+		next = append(next, v)
+	}
+	if gone != nil {
+		m.virtualRead.Store(next)
+	}
+	return gone
 }
 
 func (m *MatchPresenceList) ListPresenceIDs() []*PresenceID {

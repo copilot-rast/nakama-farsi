@@ -639,6 +639,7 @@ function allPages() {
     });
   });
   if (m.settings) m.settings.links.forEach(function (l) { out.push({ label: l.label, href: l.href, icon: l.icon, group: m.settings.label, ps: l.ps }); });
+  if (nc() && typeof nc().searchItems === 'function') nc().searchItems().forEach(function (it) { if (it && it.label && it.href) out.push({ label: it.label, href: it.href, icon: it.icon, group: it.group || '' }); });
   var api = nc() && nc().projectSettings;
   if (api && api.allowed()) api.sections().forEach(function (s) { out.push({ label: s.label, href: s.href, group: pst('settings.project'), psSection: true }); });
   var D = window.NakamaDate;

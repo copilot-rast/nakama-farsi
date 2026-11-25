@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/heroiclabs/nakama/v3/internal/localized"
 	"github.com/heroiclabs/nakama/v3/internal/pluginkit"
 )
 
@@ -155,7 +156,7 @@ func (s *service) playerCard(ctx context.Context, viewer, target, game, table, l
 	err := s.db.QueryRowContext(ctx, `SELECT u.username, COALESCE(u.display_name,''), COALESCE(u.avatar_url,''), COALESCE(u.metadata::text,'{}'), b.level, b.look::text
 		FROM users u LEFT JOIN economy_bot b ON b.user_id=u.id WHERE u.id=$1`, target).Scan(&username, &display, &avatar, &metadata, &botLevel, &look)
 	if errors.Is(err, sql.ErrNoRows) {
-		return nil, notFound("USER_NOT_FOUND")
+		return s.ghostCard(ctx, viewer, target, game, table, lang)
 	}
 	if err != nil {
 		return nil, err
@@ -164,11 +165,11 @@ func (s *service) playerCard(ctx context.Context, viewer, target, game, table, l
 	if err != nil {
 		return nil, err
 	}
-	equipped := map[string]any{}
 	slots := map[string]string{}
 	if look.Valid {
 		_ = json.Unmarshal([]byte(look.String), &slots)
-	} else {
+	}
+	if len(slots) == 0 {
 		rows, err := s.db.QueryContext(ctx, `SELECT u.slot, i.key FROM economy_user_item u JOIN economy_item i ON i.id=u.item_id WHERE u.user_id=$1 AND u.equipped AND u.slot IS NOT NULL AND u.slot<>''`, target)
 		if err != nil {
 			return nil, err
@@ -181,14 +182,7 @@ func (s *service) playerCard(ctx context.Context, viewer, target, game, table, l
 		}
 		rows.Close()
 	}
-	for slot, key := range slots {
-		v := map[string]any{"key": key, "name": key, "iconUrl": ""}
-		var name, icon string
-		if s.db.QueryRowContext(ctx, `SELECT name::text, COALESCE(icon_url,'') FROM economy_item WHERE key=$1`, key).Scan(&name, &icon) == nil {
-			v["name"], v["iconUrl"] = langs.Resolve(parseI18n(name), l), icon
-		}
-		equipped[slot] = v
-	}
+	equipped := s.equippedView(ctx, slots, langs, l)
 	stats, err := s.statsOf(ctx, target, game)
 	if err != nil {
 		return nil, err
@@ -208,6 +202,19 @@ func (s *service) playerCard(ctx context.Context, viewer, target, game, table, l
 		card["gameStats"] = stats[0]
 	}
 	return card, nil
+}
+
+func (s *service) equippedView(ctx context.Context, slots map[string]string, langs *localized.Set, l string) map[string]any {
+	equipped := map[string]any{}
+	for slot, key := range slots {
+		v := map[string]any{"key": key, "name": key, "iconUrl": ""}
+		var name, icon string
+		if s.db.QueryRowContext(ctx, `SELECT name::text, COALESCE(icon_url,'') FROM economy_item WHERE key=$1`, key).Scan(&name, &icon) == nil {
+			v["name"], v["iconUrl"] = langs.Resolve(parseI18n(name), l), icon
+		}
+		equipped[slot] = v
+	}
+	return equipped
 }
 
 func (s *service) consoleGameStats(w http.ResponseWriter, r *http.Request) {

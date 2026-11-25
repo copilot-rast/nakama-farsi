@@ -174,9 +174,24 @@ func (s *service) leaseBots(ctx context.Context, q gamecatalog.BotQuery) ([]game
 	}
 	out := []gamecatalog.Bot{}
 	taken := map[string]bool{}
-	for _, win := range botLevelWindows(q) {
+	st := s.stealthOf(ctx, q.Game)
+	wins := botLevelWindows(q)
+	nearFirst := st.GrowNearLevel && len(wins) > 1
+	grow := func() {
+		for _, b := range s.growBots(ctx, q, st, q.Count-len(out)) {
+			taken[b.UserID] = true
+			out = append(out, b)
+		}
+	}
+	for i, win := range wins {
 		if len(out) >= q.Count {
 			break
+		}
+		if nearFirst && i == len(wins)-1 {
+			grow()
+			if len(out) >= q.Count {
+				break
+			}
 		}
 		rows, err := s.db.QueryContext(ctx, `SELECT b.user_id::text, u.username, COALESCE(u.display_name,''), COALESCE(u.avatar_url,''), b.level, b.template, b.look::text
 			FROM economy_bot b JOIN users u ON u.id=b.user_id LEFT JOIN economy_bot_lease l ON l.user_id=b.user_id
@@ -226,6 +241,9 @@ func (s *service) leaseBots(ctx context.Context, q gamecatalog.BotQuery) ([]game
 			taken[b.UserID] = true
 			out = append(out, b)
 		}
+	}
+	if !nearFirst && len(out) < q.Count {
+		grow()
 	}
 	return out, nil
 }
