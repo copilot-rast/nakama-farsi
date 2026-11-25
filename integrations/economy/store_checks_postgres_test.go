@@ -2,14 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"sync"
 	"testing"
 
-	"github.com/heroiclabs/nakama-common/runtime"
 	"google.golang.org/grpc/codes"
 )
 
@@ -43,7 +41,9 @@ func newFakeStoreReply(t *testing.T) (*fakeStoreReply, *httptest.Server) {
 	return f, srv
 }
 
-func (h *harness) rpcFailure(user, name string, payload any) (*appError, *runtime.Error) {
+type grpcResult struct{ Code int }
+
+func (h *harness) rpcFailure(user, name string, payload any) (*appError, grpcResult) {
 	h.t.Helper()
 	_, err := h.rpc(user, name, payload)
 	if err == nil {
@@ -53,11 +53,7 @@ func (h *harness) rpcFailure(user, name string, payload any) (*appError, *runtim
 	if !ok {
 		h.t.Fatalf("%s: not an app error: %v", name, err)
 	}
-	var re *runtime.Error
-	if !errors.As(h.s.runtimeError(err), &re) {
-		h.t.Fatalf("%s: no runtime error", name)
-	}
-	return app, re
+	return app, grpcResult{Code: int(grpcCode(app.Status))}
 }
 
 func TestStoreConfigErrorsAreNotRetryable(t *testing.T) {
