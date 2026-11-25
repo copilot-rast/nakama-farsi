@@ -41,6 +41,29 @@ func (s *service) growLook(ctx context.Context, tx *sql.Tx, level, maxLevel int,
 	return stealthbots.LevelLook(ctx, tx, slots, level, maxLevel, st, r)
 }
 
+func (s *service) growOwnedLook(ctx context.Context, tx *sql.Tx, userID string, level, maxLevel int, st stealthbots.Settings, r *rand.Rand) error {
+	rows, err := tx.QueryContext(ctx, `SELECT ui.slot, i.key FROM economy_user_item ui JOIN economy_item i ON i.id=ui.item_id
+		WHERE ui.equipped AND ui.slot <> '' AND ui.user_id=(SELECT b.user_id FROM economy_bot b WHERE EXISTS (SELECT 1 FROM economy_user_item x WHERE x.user_id=b.user_id AND x.equipped AND x.slot <> '') ORDER BY random() LIMIT 1)`)
+	if err != nil {
+		return err
+	}
+	slots := map[string]string{}
+	for rows.Next() {
+		var slot, key string
+		if rows.Scan(&slot, &key) == nil {
+			slots[slot] = key
+		}
+	}
+	rows.Close()
+	for slot, key := range stealthbots.LevelLook(ctx, tx, slots, level, maxLevel, st, r) {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO economy_user_item (user_id, item_id, source, source_ref, equipped, slot)
+			SELECT $1::uuid, i.id, 'admin', 'look', true, $3 FROM economy_item i WHERE i.key=$2 ON CONFLICT DO NOTHING`, userID, key, slot); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (s *service) poolSize(ctx context.Context, q *sql.Tx) int {
 	var n int
 	_ = q.QueryRowContext(ctx, `SELECT count(*) FROM economy_bot WHERE enabled`).Scan(&n)
@@ -95,6 +118,11 @@ func (s *service) growBots(ctx context.Context, q gamecatalog.BotQuery, st steal
 				break
 			}
 			look := s.growLook(ctx, tx, level, maxLevel, st, r)
+			if len(look) == 0 {
+				if err := s.growOwnedLook(ctx, tx, id, level, maxLevel, st, r); err != nil {
+					return err
+				}
+			}
 			lookJSON, _ := json.Marshal(look)
 			if _, err := tx.ExecContext(ctx, `INSERT INTO economy_bot (user_id, enabled, level, template, rooms, look, note, source, updated_by) VALUES ($1,true,$2,'','[]',$3::jsonb,'',$4,'stealth')`,
 				id, level, string(lookJSON), botGrowSource); err != nil {

@@ -68,6 +68,26 @@ func TestStealthPoolGrowsRealAccountsWithLevelLook(t *testing.T) {
 	if none := lease(5); len(none) != 0 {
 		t.Fatalf("pool max stops growth: %v", none)
 	}
+	if _, err := h.s.db.ExecContext(h.ctx, `UPDATE economy_bot SET look='{}'::jsonb`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := h.s.db.ExecContext(h.ctx, `INSERT INTO economy_user_item (user_id, item_id, source, source_ref, equipped, slot) SELECT $1::uuid, id, 'admin', 'look', true, 'skin' FROM economy_item WHERE key='sk_cheap'`, tmpl); err != nil {
+		t.Fatal(err)
+	}
+	h.stealthOn("tst_board", map[string]any{"poolMax": 4, "lookSpread": 0, "levelRange": 0})
+	owned := lease(30)
+	if len(owned) != 1 {
+		t.Fatal("grows again under the new max")
+	}
+	var worn string
+	_ = h.s.db.QueryRowContext(h.ctx, `SELECT i.key FROM economy_user_item ui JOIN economy_item i ON i.id=ui.item_id WHERE ui.user_id=$1 AND ui.equipped AND ui.slot='skin'`, owned[0].UserID).Scan(&worn)
+	if worn != "sk_legend" {
+		t.Fatalf("owned look copies the slots of a pool bot and follows the level: %q", worn)
+	}
+	card, _ := h.s.playerCard(h.ctx, h.user(), owned[0].UserID, "tst_board", "", "en")
+	if eq, _ := card["equipped"].(map[string]any); eq["skin"] == nil {
+		t.Fatalf("card shows the owned look: %v", card["equipped"])
+	}
 	h.stealthOn("tst_board", map[string]any{"autoGrow": false, "poolMax": 50})
 	if none := lease(5); len(none) != 0 {
 		t.Fatalf("auto grow off: %v", none)
