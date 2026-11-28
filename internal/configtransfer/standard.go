@@ -42,6 +42,7 @@ func BaseAreas() []Area {
 		{Key: "server_rules", Owner: "base", Order: 230, Title: t2("قوانین سرور و تنظیمات کنسول", "Server rules and console settings"), Note: t2("حالت تعمیر هم جزو قوانین سرور است؛ پیش از اعمال آن را ببینید.", "Maintenance mode is part of the server rules; check it before you apply."), Tables: []Table{
 			{Name: "base_server_rules", Key: []string{"id"}, Refs: []Ref{jtags("value", "maintenance.allowTagIds[]")}},
 			{Name: "base_console_settings", Key: []string{"id"}},
+			{Name: "base_console_modules", Key: []string{"id"}},
 		}},
 	}
 }

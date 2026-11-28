@@ -112,7 +112,7 @@ func consoleBaseAuditLog(ctx context.Context, logger *zap.Logger, db *sql.DB, me
 		return
 	}
 	mod := baseTaxonomyAudit
-	for _, prefix := range []string{"/v2/console/base/languages", "/v2/console/base/brand", "/v2/console/base/console-settings", "/v2/console/base/setup", "/v2/console/base/account-rules", "/v2/console/base/friend-rules", "/v2/console/base/app-versions", "/v2/console/base/countries", "/v2/console/base/remote-config", "/v2/console/base/server-rules", "/v2/console/base/content", "/v2/console/base/insights"} {
+	for _, prefix := range []string{"/v2/console/base/languages", "/v2/console/base/brand", "/v2/console/base/console-settings", "/v2/console/base/console-modules", "/v2/console/base/setup", "/v2/console/base/account-rules", "/v2/console/base/friend-rules", "/v2/console/base/app-versions", "/v2/console/base/countries", "/v2/console/base/remote-config", "/v2/console/base/server-rules", "/v2/console/base/content", "/v2/console/base/insights"} {
 		if strings.HasPrefix(pattern, prefix) {
 			mod = baseLanguagesAudit
 		}

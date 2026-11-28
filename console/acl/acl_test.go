@@ -242,6 +242,19 @@ func TestCheckACLHttpBaseConsoleSettings(t *testing.T) {
 	}
 }
 
+func TestCheckACLHttpBaseConsoleModules(t *testing.T) {
+	path := "/v2/console/base/console-modules"
+	economyRead := NewPermission(console.AclResources_HIRO_ECONOMY, PermissionRead)
+	settingsRead := NewPermission(console.AclResources_SETTINGS, PermissionRead)
+	settingsWrite := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
+	if !CheckACLHttp(http.MethodGet, path, economyRead) || !CheckACLHttp(http.MethodGet, path, None()) {
+		t.Fatal("every console user reads which modules are off")
+	}
+	if !CheckACLHttp(http.MethodPut, path, settingsWrite) || CheckACLHttp(http.MethodPut, path, settingsRead) || CheckACLHttp(http.MethodPut, path, economyRead) {
+		t.Fatal("PUT console-modules must need settings write")
+	}
+}
+
 func TestCheckACLHttpBaseAccounts(t *testing.T) {
 	settingsRead := NewPermission(console.AclResources_SETTINGS, PermissionRead)
 	settingsWrite := NewPermission(console.AclResources_SETTINGS, PermissionWrite)
