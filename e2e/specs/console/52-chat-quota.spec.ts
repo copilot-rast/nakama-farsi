@@ -71,7 +71,7 @@ test.describe('private chat quota: hub, settings and rules', () => {
 
   test('settings turn the quota on with a daily count, a pack meta and a reset time, refuse a bad time and show the pack products', async ({ page }) => {
     await open(page, '#/moderation/chat-quota/settings');
-    const form = root(page).locator('[data-settings-form="chat-quota"]');
+    const form = page.locator('[data-settings-form="chat-quota"]');
     await expect(form.locator('[data-cq-summary]')).toBeVisible();
     await form.locator('label.x-toggle', { hasText: 'سهمیهٔ پیام خصوصی روشن باشد' }).click();
     await field(form, 'پیام رایگان در روز').locator('input').fill('۲');
@@ -182,7 +182,7 @@ test.describe('private chat quota: player card and report', () => {
     await open(page, '#/moderation/chat-quota/settings');
     await page.locator('.pl-seg-lang [data-locale="en"]').click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
-    await expect(root(page).locator('[data-settings-form="chat-quota"]')).toContainText('Private chat quota is on');
+    await expect(page.locator('[data-settings-form="chat-quota"]')).toContainText('Private chat quota is on');
     await expect(root(page).locator('[data-economy-tabs="chat-quota"] [data-economy-tab]')).toHaveText(['Rules', 'Settings', 'Report']);
     await page.locator('.pl-seg-lang [data-locale="fa-IR"]').click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');

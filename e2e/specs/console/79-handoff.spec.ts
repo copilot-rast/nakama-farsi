@@ -168,7 +168,7 @@ test.describe('front-end handoff', () => {
       await expect(hidden.locator('[data-conn="key"] [data-conn-copy]')).toHaveCount(0);
       await expect(root(page).locator('[data-sdk-page]')).not.toContainText(SERVER_KEY);
       await open(page, '#/system/server-rules');
-      await expect(root(page).locator('[data-settings-form="server-rules"]')).toContainText('نمایش کلید سرور در راهنما و صفحهٔ SDK');
+      await expect(page.locator('[data-settings-form="server-rules"]')).toContainText('نمایش کلید سرور در راهنما و صفحهٔ SDK');
     } finally {
       await setHandoff({ enabled: true, audience: 'all' });
     }
@@ -192,7 +192,7 @@ test.describe('front-end handoff', () => {
 
   test('settings: admins only hides it from other console users; off hides it for everyone', async ({ page, spawn }) => {
     await open(page, '#/system/server-rules');
-    const form = root(page).locator('[data-settings-form="server-rules"]');
+    const form = page.locator('[data-settings-form="server-rules"]');
     await expect(form).toContainText('راهنمای فرانت');
     await expect(form).toContainText('همهٔ کاربران کنسول');
     await setHandoff({ enabled: true, audience: 'admins' });

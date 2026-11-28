@@ -156,8 +156,8 @@ test.describe('native console at 390px with the plane shell', () => {
     expect(sb!.x).toBeGreaterThanOrEqual(0);
     expect(sb!.x + sb!.width).toBeLessThanOrEqual(rb!.x + 1);
     await expect(side.locator('.pl-side-label')).not.toHaveCount(1);
-    await side.locator('a[href^="#/economy/gifts"]').click();
-    await expect(page).toHaveURL(/#\/economy\/gifts/);
+    await side.locator('a[href^="#/economy/shop"]').click();
+    await expect(page).toHaveURL(/#\/economy\/shop\/products/);
     await expect(page.locator('html')).not.toHaveClass(/pl-sheet-open/);
     await page.locator('.pl-menu').click();
     await expect(page.locator('html')).toHaveClass(/pl-sheet-open/);

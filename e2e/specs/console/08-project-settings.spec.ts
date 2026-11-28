@@ -65,7 +65,7 @@ async function quickCreate(page: Page, label: RegExp, resource: 'categories' | '
 
 test.describe('project settings window', () => {
   test('opens from the top bar gear and from the sidebar, Esc and close return to the page underneath', async ({ page }) => {
-    await open(page, '#/economy/products');
+    await open(page, '#/economy/shop/products');
     const gear = page.locator('[data-ps-entry="topbar"]');
     await expect(gear).toBeVisible();
     await gear.click();
@@ -77,7 +77,7 @@ test.describe('project settings window', () => {
     await expect(page.locator('.pl-rail .pl-mode[data-pl-mode="settings"]')).toHaveAttribute('aria-current', 'true');
     await page.keyboard.press('Escape');
     await expect(psWindow(page)).toHaveCount(0);
-    await expect(page).toHaveURL(/#\/economy\/products$/);
+    await expect(page).toHaveURL(/#\/economy\/shop\/products$/);
     await expect(root(page).locator('h1')).toHaveText('فروشگاه');
 
     await page.locator('.pl-side').waitFor();
@@ -146,7 +146,7 @@ test.describe('project settings window', () => {
     await expect(page).toHaveURL(/#\/project-settings\/brand$/);
     await page.keyboard.press('ArrowUp');
     await expect(page).toHaveURL(/#\/project-settings\/updates-source$/);
-    await expect(root(page).locator('[data-settings-form="updates-source"] form')).toBeVisible();
+    await expect(page.locator('[data-settings-form="updates-source"] form')).toBeVisible();
     await settle(page);
     for (let i = 0; i < 25; i++) {
       await page.keyboard.press('Tab');

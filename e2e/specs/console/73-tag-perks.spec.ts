@@ -52,14 +52,15 @@ test.afterAll(async () => {
 });
 
 test.describe('tag perks: timed tag prizes, tag discounts and chests', () => {
-  test('the sales group has the tag discounts hub with three tabs, and Ctrl K finds it', async ({ page }) => {
+  test('the shop has the tag discounts tab with its tools, and Ctrl K finds it', async ({ page }) => {
     await open(page, '#/economy/tag-discounts');
-    await expect(root(page).locator('[data-economy-tabs="tag-discounts"] [data-economy-tab]')).toHaveText(['تخفیف‌ها', 'پیش‌نمایش بازیکن', 'تنظیمات']);
+    await expect(root(page).locator('[data-shop-tab="discounts"]')).toHaveText('تخفیف‌ها');
+    await expect(root(page).locator('[data-shop-sub="discounts"] [data-shop-tool]')).toHaveText(['پیش‌نمایش بازیکن', 'تنظیمات']);
     await page.keyboard.press('Control+k');
     await page.locator('.pl-pal-input:visible').fill('تخفیف برچسب');
     await expect(page.locator('.pl-pal-row').first()).toContainText('تخفیف برچسب‌دارها');
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/#\/economy\/tag-discounts/);
+    await expect(page).toHaveURL(/#\/economy\/shop\/discounts/);
   });
 
   test('a prize gives a player tag for 30 days', async ({ page }) => {
@@ -112,7 +113,7 @@ test.describe('tag perks: timed tag prizes, tag discounts and chests', () => {
 
   test('discount settings save the combine rule and the cap', async ({ page }) => {
     await open(page, '#/economy/tag-discounts/settings');
-    const form = root(page).locator('[data-settings-form="tag-discounts"]');
+    const form = page.locator('[data-settings-form="tag-discounts"]');
     await field(form, 'چند تخفیف هم‌زمان').locator('select').selectOption('sum');
     await field(form, 'سقف تخفیف (درصد)').locator('input').fill('۳۰');
     await form.locator('[data-settings-save]').click();
@@ -154,9 +155,10 @@ test.describe('tag perks: timed tag prizes, tag discounts and chests', () => {
     }
     await page.setViewportSize({ width: 1280, height: 900 });
     await open(page, '#/economy/tag-discounts');
-    await page.locator('.pl-seg-lang [data-locale="en"]').click();
-    await expect(root(page).locator('[data-economy-tabs="tag-discounts"] [data-economy-tab]')).toHaveText(['Discounts', 'Player preview', 'Settings']);
-    await page.locator('.pl-seg-lang [data-locale="fa-IR"]').click();
+    await page.locator('.pl-tb-end .pl-seg-lang [data-locale="en"]').click();
+    await expect(root(page).locator('[data-shop-tab="discounts"]')).toHaveText('Discounts');
+    await expect(root(page).locator('[data-shop-sub="discounts"] [data-shop-tool]')).toHaveText(['Player preview', 'Settings']);
+    await page.locator('.pl-tb-end .pl-seg-lang [data-locale="fa-IR"]').click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   });
 });

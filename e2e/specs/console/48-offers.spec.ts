@@ -64,13 +64,13 @@ test.afterAll(async () => {
 });
 
 test.describe('offers: hub, editors and settings', () => {
-  test('the sales group has the offers hub; a daily offer is built in its editor and listed', async ({ page }) => {
-    await open(page, '#/economy/products');
-    const link = page.locator('.x-drawer a[data-economy-page="offers"]').first();
-    await expect(link).toHaveText('پیشنهادهای ویژه');
+  test('the shop has the offers tab; a daily offer is built in its editor and listed', async ({ page }) => {
+    await open(page, '#/economy/shop/products');
+    await expect(root(page).locator('[data-shop-tab="offers"]')).toHaveText('پیشنهادها');
     await open(page, '#/economy/offers');
-    const tabs = root(page).locator('[data-economy-tabs="offers"] [data-economy-tab]');
-    await expect(tabs).toHaveText(['روزانه', 'پیشنهاد ورود', 'پیش‌نمایش', 'گزارش', 'تنظیمات']);
+    const sub = root(page).locator('[data-shop-sub="offers"]');
+    await expect(sub.locator('[data-shop-list]')).toHaveText(['روزانه', 'پیشنهاد ورود']);
+    await expect(sub.locator('[data-shop-tool]')).toHaveText(['پیش‌نمایش بازیکن', 'گزارش', 'تنظیمات']);
     await root(page).getByRole('button', { name: 'پیشنهاد روزانهٔ تازه' }).first().click();
     await settlePanel(page);
     const p = panel(page);
@@ -118,7 +118,7 @@ test.describe('offers: hub, editors and settings', () => {
 
   test('settings save the period, count, reroll cost and timer mode, and refuse a bad value', async ({ page }) => {
     await open(page, '#/economy/offers/settings');
-    const form = root(page).locator('[data-settings-form="offers"]');
+    const form = page.locator('[data-settings-form="offers"]');
     await expect(form.locator('[data-offer-period]')).toContainText('دورهٔ فعلی');
     await field(form, /^ساعت شروع روز$/).locator('input').fill('۳۰');
     await form.locator('[data-settings-save]').click();

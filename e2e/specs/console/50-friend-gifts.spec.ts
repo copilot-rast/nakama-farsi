@@ -71,17 +71,17 @@ test.afterAll(async () => {
 });
 
 test.describe('friend gifts: hub, settings and rules', () => {
-  test('the sales group has the friend gifts hub with its four tabs', async ({ page }) => {
-    await open(page, '#/economy/products');
-    const link = page.locator('.x-drawer a[data-economy-page="friend-gifts"]').first();
-    await expect(link).toHaveText('هدیه به دوست');
+  test('the shop gifts tab has friend gifts with its rules, report and settings', async ({ page }) => {
     await open(page, '#/economy/friend-gifts');
-    await expect(root(page).locator('[data-economy-tabs="friend-gifts"] [data-economy-tab]')).toHaveText(['گزارش هدیه‌ها', 'قانون‌ها', 'تنظیمات', 'آمار']);
+    const sub = root(page).locator('[data-shop-sub="gifts"]');
+    await expect(sub.locator('[data-shop-list]')).toHaveText(['کدهای هدیه', 'هدیه به دوست']);
+    await expect(sub.locator('[data-shop-list="friend-gifts"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(sub.locator('[data-shop-tool]')).toHaveText(['قانون‌ها', 'گزارش', 'تنظیمات']);
   });
 
   test('settings save delivery, expiry, limits and currencies, and refuse a bad value', async ({ page }) => {
     await open(page, '#/economy/friend-gifts/settings');
-    const form = root(page).locator('[data-settings-form="friend-gifts"]');
+    const form = page.locator('[data-settings-form="friend-gifts"]');
     await field(form, /^نحوهٔ رسیدن$/).locator('select').selectOption('accept');
     await field(form, 'مهلت قبول').locator('input').fill('۰');
     await form.locator('[data-settings-save]').click();
@@ -163,7 +163,7 @@ test.describe('friend gifts: log, reverse, player card and report', () => {
     await expect(card.locator('[data-fg-counts]')).toContainText('۱ فرستاده');
     await expect(card.locator(`[data-fg-row="${giftId}"]`)).toContainText('برگشت‌خورده');
     await expect(card).toContainText('قانون: e2e_' + k);
-    await expect(card.locator('[data-fg-log-link]')).toHaveAttribute('href', new RegExp('friend-gifts\\?userId=' + A.id));
+    await expect(card.locator('[data-fg-log-link]')).toHaveAttribute('href', new RegExp('gifts/friends\\?userId=' + A.id));
   });
 
   test('the report counts the gift', async ({ page }) => {

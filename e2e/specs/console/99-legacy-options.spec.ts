@@ -172,7 +172,7 @@ test.describe('legacy options in the console', () => {
   test('daily offers by score, coin floor and an entry offer after a finished match', async ({ page }) => {
     try {
       await open(page, '#/economy/offer-settings');
-      const f = root(page).locator('[data-settings-form="offers"]');
+      const f = page.locator('[data-settings-form="offers"]');
       await field(f, 'روش انتخاب').locator('select').selectOption('scored');
       await expect(f.locator('[data-os-scored]')).toBeVisible();
       await expect(field(f, 'امتیاز توان خرید').locator('input')).toHaveValue('۲۰');
@@ -207,7 +207,7 @@ test.describe('legacy options in the console', () => {
     const pay = (await eco.get('/payment-settings')).settings;
     try {
       await openSettings(page, 'friends');
-      const fr = root(page).locator('[data-settings-form="friends"]');
+      const fr = page.locator('[data-settings-form="friends"]');
       await expect(fr).toContainText('روز اجتماعی');
       await field(fr, 'منطقهٔ زمانی روز').locator('input').fill('UTC');
       await field(fr, /^شروع روز/).locator('input').fill('90');
@@ -220,14 +220,14 @@ test.describe('legacy options in the console', () => {
       expect(lim.data).toMatchObject({ timeZone: 'UTC', dayStartMinute: 90 });
 
       await openSettings(page, 'otp');
-      const otp = root(page).locator('[data-settings-form="otp"]');
+      const otp = page.locator('[data-settings-form="otp"]');
       await field(otp, 'کد در ساعت برای هر حساب').locator('input').fill('5');
       await otp.locator('[data-settings-save]').click();
       await expect(toasts(page).last()).toBeVisible();
       expect((await pub.get('/otp/settings')).userHourly).toBe(5);
 
       await open(page, '#/economy/payment-settings');
-      const ps = root(page).locator('[data-settings-form="payments"]');
+      const ps = page.locator('[data-settings-form="payments"]');
       await field(ps, 'مهلت پرداخت باز').locator('input').fill('1440');
       await ps.locator('[data-settings-save]').click();
       await expect(toasts(page).last()).toBeVisible();

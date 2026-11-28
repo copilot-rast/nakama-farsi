@@ -75,7 +75,7 @@ test.afterAll(async () => {
 test.describe('comms user tokens', () => {
   test('console fields, secret length check, connection test exchanges a user token, sealed secret, voice stays off', async ({ page }) => {
     await openSettings(page, 'voice');
-    const form = root(page).locator('[data-settings-form="voice"]');
+    const form = page.locator('[data-settings-form="voice"]');
     await form.locator('select').first().selectOption('comms');
     await expect(form).toContainText('توکن کاربر comms (چت، تماس و جلسه)');
     await expect(form).toContainText('POST /v1/sessions');

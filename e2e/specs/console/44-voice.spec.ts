@@ -67,7 +67,7 @@ test.afterAll(async () => {
 test.describe('voice: server settings', () => {
   test('provider form, test connection with a wrong and a right secret, sealed masked secret, audit log', async ({ page }) => {
     await openSettings(page, 'voice');
-    const form = root(page).locator('[data-settings-form="voice"]');
+    const form = page.locator('[data-settings-form="voice"]');
     await expect(form.locator('[data-voice-state]')).toContainText('چت صوتی خاموش است');
     await form.locator('select').first().selectOption('livekit');
     await expect(form).toContainText('توکن لایوکیت همین‌جا با کلید و رمز API امضا می‌شود');

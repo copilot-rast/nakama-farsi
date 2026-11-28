@@ -163,7 +163,7 @@ test.describe('store gateways: Google Play, Apple, Stripe', () => {
     expect(before).toMatchObject({ liveAcceptsTestPurchases: false, appStorePayload: 'optional', storeConsumed: 'accept', googleAcknowledge: true, stripeToleranceSeconds: 300 });
     try {
       await open(page, '#/economy/payment-settings');
-      const f = root(page).locator('[data-settings-form="payments"]');
+      const f = page.locator('[data-settings-form="payments"]');
       await expect(f).toContainText('گوگل‌پلی، اپل و استرایپ');
       await field(f, /^بیشترین سن امضای وب‌هوک استرایپ/).locator('input').fill('600');
       await f.locator('[data-settings-save]').click();

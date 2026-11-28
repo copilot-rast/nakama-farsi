@@ -234,7 +234,7 @@ test.describe('news: console', () => {
     const hidden = await pub.post('/news', { title: { fa: 'پنهان e2e ' + k.slice(-4) }, bodyFormat: 'html', body: { fa: '<p>x</p>' }, noindex: true });
     expect((await fetch(API_URL + '/v2/publication/public/sitemap.xml')).status).toBe(404);
     await open(page, '#/publication/news/settings');
-    const form = root(page).locator('[data-settings-form="news"]');
+    const form = page.locator('[data-settings-form="news"]');
     await form.locator('label.x-toggle', { hasText: 'صفحه‌های عمومی اخبار' }).click();
     await form.locator('[data-settings-save]').click();
     await expect(field(form, 'نشانی سایت')).toContainText('نشانی سایت لازم است');

@@ -49,7 +49,7 @@ test.describe('friends: rules in project settings', () => {
   test('defaults, summary sentence, limits checked in the form, save and the audit log', async ({ page }) => {
     await base.put('/friend-rules', { dailyRequests: 20, maxFriends: 0, expiryDays: 0, rejectCooldownHours: 0 });
     await openSettings(page, 'friends');
-    const form = root(page).locator('[data-settings-form="friends"]');
+    const form = page.locator('[data-settings-form="friends"]');
     await expect(form.locator('form')).toBeVisible();
     await expect(form).toContainText('درخواست در روز');
     const daily = field(form, 'درخواست در روز').locator('input');
@@ -164,7 +164,7 @@ test.describe('friends: limits by player tag and from metas', () => {
     await base.put('/players/' + vip.id + '/tags', { tagIds: [tag.id] });
 
     await openSettings(page, 'friends');
-    const form = root(page).locator('[data-settings-form="friends"]');
+    const form = page.locator('[data-settings-form="friends"]');
     await expect(form.locator('form')).toBeVisible();
     await pickRef(form, 'متای درخواست اضافه در روز', 'e2e_' + k + '_freq', 'درخواست اضافه ' + k.slice(-4));
     await pickRef(form, 'متای جای دوست اضافه', 'e2e_' + k + '_fslot', 'جای دوست ' + k.slice(-4));

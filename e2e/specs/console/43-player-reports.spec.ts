@@ -134,7 +134,7 @@ test.describe('player reports: rules', () => {
     const before = await base.get('/report-rules');
     try {
       await openSettings(page, 'report-rules');
-      const form = root(page).locator('[data-settings-form="report-rules"]');
+      const form = page.locator('[data-settings-form="report-rules"]');
       await expect(form.locator('form')).toBeVisible();
       await expect(field(form, 'گزارش در ساعت').locator('input')).toHaveValue(/^(10|۱۰)$/);
       await field(form, 'گزارش در ساعت').locator('input').fill('1');

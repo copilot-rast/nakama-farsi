@@ -87,7 +87,7 @@ test.describe('analytics: sessions, retention and heatmaps', () => {
 
   test('settings save retention days, Ctrl K reaches the heatmaps', async ({ page }) => {
     await open(page, '#/system/insights/settings');
-    const form = root(page).locator('[data-settings-form="insights"]');
+    const form = page.locator('[data-settings-form="insights"]');
     await expect(form).toBeVisible();
     const days = form.locator('input[dir="ltr"]').nth(1);
     await expect(days).toHaveValue('۱, ۷, ۳۰');

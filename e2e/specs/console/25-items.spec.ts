@@ -202,7 +202,7 @@ test.describe('items: console', () => {
     await page.locator('.pl-pal-input').fill('آیتم‌ها');
     await expect(page.locator('.pl-pal-row').first()).toContainText('آیتم‌ها');
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/#\/economy\/items/);
+    await expect(page).toHaveURL(/#\/economy\/shop\/items/);
     await page.locator('.pl-seg-lang [data-locale="en"]').click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     await go(page, '#/economy/items?q=' + key);

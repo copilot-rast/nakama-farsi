@@ -322,7 +322,7 @@ test.describe('economy', () => {
     await expect(row).toContainText('آزمایشی');
     await expect(row).toContainText('موفق');
     await row.locator('td').first().click();
-    await expect(page).toHaveURL(new RegExp('#/economy/payments/' + start.data.paymentId));
+    await expect(page).toHaveURL(new RegExp('#/economy/shop/payments/' + start.data.paymentId));
     await settle(page);
     await expect(root(page).locator('h1')).toContainText(start.data.paymentId.slice(0, 8));
     await expect(root(page)).toContainText('داده شد');
@@ -333,7 +333,7 @@ test.describe('economy', () => {
     await log.locator('button[aria-expanded]').click();
     await expect(log.locator('.eco-log-detail')).toBeVisible();
     await root(page).getByRole('button', { name: 'بازگشت' }).click();
-    await expect(page).toHaveURL(/#\/economy\/payments\?userId=/);
+    await expect(page).toHaveURL(/#\/economy\/shop\/payments\?userId=/);
     await root(page).locator('.eco-filters select').first().selectOption('failed');
     await expect(root(page).getByText('با این جستجو چیزی پیدا نشد.')).toBeVisible();
   });

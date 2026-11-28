@@ -92,7 +92,7 @@ test.describe('stickers: hub, packs and settings', () => {
 
   test('sticker settings close private chats and keep stickers outside the quota', async ({ page }) => {
     await open(page, '#/moderation/stickers/settings');
-    const form = root(page).locator('[data-settings-form="stickers"]');
+    const form = page.locator('[data-settings-form="stickers"]');
     await expect(form.locator('label.x-toggle', { hasText: 'ارسال استیکر روشن باشد' })).toBeVisible();
     await form.locator('label.x-toggle', { hasText: 'پیام خصوصی' }).click();
     await form.locator('label.x-toggle', { hasText: 'هر استیکر یک پیام از سهمیه کم کند' }).click();
@@ -105,7 +105,7 @@ test.describe('stickers: hub, packs and settings', () => {
   test('the chat quota settings can stop counting private messages', async ({ page }) => {
     await base.put('/chat-quota/settings', { enabled: true, dailyMessages: 5 });
     await open(page, '#/moderation/chat-quota/settings');
-    const form = root(page).locator('[data-settings-form="chat-quota"]');
+    const form = page.locator('[data-settings-form="chat-quota"]');
     await form.locator('label.x-toggle', { hasText: 'پیام خصوصی شمرده شود' }).click();
     await form.locator('label.x-toggle', { hasText: 'اتاق' }).first().click();
     await form.locator('[data-settings-save]').click();

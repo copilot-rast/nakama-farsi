@@ -43,7 +43,7 @@ test.afterAll(async () => {
 test.describe('username change policy', () => {
   test('the accounts tab saves the price ladder, cooldown and player code settings', async ({ page }) => {
     await openSettings(page, 'accounts');
-    const form = root(page).locator('[data-settings-form="username-policy"]');
+    const form = page.locator('[data-settings-form="username-policy"]');
     await expect(form).toContainText('تغییر نام کاربری');
     await expect(form).toContainText('پله‌های قیمت');
     await form.locator('label', { hasText: 'قانون تغییر نام روشن باشد' }).click();
@@ -57,7 +57,7 @@ test.describe('username change policy', () => {
     await form.locator('[data-settings-save]').click();
     await expect(form.locator('.eco-invalid')).toContainText('حداکثر بیست عدد');
 
-    const codes = root(page).locator('[data-settings-form="player-codes"]');
+    const codes = page.locator('[data-settings-form="player-codes"]');
     await expect(codes).toContainText('کد بازیکن');
     await field(codes, 'طول کد').locator('input').fill('7');
     await codes.locator('[data-settings-save]').click();

@@ -24,33 +24,34 @@ test.describe('navigation: sidebar groups, tabbed pages and old links', () => {
   test('economy groups fold, keep their state over a reload and open again for a page inside', async ({ page }) => {
     await open(page, '#/economy/overview');
     const heads = page.locator('.pl-side .pl-group-label');
-    await expect(heads).toHaveText(['ارز و پیشرفت', 'فروش', 'جایزه و بازی', 'رویداد و رشد']);
-    const sales = page.locator('.pl-side .pl-group-head[data-pl-group="sales"]');
-    const shop = page.locator('.pl-side a.pl-nav[href^="#/economy/products"]');
-    await expect(sales).toHaveAttribute('aria-expanded', 'true');
-    await expect(shop).toBeVisible();
-    await sales.click();
-    await expect(sales).toHaveAttribute('aria-expanded', 'false');
-    await expect(shop).toBeHidden();
-    expect(await page.evaluate((k) => JSON.parse(localStorage.getItem(k) || '{}'), GROUPS)).toEqual({ 'economy/sales': false });
+    await expect(heads).toHaveText(['ارز و پیشرفت', 'جایزه و بازی', 'رویداد و رشد']);
+    const play = page.locator('.pl-side .pl-group-head[data-pl-group="play"]');
+    const prizes = page.locator('.pl-side a.pl-nav[href^="#/economy/prizes"]');
+    await expect(play).toHaveAttribute('aria-expanded', 'true');
+    await expect(prizes).toBeVisible();
+    await play.click();
+    await expect(play).toHaveAttribute('aria-expanded', 'false');
+    await expect(prizes).toBeHidden();
+    expect(await page.evaluate((k) => JSON.parse(localStorage.getItem(k) || '{}'), GROUPS)).toEqual({ 'economy/play': false });
     await page.reload();
     await root(page).waitFor();
-    await expect(sales).toHaveAttribute('aria-expanded', 'false');
-    await expect(shop).toBeHidden();
-    await expect(page.locator('.x-drawer [data-economy-group-toggle="sales"]').first()).toHaveAttribute('aria-expanded', 'false');
-    await sales.press('Enter');
-    await expect(shop).toBeVisible();
-    await sales.click();
-    await expect(shop).toBeHidden();
+    await expect(play).toHaveAttribute('aria-expanded', 'false');
+    await expect(prizes).toBeHidden();
+    await expect(page.locator('.x-drawer [data-economy-group-toggle="play"]').first()).toHaveAttribute('aria-expanded', 'false');
+    await play.press('Enter');
+    await expect(prizes).toBeVisible();
+    await play.click();
+    await expect(prizes).toBeHidden();
+    await go(page, '#/economy/games');
+    await expect(play).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.locator('.pl-side a.pl-nav[aria-current="page"]')).toHaveText('بازی‌ها');
     await go(page, '#/economy/items');
-    await expect(sales).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.locator('.pl-side a.pl-nav[aria-current="page"]')).toHaveText('آیتم‌ها');
-    await expect(page.locator('.pl-tabs .pl-seg-item')).toHaveText(['فروشگاه', 'پیشنهادهای ویژه', 'تخفیف برچسب‌دارها', 'آیتم‌ها', 'آواتارساز', 'هدیه‌ها', 'هدیه به دوست', 'پرداخت‌ها']);
+    await expect(page.locator('.pl-side a.pl-nav[aria-current="page"]')).toHaveText('فروشگاه');
     await page.evaluate(() => { localStorage.setItem('nakama-console:nav-groups', '{oops'); });
     await page.reload();
     await root(page).waitFor();
-    await expect(heads).toHaveCount(4);
-    await expect(sales).toHaveAttribute('aria-expanded', 'true');
+    await expect(heads).toHaveCount(3);
+    await expect(play).toHaveAttribute('aria-expanded', 'true');
   });
 
   test('other sections are grouped the same way', async ({ page }) => {
@@ -126,7 +127,7 @@ test.describe('navigation: sidebar groups, tabbed pages and old links', () => {
     await expect(page.locator('.pl-pal-input')).toHaveCount(0);
     await page.keyboard.press('Control+k');
     await page.locator('.pl-pal-input').fill('آیتم');
-    await expect(page.locator('.pl-pal-row').first().locator('.pl-pal-group')).toHaveText('اقتصاد · فروش');
+    await expect(page.locator('.pl-pal-row').first().locator('.pl-pal-group')).toHaveText('اقتصاد · فروشگاه');
   });
 
   test('English labels, and tabs and groups at 390px in dark mode without sideways scroll', async ({ spawn }) => {

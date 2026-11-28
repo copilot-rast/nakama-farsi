@@ -257,7 +257,7 @@ test.describe('updates: page', () => {
 test.describe('updates: parent repo settings', () => {
   test('defaults, field errors, fork branches, a sealed masked token, the audit log and the base mismatch notice', async ({ page }, info) => {
     await openSettings(page, 'updates-source');
-    const form = root(page).locator('[data-settings-form="updates-source"]');
+    const form = page.locator('[data-settings-form="updates-source"]');
     const repo = form.getByRole('textbox', { name: 'نشانی ریپو' });
     const branch = form.getByRole('combobox', { name: 'شاخه' });
     const token = form.locator('[data-up-token]');

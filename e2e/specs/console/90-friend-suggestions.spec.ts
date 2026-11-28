@@ -75,9 +75,9 @@ test.describe('friend suggestions', () => {
 
   test('the friends tab saves list sizes and the player card rebuilds the list with a reserve', async ({ page }) => {
     await openSettings(page, 'friends');
-    const form = root(page).locator('[data-settings-form="friend-suggestions"]');
+    const form = page.locator('[data-settings-form="friend-suggestions"]');
     await expect(form).toContainText('پیشنهاد دوستی');
-    const rules = root(page).locator('[data-settings-form="friends"]');
+    const rules = page.locator('[data-settings-form="friends"]');
     await expect(rules).toContainText('پیام خصوصی فقط بین دوستان');
     await expect(rules).toContainText('وضعیت آنلاین فقط برای دوستان');
     await field(form, 'اندازهٔ فهرست').locator('input').fill('2');

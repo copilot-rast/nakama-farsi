@@ -60,11 +60,12 @@ test.afterAll(async () => {
 });
 
 test.describe('avatar designer: console and game', () => {
-  test('the sales group has the avatar designer hub with categories, items, types and settings tabs', async ({ page }) => {
+  test('the shop has the avatar tab with categories, items, types and settings', async ({ page }) => {
     await open(page, '#/economy/items');
-    await expect(page.locator('.x-drawer a[data-economy-page="avatar"]').first()).toHaveText('آواتارساز');
+    await expect(root(page).locator('[data-shop-tab="avatar"]')).toHaveText('آواتار');
     await open(page, '#/economy/avatar');
-    await expect(root(page).locator('[data-economy-tabs="avatar"] [data-economy-tab]')).toHaveText(['دسته‌ها', 'آیتم‌ها', 'نوع‌ها', 'تنظیمات']);
+    await expect(root(page).locator('[data-shop-sub="avatar"] [data-shop-list]')).toHaveText(['دسته‌ها', 'آیتم‌ها', 'نوع‌ها']);
+    await expect(root(page).locator('[data-shop-sub="avatar"] [data-shop-tool]')).toHaveText(['تنظیمات']);
   });
 
   test('a type, two categories and a paid item are made in the editors', async ({ page }) => {
@@ -159,7 +160,7 @@ test.describe('avatar designer: console and game', () => {
 
   test('the settings page changes the avatar count', async ({ page }) => {
     await open(page, '#/economy/avatar/settings');
-    const form = root(page).locator('[data-settings-form="avatar"]');
+    const form = page.locator('[data-settings-form="avatar"]');
     await field(form, 'بیشترین تعداد آواتار').first().locator('input').fill('۳');
     await form.locator('[data-settings-save]').click();
     await expect(toasts(page).last()).toBeVisible();
@@ -175,7 +176,8 @@ test.describe('avatar designer: console and game', () => {
   test('the hub reads in English', async ({ page }) => {
     await open(page, '#/economy/avatar');
     await page.locator('.pl-seg-lang [data-locale="en"]').click();
-    await expect(root(page).locator('[data-economy-tabs="avatar"] [data-economy-tab]')).toHaveText(['Categories', 'Items', 'Types', 'Settings']);
+    await expect(root(page).locator('[data-shop-sub="avatar"] [data-shop-list]')).toHaveText(['Categories', 'Items', 'Types']);
+    await expect(root(page).locator('[data-shop-sub="avatar"] [data-shop-tool]')).toHaveText(['Settings']);
     await page.locator('.pl-seg-lang [data-locale="fa-IR"]').click();
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   });

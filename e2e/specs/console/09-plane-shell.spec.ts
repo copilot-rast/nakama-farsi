@@ -76,11 +76,11 @@ test.describe('plane shell: rail, sidebar and top bar', () => {
     }
   });
 
-  test('economy sidebar lists its 21 entries with their icons, current state and breadcrumbs', async ({ page }) => {
-    await visit(page, '#/economy/products');
+  test('economy sidebar lists its 14 entries with their icons, current state and breadcrumbs', async ({ page }) => {
+    await visit(page, '#/economy/shop/products');
     const side = page.locator('.pl-side a.pl-nav');
-    await expect(side).toHaveCount(21);
-    for (const [hash, label] of [['#/economy/tasks', 'تسک‌ها'], ['#/economy/items', 'آیتم‌ها'], ['#/economy/achievements', 'دستاوردها'], ['#/economy/chance-games', 'بازی شانس'], ['#/economy/prizes', 'جایزه‌ها'], ['#/economy/games', 'بازی‌ها'], ['#/economy/events', 'رویدادها']]) {
+    await expect(side).toHaveCount(14);
+    for (const [hash, label] of [['#/economy/tasks', 'تسک‌ها'], ['#/economy/achievements', 'دستاوردها'], ['#/economy/chance-games', 'بازی شانس'], ['#/economy/prizes', 'جایزه‌ها'], ['#/economy/games', 'بازی‌ها'], ['#/economy/events', 'رویدادها']]) {
       const link = page.locator(`.pl-side a.pl-nav[href="${hash}"]`);
       await expect(link).toContainText(label);
       await expect(link.locator('svg')).toHaveCount(1);
@@ -134,7 +134,7 @@ test.describe('plane shell: rail, sidebar and top bar', () => {
     await page.locator('.pl-side-search').click();
     await page.locator('.pl-pal-input').fill('هدیه');
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/#\/economy\/gifts/);
+    await expect(page).toHaveURL(/#\/economy\/shop\/gifts/);
     await expect(page.locator('.pl-pal-input')).toHaveCount(0);
     await page.keyboard.press('Control+k');
     await page.locator('.pl-pal-input').fill('پیامک');

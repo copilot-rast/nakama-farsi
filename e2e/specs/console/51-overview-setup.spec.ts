@@ -54,7 +54,7 @@ test.describe('economy overview', () => {
     }));
     expect(holes.every((n) => n === 0)).toBe(true);
 
-    for (const [tile, url] of [['offers', /#\/economy\/offers$/], ['event-rules', /#\/economy\/events\/prizes$/], ['tags', /#\/project-settings\/tags$/]] as const) {
+    for (const [tile, url] of [['offers', /#\/economy\/shop\/offers$/], ['event-rules', /#\/economy\/events\/prizes$/], ['tags', /#\/project-settings\/tags$/]] as const) {
       await r.locator(`[data-ov-tile="${tile}"]`).click();
       await expect(page).toHaveURL(url);
       await page.goBack();
@@ -72,7 +72,7 @@ test.describe('economy overview', () => {
     await expect(pay.locator('[data-ov-chart="payments"] svg')).toHaveAttribute('aria-label', /پرداخت/);
     await expect(pay.locator('[data-ov-status-row]')).toHaveCount(4);
     await pay.locator('[data-ov-status-row="failed"]').click();
-    await expect(page).toHaveURL(/#\/economy\/payments\?status=failed$/);
+    await expect(page).toHaveURL(/#\/economy\/shop\/payments\?status=failed$/);
   });
 
   test('empty states: no active gateway links to payment settings, no payments links to the shop', async ({ page }) => {
@@ -100,7 +100,7 @@ test.describe('economy overview', () => {
     await root(page).waitFor();
     await expect(r.locator('[data-ov-kpis]')).toBeVisible();
     await expect(r.locator('[data-ov-empty-methods]')).toHaveCount(0);
-    await expect(r.locator('[data-ov-empty-payments] [data-ov-cta]')).toHaveAttribute('href', '#/economy/products');
+    await expect(r.locator('[data-ov-empty-payments] [data-ov-cta]')).toHaveAttribute('href', '#/economy/shop/products');
   });
 
   test('English and 390px without sideways scroll', async ({ page }) => {

@@ -32,6 +32,7 @@ CREATE TABLE zz_e2e_backup.ctset AS SELECT * FROM content_settings;
 CREATE TABLE zz_e2e_backup.inset AS SELECT * FROM insights_settings;
 CREATE TABLE zz_e2e_backup.newsset AS SELECT * FROM publication_news_settings;
 CREATE TABLE zz_e2e_backup.trset AS SELECT * FROM trophy_settings;
+CREATE TABLE zz_e2e_backup.mods AS SELECT * FROM base_console_modules;
 CREATE TABLE zz_e2e_backup.clset AS SELECT * FROM clan_settings;
 CREATE TABLE zz_e2e_backup.cllevel AS SELECT * FROM clan_level;
 CREATE TABLE zz_e2e_backup.cupset AS SELECT * FROM cup_settings;

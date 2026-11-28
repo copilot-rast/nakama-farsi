@@ -97,7 +97,7 @@ test.describe('downloadable content: upload from the console, catalog for the ga
 
   test('settings save a policy, Ctrl K finds the page', async ({ page }) => {
     await open(page, '#/system/content/settings');
-    const form = root(page).locator('[data-settings-form="content"]');
+    const form = page.locator('[data-settings-form="content"]');
     await expect(form).toBeVisible();
     await form.getByText('نسخهٔ برنامه لازم باشد').click();
     await form.locator('[data-settings-save]').click();

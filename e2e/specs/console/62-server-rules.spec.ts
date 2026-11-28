@@ -39,7 +39,7 @@ test.describe('server rules: maintenance, storage lock, account deletion', () =>
     players.push(p);
     expect((await rpc(p, 'economy_catalog', { lang: 'fa' })).status).toBe(200);
     await open(page, '#/system/server-rules');
-    const form = root(page).locator('[data-settings-form="server-rules"]');
+    const form = page.locator('[data-settings-form="server-rules"]');
     await expect(form).toBeVisible();
     await form.getByText('حالت تعمیر روشن باشد').click();
     await fillTranslated(form, 'maintenance.message', { fa: 'تا ساعت ۵ تعمیر داریم' });

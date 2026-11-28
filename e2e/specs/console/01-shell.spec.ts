@@ -7,10 +7,7 @@ const PAGES: [string, string][] = [
   ['#/economy/metas', 'متاها'],
   ['#/economy/tasks', 'تسک‌ها'],
   ['#/economy/streaks', 'روزهای پیاپی'],
-  ['#/economy/products', 'فروشگاه'],
-  ['#/economy/items', 'آیتم‌ها'],
-  ['#/economy/gifts', 'هدیه‌ها'],
-  ['#/economy/payments', 'پرداخت‌ها'],
+  ['#/economy/shop', 'فروشگاه'],
   ['#/economy/prizes', 'جایزه‌ها'],
   ['#/economy/events', 'رویدادها'],
   ['#/publication/faqs', 'سؤال‌های متداول'],
@@ -123,7 +120,7 @@ test.describe('console shell', () => {
   });
 
   test('reload and back keep our routes and their query', async ({ page }) => {
-    await open(page, '#/economy/products');
+    await open(page, '#/economy/shop/products');
     await go(page, '#/publication/news?status=published');
     await expect(root(page).locator('h1')).toHaveText('اخبار');
     await page.reload();
@@ -133,7 +130,7 @@ test.describe('console shell', () => {
     await expect(root(page).locator('h1')).toHaveText('اخبار');
     await expect(root(page).locator('.eco-filters select').first()).toHaveValue('published');
     await page.goBack();
-    await expect(page).toHaveURL(/#\/economy\/products/);
+    await expect(page).toHaveURL(/#\/economy\/shop\/products/);
     await expect(root(page).locator('h1')).toHaveText('فروشگاه');
     await page.goForward();
     await expect(page).toHaveURL(/#\/publication\/news/);

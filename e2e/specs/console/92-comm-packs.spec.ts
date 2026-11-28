@@ -85,7 +85,7 @@ test.describe('communication packs: console', () => {
 
   test('match chat settings check the window against count and gap, then save', async ({ page }) => {
     await open(page, '#/moderation/stickers/match-chat');
-    const form = root(page).locator('[data-settings-form="comms"]');
+    const form = page.locator('[data-settings-form="comms"]');
     await expect(form.locator('label.x-toggle', { hasText: 'پیام سریع بازی روشن باشد' })).toBeVisible();
     await field(form, 'فاصلهٔ دو پیام (ثانیه)').locator('input').fill('10');
     await form.locator('[data-settings-save]').click();
