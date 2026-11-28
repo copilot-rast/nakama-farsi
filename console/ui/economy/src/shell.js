@@ -65,6 +65,7 @@ function legacyHash(hash) {
 
 function hubLegacyHash(hash) {
   var m = /^#\/(economy|publication)\/([^/?]+)(.*)$/.exec(hash || '');
+  if (m && m[1] === 'economy' && SHOP_LEGACY[m[2]]) return '#/economy/shop/' + SHOP_LEGACY[m[2]] + m[3];
   if (!m || !HUB_OF[m[2]] || SECTIONS[m[1]].indexOf(m[2]) === -1) return null;
   var base = routeBase(m[2]);
   return base === m[2] ? null : '#/' + m[1] + '/' + base + m[3];
@@ -104,9 +105,9 @@ function parseRoute(hash) {
     var hub = HUBS[page] && HUBS[page].section === section ? HUBS[page] : null;
     if (hub) {
       page = hub.tabs[0][0];
-      var seg = rest ? rest.split('/')[0] : '';
-      var tab = seg ? hub.tabs.filter(function (x) { return x[1] && x[1] === seg; })[0] : null;
-      if (tab) { page = tab[0]; rest = rest.slice(seg.length + 1); }
+      var tab = null;
+      hub.tabs.forEach(function (x) { if (x[1] && (rest === x[1] || rest.indexOf(x[1] + '/') === 0) && (!tab || x[1].length > tab[1].length)) tab = x; });
+      if (tab) { page = tab[0]; rest = rest.slice(tab[1].length + 1); }
     }
     if (SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   }
@@ -252,7 +253,7 @@ function syncSidebar(route, psOn) {
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
     var collapsed = isCollapsed(a);
-    var key = lang() + '|' + collapsed + '|' + active + '|' + JSON.stringify(navGroupState()) + '|' + JSON.stringify(hubLast) + '|' + pendingComments + '|' + pendingReports + '|' + supportBadgeKey() + '|' + updatesBadge() + '|' + JSON.stringify(lastQuery) + '|' + token();
+    var key = lang() + '|' + collapsed + '|' + active + '|' + JSON.stringify(navGroupState()) + '|' + JSON.stringify(hubLast) + '|' + pendingComments + '|' + pendingReports + '|' + supportBadgeKey() + '|' + updatesBadge() + '|' + JSON.stringify(lastQuery) + '|' + token() + '|' + modulesKey();
     var prev = group;
     for (var si = 0; si < SECTION_ORDER.length; si++) {
       if (!navLayout(SECTION_ORDER[si]).length) continue;
@@ -294,6 +295,7 @@ function unmount() {
 
 function hubStrip(page) {
   var hub = HUB_OF[page];
+  if (hub === 'shop') return shopStrip(page);
   var tabs = hubTabs(hub);
   if (tabs.length < 2) return null;
   var nav = h('nav', { class: 'eco-tabs', 'aria-label': navLabel(hub), 'data-economy-tabs': hub });
@@ -309,6 +311,9 @@ function mountPage(root, route, ctl) {
   var ps2 = psSection(route.page);
   var ctx = { id: route.id, query: route.query };
   if (ps2) { ctl.list = ps2.render(root, route, ctx) || null; return; }
+  var off = moduleOfPage(route.page);
+  if (off && !moduleOn(off)) { moduleOffPage(root, off); return; }
+  if (shopPanelPage(route.page)) { shopMountPanel(root, route, ctl, ctx); return; }
   frameHub = HUB_OF[route.page] && (!route.id || RESOURCES[route.page]) ? hubStrip(route.page) : null;
   try { mountRoute(root, route, ctl, ctx); } finally { frameHub = null; }
 }
@@ -380,6 +385,7 @@ function sync() {
     else history.replaceState(history.state, '', location.pathname + location.search + moved);
   }
   var route = parseRoute(hash);
+  if (token() && MODS.token !== token()) modulesLoad(false);
   if (route && !LANGS.tried && token()) {
     LANGS.tried = true;
     loadLanguages().then(function () {
@@ -401,7 +407,8 @@ function sync() {
     navOpenedFor = route.page;
     var grp = navGroupOf(route.section, route.page);
     if (grp && !navGroupOpen(route.section, grp)) setNavGroupOpen(route.section, grp, true);
-    if (HUB_OF[route.page]) hubLast[HUB_OF[route.page]] = route.page;
+    if (HUB_OF[route.page]) hubLast[HUB_OF[route.page]] = HUB_OF[route.page] === 'shop' ? shopListOf(route.page) : route.page;
+    if (HUB_OF[route.page] === 'shop' && shopIsList(route.page)) shopLast[shopTabOf(route.page).id] = route.page;
   }
   psRemember(hash || '#/');
   syncSidebar(route, false);
@@ -543,7 +550,7 @@ function consoleTabs() {
   Object.keys(HUBS).forEach(function (hub) {
     var tabs = hubTabs(hub);
     if (!tabs.length) return;
-    out.push({ id: hub, href: '#/' + HUBS[hub].section + '/' + hub, label: navLabel(hub), tabs: tabs.map(function (tab) { return { id: tab, href: hashFor(tab), label: tabLabel(tab), first: tab === HUBS[hub].tabs[0][0] }; }) });
+    out.push({ id: hub, href: '#/' + HUBS[hub].section + '/' + hub, label: navLabel(hub), tabs: tabs.map(function (tab) { return { id: tab, href: hashFor(tab), label: hub === 'shop' ? shopSearchLabel(tab) : tabLabel(tab), first: tab === HUBS[hub].tabs[0][0] }; }) });
   });
   return out;
 }
@@ -589,6 +596,7 @@ window.NakamaConsole = {
   },
   toggleTheme: function () { toggleTheme(); },
   isDark: function () { return isDarkTheme(); },
+  modules: modulesApi(),
   handoff: {
     state: function () { return HANDOFF.meta ? { visible: !!HANDOFF.meta.visible, project: HANDOFF.meta.project ? handoffTitle(HANDOFF.meta.project) : '', changes: (HANDOFF.meta.changelog || []).length } : null; },
     open: function () { handoffOpen(); },

@@ -9,16 +9,22 @@ var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
 var PAGE_ACL = { 'server-rules': 'SETTINGS', 'sample-data': 'SETTINGS', 'config-transfer': 'SETTINGS', players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', 'comm-settings': 'CHANNEL_MESSAGE', 'comm-channels': 'CHANNEL_MESSAGE', 'voice-rooms': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
+var SHOP_TABS = [
+  { id: 'products', lists: [['products', 'products']] },
+  { id: 'offers', lists: [['offers', 'offers'], ['entry-offers', 'offers/entry']], tools: [['offer-preview', 'offers/preview'], ['offer-report', 'offers/report'], ['offer-settings', 'offers/settings']] },
+  { id: 'discounts', lists: [['tag-discounts', 'discounts']], tools: [['tag-discount-preview', 'discounts/preview'], ['tag-discount-settings', 'discounts/settings']] },
+  { id: 'items', lists: [['items', 'items']] },
+  { id: 'avatar', lists: [['avatar-categories', 'avatar'], ['avatar-items', 'avatar/items'], ['avatar-types', 'avatar/types']], tools: [['avatar-settings', 'avatar/settings']] },
+  { id: 'gifts', lists: [['gifts', 'gifts'], ['friend-gifts', 'gifts/friends']], tools: [['friend-gift-rules', 'gifts/friends/rules', 'friend-gifts'], ['friend-gift-report', 'gifts/friends/report', 'friend-gifts'], ['friend-gift-settings', 'gifts/friends/settings', 'friend-gifts']] },
+  { id: 'payments', lists: [['payments', 'payments']], tools: [['payment-methods', null], ['payment-settings', 'payments/settings']] }
+];
+var SHOP_LEGACY = { products: 'products', offers: 'offers', 'tag-discounts': 'discounts', items: 'items', avatar: 'avatar', gifts: 'gifts', 'friend-gifts': 'gifts/friends', payments: 'payments' };
 var HUBS = {
+  shop: { section: 'economy', tabs: [] },
   metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['meta-relations', 'relations'], ['level-tables', 'levels']] },
   tasks: { section: 'economy', tabs: [['tasks', ''], ['task-groups', 'groups']] },
-  offers: { section: 'economy', tabs: [['offers', ''], ['entry-offers', 'entry'], ['offer-preview', 'preview'], ['offer-report', 'report'], ['offer-settings', 'settings']] },
-  'tag-discounts': { section: 'economy', tabs: [['tag-discounts', ''], ['tag-discount-preview', 'preview'], ['tag-discount-settings', 'settings']] },
-  'friend-gifts': { section: 'economy', tabs: [['friend-gifts', ''], ['friend-gift-rules', 'rules'], ['friend-gift-settings', 'settings'], ['friend-gift-report', 'report']] },
   prizes: { section: 'economy', tabs: [['prizes', ''], ['prize-groups', 'groups']] },
-  payments: { section: 'economy', tabs: [['payments', ''], ['payment-settings', 'settings']] },
   'chat-quota': { section: 'moderation', tabs: [['chat-quota', ''], ['chat-quota-settings', 'settings'], ['chat-quota-report', 'report']] },
-  avatar: { section: 'economy', tabs: [['avatar-categories', ''], ['avatar-items', 'items'], ['avatar-types', 'types'], ['avatar-settings', 'settings']] },
   stickers: { section: 'moderation', tabs: [['sticker-packs', ''], ['sticker-settings', 'settings'], ['comm-settings', 'match-chat'], ['comm-channels', 'channels']] },
   events: { section: 'economy', tabs: [['event-types', ''], ['event-rules', 'prizes'], ['event-log', 'report']] },
   news: { section: 'publication', tabs: [['news', ''], ['news-review', 'review'], ['news-sources', 'sources'], ['news-ingest', 'log'], ['news-reactions', 'reactions'], ['news-settings', 'settings']] },
@@ -28,12 +34,13 @@ var HUBS = {
   insights: { section: 'system', tabs: [['insights-overview', ''], ['insights-sessions', 'sessions'], ['heatmaps', 'heatmaps'], ['insights-settings', 'settings']] }
 };
 var NAV = {
-  economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'offers', 'tag-discounts', 'items', 'avatar', 'gifts', 'friend-gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
+  economy: ['overview', 'shop', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
   moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers', 'voice-rooms'] }],
   support: ['tickets', 'live-chat'],
   system: ['updates', 'server-rules', 'content', 'insights', 'sdk', 'sample-data', 'config-transfer']
 };
+SHOP_TABS.forEach(function (tab) { tab.lists.concat(tab.tools || []).forEach(function (x) { if (x[1]) HUBS.shop.tabs.push([x[0], x[1]]); }); });
 var HUB_OF = {};
 Object.keys(HUBS).forEach(function (hub) { HUBS[hub].tabs.forEach(function (tab) { HUB_OF[tab[0]] = hub; }); });
 var hubLast = {};
@@ -59,7 +66,7 @@ function apiFor(page) {
 
 function pageAllowed(page) {
   var need = PAGE_ACL[page] || SECTION_ACL[sectionOf(page)];
-  return !need || aclCan(need, 0);
+  return (!need || aclCan(need, 0)) && pageModuleOn(page);
 }
 
 function hubTabs(hub) {
@@ -92,7 +99,7 @@ function errorBlock(err, retry) {
 function listPage(container, name, query, ctx) {
   var def = RESOURCES[name] || LISTS[name];
   var call = apiFor(name);
-  var columns = def.columns.map(function (c) { return { label: t(c.label), width: c.width, align: c.align, skeleton: c.skeleton, head: c.head }; });
+  var columns = def.columns.map(function (c) { return { label: t(c.label), width: c.width, align: c.align, skeleton: c.skeleton, head: c.head, cls: c.cls }; });
   var state = { q: query.q || '', page: Math.max(1, parseInt(query.page, 10) || 1), limit: LIMIT, filters: {}, total: 0, loading: true, loaded: false };
   (def.filters || []).forEach(function (f) { if (query[f.name]) state.filters[f.name] = query[f.name]; });
   lastQuery[name] = currentQuery();
@@ -258,6 +265,7 @@ function skeletonField(height) {
 var panelState = null;
 
 function closePanel() {
+  closeShopPanel();
   if (panelState) {
     panelState.el.remove();
     document.removeEventListener('keydown', panelState.esc, true);
@@ -865,7 +873,8 @@ var PAY_STATUS_ORDER = ['success', 'pending', 'failed', 'expired'];
 
 function ovAllowed(page) {
   var ps = psSection(page);
-  if (ps) return !ps.acl || aclCan(ps.acl, 0);
+  var mod = ps ? moduleOfPs(page) : null;
+  if (ps) return (!ps.acl || aclCan(ps.acl, 0)) && (!mod || moduleOn(mod));
   return pageAllowed(page);
 }
 

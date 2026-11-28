@@ -99,6 +99,164 @@ img.ProseMirror-separator {
 'use strict';
 var MESSAGES = {
   fa: {
+    'pal.tag-discounts': "تخفیف برچسب‌دارها",
+    'pal.payments': "پرداخت‌ها",
+    'nav.shop': "فروشگاه",
+    'tab.modules': "ماژول‌ها",
+    'desc.modules': "بخش‌هایی که این بازی ندارد را خاموش کنید تا کنسول ساده‌تر شود.",
+    'shop.tab.products': "محصولات",
+    'shop.tab.offers': "پیشنهادها",
+    'shop.tab.discounts': "تخفیف‌ها",
+    'shop.tab.items': "آیتم‌ها",
+    'shop.tab.avatar': "آواتار",
+    'shop.tab.gifts': "هدیه‌ها",
+    'shop.tab.payments': "پرداخت",
+    'shop.list.offers': "روزانه",
+    'shop.list.entry-offers': "پیشنهاد ورود",
+    'shop.list.avatar-categories': "دسته‌ها",
+    'shop.list.avatar-items': "آیتم‌ها",
+    'shop.list.avatar-types': "نوع‌ها",
+    'shop.list.gifts': "کدهای هدیه",
+    'shop.list.friend-gifts': "هدیه به دوست",
+    'shop.tool.offer-preview': "پیش‌نمایش بازیکن",
+    'shop.tool.offer-report': "گزارش",
+    'shop.tool.offer-settings': "تنظیمات",
+    'shop.tool.tag-discount-preview': "پیش‌نمایش بازیکن",
+    'shop.tool.tag-discount-settings': "تنظیمات",
+    'shop.tool.avatar-settings': "تنظیمات",
+    'shop.tool.friend-gift-rules': "قانون‌ها",
+    'shop.tool.friend-gift-report': "گزارش",
+    'shop.tool.friend-gift-settings': "تنظیمات",
+    'shop.tool.payment-methods': "درگاه‌ها",
+    'shop.tool.payment-settings': "تنظیمات",
+    'shop.panel.offer-settings': "تنظیمات پیشنهادها",
+    'shop.panel.tag-discount-settings': "تنظیمات تخفیف‌ها",
+    'shop.panel.avatar-settings': "تنظیمات آواتار",
+    'shop.panel.friend-gift-settings': "تنظیمات هدیه به دوست",
+    'shop.panel.payment-settings': "تنظیمات پرداخت",
+    'shop.back': "بازگشت به {name}",
+    'pal.offers': "پیشنهادهای روزانه",
+    'pal.entry-offers': "پیشنهاد ورود",
+    'pal.offer-preview': "پیش‌نمایش پیشنهادها",
+    'pal.offer-report': "گزارش پیشنهادها",
+    'pal.offer-settings': "تنظیمات پیشنهادها",
+    'pal.tag-discount-preview': "پیش‌نمایش تخفیف‌ها",
+    'pal.tag-discount-settings': "تنظیمات تخفیف‌ها",
+    'pal.avatar-settings': "تنظیمات آواتار",
+    'pal.gifts': "کدهای هدیه",
+    'pal.friend-gift-rules': "قانون‌های هدیه به دوست",
+    'pal.friend-gift-report': "گزارش هدیه به دوست",
+    'pal.friend-gift-settings': "تنظیمات هدیه به دوست",
+    'pal.payment-settings': "تنظیمات پرداخت",
+    'pr.menu.label': "کارهای {name}",
+    'pr.menu.edit': "ویرایش",
+    'pr.menu.copy': "ساخت کپی",
+    'pr.menu.payments': "دیدن خریدها",
+    'pr.menu.activate': "فعال کردن",
+    'pr.menu.deactivate': "غیرفعال کردن",
+    'pr.activated': "محصول فعال شد.",
+    'pr.deactivated': "محصول غیرفعال شد.",
+    'pr.delete.title': "«{name}» حذف شود؟",
+    'mod.where.menu': "منوی {name}",
+    'mod.off.title': "ماژول {name} خاموش است",
+    'mod.off.text': "این بخش برای {game} خاموش شده، پس در منو و جست‌وجو دیده نمی‌شود. داده‌های قبلی پاک نشده‌اند و با روشن کردن دوباره برمی‌گردند.",
+    'mod.off.textNoBrand': "این بخش خاموش شده، پس در منو و جست‌وجو دیده نمی‌شود. داده‌های قبلی پاک نشده‌اند و با روشن کردن دوباره برمی‌گردند.",
+    'mod.off.turnOn': "روشن کردن {name}",
+    'mod.off.all': "همهٔ ماژول‌ها",
+    'mod.off.fine': "فقط کسی که دسترسی تنظیمات دارد این دکمه را می‌بیند.",
+    'mod.off.askAdmin': "برای روشن کردنش از مدیر کنسول بخواهید.",
+    'mod.on.done': "{name} روشن شد.",
+    'mod.off.done': "{name} خاموش شد.",
+    'mod.undo': "برگرداندن",
+    'mod.intro.a': "بخش‌هایی را که این بازی ندارد خاموش کنید. ماژول خاموش از",
+    'mod.intro.menu': "منو",
+    'mod.intro.sep': "، ",
+    'mod.intro.search': "جست‌وجوی Ctrl+K",
+    'mod.intro.and': "و",
+    'mod.intro.cards': "کارت‌های داشبورد",
+    'mod.intro.b': "برداشته می‌شود. داده‌ها پاک نمی‌شوند و با روشن کردن دوباره برمی‌گردند. بازی همچنان کار می‌کند.",
+    'mod.search': "جست‌وجوی ماژول…",
+    'mod.filter.label': "نمایش ماژول‌ها",
+    'mod.filter.all': "همه",
+    'mod.filter.on': "روشن",
+    'mod.filter.off': "خاموش",
+    'mod.pages': "{n} صفحه",
+    'mod.psN': "{n} بخش تنظیمات پروژه",
+    'mod.note.off': "خاموش است.",
+    'mod.note.text': "از {where} برداشته شد و {n} صفحه در جست‌وجو دیده نمی‌شود. داده‌های قبلی سر جایشان هستند.",
+    'mod.offTag': "خاموش",
+    'mod.core.title': "همیشه روشن:",
+    'mod.core.text': "ارزها، متاها، جایزه‌ها، محصولات، آیتم‌ها، پرداخت، بازیکنان، اعلان‌ها و تنظیمات. بقیهٔ بخش‌ها روی این‌ها ساخته شده‌اند.",
+    'mod.group.compete': "رقابت",
+    'mod.group.sales': "فروش",
+    'mod.group.progress': "پیشرفت و رشد",
+    'mod.group.publish': "انتشار",
+    'mod.group.chat': "گفتگو",
+    'mod.group.support': "پشتیبانی",
+    'mod.group.data': "داده و ابزار",
+    'mod.group.count': "{on} از {all} روشن",
+    'mod.name.cups': "تورنمنت‌ها",
+    'mod.name.clans': "کلن‌ها",
+    'mod.name.trophies': "جام و لیگ",
+    'mod.name.leaderboardx': "جدول امتیاز",
+    'mod.name.quiz': "آزمون‌ها",
+    'mod.name.campaign': "مرحله‌ها",
+    'mod.name.chance': "بازی شانس",
+    'mod.name.offers': "پیشنهادهای ویژه",
+    'mod.name.tag-discounts': "تخفیف برچسب‌دارها",
+    'mod.name.avatar': "آواتارساز",
+    'mod.name.friend-gifts': "هدیه به دوست",
+    'mod.name.gifts': "کدهای هدیه",
+    'mod.name.tasks': "تسک‌ها",
+    'mod.name.achievements': "دستاوردها",
+    'mod.name.streaks': "روزهای پیاپی",
+    'mod.name.events': "رویدادها",
+    'mod.name.referrals': "کدهای معرف",
+    'mod.name.news': "اخبار",
+    'mod.name.comments': "کامنت‌ها",
+    'mod.name.faqs': "سؤال‌های متداول",
+    'mod.name.banners': "بنرها",
+    'mod.name.sponsors': "اسپانسرها",
+    'mod.name.auto-rules': "اعلان‌های خودکار",
+    'mod.name.voice': "اتاق‌های ویس",
+    'mod.name.stickers': "استیکرها",
+    'mod.name.chat-quota': "سهمیهٔ پیام خصوصی",
+    'mod.name.support': "تیکت و گفتگوی زنده",
+    'mod.name.insights': "آنالیتیکس",
+    'mod.name.content': "محتوای دانلودی",
+    'mod.name.itemkinds': "دارایی‌های بازی",
+    'mod.name.assets': "داده و محتوای بازی",
+    'mod.desc.cups': "تورنمنت با جدول، جایزه و ثبت‌نام، یک‌باره یا تکراری.",
+    'mod.desc.clans': "گروه بازیکن‌ها با سطح، جنگ کلن و نشان.",
+    'mod.desc.trophies': "جام هر بازیکن، لیگ‌ها و فصل‌ها.",
+    'mod.desc.leaderboardx': "جدول‌های دوره‌ای با رتبهٔ زنده و جایزهٔ برنده‌ها.",
+    'mod.desc.quiz': "پک سوال، ماموریت و دوئل.",
+    'mod.desc.campaign': "فصل‌ها و مرحله‌های بازی تک‌نفره.",
+    'mod.desc.chance': "گردونه و جعبهٔ شانس با جایزه.",
+    'mod.desc.offers': "پیشنهاد روزانه و پیشنهاد ورود برای هر بازیکن.",
+    'mod.desc.tag-discounts': "قیمت کمتر برای بازیکن‌های برچسب‌دار، مثل VIP.",
+    'mod.desc.avatar': "دسته، آیتم و نوع آواتار.",
+    'mod.desc.friend-gifts': "بازیکن برای دوستش آیتم یا محصول می‌فرستد.",
+    'mod.desc.gifts': "کد هدیه و کد تخفیف.",
+    'mod.desc.tasks': "کار روزانه با جایزه، در گروه‌های تسک.",
+    'mod.desc.achievements': "نشان‌هایی که بازیکن با بازی کردن باز می‌کند.",
+    'mod.desc.streaks': "جایزه برای چند روز پشت‌سرهم آمدن.",
+    'mod.desc.events': "کارهای ثبت‌شدهٔ بازیکن و جایزهٔ هرکدام.",
+    'mod.desc.referrals': "دعوت دوست و جایزهٔ دعوت.",
+    'mod.desc.news': "خبر، صف بررسی و منبع‌های وب‌هوک.",
+    'mod.desc.comments': "کامنت بازیکن‌ها روی خبرها.",
+    'mod.desc.faqs': "پرسش و پاسخ بخش راهنمای بازی.",
+    'mod.desc.banners': "بنر در جایگاه‌های بازی.",
+    'mod.desc.sponsors': "برندهایی که بنر یا جایگاه را حمایت می‌کنند.",
+    'mod.desc.auto-rules': "پیام‌هایی که سرور خودش برای بازیکن می‌فرستد.",
+    'mod.desc.voice': "اتاق‌های ویس فعال و بی‌صدا کردن بازیکن.",
+    'mod.desc.stickers': "بستهٔ استیکر، چت مسابقه و کانال‌ها.",
+    'mod.desc.chat-quota': "سقف پیام خصوصی برای هر برچسب.",
+    'mod.desc.support': "درخواست‌های پشتیبانی بازیکن‌ها.",
+    'mod.desc.insights': "بازیکن فعال، سشن، ماندگاری و قیف.",
+    'mod.desc.content': "بسته‌های دانلودی برای هر پلتفرم و نسخه.",
+    'mod.desc.itemkinds': "نوع‌های دارایی و مسیریاب یونیتی.",
+    'mod.desc.assets': "داده‌های بازی و بسته‌های محتوا.",
     'theme.toDark': 'حالت تیره',
     'theme.toLight': 'حالت روشن',
     'section': 'اقتصاد',
@@ -121,7 +279,7 @@ var MESSAGES = {
     'desc.currencies': 'ارزهای بازی و مقدار اولیه‌ای که هر بازیکن می‌گیرد.',
     'desc.metas': 'مقدارهای عددی هر بازیکن، مثل سطح یا امتیاز تجربه.',
     'desc.prizes': 'بسته‌هایی از ارز، متا و آیتم که به بازیکن داده می‌شود.',
-    'desc.products': 'محصولاتی که بازیکن با پول یا سکه می‌خرد.',
+    'desc.products': 'محصولاتی که بازیکن با پول یا سکه می‌خرد. هر محصول یک جایزه می‌دهد.',
     'desc.gifts': 'کدهای هدیه و تخفیف.',
     'desc.payments': 'همهٔ خریدها و وضعیت هرکدام.',
     'desc.payment-methods': 'درگاه‌ها و فروشگاه‌ها را تنظیم و فعال کنید.',
@@ -6649,6 +6807,164 @@ var MESSAGES = {
     'gm.stealth.on': 'بات پنهان روشن است.'
   },
   en: {
+    'pal.tag-discounts': "Tag discounts",
+    'pal.payments': "Payments",
+    'nav.shop': "Shop",
+    'tab.modules': "Modules",
+    'desc.modules': "Switch off the parts this game does not use to keep the console simple.",
+    'shop.tab.products': "Products",
+    'shop.tab.offers': "Offers",
+    'shop.tab.discounts': "Discounts",
+    'shop.tab.items': "Items",
+    'shop.tab.avatar': "Avatar",
+    'shop.tab.gifts': "Gifts",
+    'shop.tab.payments': "Payments",
+    'shop.list.offers': "Daily",
+    'shop.list.entry-offers': "Entry offers",
+    'shop.list.avatar-categories': "Categories",
+    'shop.list.avatar-items': "Items",
+    'shop.list.avatar-types': "Types",
+    'shop.list.gifts': "Gift codes",
+    'shop.list.friend-gifts': "Friend gifts",
+    'shop.tool.offer-preview': "Player preview",
+    'shop.tool.offer-report': "Report",
+    'shop.tool.offer-settings': "Settings",
+    'shop.tool.tag-discount-preview': "Player preview",
+    'shop.tool.tag-discount-settings': "Settings",
+    'shop.tool.avatar-settings': "Settings",
+    'shop.tool.friend-gift-rules': "Rules",
+    'shop.tool.friend-gift-report': "Report",
+    'shop.tool.friend-gift-settings': "Settings",
+    'shop.tool.payment-methods': "Gateways",
+    'shop.tool.payment-settings': "Settings",
+    'shop.panel.offer-settings': "Offer settings",
+    'shop.panel.tag-discount-settings': "Discount settings",
+    'shop.panel.avatar-settings': "Avatar settings",
+    'shop.panel.friend-gift-settings': "Friend gift settings",
+    'shop.panel.payment-settings': "Payment settings",
+    'shop.back': "Back to {name}",
+    'pal.offers': "Daily offers",
+    'pal.entry-offers': "Entry offers",
+    'pal.offer-preview': "Offer preview",
+    'pal.offer-report': "Offer report",
+    'pal.offer-settings': "Offer settings",
+    'pal.tag-discount-preview': "Discount preview",
+    'pal.tag-discount-settings': "Discount settings",
+    'pal.avatar-settings': "Avatar settings",
+    'pal.gifts': "Gift codes",
+    'pal.friend-gift-rules': "Friend gift rules",
+    'pal.friend-gift-report': "Friend gift report",
+    'pal.friend-gift-settings': "Friend gift settings",
+    'pal.payment-settings': "Payment settings",
+    'pr.menu.label': "Actions for {name}",
+    'pr.menu.edit': "Edit",
+    'pr.menu.copy': "Make a copy",
+    'pr.menu.payments': "See purchases",
+    'pr.menu.activate': "Activate",
+    'pr.menu.deactivate': "Deactivate",
+    'pr.activated': "Product activated.",
+    'pr.deactivated': "Product deactivated.",
+    'pr.delete.title': "Delete “{name}”?",
+    'mod.where.menu': "{name} menu",
+    'mod.off.title': "The {name} module is off",
+    'mod.off.text': "This part is off for {game}, so it is hidden from the menu and search. Old data is kept and comes back when you turn it on.",
+    'mod.off.textNoBrand': "This part is off, so it is hidden from the menu and search. Old data is kept and comes back when you turn it on.",
+    'mod.off.turnOn': "Turn on {name}",
+    'mod.off.all': "All modules",
+    'mod.off.fine': "Only people with settings access see this button.",
+    'mod.off.askAdmin': "Ask a console admin to turn it on.",
+    'mod.on.done': "{name} is on.",
+    'mod.off.done': "{name} is off.",
+    'mod.undo': "Undo",
+    'mod.intro.a': "Switch off the parts this game does not use. An off module is removed from the",
+    'mod.intro.menu': "menu",
+    'mod.intro.sep': ", ",
+    'mod.intro.search': "Ctrl+K search",
+    'mod.intro.and': "and",
+    'mod.intro.cards': "dashboard cards",
+    'mod.intro.b': ". Data is not deleted and comes back when you turn it on. The game keeps working.",
+    'mod.search': "Search modules…",
+    'mod.filter.label': "Show modules",
+    'mod.filter.all': "All",
+    'mod.filter.on': "On",
+    'mod.filter.off': "Off",
+    'mod.pages': "{n} pages",
+    'mod.psN': "{n} project settings sections",
+    'mod.note.off': "Off.",
+    'mod.note.text': "Removed from {where}; {n} pages are hidden from search. Old data stays where it is.",
+    'mod.offTag': "Off",
+    'mod.core.title': "Always on:",
+    'mod.core.text': "currencies, metas, prizes, products, items, payments, players, notifications and settings. Everything else is built on them.",
+    'mod.group.compete': "Competition",
+    'mod.group.sales': "Sales",
+    'mod.group.progress': "Progress and growth",
+    'mod.group.publish': "Publishing",
+    'mod.group.chat': "Chat",
+    'mod.group.support': "Support",
+    'mod.group.data': "Data and tools",
+    'mod.group.count': "{on} of {all} on",
+    'mod.name.cups': "Tournaments",
+    'mod.name.clans': "Clans",
+    'mod.name.trophies': "Trophies and leagues",
+    'mod.name.leaderboardx': "Leaderboards",
+    'mod.name.quiz': "Quizzes",
+    'mod.name.campaign': "Stages",
+    'mod.name.chance': "Chance games",
+    'mod.name.offers': "Special offers",
+    'mod.name.tag-discounts': "Tag discounts",
+    'mod.name.avatar': "Avatar builder",
+    'mod.name.friend-gifts': "Friend gifts",
+    'mod.name.gifts': "Gift codes",
+    'mod.name.tasks': "Tasks",
+    'mod.name.achievements': "Achievements",
+    'mod.name.streaks': "Daily streaks",
+    'mod.name.events': "Events",
+    'mod.name.referrals': "Referral codes",
+    'mod.name.news': "News",
+    'mod.name.comments': "Comments",
+    'mod.name.faqs': "FAQ",
+    'mod.name.banners': "Banners",
+    'mod.name.sponsors': "Sponsors",
+    'mod.name.auto-rules': "Automatic notifications",
+    'mod.name.voice': "Voice rooms",
+    'mod.name.stickers': "Stickers",
+    'mod.name.chat-quota': "Private message quota",
+    'mod.name.support': "Tickets and live chat",
+    'mod.name.insights': "Analytics",
+    'mod.name.content': "Downloadable content",
+    'mod.name.itemkinds': "Game assets",
+    'mod.name.assets': "Game data and content",
+    'mod.desc.cups': "Tournaments with brackets, prizes and sign-up, one-off or repeating.",
+    'mod.desc.clans': "Player groups with levels, clan wars and badges.",
+    'mod.desc.trophies': "Player trophies, leagues and seasons.",
+    'mod.desc.leaderboardx': "Period boards with live ranks and winner prizes.",
+    'mod.desc.quiz': "Question packs, missions and duels.",
+    'mod.desc.campaign': "Chapters and stages of single-player play.",
+    'mod.desc.chance': "Wheels and lucky boxes with prizes.",
+    'mod.desc.offers': "Daily and entry offers for each player.",
+    'mod.desc.tag-discounts': "Lower prices for tagged players, such as VIP.",
+    'mod.desc.avatar': "Avatar categories, items and types.",
+    'mod.desc.friend-gifts': "Players send items or products to friends.",
+    'mod.desc.gifts': "Gift codes and discount codes.",
+    'mod.desc.tasks': "Daily tasks with prizes, in task groups.",
+    'mod.desc.achievements': "Badges players unlock by playing.",
+    'mod.desc.streaks': "Prizes for coming back several days in a row.",
+    'mod.desc.events': "Recorded player actions and their prizes.",
+    'mod.desc.referrals': "Invite a friend and the invite prize.",
+    'mod.desc.news': "News, review queue and webhook sources.",
+    'mod.desc.comments': "Player comments on news.",
+    'mod.desc.faqs': "Questions and answers in the game help.",
+    'mod.desc.banners': "Banners in game placements.",
+    'mod.desc.sponsors': "Brands that back a banner or placement.",
+    'mod.desc.auto-rules': "Messages the server sends to players on its own.",
+    'mod.desc.voice': "Live voice rooms and muting players.",
+    'mod.desc.stickers': "Sticker packs, match chat and channels.",
+    'mod.desc.chat-quota': "Private message caps per tag.",
+    'mod.desc.support': "Player support requests.",
+    'mod.desc.insights': "Active players, sessions, retention and funnels.",
+    'mod.desc.content': "Downloadable packs per platform and version.",
+    'mod.desc.itemkinds': "Asset kinds and the Unity router.",
+    'mod.desc.assets': "Game data and content packs.",
     'theme.toDark': 'Dark mode',
     'theme.toLight': 'Light mode',
     'section': 'Economy',
@@ -6671,7 +6987,7 @@ var MESSAGES = {
     'desc.currencies': 'In-game currencies and the starting amount each player gets.',
     'desc.metas': 'Numeric values per player, such as level or XP.',
     'desc.prizes': 'Bundles of currencies, metas and items given to players.',
-    'desc.products': 'Products players buy with money or coins.',
+    'desc.products': 'Products players buy with money or coins. Each product gives a prize.',
     'desc.gifts': 'Gift and discount codes.',
     'desc.payments': 'Every purchase and its status.',
     'desc.payment-methods': 'Configure and enable gateways and stores.',
@@ -13894,8 +14210,17 @@ function bar(width, extra) {
 }
 
 var frameHub = null;
+var framePanel = false;
 
 function pageFrame(title, desc, actions) {
+  if (framePanel) {
+    var pContent = h('div', { class: 'flex flex-col flex-1 min-w-0' });
+    var pActions = h('div', { class: 'flex flex-wrap items-center gap-2' }, actions || null);
+    var pFrame = h('div', { class: 'flex flex-col flex-1 min-w-0 eco-panel-frame' },
+      desc || actions ? h('div', { class: 'flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4' }, desc ? h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: desc }) : h('span', {}), pActions) : null,
+      pContent);
+    return { el: pFrame, content: pContent, actions: pActions };
+  }
   var hub = frameHub;
   frameHub = null;
   if (hub) title = hub.label;
@@ -14076,7 +14401,7 @@ function table(columns, rows, opts) {
     }
     columns.forEach(function (c, i) {
       var cell = row.cells[i];
-      r.appendChild(h('td', { class: 'relative x-table-cell px-3 h-9 py-1.5 align-middle' + (c.align === 'center' ? ' text-center' : ''), 'data-label': c.label }, cell));
+      r.appendChild(h('td', { class: 'relative x-table-cell px-3 h-9 py-1.5 align-middle' + (c.align === 'center' ? ' text-center' : '') + (c.cls ? ' ' + c.cls : ''), 'data-label': c.label }, cell));
     });
     tbody.appendChild(r);
   });
@@ -15901,16 +16226,22 @@ var SECTION_ORDER = ['economy', 'publication', 'moderation', 'support', 'system'
 var SECTION_LABEL = { economy: 'section', publication: 'section.pub', moderation: 'section.mod', support: 'section.sup', system: 'section.sys' };
 var PAGE_ACL = { 'server-rules': 'SETTINGS', 'sample-data': 'SETTINGS', 'config-transfer': 'SETTINGS', players: 'ACCOUNT', restrictions: 'ACCOUNT', reports: 'CHANNEL_MESSAGE', 'player-reports': 'CHANNEL_MESSAGE', 'chat-words': 'CHANNEL_MESSAGE', 'chat-quota': 'CHANNEL_MESSAGE', 'chat-quota-settings': 'CHANNEL_MESSAGE', 'chat-quota-report': 'CHANNEL_MESSAGE', 'sticker-packs': 'CHANNEL_MESSAGE', 'sticker-settings': 'CHANNEL_MESSAGE', 'comm-settings': 'CHANNEL_MESSAGE', 'comm-channels': 'CHANNEL_MESSAGE', 'voice-rooms': 'CHANNEL_MESSAGE', activity: 'ACCOUNT', tickets: 'ACCOUNT_NOTES', 'live-chat': 'ACCOUNT_NOTES', 'remote-config': 'SETTINGS' };
 var SECTION_ACL = { economy: 'HIRO_ECONOMY', publication: 'NOTIFICATION', system: 'SETTINGS' };
+var SHOP_TABS = [
+  { id: 'products', lists: [['products', 'products']] },
+  { id: 'offers', lists: [['offers', 'offers'], ['entry-offers', 'offers/entry']], tools: [['offer-preview', 'offers/preview'], ['offer-report', 'offers/report'], ['offer-settings', 'offers/settings']] },
+  { id: 'discounts', lists: [['tag-discounts', 'discounts']], tools: [['tag-discount-preview', 'discounts/preview'], ['tag-discount-settings', 'discounts/settings']] },
+  { id: 'items', lists: [['items', 'items']] },
+  { id: 'avatar', lists: [['avatar-categories', 'avatar'], ['avatar-items', 'avatar/items'], ['avatar-types', 'avatar/types']], tools: [['avatar-settings', 'avatar/settings']] },
+  { id: 'gifts', lists: [['gifts', 'gifts'], ['friend-gifts', 'gifts/friends']], tools: [['friend-gift-rules', 'gifts/friends/rules', 'friend-gifts'], ['friend-gift-report', 'gifts/friends/report', 'friend-gifts'], ['friend-gift-settings', 'gifts/friends/settings', 'friend-gifts']] },
+  { id: 'payments', lists: [['payments', 'payments']], tools: [['payment-methods', null], ['payment-settings', 'payments/settings']] }
+];
+var SHOP_LEGACY = { products: 'products', offers: 'offers', 'tag-discounts': 'discounts', items: 'items', avatar: 'avatar', gifts: 'gifts', 'friend-gifts': 'gifts/friends', payments: 'payments' };
 var HUBS = {
+  shop: { section: 'economy', tabs: [] },
   metas: { section: 'economy', tabs: [['metas', ''], ['meta-rules', 'rules'], ['meta-relations', 'relations'], ['level-tables', 'levels']] },
   tasks: { section: 'economy', tabs: [['tasks', ''], ['task-groups', 'groups']] },
-  offers: { section: 'economy', tabs: [['offers', ''], ['entry-offers', 'entry'], ['offer-preview', 'preview'], ['offer-report', 'report'], ['offer-settings', 'settings']] },
-  'tag-discounts': { section: 'economy', tabs: [['tag-discounts', ''], ['tag-discount-preview', 'preview'], ['tag-discount-settings', 'settings']] },
-  'friend-gifts': { section: 'economy', tabs: [['friend-gifts', ''], ['friend-gift-rules', 'rules'], ['friend-gift-settings', 'settings'], ['friend-gift-report', 'report']] },
   prizes: { section: 'economy', tabs: [['prizes', ''], ['prize-groups', 'groups']] },
-  payments: { section: 'economy', tabs: [['payments', ''], ['payment-settings', 'settings']] },
   'chat-quota': { section: 'moderation', tabs: [['chat-quota', ''], ['chat-quota-settings', 'settings'], ['chat-quota-report', 'report']] },
-  avatar: { section: 'economy', tabs: [['avatar-categories', ''], ['avatar-items', 'items'], ['avatar-types', 'types'], ['avatar-settings', 'settings']] },
   stickers: { section: 'moderation', tabs: [['sticker-packs', ''], ['sticker-settings', 'settings'], ['comm-settings', 'match-chat'], ['comm-channels', 'channels']] },
   events: { section: 'economy', tabs: [['event-types', ''], ['event-rules', 'prizes'], ['event-log', 'report']] },
   news: { section: 'publication', tabs: [['news', ''], ['news-review', 'review'], ['news-sources', 'sources'], ['news-ingest', 'log'], ['news-reactions', 'reactions'], ['news-settings', 'settings']] },
@@ -15920,12 +16251,13 @@ var HUBS = {
   insights: { section: 'system', tabs: [['insights-overview', ''], ['insights-sessions', 'sessions'], ['heatmaps', 'heatmaps'], ['insights-settings', 'settings']] }
 };
 var NAV = {
-  economy: ['overview', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'sales', items: ['products', 'offers', 'tag-discounts', 'items', 'avatar', 'gifts', 'friend-gifts', 'payments'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
+  economy: ['overview', 'shop', { id: 'progress', items: ['currencies', 'metas', 'tasks', 'achievements', 'streaks'] }, { id: 'play', items: ['prizes', 'games', 'chance-games'] }, { id: 'growth', items: ['events', 'referrals'] }],
   publication: [{ id: 'content', items: ['faqs', 'news', 'comments'] }, { id: 'ads', items: ['banners', 'sponsors'] }, { id: 'messages', items: ['notifications', 'auto-rules'] }, 'remote-config'],
   moderation: [{ id: 'people', items: ['players', 'restrictions', 'activity'] }, { id: 'chat', items: ['reports', 'player-reports', 'chat-words', 'chat-quota', 'stickers', 'voice-rooms'] }],
   support: ['tickets', 'live-chat'],
   system: ['updates', 'server-rules', 'content', 'insights', 'sdk', 'sample-data', 'config-transfer']
 };
+SHOP_TABS.forEach(function (tab) { tab.lists.concat(tab.tools || []).forEach(function (x) { if (x[1]) HUBS.shop.tabs.push([x[0], x[1]]); }); });
 var HUB_OF = {};
 Object.keys(HUBS).forEach(function (hub) { HUBS[hub].tabs.forEach(function (tab) { HUB_OF[tab[0]] = hub; }); });
 var hubLast = {};
@@ -15951,7 +16283,7 @@ function apiFor(page) {
 
 function pageAllowed(page) {
   var need = PAGE_ACL[page] || SECTION_ACL[sectionOf(page)];
-  return !need || aclCan(need, 0);
+  return (!need || aclCan(need, 0)) && pageModuleOn(page);
 }
 
 function hubTabs(hub) {
@@ -15984,7 +16316,7 @@ function errorBlock(err, retry) {
 function listPage(container, name, query, ctx) {
   var def = RESOURCES[name] || LISTS[name];
   var call = apiFor(name);
-  var columns = def.columns.map(function (c) { return { label: t(c.label), width: c.width, align: c.align, skeleton: c.skeleton, head: c.head }; });
+  var columns = def.columns.map(function (c) { return { label: t(c.label), width: c.width, align: c.align, skeleton: c.skeleton, head: c.head, cls: c.cls }; });
   var state = { q: query.q || '', page: Math.max(1, parseInt(query.page, 10) || 1), limit: LIMIT, filters: {}, total: 0, loading: true, loaded: false };
   (def.filters || []).forEach(function (f) { if (query[f.name]) state.filters[f.name] = query[f.name]; });
   lastQuery[name] = currentQuery();
@@ -16150,6 +16482,7 @@ function skeletonField(height) {
 var panelState = null;
 
 function closePanel() {
+  closeShopPanel();
   if (panelState) {
     panelState.el.remove();
     document.removeEventListener('keydown', panelState.esc, true);
@@ -16757,7 +17090,8 @@ var PAY_STATUS_ORDER = ['success', 'pending', 'failed', 'expired'];
 
 function ovAllowed(page) {
   var ps = psSection(page);
-  if (ps) return !ps.acl || aclCan(ps.acl, 0);
+  var mod = ps ? moduleOfPs(page) : null;
+  if (ps) return (!ps.acl || aclCan(ps.acl, 0)) && (!mod || moduleOn(mod));
   return pageAllowed(page);
 }
 
@@ -33839,10 +34173,567 @@ function dateSettingsPage(container) {
   load();
 }
 
+var MODULE_GROUPS = ['compete', 'sales', 'progress', 'publish', 'chat', 'support', 'data'];
+var MODULE_LIST = [
+  { id: 'cups', group: 'compete', icon: 'medal', routes: ['cups'], api: 'NakamaCup' },
+  { id: 'clans', group: 'compete', icon: 'group', routes: ['clans'], api: 'NakamaClan' },
+  { id: 'trophies', group: 'compete', icon: 'trophy', routes: ['trophies'], api: 'NakamaClan' },
+  { id: 'leaderboardx', group: 'compete', icon: 'ladder', routes: ['leaderboardx'], api: 'NakamaLeaderboardx' },
+  { id: 'quiz', group: 'compete', icon: 'help', routes: ['quiz'], api: 'NakamaQuiz' },
+  { id: 'campaign', group: 'compete', icon: 'flag', routes: ['campaign'], api: 'NakamaCampaign' },
+  { id: 'chance', group: 'compete', icon: 'dice', pages: ['chance-games'] },
+  { id: 'offers', group: 'sales', icon: 'tag', pages: ['offers', 'entry-offers', 'offer-preview', 'offer-report', 'offer-settings'] },
+  { id: 'tag-discounts', group: 'sales', icon: 'seal', pages: ['tag-discounts', 'tag-discount-preview', 'tag-discount-settings'] },
+  { id: 'avatar', group: 'sales', icon: 'user', pages: ['avatar-categories', 'avatar-items', 'avatar-types', 'avatar-settings'] },
+  { id: 'friend-gifts', group: 'sales', icon: 'handHeart', pages: ['friend-gifts', 'friend-gift-rules', 'friend-gift-report', 'friend-gift-settings'] },
+  { id: 'gifts', group: 'sales', icon: 'ticket', pages: ['gifts'] },
+  { id: 'tasks', group: 'progress', icon: 'checklist', pages: ['tasks', 'task-groups'] },
+  { id: 'achievements', group: 'progress', icon: 'star', pages: ['achievements'] },
+  { id: 'streaks', group: 'progress', icon: 'flame', pages: ['streaks'] },
+  { id: 'events', group: 'progress', icon: 'zap', pages: ['event-types', 'event-rules', 'event-log'], ps: ['events'] },
+  { id: 'referrals', group: 'progress', icon: 'share', pages: ['referrals'], ps: ['referral-rules'] },
+  { id: 'news', group: 'publish', icon: 'newspaper', pages: ['news', 'news-review', 'news-sources', 'news-ingest', 'news-reactions', 'news-settings'] },
+  { id: 'comments', group: 'publish', icon: 'message', pages: ['comments'] },
+  { id: 'faqs', group: 'publish', icon: 'book', pages: ['faqs'] },
+  { id: 'banners', group: 'publish', icon: 'flagBanner', pages: ['banners', 'banner-lists'] },
+  { id: 'sponsors', group: 'publish', icon: 'handshake', pages: ['sponsors'] },
+  { id: 'auto-rules', group: 'publish', icon: 'send', pages: ['auto-rules'] },
+  { id: 'voice', group: 'chat', icon: 'radio', pages: ['voice-rooms'], ps: ['voice'] },
+  { id: 'stickers', group: 'chat', icon: 'image', pages: ['sticker-packs', 'sticker-settings', 'comm-settings', 'comm-channels'] },
+  { id: 'chat-quota', group: 'chat', icon: 'chats', pages: ['chat-quota', 'chat-quota-settings', 'chat-quota-report'] },
+  { id: 'support', group: 'support', icon: 'headset', pages: ['tickets', 'live-chat'], ps: ['support-departments', 'support-canned', 'support-settings'] },
+  { id: 'insights', group: 'data', icon: 'chart', pages: ['insights-overview', 'insights-sessions', 'heatmaps', 'insights-settings'], routes: ['insights'], api: 'NakamaInsights' },
+  { id: 'content', group: 'data', icon: 'cloudDown', pages: ['content-packs', 'content-settings'] },
+  { id: 'itemkinds', group: 'data', icon: 'package', routes: ['itemkinds'], api: 'NakamaItemKinds', needsApi: true },
+  { id: 'assets', group: 'data', icon: 'database', routes: ['assets'], api: 'NakamaAssets', needsApi: true }
+];
+var MODS_KEY = 'nakama-console:modules';
+var MODS = { disabled: null, loading: null, token: null, saving: false };
+
+(function () {
+  try {
+    var v = JSON.parse(localStorage.getItem(MODS_KEY) || 'null');
+    if (Array.isArray(v)) MODS.disabled = v.filter(function (x) { return typeof x === 'string'; });
+  } catch (e) {
+    MODS.disabled = null;
+  }
+})();
+
+function moduleById(id) {
+  for (var i = 0; i < MODULE_LIST.length; i++) if (MODULE_LIST[i].id === id) return MODULE_LIST[i];
+  return null;
+}
+
+function moduleOn(id) {
+  return !MODS.disabled || MODS.disabled.indexOf(id) === -1;
+}
+
+function moduleOfPage(page) {
+  for (var i = 0; i < MODULE_LIST.length; i++) if ((MODULE_LIST[i].pages || []).indexOf(page) !== -1) return MODULE_LIST[i].id;
+  return null;
+}
+
+function moduleOfPs(section) {
+  for (var i = 0; i < MODULE_LIST.length; i++) if ((MODULE_LIST[i].ps || []).indexOf(section) !== -1) return MODULE_LIST[i].id;
+  return null;
+}
+
+function moduleOfRoute(hash) {
+  var m = /^#\/([^/?]+)/.exec(hash || '');
+  if (!m) return null;
+  for (var i = 0; i < MODULE_LIST.length; i++) if ((MODULE_LIST[i].routes || []).indexOf(m[1]) !== -1) return MODULE_LIST[i].id;
+  return null;
+}
+
+function pageModuleOn(page) {
+  var id = moduleOfPage(page);
+  return !id || moduleOn(id);
+}
+
+function modulesKey() {
+  return JSON.stringify(MODS.disabled || []);
+}
+
+function modulesSet(list) {
+  var next = (list || []).slice().sort();
+  var changed = JSON.stringify(MODS.disabled || []) !== JSON.stringify(next);
+  MODS.disabled = next;
+  try { localStorage.setItem(MODS_KEY, JSON.stringify(next)); } catch (e) { MODS.saving = false; }
+  if (!changed) return;
+  if (rendered) rendered.key = '';
+  var cur = parseRoute(location.hash);
+  if (ps && ps.ctl && (!cur || cur.page !== 'modules')) ps.ctl.key = '';
+  schedule();
+  try { window.dispatchEvent(new CustomEvent('nakama-console:modules', { detail: { disabled: next.slice() } })); } catch (e) { MODS.saving = false; }
+}
+
+function modulesLoad(force) {
+  var tk = token();
+  if (!tk) return Promise.resolve(MODS.disabled || []);
+  if (MODS.loading && MODS.token === tk && !force) return MODS.loading;
+  MODS.token = tk;
+  MODS.loading = baseApi('GET', '/console-modules').then(function (res) {
+    modulesSet((res && res.disabled) || []);
+    return MODS.disabled;
+  }, function () {
+    MODS.loading = null;
+    return MODS.disabled || [];
+  });
+  return MODS.loading;
+}
+
+function modulesSave(list) {
+  return baseApi('PUT', '/console-modules', { disabled: list }).then(function (res) {
+    modulesSet((res && res.disabled) || []);
+    return res;
+  });
+}
+
+function moduleToggle(id, on) {
+  var list = (MODS.disabled || []).filter(function (x) { return x !== id; });
+  if (!on) list.push(id);
+  return modulesSave(list);
+}
+
+function moduleInstalled(m) {
+  if (!m.needsApi) return true;
+  return !!window[m.api];
+}
+
+function moduleBundlePages(m) {
+  var api = m.api ? window[m.api] : null;
+  if (!api || typeof api.pages !== 'function') return [];
+  try {
+    return (api.pages() || []).filter(function (p) { return !p.group || p.group === m.id || m.routes.indexOf(p.group) !== -1; });
+  } catch (e) {
+    return [];
+  }
+}
+
+function modulePageCount(m) {
+  return (m.pages || []).length + (m.ps || []).length + moduleBundlePages(m).length;
+}
+
+function moduleWhere(m) {
+  if (m.routes && !(m.pages || []).length) return t('mod.where.menu', { name: t('mod.name.' + m.id) });
+  var page = m.pages[0];
+  if (HUB_OF[page] === 'shop') return t('nav.shop') + ' › ' + t('shop.tab.' + shopTabOf(page).id);
+  var sec = sectionOf(page);
+  var grp = navGroupOf(sec, page);
+  return t(SECTION_LABEL[sec]) + (grp ? ' › ' + t('navg.' + grp) : '');
+}
+
+function moduleIcon(name, cls) {
+  var P = window.NakamaPlane;
+  var box = h('span', { class: 'eco-mod-ic-svg', 'aria-hidden': 'true' });
+  if (P && P.icon) box.innerHTML = P.icon(name, cls || 'pl-ic');
+  else box.appendChild(icon('page', 'h-4 w-4'));
+  return box;
+}
+
+function moduleCanEdit() {
+  return !!token() && aclCan('SETTINGS', 1);
+}
+
+function moduleOffPage(root, id) {
+  var name = t('mod.name.' + id);
+  var can = moduleCanEdit();
+  var on = can ? button({ variant: 'primary', size: 'page', label: t('mod.off.turnOn', { name: name }), onclick: function () {
+    setBusy(on, true, t('saving'));
+    moduleToggle(id, true).then(function () { toast('success', t('mod.on.done', { name: name })); }, function (err) { setBusy(on, false); toast('error', errorText(err)); });
+  } }) : null;
+  if (on) on.setAttribute('data-mod-turn-on', id);
+  var all = button({ variant: 'ghost', size: 'page', label: t('mod.off.all'), onclick: function () { psNavigate(hashFor('modules'), false); } });
+  all.classList.add('eco-mod-all');
+  var brand = typeof brandName === 'function' ? brandName() : '';
+  var box = h('div', { class: 'eco-mod-off', 'data-mod-off': id },
+    h('span', { class: 'eco-mod-off-ic' }, moduleIcon((moduleById(id) || {}).icon || 'toggle')),
+    h('h2', { class: 'eco-mod-off-title', text: t('mod.off.title', { name: name }) }),
+    h('p', { class: 'eco-mod-off-text', text: brand ? t('mod.off.text', { game: brand }) : t('mod.off.textNoBrand') }),
+    h('div', { class: 'eco-mod-off-acts' }, on, can ? all : null),
+    h('p', { class: 'eco-mod-off-fine' }, moduleIcon('lock'), h('span', { text: can ? t('mod.off.fine') : t('mod.off.askAdmin') })));
+  var page = h('div', { class: 'eco-mod-off-page' }, box);
+  clear(root).appendChild(page);
+}
+
+function modulesPage(container) {
+  var content = h('div', { class: 'flex flex-col flex-1 min-w-0' });
+  var frame = { el: content, content: content };
+  clear(container).appendChild(frame.el);
+  var state = { q: '', filter: 'all' };
+  var intro = h('div', { class: 'eco-mod-intro', 'data-mod-intro': '' }, moduleIcon('info'),
+    h('div', {}, h('span', { text: t('mod.intro.a') + ' ' }), h('b', { text: t('mod.intro.menu') }), h('span', { text: t('mod.intro.sep') }), h('b', { text: t('mod.intro.search') }), h('span', { text: ' ' + t('mod.intro.and') + ' ' }), h('b', { text: t('mod.intro.cards') }), h('span', { text: ' ' + t('mod.intro.b') })));
+  var search = searchInput('', t('mod.search'), debounce(function (e) { state.q = String(e.target.value || '').trim().toLowerCase(); paint(); }, 150));
+  search.classList.add('eco-mod-search');
+  var segBox = h('div', { class: 'eco-mod-seg' });
+  var list = h('div', { class: 'eco-mod-list', 'data-mod-list': '' });
+  var core = h('div', { class: 'eco-mod-core', 'data-mod-core': '' }, moduleIcon('lock'), h('div', {}, h('b', { text: t('mod.core.title') + ' ' }), h('span', { text: t('mod.core.text') })));
+  frame.content.appendChild(h('div', { class: 'eco-mod', 'data-modules': '' }, intro, h('div', { class: 'eco-mod-bar' }, search, segBox), list, core));
+  var can = moduleCanEdit();
+  var installed = MODULE_LIST.filter(moduleInstalled);
+
+  function paintSeg() {
+    var onN = installed.filter(function (m) { return moduleOn(m.id); }).length;
+    var opts = [['all', t('mod.filter.all'), installed.length], ['on', t('mod.filter.on'), onN], ['off', t('mod.filter.off'), installed.length - onN]];
+    var seg = h('div', { class: 'eco-seg eco-mod-filter inline-flex items-center gap-0.5 rounded-md p-0.5', role: 'radiogroup', 'aria-label': t('mod.filter.label') });
+    opts.forEach(function (o) {
+      var pressed = state.filter === o[0];
+      seg.appendChild(h('button', { type: 'button', role: 'radio', 'aria-checked': pressed ? 'true' : 'false', class: 'eco-seg-btn inline-flex items-center gap-1.5 rounded font-medium px-3 py-1.5 text-sm' + (pressed ? ' eco-seg-on' : ''), 'data-mod-filter': o[0],
+        onclick: function () { state.filter = o[0]; paint(); } }, h('span', { text: o[1] }), h('span', { class: 'eco-mod-cnt tabular-nums', text: fmtNum(o[2]) })));
+    });
+    clear(segBox).appendChild(seg);
+  }
+
+  function row(m) {
+    var on = moduleOn(m.id);
+    var name = t('mod.name.' + m.id);
+    var sw = h('button', { type: 'button', role: 'switch', class: 'eco-switch', 'aria-checked': on ? 'true' : 'false', 'aria-label': name, disabled: can ? null : '', 'data-mod-switch': m.id,
+      onclick: function () { flip(m, !on, sw); } });
+    var meta = on ? h('div', { class: 'eco-mod-meta' }, moduleIcon('list'), h('span', { text: moduleWhere(m) }), h('i', { text: '•', 'aria-hidden': 'true' }), h('span', { text: t('mod.pages', { n: localDigits(fmtNum(modulePageCount(m))) }) }),
+      (m.ps || []).length ? h('i', { text: '•', 'aria-hidden': 'true' }) : null, (m.ps || []).length ? h('span', { text: t('mod.psN', { n: localDigits(fmtNum(m.ps.length)) }) }) : null) : null;
+    var note = on ? null : h('div', { class: 'eco-mod-note', 'data-mod-note': m.id }, h('b', { text: t('mod.note.off') + ' ' }), h('span', { text: t('mod.note.text', { where: moduleWhere(m), n: localDigits(fmtNum(modulePageCount(m))) }) }));
+    return h('div', { class: 'eco-mod-row' + (on ? '' : ' eco-mod-row--off'), 'data-mod-row': m.id },
+      h('span', { class: 'eco-mod-ic' }, moduleIcon(m.icon)),
+      h('div', { class: 'eco-mod-txt' },
+        h('div', { class: 'eco-mod-name' }, h('span', { text: name }), on ? null : tag(t('mod.offTag'), 'secondary')),
+        h('div', { class: 'eco-mod-desc', text: t('mod.desc.' + m.id) }),
+        meta, note),
+      sw);
+  }
+
+  function paint() {
+    paintSeg();
+    clear(list);
+    var shown = 0;
+    MODULE_GROUPS.forEach(function (g) {
+      var all = installed.filter(function (m) { return m.group === g; });
+      if (!all.length) return;
+      var items = all.filter(function (m) {
+        if (state.filter === 'on' && !moduleOn(m.id)) return false;
+        if (state.filter === 'off' && moduleOn(m.id)) return false;
+        if (!state.q) return true;
+        return (t('mod.name.' + m.id) + ' ' + t('mod.desc.' + m.id) + ' ' + m.id).toLowerCase().indexOf(state.q) !== -1;
+      });
+      if (!items.length) return;
+      shown += items.length;
+      var onN = all.filter(function (m) { return moduleOn(m.id); }).length;
+      list.appendChild(h('section', { class: 'eco-mod-group', 'data-mod-group': g },
+        h('div', { class: 'eco-mod-group-head' }, h('h3', { text: t('mod.group.' + g) }), h('span', { text: t('mod.group.count', { on: localDigits(fmtNum(onN)), all: localDigits(fmtNum(all.length)) }) })),
+        h('div', { class: 'eco-mod-card' }, items.map(row))));
+    });
+    if (!shown) list.appendChild(h('p', { class: 'eco-mod-empty', text: t('empty.search') }));
+  }
+
+  function flip(m, on, sw) {
+    var before = (MODS.disabled || []).slice();
+    sw.setAttribute('aria-busy', 'true');
+    moduleToggle(m.id, on).then(function () {
+      paint();
+      toastAction('success', t(on ? 'mod.on.done' : 'mod.off.done', { name: t('mod.name.' + m.id) }), t('mod.undo'), function () {
+        modulesSave(before).then(function () { paint(); }, function (err) { toast('error', errorText(err)); });
+      });
+    }, function (err) {
+      sw.removeAttribute('aria-busy');
+      toast('error', errorText(err));
+    });
+  }
+
+  paint();
+  modulesLoad(true).then(function () { if (list.isConnected) paint(); });
+}
+
+function toastAction(kind, text, label, fn) {
+  if (!toastBox || !toastBox.isConnected) {
+    toastBox = h('div', { class: 'eco-toasts', 'data-l10n-skip': '', 'data-economy': '' });
+    document.body.appendChild(toastBox);
+  }
+  toastBox.setAttribute('dir', document.documentElement.getAttribute('dir') || 'ltr');
+  var el = null;
+  var undo = button({ variant: 'link', size: 'sm', label: label, onclick: function () { if (el) el.remove(); fn(); } });
+  undo.setAttribute('data-toast-undo', '');
+  el = notice(kind, text, undo);
+  el.classList.add('shadow-lg');
+  toastBox.appendChild(el);
+  setTimeout(function () { el.remove(); }, 8000);
+}
+
+function modulesApi() {
+  return {
+    list: function () { return MODULE_LIST.filter(moduleInstalled).map(function (m) { return { id: m.id, on: moduleOn(m.id), label: t('mod.name.' + m.id), routes: (m.routes || []).slice() }; }); },
+    on: function (id) { return moduleOn(id); },
+    forRoute: function (hash) { var id = moduleOfRoute(hash); return id ? { id: id, label: t('mod.name.' + id), on: moduleOn(id) } : null; },
+    routeOn: function (hash) { var id = moduleOfRoute(hash); return !id || moduleOn(id); },
+    disabled: function () { return (MODS.disabled || []).slice(); },
+    ready: function () { return modulesLoad(false); },
+    offPage: function (root, id) { moduleOffPage(root, id); }
+  };
+}
+
+PH_ICONS['shop-settings'] = '<path d="M40,88H73a32,32,0,0,0,62,0h81a8,8,0,0,0,0-16H135a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16Zm64-24A16,16,0,1,1,88,80,16,16,0,0,1,104,64ZM216,168H199a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16h97a32,32,0,0,0,62,0h17a8,8,0,0,0,0-16Zm-48,24a16,16,0,1,1,16-16A16,16,0,0,1,168,192Z"/>';
+PH_ICONS['shop-preview'] = '<path d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"/>';
+PH_ICONS['shop-report'] = '<path d="M232,208a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V48a8,8,0,0,1,16,0V156.69l50.34-50.35a8,8,0,0,1,11.32,0L128,132.69,180.69,80H160a8,8,0,0,1,0-16h40a8,8,0,0,1,8,8v40a8,8,0,0,1-16,0V91.31l-58.34,58.35a8,8,0,0,1-11.32,0L96,123.31l-56,56V200H224A8,8,0,0,1,232,208Z"/>';
+PH_ICONS['shop-rules'] = '<path d="M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.27,47,25.53a8,8,0,0,0,4.2,0c1-.26,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm0,72c0,37.07-13.66,67.16-40.6,89.42A129.3,129.3,0,0,1,128,223.62a128.25,128.25,0,0,1-38.92-21.81C61.82,179.51,48,149.3,48,112l0-56,160,0Z"/>';
+PH_ICONS['dots'] = '<path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128Zm56-12a12,12,0,1,0,12,12A12,12,0,0,0,196,116ZM60,116a12,12,0,1,0,12,12A12,12,0,0,0,60,116Z"/>';
+PH_ICONS['edit'] = '<path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"/>';
+PH_ICONS['eye-off'] = '<path d="M53.92,34.62A8,8,0,1,0,42.08,45.38L61.32,66.55C25,88.84,9.38,123.2,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208a127.11,127.11,0,0,0,52.07-10.83l22,24.21a8,8,0,1,0,11.84-10.76Zm47.33,75.84,41.67,45.85a32,32,0,0,1-41.67-45.85ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.16,133.16,0,0,1,25,128c4.69-8.79,19.66-33.39,47.35-49.38l18,19.75a48,48,0,0,0,63.66,70l14.73,16.2A112,112,0,0,1,128,192Zm6-95.43a8,8,0,0,1,3-15.72,48.16,48.16,0,0,1,38.77,42.64,8,8,0,0,1-7.22,8.71,6.39,6.39,0,0,1-.75,0,8,8,0,0,1-8-7.26A32.09,32.09,0,0,0,134,96.57Zm113.28,34.69c-.42.94-10.55,23.37-33.36,43.8a8,8,0,1,1-10.67-11.92A132.77,132.77,0,0,0,231.05,128a133.15,133.15,0,0,0-23.12-30.77C185.67,75.19,158.78,64,128,64a118.37,118.37,0,0,0-19.36,1.57A8,8,0,1,1,106,49.79,134,134,0,0,1,128,48c34.88,0,66.57,13.26,91.66,38.35,18.83,18.83,27.3,37.62,27.65,38.41A8,8,0,0,1,247.31,131.26Z"/>';
+PH_ICONS['payment-methods'] = '<path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48Zm0,16V88H32V64Zm0,128H32V104H224v88Zm-16-24a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h32A8,8,0,0,1,208,168Zm-64,0a8,8,0,0,1-8,8H120a8,8,0,0,1,0-16h16A8,8,0,0,1,144,168Z"/>';
+PH_ICONS['modules'] = '<path d="M176,56H80a72,72,0,0,0,0,144h96a72,72,0,0,0,0-144Zm0,128H80A56,56,0,0,1,80,72h96a56,56,0,0,1,0,112Zm0-96a40,40,0,1,0,40,40A40,40,0,0,0,176,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,176,152Z"/>';
+PH_ICONS['shop-discounts'] = '<path d="M225.86,102.82c-3.77-3.94-7.67-8-9.14-11.57-1.36-3.27-1.44-8.69-1.52-13.94-.15-9.76-.31-20.82-8-28.51s-18.75-7.85-28.51-8c-5.25-.08-10.67-.16-13.94-1.52-3.56-1.47-7.63-5.37-11.57-9.14C146.28,23.51,138.44,16,128,16s-18.27,7.51-25.18,14.14c-3.94,3.77-8,7.67-11.57,9.14C88,40.64,82.56,40.72,77.31,40.8c-9.76.15-20.82.31-28.51,8S41,67.55,40.8,77.31c-.08,5.25-.16,10.67-1.52,13.94-1.47,3.56-5.37,7.63-9.14,11.57C23.51,109.72,16,117.56,16,128s7.51,18.27,14.14,25.18c3.77,3.94,7.67,8,9.14,11.57,1.36,3.27,1.44,8.69,1.52,13.94.15,9.76.31,20.82,8,28.51s18.75,7.85,28.51,8c5.25.08,10.67.16,13.94,1.52,3.56,1.47,7.63,5.37,11.57,9.14C109.72,232.49,117.56,240,128,240s18.27-7.51,25.18-14.14c3.94-3.77,8-7.67,11.57-9.14,3.27-1.36,8.69-1.44,13.94-1.52,9.76-.15,20.82-.31,28.51-8s7.85-18.75,8-28.51c.08-5.25.16-10.67,1.52-13.94,1.47-3.56,5.37-7.63,9.14-11.57C232.49,146.28,240,138.44,240,128S232.49,109.73,225.86,102.82Zm-11.55,39.29c-4.79,5-9.75,10.17-12.38,16.52-2.52,6.1-2.63,13.07-2.73,19.82-.1,7-.21,14.33-3.32,17.43s-10.39,3.22-17.43,3.32c-6.75.1-13.72.21-19.82,2.73-6.35,2.63-11.52,7.59-16.52,12.38S132,224,128,224s-9.15-4.92-14.11-9.69-10.17-9.75-16.52-12.38c-6.1-2.52-13.07-2.63-19.82-2.73-7-.1-14.33-.21-17.43-3.32s-3.22-10.39-3.32-17.43c-.1-6.75-.21-13.72-2.73-19.82-2.63-6.35-7.59-11.52-12.38-16.52S32,132,32,128s4.92-9.15,9.69-14.11,9.75-10.17,12.38-16.52c2.52-6.1,2.63-13.07,2.73-19.82.1-7,.21-14.33,3.32-17.43S70.51,56.9,77.55,56.8c6.75-.1,13.72-.21,19.82-2.73,6.35-2.63,11.52-7.59,16.52-12.38S124,32,128,32s9.15,4.92,14.11,9.69,10.17,9.75,16.52,12.38c6.1,2.52,13.07,2.63,19.82,2.73,7,.1,14.33.21,17.43,3.32s3.22,10.39,3.32,17.43c.1,6.75.21,13.72,2.73,19.82,2.63,6.35,7.59,11.52,12.38,16.52S224,124,224,128,219.08,137.15,214.31,142.11ZM173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"/>';
+var SHOP_ICON = { products: 'products', offers: 'offers', discounts: 'shop-discounts', items: 'items', avatar: 'avatar-categories', gifts: 'gifts', payments: 'payments' };
+var shopLast = {};
+var shopPanel = null;
+
+function shopTabOf(page) {
+  for (var i = 0; i < SHOP_TABS.length; i++) {
+    var tab = SHOP_TABS[i];
+    if (tab.lists.concat(tab.tools || []).some(function (x) { return x[0] === page; })) return tab;
+  }
+  return null;
+}
+
+function shopOk(page) {
+  if (psSection(page)) return psAllowed().some(function (s) { return s.id === page; });
+  return pageAllowed(page);
+}
+
+function shopLists(tab) {
+  return tab.lists.map(function (x) { return x[0]; }).filter(shopOk);
+}
+
+function shopTools(tab, list) {
+  return (tab.tools || []).filter(function (x) { return (!x[2] || x[2] === list) && shopOk(x[0]); }).map(function (x) { return x[0]; });
+}
+
+function shopTabTarget(tab) {
+  var lists = shopLists(tab);
+  var last = shopLast[tab.id];
+  return lists.indexOf(last) !== -1 ? last : lists[0];
+}
+
+function shopIsList(page) {
+  var tab = shopTabOf(page);
+  return !!tab && tab.lists.some(function (x) { return x[0] === page; });
+}
+
+function shopPanelPage(page) {
+  return HUB_OF[page] === 'shop' && !shopIsList(page) && /-settings$/.test(page);
+}
+
+function shopListOf(page) {
+  var tab = shopTabOf(page);
+  if (!tab) return null;
+  if (shopIsList(page)) return page;
+  var tool = (tab.tools || []).filter(function (x) { return x[0] === page; })[0];
+  if (tool && tool[2]) return tool[2];
+  return shopTabTarget(tab);
+}
+
+function shopSearchLabel(page) {
+  return has('pal.' + page) ? t('pal.' + page) : shopIsList(page) && shopTabOf(page).lists.length === 1 ? t('shop.tab.' + shopTabOf(page).id) : t('nav.' + page);
+}
+
+function shopStrip(page) {
+  var cur = shopTabOf(page);
+  var el = h('div', { class: 'eco-shop', 'data-shop': cur ? cur.id : '' });
+  var nav = h('nav', { class: 'eco-tabs', 'aria-label': t('nav.shop'), 'data-economy-tabs': 'shop' });
+  SHOP_TABS.forEach(function (tab) {
+    var target = shopTabTarget(tab);
+    if (!target) return;
+    var on = tab === cur;
+    nav.appendChild(h('a', { href: hashFor(target, null, on ? null : lastQuery[target]), class: 'eco-tab', 'aria-current': on ? 'page' : null, 'data-economy-tab': tab.id, 'data-shop-tab': tab.id },
+      icon(SHOP_ICON[tab.id], 'h-4 w-4'), h('span', { text: t('shop.tab.' + tab.id) })));
+  });
+  el.appendChild(nav);
+  if (cur) {
+    var sub = shopSubrow(cur, page);
+    if (sub) el.appendChild(sub);
+  }
+  return { label: t('nav.shop'), el: el };
+}
+
+function shopSubrow(tab, page) {
+  var list = shopListOf(page);
+  var lists = shopLists(tab);
+  var tools = shopTools(tab, list);
+  var start = null;
+  if (!shopIsList(page) && !shopPanelPage(page)) {
+    start = h('a', { href: hashFor(list, null, lastQuery[list]), class: 'eco-shop-back', 'data-shop-back': list }, icon('back', 'h-4 w-4 eco-shop-back-ic'), h('span', { text: t('shop.back', { name: shopListLabel(tab, list) }) }));
+  } else if (lists.length > 1) {
+    start = h('div', { class: 'eco-seg eco-shop-seg inline-flex items-center gap-0.5 rounded-md p-0.5', role: 'tablist', 'aria-label': t('shop.tab.' + tab.id) });
+    lists.forEach(function (p) {
+      var on = p === list;
+      start.appendChild(h('a', { href: hashFor(p, null, on ? null : lastQuery[p]), role: 'tab', 'aria-selected': on ? 'true' : 'false', class: 'eco-seg-btn inline-flex items-center gap-1.5 rounded font-medium px-3 py-1.5 text-sm' + (on ? ' eco-seg-on' : ''), 'data-shop-list': p },
+        h('span', { text: shopListLabel(tab, p) })));
+    });
+  }
+  if (!start && !tools.length) return null;
+  var box = h('div', { class: 'eco-shop-tools' });
+  var normal = tools.filter(function (p) { return !/-settings$/.test(p); });
+  var settings = tools.filter(function (p) { return /-settings$/.test(p); });
+  normal.forEach(function (p) { box.appendChild(shopToolLink(p, page)); });
+  if (settings.length && normal.length) box.appendChild(h('span', { class: 'eco-shop-sep', 'aria-hidden': 'true' }));
+  settings.forEach(function (p) { box.appendChild(shopToolLink(p, page)); });
+  return h('div', { class: 'eco-shop-sub', 'data-shop-sub': tab.id }, start || h('span', {}), tools.length ? box : null);
+}
+
+function shopListLabel(tab, p) {
+  return has('shop.list.' + p) ? t('shop.list.' + p) : t('shop.tab.' + tab.id);
+}
+
+function shopToolLink(p, page) {
+  var on = p === page;
+  var href = psSection(p) ? hashFor(p) : hashFor(p, null, on ? null : lastQuery[p]);
+  var a = h('a', { href: href, class: 'eco-shop-tool', 'aria-current': on ? 'page' : null, 'data-shop-tool': p }, icon(shopToolIcon(p), 'h-4 w-4'), h('span', { text: t('shop.tool.' + p) }));
+  if (psSection(p)) a.addEventListener('click', psEnter);
+  return a;
+}
+
+function shopToolIcon(p) {
+  if (/-settings$/.test(p)) return 'shop-settings';
+  if (/-preview$/.test(p)) return 'shop-preview';
+  if (/-report$/.test(p)) return 'shop-report';
+  if (/-rules$/.test(p)) return 'shop-rules';
+  return 'payment-methods';
+}
+
+function closeShopPanel() {
+  if (!shopPanel) return;
+  shopPanel.el.remove();
+  document.removeEventListener('keydown', shopPanel.esc, true);
+  shopPanel = null;
+}
+
+function shopMountPanel(root, route, ctl, ctx) {
+  var list = shopListOf(route.page);
+  var listRoute = { section: route.section, page: list, id: null, query: lastQuery[list] || {} };
+  frameHub = hubStrip(route.page);
+  try { mountRoute(root, listRoute, ctl, { id: null, query: listRoute.query }); } finally { frameHub = null; }
+  closeShopPanel();
+  var back = function () { go(list, null, lastQuery[list] || {}); };
+  var body = h('div', { 'data-shop-panel': route.page });
+  var el = sidePanel(t('shop.panel.' + route.page), body, null, back);
+  el.setAttribute('data-shop-settings', route.page);
+  var esc = function (e) { if (e.key === 'Escape' && shopPanel && shopPanel.el === el && !document.querySelector('[data-economy="panel"] .eco-pop:not([hidden])')) { e.preventDefault(); back(); } };
+  document.addEventListener('keydown', esc, true);
+  shopPanel = { el: el, esc: esc };
+  document.body.appendChild(el);
+  framePanel = true;
+  try { CUSTOM_PAGES[route.page](body, route, ctl, ctx); } finally { framePanel = false; }
+  var first = body.querySelector('input,textarea,select,button');
+  if (first) first.focus({ preventScroll: true });
+}
+
+function productRowMenu(it) {
+  var items = [
+    { id: 'edit', icon: 'edit', label: t('pr.menu.edit'), run: function () { go('products', it.id, lastQuery.products || {}); } },
+    { id: 'copy', icon: 'copy', label: t('pr.menu.copy'), run: function () { go('products', 'new', Object.assign({}, lastQuery.products || {}, { copy: it.id })); } },
+    pageAllowed('payments') ? { id: 'payments', icon: 'payments', label: t('pr.menu.payments'), run: function () { go('payments', null, { productId: it.id }); } } : null,
+    { id: 'active', icon: it.isActive ? 'eye-off' : 'eye', label: t(it.isActive ? 'pr.menu.deactivate' : 'pr.menu.activate'), run: function () { productSetActive(it, !it.isActive); } },
+    { sep: true },
+    { id: 'delete', icon: 'trash', label: t('delete'), danger: true, run: function () { productDelete(it); } }
+  ];
+  return rowMenu(items.filter(Boolean), t('pr.menu.label', { name: i18nText(it.name) || it.key }));
+}
+
+function productReload() {
+  if (rendered && rendered.list && rendered.list.name === 'products') rendered.list.reload();
+}
+
+function productSetActive(it, on) {
+  api('GET', '/products/' + encodeURIComponent(it.id)).then(function (full) {
+    var body = Object.assign({}, full, { isActive: on });
+    ['id', 'createdAt', 'updatedAt'].forEach(function (k) { delete body[k]; });
+    return api('PUT', '/products/' + encodeURIComponent(it.id), body);
+  }).then(function () {
+    toast('success', t(on ? 'pr.activated' : 'pr.deactivated'));
+    productReload();
+  }, function (err) { toast('error', errorText(err)); });
+}
+
+function productDelete(it) {
+  confirmModal({ title: t('pr.delete.title', { name: i18nText(it.name) || it.key }), text: t('delete.confirm'), ok: t('delete.yes'), danger: true, icon: 'trash' }).then(function (yes) {
+    if (!yes) return;
+    api('DELETE', '/products/' + encodeURIComponent(it.id)).then(function () {
+      toast('success', t('deleted'));
+      productReload();
+    }, function (err) { toast('error', errorText(err)); });
+  });
+}
+
+function rowMenu(items, label) {
+  var wrap = h('div', { class: 'eco-rowmenu', 'data-row-menu': '' });
+  var pop = h('div', { class: 'eco-rowmenu-pop', role: 'menu', hidden: '' });
+  var btn = h('button', { type: 'button', class: 'eco-rowmenu-btn', 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': label, title: label }, icon('dots', 'h-4 w-4'));
+  var buttons = [];
+  items.forEach(function (it) {
+    if (it.sep) { pop.appendChild(h('div', { class: 'eco-rowmenu-sep', role: 'separator' })); return; }
+    var b = h('button', { type: 'button', role: 'menuitem', tabindex: '-1', class: 'eco-rowmenu-item' + (it.danger ? ' eco-rowmenu-item--danger' : ''), 'data-row-action': it.id }, icon(it.icon, 'h-4 w-4'), h('span', { text: it.label }));
+    b.addEventListener('click', function (e) { e.stopPropagation(); close(); it.run(); });
+    buttons.push(b);
+    pop.appendChild(b);
+  });
+  function outside(e) { if (!wrap.contains(e.target)) close(); }
+  function keys(e) {
+    var i = buttons.indexOf(document.activeElement);
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); btn.focus(); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); buttons[(i + 1) % buttons.length].focus(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); buttons[(i - 1 + buttons.length) % buttons.length].focus(); }
+    else if (e.key === 'Home') { e.preventDefault(); buttons[0].focus(); }
+    else if (e.key === 'End') { e.preventDefault(); buttons[buttons.length - 1].focus(); }
+    else if (e.key === 'Tab') close();
+  }
+  function open() {
+    pop.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    wrap.classList.add('eco-rowmenu--open');
+    var r = btn.getBoundingClientRect();
+    pop.classList.toggle('eco-rowmenu-pop--up', window.innerHeight - r.bottom < 260);
+    document.addEventListener('mousedown', outside, true);
+    pop.addEventListener('keydown', keys);
+    if (buttons[0]) buttons[0].focus();
+  }
+  function close() {
+    pop.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    wrap.classList.remove('eco-rowmenu--open');
+    document.removeEventListener('mousedown', outside, true);
+    pop.removeEventListener('keydown', keys);
+  }
+  btn.addEventListener('click', function (e) { e.stopPropagation(); if (pop.hidden) open(); else close(); });
+  btn.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' && pop.hidden) { e.preventDefault(); open(); } });
+  wrap.appendChild(btn);
+  wrap.appendChild(pop);
+  return wrap;
+}
+
+(function shopProductExtras() {
+  var def = RESOURCES.products;
+  if (!def.filters.some(function (f) { return f.name === 'categoryId'; })) {
+    def.filters.push({ name: 'categoryId', label: 'filter.category', type: 'ref', resource: 'categories', api: baseApi, filter: { keyType: 'product' } });
+  }
+  def.columns.push({ label: 'col.actions', render: productRowMenu, width: 52, cls: 'eco-td-act', skeleton: '20px', head: function () { return h('span', { class: 'sr-only', text: t('col.actions') }); } });
+  var baseDefaults = def.defaults;
+  def.defaults = function (q) {
+    var base = baseDefaults(q);
+    if (!q || !q.copy) return base;
+    return api('GET', '/products/' + encodeURIComponent(q.copy)).then(function (src) {
+      var copy = Object.assign({}, base, src);
+      ['id', 'createdAt', 'updatedAt'].forEach(function (k) { delete copy[k]; });
+      copy.key = String(src.key || '') + '_copy';
+      copy.isActive = false;
+      return copy;
+    }, function () { return base; });
+  };
+  if (!PAYMENT_LIST.filters.some(function (f) { return f.name === 'productId'; })) {
+    PAYMENT_LIST.filters.push({ name: 'productId', label: 'filter.of.product', type: 'ref', resource: 'products' });
+  }
+})();
+
 var PS_ROUTE = 'project-settings';
 var PS_SECTIONS = [
   { id: 'brand', label: 'tab.brand', icon: 'image', acl: 'SETTINGS', render: function (box) { brandPage(box); } },
   { id: 'setup', label: 'tab.setup', icon: 'flask', acl: 'SETTINGS', render: function (box) { setupPage(box); } },
+  { id: 'modules', label: 'tab.modules', icon: 'modules', acl: 'SETTINGS', render: function (box) { modulesPage(box); } },
   { id: 'languages', label: 'tab.languages', icon: 'languages', acl: 'SETTINGS', render: function (box, route, ctx) { return languagesPage(box, route.query, ctx); } },
   { id: 'datetime', label: 'tab.datetime', icon: 'history', acl: 'SETTINGS', render: function (box) { dateSettingsPage(box); } },
   { id: 'countries', label: 'tab.countries', icon: 'flag', acl: 'SETTINGS', render: function (box, route, ctx) { return countriesPage(box, route.query, ctx); } },
@@ -33924,7 +34815,7 @@ function aclCan(resource, level) {
 }
 
 function psAllowed() {
-  return PS_SECTIONS.filter(function (s) { return aclCan(s.acl, 0); });
+  return PS_SECTIONS.filter(function (s) { var mod = moduleOfPs(s.id); return aclCan(s.acl, 0) && (!mod || moduleOn(mod)); });
 }
 
 function psEntryHash() {
@@ -34641,6 +35532,7 @@ function legacyHash(hash) {
 
 function hubLegacyHash(hash) {
   var m = /^#\/(economy|publication)\/([^/?]+)(.*)$/.exec(hash || '');
+  if (m && m[1] === 'economy' && SHOP_LEGACY[m[2]]) return '#/economy/shop/' + SHOP_LEGACY[m[2]] + m[3];
   if (!m || !HUB_OF[m[2]] || SECTIONS[m[1]].indexOf(m[2]) === -1) return null;
   var base = routeBase(m[2]);
   return base === m[2] ? null : '#/' + m[1] + '/' + base + m[3];
@@ -34680,9 +35572,9 @@ function parseRoute(hash) {
     var hub = HUBS[page] && HUBS[page].section === section ? HUBS[page] : null;
     if (hub) {
       page = hub.tabs[0][0];
-      var seg = rest ? rest.split('/')[0] : '';
-      var tab = seg ? hub.tabs.filter(function (x) { return x[1] && x[1] === seg; })[0] : null;
-      if (tab) { page = tab[0]; rest = rest.slice(seg.length + 1); }
+      var tab = null;
+      hub.tabs.forEach(function (x) { if (x[1] && (rest === x[1] || rest.indexOf(x[1] + '/') === 0) && (!tab || x[1].length > tab[1].length)) tab = x; });
+      if (tab) { page = tab[0]; rest = rest.slice(tab[1].length + 1); }
     }
     if (SECTIONS[section].indexOf(page) === -1) page = SECTIONS[section][0];
   }
@@ -34828,7 +35720,7 @@ function syncSidebar(route, psOn) {
     var group = nav && nav.parentElement;
     if (!group || !group.parentElement) continue;
     var collapsed = isCollapsed(a);
-    var key = lang() + '|' + collapsed + '|' + active + '|' + JSON.stringify(navGroupState()) + '|' + JSON.stringify(hubLast) + '|' + pendingComments + '|' + pendingReports + '|' + supportBadgeKey() + '|' + updatesBadge() + '|' + JSON.stringify(lastQuery) + '|' + token();
+    var key = lang() + '|' + collapsed + '|' + active + '|' + JSON.stringify(navGroupState()) + '|' + JSON.stringify(hubLast) + '|' + pendingComments + '|' + pendingReports + '|' + supportBadgeKey() + '|' + updatesBadge() + '|' + JSON.stringify(lastQuery) + '|' + token() + '|' + modulesKey();
     var prev = group;
     for (var si = 0; si < SECTION_ORDER.length; si++) {
       if (!navLayout(SECTION_ORDER[si]).length) continue;
@@ -34870,6 +35762,7 @@ function unmount() {
 
 function hubStrip(page) {
   var hub = HUB_OF[page];
+  if (hub === 'shop') return shopStrip(page);
   var tabs = hubTabs(hub);
   if (tabs.length < 2) return null;
   var nav = h('nav', { class: 'eco-tabs', 'aria-label': navLabel(hub), 'data-economy-tabs': hub });
@@ -34885,6 +35778,9 @@ function mountPage(root, route, ctl) {
   var ps2 = psSection(route.page);
   var ctx = { id: route.id, query: route.query };
   if (ps2) { ctl.list = ps2.render(root, route, ctx) || null; return; }
+  var off = moduleOfPage(route.page);
+  if (off && !moduleOn(off)) { moduleOffPage(root, off); return; }
+  if (shopPanelPage(route.page)) { shopMountPanel(root, route, ctl, ctx); return; }
   frameHub = HUB_OF[route.page] && (!route.id || RESOURCES[route.page]) ? hubStrip(route.page) : null;
   try { mountRoute(root, route, ctl, ctx); } finally { frameHub = null; }
 }
@@ -34956,6 +35852,7 @@ function sync() {
     else history.replaceState(history.state, '', location.pathname + location.search + moved);
   }
   var route = parseRoute(hash);
+  if (token() && MODS.token !== token()) modulesLoad(false);
   if (route && !LANGS.tried && token()) {
     LANGS.tried = true;
     loadLanguages().then(function () {
@@ -34977,7 +35874,8 @@ function sync() {
     navOpenedFor = route.page;
     var grp = navGroupOf(route.section, route.page);
     if (grp && !navGroupOpen(route.section, grp)) setNavGroupOpen(route.section, grp, true);
-    if (HUB_OF[route.page]) hubLast[HUB_OF[route.page]] = route.page;
+    if (HUB_OF[route.page]) hubLast[HUB_OF[route.page]] = HUB_OF[route.page] === 'shop' ? shopListOf(route.page) : route.page;
+    if (HUB_OF[route.page] === 'shop' && shopIsList(route.page)) shopLast[shopTabOf(route.page).id] = route.page;
   }
   psRemember(hash || '#/');
   syncSidebar(route, false);
@@ -35119,7 +36017,7 @@ function consoleTabs() {
   Object.keys(HUBS).forEach(function (hub) {
     var tabs = hubTabs(hub);
     if (!tabs.length) return;
-    out.push({ id: hub, href: '#/' + HUBS[hub].section + '/' + hub, label: navLabel(hub), tabs: tabs.map(function (tab) { return { id: tab, href: hashFor(tab), label: tabLabel(tab), first: tab === HUBS[hub].tabs[0][0] }; }) });
+    out.push({ id: hub, href: '#/' + HUBS[hub].section + '/' + hub, label: navLabel(hub), tabs: tabs.map(function (tab) { return { id: tab, href: hashFor(tab), label: hub === 'shop' ? shopSearchLabel(tab) : tabLabel(tab), first: tab === HUBS[hub].tabs[0][0] }; }) });
   });
   return out;
 }
@@ -35165,6 +36063,7 @@ window.NakamaConsole = {
   },
   toggleTheme: function () { toggleTheme(); },
   isDark: function () { return isDarkTheme(); },
+  modules: modulesApi(),
   handoff: {
     state: function () { return HANDOFF.meta ? { visible: !!HANDOFF.meta.visible, project: HANDOFF.meta.project ? handoffTitle(HANDOFF.meta.project) : '', changes: (HANDOFF.meta.changelog || []).length } : null; },
     open: function () { handoffOpen(); },

@@ -225,8 +225,17 @@ function bar(width, extra) {
 }
 
 var frameHub = null;
+var framePanel = false;
 
 function pageFrame(title, desc, actions) {
+  if (framePanel) {
+    var pContent = h('div', { class: 'flex flex-col flex-1 min-w-0' });
+    var pActions = h('div', { class: 'flex flex-wrap items-center gap-2' }, actions || null);
+    var pFrame = h('div', { class: 'flex flex-col flex-1 min-w-0 eco-panel-frame' },
+      desc || actions ? h('div', { class: 'flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4' }, desc ? h('p', { class: 'text-sm text-secondary-500 dark:text-secondary-400', text: desc }) : h('span', {}), pActions) : null,
+      pContent);
+    return { el: pFrame, content: pContent, actions: pActions };
+  }
   var hub = frameHub;
   frameHub = null;
   if (hub) title = hub.label;
@@ -407,7 +416,7 @@ function table(columns, rows, opts) {
     }
     columns.forEach(function (c, i) {
       var cell = row.cells[i];
-      r.appendChild(h('td', { class: 'relative x-table-cell px-3 h-9 py-1.5 align-middle' + (c.align === 'center' ? ' text-center' : ''), 'data-label': c.label }, cell));
+      r.appendChild(h('td', { class: 'relative x-table-cell px-3 h-9 py-1.5 align-middle' + (c.align === 'center' ? ' text-center' : '') + (c.cls ? ' ' + c.cls : ''), 'data-label': c.label }, cell));
     });
     tbody.appendChild(r);
   });

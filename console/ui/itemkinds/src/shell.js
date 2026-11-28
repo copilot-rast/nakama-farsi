@@ -74,12 +74,17 @@ function ikNavLink(item, active) {
     h('div', { class: 'font-medium relative truncate flex-1' }, h('span', { text: item.label }))));
 }
 
+function ikModOn(id) {
+  var M = window.NakamaConsole && window.NakamaConsole.modules;
+  return !M || !M.on || M.on(id);
+}
+
 function ikSyncNav() {
   var dev = document.querySelector('.x-drawer a[href="#/api-explorer"], .x-drawer a[href="#/runtime"]');
   var group = dev && dev.closest('.x-drawer .grid > div');
   var existing = document.querySelectorAll('[data-ik-group]');
   var kinds = (ikKindCache || []).filter(function (k) { return k.enabled !== false; });
-  if (!group || !ikAllowed() || !kinds.length) { Array.prototype.forEach.call(existing, function (e) { e.remove(); }); return; }
+  if (!group || !ikAllowed() || !ikModOn('itemkinds') || !kinds.length) { Array.prototype.forEach.call(existing, function (e) { e.remove(); }); return; }
   var target = document.querySelector('.x-drawer [data-cup-group]') || document.querySelector('.x-drawer [data-clan-group="trophies"]') || document.querySelector('.x-drawer [data-quiz-group]') || document.querySelector('.x-drawer [data-campaign-group]') || document.querySelector('.x-drawer [data-shopx-group]') || document.querySelector('.x-drawer [data-account-group]') || document.querySelector('.x-drawer [data-analytics-group]') || group;
   var active = ikActiveId();
   var items = ikNavItems();
@@ -140,11 +145,12 @@ function ikSync() {
     if (ikMounted !== 'loading') { ikMounted = 'loading'; clear(root).appendChild(h('p', { class: 'px-6 text-sm text-secondary-500', text: t('loading') })); }
     return;
   }
-  var key = page + '|' + ikLang() + '|' + location.hash.split('?')[0];
+  var key = page + '|' + ikLang() + '|' + ikModOn('itemkinds') + '|' + location.hash.split('?')[0];
   if (ikMounted !== key) {
     ikMounted = key;
     closePanel();
-    ikRender(page, root);
+    if (ikModOn('itemkinds')) ikRender(page, root);
+    else window.NakamaConsole.modules.offPage(root, 'itemkinds');
   }
 }
 
@@ -158,6 +164,7 @@ function ikBoot() {
   window.addEventListener('hashchange', ikSchedule);
   window.addEventListener('popstate', ikSchedule);
   window.addEventListener('nakama-console:ready', ikSchedule);
+  window.addEventListener('nakama-console:modules', ikSchedule);
   new MutationObserver(ikSchedule).observe(document.body, { childList: true, subtree: true });
   new MutationObserver(function () { ikMounted = null; ikSchedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   var waited = 0;

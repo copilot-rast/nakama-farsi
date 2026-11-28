@@ -56,18 +56,27 @@ function clNavLink(g, page, active) {
     id === 'clans/uploads' && clPendingUploads ? h('span', { class: 'eco-nav-badge tabular-nums', 'aria-label': t('up.pendingN', { n: clPendingUploads }), text: fmtNum(clPendingUploads) }) : null));
 }
 
+function clModOn(id) {
+  var M = window.NakamaConsole && window.NakamaConsole.modules;
+  return !M || !M.on || M.on(id);
+}
+
 function clSyncNav(active) {
   var dev = document.querySelector('.x-drawer a[href="#/api-explorer"], .x-drawer a[href="#/runtime"]');
   var group = dev && dev.closest('.x-drawer .grid > div');
   var existing = document.querySelectorAll('[data-clan-group]');
   if (!group || !clAllowed()) { Array.prototype.forEach.call(existing, function (e) { e.remove(); }); return; }
   var target = document.querySelector('.x-drawer [data-quiz-group]') || document.querySelector('.x-drawer [data-campaign-group]') || document.querySelector('.x-drawer [data-shopx-group]') || document.querySelector('.x-drawer [data-account-group]') || document.querySelector('.x-drawer [data-analytics-group]') || group;
-  var key = clLang() + '|' + active + '|' + clPendingUploads;
+  var key = clLang() + '|' + active + '|' + clPendingUploads + '|' + clModOn('trophies') + clModOn('clans');
   var first = document.querySelector('[data-clan-group="trophies"]');
   var second = document.querySelector('[data-clan-group="clans"]');
-  if (first && second && first.getAttribute('data-key') === key && second.getAttribute('data-key') === key && first.nextElementSibling === second && second.nextElementSibling === target) return;
+  var shown = CL_ORDER.filter(clModOn);
+  if (!shown.length) { Array.prototype.forEach.call(existing, function (e) { e.remove(); }); return; }
+  var last = document.querySelector('[data-clan-group="' + shown[shown.length - 1] + '"]');
+  if (existing.length === shown.length && Array.prototype.every.call(existing, function (e) { return e.getAttribute('data-key') === key; }) && (shown.length < 2 || (first && first.nextElementSibling === second)) && last && last.nextElementSibling === target) return;
   Array.prototype.forEach.call(existing, function (e) { e.remove(); });
   CL_ORDER.forEach(function (g) {
+    if (!clModOn(g)) return;
     target.before(h('div', { 'data-clan-group': g, 'data-plane-group': g, 'data-l10n-skip': '', 'data-key': key, class: 'eco-nav-next' },
       h('div', { class: 'mb-2 text-secondary-500 font-bold tracking-wide uppercase truncate h-4 px-3 text-[10px]', text: t('group.' + g) }),
       h('nav', { 'aria-label': t('group.' + g) }, h('ul', { class: 'space-y-0.5' }, CL_GROUPS[g].map(function (p) { return clNavLink(g, p, active); })))));
@@ -104,11 +113,12 @@ function clSync() {
     clMounted = null;
   }
   if (root.previousElementSibling !== mains[mains.length - 1]) mains[mains.length - 1].after(root);
-  var key = page + '|' + clLang() + (page === 'clans/rounds' ? '|' + location.hash : '');
+  var key = page + '|' + clLang() + '|' + clModOn(page.split('/')[0]) + (page === 'clans/rounds' ? '|' + location.hash : '');
   if (clMounted !== key) {
     clMounted = key;
     closePanel();
-    CL_RENDER[page](root);
+    if (clModOn(page.split('/')[0])) CL_RENDER[page](root);
+    else window.NakamaConsole.modules.offPage(root, page.split('/')[0]);
   }
 }
 
@@ -122,6 +132,7 @@ function clBoot() {
   window.addEventListener('hashchange', clSchedule);
   window.addEventListener('popstate', clSchedule);
   window.addEventListener('nakama-console:ready', clSchedule);
+  window.addEventListener('nakama-console:modules', clSchedule);
   new MutationObserver(clSchedule).observe(document.body, { childList: true, subtree: true });
   new MutationObserver(function () { clMounted = null; clSchedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   var waited = 0;

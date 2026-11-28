@@ -30,6 +30,11 @@ function crumbsFor(bar) {
     out.push({ label: tab.tab.label, href: null });
   } else if (info) out.push({ label: info.link.label, href: null });
   else if (nat.length) out = out.concat(nat);
+  if (!out.length) {
+    var mods = nc() && nc().modules;
+    var mod = mods && mods.forRoute ? mods.forRoute(currentHash()) : null;
+    if (mod && !mod.on) out.push({ label: mod.label, href: null });
+  }
   return out;
 }
 

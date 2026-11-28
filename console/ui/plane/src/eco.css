@@ -1110,3 +1110,224 @@ html.pl :is(#main, [data-economy]) .eco-tbx .eco-tbf:has(option[value=""]):not(:
 html.pl :is(#main, [data-economy]) .eco-tbx .eco-tbf:has(> input:not([type="checkbox"]):not(:placeholder-shown)) > .eco-tf-label {
   color: var(--accent-ink);
 }
+
+html.pl .eco-shop-sub {
+  margin-top: 14px;
+}
+
+html.pl .eco-shop-tool,
+html.pl .eco-shop-back {
+  min-height: 28px;
+  padding-inline: 10px;
+  border-radius: var(--r-control);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--ink-2);
+  transition: background-color var(--d1) var(--ease), color var(--d1) var(--ease);
+}
+
+html.pl .eco-shop-tool:hover,
+html.pl .eco-shop-back:hover,
+html.pl .eco-shop-tool[aria-current="page"] {
+  background: var(--hover);
+  color: var(--ink-1);
+}
+
+html.pl .eco-shop-tool[aria-current="page"] {
+  background: var(--active);
+}
+
+html.pl .eco-shop-tool svg,
+html.pl .eco-shop-back svg {
+  color: var(--ink-3);
+}
+
+html.pl .eco-shop-sep {
+  background: var(--line-1);
+}
+
+html.pl .eco-shop-seg {
+  padding: 2px;
+  gap: 1px;
+  border-radius: 8px;
+}
+
+html.pl .eco-shop-seg .eco-seg-btn {
+  min-height: 28px;
+  padding-inline: 12px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+html.pl .eco-rowmenu-btn {
+  color: var(--ink-3);
+  border-radius: var(--r-control);
+}
+
+@media (hover: hover) and (min-width: 768px) {
+  html.pl tr:not(:hover) .eco-rowmenu:not(.eco-rowmenu--open) .eco-rowmenu-btn:not(:focus-visible) {
+    opacity: 0;
+  }
+}
+
+html.pl .eco-rowmenu-btn:hover,
+html.pl .eco-rowmenu--open .eco-rowmenu-btn {
+  background: var(--active);
+  color: var(--ink-1);
+}
+
+html.pl .eco-rowmenu-pop {
+  border-color: var(--line);
+  border-radius: var(--r-card);
+  background: var(--thick);
+  box-shadow: var(--thick-shadow);
+}
+
+html.pl .eco-rowmenu-item {
+  color: var(--ink-1);
+}
+
+html.pl .eco-rowmenu-item:hover,
+html.pl .eco-rowmenu-item:focus-visible {
+  background: var(--hover);
+}
+
+html.pl .eco-rowmenu-item svg {
+  color: var(--ink-3);
+}
+
+html.pl .eco-rowmenu-item--danger,
+html.pl .eco-rowmenu-item--danger svg {
+  color: var(--neg);
+}
+
+html.pl .eco-rowmenu-sep {
+  background: var(--line);
+}
+
+html.pl .eco-switch {
+  background: var(--switch-off);
+}
+
+html.pl .eco-switch::after {
+  background: var(--switch-knob);
+}
+
+html.pl .eco-switch[aria-checked="true"] {
+  background: var(--accent);
+}
+
+html.pl .eco-switch:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+
+html.pl .eco-mod-intro {
+  border-color: var(--line);
+  background: var(--well);
+  color: var(--ink-2);
+}
+
+html.pl .eco-mod-intro b,
+html.pl .eco-mod-note b {
+  color: var(--ink-1);
+}
+
+html.pl .eco-mod-intro .eco-mod-ic-svg,
+html.pl .eco-mod-core,
+html.pl .eco-mod-desc,
+html.pl .eco-mod-meta,
+html.pl .eco-mod-group-head span,
+html.pl .eco-mod-empty {
+  color: var(--ink-3);
+}
+
+html.pl .eco-mod-meta i {
+  color: var(--line-2);
+  opacity: 1;
+}
+
+html.pl .eco-mod-card {
+  border-color: var(--line);
+  border-radius: var(--r-card);
+  background: var(--capsule);
+}
+
+html.pl .eco-mod-row + .eco-mod-row {
+  border-top-color: var(--line);
+}
+
+html.pl .eco-mod-ic {
+  background: var(--well-2);
+  color: var(--ink-2);
+}
+
+html.pl .eco-mod-row--off .eco-mod-ic {
+  background: transparent;
+  border-color: var(--line-2);
+  color: var(--ink-3);
+}
+
+html.pl .eco-mod-row--off .eco-mod-name {
+  color: var(--ink-2);
+}
+
+html.pl .eco-mod-note {
+  background: var(--well);
+  color: var(--ink-2);
+}
+
+html.pl .eco-mod-core {
+  border-color: var(--line-2);
+  border-radius: var(--r-card);
+}
+
+html.pl .eco-mod-core b {
+  color: var(--ink-2);
+}
+
+html.pl .eco-mod-off-page {
+  margin: 12px 16px 24px;
+  border-color: var(--line);
+  border-radius: var(--r-window);
+  background: var(--surface);
+}
+
+html.pl .eco-mod-off-ic {
+  border-color: var(--line-2);
+  color: var(--ink-3);
+}
+
+html.pl .eco-mod-off-title {
+  color: var(--ink-1);
+}
+
+html.pl .eco-mod-off-text,
+html.pl .eco-mod-off-fine {
+  color: var(--ink-3);
+}
+
+@media (max-width: 767px) {
+  html.pl .eco-mod-off-page {
+    margin: 8px 8px 16px;
+  }
+  html.pl tr .eco-rowmenu .eco-rowmenu-btn {
+    opacity: 1;
+    width: 36px;
+    height: 36px;
+  }
+  html.pl :is(#main, [data-economy], .ps-window) table.eco-table tbody tr td.eco-td-act {
+    position: absolute;
+    top: 6px;
+    inset-inline-end: 4px;
+    width: auto;
+    min-height: 0;
+    padding: 0;
+  }
+  html.pl :is(#main, [data-economy], .ps-window) table.eco-table tbody tr td.eco-td-act::before {
+    display: none;
+  }
+  html.pl :is(#main, [data-economy], .ps-window) table.eco-table tbody tr:has(td.eco-td-act) td:first-child {
+    padding-inline-end: 48px;
+  }
+}

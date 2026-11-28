@@ -2,6 +2,7 @@ var PS_ROUTE = 'project-settings';
 var PS_SECTIONS = [
   { id: 'brand', label: 'tab.brand', icon: 'image', acl: 'SETTINGS', render: function (box) { brandPage(box); } },
   { id: 'setup', label: 'tab.setup', icon: 'flask', acl: 'SETTINGS', render: function (box) { setupPage(box); } },
+  { id: 'modules', label: 'tab.modules', icon: 'modules', acl: 'SETTINGS', render: function (box) { modulesPage(box); } },
   { id: 'languages', label: 'tab.languages', icon: 'languages', acl: 'SETTINGS', render: function (box, route, ctx) { return languagesPage(box, route.query, ctx); } },
   { id: 'datetime', label: 'tab.datetime', icon: 'history', acl: 'SETTINGS', render: function (box) { dateSettingsPage(box); } },
   { id: 'countries', label: 'tab.countries', icon: 'flag', acl: 'SETTINGS', render: function (box, route, ctx) { return countriesPage(box, route.query, ctx); } },
@@ -83,7 +84,7 @@ function aclCan(resource, level) {
 }
 
 function psAllowed() {
-  return PS_SECTIONS.filter(function (s) { return aclCan(s.acl, 0); });
+  return PS_SECTIONS.filter(function (s) { var mod = moduleOfPs(s.id); return aclCan(s.acl, 0) && (!mod || moduleOn(mod)); });
 }
 
 function psEntryHash() {

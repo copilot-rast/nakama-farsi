@@ -1643,11 +1643,16 @@ function cgVisiblePages(active) {
   return CG_PAGES.filter(function (p) { return p !== 'freeride' || !off || active === 'freeride'; });
 }
 
+function cgModOn(id) {
+  var M = window.NakamaConsole && window.NakamaConsole.modules;
+  return !M || !M.on || M.on(id);
+}
+
 function cgSyncNav(active) {
   var dev = document.querySelector('.x-drawer a[href="#/api-explorer"], .x-drawer a[href="#/runtime"]');
   var group = dev && dev.closest('.x-drawer .grid > div');
   var existing = document.querySelector('[data-campaign-group]');
-  if (!group || !cgAllowed()) { if (existing) existing.remove(); return; }
+  if (!group || !cgAllowed() || !cgModOn('campaign')) { if (existing) existing.remove(); return; }
   var target = document.querySelector('.x-drawer [data-shopx-group]') || document.querySelector('.x-drawer [data-account-group]') || document.querySelector('.x-drawer [data-analytics-group]') || group;
   var key = cgLang() + '|' + active + '|' + cgVisiblePages(active).length;
   if (existing && existing.getAttribute('data-key') === key && existing.nextElementSibling === target) return;
@@ -1688,11 +1693,12 @@ function cgSync() {
     cgMounted = null;
   }
   if (root.previousElementSibling !== mains[mains.length - 1]) mains[mains.length - 1].after(root);
-  var key = page + '|' + cgLang() + (page === 'stages' || page === 'report' ? '|' + location.hash : '');
+  var key = page + '|' + cgLang() + '|' + cgModOn('campaign') + (page === 'stages' || page === 'report' ? '|' + location.hash : '');
   if (cgMounted !== key) {
     cgMounted = key;
     closePanel();
-    CG_RENDER[page](root);
+    if (cgModOn('campaign')) CG_RENDER[page](root);
+    else window.NakamaConsole.modules.offPage(root, 'campaign');
   }
 }
 
@@ -1706,6 +1712,7 @@ function cgBoot() {
   window.addEventListener('hashchange', cgSchedule);
   window.addEventListener('popstate', cgSchedule);
   window.addEventListener('nakama-console:ready', cgSchedule);
+  window.addEventListener('nakama-console:modules', cgSchedule);
   new MutationObserver(cgSchedule).observe(document.body, { childList: true, subtree: true });
   new MutationObserver(function () { cgMounted = null; cgSchedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   var waited = 0;

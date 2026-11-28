@@ -50,11 +50,16 @@ function lbNavLink(page, active) {
     h('div', { class: 'font-medium relative truncate flex-1' }, h('span', { text: t('nav.' + page) }))));
 }
 
+function lbModOn(id) {
+  var M = window.NakamaConsole && window.NakamaConsole.modules;
+  return !M || !M.on || M.on(id);
+}
+
 function lbSyncNav(active) {
   var dev = document.querySelector('.x-drawer a[href="#/api-explorer"], .x-drawer a[href="#/runtime"]');
   var group = dev && dev.closest('.x-drawer .grid > div');
   var existing = document.querySelector('[data-lbx-group]');
-  if (!group || !lbAllowed()) { if (existing) existing.remove(); return; }
+  if (!group || !lbAllowed() || !lbModOn('leaderboardx')) { if (existing) existing.remove(); return; }
   var target = document.querySelector('.x-drawer [data-assets-group]') || document.querySelector('.x-drawer [data-campaign-group]') || document.querySelector('.x-drawer [data-shopx-group]') || document.querySelector('.x-drawer [data-account-group]') || document.querySelector('.x-drawer [data-analytics-group]') || group;
   var key = lbLang() + '|' + active;
   if (existing && existing.getAttribute('data-key') === key && existing.nextElementSibling === target) return;
@@ -95,11 +100,12 @@ function lbSync() {
     lbMounted = null;
   }
   if (root.previousElementSibling !== mains[mains.length - 1]) mains[mains.length - 1].after(root);
-  var key = page + '|' + lbLang() + (page === 'standings' || page === 'winners' || page === 'report' ? '|' + location.hash : '');
+  var key = page + '|' + lbLang() + '|' + lbModOn('leaderboardx') + (page === 'standings' || page === 'winners' || page === 'report' ? '|' + location.hash : '');
   if (lbMounted !== key) {
     lbMounted = key;
     closePanel();
-    LB_RENDER[page](root);
+    if (lbModOn('leaderboardx')) LB_RENDER[page](root);
+    else window.NakamaConsole.modules.offPage(root, 'leaderboardx');
   }
 }
 
@@ -113,6 +119,7 @@ function lbBoot() {
   window.addEventListener('hashchange', lbSchedule);
   window.addEventListener('popstate', lbSchedule);
   window.addEventListener('nakama-console:ready', lbSchedule);
+  window.addEventListener('nakama-console:modules', lbSchedule);
   new MutationObserver(lbSchedule).observe(document.body, { childList: true, subtree: true });
   new MutationObserver(function () { lbMounted = null; lbSchedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   var waited = 0;

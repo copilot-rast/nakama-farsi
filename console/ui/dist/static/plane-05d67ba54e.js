@@ -508,7 +508,7 @@ function paintSky() {}
 var DIRECT = ['/', '/players', '/groups', '/storage', '/storage-indexes', '/matches', '/leaderboards', '/notifications', '/payments', '/chat'];
 var SETTINGS_PAGES = [['users', 'settings.users', 'users'], ['general', 'settings.general', 'toggle'], ['config', 'settings.config', 'fileCode'], ['data-management', 'settings.data', 'database'], ['audit-log', 'settings.audit', 'list']];
 var NATIVE_LABEL = { '/payments': 'nav.purchases', '/chat': 'nav.chat' };
-var HREF_ICON = { '': 'dashboard', players: 'user', groups: 'users', storage: 'database', 'storage-indexes': 'list', matches: 'gamepad', leaderboards: 'trophy', notifications: 'bell', payments: 'card', chat: 'message', apiexplorer: 'terminal', 'api-explorer': 'terminal', modules: 'cpu', runtime: 'cpu', overview: 'dashboard', currencies: 'coins', metas: 'chart', prizes: 'gift', products: 'shopping', offers: 'tag', 'entry-offers': 'clock', 'offer-preview': 'eye', 'offer-report': 'chart', 'offer-settings': 'sliders', 'tag-discounts': 'tag', 'tag-discount-preview': 'eye', 'tag-discount-settings': 'sliders', 'friend-gifts': 'handHeart', 'friend-gift-rules': 'shield', 'friend-gift-settings': 'sliders', 'friend-gift-report': 'chart', gifts: 'ticket', 'event-types': 'zap', 'event-rules': 'trophy', 'meta-rules': 'sliders', 'meta-relations': 'share', 'level-tables': 'ladder', streaks: 'flame', tasks: 'checklist', 'task-groups': 'layers', items: 'backpack', achievements: 'medal', 'chance-games': 'dice', 'prize-groups': 'package', events: 'zap', games: 'puzzle', updates: 'gitMerge', 'event-log': 'list', referrals: 'share', faqs: 'help', news: 'newspaper', banners: 'flagBanner', 'banner-lists': 'slideshow', sponsors: 'handshake', 'auto-rules': 'zap', 'notify-categories': 'tag', comments: 'message', 'remote-config': 'sliders', reports: 'flag', 'player-reports': 'user', restrictions: 'micoff', 'chat-words': 'type', 'chat-quota': 'message', 'chat-quota-settings': 'sliders', 'chat-quota-report': 'chart', activity: 'activity', tickets: 'ticket', 'live-chat': 'headset', users: 'users', general: 'toggle', config: 'fileCode', 'data-management': 'database', 'audit-log': 'list', 'project-settings': 'settings', content: 'cloudDown', 'content-packs': 'cloudDown', 'content-settings': 'sliders', insights: 'chart', 'insights-overview': 'chart', 'insights-sessions': 'activity', heatmaps: 'flame', 'insights-settings': 'sliders' };
+var HREF_ICON = { '': 'dashboard', players: 'user', groups: 'users', storage: 'database', 'storage-indexes': 'list', matches: 'gamepad', leaderboards: 'trophy', notifications: 'bell', payments: 'card', chat: 'message', apiexplorer: 'terminal', 'api-explorer': 'terminal', modules: 'cpu', runtime: 'cpu', overview: 'dashboard', shop: 'shopping', currencies: 'coins', metas: 'chart', prizes: 'gift', products: 'shopping', offers: 'tag', 'entry-offers': 'clock', 'offer-preview': 'eye', 'offer-report': 'chart', 'offer-settings': 'sliders', 'tag-discounts': 'tag', 'tag-discount-preview': 'eye', 'tag-discount-settings': 'sliders', 'friend-gifts': 'handHeart', 'friend-gift-rules': 'shield', 'friend-gift-settings': 'sliders', 'friend-gift-report': 'chart', gifts: 'ticket', 'event-types': 'zap', 'event-rules': 'trophy', 'meta-rules': 'sliders', 'meta-relations': 'share', 'level-tables': 'ladder', streaks: 'flame', tasks: 'checklist', 'task-groups': 'layers', items: 'backpack', achievements: 'medal', 'chance-games': 'dice', 'prize-groups': 'package', events: 'zap', games: 'puzzle', updates: 'gitMerge', 'event-log': 'list', referrals: 'share', faqs: 'help', news: 'newspaper', banners: 'flagBanner', 'banner-lists': 'slideshow', sponsors: 'handshake', 'auto-rules': 'zap', 'notify-categories': 'tag', comments: 'message', 'remote-config': 'sliders', reports: 'flag', 'player-reports': 'user', restrictions: 'micoff', 'chat-words': 'type', 'chat-quota': 'message', 'chat-quota-settings': 'sliders', 'chat-quota-report': 'chart', activity: 'activity', tickets: 'ticket', 'live-chat': 'headset', users: 'users', general: 'toggle', config: 'fileCode', 'data-management': 'database', 'audit-log': 'list', 'project-settings': 'settings', content: 'cloudDown', 'content-packs': 'cloudDown', 'content-settings': 'sliders', insights: 'chart', 'insights-overview': 'chart', 'insights-sessions': 'activity', heatmaps: 'flame', 'insights-settings': 'sliders' };
 
 function iconFor(href) {
   if (!/^#\//.test(href || '')) return 'open';
@@ -1016,6 +1016,11 @@ function crumbsFor(bar) {
     out.push({ label: tab.tab.label, href: null });
   } else if (info) out.push({ label: info.link.label, href: null });
   else if (nat.length) out = out.concat(nat);
+  if (!out.length) {
+    var mods = nc() && nc().modules;
+    var mod = mods && mods.forRoute ? mods.forRoute(currentHash()) : null;
+    if (mod && !mod.on) out.push({ label: mod.label, href: null });
+  }
   return out;
 }
 
@@ -1542,7 +1547,7 @@ function markPage() {
   var cards = box.querySelectorAll(CARD_SEL + ', .bg-white.shadow.rounded-md');
   var tables = box.querySelectorAll('table');
   var tabs = box.querySelector('.x-tab-group');
-  var list = !tabs && tables.length >= 1 && cards.length === tables.length && cards.length <= 2 && !box.querySelector('[_echarts_instance_]');
+  var list = !!box.querySelector('.eco-shop') || !tabs && tables.length >= 1 && cards.length === tables.length && cards.length <= 2 && !box.querySelector('[_echarts_instance_]');
   if (list !== box.hasAttribute('data-pl-list')) box.toggleAttribute('data-pl-list', list);
 }
 

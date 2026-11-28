@@ -55,11 +55,16 @@ function cuNavLink(g, page, active) {
     h('div', { class: 'font-medium relative truncate flex-1' }, h('span', { text: t('nav.' + id) }))));
 }
 
+function cuModOn(id) {
+  var M = window.NakamaConsole && window.NakamaConsole.modules;
+  return !M || !M.on || M.on(id);
+}
+
 function cuSyncNav(active) {
   var dev = document.querySelector('.x-drawer a[href="#/api-explorer"], .x-drawer a[href="#/runtime"]');
   var group = dev && dev.closest('.x-drawer .grid > div');
   var existing = document.querySelectorAll('[data-cup-group]');
-  if (!group || !cuAllowed()) { Array.prototype.forEach.call(existing, function (e) { e.remove(); }); return; }
+  if (!group || !cuAllowed() || !cuModOn('cups')) { Array.prototype.forEach.call(existing, function (e) { e.remove(); }); return; }
   var target = document.querySelector('.x-drawer [data-clan-group="trophies"]') || document.querySelector('.x-drawer [data-quiz-group]') || document.querySelector('.x-drawer [data-campaign-group]') || document.querySelector('.x-drawer [data-shopx-group]') || document.querySelector('.x-drawer [data-account-group]') || document.querySelector('.x-drawer [data-analytics-group]') || group;
   var key = cuLang() + '|' + active;
   var mine = document.querySelector('[data-cup-group="cups"]');
@@ -102,11 +107,12 @@ function cuSync() {
     cuMounted = null;
   }
   if (root.previousElementSibling !== mains[mains.length - 1]) mains[mains.length - 1].after(root);
-  var key = page + '|' + cuLang() + (page === 'cups/view' || page === 'cups/list' ? '|' + location.hash : '');
+  var key = page + '|' + cuLang() + '|' + cuModOn('cups') + (page === 'cups/view' || page === 'cups/list' ? '|' + location.hash : '');
   if (cuMounted !== key) {
     cuMounted = key;
     closePanel();
-    CU_RENDER[page](root);
+    if (cuModOn('cups')) CU_RENDER[page](root);
+    else window.NakamaConsole.modules.offPage(root, 'cups');
   }
 }
 
@@ -120,6 +126,7 @@ function cuBoot() {
   window.addEventListener('hashchange', cuSchedule);
   window.addEventListener('popstate', cuSchedule);
   window.addEventListener('nakama-console:ready', cuSchedule);
+  window.addEventListener('nakama-console:modules', cuSchedule);
   new MutationObserver(cuSchedule).observe(document.body, { childList: true, subtree: true });
   new MutationObserver(function () { cuMounted = null; cuSchedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   var waited = 0;

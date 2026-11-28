@@ -50,11 +50,16 @@ function asNavLink(page, active) {
     h('div', { class: 'font-medium relative truncate flex-1' }, h('span', { text: t('nav.' + page) }))));
 }
 
+function asModOn(id) {
+  var M = window.NakamaConsole && window.NakamaConsole.modules;
+  return !M || !M.on || M.on(id);
+}
+
 function asSyncNav(active) {
   var dev = document.querySelector('.x-drawer a[href="#/api-explorer"], .x-drawer a[href="#/runtime"]');
   var group = dev && dev.closest('.x-drawer .grid > div');
   var existing = document.querySelector('[data-assets-group]');
-  if (!group || !asAllowed()) { if (existing) existing.remove(); return; }
+  if (!group || !asAllowed() || !asModOn('assets')) { if (existing) existing.remove(); return; }
   var target = document.querySelector('.x-drawer [data-campaign-group]') || document.querySelector('.x-drawer [data-shopx-group]') || document.querySelector('.x-drawer [data-account-group]') || document.querySelector('.x-drawer [data-analytics-group]') || group;
   var key = asLang() + '|' + active;
   if (existing && existing.getAttribute('data-key') === key && existing.nextElementSibling === target) return;
@@ -94,11 +99,12 @@ function asSync() {
     asMounted = null;
   }
   if (root.previousElementSibling !== mains[mains.length - 1]) mains[mains.length - 1].after(root);
-  var key = page + '|' + asLang();
+  var key = page + '|' + asLang() + '|' + asModOn('assets');
   if (asMounted !== key) {
     asMounted = key;
     closePanel();
-    AS_RENDER[page](root);
+    if (asModOn('assets')) AS_RENDER[page](root);
+    else window.NakamaConsole.modules.offPage(root, 'assets');
   }
 }
 
@@ -112,6 +118,7 @@ function asBoot() {
   window.addEventListener('hashchange', asSchedule);
   window.addEventListener('popstate', asSchedule);
   window.addEventListener('nakama-console:ready', asSchedule);
+  window.addEventListener('nakama-console:modules', asSchedule);
   new MutationObserver(asSchedule).observe(document.body, { childList: true, subtree: true });
   new MutationObserver(function () { asMounted = null; asSchedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   var waited = 0;

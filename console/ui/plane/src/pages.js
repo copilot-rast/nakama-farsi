@@ -26,7 +26,7 @@ function markPage() {
   var cards = box.querySelectorAll(CARD_SEL + ', .bg-white.shadow.rounded-md');
   var tables = box.querySelectorAll('table');
   var tabs = box.querySelector('.x-tab-group');
-  var list = !tabs && tables.length >= 1 && cards.length === tables.length && cards.length <= 2 && !box.querySelector('[_echarts_instance_]');
+  var list = !!box.querySelector('.eco-shop') || !tabs && tables.length >= 1 && cards.length === tables.length && cards.length <= 2 && !box.querySelector('[_echarts_instance_]');
   if (list !== box.hasAttribute('data-pl-list')) box.toggleAttribute('data-pl-list', list);
 }
 

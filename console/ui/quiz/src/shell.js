@@ -50,11 +50,16 @@ function qzNavLink(page, active) {
     h('div', { class: 'font-medium relative truncate flex-1' }, h('span', { text: t('nav.' + page) }))));
 }
 
+function qzModOn(id) {
+  var M = window.NakamaConsole && window.NakamaConsole.modules;
+  return !M || !M.on || M.on(id);
+}
+
 function qzSyncNav(active) {
   var dev = document.querySelector('.x-drawer a[href="#/api-explorer"], .x-drawer a[href="#/runtime"]');
   var group = dev && dev.closest('.x-drawer .grid > div');
   var existing = document.querySelector('[data-quiz-group]');
-  if (!group || !qzAllowed()) { if (existing) existing.remove(); return; }
+  if (!group || !qzAllowed() || !qzModOn('quiz')) { if (existing) existing.remove(); return; }
   var target = document.querySelector('.x-drawer [data-campaign-group]') || document.querySelector('.x-drawer [data-shopx-group]') || document.querySelector('.x-drawer [data-account-group]') || document.querySelector('.x-drawer [data-analytics-group]') || group;
   var key = qzLang() + '|' + active;
   if (existing && existing.getAttribute('data-key') === key && existing.nextElementSibling === target) return;
@@ -95,11 +100,12 @@ function qzSync() {
     qzMounted = null;
   }
   if (root.previousElementSibling !== mains[mains.length - 1]) mains[mains.length - 1].after(root);
-  var key = page + '|' + qzLang() + (page === 'questions' || page === 'reports' || page === 'stats' || page === 'duels' ? '|' + location.hash : '');
+  var key = page + '|' + qzLang() + '|' + qzModOn('quiz') + (page === 'questions' || page === 'reports' || page === 'stats' || page === 'duels' ? '|' + location.hash : '');
   if (qzMounted !== key) {
     qzMounted = key;
     closePanel();
-    QZ_RENDER[page](root);
+    if (qzModOn('quiz')) QZ_RENDER[page](root);
+    else window.NakamaConsole.modules.offPage(root, 'quiz');
   }
 }
 
@@ -113,6 +119,7 @@ function qzBoot() {
   window.addEventListener('hashchange', qzSchedule);
   window.addEventListener('popstate', qzSchedule);
   window.addEventListener('nakama-console:ready', qzSchedule);
+  window.addEventListener('nakama-console:modules', qzSchedule);
   new MutationObserver(qzSchedule).observe(document.body, { childList: true, subtree: true });
   new MutationObserver(function () { qzMounted = null; qzSchedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   var waited = 0;

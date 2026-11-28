@@ -1,10 +1,10 @@
 {
   "note": "Files generated in console/ui/dist by scripts/build.mjs.",
   "files": [
-    "static/plane-78b5562aa7.js",
-    "static/plane-78b5562aa7.js.gz",
-    "static/plane-c7ef36e592.css",
-    "static/plane-c7ef36e592.css.gz",
+    "static/plane-05d67ba54e.js",
+    "static/plane-05d67ba54e.js.gz",
+    "static/plane-d07c728eea.css",
+    "static/plane-d07c728eea.css.gz",
     "static/yekanbakh-bold.woff2",
     "static/yekanbakh-regular.woff2",
     "static/yekanbakh-semibold.woff2"
